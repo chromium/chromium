@@ -5,7 +5,8 @@
   --pi: 3.14159265358979;
   --spinner-color: var(--google-grey-900-rgb);
   --text-width: 140px;
-  --warn-text-width: 245px;
+  --warn-text-width: 241px;
+  --warn-save-text-width: 318px;
   --transparent-button-color: rgba(0, 0, 0, 0);
 }
 
@@ -104,7 +105,8 @@
   border: none;
   border-radius: 4px;
   height: 32px;
-  margin: 8px;
+  margin-inline-end: 4px;
+  margin-inline-start: 8px;
   transition: background-color 300ms;
   width: 32px;
   z-index: 2;
@@ -154,6 +156,7 @@
 #separator {
   background-color: rgba(0, 0, 0, .1);
   height: 90%;
+  margin-inline-start: 4px;
   width: 1px;
 }
 
@@ -162,8 +165,15 @@
   line-height: 150%;
 }
 
+#save-button {
+  display: none;
+  margin-inline-start: 4px;
+  z-index: 2;
+}
+
 #discard-button {
   display: none;
+  margin-inline-start: 4px;
   z-index: 2;
 }
 
@@ -171,21 +181,33 @@
   width: var(--warn-text-width);
 }
 
-[data-display-mode='warn'] .progress {
+[data-display-mode='warn-save'] #text-container {
+  width: var(--warn-save-text-width);
+}
+
+[data-display-mode^='warn'] .progress {
   padding: 0 0 0 3px;
 }
 
-[data-display-mode='warn'] #discard-button,
-[data-display-mode='warn'] #error-icon,
-[data-display-mode='warn'] #warning-text {
+[data-display-mode^='warn'] #discard-button,
+[data-display-mode^='warn'] #error-icon,
+[data-display-mode^='warn'] #warning-text {
   display: block;
 }
 
-[data-display-mode='warn'] #shadow-mask,
-[data-display-mode='warn'] #file-icon,
-[data-display-mode='warn'] #filename,
-[data-display-mode='warn'] #status-text,
-[data-display-mode='warn'] .progress-indicator {
+[data-display-mode^='warn'] #shadow-mask,
+[data-display-mode^='warn'] #file-icon,
+[data-display-mode^='warn'] #filename,
+[data-display-mode^='warn'] #status-text,
+[data-display-mode^='warn'] .progress-indicator {
+  display: none;
+}
+
+[data-display-mode='warn-save'] #save-button {
+  display: block;
+}
+
+[data-display-mode='warn-save'] #dropdown-button {
   display: none;
 }
 
@@ -212,6 +234,7 @@
     <div id="status-text"></div>
     <div id="warning-text"></div>
   </div>
+  <download-button id="save-button"></download-button>
   <download-button id="discard-button"></download-button>
   <button id="dropdown-button">
     <svg id="dropdown-icon" viewBox="0 0 16 16">

@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './download_button.js';
 import './strings.m.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
@@ -18,8 +19,12 @@ import {DownloadShelfApiProxy, DownloadShelfApiProxyImpl} from './download_shelf
 
 /** @enum {string} */
 const DisplayMode = {
+  // Shows icon + filename + context menu button.
   kNormal: 'normal',
-  kWarn: 'warn'
+  // Shows icon + warning text + discard button + context menu button.
+  kWarn: 'warn',
+  // Shows icon + warning text + save button + discard button.
+  kWarnSave: 'warn-save'
 };
 
 export class DownloadItemElement extends CustomElement {
@@ -58,6 +63,25 @@ export class DownloadItemElement extends CustomElement {
   /** @return {DownloadItem} */
   get item() {
     return this.item_;
+  }
+
+  /**
+   * @private
+   * @return {string}
+   */
+  get clampedWarningText_() {
+    // Views uses ui/gfx/text_elider.cc to elide text given a maximum width.
+    // For simplicity, we instead elide text by restricting text length.
+    const maxFilenameLength = 19;
+    const warningText = this.item.warningText;
+    if (!warningText) {
+      return '';
+    }
+
+    const filepath = this.item.fileNameDisplayString;
+    const filename = filepath.substring(filepath.lastIndexOf('/') + 1);
+    return warningText.replace(
+        filename, this.elideFilename_(filename, maxFilenameLength));
   }
 
   /** @private */
@@ -102,11 +126,18 @@ export class DownloadItemElement extends CustomElement {
       this.$('#file-icon').src = icon;
     });
 
-    downloadElement.dataset.displayMode =
-        this.item_.mode === DownloadMode.kNormal ? DisplayMode.kNormal :
-                                                   DisplayMode.kWarn;
-    this.$('#warning-text').innerText =
-        item.warningText ? item.warningText : '';
+    if (item.mode === DownloadMode.kNormal) {
+      downloadElement.dataset.displayMode = DisplayMode.kNormal;
+    } else if (
+        item.mode === DownloadMode.kDangerous ||
+        item.mode === DownloadMode.kMixedContentWarn) {
+      downloadElement.dataset.displayMode = DisplayMode.kWarnSave;
+    } else {
+      downloadElement.dataset.displayMode = DisplayMode.kWarn;
+    }
+
+    this.$('#save-button').innerText = item.warningConfirmButtonText;
+    this.$('#warning-text').innerText = this.clampedWarningText_;
   }
 
   /** @param {number} value */
@@ -134,6 +165,30 @@ export class DownloadItemElement extends CustomElement {
   onDiscardButtonClick_(e) {
     // TODO(crbug.com/1182529): Notify C++ through mojo. Remove this item
     // from download_list.
+  }
+
+  /**
+   * Elide a filename to a maximum length.
+   * The extension of the filename will be kept if it has one.
+   * @param {string} s A filename.
+   * @param {number} maxlen The maximum length after elided.
+   * @private
+   */
+  elideFilename_(s, maxlen) {
+    assert(maxlen > 6);
+
+    if (s.length <= maxlen) {
+      return s;
+    }
+
+    const extIndex = s.lastIndexOf('.');
+    if (extIndex === -1) {
+      // |s| does not have an extension.
+      return s.substr(0, maxlen - 3) + '...';
+    } else {
+      const subfix = '...' + s.substr(extIndex);
+      return s.substr(0, maxlen - subfix.length) + subfix;
+    }
   }
 }
 
