@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_com_initializer.h"
 #include "media/base/cdm_factory.h"
@@ -56,17 +55,7 @@ class MEDIA_EXPORT MediaFoundationCdmFactory : public CdmFactory {
   HRESULT CreateCdmInternal(
       const std::string& key_system,
       const CdmConfig& cdm_config,
-      const base::UnguessableToken& cdm_origin_id,
       Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm);
-  void OnCdmOriginIdObtained(
-      const std::string& key_system,
-      const CdmConfig& cdm_config,
-      const SessionMessageCB& session_message_cb,
-      const SessionClosedCB& session_closed_cb,
-      const SessionKeysChangeCB& session_keys_change_cb,
-      const SessionExpirationUpdateCB& session_expiration_update_cb,
-      CdmCreatedCB cdm_created_cb,
-      const base::UnguessableToken& cdm_origin_id);
 
   std::unique_ptr<CdmAuxiliaryHelper> helper_;
   base::FilePath user_data_dir_;
@@ -77,9 +66,6 @@ class MEDIA_EXPORT MediaFoundationCdmFactory : public CdmFactory {
 
   // Key system to CreateCdmFactoryCB mapping.
   std::map<std::string, CreateCdmFactoryCB> create_cdm_factory_cbs_;
-
-  // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<MediaFoundationCdmFactory> weak_factory_{this};
 };
 
 }  // namespace media

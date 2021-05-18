@@ -47,11 +47,6 @@ url::Origin MojoCdmHelper::GetCdmOrigin() {
   return cdm_origin;
 }
 
-void MojoCdmHelper::GetCdmOriginId(GetCdmOriginIdCB callback) {
-  ConnectToCdmPrefService();
-  cdm_pref_service_->GetCdmOriginId(std::move(callback));
-}
-
 cdm::Buffer* MojoCdmHelper::CreateCdmBuffer(size_t capacity) {
   return GetAllocator()->CreateCdmBuffer(capacity);
 }
@@ -132,13 +127,6 @@ void MojoCdmHelper::ConnectToPlatformVerification() {
   if (!platform_verification_) {
     frame_interfaces_->BindEmbedderReceiver(mojo::GenericPendingReceiver(
         platform_verification_.BindNewPipeAndPassReceiver()));
-  }
-}
-
-void MojoCdmHelper::ConnectToCdmPrefService() {
-  if (!cdm_pref_service_) {
-    frame_interfaces_->BindEmbedderReceiver(mojo::GenericPendingReceiver(
-        cdm_pref_service_.BindNewPipeAndPassReceiver()));
   }
 }
 

@@ -15,7 +15,6 @@
 #include "base/unguessable_token.h"
 #include "media/base/media_export.h"
 #include "media/cdm/cdm_allocator.h"
-#include "media/cdm/cdm_pref_service.h"
 #include "media/cdm/output_protection.h"
 #include "media/cdm/platform_verification.h"
 #include "media/media_buildflags.h"
@@ -34,8 +33,7 @@ namespace media {
 // etc. as required to meet the interface.
 class MEDIA_EXPORT CdmAuxiliaryHelper : public CdmAllocator,
                                         public OutputProtection,
-                                        public PlatformVerification,
-                                        public CdmPrefService {
+                                        public PlatformVerification {
  public:
   CdmAuxiliaryHelper();
   ~CdmAuxiliaryHelper() override;
@@ -54,6 +52,12 @@ class MEDIA_EXPORT CdmAuxiliaryHelper : public CdmAllocator,
   // if the origin is unavailable or if error happened.
   virtual url::Origin GetCdmOrigin();
 
+  // Gets the origin ID of the frame associated with the CDM. The origin ID does
+  // not reveal the origin directly and is resettable by the user by clearing
+  // browsing data. The origin ID can be empty if an error happened and should
+  // be handled by the caller.
+  virtual base::UnguessableToken GetCdmOriginId();
+
   // CdmAllocator implementation.
   cdm::Buffer* CreateCdmBuffer(size_t capacity) override;
   std::unique_ptr<VideoFrameImpl> CreateCdmVideoFrame() override;
@@ -68,9 +72,6 @@ class MEDIA_EXPORT CdmAuxiliaryHelper : public CdmAllocator,
                          const std::string& challenge,
                          ChallengePlatformCB callback) override;
   void GetStorageId(uint32_t version, StorageIdCB callback) override;
-
-  // CdmPrefService implementation.
-  void GetCdmOriginId(GetCdmOriginIdCB callback) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CdmAuxiliaryHelper);

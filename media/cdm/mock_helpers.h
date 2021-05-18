@@ -51,7 +51,7 @@ class MockCdmAuxiliaryHelper : public CdmAuxiliaryHelper {
   MOCK_METHOD1(GetStorageIdCalled, std::vector<uint8_t>(uint32_t version));
   void GetStorageId(uint32_t version, StorageIdCB callback) override;
 
-  MOCK_METHOD(void, GetCdmOriginId, (GetCdmOriginIdCB callback), (override));
+  MOCK_METHOD0(GetCdmOriginId, base::UnguessableToken());
 
  private:
   std::unique_ptr<CdmAllocator> allocator_;
