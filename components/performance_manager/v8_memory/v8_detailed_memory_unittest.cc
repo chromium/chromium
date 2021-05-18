@@ -23,6 +23,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -1345,7 +1346,13 @@ TEST_F(V8DetailedMemoryDecoratorTest, ObserverOutlivesDecorator) {
   memory_request.RemoveObserver(&observer);
 }
 
-TEST_F(V8DetailedMemoryDecoratorTest, SingleProcessRequest) {
+// TODO(crbug.com/1203439) Sometimes timing out on Windows.
+#if defined(OS_WIN)
+#define MAYBE_SingleProcessRequest DISABLED_SingleProcessRequest
+#else
+#define MAYBE_SingleProcessRequest SingleProcessRequest
+#endif
+TEST_F(V8DetailedMemoryDecoratorTest, MAYBE_SingleProcessRequest) {
   // Create 2 renderer processes. Create one request that measures both of
   // them, and one request that measures only one.
   constexpr RenderProcessHostId kProcessId1 = RenderProcessHostId(0xFAB);
