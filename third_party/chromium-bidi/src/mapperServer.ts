@@ -3,6 +3,7 @@ import debug from 'debug';
 const debugInternal = debug('bidiMapper:internal');
 const debugSend = debug('bidiMapper:SEND ►');
 const debugRecv = debug('bidiMapper:RECV ◀');
+const debugLog = debug('bidiMapper:log');
 
 import { IServer } from './iServer';
 import WebSocket from 'ws';
@@ -68,6 +69,10 @@ export class MapperServer implements IServer {
         } else {
             if (data.method === "Runtime.bindingCalled" && data.params && data.params.name === "sendBidiResponse") {
                 this._onBidiMessage(data.params.payload);
+                return;
+            }
+            if (data.method === "Runtime.consoleAPICalled") {
+                debugLog.apply(null, data.params.args.map(arg=>arg.value));
                 return;
             }
         }
