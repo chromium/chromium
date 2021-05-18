@@ -112,7 +112,7 @@ void InfobarBadgeTabHelper::OnInfobarAcceptanceStateChanged(
 
 InfobarBadgeTabHelper::InfobarAcceptanceObserver::InfobarAcceptanceObserver(
     InfobarBadgeTabHelper* tab_helper)
-    : tab_helper_(tab_helper), scoped_observer_(this) {
+    : tab_helper_(tab_helper) {
   DCHECK(tab_helper_);
 }
 
@@ -127,7 +127,7 @@ void InfobarBadgeTabHelper::InfobarAcceptanceObserver::DidUpdateAcceptedState(
 
 void InfobarBadgeTabHelper::InfobarAcceptanceObserver::InfobarDestroyed(
     InfoBarIOS* infobar) {
-  scoped_observer_.Remove(infobar);
+  scoped_observations_.RemoveObservation(infobar);
 }
 
 #pragma mark - InfobarBadgeTabHelper::InfobarManagerObserver
@@ -137,11 +137,10 @@ InfobarBadgeTabHelper::InfobarManagerObserver::InfobarManagerObserver(
     web::WebState* web_state,
     InfobarAcceptanceObserver* infobar_accept_observer)
     : tab_helper_(tab_helper),
-      infobar_accept_observer_(infobar_accept_observer),
-      scoped_observer_(this) {
+      infobar_accept_observer_(infobar_accept_observer) {
   DCHECK(tab_helper_);
   DCHECK(infobar_accept_observer_);
-  scoped_observer_.Add(InfoBarManagerImpl::FromWebState(web_state));
+  scoped_observation_.Observe(InfoBarManagerImpl::FromWebState(web_state));
 }
 
 InfobarBadgeTabHelper::InfobarManagerObserver::~InfobarManagerObserver() =
@@ -151,7 +150,7 @@ void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarAdded(
     infobars::InfoBar* infobar) {
   if (SupportsBadges(infobar)) {
     tab_helper_->ResetStateForAddedInfobar(GetInfobarType(infobar));
-    infobar_accept_observer_->scoped_observer().Add(
+    infobar_accept_observer_->scoped_observations().AddObservation(
         static_cast<InfoBarIOS*>(infobar));
   }
 }
@@ -161,7 +160,7 @@ void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarRemoved(
     bool animate) {
   if (SupportsBadges(infobar)) {
     tab_helper_->ResetStateForRemovedInfobar(GetInfobarType(infobar));
-    infobar_accept_observer_->scoped_observer().Remove(
+    infobar_accept_observer_->scoped_observations().RemoveObservation(
         static_cast<InfoBarIOS*>(infobar));
   }
 }
@@ -175,5 +174,6 @@ void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarReplaced(
 
 void InfobarBadgeTabHelper::InfobarManagerObserver::OnManagerShuttingDown(
     infobars::InfoBarManager* manager) {
-  scoped_observer_.Remove(manager);
+  DCHECK(scoped_observation_.IsObservingSource(manager));
+  scoped_observation_.Reset();
 }
