@@ -19,14 +19,17 @@ CHROMIUM_LICENSE = (
 )
 GENERATED_FILE_MESSAGE = """// GENERATED FROM THE API DEFINITION IN
 //   %s
+// by tools/json_schema_compiler.
 // DO NOT EDIT.
 """
 GENERATED_BUNDLE_FILE_MESSAGE = """// GENERATED FROM THE API DEFINITIONS IN
 //   %s
+// by tools/json_schema_compiler.
 // DO NOT EDIT.
 """
 GENERATED_FEATURE_MESSAGE = """// GENERATED FROM THE FEATURE DEFINITIONS IN
 //   %s
+// by tools/json_schema_compiler.
 // DO NOT EDIT.
 """
 

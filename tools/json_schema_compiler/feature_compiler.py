@@ -25,6 +25,7 @@ HEADER_FILE_TEMPLATE = """
 
 // GENERATED FROM THE FEATURES FILE:
 //   %(source_files)s
+// by tools/json_schema_compiler.
 // DO NOT EDIT.
 
 #ifndef %(header_guard)s
@@ -48,6 +49,7 @@ CC_FILE_BEGIN = """
 
 // GENERATED FROM THE FEATURES FILE:
 //   %(source_files)s
+// by tools/json_schema_compiler.
 // DO NOT EDIT.
 
 #include "%(header_file_path)s"
