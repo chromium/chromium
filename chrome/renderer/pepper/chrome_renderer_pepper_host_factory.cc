@@ -10,6 +10,7 @@
 #include "chrome/renderer/pepper/pepper_uma_host.h"
 #include "components/pdf/renderer/pepper_pdf_host.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
+#include "pdf/buildflags.h"
 #include "ppapi/host/ppapi_host.h"
 #include "ppapi/host/resource_host.h"
 #include "ppapi/proxy/ppapi_message_utils.h"
@@ -67,6 +68,7 @@ ChromeRendererPepperHostFactory::CreateResourceHost(
     }
   }
 
+#if BUILDFLAG(ENABLE_PDF)
   if (host_->GetPpapiHost()->permissions().HasPermission(
           ppapi::PERMISSION_PDF)) {
     switch (message.type()) {
@@ -75,6 +77,7 @@ ChromeRendererPepperHostFactory::CreateResourceHost(
       }
     }
   }
+#endif
 
   // Permissions for the following interfaces will be checked at the
   // time of the corresponding instance's method calls.  Currently these

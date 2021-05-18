@@ -24,10 +24,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/grit/pdf_resources_map.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
 #include "base/command_line.h"
@@ -46,6 +42,7 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include <utility>
 #include "chrome/browser/pdf/pdf_extension_util.h"
+#include "chrome/grit/pdf_resources_map.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {
@@ -109,10 +106,6 @@ ChromeComponentExtensionResourceManager::Data::Data() {
   AddComponentResourceEntries(kExtraComponentExtensionResources,
                               base::size(kExtraComponentExtensionResources));
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  AddComponentResourceEntries(kPdfResources, kPdfResourcesSize);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Add Files app JS modules resources.
   AddComponentResourceEntries(kFileManagerResources, kFileManagerResourcesSize);
@@ -136,6 +129,8 @@ ChromeComponentExtensionResourceManager::Data::Data() {
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
+  AddComponentResourceEntries(kPdfResources, kPdfResourcesSize);
+
   // ResourceBundle is not always initialized in unit tests.
   if (ui::ResourceBundle::HasSharedInstance()) {
     base::Value dict(base::Value::Type::DICTIONARY);

@@ -24,6 +24,7 @@ import("//extensions/buildflags/buildflags.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
+import("//pdf/features.gni")
 import("//remoting/remoting_enable.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
@@ -164,7 +165,6 @@ group("gn_all") {
       "//ppapi/examples/video_decode",
       "//ppapi/examples/video_encode",
       "//printing:printing_unittests",
-      "//third_party/pdfium/samples:pdfium_test",
       "//third_party/vulkan-deps/spirv-tools/src:SPIRV-Tools",
       "//third_party/vulkan-deps/spirv-tools/src/test/fuzzers",
       "//tools/perf/clear_system_cache",
@@ -279,6 +279,10 @@ group("gn_all") {
       "//extensions/browser/api/declarative_net_request/filter_list_converter",
       "//extensions/shell:app_shell_unittests",
     ]
+  }
+
+  if (enable_pdf) {
+    deps += [ "//third_party/pdfium/samples:pdfium_test" ]
   }
 
   if (enable_remoting) {

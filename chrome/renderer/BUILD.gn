@@ -11,6 +11,7 @@ import("//components/offline_pages/buildflags/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
+import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/widevine/cdm/widevine.gni")
@@ -258,7 +259,6 @@ static_library("renderer") {
       "plugins/chrome_plugin_placeholder.h",
     ]
     deps += [
-      "//components/pdf/renderer",
       "//components/strings",
       "//media:media_buildflags",
       "//ppapi/host",
@@ -270,6 +270,10 @@ static_library("renderer") {
     if (is_linux || is_chromeos) {
       deps += [ "//components/services/font/public/cpp" ]
     }
+  }
+
+  if (enable_pdf) {
+    deps += [ "//components/pdf/renderer" ]
   }
 
   if (is_chromeos_ash) {

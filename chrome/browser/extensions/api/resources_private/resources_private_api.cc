@@ -76,14 +76,14 @@ ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
     case api::resources_private::COMPONENT_IDENTITY:
       AddStringsForIdentity(dict.get());
       break;
+    case api::resources_private::COMPONENT_PDF:
 #if BUILDFLAG(ENABLE_PDF)
-    case api::resources_private::COMPONENT_PDF: {
       pdf_extension_util::AddStrings(pdf_extension_util::PdfViewerContext::kAll,
                                      dict.get());
       pdf_extension_util::AddAdditionalData(
           IsPdfAnnotationsEnabled(browser_context()), dict.get());
-    } break;
 #endif  // BUILDFLAG(ENABLE_PDF)
+      break;
     case api::resources_private::COMPONENT_NONE:
       NOTREACHED();
   }

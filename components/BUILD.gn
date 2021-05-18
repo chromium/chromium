@@ -11,7 +11,7 @@ import("//components/safe_browsing/buildflags.gni")
 import("//components/ui_devtools/devtools.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
-import("//ppapi/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//testing/test.gni")
@@ -517,7 +517,7 @@ test("components_unittests") {
     ]
   }
 
-  if (enable_plugins) {
+  if (enable_pdf) {
     deps += [ "//components/pdf/renderer:unit_tests" ]
   }
 
@@ -712,7 +712,7 @@ if (!is_ios && !is_fuchsia) {
       data += [ "$root_out_dir/Content Shell.app/" ]
     }
 
-    if (enable_plugins) {
+    if (enable_pdf) {
       sources += [
         "pdf/browser/pdf_web_contents_helper_browsertest.cc",
         "pdf/renderer/pdf_accessibility_tree_browsertest.cc",

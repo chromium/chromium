@@ -7,6 +7,7 @@ import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 import("//ui/base/ui_features.gni")
 import("chrome_repack_locales.gni")
 
@@ -296,7 +297,7 @@ template("chrome_extra_paks") {
         "//extensions:extensions_resources",
       ]
     }
-    if (enable_plugins) {
+    if (enable_pdf) {
       sources += [ "$root_gen_dir/chrome/pdf_resources.pak" ]
       deps += [ "//chrome/browser/resources/pdf:resources" ]
     }
