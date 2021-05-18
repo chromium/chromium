@@ -33,9 +33,11 @@ RENDERING_BENCHMARK_UMA = [
 
 
 class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
-  options = {
-      'capture_screen_video': True
-  }
+  # TODO(crbug/1205829): Capturing video is causing long cycle time and timeout
+  # on some Pixel devices. Disabling this option until the issue can be fixed.
+  #options = {
+  #    'capture_screen_video': True
+  #}
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
