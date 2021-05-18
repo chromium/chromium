@@ -36,8 +36,7 @@ void AddressProfileSaveManager::ImportProfileFromForm(
   }
 
   auto process_ptr = std::make_unique<ProfileImportProcess>(
-      observed_profile, personal_data_manager_->GetProfiles(), app_locale, url,
-      personal_data_manager_);
+      observed_profile, app_locale, url, personal_data_manager_);
 
   MaybeOfferSavePrompt(std::move(process_ptr));
 }

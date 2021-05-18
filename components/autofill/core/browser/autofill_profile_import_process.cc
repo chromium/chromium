@@ -25,7 +25,6 @@ AutofillProfileImportId GetImportId() {
 
 ProfileImportProcess::ProfileImportProcess(
     const AutofillProfile& observed_profile,
-    const std::vector<AutofillProfile*>& existing_profiles,
     const std::string& app_locale,
     const GURL& form_source_url,
     const PersonalDataManager* personal_data_manager)
@@ -34,7 +33,7 @@ ProfileImportProcess::ProfileImportProcess(
       app_locale_(app_locale),
       form_source_url_(form_source_url),
       personal_data_manager_(personal_data_manager) {
-  DetermineProfileImportType(existing_profiles, app_locale);
+  DetermineProfileImportType();
 }
 
 ProfileImportProcess::ProfileImportProcess(const ProfileImportProcess&) =
@@ -49,10 +48,8 @@ bool ProfileImportProcess::prompt_shown() const {
   return prompt_shown_;
 }
 
-void ProfileImportProcess::DetermineProfileImportType(
-    const std::vector<AutofillProfile*>& existing_profiles,
-    const std::string& app_locale) {
-  AutofillProfileComparator comparator(app_locale);
+void ProfileImportProcess::DetermineProfileImportType() {
+  AutofillProfileComparator comparator(app_locale_);
   bool is_mergeable_with_existing_profile = false;
 
   new_profiles_suppressed_for_domain_ =
@@ -61,11 +58,16 @@ void ProfileImportProcess::DetermineProfileImportType(
                 form_source_url_)
           : false;
 
+  int number_of_unchanged_profiles = 0;
+
+  const std::vector<AutofillProfile*> existing_profiles =
+      personal_data_manager_->GetProfiles();
+
   for (const auto* existing_profile : existing_profiles) {
     // If the existing profile is not mergeable with the observed profile, the
     // existing profile is not altered by this import.
     if (!comparator.AreMergeable(*existing_profile, observed_profile_)) {
-      unchanged_profiles_.emplace_back(*existing_profile);
+      ++number_of_unchanged_profiles;
       continue;
     }
 
@@ -78,8 +80,8 @@ void ProfileImportProcess::DetermineProfileImportType(
     // The return value of |MergeDataFrom()| indicates if the existing profile
     // was changed at all during that merge.
     AutofillProfile merged_profile = *existing_profile;
-    if (!merged_profile.MergeDataFrom(observed_profile_, app_locale)) {
-      unchanged_profiles_.emplace_back(*existing_profile);
+    if (!merged_profile.MergeDataFrom(observed_profile_, app_locale_)) {
+      ++number_of_unchanged_profiles;
       continue;
     }
 
@@ -111,7 +113,7 @@ void ProfileImportProcess::DetermineProfileImportType(
       } else {
         // If there is already a merge candidate, the existing profile is not
         // supposed to be changed.
-        unchanged_profiles_.emplace_back(*existing_profile);
+        ++number_of_unchanged_profiles;
       }
       continue;
     }
@@ -155,27 +157,36 @@ void ProfileImportProcess::DetermineProfileImportType(
   // At this point, all existing profiles are either unchanged, updated and/or
   // one is the merge candidate.
   DCHECK_EQ(existing_profiles.size(),
-            unchanged_profiles_.size() + updated_profiles_.size() +
+            number_of_unchanged_profiles + updated_profiles_.size() +
                 (merge_candidate_.has_value() ? 1 : 0));
   DCHECK_NE(import_type_, AutofillProfileImportType::kImportTypeUnspecified);
 }
 
 std::vector<AutofillProfile> ProfileImportProcess::GetResultingProfiles() {
-  std::vector<AutofillProfile> resulting_profiles;
-
   // At this point, a user decision must have been supplied.
   DCHECK_NE(user_decision_, UserDecision::kUndefined);
 
-  // The unchanged and updated profiles should be added unconditionally.
-  resulting_profiles.insert(resulting_profiles.end(),
-                            unchanged_profiles_.begin(),
-                            unchanged_profiles_.end());
-  resulting_profiles.insert(resulting_profiles.end(), updated_profiles_.begin(),
-                            updated_profiles_.end());
+  std::vector<AutofillProfile> resulting_profiles;
+  std::set<std::string> guids_of_changed_profiles;
+
+  // Add all updated profiles.
+  for (const auto& updated_profile : updated_profiles_) {
+    resulting_profiles.push_back(updated_profile);
+    guids_of_changed_profiles.insert(updated_profile.guid());
+  }
 
   // If there is a confirmed import candidate, add it.
   if (confirmed_import_candidate_.has_value()) {
     resulting_profiles.emplace_back(confirmed_import_candidate_.value());
+    guids_of_changed_profiles.insert(confirmed_import_candidate_->guid());
+  }
+
+  // Add all other profiles that are currently available in the personal data
+  // manager.
+  for (const auto* unchanged_profile : personal_data_manager_->GetProfiles()) {
+    if (guids_of_changed_profiles.count(unchanged_profile->guid()) == 0) {
+      resulting_profiles.push_back(*unchanged_profile);
+    }
   }
 
   return resulting_profiles;
@@ -212,11 +223,7 @@ void ProfileImportProcess::SetUserDecision(
     // that silent updates are not performed.
     case UserDecision::kDeclined:
     case UserDecision::kIgnored:
-      confirmed_import_candidate_ = merge_candidate_;
-      break;
-
     case UserDecision::kNever:
-      confirmed_import_candidate_ = merge_candidate_;
       break;
 
     case UserDecision::kUndefined:

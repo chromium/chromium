@@ -57,6 +57,10 @@ class AddressProfileSaveManager {
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
       AutofillProfile edited_profile);
 
+  PersonalDataManager* personal_data_manager() {
+    return personal_data_manager_;
+  }
+
  private:
   // Called to initiate the actual storing of a profile.
   // Verifies that the profile was actually imported.

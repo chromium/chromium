@@ -67,7 +67,6 @@ enum class AutofillProfileImportType {
 class ProfileImportProcess {
  public:
   ProfileImportProcess(const AutofillProfile& observed_profile,
-                       const std::vector<AutofillProfile*>& existing_profiles,
                        const std::string& app_locale,
                        const GURL& form_source_url,
                        const PersonalDataManager* personal_data_manager);
@@ -147,9 +146,7 @@ class ProfileImportProcess {
   // Determines the import type of |observed_profile_| with respect to
   // |existing_profiles|. Only the first profile in |existing_profiles| becomes
   // a merge candidate in case there is a confirmable merge.
-  void DetermineProfileImportType(
-      const std::vector<AutofillProfile*>& existing_profiles,
-      const std::string& app_locale);
+  void DetermineProfileImportType();
 
   // An id to identify an import request.
   AutofillProfileImportId import_id_;
@@ -159,10 +156,6 @@ class ProfileImportProcess {
 
   // The profile as it has been observed on form submission.
   AutofillProfile observed_profile_;
-
-  // Profiles that are not mergeable with the observed profile or for which
-  // the merge does not result in any change.
-  std::vector<AutofillProfile> unchanged_profiles_;
 
   // Profiles that are silently updateable with the observed profile.
   std::vector<AutofillProfile> updated_profiles_;
