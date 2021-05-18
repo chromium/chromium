@@ -294,6 +294,9 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                     Profile.getLastUsedRegularProfile(), null);
             return true;
         }
+        if (item.getItemId() == android.R.id.home) {
+            return onBackPressed();
+        }
         return false;
     }
 
