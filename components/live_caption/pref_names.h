@@ -7,8 +7,23 @@
 
 namespace prefs {
 
+// Live Caption is not available on Android, so exclude these unneeded
+// kLiveCaption*  prefs.
+#if !defined(ANDROID)
 extern const char kLiveCaptionEnabled[];
 extern const char kLiveCaptionLanguageCode[];
+#endif  // !defined(ANDROID)
+
+// These kAccessibilityCaptions* caption style prefs are used on Android
+// (though their primary use is for Live Caption, which is why they are housed
+// within this live_caption component instead of somewhere more generic).
+extern const char kAccessibilityCaptionsTextSize[];
+extern const char kAccessibilityCaptionsTextFont[];
+extern const char kAccessibilityCaptionsTextColor[];
+extern const char kAccessibilityCaptionsTextOpacity[];
+extern const char kAccessibilityCaptionsBackgroundColor[];
+extern const char kAccessibilityCaptionsTextShadow[];
+extern const char kAccessibilityCaptionsBackgroundOpacity[];
 
 }  // namespace prefs
 

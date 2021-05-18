@@ -39,6 +39,7 @@ source_set("profile") {
     "//components/data_reduction_proxy/core/browser",
     "//components/keyed_service/content",
     "//components/language/core/browser",
+    "//components/live_caption:constants",
     "//components/media_router/common",
     "//components/pref_registry",
     "//components/profile_metrics",

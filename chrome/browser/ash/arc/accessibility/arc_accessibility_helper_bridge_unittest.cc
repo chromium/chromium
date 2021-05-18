@@ -34,6 +34,7 @@
 #include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "extensions/browser/event_router.h"

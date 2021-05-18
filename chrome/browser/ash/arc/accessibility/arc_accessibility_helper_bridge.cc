@@ -33,6 +33,7 @@
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "ui/accessibility/accessibility_features.h"

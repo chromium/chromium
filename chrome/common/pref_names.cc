@@ -1185,34 +1185,6 @@ const char kResetCheckDefaultBrowser[] =
 const char kDefaultBrowserSettingEnabled[] =
     "browser.default_browser_setting_enabled";
 
-// String indicating the size of the captions text as a percentage.
-const char kAccessibilityCaptionsTextSize[] =
-    "accessibility.captions.text_size";
-
-// String indicating the font of the captions text.
-const char kAccessibilityCaptionsTextFont[] =
-    "accessibility.captions.text_font";
-
-// Comma-separated string indicating the RGB values of the captions text color.
-const char kAccessibilityCaptionsTextColor[] =
-    "accessibility.captions.text_color";
-
-// Integer indicating the opacity of the captions text from 0 - 100.
-const char kAccessibilityCaptionsTextOpacity[] =
-    "accessibility.captions.text_opacity";
-
-// Comma-separated string indicating the RGB values of the background color.
-const char kAccessibilityCaptionsBackgroundColor[] =
-    "accessibility.captions.background_color";
-
-// CSS string indicating the shadow of the captions text.
-const char kAccessibilityCaptionsTextShadow[] =
-    "accessibility.captions.text_shadow";
-
-// Integer indicating the opacity of the captions text background from 0 - 100.
-const char kAccessibilityCaptionsBackgroundOpacity[] =
-    "accessibility.captions.background_opacity";
-
 // Boolean that indicates whether chrome://accessibility should show the
 // internal accessibility tree.
 const char kShowInternalAccessibilityTree[] =

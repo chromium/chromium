@@ -22,6 +22,7 @@ include_rules = [
   "+components/flags_ui/flags_ui_switches.h",
   "+components/gcm_driver",
   "+components/google/core/common",
+  "+components/live_caption/pref_names.h",
   "+components/metrics/client_info.h",
   "+components/metrics/metadata_recorder.h",
   "+components/metrics/metrics_pref_names.h",

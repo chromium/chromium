@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/common/pref_names.h"
+#include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/native_theme/native_theme.h"
 

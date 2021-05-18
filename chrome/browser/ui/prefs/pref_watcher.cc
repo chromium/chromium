@@ -15,6 +15,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/live_caption/pref_names.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

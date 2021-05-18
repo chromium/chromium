@@ -2,27 +2,29 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("live_caption") {
-  sources = [
-    "views/caption_bubble.cc",
-    "views/caption_bubble.h",
-    "views/caption_bubble_model.cc",
-    "views/caption_bubble_model.h",
-  ]
+if (!is_android) {
+  static_library("live_caption") {
+    sources = [
+      "views/caption_bubble.cc",
+      "views/caption_bubble.h",
+      "views/caption_bubble_model.cc",
+      "views/caption_bubble_model.h",
+    ]
 
-  deps = [
-    "//base",
-    "//components/strings",
-    "//components/vector_icons",
-    "//third_party/re2",
-    "//ui/accessibility",
-    "//ui/base",
-    "//ui/gfx",
-    "//ui/native_theme",
-    "//ui/strings:ui_strings_grit",
-    "//ui/views",
-  ]
-}
+    deps = [
+      "//base",
+      "//components/strings",
+      "//components/vector_icons",
+      "//third_party/re2",
+      "//ui/accessibility",
+      "//ui/base",
+      "//ui/gfx",
+      "//ui/native_theme",
+      "//ui/strings:ui_strings_grit",
+      "//ui/views",
+    ]
+  }
+}  # !is_android
 
 source_set("constants") {
   sources = [
