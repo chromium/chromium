@@ -180,8 +180,7 @@ public class RootUiCoordinator
     private BottomSheetObserver mContextualSearchSuppressor;
     private final Supplier<ContextualSearchManager> mContextualSearchManagerSupplier;
     protected final CallbackController mCallbackController;
-    @Nullable
-    private BrowserControlsManager mBrowserControlsManager;
+    private final BrowserControlsManager mBrowserControlsManager;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     @Nullable
@@ -215,6 +214,8 @@ public class RootUiCoordinator
      * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
      * @param intentMetadataOneshotSupplier Supplier with information about the launching intent.
      * @param layoutStateProviderOneshotSupplier Supplier of the {@link LayoutStateProvider}.
+     * @param startSurfaceParentTabSupplier Supplies the parent tab for the StartSurface.
+     * @param browserControlsManager Manages the browser controls.
      */
     public RootUiCoordinator(ChromeActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
@@ -226,10 +227,12 @@ public class RootUiCoordinator
             OneshotSupplier<StartSurface> startSurfaceSupplier,
             OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
-            @NonNull Supplier<Tab> startSurfaceParentTabSupplier) {
+            @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
+            @NonNull BrowserControlsManager browserControlsManager) {
         mCallbackController = new CallbackController();
         mActivity = activity;
         mOnOmniboxFocusChangedListener = onOmniboxFocusChangedListener;
+        mBrowserControlsManager = browserControlsManager;
         mActivity.getLifecycleDispatcher().register(this);
 
         mMenuOrKeyboardActionController = mActivity.getMenuOrKeyboardActionController();
@@ -366,11 +369,6 @@ public class RootUiCoordinator
             mBottomSheetController.destroy();
         }
 
-        if (mBrowserControlsManager != null) {
-            mBrowserControlsManager.destroy();
-            mBrowserControlsManager = null;
-        }
-
         if (mButtonDataProviders != null) {
             for (ButtonDataProvider provider : mButtonDataProviders) {
                 provider.destroy();
@@ -477,7 +475,7 @@ public class RootUiCoordinator
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
             MessageContainer container = mActivity.findViewById(R.id.message_container);
             mMessageContainerCoordinator =
-                    new MessageContainerCoordinator(container, getBrowserControlsManager());
+                    new MessageContainerCoordinator(container, mBrowserControlsManager);
             long autodismissDurationMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                     ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
                     "autodismiss_duration_ms", 10 * (int) DateUtils.SECOND_IN_MILLIS);
@@ -500,11 +498,10 @@ public class RootUiCoordinator
                     mMessageContainerCoordinator::getMessageMaxTranslation,
                     autodismissDurationSupplier,
                     mActivity.getWindowAndroid()::startAnimationOverContent);
-            mMessageQueueMediator =
-                    new ChromeMessageQueueMediator(mActivity.getBrowserControlsManager(),
-                            mMessageContainerCoordinator, mActivity.getFullscreenManager(),
-                            mActivityTabProvider, mLayoutStateProviderOneShotSupplier,
-                            mActivity.getModalDialogManagerSupplier(), mMessageDispatcher);
+            mMessageQueueMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
+                    mMessageContainerCoordinator, mActivity.getFullscreenManager(),
+                    mActivityTabProvider, mLayoutStateProviderOneShotSupplier,
+                    mActivity.getModalDialogManagerSupplier(), mMessageDispatcher);
             mMessageDispatcher.setDelegate(mMessageQueueMediator);
             MessagesFactory.attachMessageDispatcher(
                     mActivity.getWindowAndroid(), mMessageDispatcher);
@@ -722,7 +719,7 @@ public class RootUiCoordinator
                 mButtonDataProviders = Arrays.asList(mIdentityDiscController, shareButtonController,
                         voiceToolbarButtonController);
             }
-            mToolbarManager = new ToolbarManager(mActivity, mActivity.getBrowserControlsManager(),
+            mToolbarManager = new ToolbarManager(mActivity, mBrowserControlsManager,
                     mActivity.getFullscreenManager(), toolbarContainer,
                     mActivity.getCompositorViewHolder(), urlFocusChangedCallback,
                     mTopUiThemeColorProvider, mTabObscuringHandler, mShareDelegateSupplier,
@@ -928,7 +925,7 @@ public class RootUiCoordinator
         BottomSheetControllerFactory.attach(mActivity.getWindowAndroid(), mBottomSheetController);
 
         mBottomSheetManager = new BottomSheetManager(mBottomSheetController, mActivityTabProvider,
-                mActivity.getBrowserControlsManager(), mActivity::getModalDialogManager,
+                mBrowserControlsManager, mActivity::getModalDialogManager,
                 this::getBottomSheetSnackbarManager, mTabObscuringHandler,
                 mOmniboxFocusStateSupplier, panelManagerSupplier, mStartSurfaceSupplier);
     }
@@ -948,29 +945,13 @@ public class RootUiCoordinator
 
     /**
      * Gets the browser controls manager, creates it unless already created.
+     * @deprecated Instead, inject this directly to your constructor. If that's not possible, then
+     *         use {@link BrowserControlsManagerSupplier}.
      */
     @NonNull
+    @Deprecated
     public BrowserControlsManager getBrowserControlsManager() {
-        if (mBrowserControlsManager == null) {
-            // When finish()ing, getBrowserControlsManager() is required to perform cleanup logic.
-            // It should never be called when it results in creating a new manager though.
-            if (mActivity.isActivityFinishingOrDestroyed()) {
-                throw new IllegalStateException();
-            }
-            mBrowserControlsManager = createBrowserControlsManager();
-            assert mBrowserControlsManager != null;
-        }
         return mBrowserControlsManager;
-    }
-
-    /**
-     * Create a browser controls manager to be used by ChromeActivity.
-     * Note: This may be called before native code is initialized.
-     * @return A {@link BrowserControlsManager} instance that's been created.
-     */
-    @NonNull
-    protected BrowserControlsManager createBrowserControlsManager() {
-        return new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);
     }
 
     /** @return The {@link ScrimCoordinator} to control activity's primary scrim. */
@@ -991,7 +972,7 @@ public class RootUiCoordinator
         int activityType = mActivity.getActivityType();
         mDirectActionInitializer = new DirectActionInitializer(mActivity, activityType, mActivity,
                 mActivity::onBackPressed, mTabModelSelectorSupplier.get(), mFindToolbarManager,
-                getBottomSheetController(), mActivity.getBrowserControlsManager(),
+                getBottomSheetController(), mBrowserControlsManager,
                 mActivity.getCompositorViewHolder(), mActivity.getActivityTabProvider());
         mActivity.getLifecycleDispatcher().register(mDirectActionInitializer);
     }

@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -300,11 +299,6 @@ public class TabPersistentStoreTest {
 
                 @Override
                 protected void destroyTabModels() {}
-
-                @Override
-                protected BrowserControlsManager createBrowserControlsManager() {
-                    return null;
-                }
 
                 @Override
                 protected LaunchCauseMetrics createLaunchCauseMetrics() {

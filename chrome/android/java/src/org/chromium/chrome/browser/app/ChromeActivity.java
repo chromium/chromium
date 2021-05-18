@@ -109,6 +109,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSessionState;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.gsa.ContextReporter;
 import org.chromium.chrome.browser.gsa.GSAAccountChangeListener;
@@ -268,6 +269,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             new TabCreatorManagerSupplier();
     private final UnownedUserDataSupplier<ManualFillingComponent> mManualFillingComponentSupplier =
             new ManualFillingComponentSupplier();
+    // TODO(crbug.com/1209864): Move ownership to RootUiCoordinator.
+    private final UnownedUserDataSupplier<BrowserControlsManager> mBrowserControlsManagerSupplier =
+            new BrowserControlsManagerSupplier();
 
     protected TabModelSelectorProfileSupplier mTabModelProfileSupplier =
             new TabModelSelectorProfileSupplier(mTabModelSelectorSupplier);
@@ -436,6 +440,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mTabModelSelectorSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         mTabCreatorManagerSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         mManualFillingComponentSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
+        mBrowserControlsManagerSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
+        // BrowserControlsManager is ready immediately.
+        mBrowserControlsManagerSupplier.set(
+                new BrowserControlsManager(this, BrowserControlsManager.ControlsPosition.TOP));
     }
 
     protected RootUiCoordinator createRootUiCoordinator() {
@@ -448,7 +456,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 getActivityTabProvider(), mTabModelProfileSupplier, mBookmarkBridgeSupplier,
                 this::getContextualSearchManager, getTabModelSelectorSupplier(),
                 new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
-                new OneshotSupplierImpl<>(), () -> null);
+                new OneshotSupplierImpl<>(), () -> null, mBrowserControlsManagerSupplier.get());
     }
 
     private NotificationManagerProxy getNotificationManagerProxy() {
@@ -1416,9 +1424,15 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mTabContentManagerSupplier = null;
         }
 
-        ManualFillingComponent manualFillingComponent = mManualFillingComponentSupplier.get();
+        if (mManualFillingComponentSupplier.hasValue()) {
+            mManualFillingComponentSupplier.get().destroy();
+        }
         mManualFillingComponentSupplier.destroy();
-        if (manualFillingComponent != null) manualFillingComponent.destroy();
+
+        if (mBrowserControlsManagerSupplier.hasValue()) {
+            mBrowserControlsManagerSupplier.get().destroy();
+        }
+        mBrowserControlsManagerSupplier.destroy();
 
         if (mActivityTabStartupMetricsTracker != null) {
             mActivityTabStartupMetricsTracker.destroy();
@@ -1904,10 +1918,19 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     /**
      * Gets the browser controls manager, creates it unless already created.
+     * @deprecated Instead, inject this directly to your constructor. If that's not possible, then
+     *         use {@link BrowserControlsManagerSupplier}.
      */
     @NonNull
+    @Deprecated
     public BrowserControlsManager getBrowserControlsManager() {
-        return mRootUiCoordinator.getBrowserControlsManager();
+        if (!mBrowserControlsManagerSupplier.hasValue() && isActivityFinishingOrDestroyed()) {
+            // BrowserControlsManagerSupplier should always have a value unless it's in the process
+            // of destruction (and in that case, nothing should be called this method).
+            throw new IllegalStateException();
+        }
+        assert mBrowserControlsManagerSupplier.hasValue();
+        return mBrowserControlsManagerSupplier.get();
     }
 
     /**
@@ -1944,16 +1967,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     /**
-     * Create a browser controls manager to be used by this activity.
-     * Note: This may be called before native code is initialized.
-     * @return A {@link BrowserControlsManager} instance that's been created.
-     */
-    @NonNull
-    protected BrowserControlsManager createBrowserControlsManager() {
-        return new BrowserControlsManager(this, BrowserControlsManager.ControlsPosition.TOP);
-    }
-
-    /**
      * Exits the fullscreen mode, if any. Does nothing if no fullscreen is present.
      * @return Whether the fullscreen mode is currently showing.
      */
@@ -1979,7 +1992,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         compositorViewHolder.setLayoutManager(layoutManager);
         compositorViewHolder.setFocusable(false);
         compositorViewHolder.setControlContainer(controlContainer);
-        compositorViewHolder.setBrowserControlsManager(getBrowserControlsManager());
+        compositorViewHolder.setBrowserControlsManager(mBrowserControlsManagerSupplier.get());
         compositorViewHolder.setUrlBar(urlBar);
         compositorViewHolder.setInsetObserverView(getInsetObserverView());
         compositorViewHolder.setTopUiThemeColorProvider(

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabbed_mode;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -150,11 +151,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<StartSurface> startSurfaceSupplier,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
-            Supplier<Tab> startSurfaceParentTabSupplier) {
+            Supplier<Tab> startSurfaceParentTabSupplier,
+            @NonNull BrowserControlsManager browserControlsManager) {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
                 profileSupplier, bookmarkBridgeSupplier, contextualSearchManagerSupplier,
                 tabModelSelectorSupplier, startSurfaceSupplier, intentMetadataOneshotSupplier,
-                layoutStateProviderOneshotSupplier, startSurfaceParentTabSupplier);
+                layoutStateProviderOneshotSupplier, startSurfaceParentTabSupplier,
+                browserControlsManager);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mCanAnimateBrowserControls = () -> {
             // These null checks prevent any exceptions that may be caused by callbacks after
@@ -163,6 +166,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             final Tab tab = mActivity.getActivityTabProvider().get();
             return tab != null && tab.isUserInteractable() && !tab.isNativePage();
         };
+
+        getAppBrowserControlsVisibilityDelegate().addDelegate(
+                browserControlsManager.getBrowserVisibilityDelegate());
     }
 
     @Override
@@ -557,14 +563,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mContinuousSearchTabObscuringHandlerObserver =
                 isObscured -> mContinuousSearchContainerCoordinator.updateTabObscured(isObscured);
         getTabObscuringHandler().addObserver(mContinuousSearchTabObscuringHandlerObserver);
-    }
-
-    @Override
-    protected BrowserControlsManager createBrowserControlsManager() {
-        BrowserControlsManager manager = super.createBrowserControlsManager();
-        getAppBrowserControlsVisibilityDelegate().addDelegate(
-                manager.getBrowserVisibilityDelegate());
-        return manager;
     }
 
     /**

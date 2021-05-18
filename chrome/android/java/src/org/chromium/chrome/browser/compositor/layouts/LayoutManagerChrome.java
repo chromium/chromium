@@ -124,8 +124,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                         TabManagementModuleProvider.getDelegate();
                 assert tabManagementDelegate != null;
 
-                final ObservableSupplier<? extends BrowserControlsStateProvider>
-                        browserControlsSupplier = mHost.getBrowserControlsManagerSupplier();
                 mOverviewLayout = tabManagementDelegate.createStartSurfaceLayout(
                         context, this, renderHost, startSurface);
             }

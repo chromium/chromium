@@ -181,10 +181,9 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             setDisplayCutoutController(TestDisplayCutoutController.create(mTab, null));
+            mListener = new FullscreenToggleObserver();
+            getActivity().getFullscreenManager().addObserver(mListener);
         });
-
-        mListener = new FullscreenToggleObserver();
-        getActivity().getFullscreenManager().addObserver(mListener);
     }
 
     protected void setDisplayCutoutController(TestDisplayCutoutController controller) {
@@ -193,9 +192,11 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
     }
 
     protected void tearDown() {
-        if (!getActivity().isActivityFinishingOrDestroyed()) {
-            getActivity().getFullscreenManager().removeObserver(mListener);
-        }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (!getActivity().isActivityFinishingOrDestroyed()) {
+                getActivity().getFullscreenManager().removeObserver(mListener);
+            }
+        });
         mTestServer.stopAndDestroyServer();
     }
 
