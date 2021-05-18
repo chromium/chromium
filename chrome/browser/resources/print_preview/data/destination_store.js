@@ -1144,7 +1144,8 @@ export class DestinationStore extends EventTarget {
     const searchingCloudPrintersDone =
         this.typesToSearch_.has(PrinterType.CLOUD_PRINTER) &&
         !this.cloudPrintInterface_.isCloudDestinationSearchInProgress() &&
-        !!payload.user;
+        (!!payload.user ||
+         event.type === CloudPrintInterfaceEventType.SEARCH_FAILED);
     if (searchingCloudPrintersDone) {
       this.typesToSearch_.delete(PrinterType.CLOUD_PRINTER);
     }
