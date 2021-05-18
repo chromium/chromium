@@ -25,7 +25,9 @@
 namespace extensions {
 
 namespace {
+constexpr int kHttpErrorCodeBadRequest = 400;
 constexpr int kHttpErrorCodeForbidden = 403;
+constexpr int kHttpErrorCodeNotFound = 404;
 }  // namespace
 
 ForceInstalledTracker::ForceInstalledTracker(ExtensionRegistry* registry,
@@ -264,9 +266,12 @@ bool ForceInstalledTracker::IsMisconfiguration(
   if (installation_data.failure_reason ==
       InstallStageTracker::FailureReason::MANIFEST_FETCH_FAILED) {
     auto extension = extensions_.find(id);
-    if (installation_data.response_code == kHttpErrorCodeForbidden &&
-        extension != extensions_.end() && !extension->second.is_from_store) {
-      return true;
+    if (extension != extensions_.end() && !extension->second.is_from_store) {
+      if (installation_data.response_code == kHttpErrorCodeBadRequest ||
+          installation_data.response_code == kHttpErrorCodeForbidden ||
+          installation_data.response_code == kHttpErrorCodeNotFound) {
+        return true;
+      }
     }
   }
 
