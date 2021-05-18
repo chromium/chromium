@@ -94,21 +94,19 @@ class StrikeDatabaseIntegratorBase {
   FRIEND_TEST_ALL_PREFIXES(ChromeBrowsingDataRemoverDelegateTest,
                            StrikeDatabaseEmptyOnAutofillRemoveEverything);
   FRIEND_TEST_ALL_PREFIXES(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
-                           ClearStrikesForKeys);
-  FRIEND_TEST_ALL_PREFIXES(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
-                           GetKeyForStrikeDatabaseIntegratorUniqueIdTest);
-  FRIEND_TEST_ALL_PREFIXES(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
-                           IdFromKey);
-  FRIEND_TEST_ALL_PREFIXES(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
                            NonExpiringStrikesDoNotExpire);
-  FRIEND_TEST_ALL_PREFIXES(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
-                           RemoveExpiredStrikesOnlyConsidersCurrentIntegrator);
   FRIEND_TEST_ALL_PREFIXES(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
                            RemoveExpiredStrikesTest);
   FRIEND_TEST_ALL_PREFIXES(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
-                           RemoveExpiredStrikesTestLogsUMA);
+                           GetKeyForStrikeDatabaseIntegratorUniqueIdTest);
   FRIEND_TEST_ALL_PREFIXES(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
                            RemoveExpiredStrikesUniqueIdTest);
+  FRIEND_TEST_ALL_PREFIXES(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
+                           RemoveExpiredStrikesTestLogsUMA);
+  FRIEND_TEST_ALL_PREFIXES(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
+                           IdFromKey);
+  FRIEND_TEST_ALL_PREFIXES(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
+                           ClearStrikesForKeys);
   friend class SaveCardInfobarEGTestHelper;
   friend class StrikeDatabaseTest;
   friend class StrikeDatabaseTester;
