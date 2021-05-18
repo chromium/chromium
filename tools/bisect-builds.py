@@ -142,7 +142,7 @@ class PathContext(object):
     #   _binary_name = The name of the executable to run.
     if self.platform in ('linux', 'linux64', 'linux-arm', 'chromeos'):
       self._binary_name = 'chrome'
-    elif self.platform in ('mac', 'mac64'):
+    elif self.platform in ('mac', 'mac64', 'mac-arm'):
       self.archive_name = 'chrome-mac.zip'
       self._archive_extract_dir = 'chrome-mac'
     elif self.platform in ('win', 'win64'):
@@ -169,6 +169,9 @@ class PathContext(object):
         self._listing_platform_dir = 'Linux_ChromiumOS_Full/'
     elif self.platform in ('mac', 'mac64'):
       self._listing_platform_dir = 'Mac/'
+      self._binary_name = 'Chromium.app/Contents/MacOS/Chromium'
+    elif self.platform in ('mac-arm'):
+      self._listing_platform_dir = 'Mac_Arm/'
       self._binary_name = 'Chromium.app/Contents/MacOS/Chromium'
     elif self.platform == 'win':
       self._listing_platform_dir = 'Win/'
@@ -1158,8 +1161,8 @@ def main():
            'E.g., add "-- --no-first-run" to bypass the first run prompts.')
   parser = optparse.OptionParser(usage=usage)
   # Strangely, the default help output doesn't include the choice list.
-  choices = ['mac', 'mac64', 'win', 'win64', 'linux', 'linux64', 'linux-arm',
-             'chromeos']
+  choices = ['mac', 'mac64', 'mac-arm', 'win', 'win64', 'linux', 'linux64',
+             'linux-arm', 'chromeos']
   parser.add_option('-a', '--archive',
                     choices=choices,
                     help='The buildbot archive to bisect [%s].' %
