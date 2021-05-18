@@ -151,9 +151,11 @@ class StarterTest : public content::RenderViewHostTestHarness {
   // Returns a serialized GetTriggerScriptsResponseProto containing a single
   // trigger script without any trigger conditions. As such, it will be shown
   // immediately upon startup.
-  std::string CreateTriggerScriptResponseForTest() {
+  std::string CreateTriggerScriptResponseForTest(
+      TriggerUIType trigger_ui_type = UNSPECIFIED_TRIGGER_UI_TYPE) {
     GetTriggerScriptsResponseProto get_trigger_scripts_response;
-    get_trigger_scripts_response.add_trigger_scripts();
+    get_trigger_scripts_response.add_trigger_scripts()->set_trigger_ui_type(
+        trigger_ui_type);
     std::string serialized_get_trigger_scripts_response;
     get_trigger_scripts_response.SerializeToString(
         &serialized_get_trigger_scripts_response);
@@ -639,16 +641,21 @@ TEST_F(StarterTest, RpcTriggerScriptSucceeds) {
             ASSERT_TRUE(request.ParseFromString(request_body));
             EXPECT_THAT(request.url(), Eq(GURL(kExampleDeeplink)));
             EXPECT_FALSE(request.client_context().is_in_chrome_triggered());
-            std::move(callback).Run(net::HTTP_OK,
-                                    CreateTriggerScriptResponseForTest());
+            std::move(callback).Run(
+                net::HTTP_OK,
+                CreateTriggerScriptResponseForTest(CART_FIRST_TIME_USER));
           }));
   GetTriggerScriptsResponseProto get_trigger_scripts_response;
   get_trigger_scripts_response.ParseFromString(
-      CreateTriggerScriptResponseForTest());
-  EXPECT_CALL(mock_start_regular_script_callback_,
-              Run(GURL(kExampleDeeplink),
-                  Pointee(Property(&TriggerContext::GetOnboardingShown, true)),
-                  Optional(get_trigger_scripts_response.trigger_scripts(0))));
+      CreateTriggerScriptResponseForTest(CART_FIRST_TIME_USER));
+  EXPECT_CALL(
+      mock_start_regular_script_callback_,
+      Run(GURL(kExampleDeeplink),
+          Pointee(AllOf(Property(&TriggerContext::GetOnboardingShown, true),
+                        Property(&TriggerContext::GetInChromeTriggered, false),
+                        Property(&TriggerContext::GetTriggerUIType,
+                                 CART_FIRST_TIME_USER))),
+          Optional(get_trigger_scripts_response.trigger_scripts(0))));
 
   starter_->Start(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(script_parameters), options));
@@ -984,8 +991,9 @@ TEST_F(StarterTest, ImplicitStartupOnSupportedDomain) {
             EXPECT_THAT(request.url(),
                         Eq(GURL("https://www.some-website.com/cart")));
             EXPECT_TRUE(request.client_context().is_in_chrome_triggered());
-            std::move(callback).Run(net::HTTP_OK,
-                                    CreateTriggerScriptResponseForTest());
+            std::move(callback).Run(
+                net::HTTP_OK,
+                CreateTriggerScriptResponseForTest(CART_RETURNING_USER));
           }));
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript)
       .WillOnce([&]() {
@@ -993,10 +1001,14 @@ TEST_F(StarterTest, ImplicitStartupOnSupportedDomain) {
         trigger_script_coordinator_->PerformTriggerScriptAction(
             TriggerScriptProto::ACCEPT);
       });
-  EXPECT_CALL(mock_start_regular_script_callback_,
-              Run(GURL("https://www.some-website.com/cart"),
-                  Pointee(Property(&TriggerContext::GetOnboardingShown, false)),
-                  testing::Ne(absl::nullopt)));
+  EXPECT_CALL(
+      mock_start_regular_script_callback_,
+      Run(GURL("https://www.some-website.com/cart"),
+          Pointee(AllOf(Property(&TriggerContext::GetOnboardingShown, false),
+                        Property(&TriggerContext::GetInChromeTriggered, true),
+                        Property(&TriggerContext::GetTriggerUIType,
+                                 CART_RETURNING_USER))),
+          testing::Ne(base::nullopt)));
 
   // Implicit startup by navigating to an autofill-assistant-enabled site.
   content::WebContentsTester::For(web_contents())
