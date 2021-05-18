@@ -558,6 +558,11 @@ const char kSamlPasswordChangeUrl[] = "saml-password-change-url";
 const char kOfflineSignInTimeLimitInSecondsOverrideForTesting[] =
     "offline-signin-timelimit-in-seconds-override-for-testing";
 
+// Used for overriding the required user activity time before running the
+// onboarding survey.
+const char kTimeBeforeOnboardingSurveyInSecondsForTesting[] =
+    "time-before-onboarding-survey-in-seconds-for-testing";
+
 // Used for overriding the preference set by the policy
 // kSamlLockScreenReauthenticationEnabled to true.
 // TODO(crbug.com/1177416): Clean up once testing is complete

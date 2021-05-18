@@ -131,8 +131,7 @@ void OnboardingUserActivityCounter::MaybeMarkForStart(Profile* profile) {
     return;
 
   profile->GetPrefs()->SetTimeDelta(
-      chromeos::prefs::kActivityTimeAfterOnboarding,
-      base::TimeDelta::FromMinutes(1));
+      chromeos::prefs::kActivityTimeAfterOnboarding, base::TimeDelta());
 }
 
 // static

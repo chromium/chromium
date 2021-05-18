@@ -206,6 +206,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSamlPasswordChangeUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kOfflineSignInTimeLimitInSecondsOverrideForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kTimeBeforeOnboardingSurveyInSecondsForTesting[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSamlLockScreenReauthenticationEnabledOverrideForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfHoverPreviews[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfHotseat[];
