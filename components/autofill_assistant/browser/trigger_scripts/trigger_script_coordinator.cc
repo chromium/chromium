@@ -541,7 +541,6 @@ void TriggerScriptCoordinator::RunCallback(
     Metrics::RecordTriggerScriptFinished(ukm_recorder_, ukm_source_id_,
                                          trigger_ui_type, state);
   }
-  trigger_context_->SetTriggerUIType(trigger_ui_type);
   std::move(callback_).Run(state, std::move(trigger_context_), trigger_script);
 }
 

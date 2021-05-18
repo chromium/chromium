@@ -59,10 +59,6 @@ message ClientContextProto {
   // triggered one.
   optional bool is_in_chrome_triggered = 17;
 
-  // The type of trigger script that was shown and accepted at the beginning of
-  // this flow, if any.
-  optional TriggerUIType trigger_ui_type = 18;
-
   message DeviceContextProto {
     message VersionProto {
       // The Android SDK version of the device.

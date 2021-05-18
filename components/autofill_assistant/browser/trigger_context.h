@@ -99,13 +99,6 @@ class TriggerContext {
   // i.e., a button or link on a website, or whether this is from within Chrome.
   virtual bool GetInChromeTriggered() const;
 
-  // Returns the trigger type of the trigger script that was shown and accepted
-  // at the beginning of the flow, if any.
-  virtual TriggerUIType GetTriggerUIType() const;
-
-  // Sets the trigger type of the shown trigger script.
-  virtual void SetTriggerUIType(TriggerUIType trigger_ui_type);
-
  private:
   std::unique_ptr<ScriptParameters> script_parameters_;
 
@@ -120,7 +113,6 @@ class TriggerContext {
 
   // The initial url at the time of triggering.
   std::string initial_url_;
-  TriggerUIType trigger_ui_type_ = UNSPECIFIED_TRIGGER_UI_TYPE;
 };
 
 }  // namespace autofill_assistant

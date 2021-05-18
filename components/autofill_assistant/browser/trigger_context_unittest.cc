@@ -44,12 +44,9 @@ TEST(TriggerContextTest, Create) {
   EXPECT_TRUE(context.GetDirectAction());
   EXPECT_EQ(context.GetInitialUrl(), "https://www.example.com");
   EXPECT_TRUE(context.GetInChromeTriggered());
-  EXPECT_EQ(context.GetTriggerUIType(), UNSPECIFIED_TRIGGER_UI_TYPE);
 
   context.SetOnboardingShown(false);
   EXPECT_FALSE(context.GetOnboardingShown());
-  context.SetTriggerUIType(CART_FIRST_TIME_USER);
-  EXPECT_EQ(context.GetTriggerUIType(), CART_FIRST_TIME_USER);
 }
 
 TEST(TriggerContextTest, MergeEmpty) {
@@ -61,7 +58,6 @@ TEST(TriggerContextTest, MergeEmpty) {
   EXPECT_FALSE(merged.GetOnboardingShown());
   EXPECT_FALSE(merged.GetDirectAction());
   EXPECT_FALSE(merged.GetInChromeTriggered());
-  EXPECT_EQ(merged.GetTriggerUIType(), UNSPECIFIED_TRIGGER_UI_TYPE);
 }
 
 TEST(TriggerContextTest, MergeEmptyWithNonEmpty) {
@@ -80,8 +76,6 @@ TEST(TriggerContextTest, MergeEmptyWithNonEmpty) {
   EXPECT_FALSE(merged.GetCCT());
   EXPECT_FALSE(merged.GetOnboardingShown());
   EXPECT_FALSE(merged.GetDirectAction());
-  EXPECT_FALSE(merged.GetInChromeTriggered());
-  EXPECT_EQ(merged.GetTriggerUIType(), UNSPECIFIED_TRIGGER_UI_TYPE);
 }
 
 TEST(TriggerContextTest, MergeNonEmptyWithNonEmpty) {
@@ -100,7 +94,6 @@ TEST(TriggerContextTest, MergeNonEmptyWithNonEmpty) {
       /* is_direct_action = */ true,
       /* initial_url = */ "https://www.example.com",
       /* is_in_chrome_triggered = */ true};
-  context2.SetTriggerUIType(CHECKOUT_FIRST_TIME_USER);
 
   // Adding empty to make sure empty contexts are properly skipped.
   TriggerContext empty;
@@ -114,7 +107,6 @@ TEST(TriggerContextTest, MergeNonEmptyWithNonEmpty) {
   EXPECT_TRUE(merged.GetDirectAction());
   EXPECT_EQ(merged.GetInitialUrl(), "https://www.example.com");
   EXPECT_TRUE(merged.GetInChromeTriggered());
-  EXPECT_EQ(merged.GetTriggerUIType(), CHECKOUT_FIRST_TIME_USER);
 }
 
 TEST(TriggerContextTest, HasExperimentId) {
