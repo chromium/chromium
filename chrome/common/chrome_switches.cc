@@ -326,6 +326,11 @@ const char kForceFirstRun[]                 = "force-first-run";
 // Forces Chrome to use a stacked tab strip layout.
 const char kForceStackedTabStripLayout[]    = "force-stacked-tab-strip-layout";
 
+// Does not show the crash restore bubble when the browser is started during the
+// system startup phase in ChromeOS, if the ChromeOS full restore feature is
+// enabled, because the ChromeOS full restore notification is shown for the user
+// to select restore or not.
+const char kHideCrashRestoreBubble[] = "hide-crash-restore-bubble";
 
 // Specifies which page will be displayed in newly-opened tabs. We need this
 // for testing purposes so that the UI tests don't depend on what comes up for

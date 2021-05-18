@@ -167,12 +167,15 @@ void AppLaunchHandler::LaunchBrowser() {
 
   restore_data_->RemoveApp(extension_misc::kChromeAppId);
 
-  // Modify the command line to restore browser sessions if not restore from
-  // crash.
-  if (profile_->GetLastSessionExitType() != Profile::EXIT_CRASHED) {
+  if (profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kRestoreLastSession);
+        switches::kHideCrashRestoreBubble);
   }
+
+  // Modify the command line to restore browser sessions.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kRestoreLastSession);
+
   UserSessionManager::GetInstance()->LaunchBrowser(profile_);
   UserSessionManager::GetInstance()->MaybeLaunchSettings(profile_);
 }

@@ -1459,7 +1459,9 @@ std::vector<GURL> GetURLsFromCommandLine(const base::CommandLine& command_line,
 
 bool HasPendingUncleanExit(Profile* profile) {
   return profile->GetLastSessionExitType() == Profile::EXIT_CRASHED &&
-         !profile_launch_observer.Get().HasBeenLaunched(profile);
+         !profile_launch_observer.Get().HasBeenLaunched(profile) &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kHideCrashRestoreBubble);
 }
 
 base::FilePath GetStartupProfilePath(const base::FilePath& user_data_dir,
