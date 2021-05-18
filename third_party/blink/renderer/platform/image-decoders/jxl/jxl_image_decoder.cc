@@ -49,44 +49,46 @@ JXLImageDecoder::~JXLImageDecoder() {
   JxlDecoderDestroy(dec_);
 }
 
-inline bool DecodeToHalfFloat(const JxlPixelFormat& format) {
-  return format.data_type == JXL_TYPE_FLOAT16;
-}
-
 void JXLImageDecoder::Decode(bool only_size) {
+  if (Failed())
+    return;
+
   if (IsDecodedSizeAvailable() && only_size) {
     // Also SetEmbeddedProfile is done already if the size was set.
     return;
   }
+
   if (!dec_) {
     dec_ = JxlDecoderCreate(nullptr);
+    // Subscribe to color encoding event even when only getting size, because
+    // SetSize must be called after SetEmbeddedColorProfile
+    const int events =
+        JXL_DEC_BASIC_INFO | JXL_DEC_COLOR_ENCODING | JXL_DEC_FULL_IMAGE;
+
+    if (JXL_DEC_SUCCESS != JxlDecoderSubscribeEvents(dec_, events)) {
+      SetFailed();
+      return;
+    }
   } else {
-    JxlDecoderReset(dec_);
+    offset_ -= JxlDecoderReleaseInput(dec_);
   }
-
-  // Subscribe to color encoding event even when only getting size, because
-  // SetSize must be called after SetEmbeddedColorProfile
-  const int events = JXL_DEC_BASIC_INFO | JXL_DEC_COLOR_ENCODING |
-                     (only_size ? 0 : JXL_DEC_FULL_IMAGE);
-
-  if (JXL_DEC_SUCCESS != JxlDecoderSubscribeEvents(dec_, events)) {
-    SetFailed();
-    return;
-  }
-
-  JxlBasicInfo info;
 
   FastSharedBufferReader reader(data_.get());
-  size_t offset = 0;
 
-  // SetEmbeddedColorProfile may only be used if !size_available at the
-  // beginning of Decode. This means even if only_size is true, we must already
-  // read the color profile as well, or we cannot set it anymore later.
+  const JxlPixelFormat format = {4, JXL_TYPE_FLOAT, JXL_NATIVE_ENDIAN, 0};
+
   const bool size_available = IsDecodedSizeAvailable();
-  // Our API guarantees that we either get JXL_DEC_ERROR, JXL_DEC_SUCCESS or
-  // JXL_DEC_NEED_MORE_INPUT, and we exit the loop below in either case.
 
+  if (have_color_info_) {
+    xform_ = ColorTransform();
+  }
+
+  // The JXL API guarantees that we eventually get JXL_DEC_ERROR,
+  // JXL_DEC_SUCCESS or JXL_DEC_NEED_MORE_INPUT, and we exit the loop below in
+  // each case.
   for (;;) {
+    if (only_size && have_color_info_)
+      return;
     JxlDecoderStatus status = JxlDecoderProcessInput(dec_);
     switch (status) {
       case JXL_DEC_ERROR: {
@@ -96,21 +98,19 @@ void JXLImageDecoder::Decode(bool only_size) {
       }
       case JXL_DEC_NEED_MORE_INPUT: {
         const size_t remaining = JxlDecoderReleaseInput(dec_);
-        if (remaining != 0) {
-          DVLOG(1) << "api needs more input but didn't use all " << remaining;
-          SetFailed();
-          return;
-        }
-        if (offset >= reader.size()) {
+        offset_ -= remaining;
+        if (offset_ >= reader.size()) {
           if (IsAllDataReceived()) {
             DVLOG(1) << "need more input but all data received";
             SetFailed();
             return;
           }
+          // Return because we need more input from the reader, to continue
+          // decoding in the next call.
           return;
         }
         const char* buffer = nullptr;
-        size_t read = reader.GetSomeData(buffer, offset);
+        size_t read = reader.GetSomeData(buffer, offset_);
         if (JXL_DEC_SUCCESS !=
             JxlDecoderSetInput(dec_, reinterpret_cast<const uint8_t*>(buffer),
                                read)) {
@@ -118,21 +118,22 @@ void JXLImageDecoder::Decode(bool only_size) {
           SetFailed();
           return;
         }
-        offset += read;
+        offset_ += read;
         break;
       }
       case JXL_DEC_BASIC_INFO: {
-        if (JXL_DEC_SUCCESS != JxlDecoderGetBasicInfo(dec_, &info)) {
+        if (JXL_DEC_SUCCESS != JxlDecoderGetBasicInfo(dec_, &info_)) {
           DVLOG(1) << "JxlDecoderGetBasicInfo failed";
           SetFailed();
           return;
         }
-        if (!size_available && !SetSize(info.xsize, info.ysize))
+        if (!size_available && !SetSize(info_.xsize, info_.ysize))
           return;
         break;
       }
       case JXL_DEC_COLOR_ENCODING: {
         if (IgnoresColorSpace()) {
+          have_color_info_ = true;
           continue;
         }
 
@@ -146,12 +147,12 @@ void JXLImageDecoder::Decode(bool only_size) {
         // Detect whether the JXL image is intended to be an HDR image: when it
         // uses more than 8 bits per pixel, or when it has explicitly marked
         // PQ or HLG color profile.
-        if (info.bits_per_sample > 8) {
+        if (info_.bits_per_sample > 8) {
           is_hdr_ = true;
         }
         JxlColorEncoding color_encoding;
         if (JXL_DEC_SUCCESS == JxlDecoderGetColorAsEncodedProfile(
-                                   dec_, &format_,
+                                   dec_, &format,
                                    JXL_COLOR_PROFILE_TARGET_ORIGINAL,
                                    &color_encoding)) {
           if (color_encoding.transfer_function == JXL_TRANSFER_FUNCTION_PQ ||
@@ -164,23 +165,17 @@ void JXLImageDecoder::Decode(bool only_size) {
 
         if (is_hdr_ &&
             high_bit_depth_decoding_option_ == kHighBitDepthToHalfFloat) {
-          format_.data_type = JXL_TYPE_FLOAT16;
-          format_.endianness = JXL_LITTLE_ENDIAN;
+          decode_to_half_float_ = true;
         }
 
         bool have_data_profile = false;
-        if (JXL_DEC_SUCCESS ==
-            JxlDecoderGetColorAsEncodedProfile(dec_, &format_,
-                                               JXL_COLOR_PROFILE_TARGET_DATA,
-                                               &color_encoding)) {
+        if (JXL_DEC_SUCCESS == JxlDecoderGetColorAsEncodedProfile(
+                                   dec_, &format, JXL_COLOR_PROFILE_TARGET_DATA,
+                                   &color_encoding)) {
           bool known_transfer_function = true;
           bool known_gamut = true;
           skcms_Matrix3x3 gamut;
           skcms_TransferFunction transfer;
-          // PQ or HLG as the data may occur if the JXL image was lossless, or
-          // not in XYB color space. If the JXL image was lossy with XYB, then
-          // instead linear sRGB is expected here when we treat the image as HDR
-          // (when format_.data_type == JXL_TYPE_FLOAT), nonlinear sRGB for SDR.
           if (color_encoding.transfer_function == JXL_TRANSFER_FUNCTION_PQ) {
             transfer = SkNamedTransferFn::kPQ;
           } else if (color_encoding.transfer_function ==
@@ -223,11 +218,11 @@ void JXLImageDecoder::Decode(bool only_size) {
           bool got_size =
               JXL_DEC_SUCCESS ==
               JxlDecoderGetICCProfileSize(
-                  dec_, &format_, JXL_COLOR_PROFILE_TARGET_DATA, &icc_size);
+                  dec_, &format, JXL_COLOR_PROFILE_TARGET_DATA, &icc_size);
           std::vector<uint8_t> icc_profile(icc_size);
           if (got_size && JXL_DEC_SUCCESS ==
                               JxlDecoderGetColorAsICCProfile(
-                                  dec_, &format_, JXL_COLOR_PROFILE_TARGET_DATA,
+                                  dec_, &format, JXL_COLOR_PROFILE_TARGET_DATA,
                                   icc_profile.data(), icc_profile.size())) {
             profile =
                 ColorProfile::Create(icc_profile.data(), icc_profile.size());
@@ -259,8 +254,7 @@ void JXLImageDecoder::Decode(bool only_size) {
 
         if (is_hdr_ &&
             high_bit_depth_decoding_option_ == kHighBitDepthToHalfFloat) {
-          format_.data_type = JXL_TYPE_FLOAT16;
-          format_.endianness = JXL_LITTLE_ENDIAN;
+          decode_to_half_float_ = true;
         }
 
         if (have_data_profile) {
@@ -268,17 +262,10 @@ void JXLImageDecoder::Decode(bool only_size) {
             SetEmbeddedColorProfile(std::move(profile));
           }
         }
+        have_color_info_ = true;
         break;
       }
       case JXL_DEC_NEED_IMAGE_OUT_BUFFER: {
-        // Progressive is not yet implemented, and we potentially require some
-        // color transforms applied on the buffer from the frame. If we let the
-        // JPEG XL decoder write to the buffer immediately, Chrome may already
-        // render its intermediate stage with the wrong color format_. Hence,
-        // for now, only set the buffer and let JXL decode once we have all
-        // data.
-        if (!IsAllDataReceived())
-          return;
         // Always 0 because animation is not yet implemented.
         const size_t frame_index = 0;
         ImageFrame& frame = frame_buffer_cache_[frame_index];
@@ -289,36 +276,59 @@ void JXLImageDecoder::Decode(bool only_size) {
           SetFailed();
           return;
         }
+        frame.SetHasAlpha(info_.alpha_bits != 0);
+
         size_t buffer_size;
         if (JXL_DEC_SUCCESS !=
-            JxlDecoderImageOutBufferSize(dec_, &format_, &buffer_size)) {
+            JxlDecoderImageOutBufferSize(dec_, &format, &buffer_size)) {
           DVLOG(1) << "JxlDecoderImageOutBufferSize failed";
           SetFailed();
           return;
         }
-
-        void* pixels_buffer;
-
-        if (DecodeToHalfFloat(format_)) {
-          if (buffer_size != info.xsize * info.ysize * 8) {
-            DVLOG(1) << "Unexpected buffer size";
-            SetFailed();
-            return;
-          }
-          pixels_buffer = reinterpret_cast<void*>(frame.GetAddrF16(0, 0));
-        } else {
-          if (buffer_size != info.xsize * info.ysize * 4) {
-            DVLOG(1) << "Unexpected buffer size";
-            SetFailed();
-            return;
-          }
-          pixels_buffer = reinterpret_cast<void*>(frame.GetAddr(0, 0));
+        if (buffer_size != info_.xsize * info_.ysize * 16) {
+          DVLOG(1) << "Unexpected buffer size";
+          SetFailed();
+          return;
         }
 
-        if (JXL_DEC_SUCCESS != JxlDecoderSetImageOutBuffer(dec_, &format_,
-                                                           pixels_buffer,
-                                                           buffer_size)) {
-          DVLOG(1) << "JxlDecoderSetImageOutBuffer failed";
+        // TODO(http://crbug.com/1210465): Add Munsell chart color accuracy
+        // tests for JXL
+        xform_ = ColorTransform();
+        auto callback = [](void* opaque, size_t x, size_t y, size_t num_pixels,
+                           const void* pixels) {
+          JXLImageDecoder* self = reinterpret_cast<JXLImageDecoder*>(opaque);
+          ImageFrame& frame = self->frame_buffer_cache_[0];
+          void* row_dst = self->decode_to_half_float_
+                              ? reinterpret_cast<void*>(frame.GetAddrF16(x, y))
+                              : reinterpret_cast<void*>(frame.GetAddr(x, y));
+
+          bool dst_premultiply = frame.PremultiplyAlpha();
+
+          const skcms_PixelFormat kSrcFormat = skcms_PixelFormat_RGBA_ffff;
+          const skcms_PixelFormat kDstFormat = self->decode_to_half_float_
+                                                   ? skcms_PixelFormat_RGBA_hhhh
+                                                   : XformColorFormat();
+
+          if (self->xform_ || (kDstFormat != kSrcFormat) ||
+              (dst_premultiply && frame.HasAlpha())) {
+            skcms_AlphaFormat src_alpha = skcms_AlphaFormat_Unpremul;
+            skcms_AlphaFormat dst_alpha =
+                (dst_premultiply && self->info_.alpha_bits)
+                    ? skcms_AlphaFormat_PremulAsEncoded
+                    : skcms_AlphaFormat_Unpremul;
+            const auto* src_profile =
+                self->xform_ ? self->xform_->SrcProfile() : nullptr;
+            const auto* dst_profile =
+                self->xform_ ? self->xform_->DstProfile() : nullptr;
+            bool color_conversion_successful = skcms_Transform(
+                pixels, kSrcFormat, src_alpha, src_profile, row_dst, kDstFormat,
+                dst_alpha, dst_profile, num_pixels);
+            DCHECK(color_conversion_successful);
+          }
+        };
+        if (JXL_DEC_SUCCESS !=
+            JxlDecoderSetImageOutCallback(dec_, &format, callback, this)) {
+          DVLOG(1) << "JxlDecoderSetImageOutCallback failed";
           SetFailed();
           return;
         }
@@ -326,35 +336,6 @@ void JXLImageDecoder::Decode(bool only_size) {
       }
       case JXL_DEC_FULL_IMAGE: {
         ImageFrame& frame = frame_buffer_cache_[0];
-        frame.SetHasAlpha(info.alpha_bits != 0);
-        ColorProfileTransform* xform = ColorTransform();
-        const skcms_PixelFormat kSrcFormat = DecodeToHalfFloat(format_)
-                                                 ? skcms_PixelFormat_RGBA_hhhh
-                                                 : skcms_PixelFormat_RGBA_8888;
-        const skcms_PixelFormat kDstFormat = DecodeToHalfFloat(format_)
-                                                 ? skcms_PixelFormat_RGBA_hhhh
-                                                 : XformColorFormat();
-
-        if (xform || (kDstFormat != kSrcFormat) ||
-            (frame.PremultiplyAlpha() && frame.HasAlpha())) {
-          skcms_AlphaFormat src_alpha = skcms_AlphaFormat_Unpremul;
-          skcms_AlphaFormat dst_alpha =
-              (frame.PremultiplyAlpha() && info.alpha_bits)
-                  ? skcms_AlphaFormat_PremulAsEncoded
-                  : skcms_AlphaFormat_Unpremul;
-          const auto* src_profile = xform ? xform->SrcProfile() : nullptr;
-          const auto* dst_profile = xform ? xform->DstProfile() : nullptr;
-          for (size_t y = 0; y < info.ysize; ++y) {
-            void* row = DecodeToHalfFloat(format_)
-                            ? reinterpret_cast<void*>(frame.GetAddrF16(0, y))
-                            : reinterpret_cast<void*>(frame.GetAddr(0, y));
-            bool color_conversion_successful =
-                skcms_Transform(row, kSrcFormat, src_alpha, src_profile, row,
-                                kDstFormat, dst_alpha, dst_profile, info.xsize);
-            DCHECK(color_conversion_successful);
-          }
-        }
-
         frame.SetPixelsChanged(true);
         frame.SetStatus(ImageFrame::kFrameComplete);
         // We do not support animated images yet, so return after the first
@@ -393,7 +374,7 @@ bool JXLImageDecoder::MatchesJXLSignature(
 
 void JXLImageDecoder::InitializeNewFrame(size_t index) {
   auto& buffer = frame_buffer_cache_[index];
-  if (DecodeToHalfFloat(format_))
+  if (decode_to_half_float_)
     buffer.SetPixelFormat(ImageFrame::PixelFormat::kRGBA_F16);
 }
 

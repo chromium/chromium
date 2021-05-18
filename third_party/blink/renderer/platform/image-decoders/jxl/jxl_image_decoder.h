@@ -75,8 +75,14 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   // The image is considered to be HDR, such as using PQ or HLG transfer
   // function in the color space.
   bool is_hdr_ = false;
+  bool decode_to_half_float_ = false;
 
-  JxlPixelFormat format_ = {4, JXL_TYPE_UINT8, JXL_NATIVE_ENDIAN, 0};
+  JxlBasicInfo info_;
+  size_t offset_ = 0;
+  bool have_color_info_ = false;
+
+  // Preserved for JXL pixel callback. Not owned.
+  ColorProfileTransform* xform_;
 };
 
 }  // namespace blink
