@@ -58,6 +58,8 @@ class SetSinkIdResolver : public ScriptPromiseResolver {
   ~SetSinkIdResolver() override = default;
   void StartAsync();
 
+  void Start();
+
   void Trace(Visitor*) const override;
 
  private:
@@ -94,6 +96,25 @@ void SetSinkIdResolver::StartAsync() {
   context->GetTaskRunner(TaskType::kInternalMedia)
       ->PostTask(FROM_HERE, WTF::Bind(&SetSinkIdResolver::DoSetSinkId,
                                       WrapWeakPersistent(this)));
+}
+
+void SetSinkIdResolver::Start() {
+  auto* context = GetExecutionContext();
+  if (!context || context->IsContextDestroyed())
+    return;
+
+  if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context)) {
+    if (window->document()->IsPrerendering()) {
+      window->document()->AddPostPrerenderingActivationStep(
+          WTF::Bind(&SetSinkIdResolver::Start, WrapWeakPersistent(this)));
+      return;
+    }
+  }
+
+  if (sink_id_ == HTMLMediaElementAudioOutputDevice::sinkId(*element_))
+    Resolve();
+  else
+    StartAsync();
 }
 
 void SetSinkIdResolver::DoSetSinkId() {
@@ -189,11 +210,7 @@ ScriptPromise HTMLMediaElementAudioOutputDevice::setSinkId(
   SetSinkIdResolver* resolver =
       SetSinkIdResolver::Create(script_state, element, sink_id);
   ScriptPromise promise = resolver->Promise();
-  if (sink_id == HTMLMediaElementAudioOutputDevice::sinkId(element))
-    resolver->Resolve();
-  else
-    resolver->StartAsync();
-
+  resolver->Start();
   return promise;
 }
 
