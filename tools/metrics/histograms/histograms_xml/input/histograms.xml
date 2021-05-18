@@ -527,7 +527,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.MultilingualExperiment.Autocorrect.Actions"
-    enum="IMEAutocorrectActions" expires_after="2021-06-30">
+    enum="IMEAutocorrectActions" expires_after="2021-12-31">
   <owner>tranbaoduy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -537,7 +537,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.MultilingualExperiment.Autocorrect.Count"
-    enum="IMETextInputClient" expires_after="2021-06-30">
+    enum="IMETextInputClient" expires_after="2021-12-31">
   <owner>tranbaoduy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -547,7 +547,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.MultilingualExperiment.Autocorrect.Delay"
-    units="ms" expires_after="2021-06-30">
+    units="ms" expires_after="2021-12-31">
   <owner>tranbaoduy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -558,7 +558,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="InputMethod.MultilingualExperiment.DiacriticalAutocorrect.Actions"
-    enum="IMEAutocorrectActions" expires_after="2021-06-30">
+    enum="IMEAutocorrectActions" expires_after="2021-12-31">
   <owner>tranbaoduy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -568,7 +568,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.MultilingualExperiment.NonAutocorrect"
-    enum="IMENonAutocorrectDiacriticStatus" expires_after="2021-06-30">
+    enum="IMENonAutocorrectDiacriticStatus" expires_after="2021-12-31">
   <owner>tranbaoduy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
