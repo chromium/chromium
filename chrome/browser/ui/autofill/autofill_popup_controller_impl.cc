@@ -105,13 +105,13 @@ void AutofillPopupControllerImpl::Show(
     just_created = true;
   }
 
+  WeakPtr<AutofillPopupControllerImpl> weak_this = GetWeakPtr();
   if (just_created) {
 #if defined(OS_ANDROID)
     ManualFillingController::GetOrCreate(web_contents_)
         ->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                    !suggestions.empty());
 #endif
-    WeakPtr<AutofillPopupControllerImpl> weak_this = GetWeakPtr();
     view_->Show();
     // crbug.com/1055981. |this| can be destroyed synchronously at this point.
     if (!weak_this)
@@ -128,6 +128,9 @@ void AutofillPopupControllerImpl::Show(
       selected_line_.reset();
 
     OnSuggestionsChanged();
+    // crbug.com/1200766. |this| can be destroyed synchronously at this point.
+    if (!weak_this)
+      return;
   }
 
   static_cast<ContentAutofillDriver*>(delegate_->GetAutofillDriver())
