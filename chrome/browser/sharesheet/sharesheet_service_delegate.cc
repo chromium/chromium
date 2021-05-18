@@ -20,8 +20,7 @@ SharesheetServiceDelegate::SharesheetServiceDelegate(
     SharesheetService* sharesheet_service)
     : native_window_(native_window),
       sharesheet_bubble_view_(
-          std::make_unique<ash::sharesheet::SharesheetBubbleView>(native_window,
-                                                                  this)),
+          new ash::sharesheet::SharesheetBubbleView(native_window, this)),
       sharesheet_service_(sharesheet_service) {}
 
 SharesheetServiceDelegate::~SharesheetServiceDelegate() = default;
@@ -61,7 +60,6 @@ void SharesheetServiceDelegate::ShowNearbyShareBubble(
 
 void SharesheetServiceDelegate::OnBubbleClosed(
     const std::u16string& active_action) {
-  sharesheet_bubble_view_.release();
   sharesheet_service_->OnBubbleClosed(native_window_, active_action);
   // This object is now deleted and nothing can be accessed any more.
   // Therefore there is no need to set is_bubble_open_ to false.

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SHARESHEET_SHARESHEET_SERVICE_DELEGATE_H_
 #define CHROME_BROWSER_SHARESHEET_SHARESHEET_SERVICE_DELEGATE_H_
 
-#include <memory>
 #include <string>
 
 #include "base/callback.h"
@@ -77,8 +76,8 @@ class SharesheetServiceDelegate : public SharesheetController {
   gfx::NativeWindow native_window_;
 
   std::u16string active_action_;
-  std::unique_ptr<ash::sharesheet::SharesheetBubbleView>
-      sharesheet_bubble_view_;
+  // Owned by views.
+  ash::sharesheet::SharesheetBubbleView* sharesheet_bubble_view_;
   SharesheetService* sharesheet_service_;
 };
 
