@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/core/app_history/app_history.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_event_init.h"
 #include "third_party/blink/renderer/core/app_history/app_history_entry.h"
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_event.h"
-#include "third_party/blink/renderer/core/app_history/app_history_navigate_event_init.h"
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
