@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Polymer, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
+
+
 /**
  * @typedef {?{
  *   url: string,
@@ -11,12 +15,11 @@
  *   active: boolean
  * }}
  */
-/* #export */ let TrackInfo;
-
-(function() {
-/* #ignore */ 'use strict';
+export let TrackInfo;
 
 Polymer({
+  _template: html`{__html_template__}`,
+
   is: 'track-list',
 
   properties: {
@@ -297,4 +300,3 @@ Polymer({
     return newTrackIndex;
   },
 });
-})();  // Anonymous closure

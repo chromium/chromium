@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import '../elements/audio_player.m.js';
+// #import '../elements/audio_player.js';
 // #import {dashToCamelCase} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {ExternallyUnmountedEvent} from '../../file_manager/externs/volume_manager.m.js';
 // #import {FilteredVolumeManager} from '../../file_manager/common/js/filtered_volume_manager.m.js';

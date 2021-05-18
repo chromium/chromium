@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Polymer, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import 'chrome://resources/cr_elements/cr_slider/cr_slider.m.js';
+import 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/elements/files_icon_button.m.js';
+import './repeat_button.js';
+
+
 /**
  * @typedef {?{
  *   mute: string,
@@ -17,12 +24,11 @@
  *   volumeSlider: string,
  * }}
  */
-/* #export */ let AriaLabels;
-
-(function() {
-/* #ignore */ 'use strict';
+export let AriaLabels;
 
 Polymer({
+  _template: html`{__html_template__}`,
+
   is: 'control-panel',
 
   properties: {
@@ -272,4 +278,3 @@ Polymer({
     this.$.volumeSlider.setAttribute('aria-label', ariaLabels.volumeSlider);
   },
 });
-})();  // Anonymous closure

@@ -3,53 +3,43 @@
   -- found in the LICENSE file.
   -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-behaviors/iron-button-state.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-behaviors/iron-control-state.html">
-<link rel="import" href="chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/elements/files_toggle_ripple.html">
+<style>
+  :host {
+    border-radius: 2px;
+    cursor: pointer;
+    display: inline-block;
+    height: 32px;
+    outline: none;
+    position: relative;
+    width: 32px;
+  }
 
-<dom-module id="repeat-button">
-  <template>
-  <style>
-    :host {
-      border-radius: 2px;
-      cursor: pointer;
-      display: inline-block;
-      height: 32px;
-      outline: none;
-      position: relative;
-      width: 32px;
-    }
+  .repeat-all, .no-repeat {
+    background-image: -webkit-image-set(
+        url(../assets/100/player_button_repeat.png) 1x,
+        url(../assets/200/player_button_repeat.png) 2x);
+  }
 
-    .repeat-all, .no-repeat {
-      background-image: -webkit-image-set(
-          url(../assets/100/player_button_repeat.png) 1x,
-          url(../assets/200/player_button_repeat.png) 2x);
-    }
+  .repeat-one {
+    background-image: -webkit-image-set(
+        url(../assets/100/player_button_repeat_one.png) 1x,
+        url(../assets/200/player_button_repeat_one.png) 2x);
+  }
 
-    .repeat-one {
-      background-image: -webkit-image-set(
-          url(../assets/100/player_button_repeat_one.png) 1x,
-          url(../assets/200/player_button_repeat_one.png) 2x);
-    }
+  files-toggle-ripple {
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 28px;
+    left: 2px;
+    pointer-events: none;
+    position: absolute;
+    top: 2px;
+    width: 28px;
+  }
 
-    files-toggle-ripple {
-      background-position: center;
-      background-repeat: no-repeat;
-      height: 28px;
-      left: 2px;
-      pointer-events: none;
-      position: absolute;
-      top: 2px;
-      width: 28px;
-    }
-
-    :host(.keyboard-focus) {
-      /* We use box-shadow rather than outline to make it rounded. */
-      box-shadow: 0 0 0 1px rgba(66, 133, 244, 0.5);
-    }
-  </style>
-    <files-toggle-ripple activated="[[isActive(repeatMode)]]" class$="{{repeatMode}}"></files-toggle-ripple>
-  </template>
-  <script src="repeat_button.js"></script>
-</dom-module>
+  :host(.keyboard-focus) {
+    /* We use box-shadow rather than outline to make it rounded. */
+    box-shadow: 0 0 0 1px rgba(66, 133, 244, 0.5);
+  }
+</style>
+<files-toggle-ripple activated="[[isActive(repeatMode)]]" class$="{{repeatMode}}"></files-toggle-ripple>

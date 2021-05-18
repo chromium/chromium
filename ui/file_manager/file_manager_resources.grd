@@ -127,14 +127,6 @@
       <include name="IDR_AUDIO_PLAYER_MANIFEST" file="audio_player/manifest.json" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_BACKGROUND_JS" file="audio_player/js/background_scripts.js" flattenhtml="true" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_BACKGROUND_HTML" file="audio_player/background.html" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ELEMENTS_AUDIO_PLAYER_HTML" file="audio_player/elements/audio_player.html" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ELEMENTS_AUDIO_PLAYER_JS" file="audio_player/elements/audio_player.js" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ELEMENTS_CONTROL_PANEL_HTML" file="audio_player/elements/control_panel.html" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ELEMENTS_CONTROL_PANEL_JS" file="audio_player/elements/control_panel.js" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ELEMENTS_REPEAT_BUTTON_HTML" file="audio_player/elements/repeat_button.html" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ELEMENTS_REPEAT_BUTTON_JS" file="audio_player/elements/repeat_button.js" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ELEMENTS_TRACK_LIST_HTML" file="audio_player/elements/track_list.html" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ELEMENTS_TRACK_LIST_JS" file="audio_player/elements/track_list.js" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_METADATA_WORKER_JS" file="audio_player/js/metadata_worker.js" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER" file="audio_player/audio_player.html" allowexternalscript="true" flattenhtml="true" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_MODULE" file="audio_player/audio_player_module.html" allowexternalscript="true" flattenhtml="true" type="BINDATA" />

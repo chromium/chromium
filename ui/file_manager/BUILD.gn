@@ -80,13 +80,20 @@ preprocess_if_expr("preprocess_static") {
   out_manifest = "$target_gen_dir/manifest_preprocess_static.json"
 
   in_files = [
+    # Audio Player:
     "audio_player/js/main.m.js",
     "audio_player/js/main_background.m.js",
+
+    # Files app:
     "file_manager/background/js/main_background.m.js",
     "file_manager/foreground/js/deferred_elements.m.js",
     "file_manager/foreground/js/elements_importer.m.js",
     "file_manager/foreground/js/main.m.js",
+
+    # Image Loader:
     "image_loader/background.m.js",
+
+    # Video Player:
     "video_player/js/main.m.js",
     "video_player/js/main_background.m.js",
   ]
@@ -116,11 +123,11 @@ preprocess_if_expr("preprocess_generated") {
     "audio_player/js/background.m.js",
     "audio_player/js/audio_player.m.js",
     "audio_player/js/metadata_worker.m.js",
-    "audio_player/elements/audio_player.m.js",
+    "audio_player/elements/audio_player.js",
     "audio_player/elements/track_info_panel.js",
-    "audio_player/elements/track_list.m.js",
-    "audio_player/elements/control_panel.m.js",
-    "audio_player/elements/repeat_button.m.js",
+    "audio_player/elements/track_list.js",
+    "audio_player/elements/control_panel.js",
+    "audio_player/elements/repeat_button.js",
 
     # Common:
     "file_manager/common/js/app_util.m.js",
@@ -364,7 +371,6 @@ preprocess_if_expr("preprocess_generated") {
   ]
 
   deps = [
-    "//ui/file_manager/audio_player/elements:elements",
     "//ui/file_manager/audio_player/elements:web_components",
     "//ui/file_manager/audio_player/js:modulize",
     "//ui/file_manager/file_manager:gen_main_html",

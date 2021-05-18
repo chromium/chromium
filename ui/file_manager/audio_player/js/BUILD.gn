@@ -10,19 +10,7 @@ group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_jsmodules",
-    ":closure_compile_legacy",
     ":closure_compile_polymer",
-  ]
-}
-
-js_type_check("closure_compile_legacy") {
-  uses_legacy_modules = true
-  deps = [
-    ":audio_player",
-    ":background",
-    ":closure_compile_externs",
-    ":error_util",
-    ":metadata_worker",
   ]
 }
 
@@ -76,7 +64,7 @@ js_library("audio_player.m") {
       [ "$root_gen_dir/ui/file_manager/audio_player/js/audio_player.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/file_manager/audio_player/elements:audio_player.m",
+    "//ui/file_manager/audio_player/elements:audio_player",
     "//ui/file_manager/file_manager/common/js:app_util.m",
     "//ui/file_manager/file_manager/common/js:async_util.m",
     "//ui/file_manager/file_manager/common/js:filtered_volume_manager.m",

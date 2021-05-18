@@ -2,7 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './track_info_panel.js';
+
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {AriaLabels} from './control_panel.js';
+import {TrackInfo} from './track_list.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
+
   is: 'audio-player',
 
   listeners: {

@@ -7,7 +7,15 @@
  *
  * This is for repeat button in Control Panel for Audio Player.
  */
+import 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/elements/files_toggle_ripple.m.js';
+
+import {IronButtonState} from 'chrome://resources/polymer/v3_0/iron-behaviors/iron-button-state.js';
+import {IronControlState} from 'chrome://resources/polymer/v3_0/iron-behaviors/iron-control-state.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
+
   is: 'repeat-button',
 
   hostAttributes: {
@@ -16,8 +24,8 @@ Polymer({
   },
 
   behaviors: [
-    Polymer.IronButtonState,
-    Polymer.IronControlState,
+    IronButtonState,
+    IronControlState,
   ],
 
   properties: {
@@ -72,7 +80,7 @@ Polymer({
       return;
     }
 
-    var nextIndex = (this.index_ + 1) % this.modeName_.length;
+    const nextIndex = (this.index_ + 1) % this.modeName_.length;
     this.repeatMode = this.modeName_[nextIndex];
     this.index_ = nextIndex;
   },
