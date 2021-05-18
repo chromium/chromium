@@ -51,6 +51,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -126,6 +127,7 @@ public class PasswordCheckEditViewTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1210268")
     public void testSiteAndUsernameDisabled() {
         onView(withId(R.id.site_edit)).check(matches(allOf(not(isEnabled()), not(isFocusable()))));
         onView(withId(R.id.username_edit))
