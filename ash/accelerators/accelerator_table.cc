@@ -73,7 +73,6 @@ const AcceleratorData kDebugAcceleratorData[] = {
     {true, ui::VKEY_L, kDebugModifier, DEBUG_PRINT_LAYER_HIERARCHY},
     {true, ui::VKEY_V, kDebugModifier, DEBUG_PRINT_VIEW_HIERARCHY},
     {true, ui::VKEY_W, kDebugModifier, DEBUG_PRINT_WINDOW_HIERARCHY},
-    {true, ui::VKEY_D, kDebugModifier, DEBUG_TOGGLE_DEVICE_SCALE_FACTOR},
     {true, ui::VKEY_B, kDebugModifier, DEBUG_TOGGLE_SHOW_DEBUG_BORDERS},
     {true, ui::VKEY_F, kDebugModifier, DEBUG_TOGGLE_SHOW_FPS_COUNTER},
     {true, ui::VKEY_P, kDebugModifier, DEBUG_TOGGLE_SHOW_PAINT_RECTS},

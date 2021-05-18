@@ -291,14 +291,6 @@ TEST_F(DisplayManagerTest, UpdateDisplayTest) {
             display_manager()->GetDisplayAt(1).bounds().ToString());
 }
 
-TEST_F(DisplayManagerTest, ScaleOnlyChange) {
-  display_manager()->ToggleDisplayScaleFactor();
-  EXPECT_TRUE(changed_metrics() &
-              display::DisplayObserver::DISPLAY_METRIC_BOUNDS);
-  EXPECT_TRUE(changed_metrics() &
-              display::DisplayObserver::DISPLAY_METRIC_WORK_AREA);
-}
-
 // Test in emulation mode (use_fullscreen_host_window=false)
 TEST_F(DisplayManagerTest, EmulatorTest) {
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());

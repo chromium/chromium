@@ -1431,20 +1431,6 @@ void DisplayManager::AddRemoveDisplay(
   UpdateDisplaysWith(new_display_info_list);
 }
 
-void DisplayManager::ToggleDisplayScaleFactor() {
-  DCHECK(!active_display_list_.empty());
-  DisplayInfoList new_display_info_list;
-  for (Displays::const_iterator iter = active_display_list_.begin();
-       iter != active_display_list_.end(); ++iter) {
-    ManagedDisplayInfo display_info = GetDisplayInfo(iter->id());
-    display_info.set_device_scale_factor(
-        display_info.device_scale_factor() == 1.0f ? 2.0f : 1.0f);
-    new_display_info_list.push_back(display_info);
-  }
-  AddMirrorDisplayInfoIfAny(&new_display_info_list);
-  UpdateDisplaysWith(new_display_info_list);
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void DisplayManager::InitConfigurator(
     std::unique_ptr<NativeDisplayDelegate> delegate) {
