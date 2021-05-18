@@ -951,7 +951,7 @@
   {
     "name": "detect-target-embedding-lookalikes",
     "owners": [ "jdeblasio", "meacer" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 93
   },
   {
     "name": "detected-source-language-option",
