@@ -724,6 +724,35 @@ TargetEmbeddingType GetTargetEmbeddingType(
     const std::vector<DomainInfo>& engaged_sites,
     const LookalikeTargetAllowlistChecker& in_target_allowlist,
     std::string* safe_hostname) {
+  // Because of how target embeddings are detected (i.e. by sweeping the URL
+  // from back to front), we're guaranteed to find tail-embedding before other
+  // target embedding. Tail embedding triggers a safety tip, but interstitials
+  // are more important than safety tips, so if we find a safety tippable
+  // embedding with SearchForEmbeddings, go search again not permitting safety
+  // tips to see if we can also find an interstitiallable embedding.
+  auto result =
+      SearchForEmbeddings(hostname, engaged_sites, in_target_allowlist,
+                          /*safety_tips_allowed=*/true, safe_hostname);
+  if (result == TargetEmbeddingType::kSafetyTip) {
+    std::string no_st_safe_hostname;
+    auto no_st_result = SearchForEmbeddings(
+        hostname, engaged_sites, in_target_allowlist,
+        /*safety_tips_allowed=*/false, &no_st_safe_hostname);
+    if (no_st_result == TargetEmbeddingType::kNone) {
+      return result;
+    }
+    *safe_hostname = no_st_safe_hostname;
+    return no_st_result;
+  }
+  return result;
+}
+
+TargetEmbeddingType SearchForEmbeddings(
+    const std::string& hostname,
+    const std::vector<DomainInfo>& engaged_sites,
+    const LookalikeTargetAllowlistChecker& in_target_allowlist,
+    bool safety_tips_allowed,
+    std::string* safe_hostname) {
   const std::string embedding_domain = GetETLDPlusOne(hostname);
   const std::vector<base::StringPiece> hostname_tokens =
       SplitDomainIntoTokens(hostname);
@@ -793,7 +822,15 @@ TargetEmbeddingType GetTargetEmbeddingType(
             !IsAllowedToBeEmbedded(embedded_dominfo, span, in_target_allowlist,
                                    embedding_domain)) {
           *safe_hostname = engaged_site.hostname;
-          return TargetEmbeddingType::kInterstitial;
+          // Tail-embedding (e.g. evil-google.com, where the embedding happens
+          // at the very end of the hostname) is a safety tip, but only when
+          // safety tips are allowed. If it's tail embedding but we can't create
+          // a safety tip, keep looking.  Non-tail-embeddings are interstitials.
+          if (end != static_cast<int>(hostname_tokens.size())) {
+            return TargetEmbeddingType::kInterstitial;
+          } else if (safety_tips_allowed) {
+            return TargetEmbeddingType::kSafetyTip;
+          }  // else keep searching.
         }
       }
     }
@@ -804,7 +841,15 @@ TargetEmbeddingType GetTargetEmbeddingType(
             etld_check_dominfo, engaged_sites, safe_hostname) &&
         !IsAllowedToBeEmbedded(etld_check_dominfo, etld_check_span,
                                in_target_allowlist, embedding_domain)) {
-      return TargetEmbeddingType::kInterstitial;
+      // Tail-embedding (e.g. evil-google.com, where the embedding happens at
+      // the very end of the hostname) is a safety tip, but only when safety
+      // tips are allowed. If it's tail embedding but we can't create a safety
+      // tip, keep looking.  Non-tail-embeddings are interstitials.
+      if (end != static_cast<int>(hostname_tokens.size())) {
+        return TargetEmbeddingType::kInterstitial;
+      } else if (safety_tips_allowed) {
+        return TargetEmbeddingType::kSafetyTip;
+      }  // else keep searching.
     }
   }
   return TargetEmbeddingType::kNone;

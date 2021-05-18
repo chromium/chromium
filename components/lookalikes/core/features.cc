@@ -9,7 +9,7 @@ namespace features {
 
 // Note: this flag is ignored on iOS. See lookalike_url_util.cc.
 const base::Feature kDetectTargetEmbeddingLookalikes{
-    "TargetEmbeddingLookalikes", base::FEATURE_DISABLED_BY_DEFAULT};
+    "TargetEmbeddingLookalikes", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kLookalikeInterstitialForPunycode{
     "LookalikeInterstitialForPunycode", base::FEATURE_ENABLED_BY_DEFAULT};

@@ -168,25 +168,24 @@ bool GetMatchingDomain(
 void RecordUMAFromMatchType(LookalikeUrlMatchType match_type);
 
 // Checks to see if a URL is a target embedding lookalike. This function sets
-// |safe_hostname| to the url of the embedded target domain.
-// At the moment we consider the following cases as Target Embedding:
-// example-google.com-site.com, example.google.com-site.com,
-// example-google-info-site.com, example.google.com.site.com,
-// example-googlé.com-site.com where the embedded target is google.com. We
-// detect embeddings of top 500 domains and engaged domains. However, to reduce
-// false positives, we do not protect domains that are shorter than 7 characters
-// long (e.g. com.ru).
-// This function checks possible targets against |in_target_allowlist| to skip
-// permitted embeddings.
-// If no target embedding is found, the return value will be set to |kNonw|.
-// When the target is embedded with another TLD instead of its actual TLD, it
-// should trigger a Safety Tip when the embedded TLD is a ccTLD. In this
-// situation, return value will be |kSafetyTip|. All the other triggers will
-// result in a |kInterstitial| return value.
+// |safe_hostname| to the url of the embedded target domain. See the unit tests
+// for what qualifies as target embedding.
 TargetEmbeddingType GetTargetEmbeddingType(
     const std::string& hostname,
     const std::vector<DomainInfo>& engaged_sites,
     const LookalikeTargetAllowlistChecker& in_target_allowlist,
+    std::string* safe_hostname);
+
+// Same as GetTargetEmbeddingType, but explicitly state whether or not a safety
+// tip is permitted via |safety_tips_allowed|. Safety tips are presently only
+// used for tail embedding (e.g. "evil-google.com"). This function may return
+// kSafetyTip preferentially to kInterstitial -- call with !safety_tips_allowed
+// if you're interested in determining if there's *also* an interstitial.
+TargetEmbeddingType SearchForEmbeddings(
+    const std::string& hostname,
+    const std::vector<DomainInfo>& engaged_sites,
+    const LookalikeTargetAllowlistChecker& in_target_allowlist,
+    bool safety_tips_allowed,
     std::string* safe_hostname);
 
 // Returns true if a navigation to an IDN should be blocked.

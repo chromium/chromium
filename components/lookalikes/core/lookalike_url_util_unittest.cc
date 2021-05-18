@@ -9,6 +9,18 @@
 #include "components/lookalikes/core/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+std::string TargetEmbeddingTypeToString(TargetEmbeddingType type) {
+  switch (type) {
+    case TargetEmbeddingType::kNone:
+      return "kNone";
+    case TargetEmbeddingType::kInterstitial:
+      return "kInterstitial";
+    case TargetEmbeddingType::kSafetyTip:
+      return "kSafetyTip";
+  }
+  NOTREACHED();
+}
+
 TEST(LookalikeUrlUtilTest, IsEditDistanceAtMostOne) {
   const struct TestCase {
     const wchar_t* domain;
@@ -278,12 +290,15 @@ TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
       {"google.com.google.com", "", TargetEmbeddingType::kNone},
       {"www.google.com.google.com", "", TargetEmbeddingType::kNone},
 
-      // Detect embeddings at the end of the domain, too.
-      {"www-google.com", "google.com", TargetEmbeddingType::kInterstitial},
+      // Detect embeddings at the end of the domain, too, but as a Safety Tip.
+      {"www-google.com", "google.com", TargetEmbeddingType::kSafetyTip},
       {"www-highengagement.com", "highengagement.com",
-       TargetEmbeddingType::kInterstitial},
+       TargetEmbeddingType::kSafetyTip},
       {"subdomain-highengagement.com", "subdomain.highengagement.com",
-       TargetEmbeddingType::kInterstitial},
+       TargetEmbeddingType::kSafetyTip},
+      // If the match duplicates the TLD, it's not quite tail-embedding.
+      {"google-com.com", "google.com", TargetEmbeddingType::kInterstitial},
+      // If there are multiple options, it should choose the more severe one.
       {"google-com.google-com.com", "google.com",
        TargetEmbeddingType::kInterstitial},
       {"subdomain.google-com.google-com.com", "google.com",
@@ -300,7 +315,7 @@ TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
       // works for domains on the list, but not for others.
       {"office.com-foo.com", "office.com", TargetEmbeddingType::kInterstitial},
       {"example-office.com", "", TargetEmbeddingType::kNone},
-      {"example-google.com", "google.com", TargetEmbeddingType::kInterstitial},
+      {"example-google.com", "google.com", TargetEmbeddingType::kSafetyTip},
   };
 
   for (auto& test_case : kTestCases) {
@@ -315,14 +330,14 @@ TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
           << (safe_hostname.empty() ? "it didn't trigger at all."
                                     : "triggered on " + safe_hostname);
       EXPECT_EQ(embedding_type, test_case.expected_type)
-          << test_case.hostname << " should trigger on "
+          << test_case.hostname << " should trigger "
+          << TargetEmbeddingTypeToString(test_case.expected_type) << " against "
           << test_case.expected_safe_host << " but it returned "
-          << (embedding_type == TargetEmbeddingType::kNone
-                  ? "kNone."
-                  : "something unexpected");
+          << TargetEmbeddingTypeToString(embedding_type);
     } else {
       EXPECT_EQ(embedding_type, TargetEmbeddingType::kNone)
-          << test_case.hostname << " unexpectedly triggered on "
+          << test_case.hostname << " unexpectedly triggered "
+          << TargetEmbeddingTypeToString(embedding_type) << " against "
           << safe_hostname;
     }
   }
