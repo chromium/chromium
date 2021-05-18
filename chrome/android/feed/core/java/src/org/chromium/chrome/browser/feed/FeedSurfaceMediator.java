@@ -1028,6 +1028,7 @@ public class FeedSurfaceMediator
     private ScrollState getScrollStateForAutoScrollToTop() {
         ScrollState state = new ScrollState();
         state.position = 1;
+        state.lastPosition = 5;
         return state;
     }
 

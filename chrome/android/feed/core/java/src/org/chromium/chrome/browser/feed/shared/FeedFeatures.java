@@ -42,7 +42,7 @@ public final class FeedFeatures {
     public static boolean isAutoScrollToTopEnabled() {
         CommandLine commandLine = CommandLine.getInstance();
         if (commandLine == null) return false;
-        return commandLine.hasSwitch("feed_auto_scroll_to_top");
+        return commandLine.hasSwitch("feed-screenshot-mode");
     }
 
     private static PrefService getPrefService() {

@@ -134,7 +134,7 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   bool IsEulaAccepted() override {
     return eula_notifier_.IsEulaAccepted() ||
            base::CommandLine::ForCurrentProcess()->HasSwitch(
-               "feedv2-accept-eula");
+               "feed-screenshot-mode");
   }
   bool IsOffline() override { return net::NetworkChangeNotifier::IsOffline(); }
   DisplayMetrics GetDisplayMetrics() override {
