@@ -58,23 +58,29 @@ class TestAddressProfileSaveManager : public AddressProfileSaveManager {
                                 PersonalDataManager* personal_data_manager);
 
   // Mocks the function that initiates the UI prompt for testing purposes.
-  MOCK_METHOD(void, OfferSavePrompt, (), (override));
+  MOCK_METHOD(void,
+              OfferSavePrompt,
+              (std::unique_ptr<ProfileImportProcess>),
+              (override));
 
   // Returns a copy of the last finished import process or 'absl::nullopt' if no
   // import process was finished.
   ProfileImportProcess* last_import();
 
-  void OnUserDecisionForTesting(UserDecision decision,
-                                AutofillProfile edited_profile) {
-    pending_import()->set_prompt_was_shown();
-    OnUserDecision(decision, edited_profile);
+  void OnUserDecisionForTesting(
+      std::unique_ptr<ProfileImportProcess> import_process,
+      UserDecision decision,
+      AutofillProfile edited_profile) {
+    import_process->set_prompt_was_shown();
+    OnUserDecision(std::move(import_process), decision, edited_profile);
   }
 
  protected:
-  void ClearPendingImport() override;
+  void ClearPendingImport(
+      std::unique_ptr<ProfileImportProcess> import_process) override;
   // Profile that is passed from the emulated UI respones in case the user
   // edited the import candidate.
-  absl::optional<ProfileImportProcess> last_import_;
+  std::unique_ptr<ProfileImportProcess> last_import_;
 };
 
 TestAddressProfileSaveManager::TestAddressProfileSaveManager(
@@ -82,15 +88,14 @@ TestAddressProfileSaveManager::TestAddressProfileSaveManager(
     PersonalDataManager* personal_data_manager)
     : AddressProfileSaveManager(client, personal_data_manager) {}
 
-void TestAddressProfileSaveManager::ClearPendingImport() {
-  if (pending_import()) {
-    last_import_ = base::OptionalFromPtr(pending_import());
-  }
-  AddressProfileSaveManager::ClearPendingImport();
+void TestAddressProfileSaveManager::ClearPendingImport(
+    std::unique_ptr<ProfileImportProcess> import_process) {
+  last_import_ = std::move(import_process);
+  AddressProfileSaveManager::ClearPendingImport(std::move(import_process));
 }
 
 ProfileImportProcess* TestAddressProfileSaveManager::last_import() {
-  return base::OptionalOrNullptr(last_import_);
+  return last_import_.get();
 }
 
 // Definition of a test scenario.
@@ -173,14 +178,16 @@ void AddressProfileSaveManagerTest::TestImportScenario(
 
   // Set up the expectation and response for if a prompt should be shown.
   if (test_scenario.is_prompt_expected) {
-    EXPECT_CALL(save_manager, OfferSavePrompt())
+    EXPECT_CALL(save_manager, OfferSavePrompt(testing::_))
         .Times(1)
-        .WillOnce(testing::InvokeWithoutArgs([&]() {
-          save_manager.OnUserDecisionForTesting(test_scenario.user_decision,
-                                                test_scenario.edited_profile);
-        }));
+        .WillOnce(testing::WithArgs<0>(
+            [&](std::unique_ptr<ProfileImportProcess> import_process) {
+              save_manager.OnUserDecisionForTesting(
+                  std::move(import_process), test_scenario.user_decision,
+                  test_scenario.edited_profile);
+            }));
   } else {
-    EXPECT_CALL(save_manager, OfferSavePrompt()).Times(0);
+    EXPECT_CALL(save_manager, OfferSavePrompt(testing::_)).Times(0);
   }
 
   // Set the existing profiles to the personal data manager.

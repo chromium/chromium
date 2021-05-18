@@ -43,29 +43,30 @@ class AddressProfileSaveManager {
  protected:
   // Initiates showing the prompt to the user.
   // This function is virtual to be mocked in tests.
-  virtual void OfferSavePrompt();
+  virtual void OfferSavePrompt(
+      std::unique_ptr<ProfileImportProcess> import_process);
 
   // Clears the pending import. This method can be overloaded to store the
   // history of import processes for testing purposes.
-  virtual void ClearPendingImport();
+  virtual void ClearPendingImport(
+      std::unique_ptr<ProfileImportProcess> import_process);
 
   // Called after the user interaction with the UI is done.
   void OnUserDecision(
+      std::unique_ptr<ProfileImportProcess> import_process,
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
       AutofillProfile edited_profile);
-
-  ProfileImportProcess* pending_import() {
-    return base::OptionalOrNullptr(pending_import_);
-  }
 
  private:
   // Called to initiate the actual storing of a profile.
   // Verifies that the profile was actually imported.
-  void FinalizeProfileImport();
+  void FinalizeProfileImport(
+      std::unique_ptr<ProfileImportProcess> import_process);
 
   // Called to make the final decision if the UI should be shown, or if the
   // import process should be continued silently.
-  void MaybeOfferSavePrompt();
+  void MaybeOfferSavePrompt(
+      std::unique_ptr<ProfileImportProcess> import_process);
 
   // A pointer to the autofill client. It is assumed that the client outlives
   // the instance of this class
@@ -74,9 +75,6 @@ class AddressProfileSaveManager {
   // The personal data manager, used to save and load personal data to/from the
   // web database.
   PersonalDataManager* const personal_data_manager_{nullptr};
-
-  // Data including the request id for the currently ongoing profile import.
-  absl::optional<ProfileImportProcess> pending_import_;
 
   base::WeakPtrFactory<AddressProfileSaveManager> weak_ptr_factory_{this};
 };

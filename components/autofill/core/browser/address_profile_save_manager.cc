@@ -35,29 +35,16 @@ void AddressProfileSaveManager::ImportProfileFromForm(
     return;
   }
 
-  // Otherwise, check if there is already an import process started.
-  if (pending_import_.has_value()) {
-    // If either the observed profile is the same or if the prompt has already
-    // been shown to the user, do nothing and return.
-    if (pending_import_->observed_profile() == observed_profile ||
-        pending_import_->prompt_shown()) {
-      return;
-    }
-  }
-
-  // Create a new pending import process. If there was already an import
-  // process, it is only overwritten if the UI request was not initialized yet.
-  pending_import_ = ProfileImportProcess(
+  auto process_ptr = std::make_unique<ProfileImportProcess>(
       observed_profile, personal_data_manager_->GetProfiles(), app_locale, url,
       personal_data_manager_);
 
-  MaybeOfferSavePrompt();
+  MaybeOfferSavePrompt(std::move(process_ptr));
 }
 
-void AddressProfileSaveManager::MaybeOfferSavePrompt() {
-  DCHECK(pending_import_.has_value());
-
-  switch (pending_import_->import_type()) {
+void AddressProfileSaveManager::MaybeOfferSavePrompt(
+    std::unique_ptr<ProfileImportProcess> import_process) {
+  switch (import_process->import_type()) {
     // If the import was a duplicate, only results in silent updates or if the
     // import of a new profile or a profile update is blocked, finish the
     // process without initiating a user prompt
@@ -66,9 +53,9 @@ void AddressProfileSaveManager::MaybeOfferSavePrompt() {
     case AutofillProfileImportType::kSuppressedNewProfile:
     case AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate:
     case AutofillProfileImportType::kSuppressedConfirmableMerge:
-      pending_import_->AcceptWithoutPrompt();
-      FinalizeProfileImport();
-      break;
+      import_process->AcceptWithoutPrompt();
+      FinalizeProfileImport(std::move(import_process));
+      return;
 
     // Both the import of a new profile, or a merge with an existing profile
     // that changes a settings-visible value of an existing profile triggers a
@@ -76,69 +63,73 @@ void AddressProfileSaveManager::MaybeOfferSavePrompt() {
     case AutofillProfileImportType::kNewProfile:
     case AutofillProfileImportType::kConfirmableMerge:
     case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
-      OfferSavePrompt();
-      break;
+      OfferSavePrompt(std::move(import_process));
+      return;
 
     case AutofillProfileImportType::kImportTypeUnspecified:
       NOTREACHED();
-      break;
+      return;
   }
 }
 
-void AddressProfileSaveManager::OfferSavePrompt() {
-  DCHECK(pending_import_.has_value());
+void AddressProfileSaveManager::OfferSavePrompt(
+    std::unique_ptr<ProfileImportProcess> import_process) {
   // The prompt should not have been shown yet.
-  DCHECK(!pending_import_->prompt_shown());
+  DCHECK(import_process->prompt_shown());
 
   // TODO(crbug.com/1175693): Pass the correct SaveAddressProfilePromptOptions
   // below.
 
-  // TODO(crbug.com/1175693): Check pending_import_->set_prompt_was_shown() is
+  // TODO(crbug.com/1175693): Check import_process->set_prompt_was_shown() is
   // always correct even in cases where it conflicts with
   // SaveAddressProfilePromptOptions
 
   // Initiate the prompt and mark it as shown.
-  pending_import_->set_prompt_was_shown();
+  // The import process that carries to state of the current import process is
+  // attached to the callback.
+  import_process->set_prompt_was_shown();
+  ProfileImportProcess* process_ptr = import_process.get();
   client_->ConfirmSaveAddressProfile(
-      pending_import_->import_candidate().value(),
-      base::OptionalOrNullptr(pending_import_->merge_candidate()),
+      process_ptr->import_candidate().value(),
+      base::OptionalOrNullptr(process_ptr->merge_candidate()),
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       base::BindOnce(&AddressProfileSaveManager::OnUserDecision,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(import_process)));
 }
 
 void AddressProfileSaveManager::OnUserDecision(
+    std::unique_ptr<ProfileImportProcess> import_process,
     AutofillClient::SaveAddressProfileOfferUserDecision decision,
     AutofillProfile edited_profile) {
-  DCHECK(pending_import_.has_value());
-  DCHECK(pending_import_->prompt_shown());
+  DCHECK(import_process->prompt_shown());
 
-  pending_import_->SetUserDecision(decision, edited_profile);
-  FinalizeProfileImport();
+  import_process->SetUserDecision(decision, edited_profile);
+  FinalizeProfileImport(std::move(import_process));
 }
 
-void AddressProfileSaveManager::FinalizeProfileImport() {
-  DCHECK(pending_import_.has_value());
+void AddressProfileSaveManager::FinalizeProfileImport(
+    std::unique_ptr<ProfileImportProcess> import_process) {
   DCHECK(personal_data_manager_);
 
   // If the profiles changed at all, reset the full list of AutofillProfiles in
   // the personal data manager.
-  if (pending_import_->ProfilesChanged()) {
+  if (import_process->ProfilesChanged()) {
     std::vector<AutofillProfile> resulting_profiles =
-        pending_import_->GetResultingProfiles();
+        import_process->GetResultingProfiles();
     personal_data_manager_->SetProfiles(&resulting_profiles);
   }
 
-  AutofillProfileImportType import_type = pending_import()->import_type();
+  AutofillProfileImportType import_type = import_process->import_type();
 
   bool accepted_or_edited =
-      pending_import()->user_decision() ==
+      import_process->user_decision() ==
           AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted ||
-      pending_import()->user_decision() ==
+      import_process->user_decision() ==
           AutofillClient::SaveAddressProfileOfferUserDecision::kEdited;
 
   bool declined =
-      pending_import()->user_decision() ==
+      import_process->user_decision() ==
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined;
 
   // If the import of a new profile was declined, add a strike for this source
@@ -146,30 +137,29 @@ void AddressProfileSaveManager::FinalizeProfileImport() {
   if (import_type == AutofillProfileImportType::kNewProfile) {
     if (declined) {
       personal_data_manager_->AddStrikeToBlockNewProfileImportForDomain(
-          pending_import()->form_source_url());
+          import_process->form_source_url());
     } else if (accepted_or_edited) {
       personal_data_manager_->RemoveStrikesToBlockNewProfileImportForDomain(
-          pending_import()->form_source_url());
+          import_process->form_source_url());
     }
   } else if (import_type == AutofillProfileImportType::kConfirmableMerge ||
              import_type ==
                  AutofillProfileImportType::kConfirmableMergeAndSilentUpdate) {
-    DCHECK(pending_import_->merge_candidate().has_value());
+    DCHECK(import_process->merge_candidate().has_value());
     if (declined) {
       personal_data_manager_->AddStrikeToBlockProfileUpdate(
-          pending_import()->merge_candidate()->guid());
+          import_process->merge_candidate()->guid());
     } else if (accepted_or_edited) {
       personal_data_manager_->RemoveStrikesToBlockProfileUpdate(
-          pending_import()->merge_candidate()->guid());
+          import_process->merge_candidate()->guid());
     }
   }
 
-  pending_import_->CollectMetrics();
-  ClearPendingImport();
+  import_process->CollectMetrics();
+  ClearPendingImport(std::move(import_process));
 }
 
-void AddressProfileSaveManager::ClearPendingImport() {
-  pending_import_.reset();
-}
+void AddressProfileSaveManager::ClearPendingImport(
+    std::unique_ptr<ProfileImportProcess> import_process) {}
 
 }  // namespace autofill
