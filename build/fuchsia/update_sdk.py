@@ -40,7 +40,8 @@ def GetOverrideCloudStorageBucket():
 
 def GetSdkHash(bucket):
   hashes = GetSdkHashList()
-  return max(hashes, key=lambda sdk:GetSdkGeneration(bucket, sdk)) if hashes else None
+  return (max(hashes, key=lambda sdk: GetSdkGeneration(bucket, sdk))
+          if hashes else None)
 
 
 def GetSdkHashList():
@@ -65,7 +66,7 @@ def GetSdkGeneration(bucket, hash):
       sdk_path
   ]
   logging.debug("Running '%s'", " ".join(cmd))
-  sdk_details = subprocess.check_output(cmd)
+  sdk_details = subprocess.check_output(cmd).decode('utf-8')
   m = re.search('Generation:\s*(\d*)', sdk_details)
   if not m:
     raise RuntimeError('Could not find SDK generation for {sdk_path}'.format(
