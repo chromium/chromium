@@ -388,6 +388,8 @@
       status: "experimental",
     },
     {
+      // blink::features::kComputePressure is a kill switch for the API. If the
+      // feature is disabled, origin trial tokens are ignored.
       name: "ComputePressure",
       origin_trial_feature_name: "ComputePressure",
       status: "experimental",

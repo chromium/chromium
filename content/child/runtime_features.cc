@@ -354,6 +354,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"COLRV1Fonts", blink::features::kCOLRV1Fonts},
           {"CSSContainerQueries", blink::features::kCSSContainerQueries},
           {"CompositeAfterPaint", blink::features::kCompositeAfterPaint},
+          {"ComputePressure", blink::features::kComputePressure,
+           kSetOnlyIfOverridden},
           {"CSSColorSchemeUARendering", features::kCSSColorSchemeUARendering},
           {"DeclarativeShadowDOM", blink::features::kDeclarativeShadowDOM},
           {"DocumentTransition", blink::features::kDocumentTransition},

@@ -440,6 +440,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
       !base::FeatureList::IsEnabled(features::kAppCache)) {
     return false;
   }
+  if (trial_name == "ComputePressure" &&
+      !base::FeatureList::IsEnabled(features::kComputePressure)) {
+    return false;
+  }
   if (trial_name == "FledgeInterestGroupAPI" &&
       !base::FeatureList::IsEnabled(features::kFledgeInterestGroups)) {
     return false;

@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/compute_pressure/compute_pressure.mojom.h"
 
 namespace content {
@@ -67,6 +68,11 @@ void ComputePressureManager::BindReceiver(
     mojo::PendingReceiver<blink::mojom::ComputePressureHost> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(frame_id);
+
+  if (!base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
+    mojo::ReportBadMessage("Compute Pressure not enabled");
+    return;
+  }
 
   if (!network::IsOriginPotentiallyTrustworthy(origin)) {
     mojo::ReportBadMessage("Compute Pressure access from an insecure origin");
