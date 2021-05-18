@@ -86,6 +86,7 @@ constexpr const char kUserActionActivateRemoraRequisition[] =
     "activateRemoraRequisition";
 constexpr const char kUserActionEditDeviceRequisition[] =
     "editDeviceRequisition";
+constexpr const char kUserActionStartOsInstall[] = "startOsInstall";
 
 struct WelcomeScreenA11yUserAction {
   const char* name_;
@@ -169,6 +170,8 @@ std::string WelcomeScreen::GetResultString(Result result) {
       return "SetupDemo";
     case Result::ENABLE_DEBUGGING:
       return "EnableDebugging";
+    case Result::START_OS_INSTALL:
+      return "StartOsInstall";
   }
 }
 
@@ -411,6 +414,11 @@ void WelcomeScreen::OnUserAction(const std::string& action_id) {
     return;
   }
 
+  if (action_id == kUserActionStartOsInstall) {
+    OnStartOsInstall();
+    return;
+  }
+
   if (IsA11yUserAction(action_id)) {
     RecordA11yUserAction(action_id);
     if (action_id == kUserActionEnableSpokenFeedback) {
@@ -518,6 +526,11 @@ void WelcomeScreen::OnSetupDemoMode() {
 void WelcomeScreen::OnEnableDebugging() {
   demo_mode_detector_.reset();
   exit_callback_.Run(Result::ENABLE_DEBUGGING);
+}
+
+void WelcomeScreen::OnStartOsInstall() {
+  demo_mode_detector_.reset();
+  exit_callback_.Run(Result::START_OS_INSTALL);
 }
 
 void WelcomeScreen::OnLanguageChangedCallback(

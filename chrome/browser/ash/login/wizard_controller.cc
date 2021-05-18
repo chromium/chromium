@@ -1114,6 +1114,10 @@ void WizardController::OnWelcomeScreenExit(WelcomeScreen::Result result) {
     case WelcomeScreen::Result::ENABLE_DEBUGGING:
       ShowEnableDebuggingScreen();
       return;
+    case WelcomeScreen::Result::START_OS_INSTALL:
+      // TODO(b/182386612): show OS installation screen once it's implemented.
+      NOTIMPLEMENTED();
+      return;
     case WelcomeScreen::Result::NEXT:
       ShowNetworkScreen();
       return;

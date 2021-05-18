@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/login/localized_values_builder.h"
@@ -146,6 +148,7 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
   }
 
   builder->Add("welcomeScreenGetStarted", IDS_LOGIN_GET_STARTED);
+  builder->Add("welcomeScreenOsInstall", IDS_OOBE_WELCOME_START_OS_INSTALL);
 
   // MD-OOBE (oobe-welcome-element)
   builder->Add("debuggingFeaturesLink", IDS_WELCOME_ENABLE_DEV_FEATURES_LINK);
@@ -291,6 +294,10 @@ void WelcomeScreenHandler::GetAdditionalParameters(
   dict->Set("timezoneList", GetTimezoneList());
   dict->Set("demoModeCountryList",
             base::Value::ToUniquePtrValue(DemoSession::GetCountryList()));
+
+  // This switch is set by the session manager if the OS install
+  // service is enabled and the OS is running from a USB installer.
+  dict->SetKey("osInstallEnabled", base::Value(switches::IsOsInstallAllowed()));
 }
 
 void WelcomeScreenHandler::Initialize() {

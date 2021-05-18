@@ -39,6 +39,10 @@ const char kAggressiveCacheDiscardThreshold[] = "aggressive-cache-discard";
 const char kAllowFailedPolicyFetchForTest[] =
     "allow-failed-policy-fetch-for-test";
 
+// When this flag is set, the OS installation UI can be accessed. This
+// allows the user to install from USB to disk.
+const char kAllowOsInstall[] = "allow-os-install";
+
 // Allows remote attestation (RA) in dev mode for testing purpose. Usually RA
 // is disabled in dev mode because it will always fail. However, there are cases
 // in testing where we do want to go through the permission flow even in dev
@@ -740,6 +744,10 @@ bool IsOOBEChromeVoxHintEnabledForDevMode() {
 bool IsDeviceRequisitionConfigurable() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kEnableRequisitionEdits);
+}
+
+bool IsOsInstallAllowed() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(kAllowOsInstall);
 }
 
 }  // namespace switches

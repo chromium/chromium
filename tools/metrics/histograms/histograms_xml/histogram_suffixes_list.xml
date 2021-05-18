@@ -12408,6 +12408,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Connect.Next" label=""/>
   <suffix name="Connect.SetupDemo" label=""/>
   <suffix name="Connect.StartDemo" label=""/>
+  <suffix name="Connect.StartOsInstall" label=""/>
   <suffix name="Debugging.Next" label=""/>
   <suffix name="Demo-preferences.Canceled" label=""/>
   <suffix name="Demo-preferences.Completed" label=""/>

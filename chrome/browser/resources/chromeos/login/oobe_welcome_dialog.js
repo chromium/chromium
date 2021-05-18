@@ -330,6 +330,15 @@
         },
         readOnly: true,
       },
+
+      osInstallEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('osInstallEnabled') &&
+              loadTimeData.getBoolean('osInstallEnabled');
+        },
+        readOnly: true,
+      },
     },
 
     onBeforeShow() {
@@ -402,6 +411,10 @@
       this.focusedElement_ =
           this.isNewLayout_ ? 'getStarted' : 'welcomeNextButton';
       this.fire('next-button-clicked');
+    },
+
+    onOsInstallClicked_() {
+      this.fire('os-install-clicked');
     },
 
     onDebuggingLinkClicked_() {
