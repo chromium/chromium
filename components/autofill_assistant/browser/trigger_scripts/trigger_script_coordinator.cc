@@ -119,7 +119,8 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
       initial_trigger_condition_evaluations_;
 
   Metrics::RecordTriggerScriptShownToUser(
-      ukm_recorder_, ukm_source_id_, UNSPECIFIED_TRIGGER_UI_TYPE,
+      ukm_recorder_, ukm_source_id_,
+      TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE,
       Metrics::TriggerScriptShownToUser::RUNNING);
   ui_delegate_->Attach(this);
   StartCheckingTriggerConditions();
@@ -170,7 +171,8 @@ void TriggerScriptCoordinator::OnOnboardingFinished(bool onboardingShown,
   // at all relevant places
   waiting_for_onboarding_ = false;
   if (visible_trigger_script_ != -1) {
-    TriggerUIType trigger_ui_type = GetTriggerUiTypeForVisibleScript();
+    TriggerScriptProto::TriggerUIType trigger_ui_type =
+        GetTriggerUiTypeForVisibleScript();
     if (onboardingShown) {
       switch (result) {
         case OnboardingResult::DISMISSED:
@@ -262,7 +264,8 @@ void TriggerScriptCoordinator::OnTriggerScriptShown(bool success) {
 
 void TriggerScriptCoordinator::Stop(Metrics::TriggerScriptFinishedState state) {
   VLOG(2) << "Stopping with status " << state;
-  TriggerUIType trigger_ui_type = GetTriggerUiTypeForVisibleScript();
+  TriggerScriptProto::TriggerUIType trigger_ui_type =
+      GetTriggerUiTypeForVisibleScript();
   HideTriggerScript();
   StopCheckingTriggerConditions();
   ui_delegate_->Detach();
@@ -533,7 +536,7 @@ void TriggerScriptCoordinator::RunOutOfScheduleTriggerConditionCheck() {
 }
 
 void TriggerScriptCoordinator::RunCallback(
-    TriggerUIType trigger_ui_type,
+    TriggerScriptProto::TriggerUIType trigger_ui_type,
     Metrics::TriggerScriptFinishedState state,
     const absl::optional<TriggerScriptProto>& trigger_script) {
   if (!finished_state_recorded_) {
@@ -545,13 +548,13 @@ void TriggerScriptCoordinator::RunCallback(
   std::move(callback_).Run(state, std::move(trigger_context_), trigger_script);
 }
 
-TriggerUIType TriggerScriptCoordinator::GetTriggerUiTypeForVisibleScript()
-    const {
+TriggerScriptProto::TriggerUIType
+TriggerScriptCoordinator::GetTriggerUiTypeForVisibleScript() const {
   if (visible_trigger_script_ >= 0 &&
       static_cast<size_t>(visible_trigger_script_) < trigger_scripts_.size()) {
     return trigger_scripts_[visible_trigger_script_]->trigger_ui_type();
   }
-  return UNSPECIFIED_TRIGGER_UI_TYPE;
+  return TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE;
 }
 
 GURL TriggerScriptCoordinator::GetCurrentURL() const {

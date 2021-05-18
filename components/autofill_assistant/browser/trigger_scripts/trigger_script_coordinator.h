@@ -145,7 +145,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   // previous results to reuse.
   void RunOutOfScheduleTriggerConditionCheck();
 
-  void RunCallback(TriggerUIType trigger_ui_type,
+  void RunCallback(TriggerScriptProto::TriggerUIType trigger_ui_type,
                    Metrics::TriggerScriptFinishedState state,
                    const absl::optional<TriggerScriptProto>& trigger_script);
 
@@ -153,7 +153,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   //
   // When recording a hide or stop action, be sure to capture the type before
   // hiding the script.
-  TriggerUIType GetTriggerUiTypeForVisibleScript() const;
+  TriggerScriptProto::TriggerUIType GetTriggerUiTypeForVisibleScript() const;
 
   // Delegate used to access settings and show the onboarding.
   StarterPlatformDelegate* starter_delegate_ = nullptr;

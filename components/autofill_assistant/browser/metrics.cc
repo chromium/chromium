@@ -197,10 +197,11 @@ void Metrics::RecordTriggerScriptStarted(ukm::UkmRecorder* ukm_recorder,
 }
 
 // static
-void Metrics::RecordTriggerScriptFinished(ukm::UkmRecorder* ukm_recorder,
-                                          ukm::SourceId source_id,
-                                          TriggerUIType trigger_ui_type,
-                                          TriggerScriptFinishedState event) {
+void Metrics::RecordTriggerScriptFinished(
+    ukm::UkmRecorder* ukm_recorder,
+    ukm::SourceId source_id,
+    TriggerScriptProto::TriggerUIType trigger_ui_type,
+    TriggerScriptFinishedState event) {
   ukm::builders::AutofillAssistant_LiteScriptFinished(source_id)
       .SetTriggerUIType(static_cast<int64_t>(trigger_ui_type))
       .SetLiteScriptFinished(static_cast<int64_t>(event))
@@ -208,10 +209,11 @@ void Metrics::RecordTriggerScriptFinished(ukm::UkmRecorder* ukm_recorder,
 }
 
 // static
-void Metrics::RecordTriggerScriptShownToUser(ukm::UkmRecorder* ukm_recorder,
-                                             ukm::SourceId source_id,
-                                             TriggerUIType trigger_ui_type,
-                                             TriggerScriptShownToUser event) {
+void Metrics::RecordTriggerScriptShownToUser(
+    ukm::UkmRecorder* ukm_recorder,
+    ukm::SourceId source_id,
+    TriggerScriptProto::TriggerUIType trigger_ui_type,
+    TriggerScriptShownToUser event) {
   ukm::builders::AutofillAssistant_LiteScriptShownToUser(source_id)
       .SetTriggerUIType(static_cast<int64_t>(trigger_ui_type))
       .SetLiteScriptShownToUser(static_cast<int64_t>(event))
@@ -219,10 +221,11 @@ void Metrics::RecordTriggerScriptShownToUser(ukm::UkmRecorder* ukm_recorder,
 }
 
 // static
-void Metrics::RecordTriggerScriptOnboarding(ukm::UkmRecorder* ukm_recorder,
-                                            ukm::SourceId source_id,
-                                            TriggerUIType trigger_ui_type,
-                                            TriggerScriptOnboarding event) {
+void Metrics::RecordTriggerScriptOnboarding(
+    ukm::UkmRecorder* ukm_recorder,
+    ukm::SourceId source_id,
+    TriggerScriptProto::TriggerUIType trigger_ui_type,
+    TriggerScriptOnboarding event) {
   ukm::builders::AutofillAssistant_LiteScriptOnboarding(source_id)
       .SetTriggerUIType(static_cast<int64_t>(trigger_ui_type))
       .SetLiteScriptOnboarding(static_cast<int64_t>(event))

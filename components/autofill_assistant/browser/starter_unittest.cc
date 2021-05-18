@@ -152,7 +152,8 @@ class StarterTest : public content::RenderViewHostTestHarness {
   // trigger script without any trigger conditions. As such, it will be shown
   // immediately upon startup.
   std::string CreateTriggerScriptResponseForTest(
-      TriggerUIType trigger_ui_type = UNSPECIFIED_TRIGGER_UI_TYPE) {
+      TriggerScriptProto::TriggerUIType trigger_ui_type =
+          TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE) {
     GetTriggerScriptsResponseProto get_trigger_scripts_response;
     get_trigger_scripts_response.add_trigger_scripts()->set_trigger_ui_type(
         trigger_ui_type);
@@ -685,19 +686,20 @@ TEST_F(StarterTest, RpcTriggerScriptSucceeds) {
             EXPECT_THAT(request.url(), Eq(GURL(kExampleDeeplink)));
             EXPECT_FALSE(request.client_context().is_in_chrome_triggered());
             std::move(callback).Run(
-                net::HTTP_OK,
-                CreateTriggerScriptResponseForTest(CART_FIRST_TIME_USER));
+                net::HTTP_OK, CreateTriggerScriptResponseForTest(
+                                  TriggerScriptProto::CART_FIRST_TIME_USER));
           }));
   GetTriggerScriptsResponseProto get_trigger_scripts_response;
   get_trigger_scripts_response.ParseFromString(
-      CreateTriggerScriptResponseForTest(CART_FIRST_TIME_USER));
+      CreateTriggerScriptResponseForTest(
+          TriggerScriptProto::CART_FIRST_TIME_USER));
   EXPECT_CALL(
       mock_start_regular_script_callback_,
       Run(GURL(kExampleDeeplink),
           Pointee(AllOf(Property(&TriggerContext::GetOnboardingShown, true),
                         Property(&TriggerContext::GetInChromeTriggered, false),
                         Property(&TriggerContext::GetTriggerUIType,
-                                 CART_FIRST_TIME_USER))),
+                                 TriggerScriptProto::CART_FIRST_TIME_USER))),
           Optional(get_trigger_scripts_response.trigger_scripts(0))));
 
   starter_->Start(std::make_unique<TriggerContext>(
@@ -1035,8 +1037,8 @@ TEST_F(StarterTest, ImplicitStartupOnSupportedDomain) {
                         Eq(GURL("https://www.some-website.com/cart")));
             EXPECT_TRUE(request.client_context().is_in_chrome_triggered());
             std::move(callback).Run(
-                net::HTTP_OK,
-                CreateTriggerScriptResponseForTest(CART_RETURNING_USER));
+                net::HTTP_OK, CreateTriggerScriptResponseForTest(
+                                  TriggerScriptProto::CART_RETURNING_USER));
           }));
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript)
       .WillOnce([&]() {
@@ -1050,7 +1052,7 @@ TEST_F(StarterTest, ImplicitStartupOnSupportedDomain) {
           Pointee(AllOf(Property(&TriggerContext::GetOnboardingShown, false),
                         Property(&TriggerContext::GetInChromeTriggered, true),
                         Property(&TriggerContext::GetTriggerUIType,
-                                 CART_RETURNING_USER))),
+                                 TriggerScriptProto::CART_RETURNING_USER))),
           testing::Ne(absl::nullopt)));
 
   // Implicit startup by navigating to an autofill-assistant-enabled site.

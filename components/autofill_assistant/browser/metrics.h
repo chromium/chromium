@@ -381,18 +381,21 @@ class Metrics {
                                          StartupUtil::StartupMode startup_mode,
                                          bool feature_module_installed,
                                          bool is_first_time_user);
-  static void RecordTriggerScriptFinished(ukm::UkmRecorder* ukm_recorder,
-                                          ukm::SourceId source_id,
-                                          TriggerUIType trigger_ui_type,
-                                          TriggerScriptFinishedState event);
-  static void RecordTriggerScriptShownToUser(ukm::UkmRecorder* ukm_recorder,
-                                             ukm::SourceId source_id,
-                                             TriggerUIType trigger_ui_type,
-                                             TriggerScriptShownToUser event);
-  static void RecordTriggerScriptOnboarding(ukm::UkmRecorder* ukm_recorder,
-                                            ukm::SourceId source_id,
-                                            TriggerUIType trigger_ui_type,
-                                            TriggerScriptOnboarding event);
+  static void RecordTriggerScriptFinished(
+      ukm::UkmRecorder* ukm_recorder,
+      ukm::SourceId source_id,
+      TriggerScriptProto::TriggerUIType trigger_ui_type,
+      TriggerScriptFinishedState event);
+  static void RecordTriggerScriptShownToUser(
+      ukm::UkmRecorder* ukm_recorder,
+      ukm::SourceId source_id,
+      TriggerScriptProto::TriggerUIType trigger_ui_type,
+      TriggerScriptShownToUser event);
+  static void RecordTriggerScriptOnboarding(
+      ukm::UkmRecorder* ukm_recorder,
+      ukm::SourceId source_id,
+      TriggerScriptProto::TriggerUIType trigger_ui_type,
+      TriggerScriptOnboarding event);
   static void RecordInChromeTriggerAction(ukm::UkmRecorder* ukm_recorder,
                                           ukm::SourceId source_id,
                                           InChromeTriggerAction event);

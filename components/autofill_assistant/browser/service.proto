@@ -61,7 +61,7 @@ message ClientContextProto {
 
   // The type of trigger script that was shown and accepted at the beginning of
   // this flow, if any.
-  optional TriggerUIType trigger_ui_type = 18;
+  optional TriggerScriptProto.TriggerUIType trigger_ui_type = 18;
 
   message DeviceContextProto {
     message VersionProto {
@@ -601,6 +601,27 @@ message TriggerScriptProto {
     ACCEPT = 5;
   }
 
+  // Set of TriggerUIType to group UKM metrics by.
+  //
+  // The set of available values is defined by AutofillAssistantTriggerUIType in
+  // tools/metrics/histograms/enums.xml
+  enum TriggerUIType {
+    UNSPECIFIED_TRIGGER_UI_TYPE = 0;
+
+    // Explicit trigger requests by some external trigger surface, i.e., a link
+    // or button.
+    CART_FIRST_TIME_USER = 1;
+    CART_RETURNING_USER = 2;
+    CHECKOUT_FIRST_TIME_USER = 3;
+    CHECKOUT_RETURNING_USER = 4;
+
+    // Implicit trigger requests started by Chrome itself.
+    IN_CHROME_CART_FIRST_TIME_USER = 5;
+    IN_CHROME_CART_RETURNING_USER = 6;
+    IN_CHROME_CHECKOUT_FIRST_TIME_USER = 7;
+    IN_CHROME_CHECKOUT_RETURNING_USER = 8;
+  }
+
   // The |trigger_condition| must be true for the script to trigger.
   optional TriggerScriptConditionProto trigger_condition = 1;
 
@@ -612,30 +633,9 @@ message TriggerScriptProto {
       [default = CANCEL_SESSION];
 
   // An identifier for the type of trigger UI this trigger represents, for UKM.
-  optional TriggerUIType trigger_ui_type = 5;
+  optional TriggerUIType trigger_ui_type = 7;
 
-  reserved 2, 6;
-}
-
-// Set of TriggerUIType to group UKM metrics by.
-//
-// The set of available values is defined by AutofillAssistantTriggerUIType in
-// tools/metrics/histograms/enums.xml
-enum TriggerUIType {
-  UNSPECIFIED_TRIGGER_UI_TYPE = 0;
-
-  // Explicit trigger requests by some external trigger surface, i.e., a link
-  // or button.
-  CART_FIRST_TIME_USER = 1;
-  CART_RETURNING_USER = 2;
-  CHECKOUT_FIRST_TIME_USER = 3;
-  CHECKOUT_RETURNING_USER = 4;
-
-  // Implicit trigger requests started by Chrome itself.
-  IN_CHROME_CART_FIRST_TIME_USER = 5;
-  IN_CHROME_CART_RETURNING_USER = 6;
-  IN_CHROME_CHECKOUT_FIRST_TIME_USER = 7;
-  IN_CHROME_CHECKOUT_RETURNING_USER = 8;
+  reserved 2, 5, 6;
 }
 
 message TriggerScriptConditionProto {

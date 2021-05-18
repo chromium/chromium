@@ -546,7 +546,8 @@ void Starter::StartTriggerScript() {
           script_parameters.GetBase64TriggerScriptsResponseProto().value());
       if (!service_request_sender) {
         Metrics::RecordTriggerScriptFinished(
-            ukm_recorder_, next_ukm_source_id_, UNSPECIFIED_TRIGGER_UI_TYPE,
+            ukm_recorder_, next_ukm_source_id_,
+            TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE,
             Metrics::TriggerScriptFinishedState::BASE64_DECODING_ERROR);
         OnTriggerScriptFinished(
             Metrics::TriggerScriptFinishedState::BASE64_DECODING_ERROR,

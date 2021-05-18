@@ -76,7 +76,7 @@ TriggerContext::TriggerContext(std::vector<const TriggerContext*> contexts)
     if (initial_url_.empty()) {
       initial_url_ = context->GetInitialUrl();
     }
-    if (trigger_ui_type_ == UNSPECIFIED_TRIGGER_UI_TYPE) {
+    if (trigger_ui_type_ == TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE) {
       trigger_ui_type_ = context->GetTriggerUIType();
     }
   }
@@ -124,11 +124,12 @@ bool TriggerContext::GetInChromeTriggered() const {
   return is_in_chrome_triggered_;
 }
 
-TriggerUIType TriggerContext::GetTriggerUIType() const {
+TriggerScriptProto::TriggerUIType TriggerContext::GetTriggerUIType() const {
   return trigger_ui_type_;
 }
 
-void TriggerContext::SetTriggerUIType(TriggerUIType trigger_ui_type) {
+void TriggerContext::SetTriggerUIType(
+    TriggerScriptProto::TriggerUIType trigger_ui_type) {
   trigger_ui_type_ = trigger_ui_type;
 }
 
