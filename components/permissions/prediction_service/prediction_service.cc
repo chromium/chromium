@@ -254,9 +254,9 @@ void PredictionService::OnURLLoaderComplete(
           CreatePredictionsResponse(loader, response_body.get());
 
       if (request.second) {
+        bool lookup_success = prediction_response != nullptr;
         std::move(request.second)
-            .Run(prediction_response != nullptr /* Lookup successful */,
-                 false /* Response from cache */,
+            .Run(lookup_success, false /* Response from cache */,
                  std::move(prediction_response));
       }
 
