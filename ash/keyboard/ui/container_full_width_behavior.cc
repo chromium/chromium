@@ -19,8 +19,8 @@ constexpr auto kHideAnimationDuration = base::TimeDelta::FromMilliseconds(100);
 
 // The height of the area from the bottom of the keyboard where the user can
 // swipe up to access the shelf. Manually calculated to be slightly below
-// the virtual keyboard's space bar.
-constexpr int kSwipeUpGestureAreaHeight = 25;
+// the virtual keyboard's space bar to avoid accidental trigger.
+constexpr int kSwipeUpGestureAreaHeight = 8;
 
 ContainerFullWidthBehavior::ContainerFullWidthBehavior(Delegate* delegate)
     : ContainerBehavior(delegate) {}
