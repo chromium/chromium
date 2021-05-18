@@ -4896,30 +4896,13 @@ String AXNodeObject::NativeTextAlternative(
 
       if (name_sources) {
         name_sources->push_back(NameSource(*found_text_alternative));
-        name_sources->back().type = name_from;
-        name_sources->back().native_source = kAXTextFromNativeHTMLTitleElement;
-      }
-
-      Element* title_element = document->TitleElement();
-      AXObject* title_ax_object = AXObjectCache().GetOrCreate(
-          title_element, AXObjectCache().Get(document));
-      if (title_ax_object) {
-        if (related_objects) {
-          local_related_objects.push_back(
-              MakeGarbageCollected<NameSourceRelatedObject>(title_ax_object,
-                                                            text_alternative));
-          *related_objects = local_related_objects;
-          local_related_objects.clear();
-        }
-
-        if (name_sources) {
-          NameSource& source = name_sources->back();
-          source.related_objects = *related_objects;
-          source.text = text_alternative;
-          *found_text_alternative = true;
-        } else {
-          return text_alternative;
-        }
+        NameSource& source = name_sources->back();
+        source.type = name_from;
+        source.native_source = kAXTextFromNativeHTMLTitleElement;
+        source.text = text_alternative;
+        *found_text_alternative = true;
+      } else {
+        return text_alternative;
       }
     }
   }

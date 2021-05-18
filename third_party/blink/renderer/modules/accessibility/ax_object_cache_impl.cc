@@ -359,6 +359,11 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
       return !select->UsesMenuList();
   }
 
+  // An HTML <title> does not require an AXObject: the document's name is
+  // retrieved directly via the inner text.
+  if (IsA<HTMLTitleElement>(node))
+    return node->IsSVGElement();
+
   return true;
 }
 
@@ -449,6 +454,11 @@ bool IsNodeRelevantForAccessibility(const Node* node,
     return true;
   }
 
+  // An HTML <title> does not require an AXObject: the document's name is
+  // retrieved directly via the inner text.
+  if (IsA<HTMLTitleElement>(node))
+    return node->IsSVGElement();
+
   // The node is either hidden or display locked:
   // Do not consider <head>/<style>/<script> relevant in these cases.
   if (IsA<HTMLHeadElement>(node))
@@ -472,9 +482,10 @@ bool IsNodeRelevantForAccessibility(const Node* node,
   // <style> element.
   if (parent_ax_known)
     return true;  // No need to check inside if the parent exists.
-  // Objects inside <head> are irrelevant, except <title> (collects title text).
+
+  // Objects inside <head> are irrelevant.
   if (Traversal<HTMLHeadElement>::FirstAncestor(*node))
-    return IsA<HTMLTitleElement>(node);
+    return false;
   // Objects inside a <style> are irrelevant.
   if (Traversal<HTMLStyleElement>::FirstAncestor(*node))
     return false;
