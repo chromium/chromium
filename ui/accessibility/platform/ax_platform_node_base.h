@@ -30,11 +30,11 @@ struct AXNodeData;
 
 // TODO(nektar): Move this struct over to AXNode so that it can be accessed by
 // AXPosition.
-struct AX_EXPORT AXHypertext {
-  AXHypertext();
-  ~AXHypertext();
-  AXHypertext(const AXHypertext& other);
-  AXHypertext& operator=(const AXHypertext& other);
+struct AX_EXPORT AXLegacyHypertext {
+  AXLegacyHypertext();
+  ~AXLegacyHypertext();
+  AXLegacyHypertext(const AXLegacyHypertext& other);
+  AXLegacyHypertext& operator=(const AXLegacyHypertext& other);
 
   // A flag that should be set if the hypertext information in this struct is
   // out-of-date and needs to be updated. This flag should always be set upon
@@ -506,13 +506,14 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   int GetHypertextOffsetFromEndpoint(AXPlatformNodeBase* endpoint_object,
                                      int endpoint_offset);
 
-  bool IsSameHypertextCharacter(const AXHypertext& old_hypertext,
+  bool IsSameHypertextCharacter(const AXLegacyHypertext& old_hypertext,
                                 size_t old_char_index,
                                 size_t new_char_index);
-  void ComputeHypertextRemovedAndInserted(const AXHypertext& old_hypertext,
-                                          size_t* start,
-                                          size_t* old_len,
-                                          size_t* new_len);
+  void ComputeHypertextRemovedAndInserted(
+      const AXLegacyHypertext& old_hypertext,
+      size_t* start,
+      size_t* old_len,
+      size_t* new_len);
 
   std::string GetInvalidValue() const;
 
@@ -521,7 +522,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   // selectable children that this object could potentially contain.
   int GetMaxSelectableItems() const;
 
-  mutable AXHypertext hypertext_;
+  mutable AXLegacyHypertext hypertext_;
 
  private:
   // Returns true if the index represents a text character.

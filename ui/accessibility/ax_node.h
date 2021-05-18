@@ -17,6 +17,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/ax_hypertext.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 
@@ -26,7 +27,7 @@ class AXTableInfo;
 struct AXLanguageInfo;
 struct AXTreeData;
 
-// One node in an AXTree.
+// This class is used to represent a node in an accessibility tree (`AXTree`).
 class AX_EXPORT AXNode final {
  public:
   // Replacement character used to represent an embedded (or, additionally for
@@ -347,6 +348,14 @@ class AX_EXPORT AXNode final {
   // TODO(nektar): Consider changing the return value to std::string.
   std::u16string GetHypertext() const;
 
+  // Temporary method that marks `hypertext_` dirty. This will eventually be
+  // handled by the AX tree in a followup patch.
+  void SetNeedsToUpdateHypertext();
+  // Temporary accessor methods until hypertext is fully migrated to this class.
+  // Hypertext won't eventually need to be accessed outside this class.
+  const std::map<int, int>& GetHypertextOffsetToHyperlinkChildIndex() const;
+  const AXHypertext& GetOldHypertext() const;
+
   // Returns the text that is found inside this node and all its descendants;
   // including text found in embedded objects.
   //
@@ -568,7 +577,7 @@ class AX_EXPORT AXNode final {
   void IdVectorToNodeVector(const std::vector<AXNodeID>& ids,
                             std::vector<AXNode*>* nodes) const;
 
-  int UpdateUnignoredCachedValuesRecursive(int startIndex);
+  int UpdateUnignoredCachedValuesRecursive(int start_index);
   AXNode* ComputeLastUnignoredChildRecursive() const;
   AXNode* ComputeFirstUnignoredChildRecursive() const;
 
@@ -597,6 +606,11 @@ class AX_EXPORT AXNode final {
   AXNode* const parent_;
   std::vector<AXNode*> children_;
   AXNodeData data_;
+
+  // See the class comment in "ax_hypertext.h" for an explanation of this
+  // member.
+  mutable AXHypertext hypertext_;
+  mutable AXHypertext old_hypertext_;
 
   // Stores the detected language computed from the node's text.
   std::unique_ptr<AXLanguageInfo> language_info_;

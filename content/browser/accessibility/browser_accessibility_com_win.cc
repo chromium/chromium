@@ -1451,7 +1451,7 @@ void BrowserAccessibilityComWin::UpdateStep1ComputeWinAttributes() {
   old_win_attributes_.swap(win_attributes_);
 
   old_hypertext_ = hypertext_;
-  hypertext_ = ui::AXHypertext();
+  hypertext_ = ui::AXLegacyHypertext();
 
   win_attributes_ = std::make_unique<WinAttributes>();
 
@@ -1524,7 +1524,7 @@ void BrowserAccessibilityComWin::UpdateStep3FireEvents() {
   }
 
   old_win_attributes_.reset(nullptr);
-  old_hypertext_ = ui::AXHypertext();
+  old_hypertext_ = ui::AXLegacyHypertext();
 }
 
 BrowserAccessibilityManager* BrowserAccessibilityComWin::Manager() const {

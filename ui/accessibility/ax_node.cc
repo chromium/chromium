@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_hypertext.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_table_info.h"
@@ -629,13 +630,16 @@ void AXNode::ClearLanguageInfo() {
 
 std::u16string AXNode::GetHypertext() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
+  // TODO(nektar): Introduce proper caching of hypertext via
+  // `AXHypertext::needs_update`.
+  hypertext_ = AXHypertext();
 
   // Hypertext is not exposed for descendants of leaf nodes. For such nodes,
   // their inner text is equivalent to their hypertext. Otherwise, we would
-  // never be able to compute equivalent ancestor positions in text fields given
-  // an AXPosition on an inline text box descendant, because there is often an
-  // ignored generic container between the text descendants and the text field
-  // node.
+  // never be able to compute equivalent ancestor positions in atomic text
+  // fields given an AXPosition on an inline text box descendant, because there
+  // is often an ignored generic container between the text descendants and the
+  // text field node.
   //
   // For example, look at the following accessibility tree and the text
   // positions indicated using "<>" symbols in the inner text of every node, and
@@ -646,29 +650,62 @@ std::u16string AXNode::GetHypertext() const {
   // ++++kGenericContainer "Hell<o>" ignored IsChildOfLeaf=true
   // ++++++kStaticText "Hell<o>" IsChildOfLeaf=true
   // ++++++++kInlineTextBox "Hell<o>" IsChildOfLeaf=true
-  if (IsLeaf() || IsChildOfLeaf())
-    return base::UTF8ToUTF16(GetInnerText());
 
-  // Construct the hypertext for this node, which contains the concatenation of
-  // the inner text of this node's textual children, and an "object replacement
-  // character" for all the other children.
-  //
-  // Note that the word "hypertext" comes from the IAccessible2 Standard and has
-  // nothing to do with HTML.
-  const std::u16string embedded_character_str(kEmbeddedCharacter);
-  DCHECK_EQ(int{embedded_character_str.length()}, kEmbeddedCharacterLength);
-  std::u16string hypertext;
-  for (auto it = UnignoredChildrenBegin(); it != UnignoredChildrenEnd(); ++it) {
-    // Similar to Firefox, we don't expose text nodes in IAccessible2 and ATK
-    // hypertext with the embedded object character. We copy all of their text
-    // instead.
-    if (it->IsText()) {
-      hypertext += base::UTF8ToUTF16(it->GetInnerText());
-    } else {
-      hypertext += embedded_character_str;
+  if (IsLeaf() || IsChildOfLeaf()) {
+    hypertext_.hypertext = base::UTF8ToUTF16(GetInnerText());
+  } else {
+    // Construct the hypertext for this node, which contains the concatenation
+    // of the inner text of this node's textual children, and an "object
+    // replacement character" for all the other children.
+    //
+    // Note that the word "hypertext" comes from the IAccessible2 Standard and
+    // has nothing to do with HTML.
+    const std::u16string embedded_character_str(kEmbeddedCharacter);
+    DCHECK_EQ(int{embedded_character_str.length()}, kEmbeddedCharacterLength);
+    for (size_t i = 0; i < GetUnignoredChildCountCrossingTreeBoundary(); ++i) {
+      const AXNode* child = GetUnignoredChildAtIndexCrossingTreeBoundary(i);
+      // Similar to Firefox, we don't expose text nodes in IAccessible2 and ATK
+      // hypertext with the embedded object character. We copy all of their text
+      // instead.
+      if (child->IsText()) {
+        hypertext_.hypertext += base::UTF8ToUTF16(child->GetInnerText());
+      } else {
+        int character_offset = int{hypertext_.hypertext.size()};
+        auto inserted =
+            hypertext_.hypertext_offset_to_hyperlink_child_index.emplace(
+                character_offset, int{i});
+        DCHECK(inserted.second) << "An embedded object at " << character_offset
+                                << " has already been encountered.";
+        hypertext_.hypertext += embedded_character_str;
+      }
     }
   }
-  return hypertext;
+
+  hypertext_.needs_update = false;
+  return hypertext_.hypertext;
+}
+
+void AXNode::SetNeedsToUpdateHypertext() {
+  old_hypertext_ = hypertext_;
+  hypertext_.needs_update = true;
+  // TODO(nektar): Introduce proper caching of hypertext via
+  // `AXHypertext::needs_update`.
+  GetHypertext();  // Forces `hypertext_` to immediately update.
+}
+
+const std::map<int, int>& AXNode::GetHypertextOffsetToHyperlinkChildIndex()
+    const {
+  // TODO(nektar): Introduce proper caching of hypertext via
+  // `AXHypertext::needs_update`.
+  GetHypertext();  // Update `hypertext_` if not up-to-date.
+  return hypertext_.hypertext_offset_to_hyperlink_child_index;
+}
+
+const AXHypertext& AXNode::GetOldHypertext() const {
+  // TODO(nektar): Introduce proper caching of hypertext via
+  // `AXHypertext::needs_update`.
+  GetHypertext();  // Update `hypertext_` if not up-to-date.
+  return old_hypertext_;
 }
 
 std::string AXNode::GetInnerText() const {

@@ -915,7 +915,7 @@ AtkHyperlink* GetLink(AtkHypertext* hypertext, int index) {
   if (!obj)
     return nullptr;
 
-  const AXHypertext& ax_hypertext = obj->GetAXHypertext();
+  const AXLegacyHypertext& ax_hypertext = obj->GetAXHypertext();
   if (index > static_cast<int>(ax_hypertext.hyperlinks.size()) || index < 0)
     return nullptr;
 
@@ -4201,7 +4201,7 @@ void AXPlatformNodeAuraLinux::UpdateHypertext() {
   if (!atk_object)
     return;
 
-  AXHypertext old_hypertext = hypertext_;
+  AXLegacyHypertext old_hypertext = hypertext_;
   base::OffsetAdjuster::Adjustments old_adjustments = GetHypertextAdjustments();
 
   UpdateComputedHypertext();
@@ -4250,7 +4250,7 @@ void AXPlatformNodeAuraLinux::UpdateHypertext() {
   }
 }
 
-const AXHypertext& AXPlatformNodeAuraLinux::GetAXHypertext() {
+const AXLegacyHypertext& AXPlatformNodeAuraLinux::GetAXHypertext() {
   return hypertext_;
 }
 

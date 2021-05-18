@@ -1381,16 +1381,17 @@ void AXPlatformNodeBase::AddAttributeToList(const char* name,
   AddAttributeToList(name, value.c_str(), attributes);
 }
 
-AXHypertext::AXHypertext() = default;
-AXHypertext::~AXHypertext() = default;
-AXHypertext::AXHypertext(const AXHypertext& other) = default;
-AXHypertext& AXHypertext::operator=(const AXHypertext& other) = default;
+AXLegacyHypertext::AXLegacyHypertext() = default;
+AXLegacyHypertext::~AXLegacyHypertext() = default;
+AXLegacyHypertext::AXLegacyHypertext(const AXLegacyHypertext& other) = default;
+AXLegacyHypertext& AXLegacyHypertext::operator=(
+    const AXLegacyHypertext& other) = default;
 
 // TODO(nektar): To be able to use AXNode in Views, move this logic to AXNode.
 void AXPlatformNodeBase::UpdateComputedHypertext() const {
   if (!delegate_)
     return;
-  hypertext_ = AXHypertext();
+  hypertext_ = AXLegacyHypertext();
 
   if (IsLeaf()) {
     hypertext_.hypertext = GetInnerText();
@@ -1785,7 +1786,7 @@ void AXPlatformNodeBase::GetSelectionOffsetsFromTree(
 }
 
 bool AXPlatformNodeBase::IsSameHypertextCharacter(
-    const AXHypertext& old_hypertext,
+    const AXLegacyHypertext& old_hypertext,
     size_t old_char_index,
     size_t new_char_index) {
   if (old_char_index >= old_hypertext.hypertext.size() ||
@@ -1843,7 +1844,7 @@ bool AXPlatformNodeBase::IsPlatformCheckable() const {
 }
 
 void AXPlatformNodeBase::ComputeHypertextRemovedAndInserted(
-    const AXHypertext& old_hypertext,
+    const AXLegacyHypertext& old_hypertext,
     size_t* start,
     size_t* old_len,
     size_t* new_len) {

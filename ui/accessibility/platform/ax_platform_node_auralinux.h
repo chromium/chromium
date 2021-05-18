@@ -249,7 +249,7 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
   bool IsNameExposed();
 
   void UpdateHypertext();
-  const AXHypertext& GetAXHypertext();
+  const AXLegacyHypertext& GetAXHypertext();
   const base::OffsetAdjuster::Adjustments& GetHypertextAdjustments();
   size_t UTF16ToUnicodeOffsetInText(size_t utf16_offset);
   size_t UnicodeToUTF16OffsetInText(int unicode_offset);
