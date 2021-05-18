@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_text_layout_engine.h"
 
 #include "base/auto_reset.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_svg_text_path.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -44,6 +46,7 @@ SVGTextLayoutEngine::SVGTextLayoutEngine(
       is_vertical_text_(false),
       in_path_layout_(false),
       text_length_spacing_in_effect_(false),
+      last_text_box_was_in_text_path_(false),
       text_path_(nullptr),
       text_path_current_offset_(0),
       text_path_displacement_(0),
@@ -77,6 +80,10 @@ bool SVGTextLayoutEngine::SetCurrentTextPosition(const SVGCharacterData& data) {
       if (has_x)
         text_path_current_offset_ = data.x + text_path_start_offset_;
     }
+  } else if ((!has_x || !has_y) && last_text_box_was_in_text_path_) {
+    UseCounter::Count(descendant_text_nodes_[0]->GetDocument(),
+                      WebFeature::kSVGTextHangingFromPath);
+    last_text_box_was_in_text_path_ = false;
   }
   return has_x || has_y;
 }
@@ -262,12 +269,14 @@ void SVGTextLayoutEngine::LayoutCharactersInTextBoxes(InlineFlowBox* start) {
       text_length_spacing_in_effect_ || DefinesTextLengthWithSpacing(start);
   base::AutoReset<bool> text_length_spacing_scope(
       &text_length_spacing_in_effect_, text_length_spacing_in_effect);
+  last_text_box_was_in_text_path_ = false;
 
   for (InlineBox* child = start->FirstChild(); child;
        child = child->NextOnLine()) {
     if (auto* svg_inline_text_box = DynamicTo<SVGInlineTextBox>(child)) {
       DCHECK(child->GetLineLayoutItem().IsSVGInlineText());
       LayoutInlineTextBox(svg_inline_text_box);
+      last_text_box_was_in_text_path_ = false;
     } else {
       // Skip generated content.
       Node* node = child->GetLineLayoutItem().GetNode();
@@ -283,6 +292,7 @@ void SVGTextLayoutEngine::LayoutCharactersInTextBoxes(InlineFlowBox* start) {
 
       if (is_text_path)
         EndTextPathLayout();
+      last_text_box_was_in_text_path_ = is_text_path;
     }
   }
 }

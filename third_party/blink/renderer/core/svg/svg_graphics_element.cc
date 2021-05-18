@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_transform_list.h"
 #include "third_party/blink/renderer/core/svg/svg_element_rare_data.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/renderer/core/svg/svg_rect_tear_off.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
@@ -185,8 +187,12 @@ SVGRectTearOff* SVGGraphicsElement::getBBoxFromJavascript() {
 
   // FIXME: Eventually we should support getBBox for detached elements.
   FloatRect boundingBox;
-  if (GetLayoutObject())
+  if (const auto* layout_object = GetLayoutObject()) {
     boundingBox = GetBBox();
+
+    if (layout_object->IsSVGText() || layout_object->IsSVGInline())
+      UseCounter::Count(GetDocument(), WebFeature::kGetBBoxForText);
+  }
   return SVGRectTearOff::CreateDetached(boundingBox);
 }
 

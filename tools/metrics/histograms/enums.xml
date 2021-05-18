@@ -32510,6 +32510,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3909" label="RTCOfferAnswerOptionsVoiceActivityDetection"/>
   <int value="3910" label="MultiColAndListItem"/>
   <int value="3911" label="CaptureHandle"/>
+  <int value="3912" label="SVGText"/>
+  <int value="3913" label="GetBBoxForText"/>
+  <int value="3914" label="SVGTextHangingFromPath"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

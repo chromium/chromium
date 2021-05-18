@@ -73,6 +73,7 @@ LayoutSVGText::LayoutSVGText(Element* node)
       needs_positioning_values_update_(false),
       needs_text_metrics_update_(false) {
   DCHECK(IsA<SVGTextElement>(node));
+  UseCounter::Count(GetDocument(), WebFeature::kSVGText);
 }
 
 LayoutSVGText::~LayoutSVGText() {
