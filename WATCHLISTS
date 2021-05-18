@@ -1088,7 +1088,9 @@
     'holding_space': {
       'filepath': 'ash/public/cpp/holding_space|'\
                   'ash/system/holding_space|'\
-                  'chrome/browser/ui/ash/holding_space'
+                  'chrome/browser/lacros/.*holding_space.*|'\
+                  'chrome/browser/ui/ash/holding_space|'\
+                  'chromeos/crosapi/mojom/.*holding_space.*'
     },
     'i18n': {
       'filepath': 'base/i18n/|base/string|l10n|icu|'\
