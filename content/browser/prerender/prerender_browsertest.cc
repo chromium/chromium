@@ -31,6 +31,7 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -1789,6 +1790,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LazyLoading) {
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        SessionStorageAfterBackNavigation_NoProcessReuse) {
+  // When BackForwardCache feature is enabled, this test doesn't work, because
+  // this test is checking the behavior of a new renderer process which is
+  // created for a back forward navigation from a prerendered page.
+  if (IsBackForwardCacheEnabled())
+    return;
+
   const GURL kInitialUrl = GetUrl("/prerender/session_storage.html");
   const GURL kPrerenderingUrl =
       GetUrl("/prerender/session_storage.html?prerendering=");
