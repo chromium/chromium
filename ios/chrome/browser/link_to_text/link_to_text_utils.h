@@ -10,9 +10,9 @@
 
 #include <string>
 
-#import "base/optional.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #import "ios/chrome/browser/link_to_text/link_generation_outcome.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;

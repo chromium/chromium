@@ -6,7 +6,6 @@
 
 #import "base/bind.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/optional.h"
 #import "base/timer/elapsed_timer.h"
 #import "base/values.h"
 #import "components/shared_highlighting/core/common/disabled_sites.h"
@@ -15,6 +14,7 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
