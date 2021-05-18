@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -21,7 +20,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
-import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -116,16 +114,9 @@ public class SyncConsentFragment extends SyncConsentFragmentBase {
                                 Profile.getLastUsedRegularProfile(), true);
                         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
                         if (settingsClicked) {
-                            if (ChromeFeatureList.isEnabled(
-                                        ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-                                settingsLauncher.launchSettingsActivity(getActivity(),
-                                        ManageSyncSettings.class,
-                                        ManageSyncSettings.createArguments(true));
-                            } else {
-                                settingsLauncher.launchSettingsActivity(getActivity(),
-                                        SyncAndServicesSettings.class,
-                                        SyncAndServicesSettings.createArguments(true));
-                            }
+                            settingsLauncher.launchSettingsActivity(getActivity(),
+                                    ManageSyncSettings.class,
+                                    ManageSyncSettings.createArguments(true));
                         } else {
                             ProfileSyncService.get().setFirstSetupComplete(
                                     SyncFirstSetupCompleteSource.BASIC_FLOW);
