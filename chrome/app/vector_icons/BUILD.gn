@@ -17,6 +17,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "account_box.icon",
     "account_child.icon",
     "account_child_circle.icon",
+    "account_circle.icon",
     "add.icon",
     "apps.icon",
     "autofill/gpay_offer.icon",

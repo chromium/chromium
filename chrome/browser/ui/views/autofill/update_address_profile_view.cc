@@ -40,7 +40,7 @@ const gfx::VectorIcon& GetVectorIconForType(ServerFieldType type) {
   // TODO(crbug.com/1167060): Update icons upon having final mocks.
   switch (type) {
     case NAME_FULL_WITH_HONORIFIC_PREFIX:
-      return kUserAccountAvatarIcon;
+      return kAccountCircleIcon;
     case EMAIL_ADDRESS:
       return vector_icons::kEmailIcon;
     case PHONE_HOME_WHOLE_NUMBER:
