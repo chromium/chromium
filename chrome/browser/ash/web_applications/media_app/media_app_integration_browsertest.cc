@@ -246,6 +246,22 @@ void clickAppBarButton(content::WebContents* app, const std::string& selector) {
   MediaAppUiBrowserTest::EvalJsInAppFrame(
       app, base::ReplaceStringPlaceholders(kClickButton, {selector}, nullptr));
 }
+
+// Returns true if the button on the app bar with the specified selector has the
+// 'on' attribute (indicating it's styled as active).
+bool isAppBarButtonOn(content::WebContents* app, const std::string& selector) {
+  constexpr char kIsButtonOn[] = R"(
+    (async () => {
+      const button =
+          await getNode('$1', ['backlight-app-bar', 'backlight-app']);
+      return button.hasAttribute('on');
+    })();
+  )";
+  return MediaAppUiBrowserTest::EvalJsInAppFrame(
+             app,
+             base::ReplaceStringPlaceholders(kIsButtonOn, {selector}, nullptr))
+      .ExtractBool();
+}
 }  // namespace
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
@@ -298,15 +314,17 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
   )";
   EXPECT_EQ(false,
             MediaAppUiBrowserTest::EvalJsInAppFrame(app, kHasInfoPanelOpen));
-
-  // Expect info panel to be open after clicking info button.
   // icon-button ids are calculated from a hash of the button labels. Id is used
   // because the UI toolkit has loose guarantees about where the actual label
   // appears in the shadow DOM.
   const std::string kInfoButtonSelector = "#icon-button-2283726";
+  EXPECT_EQ(false, isAppBarButtonOn(app, kInfoButtonSelector));
+
+  // Expect info panel to be open after clicking info button.
   clickAppBarButton(app, kInfoButtonSelector);
   EXPECT_EQ(true,
             MediaAppUiBrowserTest::EvalJsInAppFrame(app, kHasInfoPanelOpen));
+  EXPECT_EQ(true, isAppBarButtonOn(app, kInfoButtonSelector));
 
   // Expect info panel to be closed after clicking info button again.
   // After closing we must wait for the DOM update because the panel doesn't
@@ -321,6 +339,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
   MediaAppUiBrowserTest::EvalJsInAppFrame(app, kWaitForImageHandlerUpdate);
   EXPECT_EQ(false,
             MediaAppUiBrowserTest::EvalJsInAppFrame(app, kHasInfoPanelOpen));
+  EXPECT_EQ(false, isAppBarButtonOn(app, kInfoButtonSelector));
 }
 #endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
 
