@@ -11,6 +11,9 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.google.common.base.Optional;
+
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -78,13 +81,21 @@ public final class SigninPromoUtil {
             return false;
         }
 
-        final List<String> currentAccountNames =
-                AccountUtils.toAccountNames(accountManagerFacade.tryGetGoogleAccounts());
-        if (currentAccountNames.isEmpty()) {
+        final List<Account> accounts = accountManagerFacade.tryGetGoogleAccounts();
+
+        if (accounts.isEmpty()) {
             // Don't show if the account list isn't available yet or there are no accounts in it.
             return false;
         }
 
+        Optional<Boolean> isDefaultAccountSubjectToMinorModeRestrictions =
+                accountManagerFacade.isAccountSubjectToMinorModeRestrictions(accounts.get(0));
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
+                && isDefaultAccountSubjectToMinorModeRestrictions.or(/* defaultValue= */ false)) {
+            return false;
+        }
+
+        final List<String> currentAccountNames = AccountUtils.toAccountNames(accounts);
         final Set<String> previousAccountNames = prefManager.getSigninPromoLastAccountNames();
         if (previousAccountNames != null && previousAccountNames.containsAll(currentAccountNames)) {
             // Don't show if no new accounts have been added after the last time promo was shown.

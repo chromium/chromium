@@ -6,13 +6,17 @@ package org.chromium.chrome.browser.signin.ui;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.accounts.Account;
 import android.content.Context;
+
+import com.google.common.base.Optional;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -27,10 +31,12 @@ import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -47,6 +53,7 @@ import java.util.Set;
  * Tests for {@link SigninPromoUtil#launchSigninPromoIfNeeded}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures({ChromeFeatureList.MINOR_MODE_SUPPORT})
 public class SigninPromoUtilLaunchSigninPromoTest {
     private static final int CURRENT_MAJOR_VERSION = 42;
     @Rule
@@ -54,6 +61,9 @@ public class SigninPromoUtilLaunchSigninPromoTest {
 
     @Rule
     public final JniMocker mocker = new JniMocker();
+
+    @Rule
+    public final Features.JUnitProcessor processor = new Features.JUnitProcessor();
 
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
             spy(new FakeAccountManagerFacade(null));
@@ -210,5 +220,39 @@ public class SigninPromoUtilLaunchSigninPromoTest {
         verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertEquals(2, mPrefManager.getSigninPromoLastAccountNames().size());
+    }
+
+    @Test
+    public void promoHiddenWhenDefaultAccountIsMinor() {
+        mPrefManager.setSigninPromoLastShownVersion(38);
+        mAccountManagerTestRule.addAccount("test2@gmail.com");
+        doAnswer(invocation -> {
+            final Account account = invocation.getArgument(0);
+            return Optional.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL.equals(account.name));
+        })
+                .when(mFakeAccountManagerFacade)
+                .isAccountSubjectToMinorModeRestrictions(any());
+
+        Assert.assertFalse(SigninPromoUtil.launchSigninPromoIfNeeded(
+                mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+
+        verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
+    }
+
+    @Test
+    public void promoVisibleWhenTheSecondaryAccountIsMinor() {
+        final CoreAccountInfo secondAccount = mAccountManagerTestRule.addAccount("test2@gmail.com");
+        mPrefManager.setSigninPromoLastShownVersion(38);
+        doAnswer(invocation -> {
+            final Account account = invocation.getArgument(0);
+            return Optional.of(secondAccount.getEmail().equals(account.name));
+        })
+                .when(mFakeAccountManagerFacade)
+                .isAccountSubjectToMinorModeRestrictions(any());
+
+        Assert.assertTrue(SigninPromoUtil.launchSigninPromoIfNeeded(
+                mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+
+        verify(mLauncherMock).launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
     }
 }
