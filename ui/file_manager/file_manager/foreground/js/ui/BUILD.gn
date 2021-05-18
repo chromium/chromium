@@ -128,7 +128,6 @@ js_library("closure_compile_externs") {
     "//ui/file_manager/file_manager/externs/background/import_history.js",
     "//ui/file_manager/file_manager/externs/background_window.js",
     "//ui/file_manager/file_manager/externs/chrome_echo_private.js",
-    "//ui/file_manager/file_manager/externs/chrome_webstore_widget_private.js",
     "//ui/file_manager/file_manager/externs/css_rule.js",
     "//ui/file_manager/file_manager/externs/drag_target.js",
     "//ui/file_manager/file_manager/externs/drive_dialog_controller.js",

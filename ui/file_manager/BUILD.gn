@@ -39,7 +39,6 @@ group("closure_compile") {
     "audio_player/js:closure_compile",
     "file_manager/background/js:closure_compile",
     "file_manager/common/js:closure_compile",
-    "file_manager/cws_widget:closure_compile",
     "file_manager/foreground/elements:closure_compile",
     "file_manager/foreground/js:closure_compile",
     "file_manager/foreground/js/metadata:closure_compile",
@@ -257,7 +256,6 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/js/task_history.m.js",
     "file_manager/foreground/js/thumbnail_loader.m.js",
     "file_manager/foreground/js/toolbar_controller.m.js",
-    "file_manager/foreground/js/web_store_utils.m.js",
     "file_manager/foreground/js/webui_command_extender.m.js",
 
     # Files app Elements:
@@ -322,13 +320,6 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/js/ui/table/table_list.m.js",
     "file_manager/foreground/js/ui/table/table_splitter.m.js",
 
-    # CWS:
-    "file_manager/cws_widget/app_installer.m.js",
-    "file_manager/cws_widget/cws_webview_client.m.js",
-    "file_manager/cws_widget/cws_widget_container.m.js",
-    "file_manager/cws_widget/cws_widget_container_error_dialog.m.js",
-    "file_manager/cws_widget/cws_widget_container_platform_delegate.m.js",
-
     # Image Loader:
     "image_loader/cache.m.js",
     "image_loader/image_loader.m.js",
@@ -379,7 +370,6 @@ preprocess_if_expr("preprocess_generated") {
     "//ui/file_manager/file_manager:gen_main_html",
     "//ui/file_manager/file_manager/background/js:modulize",
     "//ui/file_manager/file_manager/common/js:modulize",
-    "//ui/file_manager/file_manager/cws_widget:modulize",
     "//ui/file_manager/file_manager/externs:modulize",
     "//ui/file_manager/file_manager/externs/background:modulize",
     "//ui/file_manager/file_manager/foreground/elements:elements",

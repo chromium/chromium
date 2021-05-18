@@ -161,12 +161,6 @@
       <include name="IDR_FILE_MANAGER_IMG_GALLERY_CURSOR_CROP" file="gallery/images/100/cursor_crop.png" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_IMG_GALLERY_2X_CURSOR_CROP" file="gallery/images/200/cursor_crop.png" type="BINDATA" />
 
-      <!-- Chrome Webstore widget dialog -->
-      <include name="IDR_FILE_MANAGER_WEBSTORE_WIDGET_APP_INSTALLER_JS" file="file_manager/cws_widget/app_installer.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_WEBSTORE_WIDGET_CWS_WEBVIEW_CLIENT_JS" file="file_manager/cws_widget/cws_webview_client.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_WEBSTORE_WIDGET_CWS_WIDGET_CONTAINER_JS" file="file_manager/cws_widget/cws_widget_container.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_WEBSTORE_WIDGET_CWS_WIDGET_CONTAINER_ERROR_DIALOG_JS" file="file_manager/cws_widget/cws_widget_container_error_dialog.js" type="BINDATA" />
-
       <!-- Image loader extension manifest and scripts. -->
       <if expr="chromeos">
         <include name="IDR_IMAGE_LOADER_MANIFEST" file="image_loader/manifest.json" type="BINDATA" />

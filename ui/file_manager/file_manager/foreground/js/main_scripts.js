@@ -93,7 +93,6 @@
 //
 // <include src="constants.js">
 // <include src="crossover_search_utils.js">
-// <include src="web_store_utils.js">
 // <include src="ui/multi_menu.js">
 // <include src="ui/multi_menu_button.js">
 // <include src="ui/combobutton.js">
@@ -102,11 +101,6 @@
 // <include src="metadata/metadata_cache_set.js">
 // <include src="metadata/metadata_provider.js">
 // <include src="metadata/metadata_request.js">
-//
-// <include src="../../cws_widget/app_installer.js">
-// <include src="../../cws_widget/cws_webview_client.js">
-// <include src="../../cws_widget/cws_widget_container.js">
-// <include src="../../cws_widget/cws_widget_container_error_dialog.js">
 //
 // <include src="actions_controller.js">
 // <include src="actions_model.js">

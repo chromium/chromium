@@ -7,14 +7,6 @@
 // #import {DialogType} from './dialog_type.m.js';
 // clang-format on
 
-/**
- * @typedef {{
- *   overrideCwsContainerUrlForTest: (string|undefined),
- *   overrideCwsContainerOriginForTest: (string|undefined)
- * }}
- */
-/* #export */ let SuggestAppDialogState;
-
 /* #export */ class LaunchParam {
   /**
    * @param {!Object} unformatted Unformatted option.

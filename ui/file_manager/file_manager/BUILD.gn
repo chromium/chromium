@@ -43,7 +43,6 @@ generate_grd("build_static_grdp") {
 
   input_files = [
     # CSS:
-    "cws_widget/cws_widget_container.css",
     "foreground/css/combobutton.css",
     "foreground/css/common.css",
     "foreground/css/file_manager.css",

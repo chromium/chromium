@@ -95,7 +95,6 @@ js_type_check("closure_compile_jsmodules") {
     ":task_history.m",
     ":thumbnail_loader.m",
     ":toolbar_controller.m",
-    ":web_store_utils.m",
     ":webui_command_extender.m",
   ]
 }
@@ -157,7 +156,6 @@ js_type_check("closure_compile_module") {
     ":task_history",
     ":thumbnail_loader",
     ":toolbar_controller",
-    ":web_store_utils",
     ":webui_command_extender",
   ]
 }
@@ -179,7 +177,6 @@ js_library("closure_compile_externs") {
     "//ui/file_manager/file_manager/externs/background/progress_center.js",
     "//ui/file_manager/file_manager/externs/background_window.js",
     "//ui/file_manager/file_manager/externs/chrome_echo_private.js",
-    "//ui/file_manager/file_manager/externs/chrome_webstore_widget_private.js",
     "//ui/file_manager/file_manager/externs/command_handler_deps.js",
     "//ui/file_manager/file_manager/externs/css_rule.js",
     "//ui/file_manager/file_manager/externs/directory_change_event.js",
@@ -1076,7 +1073,6 @@ js_library("file_tasks.m") {
     ":file_transfer_controller.m",
     ":naming_controller.m",
     ":task_history.m",
-    ":web_store_utils.m",
     "metadata:metadata_model.m",
     "ui:combobutton.m",
     "ui:default_task_dialog.m",
@@ -2054,17 +2050,6 @@ js_library("toolbar_controller.m") {
   extra_deps = [ ":modulize" ]
 }
 
-js_library("web_store_utils") {
-  deps = [ ":constants" ]
-}
-
-js_library("web_store_utils.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/web_store_utils.m.js" ]
-  deps = [ ":constants.m" ]
-
-  extra_deps = [ ":modulize" ]
-}
-
 js_library("webui_command_extender") {
   deps = [
     "//ui/webui/resources/js:cr",
@@ -2176,7 +2161,6 @@ js_modulizer("modulize") {
     "task_history.js",
     "thumbnail_loader.js",
     "toolbar_controller.js",
-    "web_store_utils.js",
     "webui_command_extender.js",
   ]
 
