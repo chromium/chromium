@@ -7,6 +7,7 @@ package org.chromium.android_webview;
 import android.content.Context;
 
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
+import org.chromium.base.annotations.DoNotInline;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 /**
@@ -14,6 +15,7 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
  */
 public class AwServiceWorkerController {
     private AwServiceWorkerClient mServiceWorkerClient;
+    @DoNotInline // Native stores this as a weak reference.
     private AwContentsIoThreadClient mServiceWorkerIoThreadClient;
     private AwContentsBackgroundThreadClient mServiceWorkerBackgroundThreadClient;
     private AwServiceWorkerSettings mServiceWorkerSettings;
