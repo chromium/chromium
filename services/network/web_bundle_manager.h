@@ -35,7 +35,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
       const GURL& bundle_url,
       const ResourceRequest::WebBundleTokenParams& params,
       int32_t process_id,
-      const absl::optional<url::Origin>& request_initiator_origin_lock);
+      const absl::optional<url::Origin>& request_initiator_origin_lock,
+      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
+      absl::optional<std::string> devtools_request_id);
 
   void StartSubresourceRequest(
       mojo::PendingReceiver<mojom::URLLoader> receiver,

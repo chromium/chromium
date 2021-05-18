@@ -91,6 +91,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
 
   bool GetAllowAnyCorsExemptHeaderForBrowser() const;
 
+  mojo::PendingRemote<mojom::DevToolsObserver> GetDevToolsObserver(
+      const ResourceRequest& resource_request) const;
+
   mojo::ReceiverSet<mojom::URLLoaderFactory> receivers_;
 
   // Used when constructed by NetworkContext.

@@ -453,12 +453,16 @@ WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(
     mojo::Remote<mojom::WebBundleHandle> web_bundle_handle,
     const absl::optional<url::Origin>& request_initiator_origin_lock,
     std::unique_ptr<WebBundleMemoryQuotaConsumer>
-        web_bundle_memory_quota_consumer)
+        web_bundle_memory_quota_consumer,
+    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
+    absl::optional<std::string> devtools_request_id)
     : bundle_url_(bundle_url),
       web_bundle_handle_(std::move(web_bundle_handle)),
       request_initiator_origin_lock_(request_initiator_origin_lock),
       web_bundle_memory_quota_consumer_(
-          std::move(web_bundle_memory_quota_consumer)) {}
+          std::move(web_bundle_memory_quota_consumer)),
+      devtools_observer_(std::move(devtools_observer)),
+      devtools_request_id_(std::move(devtools_request_id)) {}
 
 WebBundleURLLoaderFactory::~WebBundleURLLoaderFactory() {
   for (auto loader : pending_loaders_) {

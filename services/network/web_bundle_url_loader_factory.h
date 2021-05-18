@@ -34,7 +34,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
       mojo::Remote<mojom::WebBundleHandle> web_bundle_handle,
       const absl::optional<url::Origin>& request_initiator_origin_lock,
       std::unique_ptr<WebBundleMemoryQuotaConsumer>
-          web_bundle_memory_quota_consumer);
+          web_bundle_memory_quota_consumer,
+      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
+      absl::optional<std::string> devtools_request_id);
   ~WebBundleURLLoaderFactory();
   WebBundleURLLoaderFactory(const WebBundleURLLoaderFactory&) = delete;
   WebBundleURLLoaderFactory& operator=(const WebBundleURLLoaderFactory&) =
@@ -97,6 +99,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
   const absl::optional<::url::Origin> request_initiator_origin_lock_;
   std::unique_ptr<WebBundleMemoryQuotaConsumer>
       web_bundle_memory_quota_consumer_;
+  mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
+  absl::optional<std::string> devtools_request_id_;
   std::unique_ptr<BundleDataSource> source_;
   mojo::Remote<web_package::mojom::WebBundleParser> parser_;
   web_package::mojom::BundleMetadataPtr metadata_;
