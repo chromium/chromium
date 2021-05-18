@@ -152,6 +152,11 @@ uint32_t ScanCodeFromNative(const PlatformEvent& native_event) {
 }
 #endif  // defined(USE_OZONE)
 
+bool IsNearZero(const float num) {
+  // Epsilon of 1e-10 at 0.
+  return (std::fabs(num) < 1e-10);
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -773,6 +778,26 @@ void TouchEvent::UpdateForRootTransform(
                             pointer_details_.radius_y * matrix.get(1, 1));
   pointer_details_.radius_x = new_x;
   pointer_details_.radius_y = new_y;
+
+  // for stylus touches, tilt needs to be rotated appropriately. We don't handle
+  // screen rotations other than 0/90/180/270, but those should be handled and
+  // translated appropriately. Other rotations leave tilts untouched for now. We
+  // add a small check that tilt is set at all before looking through this
+  // section.
+  if (!IsNearZero(pointer_details_.tilt_x) ||
+      !IsNearZero(pointer_details_.tilt_y)) {
+    if (IsNearZero(matrix.get(0, 1)) && IsNearZero(matrix.get(1, 0))) {
+      pointer_details_.tilt_x *= std::copysign(1, matrix.get(0, 0));
+      pointer_details_.tilt_y *= std::copysign(1, matrix.get(1, 1));
+    } else if (IsNearZero(matrix.get(0, 0)) && IsNearZero(matrix.get(1, 1))) {
+      double new_tilt_x =
+          pointer_details_.tilt_y * std::copysign(1, matrix.get(0, 1));
+      double new_tilt_y =
+          pointer_details_.tilt_x * std::copysign(1, matrix.get(1, 0));
+      pointer_details_.tilt_x = new_tilt_x;
+      pointer_details_.tilt_y = new_tilt_y;
+    }
+  }
 }
 
 void TouchEvent::DisableSynchronousHandling() {

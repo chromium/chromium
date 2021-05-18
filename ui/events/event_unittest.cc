@@ -705,7 +705,9 @@ TEST(EventTest, UpdateForRootTransformation) {
     gfx::Transform transform3x;
     transform3x.Scale(3, 3);
     PointerDetails pointer_details(EventPointerType::kTouch, 0 /* pointer id */,
-                                   3, 4, 50, 0 /* twist */, 0, 0);
+                                   3, 4, 50, 0 /* twist */, 17.2 /* tilt_x */,
+                                   -28.3 /* tilt_y */);
+
     ui::TouchEvent targeted(ET_TOUCH_PRESSED, f_location, f_root_location,
                             EventTimeForNow(), pointer_details);
     targeted.UpdateForRootTransform(transform2x, transform3x);
@@ -733,7 +735,9 @@ TEST(EventTest, UpdateForRootTransformation) {
     gfx::Transform transform3x;
     transform3x.Scale(3, 3);
     PointerDetails pointer_details(EventPointerType::kTouch, 0 /* pointer id */,
-                                   3, 4, 50, 0 /* twist */, 0, 0);
+                                   3, 4, 50, 0 /* twist */, -17.4 /* tilt_x */,
+                                   31.2 /* tilt_y */);
+
     ui::TouchEvent targeted(ET_TOUCH_PRESSED, f_location, f_root_location,
                             EventTimeForNow(), pointer_details);
     Event::DispatcherApi(&targeted).set_target(&target);
@@ -741,6 +745,9 @@ TEST(EventTest, UpdateForRootTransformation) {
     auto updated_pointer_details(pointer_details);
     updated_pointer_details.radius_x = pointer_details.radius_y * 0.75;
     updated_pointer_details.radius_y = pointer_details.radius_x * 0.5;
+    updated_pointer_details.tilt_x = -31.2;
+    updated_pointer_details.tilt_y = -17.4;
+
     EXPECT_EQ(updated_pointer_details, targeted.pointer_details())
         << " orig: " << updated_pointer_details.ToString() << " vs "
         << targeted.pointer_details().ToString();
