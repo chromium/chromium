@@ -335,6 +335,36 @@ class Metrics {
     kMaxValue = ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION
   };
 
+  // Metric describing in-Chrome triggering. Only reported if the corresponding
+  // feature is enabled.
+  //
+  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantInChromeTriggerAction enum listing in
+  // tools/metrics/histograms/enums.xml and the description in
+  // tools/metrics/ukm/ukm.xml as necessary.
+  enum class InChromeTriggerAction {
+    // No trigger script was requested for an unspecified reason. This is
+    // intended as a catch-all bucket and should ideally always be empty.
+    OTHER = 0,
+    // No trigger script was requested because the user has temporarily opted
+    // out of receiving implicit prompts for this domain (either until tab close
+    // or until the cache entry is stale, whichever is sooner).
+    USER_DENYLISTED_DOMAIN = 1,
+    // No trigger script was requested because an earlier request to the same
+    // domain failed and the cache was still fresh.
+    CACHE_HIT_UNSUPPORTED_DOMAIN = 2,
+    // No trigger script was requested because the heuristic response did not
+    // match any trigger intent.
+    NO_HEURISTIC_MATCH = 3,
+    // The heuristic reported a match and a trigger script was requested.
+    // Note that this does not indicate that a trigger script was fetched
+    // successfully, merely that it was requested.
+    TRIGGER_SCRIPT_REQUESTED = 4,
+
+    kMaxValue = TRIGGER_SCRIPT_REQUESTED
+  };
+
   static void RecordDropOut(DropOutReason reason, const std::string& intent);
   static void RecordPaymentRequestPrefilledSuccess(bool initially_complete,
                                                    bool success);
@@ -363,6 +393,9 @@ class Metrics {
                                             ukm::SourceId source_id,
                                             TriggerUIType trigger_ui_type,
                                             TriggerScriptOnboarding event);
+  static void RecordInChromeTriggerAction(ukm::UkmRecorder* ukm_recorder,
+                                          ukm::SourceId source_id,
+                                          InChromeTriggerAction event);
   static void RecordOnboardingResult(OnBoarding event);
   static void RecordFeatureModuleInstallation(FeatureModuleInstallation event);
 

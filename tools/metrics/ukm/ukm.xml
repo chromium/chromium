@@ -1767,6 +1767,31 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AutofillAssistant.InChromeTriggering">
+  <owner>arbesser@google.com</owner>
+  <owner>mcarlen@google.com</owner>
+  <owner>marianfe@google.com</owner>
+  <summary>
+    Recorded when a navigation finishes successfully (is committed and not an
+    error page), if autofill_assistant and its proactive help setting are
+    enabled and MSBB is turned on.
+  </summary>
+  <metric name="InChromeTriggerAction"
+      enum="AutofillAssistantInChromeTriggerAction">
+    <summary>
+      An enum that captures the trigger action the client chose for a specific
+      URL.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="AutofillAssistant.LiteScriptFinished">
   <owner>arbesser@google.com</owner>
   <owner>mcarlen@google.com</owner>

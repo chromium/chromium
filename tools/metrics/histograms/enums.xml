@@ -5030,6 +5030,14 @@ others/histograms.xml -->
   <int value="3" label="Already installed"/>
 </enum>
 
+<enum name="AutofillAssistantInChromeTriggerAction">
+  <int value="0" label="Other"/>
+  <int value="1" label="User denylisted domain"/>
+  <int value="2" label="Cache hit, unsupported domain"/>
+  <int value="3" label="No heuristic match"/>
+  <int value="4" label="Trigger script requested"/>
+</enum>
+
 <enum name="AutofillAssistantLiteScriptFinished">
   <int value="0" label="Unknown failure"/>
   <int value="1" label="Service deleted"/>

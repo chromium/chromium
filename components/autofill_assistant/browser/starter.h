@@ -72,7 +72,8 @@ class Starter : public content::WebContentsObserver {
 
   // Starts a flow for |url| if possible. Will fail (do nothing) if the feature
   // is disabled or if there is already a pending startup.
-  void MaybeStartImplicitlyForUrl(const GURL& url);
+  void MaybeStartImplicitlyForUrl(const GURL& url,
+                                  const ukm::SourceId source_id);
 
   // Cancels the currently pending startup request, if any. If a trigger script
   // is currently running, this will record |state| as the reason for stopping.
@@ -118,7 +119,9 @@ class Starter : public content::WebContentsObserver {
       absl::optional<TriggerScriptProto> trigger_script = absl::nullopt);
 
   // Called when the heuristic result for |url| is available.
-  void OnHeuristicMatch(const GURL& url, absl::optional<std::string> intent);
+  void OnHeuristicMatch(const GURL& url,
+                        const ukm::SourceId source_id,
+                        absl::optional<std::string> intent);
 
   // Returns whether there is a currently pending call to |Start| or not.
   bool IsStartupPending() const;

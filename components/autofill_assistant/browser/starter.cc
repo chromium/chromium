@@ -249,11 +249,15 @@ void Starter::DidFinishNavigation(
   }
 
   if (navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage()) {
-    MaybeStartImplicitlyForUrl(navigation_handle->GetURL());
+    MaybeStartImplicitlyForUrl(
+        navigation_handle->GetURL(),
+        ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
+                               ukm::SourceIdType::NAVIGATION_ID));
   }
 }
 
-void Starter::MaybeStartImplicitlyForUrl(const GURL& url) {
+void Starter::MaybeStartImplicitlyForUrl(const GURL& url,
+                                         const ukm::SourceId source_id) {
   if (!fetch_trigger_scripts_on_navigation_ || IsStartupPending() ||
       platform_delegate_->IsRegularScriptRunning() || !url.is_valid()) {
     return;
@@ -263,24 +267,44 @@ void Starter::MaybeStartImplicitlyForUrl(const GURL& url) {
   // the user has denylisted the domain, don't try again.
   base::TimeTicks now_ticks = tick_clock_->NowTicks();
   if (HasFreshCacheEntry(*cached_failed_trigger_script_fetches_, url,
-                         now_ticks - kMaxFailedTriggerScriptsCacheDuration) ||
-      HasFreshCacheEntry(user_denylisted_domains_, url,
+                         now_ticks - kMaxFailedTriggerScriptsCacheDuration)) {
+    Metrics::RecordInChromeTriggerAction(
+        ukm_recorder_, source_id,
+        Metrics::InChromeTriggerAction::CACHE_HIT_UNSUPPORTED_DOMAIN);
+    return;
+  }
+  if (HasFreshCacheEntry(user_denylisted_domains_, url,
                          now_ticks - kMaxUserDenylistedCacheDuration)) {
+    Metrics::RecordInChromeTriggerAction(
+        ukm_recorder_, source_id,
+        Metrics::InChromeTriggerAction::USER_DENYLISTED_DOMAIN);
     return;
   }
 
   // Run the heuristic in a separate task.
   starter_heuristic_->RunHeuristicAsync(
       url, base::BindOnce(&Starter::OnHeuristicMatch,
-                          weak_ptr_factory_.GetWeakPtr(), url));
+                          weak_ptr_factory_.GetWeakPtr(), url, source_id));
 }
 
 void Starter::OnHeuristicMatch(const GURL& url,
+                               const ukm::SourceId source_id,
                                absl::optional<std::string> intent) {
-  if (!intent || IsStartupPending() || !fetch_trigger_scripts_on_navigation_) {
+  if (!intent) {
+    Metrics::RecordInChromeTriggerAction(
+        ukm_recorder_, source_id,
+        Metrics::InChromeTriggerAction::NO_HEURISTIC_MATCH);
+    return;
+  }
+  if (IsStartupPending() || !fetch_trigger_scripts_on_navigation_) {
+    Metrics::RecordInChromeTriggerAction(ukm_recorder_, source_id,
+                                         Metrics::InChromeTriggerAction::OTHER);
     return;
   }
 
+  Metrics::RecordInChromeTriggerAction(
+      ukm_recorder_, source_id,
+      Metrics::InChromeTriggerAction::TRIGGER_SCRIPT_REQUESTED);
   std::map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
@@ -369,7 +393,9 @@ void Starter::CheckSettings() {
     }
   } else if (!prev_fetch_trigger_scripts_on_navigation &&
              fetch_trigger_scripts_on_navigation_) {
-    MaybeStartImplicitlyForUrl(web_contents()->GetLastCommittedURL());
+    MaybeStartImplicitlyForUrl(
+        web_contents()->GetLastCommittedURL(),
+        ukm::GetSourceIdForWebContentsDocument(web_contents()));
   }
 }
 

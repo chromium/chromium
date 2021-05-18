@@ -230,6 +230,15 @@ void Metrics::RecordTriggerScriptOnboarding(ukm::UkmRecorder* ukm_recorder,
 }
 
 // static
+void Metrics::RecordInChromeTriggerAction(ukm::UkmRecorder* ukm_recorder,
+                                          ukm::SourceId source_id,
+                                          InChromeTriggerAction event) {
+  ukm::builders::AutofillAssistant_InChromeTriggering(source_id)
+      .SetInChromeTriggerAction(static_cast<int64_t>(event))
+      .Record(ukm_recorder);
+}
+
+// static
 void Metrics::RecordOnboardingResult(OnBoarding event) {
   DCHECK_LE(event, OnBoarding::kMaxValue);
   base::UmaHistogramEnumeration(kOnboardingEnumName, event);
