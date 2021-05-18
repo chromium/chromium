@@ -77,8 +77,6 @@ AuthenticationService::AuthenticationService(
       sync_setup_service_(sync_setup_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
-      identity_service_observer_(this),
-      identity_manager_observer_(this),
       weak_pointer_factory_(this) {
   DCHECK(pref_service_);
   DCHECK(sync_setup_service_);
@@ -112,14 +110,14 @@ void AuthenticationService::Initialize(
 
   crash_keys::SetCurrentlySignedIn(IsAuthenticated());
 
-  identity_service_observer_.Add(
+  identity_service_observation_.Observe(
       ios::GetChromeBrowserProvider()->GetChromeIdentityService());
 
   OnApplicationWillEnterForeground();
 }
 
 void AuthenticationService::Shutdown() {
-  identity_manager_observer_.RemoveAll();
+  identity_manager_observation_.Reset();
   delegate_.reset();
 }
 
@@ -127,7 +125,7 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
   if (InForeground())
     return;
 
-  identity_manager_observer_.Add(identity_manager_);
+  identity_manager_observation_.Observe(identity_manager_);
 
   // As the SSO library does not send notification when the app is in the
   // background, reload the credentials and check whether any accounts have
@@ -172,8 +170,9 @@ void AuthenticationService::OnApplicationDidEnterBackground() {
 
   // Stop observing |identity_manager_| when in the background. Note that
   // this allows checking whether the app is in background without having a
-  // separate bool by using identity_manager_observer_.IsObservingSources().
-  identity_manager_observer_.Remove(identity_manager_);
+  // separate bool by using identity_manager_observation_.IsObserving().
+  DCHECK(identity_manager_observation_.IsObservingSource(identity_manager_));
+  identity_manager_observation_.Reset();
 
   // Reset the state |have_accounts_changed_while_in_background_| as the
   // application just entered background.
@@ -181,9 +180,9 @@ void AuthenticationService::OnApplicationDidEnterBackground() {
 }
 
 bool AuthenticationService::InForeground() const {
-  // The application is in foreground when |identity_manager_observer_| is
+  // The application is in foreground when |identity_manager_observation_| is
   // observing sources.
-  return identity_manager_observer_.IsObservingSources();
+  return identity_manager_observation_.IsObserving();
 }
 
 void AuthenticationService::SetPromptForSignIn() {
@@ -456,8 +455,8 @@ bool AuthenticationService::ShowMDMErrorDialogForIdentity(
 }
 
 void AuthenticationService::ResetChromeIdentityServiceObserverForTesting() {
-  DCHECK(!identity_service_observer_.IsObservingSources());
-  identity_service_observer_.Add(
+  DCHECK(!identity_service_observation_.IsObserving());
+  identity_service_observation_.Observe(
       ios::GetChromeBrowserProvider()->GetChromeIdentityService());
 }
 
@@ -542,7 +541,7 @@ void AuthenticationService::OnAccessTokenRefreshFailed(
 }
 
 void AuthenticationService::OnChromeIdentityServiceWillBeDestroyed() {
-  identity_service_observer_.RemoveAll();
+  identity_service_observation_.Reset();
 }
 
 void AuthenticationService::HandleIdentityListChanged() {

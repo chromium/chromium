@@ -27,9 +27,9 @@ SigninBrowserStateInfoUpdater::SigninBrowserStateInfoUpdater(
   if (!GetApplicationContext()->GetChromeBrowserStateManager())
     return;
 
-  identity_manager_observer_.Add(identity_manager_);
+  identity_manager_observation_.Observe(identity_manager_);
 
-  signin_error_controller_observer_.Add(signin_error_controller);
+  signin_error_controller_observation_.Observe(signin_error_controller);
 
   UpdateBrowserStateInfo();
   // TODO(crbug.com/908457): Call OnErrorChanged() here, to catch any change
@@ -40,8 +40,8 @@ SigninBrowserStateInfoUpdater::SigninBrowserStateInfoUpdater(
 SigninBrowserStateInfoUpdater::~SigninBrowserStateInfoUpdater() = default;
 
 void SigninBrowserStateInfoUpdater::Shutdown() {
-  identity_manager_observer_.RemoveAll();
-  signin_error_controller_observer_.RemoveAll();
+  identity_manager_observation_.Reset();
+  signin_error_controller_observation_.Reset();
 }
 
 void SigninBrowserStateInfoUpdater::UpdateBrowserStateInfo() {
