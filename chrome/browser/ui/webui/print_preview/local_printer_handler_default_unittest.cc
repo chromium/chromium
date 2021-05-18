@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/common/printing/printer_capabilities.h"
 #include "chrome/test/base/testing_profile.h"
@@ -65,37 +66,70 @@ base::Value GetJSONAsValue(const base::StringPiece& json, std::string& error) {
 
 }  // namespace
 
-class LocalPrinterHandlerDefaultTest : public testing::TestWithParam<bool> {
+// Base testing class for `LocalPrinterHandlerDefault`.  Contains the base
+// logic to allow for using either a local task runner or a service to make
+// print backend calls, and to possibly enable fallback when using a service.
+// Tests to trigger those different paths can be done by overloading
+// `UseService()` and `SupportFallback()`.
+class LocalPrinterHandlerDefaultTestBase : public testing::Test {
  public:
-  LocalPrinterHandlerDefaultTest() = default;
-  LocalPrinterHandlerDefaultTest(const LocalPrinterHandlerDefaultTest&) =
-      delete;
-  LocalPrinterHandlerDefaultTest& operator=(
-      const LocalPrinterHandlerDefaultTest&) = delete;
-  ~LocalPrinterHandlerDefaultTest() override = default;
+  LocalPrinterHandlerDefaultTestBase() = default;
+  LocalPrinterHandlerDefaultTestBase(
+      const LocalPrinterHandlerDefaultTestBase&) = delete;
+  LocalPrinterHandlerDefaultTestBase& operator=(
+      const LocalPrinterHandlerDefaultTestBase&) = delete;
+  ~LocalPrinterHandlerDefaultTestBase() override = default;
 
-  TestPrintBackend* print_backend() { return test_backend_.get(); }
+  TestPrintBackend* sandboxed_print_backend() {
+    return sandboxed_test_backend_.get();
+  }
+  TestPrintBackend* unsandboxed_print_backend() {
+    return unsandboxed_test_backend_.get();
+  }
+
+  // Indicate if calls to print backend should be made using a service instead
+  // of a local task runner.
+  virtual bool UseService() = 0;
+
+  // Indicate if fallback support for access-denied errors should be included
+  // when using a service for print backend calls.
+  virtual bool SupportFallback() = 0;
 
   void SetUp() override {
     // Choose between running with local test runner or via a service.
-    const bool use_backend_service = GetParam();
     feature_list_.InitWithFeatureState(features::kEnableOopPrintDrivers,
-                                       use_backend_service);
+                                       UseService());
 
     TestingProfile::Builder builder;
     profile_ = builder.Build();
     initiator_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_.get()));
-    test_backend_ = base::MakeRefCounted<TestPrintBackend>();
-    PrintBackend::SetPrintBackendForTesting(test_backend_.get());
+    sandboxed_test_backend_ = base::MakeRefCounted<TestPrintBackend>();
+
     local_printer_handler_ =
         std::make_unique<LocalPrinterHandlerDefault>(initiator_.get());
 
-    if (use_backend_service) {
-      print_backend_service_ = PrintBackendServiceTestImpl::LaunchForTesting(
-          test_remote_, test_backend_);
+    if (UseService()) {
+      sandboxed_print_backend_service_ =
+          PrintBackendServiceTestImpl::LaunchForTesting(sandboxed_test_remote_,
+                                                        sandboxed_test_backend_,
+                                                        /*sandboxed=*/true);
+      if (SupportFallback()) {
+        unsandboxed_test_backend_ = base::MakeRefCounted<TestPrintBackend>();
+
+        unsandboxed_print_backend_service_ =
+            PrintBackendServiceTestImpl::LaunchForTesting(
+                unsandboxed_test_remote_, unsandboxed_test_backend_,
+                /*sandboxed=*/false);
+      }
+    } else {
+      // Use of task runners will call `PrintBackend::CreateInstance()`, which
+      // needs a test backend registered for it to use.
+      PrintBackend::SetPrintBackendForTesting(sandboxed_test_backend_.get());
     }
   }
+
+  void TearDown() override { PrintBackendServiceManager::ResetForTesting(); }
 
   void AddPrinter(const std::string& id,
                   const std::string& display_name,
@@ -109,11 +143,22 @@ class LocalPrinterHandlerDefaultTest : public testing::TestWithParam<bool> {
         id, display_name, description,
         /*printer_status=*/0, is_default, PrinterBasicInfoOptions{});
 
+    if (SupportFallback()) {
+      // Need to populate same values into a second print backend.
+      // For fallback they will always be treated as valid.
+      auto caps_unsandboxed =
+          std::make_unique<PrinterSemanticCapsAndDefaults>(*caps);
+      auto basic_info_unsandboxed =
+          std::make_unique<PrinterBasicInfo>(*basic_info);
+      unsandboxed_print_backend()->AddValidPrinter(
+          id, std::move(caps_unsandboxed), std::move(basic_info_unsandboxed));
+    }
+
     if (requires_elevated_permissions) {
-      print_backend()->AddAccessDeniedPrinter(id);
+      sandboxed_print_backend()->AddAccessDeniedPrinter(id);
     } else {
-      print_backend()->AddValidPrinter(id, std::move(caps),
-                                       std::move(basic_info));
+      sandboxed_print_backend()->AddValidPrinter(id, std::move(caps),
+                                                 std::move(basic_info));
     }
   }
 
@@ -128,19 +173,60 @@ class LocalPrinterHandlerDefaultTest : public testing::TestWithParam<bool> {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> initiator_;
-  scoped_refptr<TestPrintBackend> test_backend_;
+  scoped_refptr<TestPrintBackend> sandboxed_test_backend_;
+  scoped_refptr<TestPrintBackend> unsandboxed_test_backend_;
   std::unique_ptr<LocalPrinterHandlerDefault> local_printer_handler_;
 
   // Support for testing via a service instead of with a local task runner.
   base::test::ScopedFeatureList feature_list_;
-  mojo::Remote<mojom::PrintBackendService> test_remote_;
-  std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
+  mojo::Remote<mojom::PrintBackendService> sandboxed_test_remote_;
+  mojo::Remote<mojom::PrintBackendService> unsandboxed_test_remote_;
+  std::unique_ptr<PrintBackendServiceTestImpl> sandboxed_print_backend_service_;
+  std::unique_ptr<PrintBackendServiceTestImpl>
+      unsandboxed_print_backend_service_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, LocalPrinterHandlerDefaultTest, testing::Bool());
+// Testing class to cover `LocalPrinterHandlerDefault` handling using either a
+// local task runner or a service.  Makes no attempt to cover fallback when
+// using a service, which is handled separately by
+// `LocalPrinterHandlerDefaultTestFallback`
+class LocalPrinterHandlerDefaultTestProcess
+    : public LocalPrinterHandlerDefaultTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  LocalPrinterHandlerDefaultTestProcess() = default;
+  LocalPrinterHandlerDefaultTestProcess(
+      const LocalPrinterHandlerDefaultTestProcess&) = delete;
+  LocalPrinterHandlerDefaultTestProcess& operator=(
+      const LocalPrinterHandlerDefaultTestProcess&) = delete;
+  ~LocalPrinterHandlerDefaultTestProcess() override = default;
+
+  bool UseService() override { return GetParam(); }
+  bool SupportFallback() override { return false; }
+};
+
+// Testing class to cover `LocalPrinterHandlerDefault` handling using only a
+// service, and to check different behavior for whether fallback is enabled.
+class LocalPrinterHandlerDefaultTestFallback
+    : public LocalPrinterHandlerDefaultTestBase {
+ public:
+  LocalPrinterHandlerDefaultTestFallback() = default;
+  LocalPrinterHandlerDefaultTestFallback(
+      const LocalPrinterHandlerDefaultTestFallback&) = delete;
+  LocalPrinterHandlerDefaultTestFallback& operator=(
+      const LocalPrinterHandlerDefaultTestFallback&) = delete;
+  ~LocalPrinterHandlerDefaultTestFallback() override = default;
+
+  bool UseService() override { return true; }
+  bool SupportFallback() override { return true; }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         LocalPrinterHandlerDefaultTestProcess,
+                         testing::Bool());
 
 // Tests that getting default printer is successful.
-TEST_P(LocalPrinterHandlerDefaultTest, GetDefaultPrinter) {
+TEST_P(LocalPrinterHandlerDefaultTestProcess, GetDefaultPrinter) {
   AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
              /*requires_elevated_permissions=*/false);
   AddPrinter("printer2", "non-default2", "description2", /*is_default=*/false,
@@ -159,7 +245,7 @@ TEST_P(LocalPrinterHandlerDefaultTest, GetDefaultPrinter) {
 
 // Tests that getting default printer gives empty string when no printers are
 // installed.
-TEST_P(LocalPrinterHandlerDefaultTest, GetDefaultPrinterNoneInstalled) {
+TEST_P(LocalPrinterHandlerDefaultTestProcess, GetDefaultPrinterNoneInstalled) {
   std::string default_printer = "dummy";
   local_printer_handler()->GetDefaultPrinter(
       base::BindOnce(&RecordGetDefaultPrinter, std::ref(default_printer)));
@@ -169,7 +255,7 @@ TEST_P(LocalPrinterHandlerDefaultTest, GetDefaultPrinterNoneInstalled) {
   EXPECT_TRUE(default_printer.empty());
 }
 
-TEST_P(LocalPrinterHandlerDefaultTest, GetPrinters) {
+TEST_P(LocalPrinterHandlerDefaultTestProcess, GetPrinters) {
   AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
              /*requires_elevated_permissions=*/false);
   AddPrinter("printer2", "non-default2", "description2", /*is_default=*/false,
@@ -221,7 +307,7 @@ TEST_P(LocalPrinterHandlerDefaultTest, GetPrinters) {
   EXPECT_EQ(*printers, expected_printers);
 }
 
-TEST_P(LocalPrinterHandlerDefaultTest, GetPrintersNoneRegistered) {
+TEST_P(LocalPrinterHandlerDefaultTestProcess, GetPrintersNoneRegistered) {
   size_t call_count = 0;
   std::unique_ptr<base::ListValue> printers;
   bool is_done = false;
@@ -241,24 +327,24 @@ TEST_P(LocalPrinterHandlerDefaultTest, GetPrintersNoneRegistered) {
 
 // Tests that fetching capabilities for an existing installed printer is
 // successful.
-TEST_P(LocalPrinterHandlerDefaultTest, StartGetCapabilityValidPrinter) {
+TEST_P(LocalPrinterHandlerDefaultTestProcess, StartGetCapabilityValidPrinter) {
   AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
              /*requires_elevated_permissions=*/false);
 
-  base::Value fetched_caps;
+  base::Value fetched_caps("dummy");
   local_printer_handler()->StartGetCapability(
       "printer1", base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
 
   RunUntilIdle();
 
-  ASSERT_TRUE(fetched_caps.is_dict());
-  EXPECT_TRUE(fetched_caps.FindKey(kSettingCapabilities));
-  EXPECT_TRUE(fetched_caps.FindKey(kPrinter));
+  EXPECT_TRUE(fetched_caps.FindDictKey(kSettingCapabilities));
+  EXPECT_TRUE(fetched_caps.FindDictKey(kPrinter));
 }
 
 // Tests that fetching capabilities bails early when the provided printer
 // can't be found.
-TEST_P(LocalPrinterHandlerDefaultTest, StartGetCapabilityInvalidPrinter) {
+TEST_P(LocalPrinterHandlerDefaultTestProcess,
+       StartGetCapabilityInvalidPrinter) {
   base::Value fetched_caps("dummy");
   local_printer_handler()->StartGetCapability(
       /*destination_id=*/"invalid printer",
@@ -271,7 +357,7 @@ TEST_P(LocalPrinterHandlerDefaultTest, StartGetCapabilityInvalidPrinter) {
 
 // Test that installed printers to which the user does not have permission to
 // access will fail to get any capabilities.
-TEST_P(LocalPrinterHandlerDefaultTest, StartGetCapabilityAccessDenied) {
+TEST_P(LocalPrinterHandlerDefaultTestProcess, StartGetCapabilityAccessDenied) {
   AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
              /*requires_elevated_permissions=*/true);
 
@@ -283,6 +369,32 @@ TEST_P(LocalPrinterHandlerDefaultTest, StartGetCapabilityAccessDenied) {
   RunUntilIdle();
 
   EXPECT_TRUE(fetched_caps.is_none());
+}
+
+// Tests that fetching capabilities can eventually succeed with fallback
+// processing when a printer requires elevated permissions.
+TEST_F(LocalPrinterHandlerDefaultTestFallback,
+       StartGetCapabilityElevatedPermissionsSucceeds) {
+  AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
+             /*requires_elevated_permissions=*/true);
+
+  // Note that printer does not initially show as requiring elevated privileges.
+  EXPECT_FALSE(PrintBackendServiceManager::GetInstance()
+                   .PrinterDriverRequiresElevatedPrivilege("printer1"));
+
+  base::Value fetched_caps("dummy");
+  local_printer_handler()->StartGetCapability(
+      /*destination_id=*/"printer1",
+      base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
+
+  RunUntilIdle();
+
+  EXPECT_TRUE(fetched_caps.FindDictKey(kSettingCapabilities));
+  EXPECT_TRUE(fetched_caps.FindDictKey(kPrinter));
+
+  // Verify that this printer now shows up as requiring elevated privileges.
+  EXPECT_TRUE(PrintBackendServiceManager::GetInstance()
+                  .PrinterDriverRequiresElevatedPrivilege("printer1"));
 }
 
 }  // namespace printing

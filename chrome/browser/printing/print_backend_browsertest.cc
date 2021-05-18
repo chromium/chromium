@@ -70,7 +70,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
   // Initialize and load the backend service with some test print drivers.
   void LaunchService() {
     print_backend_service_ = PrintBackendServiceTestImpl::LaunchForTesting(
-        remote_, test_print_backend_);
+        remote_, test_print_backend_, /*sandboxed=*/true);
   }
 
   // Load the test backend with a default printer driver.

@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/printing/test_cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/test_printer_configurer.h"
+#include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -142,24 +143,70 @@ class FakePpdProvider : public chromeos::PpdProvider {
 
 }  // namespace
 
-class LocalPrinterHandlerChromeosTest : public testing::Test {
+// Base testing class for `LocalPrinterHandlerChromeos`.  Contains the base
+// logic to allow for using either a local task runner or a service to make
+// print backend calls, and to possibly enable fallback when using a service.
+// Tests to trigger those different paths can be done by overloading
+// `UseService()` and `SupportFallback()`.
+class LocalPrinterHandlerChromeosTestBase : public testing::Test {
  public:
-  LocalPrinterHandlerChromeosTest() = default;
-  LocalPrinterHandlerChromeosTest(const LocalPrinterHandlerChromeosTest&) =
-      delete;
-  LocalPrinterHandlerChromeosTest& operator=(
-      const LocalPrinterHandlerChromeosTest&) = delete;
-  ~LocalPrinterHandlerChromeosTest() override = default;
+  LocalPrinterHandlerChromeosTestBase() = default;
+  LocalPrinterHandlerChromeosTestBase(
+      const LocalPrinterHandlerChromeosTestBase&) = delete;
+  LocalPrinterHandlerChromeosTestBase& operator=(
+      const LocalPrinterHandlerChromeosTestBase&) = delete;
+  ~LocalPrinterHandlerChromeosTestBase() override = default;
+
+  TestPrintBackend* sandboxed_print_backend() {
+    return sandboxed_test_backend_.get();
+  }
+  TestPrintBackend* unsandboxed_print_backend() {
+    return unsandboxed_test_backend_.get();
+  }
+
+  // Indicate if calls to print backend should be made using a service instead
+  // of a local task runner.
+  virtual bool UseService() = 0;
+
+  // Indicate if fallback support for access-denied errors should be included
+  // when using a service for print backend calls.
+  virtual bool SupportFallback() = 0;
 
   void SetUp() override {
-    test_backend_ = base::MakeRefCounted<TestPrintBackend>();
-    PrintBackend::SetPrintBackendForTesting(test_backend_.get());
+    // Choose between running with local test runner or via a service.
+    feature_list_.InitWithFeatureState(features::kEnableOopPrintDrivers,
+                                       UseService());
+
+    sandboxed_test_backend_ = base::MakeRefCounted<TestPrintBackend>();
     ppd_provider_ = base::MakeRefCounted<FakePpdProvider>();
     local_printer_handler_ = LocalPrinterHandlerChromeos::CreateForTesting(
         &profile_, nullptr, &printers_manager_,
         std::make_unique<chromeos::TestPrinterConfigurer>(), ppd_provider_);
+
+    if (UseService()) {
+      sandboxed_print_backend_service_ =
+          PrintBackendServiceTestImpl::LaunchForTesting(sandboxed_test_remote_,
+                                                        sandboxed_test_backend_,
+                                                        /*sandboxed=*/true);
+
+      if (SupportFallback()) {
+        unsandboxed_test_backend_ = base::MakeRefCounted<TestPrintBackend>();
+
+        unsandboxed_print_backend_service_ =
+            PrintBackendServiceTestImpl::LaunchForTesting(
+                unsandboxed_test_remote_, unsandboxed_test_backend_,
+                /*sandboxed=*/false);
+      }
+    } else {
+      // Use of task runners will call `PrintBackend::CreateInstance()`, which
+      // needs a test backend registered for it to use.
+      PrintBackend::SetPrintBackendForTesting(sandboxed_test_backend_.get());
+    }
   }
 
+  void TearDown() override { PrintBackendServiceManager::ResetForTesting(); }
+
+ protected:
   void AddPrinter(const std::string& id,
                   const std::string& display_name,
                   const std::string& description,
@@ -170,19 +217,29 @@ class LocalPrinterHandlerChromeosTest : public testing::Test {
     auto basic_info = std::make_unique<PrinterBasicInfo>(
         id, display_name, description, /*printer_status=*/0, is_default,
         PrinterBasicInfoOptions{});
+
+    if (SupportFallback()) {
+      // Need to populate same values into a second print backend.
+      // For fallback they will always be treated as valid.
+      auto caps_unsandboxed =
+          std::make_unique<PrinterSemanticCapsAndDefaults>(*caps);
+      auto basic_info_unsandboxed =
+          std::make_unique<PrinterBasicInfo>(*basic_info);
+      unsandboxed_print_backend()->AddValidPrinter(
+          id, std::move(caps_unsandboxed), std::move(basic_info_unsandboxed));
+    }
+
     if (requires_elevated_permissions) {
-      test_backend_->AddAccessDeniedPrinter(id);
+      sandboxed_print_backend()->AddAccessDeniedPrinter(id);
     } else {
-      test_backend_->AddValidPrinter(id, std::move(caps),
-                                     std::move(basic_info));
+      sandboxed_print_backend()->AddValidPrinter(id, std::move(caps),
+                                                 std::move(basic_info));
     }
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   TestingProfile& profile() { return profile_; }
-
-  scoped_refptr<TestPrintBackend> test_backend() { return test_backend_; }
 
   chromeos::TestCupsPrintersManager& printers_manager() {
     return printers_manager_;
@@ -197,17 +254,43 @@ class LocalPrinterHandlerChromeosTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   // Must outlive `printers_manager_`.
   TestingProfile profile_;
-  scoped_refptr<TestPrintBackend> test_backend_;
+  scoped_refptr<TestPrintBackend> sandboxed_test_backend_;
+  scoped_refptr<TestPrintBackend> unsandboxed_test_backend_;
   chromeos::TestCupsPrintersManager printers_manager_;
   scoped_refptr<FakePpdProvider> ppd_provider_;
   std::unique_ptr<LocalPrinterHandlerChromeos> local_printer_handler_;
+
+  // Support for testing via a service instead of with a local task runner.
+  base::test::ScopedFeatureList feature_list_;
+  mojo::Remote<mojom::PrintBackendService> sandboxed_test_remote_;
+  mojo::Remote<mojom::PrintBackendService> unsandboxed_test_remote_;
+  std::unique_ptr<PrintBackendServiceTestImpl> sandboxed_print_backend_service_;
+  std::unique_ptr<PrintBackendServiceTestImpl>
+      unsandboxed_print_backend_service_;
 };
 
-// `LocalPrinterHandlerChromeosProcessScopeTest` performs test which make use
-// of the print backend and can utilize that in different process scopes, be
-// that in-process via a local task runner or out-of-process through a service.
+// Testing class to cover `LocalPrinterHandlerChromeos` handling using a local
+// task runner.
+class LocalPrinterHandlerChromeosTest
+    : public LocalPrinterHandlerChromeosTestBase {
+ public:
+  LocalPrinterHandlerChromeosTest() = default;
+  LocalPrinterHandlerChromeosTest(const LocalPrinterHandlerChromeosTest&) =
+      delete;
+  LocalPrinterHandlerChromeosTest& operator=(
+      const LocalPrinterHandlerChromeosTest&) = delete;
+  ~LocalPrinterHandlerChromeosTest() override = default;
+
+  bool UseService() override { return false; }
+  bool SupportFallback() override { return false; }
+};
+
+// Testing class to cover `LocalPrinterHandlerChromeos` handling using either a
+// local task runner or a service.  Makes no attempt to cover fallback when
+// using a service, which is handled separately by
+// `LocalPrinterHandlerChromeosFallbackTest`
 class LocalPrinterHandlerChromeosProcessScopeTest
-    : public LocalPrinterHandlerChromeosTest,
+    : public LocalPrinterHandlerChromeosTestBase,
       public testing::WithParamInterface<bool> {
  public:
   LocalPrinterHandlerChromeosProcessScopeTest() = default;
@@ -217,22 +300,24 @@ class LocalPrinterHandlerChromeosProcessScopeTest
       const LocalPrinterHandlerChromeosProcessScopeTest&) = delete;
   ~LocalPrinterHandlerChromeosProcessScopeTest() override = default;
 
-  void SetUp() override {
-    // Choose between running with local test runner or via a service.
-    LocalPrinterHandlerChromeosTest::SetUp();
-    const bool use_backend_service = GetParam();
-    if (use_backend_service) {
-      feature_list_.InitAndEnableFeature(features::kEnableOopPrintDrivers);
-      print_backend_service_ = PrintBackendServiceTestImpl::LaunchForTesting(
-          test_remote_, test_backend());
-    }
-  }
+  bool UseService() override { return GetParam(); }
+  bool SupportFallback() override { return false; }
+};
 
- private:
-  // Support for testing via a service instead of with a local task runner.
-  base::test::ScopedFeatureList feature_list_;
-  mojo::Remote<mojom::PrintBackendService> test_remote_;
-  std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
+// Testing class to cover `LocalPrinterHandlerChromeos` handling using only a
+// service and when fallback could yield different results.
+class LocalPrinterHandlerChromeosFallbackTest
+    : public LocalPrinterHandlerChromeosTestBase {
+ public:
+  LocalPrinterHandlerChromeosFallbackTest() = default;
+  LocalPrinterHandlerChromeosFallbackTest(
+      const LocalPrinterHandlerChromeosFallbackTest&) = delete;
+  LocalPrinterHandlerChromeosFallbackTest& operator=(
+      const LocalPrinterHandlerChromeosFallbackTest&) = delete;
+  ~LocalPrinterHandlerChromeosFallbackTest() override = default;
+
+  bool UseService() override { return true; }
+  bool SupportFallback() override { return true; }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -315,15 +400,14 @@ TEST_P(LocalPrinterHandlerChromeosProcessScopeTest,
   AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
              /*requires_elevated_permissions=*/false);
 
-  base::Value fetched_caps;
+  base::Value fetched_caps("dummy");
   local_printer_handler()->StartGetCapability(
       "printer1", base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
 
   RunUntilIdle();
 
-  ASSERT_TRUE(fetched_caps.is_dict());
-  EXPECT_TRUE(fetched_caps.FindKey(kSettingCapabilities));
-  EXPECT_TRUE(fetched_caps.FindKey(kPrinter));
+  EXPECT_TRUE(fetched_caps.FindDictKey(kSettingCapabilities));
+  EXPECT_TRUE(fetched_caps.FindDictKey(kPrinter));
 }
 
 // Test that printers which have not yet been installed are installed with
@@ -340,15 +424,14 @@ TEST_P(LocalPrinterHandlerChromeosProcessScopeTest,
   AddPrinter("printer1", "discovered", "description1", /*is_default=*/true,
              /*requires_elevated_permissions=*/false);
 
-  base::Value fetched_caps;
+  base::Value fetched_caps("dummy");
   local_printer_handler()->StartGetCapability(
       "printer1", base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
 
   RunUntilIdle();
 
-  ASSERT_TRUE(fetched_caps.is_dict());
-  EXPECT_TRUE(fetched_caps.FindKey(kSettingCapabilities));
-  EXPECT_TRUE(fetched_caps.FindKey(kPrinter));
+  EXPECT_TRUE(fetched_caps.FindDictKey(kSettingCapabilities));
+  EXPECT_TRUE(fetched_caps.FindDictKey(kPrinter));
 }
 
 // In this test we expect the `StartGetCapability` to bail early because the
@@ -379,17 +462,47 @@ TEST_P(LocalPrinterHandlerChromeosProcessScopeTest,
   AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
              /*requires_elevated_permissions=*/true);
 
-  base::Value fetched_caps;
+  base::Value fetched_caps("dummy");
   local_printer_handler()->StartGetCapability(
       "printer1", base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
 
   RunUntilIdle();
 
-  ASSERT_TRUE(fetched_caps.is_dict());
-  const base::Value* settings = fetched_caps.FindKey(kSettingCapabilities);
+  const base::Value* settings = fetched_caps.FindDictKey(kSettingCapabilities);
   ASSERT_TRUE(settings);
   ASSERT_TRUE(settings->is_dict());
   EXPECT_TRUE(settings->DictEmpty());
+}
+
+TEST_F(LocalPrinterHandlerChromeosFallbackTest,
+       StartGetCapabilityElevatedPermissionsSucceeds) {
+  Printer saved_printer =
+      CreateTestPrinter("printer1", "saved", "description1");
+  printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
+  printers_manager().InstallPrinter("printer1");
+
+  // Add printer capabilities to `test_backend_`.
+  AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
+             /*requires_elevated_permissions=*/true);
+
+  // Note that printer does not initially show as requiring elevated privileges.
+  EXPECT_FALSE(PrintBackendServiceManager::GetInstance()
+                   .PrinterDriverRequiresElevatedPrivilege("printer1"));
+
+  base::Value fetched_caps("dummy");
+  local_printer_handler()->StartGetCapability(
+      "printer1", base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
+
+  RunUntilIdle();
+
+  // Getting capabilities should succeed when fallback is supported.
+  const base::Value* settings = fetched_caps.FindDictKey(kSettingCapabilities);
+  ASSERT_TRUE(settings);
+  EXPECT_TRUE(settings->FindDictKey(kPrinter));
+
+  // Verify that this printer now shows up as requiring elevated privileges.
+  EXPECT_TRUE(PrintBackendServiceManager::GetInstance()
+                  .PrinterDriverRequiresElevatedPrivilege("printer1"));
 }
 
 TEST_F(LocalPrinterHandlerChromeosTest, GetNativePrinterPolicies) {

@@ -7,12 +7,14 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/no_destructor.h"
+#include "base/containers/flat_set.h"
+#include "base/logging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/service_sandbox_type.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -24,18 +26,38 @@ namespace {
 constexpr base::TimeDelta kResetOnIdleTimeout =
     base::TimeDelta::FromSeconds(20);
 
+PrintBackendServiceManager* g_print_backend_service_manager_singleton = nullptr;
+
 }  // namespace
 
 PrintBackendServiceManager::PrintBackendServiceManager() = default;
 
 PrintBackendServiceManager::~PrintBackendServiceManager() = default;
 
+bool PrintBackendServiceManager::ShouldSandboxPrintBackendService() const {
+  return sandbox_service_;
+}
+
 const mojo::Remote<printing::mojom::PrintBackendService>&
 PrintBackendServiceManager::GetService(const std::string& locale,
                                        const std::string& printer_name) {
-  if (service_remote_for_test_)
-    return *service_remote_for_test_;
+  // Value of `sandbox_service_` will be referenced during the service launch
+  // by `ShouldSandboxPrintBackendService()` if the service is started via
+  // `content::ServiceProcessHost::Launch()`.
+  sandbox_service_ = !PrinterDriverRequiresElevatedPrivilege(printer_name);
 
+  if (sandboxed_service_remote_for_test_) {
+    // The presence of a sandboxed remote for testing signals a testing
+    // environment.  If no unsandboxed test service was provided for fallback
+    // processing then use the sandboxed one for that as well.
+    if (!sandbox_service_ && unsandboxed_service_remote_for_test_)
+      return *unsandboxed_service_remote_for_test_;
+
+    return *sandboxed_service_remote_for_test_;
+  }
+
+  RemotesMap& remote =
+      sandbox_service_ ? sandbox_remotes_ : unsandboxed_remotes_;
   std::string remote_id;
 #if defined(OS_WIN)
   // Windows drivers are not thread safe.  Use a process per driver to prevent
@@ -43,16 +65,19 @@ PrintBackendServiceManager::GetService(const std::string& locale,
   // https://crbug.com/957242
   remote_id = printer_name;
 #endif
-  auto iter = remotes_.find(remote_id);
-  if (iter == remotes_.end()) {
+  auto iter = remote.find(remote_id);
+  if (iter == remote.end()) {
     // First time for this `remote_id`.
-    auto result = remotes_.emplace(
+    auto result = remote.emplace(
         printer_name, mojo::Remote<printing::mojom::PrintBackendService>());
     iter = result.first;
   }
 
   mojo::Remote<printing::mojom::PrintBackendService>& service = iter->second;
   if (!service) {
+    VLOG(1) << "Launching print backend "
+            << (sandbox_service_ ? "sandboxed" : "unsandboxed") << " for '"
+            << remote_id << "'";
     content::ServiceProcessHost::Launch(
         service.BindNewPipeAndPassReceiver(),
         content::ServiceProcessHost::Options()
@@ -82,15 +107,44 @@ PrintBackendServiceManager::GetService(const std::string& locale,
   return service;
 }
 
+bool PrintBackendServiceManager::PrinterDriverRequiresElevatedPrivilege(
+    const std::string& printer_name) const {
+  return drivers_requiring_elevated_privilege_.contains(printer_name);
+}
+
+void PrintBackendServiceManager::SetPrinterDriverRequiresElevatedPrivilege(
+    const std::string& printer_name) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  VLOG(1) << "Destination '" << printer_name
+          << "' requires elevated privileges.";
+  drivers_requiring_elevated_privilege_.emplace(printer_name);
+}
+
 void PrintBackendServiceManager::SetServiceForTesting(
     mojo::Remote<printing::mojom::PrintBackendService>* remote) {
-  service_remote_for_test_ = remote;
+  sandboxed_service_remote_for_test_ = remote;
+}
+
+void PrintBackendServiceManager::SetServiceForFallbackTesting(
+    mojo::Remote<printing::mojom::PrintBackendService>* remote) {
+  unsandboxed_service_remote_for_test_ = remote;
 }
 
 // static
 PrintBackendServiceManager& PrintBackendServiceManager::GetInstance() {
-  static base::NoDestructor<PrintBackendServiceManager> singleton;
-  return *singleton;
+  if (!g_print_backend_service_manager_singleton) {
+    g_print_backend_service_manager_singleton =
+        new PrintBackendServiceManager();
+  }
+  return *g_print_backend_service_manager_singleton;
+}
+
+// static
+void PrintBackendServiceManager::ResetForTesting() {
+  if (g_print_backend_service_manager_singleton) {
+    delete g_print_backend_service_manager_singleton;
+    g_print_backend_service_manager_singleton = nullptr;
+  }
 }
 
 }  // namespace printing

@@ -37,7 +37,8 @@ PrintBackendServiceTestImpl::LaunchUninitialized(
 std::unique_ptr<PrintBackendServiceTestImpl>
 PrintBackendServiceTestImpl::LaunchForTesting(
     mojo::Remote<mojom::PrintBackendService>& remote,
-    scoped_refptr<TestPrintBackend> backend) {
+    scoped_refptr<TestPrintBackend> backend,
+    bool sandboxed) {
   std::unique_ptr<PrintBackendServiceTestImpl> service =
       LaunchUninitialized(remote);
 
@@ -47,7 +48,12 @@ PrintBackendServiceTestImpl::LaunchForTesting(
 
   // Register this test version of print backend service to be used instead of
   // launching instances out-of-process on-demand.
-  PrintBackendServiceManager::GetInstance().SetServiceForTesting(&remote);
+  if (sandboxed) {
+    PrintBackendServiceManager::GetInstance().SetServiceForTesting(&remote);
+  } else {
+    PrintBackendServiceManager::GetInstance().SetServiceForFallbackTesting(
+        &remote);
+  }
 
   return service;
 }

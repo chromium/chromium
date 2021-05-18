@@ -33,9 +33,12 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
   void Init(const std::string& locale) override;
 
   // Launch the service in-process for testing using the provided backend.
+  // `sandboxed` identifies if this service is potentially subject to
+  // experiencing access-denied errors on some commands.
   static std::unique_ptr<PrintBackendServiceTestImpl> LaunchForTesting(
       mojo::Remote<mojom::PrintBackendService>& remote,
-      scoped_refptr<TestPrintBackend> backend);
+      scoped_refptr<TestPrintBackend> backend,
+      bool sandboxed);
 
  private:
   friend class PrintBackendBrowserTest;
@@ -43,6 +46,10 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
   // Launch the service in-process for testing without initializing backend.
   static std::unique_ptr<PrintBackendServiceTestImpl> LaunchUninitialized(
       mojo::Remote<mojom::PrintBackendService>& remote);
+
+  // When pretending to be sandboxed, have the possibility of getting access
+  // denied errors.
+  bool is_sandboxed_ = false;
 
   scoped_refptr<TestPrintBackend> test_print_backend_;
 };

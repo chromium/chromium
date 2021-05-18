@@ -9,7 +9,14 @@
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/service_process_host.h"
 #include "media/base/media_switches.h"
+#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/sandbox_type.h"
+
+#if (defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+     defined(OS_CHROMEOS)) &&                                   \
+    BUILDFLAG(ENABLE_PRINTING)
+#include "chrome/browser/printing/print_backend_service_manager.h"
+#endif
 
 // This file maps service classes to sandbox types.  Services which
 // require a non-utility sandbox can be added here.  See
@@ -105,6 +112,10 @@ content::GetServiceSandboxType<printing::mojom::PrintingService>() {
 }
 #endif  // defined(OS_WIN)
 
+// printing::mojom::PrintBackendService
+#if (defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+     defined(OS_CHROMEOS)) &&                                   \
+    BUILDFLAG(ENABLE_PRINTING)
 namespace printing {
 namespace mojom {
 class PrintBackendService;
@@ -114,8 +125,14 @@ class PrintBackendService;
 template <>
 inline sandbox::policy::SandboxType
 content::GetServiceSandboxType<printing::mojom::PrintBackendService>() {
-  return sandbox::policy::SandboxType::kPrintBackend;
+  return printing::PrintBackendServiceManager::GetInstance()
+                 .ShouldSandboxPrintBackendService()
+             ? sandbox::policy::SandboxType::kPrintBackend
+             : sandbox::policy::SandboxType::kNoSandbox;
 }
+#endif  // (defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
+        //  defined(OS_CHROMEOS)) &&
+        // BUILDFLAG(ENABLE_PRINTING)
 
 // proxy_resolver::mojom::ProxyResolverFactory
 #if defined(OS_WIN)

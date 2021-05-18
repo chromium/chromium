@@ -89,12 +89,37 @@ void OnDidEnumeratePrinters(
 
 void OnDidFetchCapabilities(
     const std::string& device_name,
+    bool elevated_privileges,
     bool has_secure_protocol,
     PrinterHandler::GetCapabilityCallback callback,
     mojom::PrinterCapsAndInfoResultPtr printer_caps_and_info) {
   if (printer_caps_and_info->is_result_code()) {
     LOG(WARNING) << "Failure fetching printer capabilities for " << device_name
                  << " - error " << printer_caps_and_info->get_result_code();
+
+    // If we failed because of access denied then we could retry at an elevated
+    // privilege (if not already elevated).
+    if (printer_caps_and_info->get_result_code() ==
+            mojom::ResultCode::kAccessDenied &&
+        !elevated_privileges) {
+      // Register that this printer requires elevated privileges.
+      PrintBackendServiceManager& service_mgr =
+          PrintBackendServiceManager::GetInstance();
+      service_mgr.SetPrinterDriverRequiresElevatedPrivilege(device_name);
+
+      // Retry the operation which should now happen at a higher privilege
+      // level.
+      auto& service = service_mgr.GetService(
+          g_browser_process->GetApplicationLocale(), device_name);
+      service->FetchCapabilities(
+          device_name,
+          base::BindOnce(&OnDidFetchCapabilities, device_name,
+                         /*elevated_privileges=*/true, has_secure_protocol,
+                         std::move(callback)));
+      return;
+    }
+
+    // Unable to fallback, call back without data.
     std::move(callback).Run(base::Value());
     return;
   }
@@ -237,12 +262,16 @@ void LocalPrinterHandlerDefault::StartGetCapability(
 
   if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     VLOG(1) << "Getting printer capabilities via service for " << device_name;
-    auto& service = PrintBackendServiceManager::GetInstance().GetService(
+    PrintBackendServiceManager& service_mgr =
+        PrintBackendServiceManager::GetInstance();
+    auto& service = service_mgr.GetService(
         g_browser_process->GetApplicationLocale(), device_name);
     service->FetchCapabilities(
         device_name,
-        base::BindOnce(&OnDidFetchCapabilities, device_name,
-                       /*has_secure_protocol=*/false, std::move(cb)));
+        base::BindOnce(
+            &OnDidFetchCapabilities, device_name,
+            service_mgr.PrinterDriverRequiresElevatedPrivilege(device_name),
+            /*has_secure_protocol=*/false, std::move(cb)));
   } else {
     VLOG(1) << "Getting printer capabilities in-process for " << device_name;
     base::PostTaskAndReplyWithResult(

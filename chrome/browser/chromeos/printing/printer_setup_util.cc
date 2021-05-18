@@ -110,15 +110,39 @@ FetchCapabilitiesOnBlockingTaskRunner(const std::string& printer_id,
 
 void CapabilitiesFetchedFromService(
     const std::string& printer_id,
+    bool elevated_privileges,
     GetPrinterCapabilitiesCallback cb,
     mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps) {
   if (printer_caps->is_result_code()) {
     LOG(WARNING) << "Failure fetching printer capabilities from service for "
                  << printer_id << " - error "
                  << printer_caps->get_result_code();
+
+    // If we failed because of access denied then we could retry at an elevated
+    // privilege (if not already elevated).
+    if (printer_caps->get_result_code() == mojom::ResultCode::kAccessDenied &&
+        !elevated_privileges) {
+      // Register that this printer requires elevated privileges.
+      PrintBackendServiceManager& service_mgr =
+          PrintBackendServiceManager::GetInstance();
+      service_mgr.SetPrinterDriverRequiresElevatedPrivilege(printer_id);
+
+      // Retry the operation which should now happen at a higher privilege
+      // level.
+      auto& service = service_mgr.GetService(
+          g_browser_process->GetApplicationLocale(), printer_id);
+      service->GetPrinterSemanticCapsAndDefaults(
+          printer_id,
+          base::BindOnce(&CapabilitiesFetchedFromService, printer_id,
+                         /*elevated_privileges=*/true, std::move(cb)));
+      return;
+    }
+
+    // Unable to fallback, call back without data.
     std::move(cb).Run(absl::nullopt);
     return;
   }
+
   VLOG(1) << "Successfully received printer capabilities from service for "
           << printer_id;
   std::move(cb).Run(printer_caps->get_printer_caps());
@@ -130,11 +154,16 @@ void FetchCapabilities(const std::string& printer_id,
 
   if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     VLOG(1) << "Fetching printer capabilities via service";
-    auto& service = PrintBackendServiceManager::GetInstance().GetService(
+    PrintBackendServiceManager& service_mgr =
+        PrintBackendServiceManager::GetInstance();
+    auto& service = service_mgr.GetService(
         g_browser_process->GetApplicationLocale(), printer_id);
     service->GetPrinterSemanticCapsAndDefaults(
-        printer_id, base::BindOnce(&CapabilitiesFetchedFromService, printer_id,
-                                   std::move(cb)));
+        printer_id,
+        base::BindOnce(
+            &CapabilitiesFetchedFromService, printer_id,
+            service_mgr.PrinterDriverRequiresElevatedPrivilege(printer_id),
+            std::move(cb)));
   } else {
     VLOG(1) << "Fetching printer capabilities in-process";
     // USER_VISIBLE because the result is displayed in the print preview dialog.
