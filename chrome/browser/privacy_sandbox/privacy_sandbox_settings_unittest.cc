@@ -5,11 +5,14 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 
 #include "base/test/gtest_util.h"
+#include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/util/values/values_util.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/federated_learning/floc_id_provider.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -33,10 +36,22 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/federated_learning/floc.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 namespace {
+
+class MockFlocIdProvider : public federated_learning::FlocIdProvider {
+ public:
+  blink::mojom::InterestCohortPtr GetInterestCohortForJsApi(
+      const GURL& url,
+      const absl::optional<url::Origin>& top_frame_origin) const override {
+    return blink::mojom::InterestCohort::New();
+  }
+  MOCK_METHOD(void, MaybeRecordFlocToUkm, (ukm::SourceId), (override));
+  MOCK_METHOD(base::Time, GetApproximateNextComputeTime, (), (const, override));
+};
 
 // Define an additional content setting value to simulate an unmanaged default
 // content setting.
@@ -894,16 +909,79 @@ TEST_F(PrivacySandboxSettingsTest, GetFlocIdForDisplay) {
             privacy_sandbox_settings()->GetFlocIdForDisplay());
 }
 
+TEST_F(PrivacySandboxSettingsTest, GetFlocIdNextUpdateForDisplay) {
+  // Check that date FLoC will be next updated is returned when available.
+  MockFlocIdProvider mock_floc_id_provider;
+  feature_list()->InitWithFeatures(
+      {blink::features::kInterestCohortAPIOriginTrial}, {});
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxApisEnabled, true);
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, true);
+
+  std::map<base::TimeDelta, std::u16string> offsets_to_expected_string = {
+      {base::TimeDelta::FromHours(23),
+       l10n_util::GetPluralStringFUTF16(
+           IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE, 0)},
+      {base::TimeDelta::FromHours(25),
+       l10n_util::GetPluralStringFUTF16(
+           IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE, 1)},
+      {base::TimeDelta::FromDays(2),
+       l10n_util::GetPluralStringFUTF16(
+           IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE, 2)},
+      {base::TimeDelta::FromHours(60),
+       l10n_util::GetPluralStringFUTF16(
+           IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE, 3)},
+      {base::TimeDelta::FromHours(167),  // 1 hour less than 7 days.
+       l10n_util::GetPluralStringFUTF16(
+           IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE, 7)}};
+
+  for (const auto& offset_expected : offsets_to_expected_string) {
+    EXPECT_CALL(mock_floc_id_provider, GetApproximateNextComputeTime)
+        .WillOnce(testing::Return(base::Time::Now() + offset_expected.first));
+    EXPECT_EQ(
+        offset_expected.second,
+        privacy_sandbox_settings()->GetFlocIdNextUpdateForDisplay(
+            &mock_floc_id_provider, profile()->GetPrefs(), base::Time::Now()));
+    testing::Mock::VerifyAndClearExpectations(&mock_floc_id_provider);
+  }
+
+  // Check that disabling FLoC is also reflected in the returned string.
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, false);
+  EXPECT_CALL(mock_floc_id_provider, GetApproximateNextComputeTime).Times(0);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+          IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE_INVALID),
+      privacy_sandbox_settings()->GetFlocIdNextUpdateForDisplay(
+          &mock_floc_id_provider, profile()->GetPrefs(), base::Time::Now()));
+  testing::Mock::VerifyAndClearExpectations(&mock_floc_id_provider);
+
+  // Disabling the FLoC feature should also invalidate the next compute time.
+  feature_list()->Reset();
+  feature_list()->InitWithFeatures(
+      {}, {blink::features::kInterestCohortAPIOriginTrial});
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, true);
+  testing::Mock::VerifyAndClearExpectations(&mock_floc_id_provider);
+}
+
 TEST_F(PrivacySandboxSettingsTest, GetFlocResetExplanationForDisplay) {
   // Check that the string description indicating what happens when the user
   // resets the FLoC ID updates appropriately based on the feature parameter.
   std::map<std::string, std::u16string> param_to_expected_string = {
       {"1h", l10n_util::GetPluralStringFUTF16(
                  IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, 0)},
+      {"23h", l10n_util::GetPluralStringFUTF16(
+                  IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, 0)},
       {"24h", l10n_util::GetPluralStringFUTF16(
                   IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, 1)},
+      {"25h", l10n_util::GetPluralStringFUTF16(
+                  IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, 1)},
+      {"60h", l10n_util::GetPluralStringFUTF16(
+                  IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, 3)},
       {"167h", l10n_util::GetPluralStringFUTF16(
-                   IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, 6)},
+                   IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, 7)},
       {"168h", l10n_util::GetPluralStringFUTF16(
                    IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, 7)}};
 

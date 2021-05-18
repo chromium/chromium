@@ -46,6 +46,10 @@ class FixedFlocIdProvider : public federated_learning::FlocIdProvider {
   }
 
   void MaybeRecordFlocToUkm(ukm::SourceId source_id) override {}
+
+  base::Time GetApproximateNextComputeTime() const override {
+    return base::Time();
+  }
 };
 
 }  // namespace

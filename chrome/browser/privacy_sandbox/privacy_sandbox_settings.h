@@ -9,6 +9,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/federated_learning/floc_id_provider.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_service.h"
@@ -82,6 +83,19 @@ class PrivacySandboxSettings : public KeyedService,
   // not valid, the appropriate descriptive string is returned instead.
   std::u16string GetFlocIdForDisplay() const;
 
+  // Returns when the user's current FLoC cohort identifier will next be updated
+  // in a string format suitable for direct display to the user. If no compute
+  // is scheduled, the appropriate descriptive string is returned instead.
+  // This is static to break a circular dependency between this service, and
+  // the FlocIdProvider service. This pushes the requirement to the caller to
+  // ensure the profile is not in a shutdown state before calling.
+  // TODO(crbug.com/1210405): This is indicative of an architecture issue and
+  // should be changed or broken out into an explicit helper.
+  static std::u16string GetFlocIdNextUpdateForDisplay(
+      federated_learning::FlocIdProvider* floc_id_provider,
+      PrefService* pref_service,
+      const base::Time& current_time);
+
   // Returns the display ready string explanaing what happens when the user
   // resets the FLoC cohort identifier.
   std::u16string GetFlocResetExplanationForDisplay() const;
@@ -89,6 +103,9 @@ class PrivacySandboxSettings : public KeyedService,
   // Returns a display ready string explaining the current status of FloC. E.g.
   // the effective state of the Finch experiment, and the user's setting.
   std::u16string GetFlocStatusForDisplay() const;
+
+  // Returns whether the user's current FLoC ID is valid.
+  bool IsFlocIdValid() const;
 
   // Determines whether Conversion Measurement is allowable in a particular
   // context. Should be called at both impression & conversion. At each of these

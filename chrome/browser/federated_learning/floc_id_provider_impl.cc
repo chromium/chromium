@@ -164,6 +164,15 @@ void FlocIdProviderImpl::MaybeRecordFlocToUkm(ukm::SourceId source_id) {
   need_ukm_recording_ = false;
 }
 
+base::Time FlocIdProviderImpl::GetApproximateNextComputeTime() const {
+  if (!compute_floc_timer_.IsRunning())
+    return base::Time::Now();
+
+  // Convert the TimeTicks type the timer provides to base::Time.
+  return base::Time::Now() +
+         (compute_floc_timer_.desired_run_time() - base::TimeTicks::Now());
+}
+
 void FlocIdProviderImpl::OnComputeFlocCompleted(ComputeFlocResult result) {
   DCHECK(floc_computation_in_progress_);
   floc_computation_in_progress_ = false;

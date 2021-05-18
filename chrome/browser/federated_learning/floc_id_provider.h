@@ -32,6 +32,12 @@ class FlocIdProvider : public KeyedService {
   // recorded to UKM before.
   virtual void MaybeRecordFlocToUkm(ukm::SourceId source_id) = 0;
 
+  // Returns the approximate time the floc will be next computed. This is not
+  // a guaranetee that floc computation will run at the returned time. The
+  // accuracy of the return value also cannot be guaranteed, for example it will
+  // return current time if a computation is currently in progress.
+  virtual base::Time GetApproximateNextComputeTime() const = 0;
+
   ~FlocIdProvider() override = default;
 };
 

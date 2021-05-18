@@ -96,6 +96,8 @@ class FlocIdProviderImpl : public FlocIdProvider,
 
   void MaybeRecordFlocToUkm(ukm::SourceId source_id) override;
 
+  base::Time GetApproximateNextComputeTime() const override;
+
  protected:
   // protected virtual for testing.
   virtual void OnComputeFlocCompleted(ComputeFlocResult result);

@@ -5,6 +5,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 
 #include "base/feature_list.h"
+#include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -128,6 +129,28 @@ bool ShouldDisablePrivacySandbox(
           default_cookie_setting == ContentSetting::CONTENT_SETTING_BLOCK);
 }
 
+// Returns whether FLoC is allowable by the current state of |pref_service|.
+bool IsFlocAllowedByPrefs(PrefService* pref_service) {
+  return pref_service->GetBoolean(prefs::kPrivacySandboxFlocEnabled) &&
+         pref_service->GetBoolean(prefs::kPrivacySandboxApisEnabled);
+}
+
+// Returns the number of days in |time|, rounded to the closest day by hour if
+// there is at least 1 day, but rounded to 0 if |time| is less than 1 day.
+int GetNumberOfDaysRoundedAboveOne(base::TimeDelta time) {
+  int number_of_days = time.InDays();
+  if (number_of_days == 0)
+    return 0;
+
+  int number_of_hours_past_day =
+      (time - base::TimeDelta::FromDays(number_of_days)).InHours();
+
+  if (number_of_hours_past_day >= 12)
+    number_of_days++;
+
+  return number_of_days;
+}
+
 }  // namespace
 
 PrivacySandboxSettings::PrivacySandboxSettings(
@@ -183,8 +206,7 @@ bool PrivacySandboxSettings::IsFlocAllowed() const {
     return !cookie_settings_->ShouldBlockThirdPartyCookies();
   }
 
-  return pref_service_->GetBoolean(prefs::kPrivacySandboxFlocEnabled) &&
-         pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled);
+  return IsFlocAllowedByPrefs(pref_service_);
 }
 
 bool PrivacySandboxSettings::IsFlocAllowedForContext(
@@ -214,13 +236,39 @@ std::u16string PrivacySandboxSettings::GetFlocIdForDisplay() const {
   return base::NumberToString16(floc_id.ToUint64());
 }
 
-std::u16string PrivacySandboxSettings::GetFlocResetExplanationForDisplay()
-    const {
-  const int floc_compute_days =
-      federated_learning::kFlocIdScheduledUpdateInterval.Get().InDays();
+/*static*/ std::u16string PrivacySandboxSettings::GetFlocIdNextUpdateForDisplay(
+    federated_learning::FlocIdProvider* floc_id_provider,
+    PrefService* pref_service,
+    const base::Time& current_time) {
+  DCHECK(PrivacySandboxSettingsFunctional());
+  const bool floc_feature_enabled = base::FeatureList::IsEnabled(
+      blink::features::kInterestCohortAPIOriginTrial);
+
+  if (!floc_id_provider || !floc_feature_enabled ||
+      !IsFlocAllowedByPrefs(pref_service)) {
+    return l10n_util::GetStringUTF16(
+        IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE_INVALID);
+  }
+
+  auto next_compute_time = floc_id_provider->GetApproximateNextComputeTime();
+
+  // There are no guarantee that the next compute time is in the future. This
+  // should only occur when a compute is soon to occur, so assuming the current
+  // time is suitable.
+  if (next_compute_time < current_time)
+    next_compute_time = current_time;
 
   return l10n_util::GetPluralStringFUTF16(
-      IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, floc_compute_days);
+      IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE,
+      GetNumberOfDaysRoundedAboveOne(next_compute_time - current_time));
+}
+
+std::u16string PrivacySandboxSettings::GetFlocResetExplanationForDisplay()
+    const {
+  return l10n_util::GetPluralStringFUTF16(
+      IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION,
+      GetNumberOfDaysRoundedAboveOne(
+          federated_learning::kFlocIdScheduledUpdateInterval.Get()));
 }
 
 std::u16string PrivacySandboxSettings::GetFlocStatusForDisplay() const {
@@ -236,6 +284,10 @@ std::u16string PrivacySandboxSettings::GetFlocStatusForDisplay() const {
   }
 
   return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_STATUS_NOT_ACTIVE);
+}
+
+bool PrivacySandboxSettings::IsFlocIdValid() const {
+  return federated_learning::FlocId::ReadFromPrefs(pref_service_).IsValid();
 }
 
 bool PrivacySandboxSettings::IsConversionMeasurementAllowed(

@@ -344,17 +344,23 @@ TEST_F(FlocIdProviderUnitTest, DefaultSetup_ComputationState) {
   InitializeFlocIdProvider();
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_FALSE(floc_computation_scheduled());
+  EXPECT_EQ(base::Time::Now(),
+            floc_id_provider_->GetApproximateNextComputeTime());
 
   // Configure the sorting-lsh service to to trigger the 1st floc computation.
   sorting_lsh_service_->ConfigureSortingLsh(base::Version("2.0.0"));
   EXPECT_TRUE(floc_computation_in_progress());
   EXPECT_FALSE(floc_computation_scheduled());
+  EXPECT_EQ(base::Time::Now(),
+            floc_id_provider_->GetApproximateNextComputeTime());
 
   // Finish any outstanding history queries.
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_TRUE(floc_computation_scheduled());
+  EXPECT_EQ(base::Time::Now() + base::TimeDelta::FromDays(7),
+            floc_id_provider_->GetApproximateNextComputeTime());
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
 
@@ -750,6 +756,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(base::Time::Now(), FlocId::ReadFromPrefs(&prefs_).compute_time());
+  EXPECT_EQ(base::Time::Now() + base::TimeDelta::FromDays(1),
+            floc_id_provider_->GetApproximateNextComputeTime());
 
   // Move the clock forward 20 hours and update the floc available time,
   // selecting to reset the compute timer.
@@ -757,6 +765,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   OnFlocDataAccessibleSinceUpdated(/*reset_compute_timer=*/true);
   const base::Time kResetComputeTime = base::Time::Now();
   EXPECT_EQ(kResetComputeTime, FlocId::ReadFromPrefs(&prefs_).compute_time());
+  EXPECT_EQ(base::Time::Now() + base::TimeDelta::FromDays(1),
+            floc_id_provider_->GetApproximateNextComputeTime());
 
   // Move the clock forward another 20 hours, moving past the default refresh
   // interval of 24 hours. A new floc id should not have been computed as the
@@ -764,17 +774,23 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(20));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
+  EXPECT_EQ(base::Time::Now() + base::TimeDelta::FromHours(4),
+            floc_id_provider_->GetApproximateNextComputeTime());
 
   // Update the floc available time without resetting compute time.
   OnFlocDataAccessibleSinceUpdated(
       /*reset_compute_timer=*/false);
   EXPECT_EQ(kResetComputeTime, FlocId::ReadFromPrefs(&prefs_).compute_time());
+  EXPECT_EQ(base::Time::Now() + base::TimeDelta::FromHours(4),
+            floc_id_provider_->GetApproximateNextComputeTime());
 
   // Move the clock forward 5 hours, making 25 hours since the compute timer was
   // reset, a new floc id should have been computed.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(5));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
+  EXPECT_EQ(base::Time::Now() + base::TimeDelta::FromHours(23),
+            floc_id_provider_->GetApproximateNextComputeTime());
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, HistoryDelete_AllHistory) {
@@ -1132,6 +1148,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
   EXPECT_TRUE(floc_computation_in_progress());
+  EXPECT_EQ(base::Time::Now(),
+            floc_id_provider_->GetApproximateNextComputeTime());
   EXPECT_FALSE(need_recompute());
   EXPECT_EQ(FlocIdTester::Create(
                 FlocId::SimHashHistory({"foo.com", "bar.com", "baz.com"}),
@@ -1160,6 +1178,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   EXPECT_EQ(3u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(2u, floc_id_provider_->log_event_count());
   EXPECT_FALSE(need_recompute());
+  EXPECT_EQ(base::Time::Now() + base::TimeDelta::FromDays(1),
+            floc_id_provider_->GetApproximateNextComputeTime());
 
   // The final floc should be derived from "baz.com".
   EXPECT_TRUE(floc_id().IsValid());
@@ -1437,12 +1457,16 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_FALSE(floc_computation_scheduled());
   EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
+  EXPECT_EQ(base::Time::Now(),
+            floc_id_provider_->GetApproximateNextComputeTime());
 
   // Set up the sorting-lsh service to trigger the 1st floc computation.
   sorting_lsh_service_->ConfigureSortingLsh(base::Version("99.0"));
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_TRUE(floc_computation_scheduled());
+  EXPECT_EQ(base::Time::Now() + base::TimeDelta::FromDays(1),
+            floc_id_provider_->GetApproximateNextComputeTime());
 
   // Expect a completed computation and an update to the local prefs.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
@@ -1487,6 +1511,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   EXPECT_EQ(FlocId::ReadFromPrefs(&prefs_), initial_invalid_floc_id);
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_FALSE(floc_computation_scheduled());
+  EXPECT_EQ(base::Time::Now(),
+            floc_id_provider_->GetApproximateNextComputeTime());
   EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
 
   // Set up the sorting-lsh service to trigger the 1st floc computation.
@@ -1494,6 +1520,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_TRUE(floc_computation_scheduled());
+  EXPECT_EQ(base::Time::Now() + base::TimeDelta::FromDays(1),
+            floc_id_provider_->GetApproximateNextComputeTime());
 
   // Expect a completed computation and an update to the local prefs.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
