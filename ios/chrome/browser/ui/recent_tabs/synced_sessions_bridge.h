@@ -10,7 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class ChromeBrowserState;
@@ -45,8 +45,9 @@ class SyncedSessionsObserverBridge : public signin::IdentityManager::Observer {
 
   __weak id<SyncedSessionsObserver> owner_ = nil;
   signin::IdentityManager* identity_manager_ = nullptr;
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_manager_observer_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
   base::CallbackListSubscription foreign_session_updated_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncedSessionsObserverBridge);
