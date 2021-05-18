@@ -14,6 +14,9 @@ class Window;
 
 namespace ash {
 
+class BubbleAppsPage;
+class BubbleAssistantPage;
+class BubbleSearchPage;
 enum class ShelfAlignment;
 
 // Contains the views for the bubble version of the launcher.
@@ -25,6 +28,21 @@ class ASH_EXPORT AppListBubbleView : public views::BubbleDialogDelegateView {
   AppListBubbleView(const AppListBubbleView&) = delete;
   AppListBubbleView& operator=(const AppListBubbleView&) = delete;
   ~AppListBubbleView() override;
+
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override;
+
+ private:
+  // Flips between the apps, search and assistant pages.
+  // TODO(https://crbug.com/1204551): Delete this when search box is hooked up.
+  void FlipPage();
+
+  // TODO(https://crbug.com/1204551): Delete this when search box is hooked up.
+  int visible_page_ = 0;
+
+  BubbleAppsPage* apps_page_ = nullptr;
+  BubbleSearchPage* search_page_ = nullptr;
+  BubbleAssistantPage* assistant_page_ = nullptr;
 };
 
 }  // namespace ash

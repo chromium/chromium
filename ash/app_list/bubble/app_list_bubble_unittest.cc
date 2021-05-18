@@ -14,6 +14,7 @@
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
@@ -42,6 +43,13 @@ class AppListBubbleTest : public AshTestBase {
     scoped_features_.InitAndEnableFeature(features::kAppListBubble);
   }
   ~AppListBubbleTest() override = default;
+
+  // testing::Test:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    // Use a realistic screen size so the default size bubble will fit.
+    UpdateDisplay("1366x768");
+  }
 
   // Returns the AppListBubble instance. Use this instead of creating a new
   // AppListBubble instance in each test to avoid situations where two bubbles
