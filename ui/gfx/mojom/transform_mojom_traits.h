@@ -5,6 +5,7 @@
 #ifndef UI_GFX_MOJOM_TRANSFORM_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_TRANSFORM_MOJOM_TRAITS_H_
 
+#include "base/record_replay.h"
 #include "mojo/public/cpp/bindings/array_traits.h"
 #include "ui/gfx/mojom/transform.mojom-shared.h"
 #include "ui/gfx/transform.h"
@@ -15,7 +16,16 @@ template <>
 struct ArrayTraits<SkMatrix44> {
   using Element = float;
 
-  static bool IsNull(const SkMatrix44& input) { return input.isIdentity(); }
+  static bool IsNull(const SkMatrix44& input) {
+    // When recording/replaying, whether a matrix is an identity or not can
+    // vary between recording and replaying for unknown reasons. Checking
+    // isIdentity below can lead to messages having different lengths,
+    // so for now we workaround this by always serializing the matrix.
+    if (recordreplay::IsRecordingOrReplaying()) {
+      return false;
+    }
+    return input.isIdentity();
+  }
 
   static size_t GetSize(const SkMatrix44& input) { return 16; }
 
