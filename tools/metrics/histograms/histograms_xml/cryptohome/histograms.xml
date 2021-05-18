@@ -395,7 +395,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.ParallelTasks" units="count"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -556,7 +556,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.TimeToTakeTpmOwnership" units="ms"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -602,7 +602,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram name="CryptohomeClient" units="ms" expires_after="2021-09-12">
+<histogram name="CryptohomeClient" units="ms" expires_after="2021-11-14">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
