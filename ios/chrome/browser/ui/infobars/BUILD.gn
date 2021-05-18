@@ -73,9 +73,13 @@ source_set("infobars_ui") {
   ]
   deps = [
     ":public",
+    "resources:infobar_autofill_address_icon",
     "resources:infobar_downloading",
+    "resources:infobar_email_icon",
     "resources:infobar_hide_password_icon",
+    "resources:infobar_phone_icon",
     "resources:infobar_popup_blocker",
+    "resources:infobar_profile_icon",
     "resources:infobar_reveal_password_icon",
     "resources:infobar_save_card_icon",
     "resources:infobar_settings_icon",
