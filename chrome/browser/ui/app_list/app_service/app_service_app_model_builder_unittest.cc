@@ -42,9 +42,7 @@
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -328,9 +326,6 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
 
   std::string CreateWebApp(const std::string& app_name) {
     const GURL kAppUrl("https://example.com/");
-
-    os_integration_manager().SetNextCreateShortcutsResult(
-        web_app::GenerateAppIdFromURL(kAppUrl), true);
 
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->title = base::UTF8ToUTF16(app_name);

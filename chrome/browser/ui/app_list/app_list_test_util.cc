@@ -9,7 +9,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
-#include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -64,17 +63,8 @@ void AppListTestBase::ConfigureWebAppProvider() {
       std::make_unique<web_app::ExternallyManagedAppManagerImpl>(profile);
   externally_managed_app_manager->SetUrlLoaderForTesting(std::move(url_loader));
 
-  auto os_integration_manager =
-      std::make_unique<web_app::TestOsIntegrationManager>(
-          profile, /*app_shortcut_manager=*/nullptr,
-          /*file_handler_manager=*/nullptr,
-          /*protocol_handler_manager=*/nullptr,
-          /*url_handler_manager*/ nullptr);
-  os_integration_manager_ = os_integration_manager.get();
-
-  auto* provider = web_app::TestWebAppProvider::Get(profile);
+  auto* const provider = web_app::TestWebAppProvider::Get(profile);
   provider->SetExternallyManagedAppManager(
       std::move(externally_managed_app_manager));
-  provider->SetOsIntegrationManager(std::move(os_integration_manager));
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile);
 }

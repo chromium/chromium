@@ -837,6 +837,32 @@ TEST_F(WebAppInstallTaskTest, FinalizerMethodsNotCalled) {
       test_os_integration_manager().num_add_app_to_quick_launch_bar_calls());
 }
 
+TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifest_Success) {
+  const GURL url = GURL("https://example.com/path");
+  const AppId app_id = GenerateAppIdFromURL(url);
+
+  auto manifest = std::make_unique<blink::Manifest>();
+  manifest->start_url = url;
+  manifest->short_name = u"Server Name";
+
+  data_retriever_->SetManifest(std::move(manifest), /*is_installable=*/true);
+
+  base::RunLoop run_loop;
+
+  install_task_->InstallWebAppFromManifest(
+      web_contents(), /*bypass_service_worker_check=*/false,
+      webapps::WebappInstallSource::MENU_BROWSER_TAB,
+      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindLambdaForTesting(
+          [&](const AppId& installed_app_id, InstallResultCode code) {
+            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+            EXPECT_EQ(app_id, installed_app_id);
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
 TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_Success) {
   SetInstallFinalizerForTesting();
 
@@ -866,48 +892,6 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_Success) {
           }));
 
   run_loop.Run();
-
-  // With no install params set, OS hooks are run but no shortcuts are created.
-  EXPECT_EQ(0u, test_os_integration_manager().num_create_shortcuts_calls());
-  EXPECT_EQ(1u, test_os_integration_manager().num_create_file_handlers_calls());
-}
-
-TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_WithInstallParams) {
-  SetInstallFinalizerForTesting();
-
-  const GURL url = GURL("https://example.com/path");
-  const AppId app_id = GenerateAppIdFromURL(url);
-
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->start_url = url;
-  web_app_info->open_as_window = true;
-  web_app_info->title = u"App Name";
-
-  // Set install params that add shortcuts.
-  install_task_->SetInstallParams(InstallManager::InstallParams());
-
-  base::RunLoop run_loop;
-
-  install_task_->InstallWebAppFromInfo(
-      std::move(web_app_info), ForInstallableSite::kYes,
-      webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
-            EXPECT_EQ(app_id, installed_app_id);
-
-            std::unique_ptr<WebApplicationInfo> final_web_app_info =
-                test_install_finalizer().web_app_info();
-            EXPECT_TRUE(final_web_app_info->open_as_window);
-
-            run_loop.Quit();
-          }));
-
-  run_loop.Run();
-
-  // OS hooks are run and shortcuts are created.
-  EXPECT_EQ(1u, test_os_integration_manager().num_create_shortcuts_calls());
-  EXPECT_EQ(1u, test_os_integration_manager().num_create_file_handlers_calls());
 }
 
 TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_GenerateIcons) {

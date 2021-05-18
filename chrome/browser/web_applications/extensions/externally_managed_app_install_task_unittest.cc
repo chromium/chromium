@@ -1040,8 +1040,6 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
   const GURL kWebAppUrl("https://foo.example");
   ExternalInstallOptions options(kWebAppUrl, DisplayMode::kStandalone,
                                  ExternalInstallSource::kSystemInstalled);
-  options.add_to_desktop = false;
-  options.add_to_quick_launch_bar = false;
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindLambdaForTesting([&kWebAppUrl]() {
     auto info = std::make_unique<WebApplicationInfo>();
@@ -1050,9 +1048,6 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
     info->title = u"Foo Web App";
     return info;
   });
-
-  os_integration_manager()->SetNextCreateShortcutsResult(
-      finalizer()->GetAppIdForUrl(options.install_url), true);
 
   ExternallyManagedAppInstallTask task(
       profile(), /*url_loader=*/nullptr, registrar(), os_integration_manager(),
@@ -1077,12 +1072,10 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
 
         EXPECT_EQ(app_id.value(), id.value());
 
-        // Installing with an App Info does call into OS Integration Manager.
-        absl::optional<InstallOsHooksOptions> os_hooks_options =
-            os_integration_manager()->get_last_install_options();
-        ASSERT_TRUE(os_hooks_options);
-        EXPECT_FALSE(os_hooks_options->add_to_desktop);
-        EXPECT_FALSE(os_hooks_options->add_to_quick_launch_bar);
+        // Installing with an App Info doesn't call into OS Integration Manager.
+        // This might be an issue for default apps.
+        EXPECT_FALSE(
+            os_integration_manager()->get_last_install_options().has_value());
 
         EXPECT_EQ(0u, finalizer()->num_reparent_tab_calls());
 

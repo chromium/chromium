@@ -8,7 +8,6 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 
 namespace web_app {
-class TestOsIntegrationManager;
 class TestWebAppUrlLoader;
 }  // namespace web_app
 
@@ -24,15 +23,11 @@ class AppListTestBase : public extensions::ExtensionServiceTestBase {
 
   void SetUp() override;
 
-  web_app::TestOsIntegrationManager& os_integration_manager() {
-    return *os_integration_manager_;
-  }
   web_app::TestWebAppUrlLoader& url_loader() { return *url_loader_; }
 
  private:
   void ConfigureWebAppProvider();
 
-  web_app::TestOsIntegrationManager* os_integration_manager_ = nullptr;
   web_app::TestWebAppUrlLoader* url_loader_ = nullptr;
 };
 
