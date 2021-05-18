@@ -156,9 +156,6 @@ enum class KeyRetrievalTriggerForUMA;
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController;
 
-// Signs the user out and dismisses UI for any in-progress sign-in.
-- (void)forceSignOut;
-
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the consistency promo UI that allows users to sign in to Chrome using
 // the default accounts on the device.

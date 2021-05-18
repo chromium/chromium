@@ -10,7 +10,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#include "ios/chrome/browser/policy/policy_watcher_browser_agent_observer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,12 +24,7 @@ PolicyWatcherBrowserAgent::PolicyWatcherBrowserAgent(Browser* browser)
   prefs_change_observer_->Init(browser_->GetBrowserState()->GetPrefs());
 }
 
-PolicyWatcherBrowserAgent::~PolicyWatcherBrowserAgent() {}
-
-void PolicyWatcherBrowserAgent::SetApplicationCommandsHandler(
-    id<ApplicationCommands> handler) {
-  application_commands_handler_ = handler;
-
+void PolicyWatcherBrowserAgent::Initialize() {
   // BrowserSignin policy: start observing the kSigninAllowed pref for non-OTR
   // browsers. When the pref becomes false, send a UI command to sign the user
   // out. This requires the given command dispatcher to be fully configured.
@@ -44,11 +39,23 @@ void PolicyWatcherBrowserAgent::SetApplicationCommandsHandler(
   ForceSignOutIfSigninDisabled();
 }
 
+PolicyWatcherBrowserAgent::~PolicyWatcherBrowserAgent() {}
+
 void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
   if (!browser_->GetBrowserState()->GetPrefs()->GetBoolean(
           prefs::kSigninAllowed)) {
-    // Trigger the command to interrupt any in-progress sign-in and to force
-    // sign out existing users.
-    [application_commands_handler_ forceSignOut];
+    for (auto& observer : observers_) {
+      observer.OnSignInDisallowed(this);
+    }
   }
+}
+
+void PolicyWatcherBrowserAgent::AddObserver(
+    PolicyWatcherBrowserAgentObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PolicyWatcherBrowserAgent::RemoveObserver(
+    PolicyWatcherBrowserAgentObserver* observer) {
+  observers_.RemoveObserver(observer);
 }

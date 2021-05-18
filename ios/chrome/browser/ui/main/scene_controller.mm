@@ -23,6 +23,7 @@
 #include "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/version_info/version_info.h"
@@ -59,6 +60,8 @@
 #include "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
+#include "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
+#import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
 #include "ios/chrome/browser/screenshot/screenshot_delegate.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -183,12 +186,15 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 @interface SceneController () <AppStateObserver,
                                FirstRunCoordinatorDelegate,
                                LocationPermissionsCommands,
+                               PolicyWatcherBrowserAgentObserving,
                                SettingsNavigationControllerDelegate,
                                SceneURLLoadingServiceDelegate,
                                TabGridCoordinatorDelegate,
                                UserFeedbackDataSource,
                                WebStateListObserving> {
   std::unique_ptr<WebStateListObserverBridge> _webStateListForwardingObserver;
+  std::unique_ptr<PolicyWatcherBrowserAgentObserverBridge>
+      _policyWatcherObserverBridge;
 }
 
 // Navigation View controller for the settings.
@@ -297,6 +303,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
     _webStateListForwardingObserver =
         std::make_unique<WebStateListObserverBridge>(self);
+
+    _policyWatcherObserverBridge =
+        std::make_unique<PolicyWatcherBrowserAgentObserverBridge>(self);
 
     // Add agents.
     [_sceneState addAgent:[[UIBlockerSceneAgent alloc] init]];
@@ -796,14 +805,12 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // Create and start the BVC.
   [self.browserViewWrangler createMainCoordinatorAndInterface];
 
-  // Now that the main browser's command dispatcher is created and the newly
-  // started UI coordinators have registered with it, inject it into the
-  // PolicyWatcherBrowserAgent so it can start monitoring UI-impacting policy
-  // changes.
-  id<ApplicationCommands> handler =
-      HandlerForProtocol(mainCommandDispatcher, ApplicationCommands);
-  PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser)
-      ->SetApplicationCommandsHandler(handler);
+  // Start observing PolicyWatcherBrowserAgent so it can start monitoring
+  // UI-impacting policy changes.
+  PolicyWatcherBrowserAgent* policyWatcherAgent =
+      PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser);
+  policyWatcherAgent->AddObserver(_policyWatcherObserverBridge.get());
+  policyWatcherAgent->Initialize();
 
   if (@available(iOS 14, *)) {
     if (base::ios::IsSceneStartupSupported() &&
@@ -1048,6 +1055,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       _webStateListForwardingObserver.get());
   self.incognitoInterface.browser->GetWebStateList()->RemoveObserver(
       _webStateListForwardingObserver.get());
+
+  PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser)
+      ->RemoveObserver(_policyWatcherObserverBridge.get());
 
   [self.browserViewWrangler shutdown];
   self.browserViewWrangler = nil;
@@ -1506,47 +1516,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       break;
   }
   [self startSigninCoordinatorWithCompletion:command.callback];
-}
-
-- (void)forceSignOut {
-  AuthenticationService* service =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.mainInterface.browser->GetBrowserState());
-  auto signOut = ^{
-    if (!service->IsAuthenticated()) {
-      return;
-    }
-    UMA_HISTOGRAM_BOOLEAN("Enterprise.BrowserSigninIOS.SignedOutByPolicy",
-                          true);
-    // Sign the user out, but keep synced data (bookmarks, passwords, etc)
-    // locally to be consistent with the policy's behavior on other platforms.
-    service->SignOut(
-        signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED,
-        /*force_clear_browsing_data=*/false, ^{
-          BOOL sceneIsActive = self.sceneState.activationLevel >=
-                               SceneActivationLevelForegroundActive;
-          if (sceneIsActive) {
-            id<PolicySignoutPromptCommands> handler = HandlerForProtocol(
-                self.mainInterface.browser->GetCommandDispatcher(),
-                PolicySignoutPromptCommands);
-            [handler showPolicySignoutPrompt];
-          } else {
-            self.sceneState.appState.shouldShowPolicySignoutPrompt = YES;
-          }
-        });
-  };
-
-  if (self.signinCoordinator) {
-    [self interruptSigninCoordinatorAnimated:YES completion:signOut];
-    UMA_HISTOGRAM_BOOLEAN(
-        "Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy", true);
-  } else if (self.sceneState.presentingFirstRunUI &&
-             self.welcomeToChromeController) {
-    [self.welcomeToChromeController
-        interruptSigninCoordinatorWithCompletion:signOut];
-  } else {
-    signOut();
-  }
 }
 
 - (void)showAdvancedSigninSettingsFromViewController:
@@ -3143,6 +3112,57 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
         self.mainInterface.browser->GetCommandDispatcher());
     [handler showLocationPermissionsFromViewController:self.mainInterface.bvc];
   }
+}
+
+#pragma mark - PolicyWatcherBrowserAgentObserving
+
+- (void)policyWatcherBrowserAgentNotifySignInDisabled:
+    (PolicyWatcherBrowserAgent*)policyWatcher {
+  auto signOut = ^{
+    [self signOutIfNeeded];
+  };
+
+  if (self.signinCoordinator) {
+    [self interruptSigninCoordinatorAnimated:YES completion:signOut];
+    UMA_HISTOGRAM_BOOLEAN(
+        "Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy", true);
+  } else if (self.sceneState.presentingFirstRunUI &&
+             self.welcomeToChromeController) {
+    [self.welcomeToChromeController
+        interruptSigninCoordinatorWithCompletion:signOut];
+  } else {
+    signOut();
+  }
+}
+
+// TODO(crbug.com/1205793): Move this method to the BrowserAgent.
+- (void)signOutIfNeeded {
+  AuthenticationService* service =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.mainInterface.browser->GetBrowserState());
+  if (self.mainInterface.browser->GetBrowserState()->GetPrefs()->GetBoolean(
+          prefs::kSigninAllowed) ||
+      !service->IsAuthenticated()) {
+    return;
+  }
+
+  UMA_HISTOGRAM_BOOLEAN("Enterprise.BrowserSigninIOS.SignedOutByPolicy", true);
+  // Sign the user out, but keep synced data (bookmarks, passwords, etc)
+  // locally to be consistent with the policy's behavior on other platforms.
+  service->SignOut(
+      signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED,
+      /*force_clear_browsing_data=*/false, ^{
+        BOOL sceneIsActive = self.sceneState.activationLevel >=
+                             SceneActivationLevelForegroundActive;
+        if (sceneIsActive) {
+          id<PolicySignoutPromptCommands> handler = HandlerForProtocol(
+              self.mainInterface.browser->GetCommandDispatcher(),
+              PolicySignoutPromptCommands);
+          [handler showPolicySignoutPrompt];
+        } else {
+          self.sceneState.appState.shouldShowPolicySignoutPrompt = YES;
+        }
+      });
 }
 
 @end

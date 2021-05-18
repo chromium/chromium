@@ -8,10 +8,11 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/observer_list.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
 
 class Browser;
+class PolicyWatcherBrowserAgentObserver;
 class PrefChangeRegistrar;
 
 // Service that listens for policy-controlled prefs changes and sends commands
@@ -21,9 +22,12 @@ class PolicyWatcherBrowserAgent
  public:
   ~PolicyWatcherBrowserAgent() override;
 
-  // Sets the command dispatcher to use for sneding UI commands when prefs
-  // change. Also starts observing the kSigninAllowed pref.
-  void SetApplicationCommandsHandler(id<ApplicationCommands> handler);
+  void AddObserver(PolicyWatcherBrowserAgentObserver* observer);
+  void RemoveObserver(PolicyWatcherBrowserAgentObserver* observer);
+
+  // Starts observing the kSigninAllowed pref and trigger a SignOut if the pref
+  // has changed before the BrowserAgent start the observation.
+  void Initialize();
 
  private:
   explicit PolicyWatcherBrowserAgent(Browser* browser);
@@ -38,12 +42,11 @@ class PolicyWatcherBrowserAgent
   // The owning Browser.
   Browser* browser_;
 
-  // The command handler to use for sending ApplicationCommands. Must be set by
-  //
-  id<ApplicationCommands> application_commands_handler_;
-
   // Registrar for pref change notifications.
   std::unique_ptr<PrefChangeRegistrar> prefs_change_observer_;
+
+  // List of observers notified of changes to the policy.
+  base::ObserverList<PolicyWatcherBrowserAgentObserver, true> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_POLICY_POLICY_WATCHER_BROWSER_AGENT_H_

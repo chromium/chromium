@@ -11,6 +11,7 @@
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#include "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -52,9 +53,9 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
 
 #pragma mark - Tests.
 
-// Tests that the browser agent monitors the kSigninAllowed pref and dispatches
-// the appropriate command when the pref becomes false.
-TEST_F(PolicyWatcherBrowserAgentTest, observesSigninAllowed) {
+// Tests that the browser agent doesn't monitor the pref if Initialize hasn't
+// been called.
+TEST_F(PolicyWatcherBrowserAgentTest, NoObservationIfNoInitialize) {
   // Set the initial pref value.
   chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, true);
 
@@ -63,17 +64,51 @@ TEST_F(PolicyWatcherBrowserAgentTest, observesSigninAllowed) {
       std::make_unique<TestBrowser>(chrome_browser_state_.get());
   PolicyWatcherBrowserAgent::CreateForBrowser(browser.get());
 
-  // Set up the mock ApplicationCommands handler and inject it in the browser
-  // agent.
-  id applicationCommandHandler =
-      [OCMockObject mockForProtocol:@protocol(ApplicationCommands)];
-  [((id<ApplicationCommands>)[applicationCommandHandler expect]) forceSignOut];
-  PolicyWatcherBrowserAgent::FromBrowser(browser.get())
-      ->SetApplicationCommandsHandler(applicationCommandHandler);
+  // Set up the mock observer handler as strict mock. Calling it will fail the
+  // test.
+  id mockObserver =
+      OCMStrictProtocolMock(@protocol(PolicyWatcherBrowserAgentObserving));
+  PolicyWatcherBrowserAgentObserverBridge bridge(mockObserver);
+  PolicyWatcherBrowserAgent* agent =
+      PolicyWatcherBrowserAgent::FromBrowser(browser.get());
+  agent->AddObserver(&bridge);
+
+  // Action: disable browser sign-in.
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+
+  agent->RemoveObserver(&bridge);
+}
+
+// Tests that the browser agent monitors the kSigninAllowed pref and notifies
+// its observers when it changes.
+TEST_F(PolicyWatcherBrowserAgentTest, ObservesSigninAllowed) {
+  // Set the initial pref value.
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, true);
+
+  // Set up the test browser and attach the browser agent under test.
+  std::unique_ptr<Browser> browser =
+      std::make_unique<TestBrowser>(chrome_browser_state_.get());
+  PolicyWatcherBrowserAgent::CreateForBrowser(browser.get());
+
+  // Set up the mock observer handler as strict mock. Calling it will fail the
+  // test.
+  id mockObserver =
+      OCMStrictProtocolMock(@protocol(PolicyWatcherBrowserAgentObserving));
+  PolicyWatcherBrowserAgentObserverBridge bridge(mockObserver);
+  PolicyWatcherBrowserAgent* agent =
+      PolicyWatcherBrowserAgent::FromBrowser(browser.get());
+  agent->AddObserver(&bridge);
+  agent->Initialize();
+
+  // Setup the expectation after the Initialize to make sure that the observers
+  // are notified when the pref is updated and not during Initialize().
+  OCMExpect([mockObserver policyWatcherBrowserAgentNotifySignInDisabled:agent]);
 
   // Action: disable browser sign-in.
   chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
 
   // Verify the forceSignOut command was dispatched by the browser agent.
-  EXPECT_OCMOCK_VERIFY(applicationCommandHandler);
+  EXPECT_OCMOCK_VERIFY(mockObserver);
+
+  agent->RemoveObserver(&bridge);
 }
