@@ -2867,7 +2867,7 @@
   },
   {
     "name": "files-trash",
-    "owners": [ "joelhockey", "noel", "simmonsjosh" ],
+    "owners": [ "joelhockey", "noel", "simmonsjosh@google.com" ],
     "expiry_milestone": 95
   },
   {
