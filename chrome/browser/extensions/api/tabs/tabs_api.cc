@@ -580,9 +580,10 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     // Find the tab. |source_tab_strip| and |tab_index| will later be used to
     // move the tab into the created window.
     Browser* source_browser = nullptr;
+    content::WebContents* web_contents = nullptr;
     if (!GetTabById(*create_data->tab_id, calling_profile,
                     include_incognito_information(), &source_browser,
-                    &source_tab_strip, nullptr, &tab_index, &error)) {
+                    &source_tab_strip, &web_contents, &tab_index, &error)) {
       return RespondNow(Error(std::move(error)));
     }
 
@@ -592,6 +593,9 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     if (source_browser->profile() != window_profile)
       return RespondNow(
           Error(tabs_constants::kCanOnlyMoveTabsWithinSameProfileError));
+
+    if (DevToolsWindow::IsDevToolsWindow(web_contents))
+      return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
   }
 
   if (!IsValidStateForWindowsCreateFunction(create_data))
@@ -1377,6 +1381,9 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
+  if (DevToolsWindow::IsDevToolsWindow(contents))
+    return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
+
   if (!ExtensionTabUtil::BrowserSupportsTabs(browser))
     return RespondNow(Error(tabs_constants::kNoCurrentWindowError));
 
@@ -1610,6 +1617,11 @@ bool TabsMoveFunction::MoveTab(int tab_id,
   if (!GetTabById(tab_id, browser_context(), include_incognito_information(),
                   &source_browser, &source_tab_strip, &contents, &tab_index,
                   error)) {
+    return false;
+  }
+
+  if (DevToolsWindow::IsDevToolsWindow(contents)) {
+    *error = tabs_constants::kNotAllowedForDevToolsError;
     return false;
   }
 
@@ -1866,11 +1878,15 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
   tab_browsers.reserve(tab_ids.size());
   for (int tab_id : tab_ids) {
     Browser* tab_browser = nullptr;
+    content::WebContents* web_contents = nullptr;
     if (!GetTabById(tab_id, browser_context(), include_incognito_information(),
-                    &tab_browser, nullptr, nullptr, nullptr, &error)) {
+                    &tab_browser, nullptr, &web_contents, nullptr, &error)) {
       return RespondNow(Error(std::move(error)));
     }
     tab_browsers.push_back(tab_browser);
+
+    if (DevToolsWindow::IsDevToolsWindow(web_contents))
+      return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
   }
 
   // Move all tabs to the target browser, appending to the end each time. Only
@@ -2509,6 +2525,9 @@ ExtensionFunction::ResponseAction TabsDiscardFunction::Run() {
                     nullptr, nullptr, &contents, nullptr, &error)) {
       return RespondNow(Error(std::move(error)));
     }
+
+    if (DevToolsWindow::IsDevToolsWindow(contents))
+      return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
   }
   // Discard the tab.
   contents =

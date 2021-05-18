@@ -112,6 +112,8 @@ extern const char kBrowserWindowNotAllowed[];
 extern const char kLockedFullscreenModeNewTabError[];
 extern const char kGroupParamsError[];
 extern const char kCannotNavigateToDevtools[];
+extern const char kCannotHighlightTabs[];
+extern const char kNotAllowedForDevToolsError[];
 
 }  // namespace tabs_constants
 }  // namespace extensions

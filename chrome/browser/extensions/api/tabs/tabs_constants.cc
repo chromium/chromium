@@ -129,6 +129,11 @@ const char kGroupParamsError[] =
 const char kCannotNavigateToDevtools[] =
     "Cannot navigate to a devtools:// page without either the devtools or "
     "debugger permission.";
+const char kCannotHighlightTabs[] =
+    "Cannot change tab highlight. This may be due to user dragging in "
+    "progress.";
+const char kNotAllowedForDevToolsError[] =
+    "Operation not allowed for DevTools windows";
 
 }  // namespace tabs_constants
 }  // namespace extensions
