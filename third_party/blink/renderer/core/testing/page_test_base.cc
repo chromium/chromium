@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
+#include <sstream>
+
 #include "base/callback.h"
 #include "base/test/bind.h"
 #include "base/time/default_tick_clock.h"
@@ -19,6 +21,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -36,6 +39,24 @@ Element* GetOrCreateElement(ContainerNode* parent,
     return elements->item(0);
   return parent->ownerDocument()->CreateRawElement(
       tag_name, CreateElementFlags::ByCreateElement());
+}
+
+void ToSimpleLayoutTree(std::ostream& ostream,
+                        const LayoutObject& layout_object,
+                        int depth) {
+  for (int i = 1; i < depth; ++i)
+    ostream << "|  ";
+  ostream << (depth ? "+--" : "") << layout_object.GetName() << " ";
+  if (auto* node = layout_object.GetNode())
+    ostream << *node;
+  else
+    ostream << "(anonymous)";
+  ostream << std::endl;
+  for (auto* child = layout_object.SlowFirstChild(); child;
+       child = child->NextSibling()) {
+    ostream << "  ";
+    ToSimpleLayoutTree(ostream, *child, depth + 1);
+  }
 }
 
 }  // namespace
@@ -272,6 +293,16 @@ void PageTestBase::EnablePlatform() {
 const base::TickClock* PageTestBase::GetTickClock() {
   return platform_ ? platform()->test_task_runner()->GetMockTickClock()
                    : base::DefaultTickClock::GetInstance();
+}
+
+// See also LayoutTreeAsText to dump with geometry and paint layers.
+// static
+std::string PageTestBase::ToSimpleLayoutTree(
+    const LayoutObject& layout_object) {
+  std::ostringstream ostream;
+  ostream << std::endl;
+  ::blink::ToSimpleLayoutTree(ostream, layout_object, 0);
+  return ostream.str();
 }
 
 }  // namespace blink

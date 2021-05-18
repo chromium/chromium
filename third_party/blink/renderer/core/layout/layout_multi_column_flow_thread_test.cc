@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 
-#include <sstream>
-
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
@@ -37,33 +35,6 @@ class MultiColumnRenderingTest : public RenderingTest {
   String ColumnSetSignature(const char* multicol_id);
 
   void SetMulticolHTML(const String&);
-
-  // See also LayoutTreeAsText to dump with geometry and paint layers.
-  static std::string ToSimpleLayoutTree(const LayoutObject& layout_object) {
-    std::ostringstream ostream;
-    ostream << std::endl;
-    ToSimpleLayoutTree(ostream, layout_object, 0);
-    return ostream.str();
-  }
-
- private:
-  static void ToSimpleLayoutTree(std::ostream& ostream,
-                                 const LayoutObject& layout_object,
-                                 int depth) {
-    for (int i = 1; i < depth; ++i)
-      ostream << "|  ";
-    ostream << (depth ? "+--" : "") << layout_object.GetName() << " ";
-    if (auto* node = layout_object.GetNode())
-      ostream << *node;
-    else
-      ostream << "(anonymous)";
-    ostream << std::endl;
-    for (auto* child = layout_object.SlowFirstChild(); child;
-         child = child->NextSibling()) {
-      ostream << "  ";
-      ToSimpleLayoutTree(ostream, *child, depth + 1);
-    }
-  }
 };
 
 LayoutMultiColumnFlowThread* MultiColumnRenderingTest::FindFlowThread(

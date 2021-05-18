@@ -99,6 +99,8 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   // See external/wpt/css/fonts/ahem/README for more about the 'Ahem' font.
   static void LoadAhem(LocalFrame&);
 
+  static std::string ToSimpleLayoutTree(const LayoutObject& layout_object);
+
  protected:
   void LoadAhem();
   void EnablePlatform();
