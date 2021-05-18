@@ -108,9 +108,8 @@ void TestDeserialize(const ProtoTranslator& translator) {
   if (!entry)
     return;
 
-  std::unique_ptr<base::Value> reserialized =
+  base::Value reserialized =
       BackoffEntrySerializer::SerializeToValue(*entry, translator.parse_time());
-  CHECK(reserialized);
 
   // Due to fuzzy interpretation in BackoffEntrySerializer::
   // DeserializeFromValue, we cannot assert that |*reserialized == *value|.
@@ -118,7 +117,7 @@ void TestDeserialize(const ProtoTranslator& translator) {
   // properties are preserved.
   std::unique_ptr<BackoffEntry> entry_reparsed =
       BackoffEntrySerializer::DeserializeFromValue(
-          *reserialized, &policy, &clock, translator.parse_time());
+          reserialized, &policy, &clock, translator.parse_time());
   CHECK(entry_reparsed);
   CHECK_EQ(entry_reparsed->failure_count(), entry->failure_count());
   CHECK_LE(entry_reparsed->GetReleaseTime(), entry->GetReleaseTime());
@@ -133,17 +132,16 @@ void TestSerialize(const ProtoTranslator& translator) {
 
   // Serialize the BackoffEntry.
   BackoffEntry native_entry(&policy);
-  std::unique_ptr<base::Value> serialized =
-      BackoffEntrySerializer::SerializeToValue(native_entry,
-                                               translator.serialize_time());
-  CHECK(serialized);
+  base::Value serialized = BackoffEntrySerializer::SerializeToValue(
+      native_entry, translator.serialize_time());
+  CHECK(serialized.is_list());
 
   MockClock clock;
   clock.SetNow(translator.now_ticks());
 
   // Deserialize it.
   std::unique_ptr<BackoffEntry> deserialized_entry =
-      BackoffEntrySerializer::DeserializeFromValue(*serialized, &policy, &clock,
+      BackoffEntrySerializer::DeserializeFromValue(serialized, &policy, &clock,
                                                    translator.parse_time());
   // Even though SerializeToValue was successful, we're not guaranteed to have a
   // |deserialized_entry|. One reason deserialization may fail is if the parsed

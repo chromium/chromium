@@ -117,9 +117,9 @@ void PrefetchBackgroundTaskHandlerImpl::SetTickClockForTesting(
 
 void PrefetchBackgroundTaskHandlerImpl::UpdateBackoff(
     net::BackoffEntry* backoff) {
-  std::unique_ptr<base::Value> value =
+  base::Value value =
       net::BackoffEntrySerializer::SerializeToValue(*backoff, OfflineTimeNow());
-  prefs_->Set(prefetch_prefs::kBackoff, *value);
+  prefs_->Set(prefetch_prefs::kBackoff, value);
 }
 
 }  // namespace offline_pages
