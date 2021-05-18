@@ -108,7 +108,12 @@ export class CloudPrintInterfaceImpl {
       });
     }
     this.abortSearchRequests_(origins);
-    this.search_(true, account, origins);
+    if (opt_account) {
+      // No need to send two search requests if we don't know the account. The
+      // server only sends back the XSRF token once so the other request will
+      // fail.
+      this.search_(true, account, origins);
+    }
     this.search_(false, account, origins);
   }
 
