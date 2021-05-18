@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -46,6 +47,8 @@ import org.chromium.components.policy.PolicyService;
 @Config(manifest = Config.NONE,
         shadows = {SkipTosDialogPolicyListenerUnitTest.ShadowFirstRunUtils.class,
                 ShadowRecordHistogram.class})
+//TODO(crbug.com/1210371): Rewrite using paused loop. See crbug for details.
+@LooperMode(LooperMode.Mode.LEGACY)
 public class SkipTosDialogPolicyListenerUnitTest {
     private static final String HIST_IS_DEVICE_OWNED_DETECTED =
             "histogramRecorded.OnIsDeviceOwnedDetected";
