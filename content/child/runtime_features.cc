@@ -356,6 +356,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"CompositeAfterPaint", blink::features::kCompositeAfterPaint},
           {"CSSColorSchemeUARendering", features::kCSSColorSchemeUARendering},
           {"DeclarativeShadowDOM", blink::features::kDeclarativeShadowDOM},
+          {"DocumentTransition", blink::features::kDocumentTransition},
           {"FeaturePolicyForClientHints",
            features::kFeaturePolicyForClientHints},
           {"EditingNG", blink::features::kEditingNG},
