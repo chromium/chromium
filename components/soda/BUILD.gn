@@ -19,7 +19,16 @@ source_set("soda") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//ash/public/cpp" ]
+    sources += [
+      "soda_installer_impl_chromeos.cc",
+      "soda_installer_impl_chromeos.h",
+    ]
+
+    deps += [
+      "//ash/public/cpp",
+      "//chromeos/dbus/dlcservice",
+      "//ui/base",
+    ]
   }
 }
 

@@ -498,8 +498,6 @@ source_set("chromeos") {
     "../ash/accessibility/magnifier_type.h",
     "../ash/accessibility/select_to_speak_event_handler_delegate_impl.cc",
     "../ash/accessibility/select_to_speak_event_handler_delegate_impl.h",
-    "../ash/accessibility/soda_installer_impl_chromeos.cc",
-    "../ash/accessibility/soda_installer_impl_chromeos.h",
     "../ash/account_manager/account_manager_edu_coexistence_controller.cc",
     "../ash/account_manager/account_manager_edu_coexistence_controller.h",
     "../ash/account_manager/account_manager_facade_factory_ash.cc",

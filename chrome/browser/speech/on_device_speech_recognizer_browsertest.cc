@@ -7,7 +7,6 @@
 #include <map>
 #include <memory>
 
-#include "chrome/browser/ash/accessibility/soda_installer_impl_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/soda/soda_installer.h"
+#include "components/soda/soda_installer_impl_chromeos.h"
 #include "content/public/test/browser_test.h"
 #include "media/audio/audio_system.h"
 #include "media/base/audio_parameters.h"

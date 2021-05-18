@@ -1,9 +1,11 @@
 include_rules = [
   "+ash/public/cpp",
+  "+chromeos/dbus/dlcservice/dlcservice_client.h",
   "+components/component_updater/component_updater_paths.h",
   "+components/crx_file",
   "+components/live_caption",
   "+components/prefs",
   "+components/strings/grit/components_strings.h",
   "+media/base",
+  "+ui/base",
 ]
