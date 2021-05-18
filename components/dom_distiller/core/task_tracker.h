@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "components/dom_distiller/core/article_distillation_update.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/distiller.h"
@@ -40,9 +41,9 @@ class ViewerHandle {
 
 // Interface for a DOM distiller entry viewer. Implement this to make a view
 // request and receive the data for an entry when it becomes available.
-class ViewRequestDelegate {
+class ViewRequestDelegate : public base::CheckedObserver {
  public:
-  virtual ~ViewRequestDelegate() = default;
+  ~ViewRequestDelegate() override = default;
 
   // Called when the distilled article contents are available. The
   // DistilledArticleProto is owned by a TaskTracker instance and is invalidated
@@ -140,7 +141,7 @@ class TaskTracker {
   std::vector<SaveCallback> save_callbacks_;
   // A ViewRequestDelegate will be added to this list when a view request is
   // made and removed when the corresponding ViewerHandle is destroyed.
-  std::vector<ViewRequestDelegate*> viewers_;
+  base::ObserverList<ViewRequestDelegate> viewers_;
 
   std::unique_ptr<Distiller> distiller_;
   bool blob_fetcher_running_;
