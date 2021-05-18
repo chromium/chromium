@@ -232,7 +232,7 @@ TEST_F(MicrophoneMuteNotificationControllerTest,
   EXPECT_FALSE(GetPopupNotification());
 
   // The notification should be removed if all input streams are removed.
-  LaunchApp(base::nullopt);
+  LaunchApp(absl::nullopt);
   SetNumberOfActiveInputStreams(0);
 
   EXPECT_FALSE(GetNotification());
