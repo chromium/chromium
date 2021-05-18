@@ -103,7 +103,7 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
                                     null, DownloadOpenSource.INFO_BAR);
                         } else {
                             DownloadManagerService.openDownloadsPage(
-                                    ContextUtils.getApplicationContext(),
+                                    ContextUtils.getApplicationContext(), mOTRProfileID,
                                     DownloadOpenSource.INFO_BAR);
                         }
                     }

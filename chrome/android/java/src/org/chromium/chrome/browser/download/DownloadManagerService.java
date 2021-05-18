@@ -877,7 +877,7 @@ public class DownloadManagerService implements DownloadController.Observer,
                         && DownloadUtils.fireOpenIntentForDownload(context, intent);
 
                 if (!didLaunchIntent) {
-                    openDownloadsPage(context, source);
+                    openDownloadsPage(context, otrProfileID, source);
                     return;
                 }
 
@@ -913,14 +913,6 @@ public class DownloadManagerService implements DownloadController.Observer,
             Toast.makeText(ContextUtils.getApplicationContext(), failureMessage, Toast.LENGTH_SHORT)
                     .show();
         }
-    }
-
-    /**
-     * Open the Activity which shows a list of all downloads.
-     * @see {@link #openDownloadsPage(Context, OTRProfileID, int)}.
-     */
-    public static void openDownloadsPage(Context context, @DownloadOpenSource int source) {
-        openDownloadsPage(context, null, source);
     }
 
     /**
@@ -1587,7 +1579,8 @@ public class DownloadManagerService implements DownloadController.Observer,
                         downloadInfo.getDownloadGuid(), downloadInfo.getOTRProfileId(),
                         downloadInfo.getOriginalUrl(), downloadInfo.getReferrer(), source);
         if (!canOpen) {
-            openDownloadsPage(ContextUtils.getApplicationContext(), source);
+            openDownloadsPage(
+                    ContextUtils.getApplicationContext(), downloadInfo.getOTRProfileId(), source);
         }
     }
 
