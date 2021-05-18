@@ -427,7 +427,7 @@ void AccountConsistencyService::SetChromeConnectedCookieWithUrl(
   const std::string domain = GetDomainFromUrl(url);
   std::string cookie_value = signin::BuildMirrorRequestCookieIfPossible(
       url,
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia,
       signin::AccountConsistencyMethod::kMirror, cookie_settings_.get(),
       signin::PROFILE_MODE_DEFAULT);
