@@ -8,6 +8,7 @@
 #include "chrome/browser/extensions/test_blocklist.h"
 #include "components/safe_browsing/buildflags.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // The interaction tests rely on the safe-browsing database.
@@ -27,10 +28,17 @@ constexpr char kTestExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 // is in the correct extension set under different circumstances.
 class BlocklistStatesInteractionUnitTest : public ExtensionServiceTestBase {
  public:
+  BlocklistStatesInteractionUnitTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kDisablePolicyViolationExtensionsRemotely);
+  }
+
   void SetUp() override {
+    ExtensionServiceTestBase::SetUp();
     InitializeGoodInstalledExtensionService();
     test_blocklist_.Attach(service()->blocklist_);
     service()->Init();
+    extension_prefs_ = ExtensionPrefs::Get(profile());
   }
 
  protected:
@@ -52,8 +60,11 @@ class BlocklistStatesInteractionUnitTest : public ExtensionServiceTestBase {
     service()->PerformActionBasedOnOmahaAttributes(extension_id, attributes);
   }
 
+  ExtensionPrefs* extension_prefs() { return extension_prefs_; }
+
  private:
   TestBlocklist test_blocklist_;
+  ExtensionPrefs* extension_prefs_;
 };
 
 // 1. The extension is added to the Safe Browsing blocklist with
@@ -143,13 +154,12 @@ TEST_F(BlocklistStatesInteractionUnitTest,
                                             BLOCKLISTED_POTENTIALLY_UNWANTED);
   EXPECT_FALSE(blocklisted_extensions.Contains(kTestExtensionId));
   EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_TRUE(ExtensionPrefs::Get(profile())->HasDisableReason(
+  EXPECT_TRUE(extension_prefs()->HasDisableReason(
       kTestExtensionId, disable_reason::DISABLE_GREYLIST));
 
   SetOmahaBlocklistStateForExtension(kTestExtensionId, "_malware", true);
   EXPECT_EQ(BLOCKLISTED_MALWARE,
-            ExtensionPrefs::Get(profile())->GetExtensionBlocklistState(
-                kTestExtensionId));
+            extension_prefs()->GetExtensionBlocklistState(kTestExtensionId));
   EXPECT_TRUE(blocklisted_extensions.Contains(kTestExtensionId));
   EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
 
@@ -164,14 +174,10 @@ TEST_F(BlocklistStatesInteractionUnitTest,
   // greylist. It will be fixed after we decouple Safe Browsing blocklist state
   // and Omaha attribute blocklist state.
   EXPECT_EQ(NOT_BLOCKLISTED,
-            ExtensionPrefs::Get(profile())->GetExtensionBlocklistState(
-                kTestExtensionId));
+            extension_prefs()->GetExtensionBlocklistState(kTestExtensionId));
   EXPECT_FALSE(blocklisted_extensions.Contains(kTestExtensionId));
-  // TODO(crbug.com/1193695): The extension is still disabled with
-  // DISABLE_GREYLIST reason even though the blocklist state is cleared. This
-  // should be fixed when we start to consume Omaha attribute greylist.
-  EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_TRUE(ExtensionPrefs::Get(profile())->HasDisableReason(
+  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
+  EXPECT_FALSE(extension_prefs()->HasDisableReason(
       kTestExtensionId, disable_reason::DISABLE_GREYLIST));
 
   // The Safe Browsing greylist state should be set correctly after the Safe
@@ -179,20 +185,69 @@ TEST_F(BlocklistStatesInteractionUnitTest,
   SetSafeBrowsingBlocklistStateForExtension(kTestExtensionId,
                                             BLOCKLISTED_POTENTIALLY_UNWANTED);
   EXPECT_EQ(BLOCKLISTED_POTENTIALLY_UNWANTED,
-            ExtensionPrefs::Get(profile())->GetExtensionBlocklistState(
-                kTestExtensionId));
+            extension_prefs()->GetExtensionBlocklistState(kTestExtensionId));
 
   EXPECT_FALSE(blocklisted_extensions.Contains(kTestExtensionId));
   // The extension should be kept disabled because it's still in the Safe
   // Browsing greylist.
   EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_TRUE(ExtensionPrefs::Get(profile())->HasDisableReason(
+  EXPECT_TRUE(extension_prefs()->HasDisableReason(
       kTestExtensionId, disable_reason::DISABLE_GREYLIST));
 
   SetSafeBrowsingBlocklistStateForExtension(kTestExtensionId, NOT_BLOCKLISTED);
   EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_FALSE(ExtensionPrefs::Get(profile())->HasDisableReason(
+  EXPECT_FALSE(extension_prefs()->HasDisableReason(
       kTestExtensionId, disable_reason::DISABLE_GREYLIST));
+}
+
+// 1. The extension is added to the Safe Browsing blocklist with
+// BLOCKLISTED_MALWARE state.
+// 2. The extension is added to the Omaha attribute greylist with
+// _policy_violation attribute.
+// 3. The extension is removed from the Safe Browsing blocklist.
+// 4. The extension is removed from the Omaha attribute greylist.
+TEST_F(BlocklistStatesInteractionUnitTest,
+       SafeBrowsingMalwareThenOmahaAttributePolicyViolation) {
+  const ExtensionSet& blocklisted_extensions =
+      registry()->blocklisted_extensions();
+  const ExtensionSet& enabled_extensions = registry()->enabled_extensions();
+  const ExtensionSet& disabled_extensions = registry()->disabled_extensions();
+  EXPECT_FALSE(blocklisted_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
+  EXPECT_FALSE(disabled_extensions.Contains(kTestExtensionId));
+
+  SetSafeBrowsingBlocklistStateForExtension(kTestExtensionId,
+                                            BLOCKLISTED_MALWARE);
+  EXPECT_TRUE(blocklisted_extensions.Contains(kTestExtensionId));
+  EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
+  EXPECT_EQ(BLOCKLISTED_MALWARE,
+            extension_prefs()->GetExtensionBlocklistState(kTestExtensionId));
+
+  SetOmahaBlocklistStateForExtension(kTestExtensionId, "_policy_violation",
+                                     true);
+  EXPECT_TRUE(blocklisted_extensions.Contains(kTestExtensionId));
+  EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(blocklist_prefs::HasOmahaBlocklistState(
+      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs()));
+
+  SetSafeBrowsingBlocklistStateForExtension(kTestExtensionId, NOT_BLOCKLISTED);
+  EXPECT_FALSE(blocklisted_extensions.Contains(kTestExtensionId));
+  // The extension should be kept disabled because it's still in the Omaha
+  // attribute greylist.
+  EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(disabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(extension_prefs()->HasDisableReason(
+      kTestExtensionId, disable_reason::DISABLE_GREYLIST));
+  EXPECT_EQ(NOT_BLOCKLISTED,
+            extension_prefs()->GetExtensionBlocklistState(kTestExtensionId));
+  EXPECT_TRUE(blocklist_prefs::HasOmahaBlocklistState(
+      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs()));
+
+  SetOmahaBlocklistStateForExtension(kTestExtensionId, "_policy_violation",
+                                     false);
+  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
 }
 
 // 1. The extension is added to the Safe Browsing greylist with
@@ -209,34 +264,117 @@ TEST_F(BlocklistStatesInteractionUnitTest,
   SetSafeBrowsingBlocklistStateForExtension(kTestExtensionId,
                                             BLOCKLISTED_CWS_POLICY_VIOLATION);
   EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_TRUE(ExtensionPrefs::Get(profile())->HasDisableReason(
+  EXPECT_TRUE(extension_prefs()->HasDisableReason(
       kTestExtensionId, disable_reason::DISABLE_GREYLIST));
 
-  // TODO(crbug.com/1180996): Call SetOmahaBlocklistStateForExtension directly
-  // once we start to consume the _policy_violation attribute.
-  blocklist_prefs::AddOmahaBlocklistState(
-      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
-      ExtensionPrefs::Get(profile()));
+  SetOmahaBlocklistStateForExtension(kTestExtensionId, "_policy_violation",
+                                     true);
   EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_TRUE(ExtensionPrefs::Get(profile())->HasDisableReason(
+  EXPECT_TRUE(extension_prefs()->HasDisableReason(
       kTestExtensionId, disable_reason::DISABLE_GREYLIST));
 
   SetSafeBrowsingBlocklistStateForExtension(kTestExtensionId, NOT_BLOCKLISTED);
   // The extension should be kept disabled because it's still in the Omaha
   // attribute greylist.
   EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_TRUE(ExtensionPrefs::Get(profile())->HasDisableReason(
+  EXPECT_TRUE(extension_prefs()->HasDisableReason(
       kTestExtensionId, disable_reason::DISABLE_GREYLIST));
 
-  // TODO(crbug.com/1180996): Call SetOmahaBlocklistStateForExtension directly
-  // once we start to consume the _policy_violation attribute.
-  blocklist_prefs::RemoveOmahaBlocklistState(
-      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
-      ExtensionPrefs::Get(profile()));
-  service()->ClearGreylistedAcknowledgedStateAndMaybeReenable(kTestExtensionId);
+  SetOmahaBlocklistStateForExtension(kTestExtensionId, "_policy_violation",
+                                     false);
   EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_FALSE(ExtensionPrefs::Get(profile())->HasDisableReason(
+  EXPECT_FALSE(extension_prefs()->HasDisableReason(
       kTestExtensionId, disable_reason::DISABLE_GREYLIST));
+}
+
+// 1. The extension is added to the Omaha attribute greylist with
+// BLOCKLISTED_CWS_POLICY_VIOLATION state.
+// 2. The extension is added to the Safe Browsing greylist with
+// _policy_violation attribute.
+// 3. The extension is removed from the Omaha attribute greylist.
+// 4. The extension is removed from the Safe Browsing greylist.
+TEST_F(BlocklistStatesInteractionUnitTest,
+       OmahaAttributePolicyViolationThenSafeBrowsingPolicyViolation) {
+  const ExtensionSet& enabled_extensions = registry()->enabled_extensions();
+  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
+
+  SetOmahaBlocklistStateForExtension(kTestExtensionId, "_policy_violation",
+                                     true);
+  EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(extension_prefs()->HasDisableReason(
+      kTestExtensionId, disable_reason::DISABLE_GREYLIST));
+
+  SetSafeBrowsingBlocklistStateForExtension(kTestExtensionId,
+                                            BLOCKLISTED_CWS_POLICY_VIOLATION);
+  EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(extension_prefs()->HasDisableReason(
+      kTestExtensionId, disable_reason::DISABLE_GREYLIST));
+
+  SetOmahaBlocklistStateForExtension(kTestExtensionId, "_policy_violation",
+                                     false);
+  // The extension should be kept disabled because it's still in the Safe
+  // Browsing greylist.
+  EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(extension_prefs()->HasDisableReason(
+      kTestExtensionId, disable_reason::DISABLE_GREYLIST));
+
+  SetSafeBrowsingBlocklistStateForExtension(kTestExtensionId, NOT_BLOCKLISTED);
+  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
+  EXPECT_FALSE(extension_prefs()->HasDisableReason(
+      kTestExtensionId, disable_reason::DISABLE_GREYLIST));
+}
+
+// 1. The extension is added to the Safe Browsing greylist with
+// BLOCKLISTED_CWS_POLICY_VIOLATION state.
+// 2. User re-enabled the extension.
+// 3. The extension is added to the Omaha attribute greylist with
+// _policy_violation attribute.
+// 4. The extension is removed from the Safe Browsing greylist.
+// 5. The extension is removed from the Omaha attribute greylist.
+TEST_F(
+    BlocklistStatesInteractionUnitTest,
+    SafeBrowsingPolicyViolationThenOmahaAttributePolicyViolationWithUserAction) {
+  const ExtensionSet& enabled_extensions = registry()->enabled_extensions();
+  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
+
+  SetSafeBrowsingBlocklistStateForExtension(kTestExtensionId,
+                                            BLOCKLISTED_CWS_POLICY_VIOLATION);
+  EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(extension_prefs()->HasDisableReason(
+      kTestExtensionId, disable_reason::DISABLE_GREYLIST));
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs()));
+
+  // The extension is manually re-enabled.
+  service()->EnableExtension(kTestExtensionId);
+  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
+  EXPECT_FALSE(extension_prefs()->HasDisableReason(
+      kTestExtensionId, disable_reason::DISABLE_GREYLIST));
+
+  SetOmahaBlocklistStateForExtension(kTestExtensionId, "_policy_violation",
+                                     true);
+  // The extension is not disabled again, because it was previously manually
+  // re-enabled.
+  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
+  EXPECT_FALSE(extension_prefs()->HasDisableReason(
+      kTestExtensionId, disable_reason::DISABLE_GREYLIST));
+
+  SetSafeBrowsingBlocklistStateForExtension(kTestExtensionId, NOT_BLOCKLISTED);
+  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
+  // The acknowledged state should not be cleared yet, because it is still in
+  // the Omaha attribute greylist.
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs()));
+
+  SetOmahaBlocklistStateForExtension(kTestExtensionId, "_policy_violation",
+                                     false);
+  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
+  // The acknowledged state should be removed now.
+  EXPECT_FALSE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs()));
 }
 #endif
 

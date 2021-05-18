@@ -10,6 +10,7 @@
 namespace extensions_features {
 
 extern const base::Feature kDisableMalwareExtensionsRemotely;
+extern const base::Feature kDisablePolicyViolationExtensionsRemotely;
 extern const base::Feature kSafeBrowsingCrxAllowlistShowWarnings;
 extern const base::Feature kSafeBrowsingCrxAllowlistAutoDisable;
 

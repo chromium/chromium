@@ -54,6 +54,7 @@
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/installed_loader.h"
+#include "chrome/browser/extensions/omaha_attributes_handler.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/extensions/shared_module_service.h"
@@ -375,6 +376,7 @@ ExtensionService::ExtensionService(Profile* profile,
       safe_browsing_verdict_handler_(extension_prefs,
                                      ExtensionRegistry::Get(profile),
                                      this),
+      omaha_attributes_handler_(extension_prefs, this),
       registry_(ExtensionRegistry::Get(profile)),
       pending_extension_manager_(profile),
       install_directory_(install_directory),
@@ -842,17 +844,20 @@ void ExtensionService::PerformActionBasedOnOmahaAttributes(
     const base::Value& attributes) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   HandleMalwareOmahaAttribute(extension_id, attributes);
-  omaha_attributes_handler_.PerformActionBasedOnOmahaAttributes(attributes);
+  omaha_attributes_handler_.PerformActionBasedOnOmahaAttributes(extension_id,
+                                                                attributes);
   allowlist_.PerformActionBasedOnOmahaAttributes(extension_id, attributes);
 }
 
 void ExtensionService::HandleMalwareOmahaAttribute(
     const std::string& extension_id,
     const base::Value& attributes) {
-  const base::Value* malware_value = attributes.FindKey("_malware");
+  bool has_malware_value =
+      OmahaAttributesHandler::HasOmahaBlocklistStateInAttributes(
+          attributes, BitMapBlocklistState::BLOCKLISTED_MALWARE);
   if (!base::FeatureList::IsEnabled(
           extensions_features::kDisableMalwareExtensionsRemotely) ||
-      malware_value == nullptr || !malware_value->GetBool()) {
+      !has_malware_value) {
     OmahaAttributesHandler::ReportNoUpdateCheckKeys();
     // Omaha attributes may have previously have the "_malware" key.
     MaybeEnableRemotelyDisabledExtension(extension_id);

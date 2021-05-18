@@ -552,6 +552,7 @@ class ExtensionService : public ExtensionServiceInterface,
   bool CanBlockExtension(const Extension* extension) const;
 
   // Handles the malware Omaha attribute for remotely disabled extensions.
+  // TODO(crbug.com/1193695): Move this function to OmahaAttributesHandler.
   void HandleMalwareOmahaAttribute(const std::string& extension_id,
                                    const base::Value& attributes);
 
