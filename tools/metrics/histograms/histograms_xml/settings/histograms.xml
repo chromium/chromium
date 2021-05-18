@@ -178,7 +178,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Whether or not privacy sandbox apis are enabled, including the current state
     of cookie settings, and if it is disabled by policy. Recorded on profile
-    startup.
+    startup. Values 8, 9, and 10 were added with M92.
   </summary>
 </histogram>
 

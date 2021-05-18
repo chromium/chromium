@@ -1376,6 +1376,11 @@ TEST_F(PrivacySandboxSettingsTest, MetricsLoggingOccursCorrectly) {
   // The histogram should start off empty.
   histograms.ExpectTotalCount(histogram_name, 0);
 
+  // For buckets that do not explicitly mention FLoC, it is assumed to be on,
+  // or its state is irrelevant, i.e. overriden by the Privacy Sandbox pref.
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, true);
+
   SetupTestState(
       /*privacy_sandbox_available=*/true,
       /*privacy_sandbox_enabled=*/true,
@@ -1549,6 +1554,64 @@ TEST_F(PrivacySandboxSettingsTest, MetricsLoggingOccursCorrectly) {
       histogram_name,
       static_cast<int>(PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
                            kPSDisabledPolicyBlockAll),
+      1);
+
+  // Disable FLoC and test the buckets that reflect a disabled FLoC state.
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, false);
+
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  privacy_sandbox_settings()->MaybeReconcilePrivacySandboxPref();
+
+  histograms.ExpectTotalCount(histogram_name, 9);
+  histograms.ExpectBucketCount(
+      histogram_name,
+      static_cast<int>(PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+                           kPSEnabledFlocDisabledAllowAll),
+      1);
+
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  privacy_sandbox_settings()->MaybeReconcilePrivacySandboxPref();
+
+  histograms.ExpectTotalCount(histogram_name, 10);
+  histograms.ExpectBucketCount(
+      histogram_name,
+      static_cast<int>(PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+                           kPSEnabledFlocDisabledBlock3P),
+      1);
+
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+
+  privacy_sandbox_settings()->MaybeReconcilePrivacySandboxPref();
+
+  histograms.ExpectTotalCount(histogram_name, 11);
+  histograms.ExpectBucketCount(
+      histogram_name,
+      static_cast<int>(PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+                           kPSEnabledFlocDisabledBlockAll),
       1);
 }
 

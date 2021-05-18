@@ -543,19 +543,28 @@ void PrivacySandboxSettings::LogPrivacySandboxState() {
   }
 
   if (pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled)) {
+    const bool floc_enabled =
+        pref_service_->GetBoolean(prefs::kPrivacySandboxFlocEnabled);
+
     if (default_cookie_setting == ContentSetting::CONTENT_SETTING_BLOCK) {
       RecordPrivacySandboxHistogram(
-          PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
-              kPSEnabledBlockAll);
+          floc_enabled ? PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+                             kPSEnabledBlockAll
+                       : PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+                             kPSEnabledFlocDisabledBlockAll);
     } else if (cookie_controls_mode_value ==
                content_settings::CookieControlsMode::kBlockThirdParty) {
       RecordPrivacySandboxHistogram(
-          PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
-              kPSEnabledBlock3P);
+          floc_enabled ? PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+                             kPSEnabledBlock3P
+                       : PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+                             kPSEnabledFlocDisabledBlock3P);
     } else {
       RecordPrivacySandboxHistogram(
-          PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
-              kPSEnabledAllowAll);
+          floc_enabled ? PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+                             kPSEnabledAllowAll
+                       : PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+                             kPSEnabledFlocDisabledAllowAll);
     }
   } else {
     if (default_cookie_setting == ContentSetting::CONTENT_SETTING_BLOCK) {

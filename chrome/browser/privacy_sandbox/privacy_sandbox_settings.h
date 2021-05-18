@@ -193,15 +193,11 @@ class PrivacySandboxSettings : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
                            MetricsLoggingOccursCorrectly);
 
-  /**
-   * Contains all possible privacy sandbox states, recorded on startup.
-   *
-   * These values are persisted to logs. Entries should not be renumbered and
-   * numeric values should never be reused.
-   *
-   * Must be kept in sync with the SettingsPrivacySandboxEnabled enum in
-   * histograms/enums.xml and privacy_sandbox_settings_unittest.cc.
-   */
+  // Contains all possible privacy sandbox states, recorded on startup.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // Must be kept in sync with the SettingsPrivacySandboxEnabled enum in
+  // histograms/enums.xml.
   enum class SettingsPrivacySandboxEnabled {
     kPSEnabledAllowAll = 0,
     kPSEnabledBlock3P = 1,
@@ -211,9 +207,12 @@ class PrivacySandboxSettings : public KeyedService,
     kPSDisabledBlockAll = 5,
     kPSDisabledPolicyBlock3P = 6,
     kPSDisabledPolicyBlockAll = 7,
+    kPSEnabledFlocDisabledAllowAll = 8,
+    kPSEnabledFlocDisabledBlock3P = 9,
+    kPSEnabledFlocDisabledBlockAll = 10,
     // Add values above this line with a corresponding label in
     // tools/metrics/histograms/enums.xml
-    kMaxValue = kPSDisabledPolicyBlockAll,
+    kMaxValue = kPSEnabledFlocDisabledBlockAll,
   };
 
   // Determines based on the current features, preferences and provided
