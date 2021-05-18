@@ -843,6 +843,8 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     RestoreBackBufferOOP(image);
   }
 
+  bool UseOopRasterization() final { return use_oop_rasterization_; }
+
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
                    size_t row_bytes,
