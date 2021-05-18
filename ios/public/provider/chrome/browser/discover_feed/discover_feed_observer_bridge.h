@@ -9,7 +9,7 @@
 
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 
 // Implement this protocol and pass your implementation into an
 // DiscoveFeedObserverBridge object to receive DiscoverFeed observer
@@ -43,8 +43,8 @@ class DiscoverFeedObserverBridge : public DiscoverFeedProvider::Observer {
   void OnDiscoverFeedModelRecreated() override;
 
   __weak id<DiscoverFeedObserverBridgeDelegate> observer_;
-  ScopedObserver<DiscoverFeedProvider, DiscoverFeedProvider::Observer>
-      scoped_observer_{this};
+  base::ScopedObservation<DiscoverFeedProvider, DiscoverFeedProvider::Observer>
+      scoped_observation_{this};
 };
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_OBSERVER_BRIDGE_H_
