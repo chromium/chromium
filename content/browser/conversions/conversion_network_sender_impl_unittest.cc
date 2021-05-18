@@ -282,6 +282,8 @@ TEST_F(ConversionNetworkSenderTest, ErrorHistogram) {
         kReportUrl, ""));
     // kOk = 0.
     histograms.ExpectUniqueSample("Conversions.ReportStatus", 0, 1);
+    histograms.ExpectUniqueSample(
+        "Conversions.Report.HttpResponseOrNetErrorCode", net::HTTP_OK, 1);
   }
   // Internal error.
   {
@@ -294,6 +296,8 @@ TEST_F(ConversionNetworkSenderTest, ErrorHistogram) {
         network::mojom::URLResponseHead::New(), std::string()));
     // kInternalError = 1.
     histograms.ExpectUniqueSample("Conversions.ReportStatus", 1, 1);
+    histograms.ExpectUniqueSample(
+        "Conversions.Report.HttpResponseOrNetErrorCode", net::ERR_FAILED, 1);
   }
   {
     base::HistogramTester histograms;
@@ -303,6 +307,9 @@ TEST_F(ConversionNetworkSenderTest, ErrorHistogram) {
         kReportUrl, std::string(), net::HTTP_UNAUTHORIZED));
     // kExternalError = 2.
     histograms.ExpectUniqueSample("Conversions.ReportStatus", 2, 1);
+    histograms.ExpectUniqueSample(
+        "Conversions.Report.HttpResponseOrNetErrorCode", net::HTTP_UNAUTHORIZED,
+        1);
   }
 }
 

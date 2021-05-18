@@ -196,14 +196,22 @@ void ConversionNetworkSenderImpl::OnReportSent(
   network::SimpleURLLoader* loader = it->get();
 
   // Consider a non-200 HTTP code as a non-internal error.
-  bool internal_ok = loader->NetError() == net::OK ||
-                     loader->NetError() == net::ERR_HTTP_RESPONSE_CODE_FAILURE;
-  bool external_ok = headers && headers->response_code() == net::HTTP_OK;
+  int net_error = loader->NetError();
+  bool internal_ok =
+      net_error == net::OK || net_error == net::ERR_HTTP_RESPONSE_CODE_FAILURE;
+
+  int response_code = headers ? headers->response_code() : -1;
+  bool external_ok = response_code == net::HTTP_OK;
   Status status =
       internal_ok && external_ok
           ? Status::kOk
           : !internal_ok ? Status::kInternalError : Status::kExternalError;
   base::UmaHistogramEnumeration("Conversions.ReportStatus", status);
+
+  // Since net errors are always negative and HTTP errors are always positive,
+  // it is fine to combine these in a single histogram.
+  base::UmaHistogramSparse("Conversions.Report.HttpResponseOrNetErrorCode",
+                           internal_ok ? response_code : net_error);
 
   if (loader->GetNumRetries() > 0) {
     base::UmaHistogramBoolean("Conversions.ReportRetrySucceed",
