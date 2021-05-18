@@ -1,7 +1,1 @@
-# primary reviewer
-mathias@chromium.org
-sadym@chromium.org
-
-# secondary reviewer
-johnchen@chromium.org
-shengfa@google.com
+file://chrome/test/chromedriver/OWNERS
