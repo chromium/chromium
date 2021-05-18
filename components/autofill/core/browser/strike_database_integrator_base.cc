@@ -140,6 +140,10 @@ void StrikeDatabaseIntegratorBase::RemoveExpiredStrikes() {
   }
   std::vector<std::string> expired_keys;
   for (auto entry : strike_database_->GetStrikeCache()) {
+    // Only consider keys from the current strike database integrator.
+    if (strike_database_->GetPrefixFromKey(entry.first) != GetProjectPrefix()) {
+      continue;
+    }
     if (GetEntryAge(entry.second) > GetExpiryTimeDelta().value()) {
       if (strike_database_->GetStrikes(entry.first) > 0) {
         expired_keys.push_back(entry.first);

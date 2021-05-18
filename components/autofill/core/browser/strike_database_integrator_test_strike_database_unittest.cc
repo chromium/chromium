@@ -206,6 +206,38 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
       11, 1);
 }
 
+// This test verifies correctness of http://crbug/1206176.
+TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
+       RemoveExpiredStrikesOnlyConsidersCurrentIntegrator) {
+  autofill::TestAutofillClock test_clock;
+  test_clock.SetNow(AutofillClock::Now());
+  // Create a second test integrator, but with a different project prefix name,
+  // and whose strikes explicitly do not expire.
+  std::string other_project_prefix = "DifferentProjectPrefix";
+  std::unique_ptr<StrikeDatabaseIntegratorTestStrikeDatabase>
+      other_strike_database =
+          std::make_unique<StrikeDatabaseIntegratorTestStrikeDatabase>(
+              strike_database_service_.get(),
+              /*expiry_time_micros=*/absl::nullopt, other_project_prefix);
+
+  // Add a strike to both integrators.
+  strike_database_->AddStrike();
+  EXPECT_EQ(1, strike_database_->GetStrikes());
+  other_strike_database->AddStrike();
+  EXPECT_EQ(1, other_strike_database->GetStrikes());
+
+  // Advance clock to past expiry time for |strike_database_|.
+  test_clock.Advance(strike_database_->GetExpiryTimeDelta().value() +
+                     base::TimeDelta::FromMicroseconds(1));
+
+  // Attempt to expire strikes. Only |strike_database_|'s keys should be
+  // affected.
+  strike_database_->RemoveExpiredStrikes();
+  other_strike_database->RemoveExpiredStrikes();
+  EXPECT_EQ(0, strike_database_->GetStrikes());
+  EXPECT_EQ(1, other_strike_database->GetStrikes());
+}
+
 TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
        GetKeyForStrikeDatabaseIntegratorUniqueIdTest) {
   strike_database_->SetUniqueIdsRequired(true);
