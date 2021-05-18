@@ -65,10 +65,6 @@ constexpr CGFloat kVerticalButtonSpacing = 10;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  if (@available(iOS 13, *)) {
-    self.modalInPresentation = !self.canDismissScreen;
-  }
-
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
   // Create a layout guide for the margin between the subtitle and the screen-
@@ -307,6 +303,8 @@ constexpr CGFloat kVerticalButtonSpacing = 10;
     }
   });
 }
+
+#pragma mark - Setter
 
 - (void)setPrimaryActionString:(NSString*)text {
   _primaryActionString = text;

@@ -51,10 +51,6 @@
 // NO.
 @property(nonatomic, assign) BOOL scrollToEndMandatory;
 
-// When set to YES, the screen can be dismissed by the user by swiping the view
-// down. Defaults to NO. Has no effect on iOS 12.
-@property(nonatomic, assign) BOOL canDismissScreen;
-
 // YES if an unified button style applies to all buttons.
 @property(nonatomic, assign) BOOL unifiedButtonStyle;
 
