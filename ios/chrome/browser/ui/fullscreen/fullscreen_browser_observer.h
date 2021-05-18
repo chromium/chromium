@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_BROWSER_OBSERVER_H_
 #define IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_BROWSER_OBSERVER_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_state_list_observer.h"
@@ -25,7 +25,7 @@ class FullscreenBrowserObserver : public BrowserObserver {
   // The FullscreenWebStateListObserver passed on construction.
   FullscreenWebStateListObserver* web_state_list_observer_;
   // Scoped observer that facilitates observing an BrowserObserver.
-  ScopedObserver<Browser, BrowserObserver> scoped_observer_;
+  base::ScopedObservation<Browser, BrowserObserver> scoped_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_BROWSER_OBSERVER_H_

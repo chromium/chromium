@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_UI_UPDATER_H_
 #define IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_UI_UPDATER_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_observer.h"
 
@@ -60,7 +60,8 @@ class FullscreenUIUpdater {
   // The observer forwarder.
   FullscreenControllerObserverForwarder forwarder_;
   // Scoped observer for |forwarder_|.
-  ScopedObserver<FullscreenController, FullscreenControllerObserver> observer_;
+  base::ScopedObservation<FullscreenController, FullscreenControllerObserver>
+      observation_{&forwarder_};
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_UI_UPDATER_H_
