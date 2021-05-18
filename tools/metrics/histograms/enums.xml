@@ -5142,14 +5142,18 @@ others/histograms.xml -->
 
 <enum name="AutofillAssistantTriggerUIType">
   <int value="0" label="UNSPECIFIED_TRIGGER_UI_TYPE"/>
-  <int value="1" label="CART_FIRST_TIME_USER"/>
-  <int value="2" label="CART_RETURNING_USER"/>
-  <int value="3" label="CHECKOUT_FIRST_TIME_USER"/>
-  <int value="4" label="CHECKOUT_RETURNING_TIME_USER"/>
-  <int value="5" label="IN_CHROME_CART_FIRST_TIME_USER"/>
-  <int value="6" label="IN_CHROME_CART_RETURNING_USER"/>
-  <int value="7" label="IN_CHROME_CHECKOUT_FIRST_TIME_USER"/>
-  <int value="8" label="IN_CHROME_CHECKOUT_RETURNING_USER"/>
+  <int value="1" label="(External) Shopping cart, first time user"/>
+  <int value="2" label="(External) Shopping cart, returning user"/>
+  <int value="3" label="(External) Shopping checkout, first time user"/>
+  <int value="4" label="(External) Shopping checkout, returning user"/>
+  <int value="5" label="(In-Chrome) Shopping cart, first time user"/>
+  <int value="6" label="(In-Chrome) Shopping cart, returning user"/>
+  <int value="7" label="(In-Chrome) Shopping checkout, first time user"/>
+  <int value="8" label="(In-Chrome) Shopping checkout, returning user"/>
+  <int value="9" label="(External) Food ordering cart, first time user"/>
+  <int value="10" label="(External) Food ordering cart, returning user"/>
+  <int value="11" label="(In-Chrome) Food ordering cart, first time user"/>
+  <int value="12" label="(In-Chrome) Food ordering cart, returning user"/>
 </enum>
 
 <enum name="AutofillAwGSuggestionAvailability">

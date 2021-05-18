@@ -49,9 +49,9 @@ TEST(TriggerContextTest, Create) {
 
   context.SetOnboardingShown(false);
   EXPECT_FALSE(context.GetOnboardingShown());
-  context.SetTriggerUIType(TriggerScriptProto::CART_FIRST_TIME_USER);
+  context.SetTriggerUIType(TriggerScriptProto::SHOPPING_CART_FIRST_TIME_USER);
   EXPECT_EQ(context.GetTriggerUIType(),
-            TriggerScriptProto::CART_FIRST_TIME_USER);
+            TriggerScriptProto::SHOPPING_CART_FIRST_TIME_USER);
 }
 
 TEST(TriggerContextTest, MergeEmpty) {
@@ -104,7 +104,8 @@ TEST(TriggerContextTest, MergeNonEmptyWithNonEmpty) {
       /* is_direct_action = */ true,
       /* initial_url = */ "https://www.example.com",
       /* is_in_chrome_triggered = */ true};
-  context2.SetTriggerUIType(TriggerScriptProto::CHECKOUT_FIRST_TIME_USER);
+  context2.SetTriggerUIType(
+      TriggerScriptProto::SHOPPING_CHECKOUT_FIRST_TIME_USER);
 
   // Adding empty to make sure empty contexts are properly skipped.
   TriggerContext empty;
@@ -119,7 +120,7 @@ TEST(TriggerContextTest, MergeNonEmptyWithNonEmpty) {
   EXPECT_EQ(merged.GetInitialUrl(), "https://www.example.com");
   EXPECT_TRUE(merged.GetInChromeTriggered());
   EXPECT_EQ(merged.GetTriggerUIType(),
-            TriggerScriptProto::CHECKOUT_FIRST_TIME_USER);
+            TriggerScriptProto::SHOPPING_CHECKOUT_FIRST_TIME_USER);
 }
 
 TEST(TriggerContextTest, HasExperimentId) {
