@@ -27,12 +27,14 @@
 #include "third_party/blink/renderer/core/layout/layout_word_break.h"
 
 #include "third_party/blink/renderer/core/editing/position.h"
-#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_wbr_element.h"
 
 namespace blink {
 
-LayoutWordBreak::LayoutWordBreak(HTMLElement* element)
-    : LayoutText(element, StringImpl::empty_) {}
+LayoutWordBreak::LayoutWordBreak(Node* node)
+    : LayoutText(node, StringImpl::empty_) {
+  DCHECK(IsA<HTMLWBRElement>(node)) << node;
+}
 
 bool LayoutWordBreak::IsWordBreak() const {
   NOT_DESTROYED();

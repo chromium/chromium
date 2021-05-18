@@ -12,6 +12,7 @@
 namespace blink {
 
 class ComputedStyle;
+class HTMLElement;
 class LayoutBlock;
 class LayoutBlockFlow;
 class LayoutObject;
@@ -107,6 +108,7 @@ class LayoutObjectFactory {
                                      LegacyLayout legacy);
 
   static LayoutObject* CreateBR(Node*, LegacyLayout);
+  static LayoutObject* CreateWordBreak(HTMLElement*, LegacyLayout);
 
   // Anonymous creation methods
 

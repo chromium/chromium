@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_br.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_word_break.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_button.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
@@ -356,6 +357,12 @@ LayoutObject* LayoutObjectFactory::CreateSVGText(Node& node,
 
 LayoutObject* LayoutObjectFactory::CreateBR(Node* node, LegacyLayout legacy) {
   return CreateObject<LayoutObject, LayoutNGBR, LayoutBR>(*node, legacy);
+}
+
+LayoutObject* LayoutObjectFactory::CreateWordBreak(HTMLElement* element,
+                                                   LegacyLayout legacy) {
+  return CreateObject<LayoutObject, LayoutNGWordBreak, LayoutWordBreak>(
+      *element, legacy);
 }
 
 LayoutBox* LayoutObjectFactory::CreateAnonymousTableWithParent(
