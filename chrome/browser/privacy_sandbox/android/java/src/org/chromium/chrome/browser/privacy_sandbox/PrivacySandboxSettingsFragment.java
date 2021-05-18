@@ -35,8 +35,7 @@ import org.chromium.ui.widget.ChromeBulletSpan;
  */
 public class PrivacySandboxSettingsFragment
         extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
-    public static final String PRIVACY_SANDBOX_DEFAULT_URL =
-            "https://web.dev/digging-into-the-privacy-sandbox/";
+    public static final String PRIVACY_SANDBOX_DEFAULT_URL = "https://www.privacysandbox.com";
     public static final String EXPERIMENT_URL_PARAM = "website-url";
     // Key for the argument with which the PrivacySandbox fragment will be launched. The value for
     // this argument should be part of the PrivacySandboxReferrer enum, which contains all points of
