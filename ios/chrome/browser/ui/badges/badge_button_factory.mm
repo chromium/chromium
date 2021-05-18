@@ -36,6 +36,8 @@
       return [self incognitoBadgeButton];
     case BadgeType::kBadgeTypeOverflow:
       return [self overflowBadgeButton];
+    case BadgeType::kBadgeTypeSaveAddressProfile:
+      return [self saveAddressProfileBadgeButton];
     case BadgeType::kBadgeTypeNone:
       NOTREACHED() << "A badge should not have kBadgeTypeNone";
       return nil;
@@ -131,6 +133,20 @@
   button.accessibilityIdentifier = kBadgeButtonOverflowAccessibilityIdentifier;
   button.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_OVERFLOW_BADGE_HINT);
+  return button;
+}
+
+- (BadgeButton*)saveAddressProfileBadgeButton {
+  BadgeButton* button =
+      [self createButtonForType:BadgeType::kBadgeTypeSaveAddressProfile
+                     imageNamed:@"ic_place"
+                  renderingMode:UIImageRenderingModeAlwaysTemplate];
+  [button addTarget:self.delegate
+                action:@selector(saveAddressProfileBadgeButtonTapped:)
+      forControlEvents:UIControlEventTouchUpInside];
+  button.accessibilityIdentifier =
+      kBadgeButtonSaveAddressProfileAccessibilityIdentifier;
+  // TODO(crbug.com/1014652): Create a11y label hint.
   return button;
 }
 

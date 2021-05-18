@@ -14,6 +14,8 @@ BadgeType BadgeTypeForInfobarType(InfobarType infobar_type) {
       return BadgeType::kBadgeTypePasswordSave;
     case InfobarType::kInfobarTypePasswordUpdate:
       return BadgeType::kBadgeTypePasswordUpdate;
+    case InfobarType::kInfobarTypeSaveAutofillAddressProfile:
+      return BadgeType::kBadgeTypeSaveAddressProfile;
     case InfobarType::kInfobarTypeSaveCard:
       return BadgeType::kBadgeTypeSaveCard;
     case InfobarType::kInfobarTypeTranslate:
@@ -29,6 +31,8 @@ InfobarType InfobarTypeForBadgeType(BadgeType badge_type) {
       return InfobarType::kInfobarTypePasswordSave;
     case BadgeType::kBadgeTypePasswordUpdate:
       return InfobarType::kInfobarTypePasswordUpdate;
+    case BadgeType::kBadgeTypeSaveAddressProfile:
+      return InfobarType::kInfobarTypeSaveAutofillAddressProfile;
     case BadgeType::kBadgeTypeSaveCard:
       return InfobarType::kInfobarTypeSaveCard;
     case BadgeType::kBadgeTypeTranslate:

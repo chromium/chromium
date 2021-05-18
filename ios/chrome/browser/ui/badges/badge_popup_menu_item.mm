@@ -61,6 +61,10 @@ const CGFloat kBadgeCornerRadius = 5.0;
         _title = l10n_util::GetNSString(
             IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD_TITLE);
         break;
+      case BadgeType::kBadgeTypeSaveAddressProfile:
+        _actionIdentifier = PopupMenuActionShowSaveAddressProfileOptions;
+        _title = @"Save Address";
+        break;
       case BadgeType::kBadgeTypeSaveCard:
         _actionIdentifier = PopupMenuActionShowSaveCardOptions;
         _title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_CARD);
@@ -94,6 +98,10 @@ const CGFloat kBadgeCornerRadius = 5.0;
     case BadgeType::kBadgeTypePasswordSave:
     case BadgeType::kBadgeTypePasswordUpdate:
       badgeImage = [[UIImage imageNamed:@"password_key"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      break;
+    case BadgeType::kBadgeTypeSaveAddressProfile:
+      badgeImage = [[UIImage imageNamed:@"ic_place"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
     case BadgeType::kBadgeTypeSaveCard:

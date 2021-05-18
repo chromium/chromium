@@ -205,6 +205,13 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   [self handleTappedBadgeButton:badgeButton];
 }
 
+- (void)saveAddressProfileBadgeButtonTapped:(id)sender {
+  BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
+  DCHECK_EQ(badgeButton.badgeType, BadgeType::kBadgeTypeSaveAddressProfile);
+
+  [self handleTappedBadgeButton:badgeButton];
+}
+
 - (void)saveCardBadgeButtonTapped:(id)sender {
   BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
   DCHECK_EQ(badgeButton.badgeType, BadgeType::kBadgeTypeSaveCard);

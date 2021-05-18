@@ -15,6 +15,9 @@ extern NSString* const
     kBadgeButtonUpdatePasswordAccpetedAccessibilityIdentifier;
 extern NSString* const kBadgeButtonIncognitoAccessibilityIdentifier;
 extern NSString* const kBadgeButtonOverflowAccessibilityIdentifier;
+extern NSString* const kBadgeButtonSaveAddressProfileAccessibilityIdentifier;
+extern NSString* const
+    kBadgeButtonSaveAddressProfileAcceptedAccessibilityIdentifier;
 extern NSString* const kBadgeButtonSaveCardAccessibilityIdentifier;
 extern NSString* const kBadgeButtonSaveCardAcceptedAccessibilityIdentifier;
 extern NSString* const kBadgeButtonTranslateAccessibilityIdentifier;

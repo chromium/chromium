@@ -115,6 +115,13 @@
                                               kInfobarTypePasswordUpdate];
       break;
     }
+    case PopupMenuActionShowSaveAddressProfileOptions: {
+      // TODO(crbug.com/1167062): Record this event.
+
+      [self addModalRequestForInfobarType:
+                InfobarType::kInfobarTypeSaveAutofillAddressProfile];
+      break;
+    }
     case PopupMenuActionShowSaveCardOptions: {
       UMA_HISTOGRAM_ENUMERATION(kInfobarOverflowMenuTappedHistogram,
                                 MobileMessagesInfobarType::SaveCard);

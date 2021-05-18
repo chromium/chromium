@@ -142,6 +142,9 @@
 - (void)saveCardBadgeButtonTapped:(id)sender {
 }
 
+- (void)saveAddressProfileBadgeButtonTapped:(id)sender {
+}
+
 - (void)translateBadgeButtonTapped:(id)sender {
 }
 
