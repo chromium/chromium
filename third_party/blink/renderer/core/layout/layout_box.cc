@@ -2789,8 +2789,12 @@ void LayoutBox::SizeChanged() {
     SetShouldCheckForPaintInvalidation();
   // In flipped blocks writing mode, our children can change physical location,
   // but their flipped location remains the same.
-  if (HasFlippedBlocksWritingMode())
-    SetSubtreeShouldCheckForPaintInvalidation();
+  if (HasFlippedBlocksWritingMode()) {
+    if (ChildrenInline())
+      SetSubtreeShouldDoFullPaintInvalidation();
+    else
+      SetSubtreeShouldCheckForPaintInvalidation();
+  }
 }
 
 bool LayoutBox::IntersectsVisibleViewport() const {
