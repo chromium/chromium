@@ -9,6 +9,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -172,9 +173,29 @@ void WebAppShimManagerDelegate::LaunchApp(
     return;
   }
 
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(std::move(params));
+  if (params.protocol_handler_launch_url.has_value()) {
+    GURL protocol_url = params.protocol_handler_launch_url.value();
+
+    auto launch_callback = base::BindOnce(
+        [](apps::AppLaunchParams params, Profile* profile, bool accepted) {
+          if (accepted) {
+            apps::AppServiceProxyFactory::GetForProfile(profile)
+                ->BrowserAppLauncher()
+                ->LaunchAppWithParams(std::move(params));
+          }
+        },
+        std::move(params), profile);
+
+    // ShowWebAppProtocolHandlerIntentPicker keeps the `profile` alive through
+    // running of `launch_callback`.
+    chrome::ShowWebAppProtocolHandlerIntentPicker(
+        std::move(protocol_url), profile, app_id, std::move(launch_callback));
+
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile)
+        ->BrowserAppLauncher()
+        ->LaunchAppWithParams(std::move(params));
+  }
 }
 
 void WebAppShimManagerDelegate::LaunchShim(

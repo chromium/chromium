@@ -86,11 +86,11 @@ WebAppProtocolHandlerIntentPickerView::WebAppProtocolHandlerIntentPickerView(
       keep_alive_(std::move(keep_alive)),
       close_callback_(std::move(close_callback)) {
   SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::MODAL_TYPE_NONE);
   std::u16string title = l10n_util::GetStringUTF16(
       IDS_PROTOCOL_HANDLER_INTENT_PICKER_SINGLE_TITLE);
   SetTitle(title);
-  SetShowCloseButton(false);
+  SetShowCloseButton(true);
 
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(
