@@ -178,6 +178,8 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
     blink::features::kPortals,
     // TODO(crbug.com/1174566): Enable by default after experiment.
     content_capture::features::kContentCapture,
+    // TODO(crbug.com/1144912): Support BackForwardCache on WebLayer.
+    ::features::kBackForwardCache,
 
 #if defined(OS_ANDROID)
     // TODO(crbug.com/1131016): Support Picture in Picture API on WebLayer.
