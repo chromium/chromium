@@ -1214,7 +1214,7 @@ MinMaxSizes LayoutFlexibleBox::ComputeMinAndMaxSizesForChild(
                                  : resolved_main_size;
 
         sizes.min_size = std::min(specified_size, content_size);
-      } else if (UseChildAspectRatio(child)) {
+      } else if (child.IsLayoutReplaced() && UseChildAspectRatio(child)) {
         const Length& cross_size_length = IsHorizontalFlow()
                                               ? child.StyleRef().Height()
                                               : child.StyleRef().Width();
