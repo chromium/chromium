@@ -34,6 +34,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/media_content_type.h"
@@ -178,6 +179,35 @@ enum class PlayPromiseRejectReason {
   kInterruptedByLoad,
   kMaxValue = kInterruptedByLoad,
 };
+
+// The state of the HTMLMediaElement when ProgressEventTimerFired is invoked.
+// These values are histogrammed, so please only add values to the end.
+enum class ProgressEventTimerState {
+  // networkState is not NETWORK_LOADING.
+  kNotLoading,
+  // MediaShouldBeOpaque() is true.
+  kMediaShouldBeOpaque,
+  // "progress" event was scheduled.
+  kProgress,
+  // No progress. The "stalled" event was scheduled.
+  kStalled,
+  // No progress. No "stalled" event scheduled because a Media Source Attachment
+  // is used.
+  kHasMediaSourceAttachment,
+  // No progress. No "stalled" event scheduled because there was recent
+  // progress.
+  kRecentProgress,
+  // No progress. No "stalled" event scheduled because it was already scheduled.
+  kStalledEventAlreadyScheduled,
+  kMaxValue = kStalledEventAlreadyScheduled
+};
+
+// Records the state of the HTMLMediaElement when its "progress event" timer
+// fires.
+// TODO(crbug.com/1143317): Remove once the bug is fixed.
+void RecordProgressEventTimerState(ProgressEventTimerState state) {
+  UMA_HISTOGRAM_ENUMERATION("Media.ProgressEventTimerState", state);
+}
 
 static const base::TimeDelta kStalledNotificationInterval =
     base::TimeDelta::FromSeconds(3);
@@ -2060,15 +2090,20 @@ void HTMLMediaElement::UpdateLayoutObject() {
 }
 
 void HTMLMediaElement::ProgressEventTimerFired(TimerBase*) {
-  if (network_state_ != kNetworkLoading)
+  if (network_state_ != kNetworkLoading) {
+    RecordProgressEventTimerState(ProgressEventTimerState::kNotLoading);
     return;
+  }
 
   // If this is an cross-origin request, and we haven't discovered whether
   // the media is actually playable yet, don't fire any progress events as
   // those may let the page know information about the resource that it's
   // not supposed to know.
-  if (MediaShouldBeOpaque())
+  if (MediaShouldBeOpaque()) {
+    RecordProgressEventTimerState(
+        ProgressEventTimerState::kMediaShouldBeOpaque);
     return;
+  }
 
   DCHECK(previous_progress_time_);
 
@@ -2077,10 +2112,17 @@ void HTMLMediaElement::ProgressEventTimerFired(TimerBase*) {
     previous_progress_time_ = base::ElapsedTimer();
     sent_stalled_event_ = false;
     UpdateLayoutObject();
-  } else if (!media_source_attachment_ &&
-             previous_progress_time_->Elapsed() >
-                 kStalledNotificationInterval &&
-             !sent_stalled_event_) {
+    RecordProgressEventTimerState(ProgressEventTimerState::kProgress);
+  } else if (media_source_attachment_) {
+    RecordProgressEventTimerState(
+        ProgressEventTimerState::kHasMediaSourceAttachment);
+  } else if (previous_progress_time_->Elapsed() <=
+             kStalledNotificationInterval) {
+    RecordProgressEventTimerState(ProgressEventTimerState::kRecentProgress);
+  } else if (sent_stalled_event_) {
+    RecordProgressEventTimerState(
+        ProgressEventTimerState::kStalledEventAlreadyScheduled);
+  } else {
     // Note the !media_source_attachment_ condition above. The 'stalled' event
     // is not fired when using MSE. MSE's resource is considered 'local' (we
     // don't manage the download - the app does), so the HTML5 spec text around
@@ -2090,6 +2132,7 @@ void HTMLMediaElement::ProgressEventTimerFired(TimerBase*) {
     ScheduleEvent(event_type_names::kStalled);
     sent_stalled_event_ = true;
     SetShouldDelayLoadEvent(false);
+    RecordProgressEventTimerState(ProgressEventTimerState::kStalled);
   }
 }
 
