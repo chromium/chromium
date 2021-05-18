@@ -1,8 +1,10 @@
 const load = {
   _cache_bust_value: Math.random().toString().substr(2),
+
   cache_bust: path => {
     let url = new URL(path, location.origin);
-    url.hash += `cache_bust=${load._cache_bust_value++}`;
+    url.href += (url.href.includes("?")) ? '&' : '?';
+    url.href += "unique=" + load._cache_bust_value++
     return url.href;
   },
 

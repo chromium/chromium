@@ -160,31 +160,12 @@ blink::mojom::ResourceTimingInfoPtr GenerateResourceTiming(
     if (!timing_info->allow_redirect_details) {
       timing_info->start_time = response_head.load_timing.request_start;
     }
-
-    // Accumulate `encoded_data_length` of intermediate redirects into
-    // `transfer_size`. The encoded data length of the final response will be
-    // added later.
-    const GURL* current_url = &initial_url;
-    for (size_t i = 0; i < commit_params.redirect_infos.size(); ++i) {
-      if (url::Origin::Create(*current_url)
-              .IsSameOriginWith(url::Origin::Create(
-                  commit_params.redirect_infos[i].new_url))) {
-        timing_info->transfer_size +=
-            commit_params.redirect_response[i]->encoded_data_length;
-        current_url = &commit_params.redirect_infos[i].new_url;
-      } else {
-        // Any cross-origin redirects zeros out the transfer size and prevents
-        // counting the transfer size of *all* redirects.
-        timing_info->transfer_size = 0;
-        break;
-      }
-    }
   } else {
     timing_info->allow_redirect_details = false;
     timing_info->last_redirect_end_time = base::TimeTicks();
   }
-  // The final value for `transfer_size`, as well as `encoded_body_size`, and
-  // `decoded_body_size` will be populated after loading the body.
+  // The final value for `encoded_body_size` and `decoded_body_size` will be
+  // populated after loading the body.
   timing_info->did_reuse_connection = response_head.load_timing.socket_reused;
   // Use url::Origin to handle cases like blob:https://.
   timing_info->is_secure_transport = base::Contains(
@@ -284,7 +265,6 @@ void ObjectNavigationFallbackBodyLoader::MaybeComplete() {
   }
 
   timing_info_->response_end = status_->completion_time;
-  timing_info_->transfer_size += status_->encoded_data_length;
   timing_info_->encoded_body_size = status_->encoded_body_length;
   timing_info_->decoded_body_size = status_->decoded_body_length;
 

@@ -91,6 +91,10 @@ struct URLResponseHead {
   // Remote address of the socket which fetched this resource.
   IPEndPoint remote_endpoint;
 
+  // True if the response was fetched from the cache and validated over the
+  // network.
+  bool is_validated = false;
+
   // True if the response came from cache.
   bool was_fetched_via_cache = false;
 

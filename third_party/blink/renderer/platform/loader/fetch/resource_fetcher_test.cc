@@ -86,7 +86,6 @@ namespace {
 
 constexpr char kTestResourceFilename[] = "white-1x1.png";
 constexpr char kTestResourceMimeType[] = "image/png";
-constexpr uint32_t kTestResourceSize = 103;  // size of white-1x1.png
 
 const FetchClientSettingsObjectSnapshot& CreateFetchClientSettingsObject(
     network::mojom::IPAddressSpace address_space) {
@@ -572,20 +571,6 @@ TEST_F(ResourceFetcherTest, Vary) {
   new_resource->Loader()->Cancel();
 }
 
-TEST_F(ResourceFetcherTest, ResourceTimingInfo) {
-  auto info = ResourceTimingInfo::Create(
-      fetch_initiator_type_names::kDocument, base::TimeTicks::Now(),
-      mojom::blink::RequestContextType::UNSPECIFIED,
-      network::mojom::RequestDestination::kEmpty);
-  info->AddFinalTransferSize(5);
-  EXPECT_EQ(info->TransferSize(), static_cast<uint64_t>(5));
-  ResourceResponse redirect_response(KURL("https://example.com/original"));
-  redirect_response.SetHttpStatusCode(200);
-  redirect_response.SetEncodedDataLength(7);
-  info->AddRedirect(redirect_response, KURL("https://example.com/redirect"));
-  EXPECT_EQ(info->TransferSize(), static_cast<uint64_t>(12));
-}
-
 TEST_F(ResourceFetcherTest, VaryOnBack) {
   scoped_refptr<const SecurityOrigin> source_origin =
       SecurityOrigin::CreateUniqueOpaque();
@@ -853,50 +838,6 @@ class ScopedMockRedirectRequester {
 
   DISALLOW_COPY_AND_ASSIGN(ScopedMockRedirectRequester);
 };
-
-TEST_F(ResourceFetcherTest, SameOriginRedirect) {
-  const char kRedirectURL[] = "http://127.0.0.1:8000/redirect.html";
-  const char kFinalURL[] = "http://127.0.0.1:8000/final.html";
-  MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  ScopedMockRedirectRequester requester(platform_->GetURLLoaderMockFactory(),
-                                        context, CreateTaskRunner());
-  requester.RegisterRedirect(kRedirectURL, kFinalURL);
-  requester.RegisterFinalResource(kFinalURL);
-  requester.Request(kRedirectURL);
-
-  EXPECT_EQ(kRedirectResponseOverheadBytes + kTestResourceSize,
-            context->GetTransferSize());
-}
-
-TEST_F(ResourceFetcherTest, CrossOriginRedirect) {
-  const char kRedirectURL[] = "http://otherorigin.test/redirect.html";
-  const char kFinalURL[] = "http://127.0.0.1:8000/final.html";
-  MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  ScopedMockRedirectRequester requester(platform_->GetURLLoaderMockFactory(),
-                                        context, CreateTaskRunner());
-  requester.RegisterRedirect(kRedirectURL, kFinalURL);
-  requester.RegisterFinalResource(kFinalURL);
-  requester.Request(kRedirectURL);
-
-  EXPECT_EQ(kTestResourceSize, context->GetTransferSize());
-}
-
-TEST_F(ResourceFetcherTest, ComplexCrossOriginRedirect) {
-  const char kRedirectURL1[] = "http://127.0.0.1:8000/redirect1.html";
-  const char kRedirectURL2[] = "http://otherorigin.test/redirect2.html";
-  const char kRedirectURL3[] = "http://127.0.0.1:8000/redirect3.html";
-  const char kFinalURL[] = "http://127.0.0.1:8000/final.html";
-  MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  ScopedMockRedirectRequester requester(platform_->GetURLLoaderMockFactory(),
-                                        context, CreateTaskRunner());
-  requester.RegisterRedirect(kRedirectURL1, kRedirectURL2);
-  requester.RegisterRedirect(kRedirectURL2, kRedirectURL3);
-  requester.RegisterRedirect(kRedirectURL3, kFinalURL);
-  requester.RegisterFinalResource(kFinalURL);
-  requester.Request(kRedirectURL1);
-
-  EXPECT_EQ(kTestResourceSize, context->GetTransferSize());
-}
 
 TEST_F(ResourceFetcherTest, SynchronousRequest) {
   KURL url("http://127.0.0.1:8000/foo.png");

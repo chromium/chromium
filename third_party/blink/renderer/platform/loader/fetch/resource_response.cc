@@ -474,6 +474,17 @@ AtomicString ResourceResponse::ConnectionInfoString() const {
       connection_info_string.length());
 }
 
+mojom::blink::CacheState ResourceResponse::CacheState() const {
+  return is_validated_
+             ? mojom::blink::CacheState::kValidated
+             : (!encoded_data_length_ ? mojom::blink::CacheState::kLocal
+                                      : mojom::blink::CacheState::kNone);
+}
+
+void ResourceResponse::SetIsValidated(bool is_validated) {
+  is_validated_ = is_validated;
+}
+
 void ResourceResponse::SetEncodedDataLength(int64_t value) {
   encoded_data_length_ = value;
 }

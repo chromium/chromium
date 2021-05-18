@@ -13412,18 +13412,6 @@ TEST_F(WebFrameTest, GetCanonicalUrlForSharingMultiple) {
             frame->GetDocument().CanonicalUrlForSharing());
 }
 
-TEST_F(WebFrameTest, NavigationTimingInfo) {
-  RegisterMockedHttpURLLoad("foo.html");
-  frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.InitializeAndLoad(base_url_ + "foo.html");
-  ResourceTimingInfo* navigation_timing_info = web_view_helper.LocalMainFrame()
-                                                   ->GetFrame()
-                                                   ->Loader()
-                                                   .GetDocumentLoader()
-                                                   ->GetNavigationTimingInfo();
-  EXPECT_EQ(navigation_timing_info->TransferSize(), static_cast<uint64_t>(34));
-}
-
 TEST_F(WebFrameSimTest, EnterFullscreenResetScrollAndScaleState) {
   UseAndroidSettings();
   WebView().MainFrameViewWidget()->Resize(gfx::Size(490, 500));
