@@ -18,6 +18,7 @@
 #include "components/variations/synthetic_trials.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/task/thread_pool.h"
 #include "components/variations/variations_crash_keys_chromeos.h"
 #endif
 
@@ -78,6 +79,12 @@ class VariationsCrashKeys final : public base::FieldTrialList::Observer {
   // observer calls that happen on a different thread.
   scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner_;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Task runner corresponding to a background thread, used for tasks that may
+  // block.
+  scoped_refptr<base::SequencedTaskRunner> background_thread_task_runner_;
+#endif  // IS_CHROMEOS_ASH
+
   // A serialized string containing the variations state.
   std::string variations_string_;
 
@@ -101,6 +108,11 @@ VariationsCrashKeys::VariationsCrashKeys() {
   for (const auto& entry : active_groups) {
     AppendFieldTrial(entry.trial_name, entry.group_name);
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  background_thread_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::BEST_EFFORT, base::MayBlock()});
+#endif  // IS_CHROMEOS_ASH
+
   UpdateCrashKeys();
 
   ui_thread_task_runner_ = base::SequencedTaskRunnerHandle::Get();
@@ -176,7 +188,7 @@ void VariationsCrashKeys::UpdateCrashKeys() {
   g_variations_crash_key.Set(info.experiment_list);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ReportVariationsToChromeOs(info);
+  ReportVariationsToChromeOs(background_thread_task_runner_, info);
 #endif  // IS_CHROMEOS_ASH
 }
 

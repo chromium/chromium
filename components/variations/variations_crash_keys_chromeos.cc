@@ -40,11 +40,10 @@ void WriteVariationsToFile(ExperimentListInfo info) {
 
 }  // namespace
 
-void ReportVariationsToChromeOs(ExperimentListInfo info) {
+void ReportVariationsToChromeOs(scoped_refptr<base::SequencedTaskRunner> runner,
+                                ExperimentListInfo info) {
   // On a thread in the background, write variants to a file.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(&WriteVariationsToFile, info));
+  runner->PostTask(FROM_HERE, base::BindOnce(&WriteVariationsToFile, info));
 }
 
 }  // namespace variations
