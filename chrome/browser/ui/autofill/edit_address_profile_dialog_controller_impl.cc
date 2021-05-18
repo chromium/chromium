@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -39,16 +41,14 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
 }
 
 std::u16string EditAddressProfileDialogControllerImpl::GetWindowTitle() const {
-  // TODO(crbug.com/1167060): Use internationalized string upon having final
-  // strings.
-  return is_update_ ? u"Update Address?" : u"Save Address?";
+  return l10n_util::GetStringUTF16(IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_TITLE);
 }
 
 std::u16string EditAddressProfileDialogControllerImpl::GetOkButtonLabel()
     const {
-  // TODO(crbug.com/1167060): Use internationalized string upon having final
-  // strings.
-  return is_update_ ? u"Update" : u"Save";
+  return l10n_util::GetStringUTF16(
+      is_update_ ? IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_UPDATE
+                 : IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE);
 }
 
 const AutofillProfile&

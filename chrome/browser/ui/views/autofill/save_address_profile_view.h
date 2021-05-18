@@ -36,7 +36,6 @@ class SaveAddressProfileView : public AutofillBubbleBase,
 
   // views::WidgetDelegate:
   bool ShouldShowCloseButton() const override;
-  std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
 
   void Show(DisplayReason reason);

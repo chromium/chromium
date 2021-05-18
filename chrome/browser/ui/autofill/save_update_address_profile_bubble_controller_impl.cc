@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -46,11 +48,9 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OfferSave(
 
 std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetWindowTitle()
     const {
-  // TODO(crbug.com/1167060): Use internationalized string upon having final
-  // strings.
-  // TODO(crbug.com/1167060): Update prompt title should reflect the fields that
-  // are being updated.
-  return original_profile_ ? u"Update Address?" : u"Save Address?";
+  return l10n_util::GetStringUTF16(
+      original_profile_ ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE
+                        : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
 }
 
 const AutofillProfile&
@@ -100,9 +100,7 @@ bool SaveUpdateAddressProfileBubbleControllerImpl::IsBubbleActive() const {
 
 std::u16string
 SaveUpdateAddressProfileBubbleControllerImpl::GetPageActionIconTootip() const {
-  // TODO(crbug.com/1167060): Use internationalized string upon having final
-  // strings.
-  return original_profile_ ? u"Update Address?" : u"Save Address?";
+  return GetWindowTitle();
 }
 
 AutofillBubbleBase*
