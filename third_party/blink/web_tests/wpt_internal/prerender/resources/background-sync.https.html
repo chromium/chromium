@@ -16,14 +16,12 @@ if (!isPrerendering) {
   loadInitiatorPage();
 } else {
   async function loadPrerenderPage() {
-    const prerenderEventCollector =
-        new PrerenderEventCollector({customizedReadyToActivate: true});
+    const prerenderEventCollector = new PrerenderEventCollector();
     const scope = `resources/`;
     const registration = await navigator.serviceWorker.getRegistration(scope);
     const register_promise = registration.periodicSync.register(
         'periodic', { minInterval: 1000 });
     prerenderEventCollector.start(register_promise, 'periodicSync.register');
-    prerenderEventCollector.readyToActivate();
   }
   loadPrerenderPage();
 }

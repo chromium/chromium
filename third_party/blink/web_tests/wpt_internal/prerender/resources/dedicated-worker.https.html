@@ -15,8 +15,7 @@ const isPrerendering = params.has('prerendering');
 if (!isPrerendering) {
   loadInitiatorPage();
 } else {
-  const prerenderEventCollector =
-      new PrerenderEventCollector({customizedReadyToActivate: true});
+  const prerenderEventCollector = new PrerenderEventCollector();
   const promise = new Promise((resolve, reject) => {
     try {
       const worker = new Worker('dedicated-worker.js');
@@ -27,7 +26,6 @@ if (!isPrerendering) {
     }
   });
   prerenderEventCollector.start(promise, 'worker construction');
-  prerenderEventCollector.readyToActivate();
 }
 
 </script>
