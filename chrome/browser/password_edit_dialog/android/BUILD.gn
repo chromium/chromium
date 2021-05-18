@@ -43,7 +43,10 @@ generate_jni("jni_headers") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/layout/password_edit_dialog.xml" ]
+  sources = [
+    "java/res/layout/password_edit_dialog.xml",
+    "java/res/values/dimens.xml",
+  ]
 
   deps = [
     "//chrome/app:java_strings_grd",
