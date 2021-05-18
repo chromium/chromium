@@ -14,9 +14,9 @@ namespace base {
 template <typename T>
 using Optional [[deprecated]] = absl::optional<T>;
 
-using absl::make_optional [[deprecated]];
-using absl::nullopt [[deprecated]];
-using absl::nullopt_t [[deprecated]];
+using absl::make_optional;
+using absl::nullopt;
+using absl::nullopt_t;
 
 }  // namespace base
 
