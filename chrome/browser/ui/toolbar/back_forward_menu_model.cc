@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/grit/components_scaled_resources.h"
@@ -69,6 +70,11 @@ int BackForwardMenuModel::GetItemCount() const {
   if (chapter_stops)
     items += chapter_stops + 1;  // Chapter stops also need a separator.
 
+  // If the current mode is incognito, "Show Full History" should not be
+  // visible.
+  if (!ShouldShowFullHistoryBeVisible())
+    return items;
+
   // If the menu is not empty, add two positions in the end
   // for a separator and a "Show Full History" item.
   items += 2;
@@ -90,7 +96,7 @@ int BackForwardMenuModel::GetCommandIdAt(int index) const {
 
 std::u16string BackForwardMenuModel::GetLabelAt(int index) const {
   // Return label "Show Full History" for the last item of the menu.
-  if (index == GetItemCount() - 1)
+  if (ShouldShowFullHistoryBeVisible() && index == GetItemCount() - 1)
     return l10n_util::GetStringUTF16(IDS_HISTORY_SHOWFULLHISTORY_LINK);
 
   // Return an empty string for a separator.
@@ -131,7 +137,8 @@ ui::ImageModel BackForwardMenuModel::GetIconAt(int index) const {
   if (!ItemHasIcon(index))
     return ui::ImageModel();
 
-  if (index == GetItemCount() - 1) {
+  // Return icon of "Show Full History" for the last item of the menu.
+  if (ShouldShowFullHistoryBeVisible() && index == GetItemCount() - 1) {
     return ui::ImageModel::FromImage(
         ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
             IDR_HISTORY_FAVICON));
@@ -172,7 +179,7 @@ void BackForwardMenuModel::ActivatedAt(int index, int event_flags) {
   DCHECK(!IsSeparator(index));
 
   // Execute the command for the last item: "Show Full History".
-  if (index == GetItemCount() - 1) {
+  if (ShouldShowFullHistoryBeVisible() && index == GetItemCount() - 1) {
     base::RecordComputedAction(BuildActionName("ShowFullHistory", -1));
     NavigateParams params(GetSingletonTabNavigateParams(
         browser_, GURL(chrome::kChromeUIHistoryURL)));
@@ -453,4 +460,10 @@ std::string BackForwardMenuModel::BuildActionName(
     metric_string += base::NumberToString(index + 1);
   }
   return metric_string;
+}
+
+bool BackForwardMenuModel::ShouldShowFullHistoryBeVisible() const {
+  return !browser_->profile()->IsOffTheRecord() ||
+         !base::FeatureList::IsEnabled(
+             features::kUpdateHistoryEntryPointsInIncognito);
 }

@@ -75,6 +75,7 @@ class BackForwardMenuModel : public ui::MenuModel {
   FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelTest, ChapterStops);
   FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelTest, EscapeLabel);
   FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelTest, FaviconLoadTest);
+  FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelIncognitoTest, IncognitoCaseTest);
   FRIEND_TEST_ALL_PREFIXES(ChromeNavigationBrowserTest,
                            NoUserActivationSetSkipOnBackForward);
 
@@ -171,6 +172,10 @@ class BackForwardMenuModel : public ui::MenuModel {
   // E.g. BuildActionName("Click", 2) returns "BackMenu_Click2".
   // An index of -1 means no index.
   std::string BuildActionName(const std::string& name, int index) const;
+
+  // Returns true if "Show Full History" item should be visible. It is visible
+  // only in outside incognito mode.
+  bool ShouldShowFullHistoryBeVisible() const;
 
   Browser* const browser_;
 
