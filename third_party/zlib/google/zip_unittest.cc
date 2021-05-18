@@ -79,13 +79,10 @@ class VirtualFileSystem : public zip::FileAccessor {
     DCHECK(success);
     files_[bar2_txt_path] = std::move(file);
 
-    file_tree_[test_dir] = std::vector<DirectoryContentEntry>{
-        DirectoryContentEntry(foo_txt_path, /*is_dir=*/false),
-        DirectoryContentEntry(bar_dir, /*is_dir=*/true)};
-    file_tree_[bar_dir] = std::vector<DirectoryContentEntry>{
-        DirectoryContentEntry(bar1_txt_path, /*is_dir=*/false),
-        DirectoryContentEntry(bar2_txt_path, /*is_dir=*/false)};
+    file_tree_[test_dir] = {{foo_txt_path, false}, {bar_dir, true}};
+    file_tree_[bar_dir] = {{bar1_txt_path, false}, {bar2_txt_path, false}};
   }
+
   ~VirtualFileSystem() override = default;
 
  private:
@@ -109,7 +106,7 @@ class VirtualFileSystem : public zip::FileAccessor {
     auto iter = file_tree_.find(dir);
     if (iter == file_tree_.end()) {
       NOTREACHED();
-      return std::vector<DirectoryContentEntry>();
+      return {};
     }
     return iter->second;
   }

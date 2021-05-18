@@ -99,20 +99,21 @@ class MojoFileAccessor : public zip::FileAccessor {
     base::File::Error error;
     dir->Read(&error, &directory_contents);
     if (error != base::File::Error::FILE_OK) {
-      LOG(ERROR) << "Failed to list content of " << dir_path.value()
-                 << " error " << error;
+      LOG(ERROR) << "Cannot list content of '" << dir_path << "': Error "
+                 << error;
       return results;
     }
+
     if (directory_contents) {
       results.reserve(directory_contents->size());
       for (const filesystem::mojom::DirectoryEntryPtr& entry :
            *directory_contents) {
-        base::FilePath path = dir_path.Append(entry->name);
-        bool is_directory =
-            entry->type == filesystem::mojom::FsFileType::DIRECTORY;
-        results.push_back(DirectoryContentEntry(path, is_directory));
+        results.push_back(
+            {dir_path.Append(entry->name),
+             entry->type == filesystem::mojom::FsFileType::DIRECTORY});
       }
     }
+
     return results;
   }
 

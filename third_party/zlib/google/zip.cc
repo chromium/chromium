@@ -50,12 +50,12 @@ std::unique_ptr<WriterDelegate> CreateFilePathWriterDelegate(
 
 class DirectFileAccessor : public FileAccessor {
  public:
-  explicit DirectFileAccessor(base::FilePath src_dir) : src_dir_(src_dir) {}
   ~DirectFileAccessor() override = default;
 
   std::vector<base::File> OpenFilesForReading(
       const std::vector<base::FilePath>& paths) override {
     std::vector<base::File> files;
+
     for (const auto& path : paths) {
       base::File file;
       if (base::PathExists(path) && !base::DirectoryExists(path)) {
@@ -63,6 +63,7 @@ class DirectFileAccessor : public FileAccessor {
       }
       files.push_back(std::move(file));
     }
+
     return files;
   }
 
@@ -73,29 +74,26 @@ class DirectFileAccessor : public FileAccessor {
   std::vector<DirectoryContentEntry> ListDirectoryContent(
       const base::FilePath& dir) override {
     std::vector<DirectoryContentEntry> files;
+
     base::FileEnumerator file_enumerator(
         dir, false /* recursive */,
         base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
-    for (base::FilePath path = file_enumerator.Next(); !path.value().empty();
+    for (base::FilePath path = file_enumerator.Next(); !path.empty();
          path = file_enumerator.Next()) {
-      files.push_back(DirectoryContentEntry(path, base::DirectoryExists(path)));
+      const bool is_directory = base::DirectoryExists(path);
+      files.push_back({std::move(path), is_directory});
     }
+
     return files;
   }
 
   base::Time GetLastModifiedTime(const base::FilePath& path) override {
     base::File::Info file_info;
     if (!base::GetFileInfo(path, &file_info)) {
-      LOG(ERROR) << "Failed to retrieve file modification time for "
-                 << path.value();
+      LOG(ERROR) << "Cannot get modification time for '" << path << "'";
     }
     return file_info.last_modified;
   }
-
- private:
-  base::FilePath src_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectFileAccessor);
 };
 
 }  // namespace
@@ -106,7 +104,7 @@ std::ostream& operator<<(std::ostream& out, const Progress& progress) {
 }
 
 bool Zip(const ZipParams& params) {
-  DirectFileAccessor default_accessor(params.src_dir);
+  DirectFileAccessor default_accessor;
   FileAccessor* const file_accessor = params.file_accessor ?: &default_accessor;
 
   Paths files_to_add = params.src_files;

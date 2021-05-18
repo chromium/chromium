@@ -35,8 +35,6 @@ class FileAccessor {
   virtual ~FileAccessor() = default;
 
   struct DirectoryContentEntry {
-    DirectoryContentEntry(const base::FilePath& path, bool is_directory)
-        : path(path), is_directory(is_directory) {}
     base::FilePath path;
     bool is_directory = false;
   };
