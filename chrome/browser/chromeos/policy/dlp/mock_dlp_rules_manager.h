@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_MOCK_DLP_RULES_MANAGER_H_
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

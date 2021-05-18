@@ -12,7 +12,6 @@
 
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/tracing/perfetto/producer_host.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/producer.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/tracing_service.h"

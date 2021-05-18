@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "extensions/browser/api/socket/socket.h"
-#include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/common/api/socket.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/display/display_animator.h"
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

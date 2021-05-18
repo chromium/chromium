@@ -24,7 +24,6 @@
 #include "media/base/video_frame.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
-#include "media/gpu/v4l2/v4l2_jpeg_encode_accelerator.h"
 #include "media/parsers/jpeg_parser.h"
 
 namespace {

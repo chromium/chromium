@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/ui/views/color_chooser_dialog.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/shell_dialogs/base_shell_dialog.h"
 #include "ui/shell_dialogs/base_shell_dialog_win.h"

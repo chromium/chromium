@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_BROWSING_DATA_THIRD_PARTY_DATA_REMOVER_H_
 #define CHROME_BROWSER_BROWSING_DATA_THIRD_PARTY_DATA_REMOVER_H_
 
-#include "chrome/browser/browsing_data/third_party_data_remover.h"
-
 #include "base/callback.h"
 #include "content/public/browser/browser_context.h"
 

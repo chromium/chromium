@@ -7,7 +7,6 @@
 
 #include "base/files/file_path.h"
 #include "mojo/public/cpp/bindings/message.h"
-#include "mojo/public/cpp/bindings/message_dumper.h"
 
 namespace mojo {
 

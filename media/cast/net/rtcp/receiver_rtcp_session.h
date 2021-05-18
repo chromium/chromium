@@ -9,7 +9,6 @@
 #include "media/cast/common/clock_drift_smoother.h"
 #include "media/cast/net/pacing/paced_sender.h"
 #include "media/cast/net/rtcp/receiver_rtcp_event_subscriber.h"
-#include "media/cast/net/rtcp/receiver_rtcp_session.h"
 #include "media/cast/net/rtcp/rtcp_defines.h"
 #include "media/cast/net/rtcp/rtcp_session.h"
 #include "media/cast/net/rtcp/rtcp_utility.h"
