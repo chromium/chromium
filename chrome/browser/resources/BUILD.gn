@@ -53,6 +53,7 @@ group("resources") {
       "chromeos/login:resources",
       "chromeos/multidevice_internals:resources",
       "chromeos/network_ui:resources",
+      "chromeos/projector:resources",
       "nearby_internals:resources",
       "nearby_share:resources",
       "settings/chromeos:resources",
@@ -141,6 +142,7 @@ if (enable_js_type_check) {
     if (is_chromeos_ash) {
       deps += [
         "chromeos:closure_compile",
+        "chromeos/projector:closure_compile",
         "nearby_share:closure_compile",
         "nearby_share/shared:closure_compile",
         "nearby_share/shared:closure_compile_module",

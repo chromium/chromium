@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -15,13 +14,12 @@ generate_grd("build_grd") {
   input_files = [
     "selfie_cam.html",
     "selfie_cam.js",
+    "selfie_cam.css",
   ]
   input_files_base_dir = rebase_path(".", "//")
 }
 
 grit("resources") {
-  defines = chrome_grit_defines
-
   # These arguments are needed since the grd is generated at build time.
   enable_input_discovery_for_gn_analyze = false
   source = "$target_gen_dir/resources.grd"

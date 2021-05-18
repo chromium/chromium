@@ -6,7 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chromeos/projector/grit/projector_resources.h"
 #include "chromeos/projector/grit/projector_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -17,7 +17,7 @@ namespace {
 
 content::WebUIDataSource* CreateProjectorHTMLSource() {
   content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIProjectorHost);
+      content::WebUIDataSource::Create(chrome::kChromeUIProjectorSelfieCamHost);
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kProjectorResources, kProjectorResourcesSize),
@@ -27,11 +27,14 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
 
 }  // namespace
 
-ProjectorUI::ProjectorUI(content::WebUI* web_ui) : WebUIController(web_ui) {
+ProjectorUI::ProjectorUI(content::WebUI* web_ui)
+    : MojoBubbleWebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, CreateProjectorHTMLSource());
 }
 
 ProjectorUI::~ProjectorUI() = default;
+
+WEB_UI_CONTROLLER_TYPE_IMPL(ProjectorUI)
 
 }  // namespace chromeos

@@ -6036,4 +6036,9 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     </message>
   </if>
 
+   <!-- Strings for Projector-->
+  <message name="IDS_SELFIE_CAM_TITLE" desc="The title for the selfie camera dialog.">
+    Selfie Camera
+  </message>
+
 </grit-part>

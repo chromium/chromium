@@ -3003,6 +3003,7 @@ if (!is_android) {
         "../browser/ui/ash/keyboard/keyboard_end_to_end_browsertest.cc",
         "../browser/ui/ash/multi_user/test_multi_user_window_manager.cc",
         "../browser/ui/ash/multi_user/test_multi_user_window_manager.h",
+        "../browser/ui/ash/projector/projector_client_impl_browsertest.cc",
         "../browser/ui/ash/recording_service_browsertest.cc",
         "../browser/ui/ash/screen_orientation_delegate_chromeos_browsertest.cc",
         "../browser/ui/ash/sharesheet/sharesheet_bubble_view_browsertest.cc",

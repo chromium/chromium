@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
+#include "chrome/browser/ui/webui/chromeos/projector/selfie_cam_bubble_manager.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 
@@ -29,8 +30,10 @@ class ProjectorClientImpl : public ash::ProjectorClient,
 
   // ash::ProjectorClient:
   void StartSpeechRecognition() override;
-
   void StopSpeechRecognition() override;
+  void ShowSelfieCam() override;
+  void CloseSelfieCam() override;
+  bool IsSelfieCamVisible() const override;
 
   // SpeechRecognizerDelegate:
   void OnSpeechResult(
@@ -62,6 +65,7 @@ class ProjectorClientImpl : public ash::ProjectorClient,
                           speech::SodaInstaller::Observer>
       observed_soda_installer_{this};
   std::unique_ptr<OnDeviceSpeechRecognizer> speech_recognizer_;
+  chromeos::SelfieCamBubbleManager selfie_cam_bubble_manager_;
   base::WeakPtrFactory<ProjectorClientImpl> weak_ptr_factory_{this};
 };
 

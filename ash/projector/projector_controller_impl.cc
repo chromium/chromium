@@ -56,10 +56,14 @@ void ProjectorControllerImpl::OnTranscription(
 void ProjectorControllerImpl::SetProjectorToolsVisible(bool is_visible) {
   // TODO(yilkal): Projector toolbar shouldn't be shown if soda is not
   // available.
-  if (is_visible)
+  if (is_visible) {
     ui_controller_->ShowToolbar();
-  else
-    ui_controller_->CloseToolbar();
+    return;
+  }
+
+  if (client_->IsSelfieCamVisible())
+    client_->CloseSelfieCam();
+  ui_controller_->CloseToolbar();
 }
 
 bool ProjectorControllerImpl::IsEligible() const {
@@ -88,6 +92,9 @@ void ProjectorControllerImpl::OnRecordingStarted() {
 void ProjectorControllerImpl::OnRecordingEnded() {
   StopSpeechRecognition();
   ui_controller_->OnRecordingStateChanged(false /* started */);
+
+  if (client_->IsSelfieCamVisible())
+    OnSelfieCamPressed(/*enabled=*/false);
 
   // TODO(crbug.com/1165439): Call on to SaveScreencast when the metadata file
   // saving format is finalized.
@@ -126,6 +133,16 @@ void ProjectorControllerImpl::OnClearAllMarkersPressed() {
 
 void ProjectorControllerImpl::OnSelfieCamPressed(bool enabled) {
   ui_controller_->OnSelfieCamPressed(enabled);
+
+  DCHECK_NE(client_, nullptr);
+  if (enabled == client_->IsSelfieCamVisible())
+    return;
+
+  if (enabled) {
+    client_->ShowSelfieCam();
+    return;
+  }
+  client_->CloseSelfieCam();
 }
 
 void ProjectorControllerImpl::OnMagnifierButtonPressed(bool enabled) {

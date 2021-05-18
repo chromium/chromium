@@ -57,6 +57,18 @@ void ProjectorClientImpl::StopSpeechRecognition() {
   recognizer_status_ = SPEECH_RECOGNIZER_OFF;
 }
 
+void ProjectorClientImpl::ShowSelfieCam() {
+  selfie_cam_bubble_manager_.Show(ProfileManager::GetPrimaryUserProfile());
+}
+
+void ProjectorClientImpl::CloseSelfieCam() {
+  selfie_cam_bubble_manager_.Close();
+}
+
+bool ProjectorClientImpl::IsSelfieCamVisible() const {
+  return selfie_cam_bubble_manager_.IsVisible();
+}
+
 void ProjectorClientImpl::OnSpeechResult(
     const std::u16string& text,
     bool is_final,

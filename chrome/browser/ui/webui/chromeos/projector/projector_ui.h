@@ -6,16 +6,20 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_PROJECTOR_PROJECTOR_UI_H_
 
 #include "content/public/browser/web_ui_controller.h"
+#include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 namespace chromeos {
 
 // The implementation for the Projector Selfie Cam WebUI.
-class ProjectorUI : public content::WebUIController {
+class ProjectorUI : public ui::MojoBubbleWebUIController {
  public:
   explicit ProjectorUI(content::WebUI* web_ui);
   ~ProjectorUI() override;
   ProjectorUI(const ProjectorUI&) = delete;
   ProjectorUI& operator=(const ProjectorUI&) = delete;
+
+ private:
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 }  // namespace chromeos
