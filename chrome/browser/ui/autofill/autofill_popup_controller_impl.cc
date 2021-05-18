@@ -350,6 +350,11 @@ bool AutofillPopupControllerImpl::GetRemovalConfirmationText(
 }
 
 bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
+  // This function might be called in a callback, so ensure the list index is
+  // still in bounds. If not, terminate the removing and consider it failed.
+  // TODO(crbug.com/1209792): Replace these checks with a stronger identifier.
+  if (list_index < 0 || static_cast<size_t>(list_index) >= suggestions_.size())
+    return false;
   if (!delegate_->RemoveSuggestion(suggestions_[list_index].value,
                                    suggestions_[list_index].frontend_id)) {
     return false;
