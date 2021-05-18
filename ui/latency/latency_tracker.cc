@@ -141,6 +141,29 @@ void LatencyTracker::ReportJankyFrame(base::TimeTicks original_timestamp,
   CONFIRM_EVENT_TIMES_EXIST(original_timestamp, gpu_swap_end_timestamp);
   base::TimeDelta dur = gpu_swap_end_timestamp - original_timestamp;
 
+  if (first_frame) {
+    if (total_update_events_ > 0) {
+      // If we have some data from previous scroll, report it to UMA.
+      UMA_HISTOGRAM_MEDIUM_TIMES("Event.Latency.ScrollUpdate.TotalDuration",
+                                 total_update_duration_);
+      UMA_HISTOGRAM_MEDIUM_TIMES("Event.Latency.ScrollUpdate.JankyDuration",
+                                 janky_update_duration_);
+
+      UMA_HISTOGRAM_COUNTS_10000("Event.Latency.ScrollUpdate.TotalEvents",
+                                 total_update_events_);
+      UMA_HISTOGRAM_COUNTS_10000("Event.Latency.ScrollUpdate.JankyEvents",
+                                 janky_update_events_);
+    }
+
+    total_update_events_ = 0;
+    janky_update_events_ = 0;
+    total_update_duration_ = base::TimeDelta{};
+    janky_update_duration_ = base::TimeDelta{};
+  }
+
+  total_update_events_++;
+  total_update_duration_ += dur;
+
   // When processing first frame in a scroll, we do not have any other frames to
   // compare it to, and thus no way to detect the jank.
   if (!first_frame) {
@@ -161,13 +184,20 @@ void LatencyTracker::ReportJankyFrame(base::TimeTicks original_timestamp,
     if (!prev_scroll_update_reported_) {
       // The information about previous GestureScrollUpdate was not reported:
       // check whether it's janky by comparing to the current frame and report.
-      UMA_HISTOGRAM_BOOLEAN("Event.Latency.ScrollJank",
-                            prev_frames_taken > frames_taken + 0.5);
+      if (prev_frames_taken > frames_taken + 0.5) {
+        UMA_HISTOGRAM_BOOLEAN("Event.Latency.ScrollJank", true);
+        janky_update_events_++;
+        janky_update_duration_ += prev_duration_;
+      } else {
+        UMA_HISTOGRAM_BOOLEAN("Event.Latency.ScrollJank", false);
+      }
     }
 
     // The current GestureScrollUpdate is janky compared to the previous one.
     if (frames_taken > prev_frames_taken + 0.5) {
       UMA_HISTOGRAM_BOOLEAN("Event.Latency.ScrollJank", true);
+      janky_update_events_++;
+      janky_update_duration_ += dur;
 
       // Since we have reported the current event as janky, there is no need to
       // report anything about it on the next iteration, as we would like to
