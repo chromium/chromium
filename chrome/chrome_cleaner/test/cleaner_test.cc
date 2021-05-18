@@ -603,6 +603,12 @@ class CleanerScanningModeTest
   void SetUp() override {
     CleanerTestBase::SetUp();
 
+    // TODO(crbug.com/1210601): All uses of MockChromePromptResponder are
+    // failing on Windows 7. Disable this test suite until the problem can be
+    // investigated.
+    if (base::win::GetVersion() < base::win::Version::WIN8)
+      GTEST_SKIP() << "Skipping on Win7: crbug.com/1210601";
+
     command_line_ =
         BuildCommandLine(kCleanerExecutable, ExecutionMode::kScanning);
     chrome_cleaner::ChromePromptPipeHandles pipe_handles =
