@@ -80,12 +80,12 @@ dialog#delete-confirm-dialog::backdrop {
 }
 
 #contentPanel[metadata-box-active] {
-  margin-right: 320px;
+  margin-inline-end: 320px;
 }
 
 :host-context(html[dir='rtl']) #contentPanel[metadata-box-active] {
-  margin-left: 320px;
-  margin-right: auto;
+  margin-inline-end: auto;
+  margin-inline-start: 320px;
 }
 
 #innerContentPanel {
@@ -153,19 +153,6 @@ dialog#delete-confirm-dialog::backdrop {
   display: flex;
 }
 
-:host(:not([files-ng])) cr-button,
-:host(:not([files-ng])) files-icon-button {
-  --ink-color: currentColor;
-  border: none;
-  border-radius: 2px;
-  color: currentColor;
-  height: 32px;
-  margin: 0 8px;
-  min-width: 32px;
-  padding: 0;
-  text-transform: uppercase;
-}
-
 :host([files-ng]) cr-button {
   --hover-bg-color: rgba(255, 255, 255, 4%);
   --ink-color: rgba(255, 255, 255, 88%);
@@ -214,10 +201,6 @@ iron-icon {
   display: none;
 }
 
-:host(:not([files-ng])) #back-button > .icon {
-  display: none;
-}
-
 :host([files-ng]) #back-button > .icon {
   -webkit-mask-image: url(../images/files/ui/back.svg);
 }
@@ -237,10 +220,6 @@ iron-icon {
   -webkit-mask-image: url(../images/files/ui/delete_ng.svg);
 }
 
-:host(:not([files-ng])) #info-button {
-  display: none;
-}
-
 #metadata-button {
   --files-toggle-ripple-bg-color: white;
   --files-toggle-ripple-activated-opacity: 0.3;
@@ -256,11 +235,6 @@ iron-icon {
 
 :host([files-ng]) #info-button > .icon {
   -webkit-mask-image: url(../images/files/ui/info.svg);
-}
-
-:host(:not([files-ng])) cr-button:focus:not(:active) {
-  box-shadow: 0 0 0 1px rgba(66, 133, 244, 50%);
-  font-weight: bold;
 }
 
 :host-context(html.focus-outline-visible.files-ng) cr-button:not(:active):focus {
@@ -309,11 +283,11 @@ iron-icon {
 
 @media only screen and (max-width: 720px) {
   #contentPanel[metadata-box-active] #innerContentPanel {
-    padding-left: 4px;
-    padding-right: 4px;
+    padding-inline-end: 4px;
+    padding-inline-start: 4px;
   }
   #contentPanel[metadata-box-active] {
-    margin-right: 250px;
+    margin-inline-end: 250px;
   }
 }
 

@@ -71,12 +71,6 @@ html[dir=rtl] .tree-row > .file-row > .expand-icon {
   display: none;
 }
 
-/* Not used in files-ng: restrict by #directory-tree:not([files-ng]) to block
-   the trailing > * matching the files-ng .tree-row > .file-row structure. */
-#directory-tree:not([files-ng]) .tree-item > .tree-row > * {
-  display: inline-block;
-}
-
 .tree-label {
   white-space: pre;
 }

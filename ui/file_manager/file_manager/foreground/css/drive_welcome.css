@@ -23,16 +23,6 @@ body.files-ng .drive-welcome-icon {
 }
 
 /* Header welcome banner. */
-body:not(.files-ng) .drive-welcome.header {
-  background-color: rgb(79, 129, 232);
-  flex: none;
-  height: 130px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  position: relative;
-  transition: height 180ms ease, visibility 0ms linear 180ms;
-}
-
 body.files-ng .drive-welcome.header {
   border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
   box-sizing: border-box;
@@ -47,12 +37,6 @@ body.files-ng .drive-welcome.header {
   visibility: visible;
 }
 
-body:not(.files-ng) .dialog-container:not([drive-welcome='header'])
-.drive-welcome.header {
-  height: 0;
-  visibility: hidden;
-}
-
 body.files-ng .dialog-container:not([drive-welcome='header'])
 .drive-welcome.header {
   height: 0;
@@ -60,35 +44,11 @@ body.files-ng .dialog-container:not([drive-welcome='header'])
   visibility: hidden;
 }
 
-body:not(.files-ng) .drive-welcome.header .drive-welcome-wrapper {
-  color: white;
-  display: flex;
-  flex-direction: row;
-  left: 0;
-  padding-top: 21px;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
 body.files-ng .drive-welcome.header .drive-welcome-wrapper {
   align-items: center;
   display: flex;
   flex-direction: row;
   height: 71px;
-}
-
-body:not(.files-ng) .drive-welcome.header .drive-welcome-icon {
-  background-color: white;
-  background-position: center;
-  background-size: 64px 64px;
-  border-radius: 4px;
-  flex: none;
-  height: 78px;
-  /* Icon should be centered within 128px banner with 25px margin. */
-  /* 4px at top adds to 21px padding-top in drive-welcom-header to make 25px. */
-  margin: 4px 25px 0 25px;
-  width: 78px;
 }
 
 body.files-ng .drive-welcome.header .drive-welcome-icon {
@@ -102,36 +62,16 @@ body.files-ng .drive-welcome.header .drive-welcome-icon {
   width: 32px;
 }
 
-body:not(.files-ng) .drive-welcome.header .drive-welcome-message {
-  margin-inline-end: 144px;
-  margin-inline-start: 20px;
-  z-index: 1;
-}
-
 body.files-ng .drive-welcome.header .drive-welcome-message {
   z-index: 1;
-}
-
-body:not(.files-ng) .drive-welcome.header .drive-welcome-title {
-  font-size: 21px;
-  font-weight: 500;
-  margin-bottom: 4px;
 }
 
 body.files-ng .drive-welcome.header .drive-welcome-title {
   margin-bottom: 2px;
 }
 
-body:not(.files-ng) .drive-welcome.header .drive-welcome-text {
-  font-size: 16px;
-}
-
 body.files-ng .drive-welcome.header .drive-welcome-text {
   display: inline;
-}
-
-body:not(.files-ng) .drive-welcome.header .drive-welcome-links {
-  z-index: 1;
 }
 
 body.files-ng .drive-welcome.header .drive-welcome-links {
@@ -146,22 +86,12 @@ body.files-ng .drive-welcome.header .drive-welcome-links {
   padding: 0 4px;
 }
 
-body:not(.files-ng) .drive-welcome.header .banner-close {
-  top: 0;
-}
-
 html[dir='ltr'] .drive-welcome.header .banner-people {
   right: 38px;
 }
 
 html[dir='rtl'] .drive-welcome.header .banner-people {
   left: 38px;
-}
-
-body:not(.files-ng) .drive-welcome.header .plain-link {
-  color: white;
-  font-size: 16px;
-  text-decoration: underline;
 }
 
 body.files-ng .drive-welcome.header .plain-link {

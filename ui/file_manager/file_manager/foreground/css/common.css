@@ -125,8 +125,7 @@ cr-menu.chrome-menu > [checked]::before {
 }
 
 /* Style for <button>s to have similar style with Polymer's <paper-button>. */
-.imitate-paper-button,
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button {
+.imitate-paper-button {
   background: transparent;
   border: 0;
   border-image: none;
@@ -147,17 +146,6 @@ cr-menu.chrome-menu > [checked]::before {
   text-transform: uppercase;
   user-select: none;
   z-index: 0;
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button {
-  border-radius: 4px;
-  font-weight: 500;
-  margin-inline-end: 0;
-  margin-inline-start: 5px;
-  min-height: 32px;
-  min-width: 70px;
-  padding: auto;
-  text-transform: none;
 }
 
 .cr-dialog-container.files-ng .cr-dialog-buttons > button {
@@ -182,25 +170,11 @@ cr-menu.chrome-menu > [checked]::before {
   z-index: 0;
 }
 
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-ok,
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-ok:hover {
-  background-color: var(--cros-button-background-color-primary);
-  color: var(--cros-button-label-color-primary);
-  order: 1;
-}
-
 .cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-ok,
 .cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-ok:hover {
   background-color: var(--cros-button-background-color-primary);
   color: var(--cros-button-label-color-primary);
   order: 1;
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-ok:hover {
-  background:
-      linear-gradient(var(--cros-button-background-color-primary-hover-overlay),
-                      var(--cros-button-background-color-primary-hover-overlay));
-              var(--cros-button-background-color-primary),
 }
 
 .cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-ok:hover {
@@ -210,24 +184,11 @@ cr-menu.chrome-menu > [checked]::before {
               var(--cros-button-background-color-primary);
 }
 
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-ok[disabled],
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-ok[disabled]:hover {
-  background-color:
-      var(--cros-button-background-color-primary-disabled);
-  color: var(--cros-button-label-color-primary-disabled);
-}
-
 .cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-ok[disabled],
 .cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-ok[disabled]:hover {
   background-color:
       var(--cros-button-background-color-primary-disabled);
   color: var(--cros-button-label-color-primary-disabled);
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-cancel {
-  border: 1px solid var(--cros-button-stroke-color-secondary);
-  color: var(--cros-button-label-color-secondary);
-  order: 0;
 }
 
 .cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-cancel {
@@ -236,28 +197,14 @@ cr-menu.chrome-menu > [checked]::before {
   order: 0;
 }
 
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-cancel:hover {
-  background: var(--cros-button-background-color-secondary-hover);
-}
-
 .cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-cancel:hover {
   background: var(--cros-button-background-color-secondary-hover);
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-cancel[disabled],
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-cancel[disabled]:hover  {
-  border: 1px solid var(--cros-button-stroke-color-secondary-disabled);
-  color: var(--cros-button-label-color-secondary-disabled);
 }
 
 .cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-cancel[disabled],
 .cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-cancel[disabled]:hover  {
   border: 1px solid var(--cros-button-stroke-color-secondary-disabled);
   color: var(--cros-button-label-color-secondary-disabled);
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button:not(:active):focus {
-  box-shadow: 0 0 0 2px rgba(51, 103, 214, 0.5);
 }
 
 :root.focus-outline-visible .cr-dialog-container.files-ng .cr-dialog-buttons > button:not(:active):focus,
@@ -301,25 +248,8 @@ html[dir='rtl'] .entry-name {
 }
 
 /* Pop-up dialogs. */
-.cr-dialog-container:not(.files-ng).shown {
-  background-color: rgba(0, 0, 0, 0.6);
-}
-
 .cr-dialog-container.files-ng.shown {
   background-color: rgba(var(--google-grey-900-rgb), 60%);
-}
-
-.cr-dialog-container:not(.files-ng) {
-  display: flex;
-  height: 100%;
-  left: 0;
-  overflow: auto;
-  position: absolute;
-  top: 0;
-  transition: opacity 250ms linear;
-  user-select: none;
-  width: 100%;
-  z-index: 9999;
 }
 
 .cr-dialog-container.files-ng {
@@ -332,21 +262,6 @@ html[dir='rtl'] .entry-name {
   user-select: none;
   width: 100%;
   z-index: 9999;
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-frame {
-  background-color: var(--cros-bg-color);
-  border-radius: 2px;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2),
-              0 2px 6px 0 rgba(0, 0, 0, 0.1);
-  color: var(--cros-text-color-primary);
-  cursor: default;
-  display: flex;
-  flex-direction: column;
-  margin: auto;
-  padding: 12px;
-  position: relative;
-  width: 386px;
 }
 
 .cr-dialog-container.files-ng .cr-dialog-frame {
@@ -365,10 +280,6 @@ html[dir='rtl'] .entry-name {
   padding: 24px;
   padding-bottom: 20px;
   position: relative;
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-frame:focus {
-  outline: none;
 }
 
 .cr-dialog-container.files-ng .cr-dialog-frame:focus {
@@ -397,15 +308,6 @@ html[dir='rtl'] .entry-name {
   animation-timing-function: ease-in-out;
 }
 
-.cr-dialog-container:not(.files-ng).shown > .cr-dialog-frame {
-  opacity: 1;
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-frame {
-  opacity: 0;
-  transition: opacity 250ms;
-}
-
 .cr-dialog-container.files-ng.shown > .cr-dialog-frame {
   opacity: 1;
 }
@@ -413,18 +315,6 @@ html[dir='rtl'] .entry-name {
 .cr-dialog-container.files-ng .cr-dialog-frame {
   opacity: 0;
   transition: opacity 100ms;
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-title {
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 10px;
-  margin-inline-end: 20px;
-  margin-inline-start: 4px;
-  margin-top: 4px;
-  white-space: nowrap;
-  word-wrap: normal;
 }
 
 .cr-dialog-container.files-ng .cr-dialog-title {
@@ -435,20 +325,8 @@ html[dir='rtl'] .entry-name {
   margin-bottom: 16px;
 }
 
-.cr-dialog-container:not(.files-ng) .cr-dialog-text {
-  font-size: 12px;
-  margin: 4px 4px 10px 4px;
-}
-
 .cr-dialog-container.files-ng .cr-dialog-text {
   font-size: 14px;
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-text,
-.cr-dialog-container:not(.files-ng) .cr-dialog-title {
-  color: var(--cros-text-color-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .cr-dialog-container.files-ng .cr-dialog-text,
@@ -462,18 +340,6 @@ html[dir='rtl'] .entry-name {
 
 .cr-dialog-container.files-ng .no-title .cr-dialog-text {
   color: var(--cros-text-color-primary);
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-frame input {
-  box-sizing: border-box;
-  width: 100%;
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  padding-top: 24px;
 }
 
 .cr-dialog-container.files-ng .cr-dialog-buttons {
@@ -505,29 +371,6 @@ html[dir='rtl'] .entry-name {
 :host-context(:root[dir='rtl']) .cr-dialog-container.files-ng .cr-dialog-close {
   left: 6px;
   right: unset !important;
-}
-
-html[dir='rtl'] .cr-dialog-container:not(.files-ng) .cr-dialog-close {
-  left: 0;
-  right: auto;
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-close:hover {
-  opacity: 0.9;
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-close:active {
-  opacity: 1;
-}
-
-.cr-dialog-container:not(.files-ng) .files-alert-dialog .cr-dialog-close,
-.cr-dialog-container:not(.files-ng) .files-confirm-dialog .cr-dialog-close {
-  display: none;
-}
-
-.cr-dialog-container:not(.files-ng) .files-alert-dialog .cr-dialog-text,
-.cr-dialog-container:not(.files-ng) .files-confirm-dialog .cr-dialog-text {
-  font-size: 14px;
 }
 
 /* Modal <dialog> container for Pop-up dialogs. */
