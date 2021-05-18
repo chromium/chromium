@@ -8,11 +8,18 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+
+class Profile;
+
+namespace base {
+class FilePath;
+}
 
 namespace signin {
 class IdentityManager;
@@ -26,7 +33,8 @@ struct AccessTokenInfo;
 class ForceSigninVerifier
     : public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
-  explicit ForceSigninVerifier(signin::IdentityManager* identity_manager);
+  explicit ForceSigninVerifier(Profile* profile,
+                               signin::IdentityManager* identity_manager);
   ~ForceSigninVerifier() override;
 
   void OnAccessTokenFetchComplete(GoogleServiceAuthError error,
@@ -47,7 +55,6 @@ class ForceSigninVerifier
   //   - There is no on going verification.
   //   - There is network connection.
   //   - The profile has signed in.
-  //
   void SendRequest();
 
   // Send the request if |network_type| is not CONNECTION_NONE and
@@ -58,6 +65,7 @@ class ForceSigninVerifier
   bool ShouldSendRequest();
 
   virtual void CloseAllBrowserWindows();
+  void OnCloseBrowsersSuccess(const base::FilePath& profile_path);
 
   signin::PrimaryAccountAccessTokenFetcher* GetAccessTokenFetcherForTesting();
   net::BackoffEntry* GetBackoffEntryForTesting();
@@ -74,7 +82,10 @@ class ForceSigninVerifier
   base::OneShotTimer backoff_request_timer_;
   base::TimeTicks creation_time_;
 
+  Profile* profile_ = nullptr;
   signin::IdentityManager* identity_manager_ = nullptr;
+
+  base::WeakPtrFactory<ForceSigninVerifier> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ForceSigninVerifier);
 };

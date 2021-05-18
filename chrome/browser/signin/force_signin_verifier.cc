@@ -7,7 +7,17 @@
 #include "chrome/browser/signin/force_signin_verifier.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -32,10 +42,12 @@ const net::BackoffEntry::Policy kForceSigninVerifierBackoffPolicy = {
 }  // namespace
 
 ForceSigninVerifier::ForceSigninVerifier(
+    Profile* profile,
     signin::IdentityManager* identity_manager)
     : has_token_verified_(false),
       backoff_entry_(&kForceSigninVerifierBackoffPolicy),
       creation_time_(base::TimeTicks::Now()),
+      profile_(profile),
       identity_manager_(identity_manager) {
   content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
   // Most of time (~94%), sign-in token can be verified with server.
@@ -135,14 +147,40 @@ bool ForceSigninVerifier::ShouldSendRequest() {
 }
 
 void ForceSigninVerifier::CloseAllBrowserWindows() {
-  // Do not close window if there is ongoing reauth. If it fails later, the
-  // signin process should take care of the signout.
-  auto* primary_account_mutator = identity_manager_->GetPrimaryAccountMutator();
-  if (!primary_account_mutator)
+  if (base::FeatureList::IsEnabled(features::kForceSignInReauth)) {
+    // Do not sign the user out to allow them to reauthenticate from the profile
+    // picker.
+    BrowserList::CloseAllBrowsersWithProfile(
+        profile_,
+        base::BindRepeating(&ForceSigninVerifier::OnCloseBrowsersSuccess,
+                            weak_factory_.GetWeakPtr()),
+        base::DoNothing(),
+        /*skip_beforeunload=*/true);
+  } else {
+    // Do not close window if there is ongoing reauth. If it fails later, the
+    // signin process should take care of the signout.
+    auto* primary_account_mutator =
+        identity_manager_->GetPrimaryAccountMutator();
+    if (!primary_account_mutator)
+      return;
+    primary_account_mutator->ClearPrimaryAccount(
+        signin_metrics::AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN,
+        signin_metrics::SignoutDelete::kIgnoreMetric);
+  }
+}
+
+void ForceSigninVerifier::OnCloseBrowsersSuccess(
+    const base::FilePath& profile_path) {
+  Cancel();
+
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path);
+  if (!entry)
     return;
-  primary_account_mutator->ClearPrimaryAccount(
-      signin_metrics::AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+  entry->LockForceSigninProfile(true);
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
 }
 
 signin::PrimaryAccountAccessTokenFetcher*

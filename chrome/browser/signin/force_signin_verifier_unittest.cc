@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -20,7 +21,7 @@ class ForceSigninVerifierWithAccessToInternalsForTesting
  public:
   explicit ForceSigninVerifierWithAccessToInternalsForTesting(
       signin::IdentityManager* identity_manager)
-      : ForceSigninVerifier(identity_manager) {}
+      : ForceSigninVerifier(nullptr, identity_manager) {}
 
   bool IsDelayTaskPosted() { return GetOneShotTimerForTesting()->IsRunning(); }
 
