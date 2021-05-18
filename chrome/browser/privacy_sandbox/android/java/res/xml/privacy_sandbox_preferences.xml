@@ -12,6 +12,7 @@
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="privacy_sandbox_title"
         android:title="@string/privacy_sandbox_description_title"
         app:allowDividerBelow="false" />
 
@@ -27,6 +28,13 @@
 
     <org.chromium.components.browser_ui.settings.LongSummaryTextMessagePreference
         android:key="privacy_sandbox_toggle_description"
-        app:allowDividerBelow="false" />
+        app:allowDividerBelow="true" />
+
+    <Preference
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.FlocSettingsFragment"
+        android:key="floc_page"
+        android:title="@string/prefs_privacy_sandbox_floc"
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="true" />
 
 </PreferenceScreen>

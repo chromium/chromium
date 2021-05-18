@@ -24,11 +24,26 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().setPrivacySandboxEnabled(enabled);
     }
 
+    public static boolean isFlocEnabled() {
+        return PrivacySandboxBridgeJni.get().isFlocEnabled();
+    }
+
+    public static String getFlocStatusString() {
+        return PrivacySandboxBridgeJni.get().getFlocStatusString();
+    }
+
+    public static String getFlocGroupString() {
+        return PrivacySandboxBridgeJni.get().getFlocGroupString();
+    }
+
     @NativeMethods
     interface Natives {
         boolean isPrivacySandboxSettingsFunctional();
         boolean isPrivacySandboxEnabled();
         boolean isPrivacySandboxManaged();
         void setPrivacySandboxEnabled(boolean enabled);
+        boolean isFlocEnabled();
+        String getFlocStatusString();
+        String getFlocGroupString();
     }
 }

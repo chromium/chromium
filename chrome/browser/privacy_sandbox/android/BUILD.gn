@@ -10,6 +10,7 @@ generate_jni("jni_headers") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/FlocSettingsFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxHelpers.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxReferrer.java",
@@ -55,8 +56,10 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable-night/privacy_sandbox_illustration.xml",
     "java/res/drawable/privacy_sandbox_illustration.xml",
+    "java/res/layout/floc_button.xml",
     "java/res/layout/privacy_sandbox_header.xml",
     "java/res/values/dimens.xml",
+    "java/res/xml/floc_preferences.xml",
     "java/res/xml/privacy_sandbox_preferences.xml",
   ]
   deps = [

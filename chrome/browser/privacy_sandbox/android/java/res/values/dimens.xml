@@ -4,6 +4,7 @@
      found in the LICENSE file. -->
 
 <resources>
+  <dimen name="floc_button_margin">16dp</dimen>
   <dimen name="privacy_sandbox_illustration_height">120dp</dimen>
   <dimen name="privacy_sandbox_illustration_width">120dp</dimen>
 </resources>

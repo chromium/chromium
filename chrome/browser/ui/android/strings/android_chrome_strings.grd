@@ -816,6 +816,27 @@ Privacy Sandbox is still in active development and is available in selected regi
       <message name="IDS_PRIVACY_SANDBOX_SNACKBAR_MESSAGE" desc="The text displayed in the snackbar, which gives the user an option to navigate to the Privacy Sandbox settings page. 'Privacy sandbox' has TC ID 5753235213964358658.">
         Learn about and control new technologies that aim to replace third-party cookies
       </message>
+      <message name="IDS_PREFS_PRIVACY_SANDBOX_FLOC" desc="Title for the FLoC preferences as part of the Privacy Sandbox.">
+        FLoC
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION" desc="Describes the FLoC technology as part of Privacy Sandbox.">
+        When on and the status is active, Chrome uses your browsing history over 7 days to determine a group, or “cohort”, that you’re in. Advertisers can select ads for the group. Your browsing history is not shared and is kept private on your device. In some regions, this trial is not active.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_FLOC_STATUS_TITLE" desc="Title for FLoC experiment status.">
+        Status
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_FLOC_GROUP_TITLE" desc="Title for FLoC group.">
+        Group ID
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_FLOC_UPDATE_TITLE" desc="Title for FLoC update.">
+        Next update
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_FLOC_RESET_DESCRIPTION" desc="Describes the ability to reset FLoC group ID.">
+        You can reset your group at any time. It takes 7 days to determine your group.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_FLOC_RESET_BUTTON" desc="Button text to reset FLoC group ID.">
+        Reset group
+      </message>
 
       <!-- Secure DNS Settings.  Used by //chrome/browser/privacy. -->
       <message name="IDS_SETTINGS_CUSTOM" desc="Label for a custom option in a dropdown menu.">
