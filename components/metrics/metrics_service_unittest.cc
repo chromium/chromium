@@ -193,7 +193,7 @@ class MetricsServiceTest : public testing::Test {
   // the histogram was not found.
   int GetHistogramSampleCount(const ChromeUserMetricsExtension& uma_log,
                               base::StringPiece histogram_name) {
-    const auto histogram_name_hash = HashMetricName(histogram_name);
+    const auto histogram_name_hash = base::HashMetricName(histogram_name);
     int samples = 0;
     for (int i = 0; i < uma_log.histogram_event_size(); ++i) {
       const auto& histogram = uma_log.histogram_event(i);

@@ -238,9 +238,8 @@ LogTableRowBuffer&& operator<<(LogTableRowBuffer&& buf, Attrib&& attrib) {
 
 namespace {
 // Highlights the first |needle| in |haystack| by wrapping it in <b> tags.
-template <typename CharT>
-LogBuffer HighlightValueInternal(base::BasicStringPiece<CharT> haystack,
-                                 base::BasicStringPiece<CharT> needle) {
+template <typename T, typename CharT = typename T::value_type>
+LogBuffer HighlightValueInternal(T haystack, T needle) {
   using StringPieceT = base::BasicStringPiece<CharT>;
   LogBuffer buffer;
   size_t pos = haystack.find(needle);

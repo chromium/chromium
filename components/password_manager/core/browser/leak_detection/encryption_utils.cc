@@ -23,9 +23,8 @@ namespace password_manager {
 
 namespace {
 
-template <typename CharT>
-std::basic_string<CharT> CanonicalizeUsernameT(
-    base::BasicStringPiece<CharT> username) {
+template <typename T, typename CharT = typename T::value_type>
+std::basic_string<CharT> CanonicalizeUsernameT(T username) {
   static constexpr CharT kPeriod = '.';
 
   std::basic_string<CharT> email_lower = base::ToLowerASCII(username);

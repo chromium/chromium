@@ -38,7 +38,7 @@ class FindInPageInteractiveTest : public InProcessBrowserTest {
                       bool forward,
                       bool case_sensitive,
                       int* ordinal) {
-    std::u16string search_str16(ASCIIToUTF16(search_str));
+    std::u16string search_str16(base::ASCIIToUTF16(search_str));
     Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
     browser->GetFindBarController()->find_bar()->SetFindTextAndSelectedRange(
         search_str16, gfx::Range());

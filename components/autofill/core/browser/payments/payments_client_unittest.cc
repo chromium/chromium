@@ -366,13 +366,14 @@ class PaymentsClientTest : public testing::Test {
                                base::StringPiece phone_number) {
     AutofillProfile profile;
 
-    profile.SetInfo(NAME_FIRST, ASCIIToUTF16(first_name), "en-US");
-    profile.SetInfo(NAME_LAST, ASCIIToUTF16(last_name), "en-US");
-    profile.SetInfo(ADDRESS_HOME_LINE1, ASCIIToUTF16(address_line), "en-US");
-    profile.SetInfo(ADDRESS_HOME_CITY, ASCIIToUTF16(city), "en-US");
-    profile.SetInfo(ADDRESS_HOME_STATE, ASCIIToUTF16(state), "en-US");
-    profile.SetInfo(ADDRESS_HOME_ZIP, ASCIIToUTF16(zip), "en-US");
-    profile.SetInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16(phone_number),
+    profile.SetInfo(NAME_FIRST, base::ASCIIToUTF16(first_name), "en-US");
+    profile.SetInfo(NAME_LAST, base::ASCIIToUTF16(last_name), "en-US");
+    profile.SetInfo(ADDRESS_HOME_LINE1, base::ASCIIToUTF16(address_line),
+                    "en-US");
+    profile.SetInfo(ADDRESS_HOME_CITY, base::ASCIIToUTF16(city), "en-US");
+    profile.SetInfo(ADDRESS_HOME_STATE, base::ASCIIToUTF16(state), "en-US");
+    profile.SetInfo(ADDRESS_HOME_ZIP, base::ASCIIToUTF16(zip), "en-US");
+    profile.SetInfo(PHONE_HOME_WHOLE_NUMBER, base::ASCIIToUTF16(phone_number),
                     "en-US");
     profile.FinalizeAfterImport();
     return profile;

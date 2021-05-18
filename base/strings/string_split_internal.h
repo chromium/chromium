@@ -29,12 +29,13 @@ inline StringPiece WhitespaceForType<char>() {
 
 // General string splitter template. Can take 8- or 16-bit input, can produce
 // the corresponding string or StringPiece output.
-template <typename OutputStringType, typename CharT>
-static std::vector<OutputStringType> SplitStringT(
-    BasicStringPiece<CharT> str,
-    BasicStringPiece<CharT> delimiter,
-    WhitespaceHandling whitespace,
-    SplitResult result_type) {
+template <typename OutputStringType,
+          typename T,
+          typename CharT = typename T::value_type>
+static std::vector<OutputStringType> SplitStringT(T str,
+                                                  T delimiter,
+                                                  WhitespaceHandling whitespace,
+                                                  SplitResult result_type) {
   std::vector<OutputStringType> result;
   if (str.empty())
     return result;
@@ -61,10 +62,12 @@ static std::vector<OutputStringType> SplitStringT(
   return result;
 }
 
-template <typename OutputStringType, typename CharT>
+template <typename OutputStringType,
+          typename T,
+          typename CharT = typename T::value_type>
 std::vector<OutputStringType> SplitStringUsingSubstrT(
-    BasicStringPiece<CharT> input,
-    BasicStringPiece<CharT> delimiter,
+    T input,
+    T delimiter,
     WhitespaceHandling whitespace,
     SplitResult result_type) {
   using Piece = BasicStringPiece<CharT>;

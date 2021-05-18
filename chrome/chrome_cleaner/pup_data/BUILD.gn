@@ -16,12 +16,12 @@ source_set("pup_data_base") {
 
   deps = [
     ":test_uws",
-    "//base",
     "//chrome/chrome_cleaner/os:common_os",
     "//chrome/chrome_cleaner/proto:shared_pup_enums_proto",
   ]
 
   public_deps = [
+    "//base",
     "//chrome/chrome_cleaner/constants:uws_id",
     "//chrome/chrome_cleaner/logging/proto:shared_data_proto",
     "//chrome/chrome_cleaner/settings:matching_options",

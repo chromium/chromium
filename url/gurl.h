@@ -448,9 +448,8 @@ class COMPONENT_EXPORT(URL) GURL {
   enum RetainWhiteSpaceSelector { RETAIN_TRAILING_PATH_WHITEPACE };
   GURL(const std::string& url_string, RetainWhiteSpaceSelector);
 
-  template <typename CharT>
-  void InitCanonical(base::BasicStringPiece<CharT> input_spec,
-                     bool trim_path_end);
+  template <typename T, typename CharT = typename T::value_type>
+  void InitCanonical(T input_spec, bool trim_path_end);
 
   void InitializeFromCanonicalSpec();
 

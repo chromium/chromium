@@ -84,9 +84,8 @@ void AppendEscapedCharForHTMLImpl(typename str::value_type c, str* output) {
 }
 
 // Convert |input| string to a form that will not be interpreted as HTML.
-template <class CharT>
-std::basic_string<CharT> EscapeForHTMLImpl(
-    base::BasicStringPiece<CharT> input) {
+template <typename T, typename CharT = typename T::value_type>
+std::basic_string<CharT> EscapeForHTMLImpl(T input) {
   std::basic_string<CharT> result;
   result.reserve(input.size());  // Optimize for no escaping.
 

@@ -213,16 +213,16 @@ auto StringToNumber(BasicStringPiece<CharT> input) {
   return result;
 }
 
-template <typename CharT, typename VALUE>
-bool StringToIntImpl(BasicStringPiece<CharT> input, VALUE& output) {
-  auto result = StringToNumber<VALUE, 10>(input);
+template <typename T, typename VALUE, typename CharT = typename T::value_type>
+bool StringToIntImpl(T input, VALUE& output) {
+  auto result = StringToNumber<VALUE, 10, CharT>(input);
   output = result.value;
   return result.valid;
 }
 
-template <typename CharT, typename VALUE>
-bool HexStringToIntImpl(BasicStringPiece<CharT> input, VALUE& output) {
-  auto result = StringToNumber<VALUE, 16>(input);
+template <typename T, typename VALUE, typename CharT = typename T::value_type>
+bool HexStringToIntImpl(T input, VALUE& output) {
+  auto result = StringToNumber<VALUE, 16, CharT>(input);
   output = result.value;
   return result.valid;
 }

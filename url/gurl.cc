@@ -51,7 +51,7 @@ GURL::GURL(base::StringPiece16 url_string) {
 }
 
 GURL::GURL(const std::string& url_string, RetainWhiteSpaceSelector) {
-  InitCanonical(base::StringPiece(url_string), false);
+  InitCanonical(url_string, false);
 }
 
 GURL::GURL(const char* canonical_spec,
@@ -69,9 +69,8 @@ GURL::GURL(std::string canonical_spec, const url::Parsed& parsed, bool is_valid)
   InitializeFromCanonicalSpec();
 }
 
-template <typename CharT>
-void GURL::InitCanonical(base::BasicStringPiece<CharT> input_spec,
-                         bool trim_path_end) {
+template <typename T, typename CharT>
+void GURL::InitCanonical(T input_spec, bool trim_path_end) {
   url::StdStringCanonOutput output(&spec_);
   is_valid_ = url::Canonicalize(
       input_spec.data(), static_cast<int>(input_spec.length()), trim_path_end,

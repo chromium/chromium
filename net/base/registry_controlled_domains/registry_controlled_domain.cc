@@ -227,8 +227,8 @@ void AppendInvalidString(base::StringPiece16 str, url::CanonOutput* output) {
 
 // Backend for PermissiveGetHostRegistryLength that handles both UTF-8 and
 // UTF-16 input.
-template <typename CharT>
-size_t DoPermissiveGetHostRegistryLength(base::BasicStringPiece<CharT> host,
+template <typename T, typename CharT = typename T::value_type>
+size_t DoPermissiveGetHostRegistryLength(T host,
                                          UnknownRegistryFilter unknown_filter,
                                          PrivateRegistryFilter private_filter) {
   std::string canonical_host;  // Do not modify outside of canon_output.

@@ -24,8 +24,8 @@ bool IsUnicodeWhitespaceOrControl(wchar_t c) {
          c != 0x000B;
 }
 
-template <typename CharT>
-std::basic_string<CharT> ValidateTitleT(base::BasicStringPiece<CharT> input) {
+template <typename T, typename CharT = typename T::value_type>
+std::basic_string<CharT> ValidateTitleT(T input) {
   auto begin_it = std::find_if(input.begin(), input.end(),
                                base::not_fn(IsUnicodeWhitespaceOrControl));
   auto end_it = std::find_if(input.rbegin(), input.rend(),

@@ -43,8 +43,8 @@ inline bool IsMachineWordAligned(const void* pointer) {
   return !(reinterpret_cast<MachineWord>(pointer) & (sizeof(MachineWord) - 1));
 }
 
-template <typename CharT>
-std::basic_string<CharT> ToLowerASCIIImpl(BasicStringPiece<CharT> str) {
+template <typename T, typename CharT = typename T::value_type>
+std::basic_string<CharT> ToLowerASCIIImpl(T str) {
   std::basic_string<CharT> ret;
   ret.reserve(str.size());
   for (size_t i = 0; i < str.size(); i++)
@@ -52,8 +52,8 @@ std::basic_string<CharT> ToLowerASCIIImpl(BasicStringPiece<CharT> str) {
   return ret;
 }
 
-template <typename CharT>
-std::basic_string<CharT> ToUpperASCIIImpl(BasicStringPiece<CharT> str) {
+template <typename T, typename CharT = typename T::value_type>
+std::basic_string<CharT> ToUpperASCIIImpl(T str) {
   std::basic_string<CharT> ret;
   ret.reserve(str.size());
   for (size_t i = 0; i < str.size(); i++)
@@ -61,9 +61,8 @@ std::basic_string<CharT> ToUpperASCIIImpl(BasicStringPiece<CharT> str) {
   return ret;
 }
 
-template <class CharT>
-int CompareCaseInsensitiveASCIIT(BasicStringPiece<CharT> a,
-                                 BasicStringPiece<CharT> b) {
+template <typename T, typename CharT = typename T::value_type>
+int CompareCaseInsensitiveASCIIT(T a, T b) {
   // Find the first characters that aren't equal and compare them.  If the end
   // of one of the strings is found before a nonequal character, the lengths
   // of the strings are compared.
@@ -88,9 +87,9 @@ int CompareCaseInsensitiveASCIIT(BasicStringPiece<CharT> a,
   return 1;
 }
 
-template <typename CharT>
-TrimPositions TrimStringT(BasicStringPiece<CharT> input,
-                          BasicStringPiece<CharT> trim_chars,
+template <typename T, typename CharT = typename T::value_type>
+TrimPositions TrimStringT(T input,
+                          T trim_chars,
                           TrimPositions positions,
                           std::basic_string<CharT>* output) {
   // Find the edges of leading/trailing whitespace as desired. Need to use
@@ -124,10 +123,8 @@ TrimPositions TrimStringT(BasicStringPiece<CharT> input,
       (last_good_char == last_char ? TRIM_NONE : TRIM_TRAILING));
 }
 
-template <typename CharT>
-BasicStringPiece<CharT> TrimStringPieceT(BasicStringPiece<CharT> input,
-                                         BasicStringPiece<CharT> trim_chars,
-                                         TrimPositions positions) {
+template <typename T, typename CharT = typename T::value_type>
+T TrimStringPieceT(T input, T trim_chars, TrimPositions positions) {
   size_t begin =
       (positions & TRIM_LEADING) ? input.find_first_not_of(trim_chars) : 0;
   size_t end = (positions & TRIM_TRAILING)
@@ -136,9 +133,9 @@ BasicStringPiece<CharT> TrimStringPieceT(BasicStringPiece<CharT> input,
   return input.substr(std::min(begin, input.size()), end - begin);
 }
 
-template <typename CharT>
+template <typename T, typename CharT = typename T::value_type>
 std::basic_string<CharT> CollapseWhitespaceT(
-    BasicStringPiece<CharT> text,
+    T text,
     bool trim_sequences_with_line_breaks) {
   std::basic_string<CharT> result;
   result.resize(text.size());
@@ -258,18 +255,15 @@ inline bool DoIsStringUTF8(StringPiece str) {
 // The hardcoded strings are typically very short so it doesn't matter, and the
 // string piece gives additional flexibility for the caller (doesn't have to be
 // null terminated) so we choose the StringPiece route.
-template <typename CharT>
-inline bool DoLowerCaseEqualsASCII(BasicStringPiece<CharT> str,
-                                   StringPiece lowercase_ascii) {
+template <typename T, typename CharT = typename T::value_type>
+inline bool DoLowerCaseEqualsASCII(T str, StringPiece lowercase_ascii) {
   return std::equal(
       str.begin(), str.end(), lowercase_ascii.begin(), lowercase_ascii.end(),
       [](auto lhs, auto rhs) { return ToLowerASCII(lhs) == rhs; });
 }
 
-template <typename CharT>
-bool StartsWithT(BasicStringPiece<CharT> str,
-                 BasicStringPiece<CharT> search_for,
-                 CompareCase case_sensitivity) {
+template <typename T, typename CharT = typename T::value_type>
+bool StartsWithT(T str, T search_for, CompareCase case_sensitivity) {
   if (search_for.size() > str.size())
     return false;
 
@@ -289,10 +283,8 @@ bool StartsWithT(BasicStringPiece<CharT> str,
   }
 }
 
-template <typename CharT>
-bool EndsWithT(BasicStringPiece<CharT> str,
-               BasicStringPiece<CharT> search_for,
-               CompareCase case_sensitivity) {
+template <typename T, typename CharT = typename T::value_type>
+bool EndsWithT(T str, T search_for, CompareCase case_sensitivity) {
   if (search_for.size() > str.size())
     return false;
 
@@ -325,8 +317,8 @@ struct SubstringMatcher {
 };
 
 // Type deduction helper for SubstringMatcher.
-template <class CharT>
-auto MakeSubstringMatcher(BasicStringPiece<CharT> find_this) {
+template <typename T, typename CharT = typename T::value_type>
+auto MakeSubstringMatcher(T find_this) {
   return SubstringMatcher<CharT>{find_this};
 }
 
@@ -343,8 +335,8 @@ struct CharacterMatcher {
 };
 
 // Type deduction helper for CharacterMatcher.
-template <class CharT>
-auto MakeCharacterMatcher(BasicStringPiece<CharT> find_any_of_these) {
+template <typename T, typename CharT = typename T::value_type>
+auto MakeCharacterMatcher(T find_any_of_these) {
   return CharacterMatcher<CharT>{find_any_of_these};
 }
 
@@ -355,11 +347,11 @@ enum class ReplaceType { REPLACE_ALL, REPLACE_FIRST };
 //
 // This is parameterized on a |Matcher| traits type, so that it can be the
 // implementation for both ReplaceChars() and ReplaceSubstringsAfterOffset().
-template <class CharT, class Matcher>
+template <typename Matcher, typename T, typename CharT = typename T::value_type>
 bool DoReplaceMatchesAfterOffset(std::basic_string<CharT>* str,
                                  size_t initial_offset,
                                  Matcher matcher,
-                                 BasicStringPiece<CharT> replace_with,
+                                 T replace_with,
                                  ReplaceType replace_type) {
   using CharTraits = std::char_traits<CharT>;
 
@@ -499,10 +491,10 @@ bool DoReplaceMatchesAfterOffset(std::basic_string<CharT>* str,
   return true;
 }
 
-template <class CharT>
-bool ReplaceCharsT(BasicStringPiece<CharT> input,
-                   BasicStringPiece<CharT> find_any_of_these,
-                   BasicStringPiece<CharT> replace_with,
+template <typename T, typename CharT = typename T::value_type>
+bool ReplaceCharsT(T input,
+                   T find_any_of_these,
+                   T replace_with,
                    std::basic_string<CharT>* output) {
   // Commonly, this is called with output and input being the same string; in
   // that case, skip the copy.
@@ -527,9 +519,10 @@ inline typename string_type::value_type* WriteIntoT(string_type* str,
 // (base::span or std::initializer_list) of strings/StringPieces (std::string,
 // std::u16string, StringPiece or StringPiece16). |CharT| is either char or
 // char16_t.
-template <typename list_type, typename CharT>
-static std::basic_string<CharT> JoinStringT(list_type parts,
-                                            BasicStringPiece<CharT> sep) {
+template <typename list_type,
+          typename T,
+          typename CharT = typename T::value_type>
+static std::basic_string<CharT> JoinStringT(list_type parts, T sep) {
   if (base::empty(parts))
     return std::basic_string<CharT>();
 
@@ -557,9 +550,9 @@ static std::basic_string<CharT> JoinStringT(list_type parts,
   return result;
 }
 
-template <class CharT>
+template <typename T, typename CharT = typename T::value_type>
 std::basic_string<CharT> DoReplaceStringPlaceholders(
-    BasicStringPiece<CharT> format_string,
+    T format_string,
     const std::vector<std::basic_string<CharT>>& subst,
     std::vector<size_t>* offsets) {
   size_t substitutions = subst.size();

@@ -18,7 +18,8 @@ std::string CanonicalizeString(std::string original_string) {
   // Trim common separator character used in about_flags
   char kSeparators[] = "-";
   base::RemoveChars(original_string, kSeparators, &new_string);
-  return ToLowerASCII(TrimWhitespaceASCII(new_string, base::TRIM_ALL));
+  return base::ToLowerASCII(
+      base::TrimWhitespaceASCII(new_string, base::TRIM_ALL));
 }
 }  // namespace
 
