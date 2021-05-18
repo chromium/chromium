@@ -59,10 +59,16 @@ if (is_chromeos_device) {
     # A list of tests that are known to work reliably.
     # TODO(crbug.com/1158590): use --attr-expr instead of hard-coding the tests.
     tast_tests = [
-      "lacros.AppLauncherLaunch",
-      "lacros.AudioPlay",
+      # TODO(crbug.com/1202407): Enable this test again.
+      #"lacros.AudioPlay",
+
+      # TODO(crbug.com/1208845): Enable this test again.
+      #"lacros.AppLauncherLaunch",
+
       "lacros.Basic",
-      "lacros.ShelfLaunch",
+
+      # TODO(crbug.com/1205526): Enable this test again.
+      #"lacros.ShelfLaunch",
     ]
   }
 
