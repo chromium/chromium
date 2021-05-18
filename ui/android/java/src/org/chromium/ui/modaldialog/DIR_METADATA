@@ -9,4 +9,3 @@
 monorail {
   component: "UI>Browser>Mobile>Messages"
 }
-os: ANDROID

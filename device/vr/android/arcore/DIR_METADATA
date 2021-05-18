@@ -9,5 +9,4 @@
 monorail {
   component: "Blink>WebXR>AR"
 }
-team_email: "xr-dev@chromium.org"
 os: ANDROID

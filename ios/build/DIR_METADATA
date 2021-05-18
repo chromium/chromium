@@ -9,5 +9,3 @@
 monorail {
   component: "Infra>Client>Chrome"
 }
-team_email: "ios-directory-owners@chromium.org"
-os: IOS

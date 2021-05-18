@@ -1,4 +1,3 @@
 monorail {
   component: "OS>Accessibility>Magnifier"
 }
-team_email: "chromium-accessibility@chromium.org"

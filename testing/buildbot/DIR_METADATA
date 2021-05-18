@@ -9,4 +9,3 @@
 monorail {
   component: "Infra>Client>Chrome"
 }
-team_email: "infra-dev@chromium.org"

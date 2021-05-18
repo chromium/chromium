@@ -2,6 +2,3 @@ monorail {
   component: "UI>Browser>Mobile>NavPanel"
 }
 
-team_email: "clank-app-team@google.com"
-
-os: ANDROID

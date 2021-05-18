@@ -1,7 +1,6 @@
 monorail {
   component: "Blink>Layout>Shape"
 }
-team_email: "layout-dev@chromium.org"
 wpt {
   notify: YES
 }

@@ -1,4 +1,0 @@
-monorail {
-  component: "Platform>Extensions"
-}
-team_email: "extensions-dev@chromium.org"

@@ -2,4 +2,3 @@ monorail {
   component: "UI>Browser>Mobile>CustomTabs"
 }
 team_email: "mobile-web-install-team@google.com"
-os: ANDROID
