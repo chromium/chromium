@@ -1,12 +1,20 @@
 export async function runBidiCommandsProcessor(cdpClient, bidiClient, getCurrentTargetId) {
     const targets = {};
 
-    const getErrorResponse = (commandData, errorCode, errorMessage) => {
+    const _isValidTarget = (target) => {
+        if (target.targetId === getCurrentTargetId())
+            return false;
+        if (!target.type || target.type !== "page")
+            return false;
+        return true;
+    }
+
+    const _getErrorResponse = (commandData, errorCode, errorMessage) => {
         // TODO: this is bizarre per spec. We reparse the payload and
         // extract the ID, regardless of what kind of value it was.
         let commandId = undefined;
         try {
-                commandId = commandData.id;
+            commandId = commandData.id;
         } catch { }
 
         return {
@@ -17,8 +25,8 @@ export async function runBidiCommandsProcessor(cdpClient, bidiClient, getCurrent
         };
     };
 
-    const respondWithError = (commandData, errorCode, errorMessage) => {
-        const errorResponse = getErrorResponse(commandData, errorCode, errorMessage);
+    const _respondWithError = (commandData, errorCode, errorMessage) => {
+        const errorResponse = _getErrorResponse(commandData, errorCode, errorMessage);
         bidiClient.sendBidiMessage(errorResponse);
     };
 
@@ -33,7 +41,7 @@ export async function runBidiCommandsProcessor(cdpClient, bidiClient, getCurrent
         const cdpTargets = await cdpClient.sendCdpCommand({ method: "Target.getTargets" });
         const contexts = cdpTargets.targetInfos
             // Don't expose any information about the tab with Mapper running.
-            .filter(t => t.targetId !== getCurrentTargetId())
+            .filter(_isValidTarget)
             .map(targetToContext);
         return { contexts };
     };
@@ -59,21 +67,28 @@ export async function runBidiCommandsProcessor(cdpClient, bidiClient, getCurrent
     };
 
     const handle_target_attachedToTarget = (message) => {
-        targets[message.params.targetInfo.targetId] = message.params.targetInfo;
+        const target = message.params.targetInfo;
+        if (!_isValidTarget(target))
+            return;
+
+        targets[target.targetId] = target;
         bidiClient.sendBidiMessage(
             {
                 method: 'browsingContext.contextCreated',
-                params: targetToContext(message.params.targetInfo)
+                params: targetToContext(target)
             });
     }
 
     const handle_target_detachedFromTarget = (message) => {
+        const targetId = message.params.targetId;
+        if (!targets.hasOwnProperty(targetId))
+            return;
         bidiClient.sendBidiMessage(
             {
                 method: 'browsingContext.contextDestroyed',
-                params: targetToContext(targets[message.params.targetId])
+                params: targetToContext(targets[targetId])
             });
-        delete targets[message.params.targetId];
+        delete targets[targetId];
     }
 
     const onCdpMessage = function (message) {
@@ -109,17 +124,18 @@ export async function runBidiCommandsProcessor(cdpClient, bidiClient, getCurrent
     };
 
     const onBidiMessage = async (message) => {
-        processCommand(message).then(result => {
-            const response = {
-                id: message.id,
-                result
-            };
+        await processCommand(message)
+            .then(result => {
+                const response = {
+                    id: message.id,
+                    result
+                };
 
-            bidiClient.sendBidiMessage(response);
-        }).catch(e => {
-            console.error(e);
-            respondWithError(message, "unknown error", e.message);
-        });
+                bidiClient.sendBidiMessage(response);
+            }).catch(e => {
+                console.error(e);
+                _respondWithError(message, "unknown error", e.message);
+            });
     }
 
     cdpClient.setCdpMessageHandler(onCdpMessage);
