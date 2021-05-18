@@ -32,6 +32,7 @@ public class DownloadDialogUtils {
     /**
      * Returns whether the download location suggestion dialog should be prompted.
      * @param dirs The available directories.
+     * @param defaultLocation The default download location.
      * @param totalBytes The download size.
      */
     public static boolean shouldSuggestDownloadLocation(

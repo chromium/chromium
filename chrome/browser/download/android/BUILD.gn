@@ -74,6 +74,7 @@ android_library("java") {
     "//chrome/browser/offline_pages/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/modaldialog/android:java",

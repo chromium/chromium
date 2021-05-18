@@ -6,13 +6,14 @@ package org.chromium.chrome.browser.download.dialogs;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -129,6 +130,10 @@ public class DownloadLocationDialogTest extends DummyUiActivityTestCase {
         when(mPrefService.getInteger(Pref.PROMPT_FOR_DOWNLOAD_ANDROID)).thenReturn(promptStatus);
     }
 
+    private void setPromptForPolicy(boolean promptForPolicy) {
+        when(mPrefService.getBoolean(Pref.PROMPT_FOR_DOWNLOAD)).thenReturn(promptForPolicy);
+    }
+
     private void showDialog(
             long totalBytes, @DownloadLocationDialogType int dialogType, String suggestedPath) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -152,7 +157,7 @@ public class DownloadLocationDialogTest extends DummyUiActivityTestCase {
      */
     private void assertDontShowAgainCheckbox(Boolean checked) {
         if (checked == null) {
-            onView(withId(R.id.show_again_checkbox)).check(matches(not(isDisplayed())));
+            onView(withId(R.id.show_again_checkbox)).check(matches(withEffectiveVisibility(GONE)));
         } else if (checked) {
             onView(withId(R.id.show_again_checkbox)).check(matches(isChecked()));
         } else {
@@ -177,5 +182,17 @@ public class DownloadLocationDialogTest extends DummyUiActivityTestCase {
         assertTitle(R.string.download_location_dialog_title);
         assertSubtitle(DownloadUtils.getStringForBytes(getActivity(), TOTAL_BYTES));
         assertDontShowAgainCheckbox(false);
+    }
+
+    @Test
+    @MediumTest
+    public void testForceShowEnterprisePolicy() {
+        when(mDownloadDialogBridgeJniMock.isLocationDialogManaged()).thenReturn(true);
+        setPromptForPolicy(true);
+        setDownloadPromptStatus(DownloadPromptStatus.SHOW_PREFERENCE);
+        showDialog(TOTAL_BYTES, DownloadLocationDialogType.DEFAULT, SUGGESTED_PATH);
+        assertTitle(R.string.download_location_dialog_title_confirm_download);
+        assertSubtitle(DownloadUtils.getStringForBytes(getActivity(), TOTAL_BYTES));
+        assertDontShowAgainCheckbox(null);
     }
 }

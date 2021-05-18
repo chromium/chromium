@@ -395,6 +395,10 @@ bool DownloadPrefs::PromptForDownload() const {
 
 // Return the Android prompt for download only.
 #if defined(OS_ANDROID)
+  // Use |prompt_for_download_| preference for enterprise policy.
+  if (prompt_for_download_.IsManaged())
+    return prompt_for_download_.GetValue();
+
   // As long as they haven't indicated in preferences they do not want the
   // dialog shown, show the dialog.
   return *prompt_for_download_android_ !=
@@ -406,6 +410,9 @@ bool DownloadPrefs::PromptForDownload() const {
 
 bool DownloadPrefs::PromptDownloadLater() const {
 #ifdef OS_ANDROID
+  if (prompt_for_download_.IsManaged())
+    return false;
+
   if (base::FeatureList::IsEnabled(download::features::kDownloadLater)) {
     return *prompt_for_download_later_ !=
            static_cast<int>(DownloadLaterPromptStatus::kDontShow);

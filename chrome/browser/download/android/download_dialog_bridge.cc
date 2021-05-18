@@ -177,6 +177,13 @@ jboolean JNI_DownloadDialogBridge_ShouldShowDateTimePicker(JNIEnv* env) {
   return DownloadDialogBridge::ShouldShowDateTimePicker();
 }
 
+jboolean JNI_DownloadDialogBridge_IsLocationDialogManaged(JNIEnv* env) {
+  PrefService* pref_service =
+      ProfileManager::GetActiveUserProfile()->GetOriginalProfile()->GetPrefs();
+
+  return pref_service->IsManagedPreference(prefs::kPromptForDownload);
+}
+
 // static
 long DownloadDialogBridge::GetDownloadLaterMinFileSize() {
   return base::GetFieldTrialParamByFeatureAsInt(

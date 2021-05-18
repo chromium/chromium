@@ -496,6 +496,33 @@ TEST(DownloadPrefsTest, DownloadLaterPrefs) {
   EXPECT_TRUE(prefs.HasDownloadLaterPromptShown());
 }
 
+// Verfies the returned value of PromptForDownload() and PromptDownloadLater()
+// when prefs::kPromptForDownload is managed by enterprise policy,
+TEST(DownloadPrefsTest, ManagedPromptForDownload) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(download::features::kDownloadLater);
+
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile;
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kPromptForDownload, std::make_unique<base::Value>(true));
+  DownloadPrefs prefs(&profile);
+
+  profile.GetPrefs()->SetInteger(
+      prefs::kDownloadLaterPromptStatus,
+      static_cast<int>(DownloadLaterPromptStatus::kShowPreference));
+  profile.GetPrefs()->SetInteger(
+      prefs::kPromptForDownloadAndroid,
+      static_cast<int>(DownloadPromptStatus::DONT_SHOW));
+  EXPECT_FALSE(prefs.PromptDownloadLater());
+  EXPECT_TRUE(prefs.PromptForDownload());
+
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kPromptForDownload, std::make_unique<base::Value>(false));
+  EXPECT_FALSE(prefs.PromptDownloadLater());
+  EXPECT_FALSE(prefs.PromptForDownload());
+}
+
 #endif  // OS_ANDROID
 
 }  // namespace
