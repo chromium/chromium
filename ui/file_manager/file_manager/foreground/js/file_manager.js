@@ -1045,9 +1045,6 @@
     // Set the files-ng class for dialog header styling.
     const dialogHeader = queryRequiredElement('.dialog-header');
     dialogHeader.classList.add('files-ng');
-    // Move the dialog header to the side of the splitter above the list view.
-    const dialogMain = queryRequiredElement('.dialog-main');
-    dialogMain.insertBefore(dialogHeader, dialogMain.firstChild);
 
     // Create the root view of FileManager.
     assert(this.dialogDom_);

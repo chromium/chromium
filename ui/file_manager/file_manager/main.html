@@ -360,159 +360,6 @@
       </cr-menu>
     </menus>
 
-    <div class="dialog-header files-ng" role="contentinfo">
-      <div id="location-breadcrumbs" class="breadcrumbs"></div>
-      <div id="read-only-indicator" aria-label="$i18n{READONLY_INDICATOR_TOOLTIP}" hidden
-           has-tooltip show-card-tooltip>
-        <span id="read-only-icon"></span>
-        <span id="read-only-label">$i18n{READ_ONLY_LABEL}</span>
-      </div>
-      <div id="cancel-selection-button-wrapper">
-        <cr-button id="cancel-selection-button" class="menu-button" tabindex="0"
-              aria-label="$i18n{CANCEL_SELECTION_BUTTON_LABEL}" has-tooltip>
-          <span class="icon-arrow-back"></span>
-          <span id="cancel-selection-label">$i18n{CANCEL_SELECTION_BUTTON_LABEL}</span>
-        </cr-button>
-      </div>
-      <div id="files-selected-label"></div>
-      <div class="spacer"></div>
-      <div id="action-bar">
-        <div id="pinned-toggle-wrapper" hidden>
-          <span id="pinned-toggle-label">$i18n{OFFLINE_COLUMN_LABEL}</span>
-          <cr-toggle id="pinned-toggle" command="#toggle-pinned"
-                     aria-labelledby="pinned-toggle-label">
-          </cr-toggle>
-        </div>
-        <button id="tasks" class="combobutton menu-button" menu="#tasks-menu"
-                tabindex="0" hidden
-                aria-label="$i18n{TASKS_BUTTON_LABEL}">
-        </button>
-        <button id="share-menu-button" class="icon-button menu-button" tabindex="0" hidden
-                menu="#share-menu"
-                aria-label="$i18n{SHARE_BUTTON_TOOLTIP}"
-                aria-activedescendant="share-menu"
-                has-tooltip>
-          <files-toggle-ripple></files-toggle-ripple>
-          <div class="icon"></div>
-        </button>
-        <cr-button id="sharesheet-button" class="icon-button menu-button" tabindex="0" hidden
-                aria-label="$i18n{SHARESHEET_BUTTON_LABEL}"
-                visibleif="full-page"
-                command="#invoke-sharesheet"
-                has-tooltip>
-          <files-ripple></files-ripple>
-          <div class="icon"></div>
-        </cr-button>
-        <cr-button id="move-to-trash-button" class="icon-button menu-button" tabindex="0" hidden
-                aria-label="$i18n{MOVE_TO_TRASH_BUTTON_LABEL}"
-                visibleif="full-page"
-                has-tooltip>
-          <files-ripple></files-ripple>
-          <div class="icon"></div>
-        </cr-button>
-        <cr-button id="delete-button" class="icon-button menu-button" tabindex="0" hidden
-                aria-label="$i18n{DELETE_BUTTON_LABEL}"
-                visibleif="full-page"
-                has-tooltip>
-          <files-ripple></files-ripple>
-          <div class="icon"></div>
-        </cr-button>
-        <cr-button id="restore-from-trash-button" class="icon-button menu-button" tabindex="0" hidden
-                aria-label="$i18n{RESTORE_FROM_TRASH_BUTTON_LABEL}"
-                visibleif="full-page"
-                has-tooltip>
-          <files-ripple></files-ripple>
-          <div class="icon"></div>
-        </cr-button>
-        <cr-button id="empty-trash-button" class="icon-button menu-button" tabindex="0" hidden
-                aria-label="$i18n{EMPTY_TRASH_BUTTON_LABEL}"
-                visibleif="full-page"
-                has-tooltip>
-          <files-ripple></files-ripple>
-          $i18n{EMPTY_TRASH_BUTTON_LABEL}
-        </cr-button>
-        <div id="search-wrapper">
-          <cr-button id="search-button" class="icon-button menu-button" tabindex="0"
-                  aria-label="$i18n{SEARCH_TEXT_LABEL}"
-                  has-tooltip>
-            <files-toggle-ripple></files-toggle-ripple>
-            <div class="icon"></div>
-          </cr-button>
-          <div id="search-box">
-            <cr-input type="search" tabindex="0" disabled
-                aria-label="$i18n{SEARCH_TEXT_LABEL}" placeholder="$i18n{SEARCH_TEXT_LABEL}">
-              <cr-button class="clear" slot="suffix" tabindex="0"
-                aria-label="$i18n{SEARCH_CLEAR_LABEL}" has-tooltip>
-                <div class="icon"></div>
-              </cr-button>
-            </cr-input>
-          </div>
-        </div>
-        <cr-button id="refresh-button" class="icon-button menu-button" tabindex="0" hidden
-                aria-label="$i18n{REFRESH_BUTTON_LABEL}"
-                command="#refresh" has-tooltip>
-          <files-ripple></files-ripple>
-          <div class="icon"></div>
-        </cr-button>
-        <div id="cloud-import-combo-button"
-             class="cloud-import-combo-button"
-             hidden>
-          <div class="buttons">
-            <cr-button id="cloud-import-button"
-                    class="icon-button menu-button"
-                    tabindex="0"
-                    aria-label="$i18n{CLOUD_IMPORT_COMMAND}"
-                    has-tooltip>
-              <iron-icon icon="files:cloud-queue"></iron-icon>
-            </cr-button>
-            <cr-button id="cloud-import-details-button"
-                    class="icon-button menu-button"
-                    tabindex="0"
-                    aria-label="$i18n{CLOUD_IMPORT_SHOW_DETAILS}"
-                    has-tooltip>
-              <iron-icon icon="files:arrow-drop-down"></iron-icon>
-            </cr-button>
-          </div>
-          <div class="ripples">
-            <paper-ripple></paper-ripple>
-            <files-toggle-ripple></files-toggle-ripple>
-          </div>
-        </div>
-        <cr-button id="view-button" class="icon-button menu-button" tabindex="0"
-                aria-label="$i18n{CHANGE_TO_THUMBNAILVIEW_BUTTON_LABEL}"
-                has-tooltip>
-          <files-ripple></files-ripple>
-          <div class="icon"></div>
-        </cr-button>
-        <button id="sort-button" class="icon-button menu-button" tabindex="0"
-                menu="#sort-menu"
-                aria-haspopup="true"
-                aria-label="$i18n{SORT_BUTTON_TOOLTIP}"
-                aria-activedescendant="sort-menu"
-                has-tooltip>
-          <files-toggle-ripple></files-toggle-ripple>
-          <div class="icon"></div>
-        </button>
-        <button id="gear-button" class="icon-button menu-button" tabindex="0"
-                menu="#gear-menu"
-                aria-label="$i18n{GEAR_BUTTON_TOOLTIP}"
-                aria-haspopup="true"
-                aria-activedescendant="gear-menu"
-                has-tooltip>
-          <files-toggle-ripple></files-toggle-ripple>
-          <div class="icon"></div>
-        </button>
-        <button id="selection-menu-button" class="icon-button menu-button" tabindex="0"
-                menu="#file-context-menu"
-                aria-label="$i18n{SELECTION_MENU_BUTTON_TOOLTIP}"
-                aria-activedescendant="file-context-menu"
-                has-tooltip hidden>
-          <files-toggle-ripple></files-toggle-ripple>
-          <div class="icon"></div>
-        </button>
-      </div>
-    </div>
-
     <div id="cloud-import-details" class="hidden" hidden>
       <div class="banner">
         <div class="title">$i18n{CLOUD_IMPORT_TITLE}</div>
@@ -545,6 +392,158 @@
         </cr-button>
       </div>
       <div class="dialog-main">
+        <div class="dialog-header files-ng" role="contentinfo">
+          <div id="location-breadcrumbs" class="breadcrumbs"></div>
+          <div id="read-only-indicator" aria-label="$i18n{READONLY_INDICATOR_TOOLTIP}" hidden
+               has-tooltip show-card-tooltip>
+            <span id="read-only-icon"></span>
+            <span id="read-only-label">$i18n{READ_ONLY_LABEL}</span>
+          </div>
+          <div id="cancel-selection-button-wrapper">
+            <cr-button id="cancel-selection-button" class="menu-button" tabindex="0"
+                  aria-label="$i18n{CANCEL_SELECTION_BUTTON_LABEL}" has-tooltip>
+              <span class="icon-arrow-back"></span>
+              <span id="cancel-selection-label">$i18n{CANCEL_SELECTION_BUTTON_LABEL}</span>
+            </cr-button>
+          </div>
+          <div id="files-selected-label"></div>
+          <div class="spacer"></div>
+          <div id="action-bar">
+            <div id="pinned-toggle-wrapper" hidden>
+              <span id="pinned-toggle-label">$i18n{OFFLINE_COLUMN_LABEL}</span>
+              <cr-toggle id="pinned-toggle" command="#toggle-pinned"
+                         aria-labelledby="pinned-toggle-label">
+              </cr-toggle>
+            </div>
+            <button id="tasks" class="combobutton menu-button" menu="#tasks-menu"
+                    tabindex="0" hidden
+                    aria-label="$i18n{TASKS_BUTTON_LABEL}">
+            </button>
+            <button id="share-menu-button" class="icon-button menu-button" tabindex="0" hidden
+                    menu="#share-menu"
+                    aria-label="$i18n{SHARE_BUTTON_TOOLTIP}"
+                    aria-activedescendant="share-menu"
+                    has-tooltip>
+              <files-toggle-ripple></files-toggle-ripple>
+              <div class="icon"></div>
+            </button>
+            <cr-button id="sharesheet-button" class="icon-button menu-button" tabindex="0" hidden
+                    aria-label="$i18n{SHARESHEET_BUTTON_LABEL}"
+                    visibleif="full-page"
+                    command="#invoke-sharesheet"
+                    has-tooltip>
+              <files-ripple></files-ripple>
+              <div class="icon"></div>
+            </cr-button>
+            <cr-button id="move-to-trash-button" class="icon-button menu-button" tabindex="0" hidden
+                    aria-label="$i18n{MOVE_TO_TRASH_BUTTON_LABEL}"
+                    visibleif="full-page"
+                    has-tooltip>
+              <files-ripple></files-ripple>
+              <div class="icon"></div>
+            </cr-button>
+            <cr-button id="delete-button" class="icon-button menu-button" tabindex="0" hidden
+                    aria-label="$i18n{DELETE_BUTTON_LABEL}"
+                    visibleif="full-page"
+                    has-tooltip>
+              <files-ripple></files-ripple>
+              <div class="icon"></div>
+            </cr-button>
+            <cr-button id="restore-from-trash-button" class="icon-button menu-button" tabindex="0" hidden
+                    aria-label="$i18n{RESTORE_FROM_TRASH_BUTTON_LABEL}"
+                    visibleif="full-page"
+                    has-tooltip>
+              <files-ripple></files-ripple>
+              <div class="icon"></div>
+            </cr-button>
+            <cr-button id="empty-trash-button" class="icon-button menu-button" tabindex="0" hidden
+                    aria-label="$i18n{EMPTY_TRASH_BUTTON_LABEL}"
+                    visibleif="full-page"
+                    has-tooltip>
+              <files-ripple></files-ripple>
+              $i18n{EMPTY_TRASH_BUTTON_LABEL}
+            </cr-button>
+            <div id="search-wrapper">
+              <cr-button id="search-button" class="icon-button menu-button" tabindex="0"
+                      aria-label="$i18n{SEARCH_TEXT_LABEL}"
+                      has-tooltip>
+                <files-toggle-ripple></files-toggle-ripple>
+                <div class="icon"></div>
+              </cr-button>
+              <div id="search-box">
+                <cr-input type="search" tabindex="0" disabled
+                    aria-label="$i18n{SEARCH_TEXT_LABEL}" placeholder="$i18n{SEARCH_TEXT_LABEL}">
+                  <cr-button class="clear" slot="suffix" tabindex="0"
+                    aria-label="$i18n{SEARCH_CLEAR_LABEL}" has-tooltip>
+                    <div class="icon"></div>
+                  </cr-button>
+                </cr-input>
+              </div>
+            </div>
+            <cr-button id="refresh-button" class="icon-button menu-button" tabindex="0" hidden
+                    aria-label="$i18n{REFRESH_BUTTON_LABEL}"
+                    command="#refresh" has-tooltip>
+              <files-ripple></files-ripple>
+              <div class="icon"></div>
+            </cr-button>
+            <div id="cloud-import-combo-button"
+                 class="cloud-import-combo-button"
+                 hidden>
+              <div class="buttons">
+                <cr-button id="cloud-import-button"
+                        class="icon-button menu-button"
+                        tabindex="0"
+                        aria-label="$i18n{CLOUD_IMPORT_COMMAND}"
+                        has-tooltip>
+                  <iron-icon icon="files:cloud-queue"></iron-icon>
+                </cr-button>
+                <cr-button id="cloud-import-details-button"
+                        class="icon-button menu-button"
+                        tabindex="0"
+                        aria-label="$i18n{CLOUD_IMPORT_SHOW_DETAILS}"
+                        has-tooltip>
+                  <iron-icon icon="files:arrow-drop-down"></iron-icon>
+                </cr-button>
+              </div>
+              <div class="ripples">
+                <paper-ripple></paper-ripple>
+                <files-toggle-ripple></files-toggle-ripple>
+              </div>
+            </div>
+            <cr-button id="view-button" class="icon-button menu-button" tabindex="0"
+                    aria-label="$i18n{CHANGE_TO_THUMBNAILVIEW_BUTTON_LABEL}"
+                    has-tooltip>
+              <files-ripple></files-ripple>
+              <div class="icon"></div>
+            </cr-button>
+            <button id="sort-button" class="icon-button menu-button" tabindex="0"
+                    menu="#sort-menu"
+                    aria-haspopup="true"
+                    aria-label="$i18n{SORT_BUTTON_TOOLTIP}"
+                    aria-activedescendant="sort-menu"
+                    has-tooltip>
+              <files-toggle-ripple></files-toggle-ripple>
+              <div class="icon"></div>
+            </button>
+            <button id="gear-button" class="icon-button menu-button" tabindex="0"
+                    menu="#gear-menu"
+                    aria-label="$i18n{GEAR_BUTTON_TOOLTIP}"
+                    aria-haspopup="true"
+                    aria-activedescendant="gear-menu"
+                    has-tooltip>
+              <files-toggle-ripple></files-toggle-ripple>
+              <div class="icon"></div>
+            </button>
+            <button id="selection-menu-button" class="icon-button menu-button" tabindex="0"
+                    menu="#file-context-menu"
+                    aria-label="$i18n{SELECTION_MENU_BUTTON_TOOLTIP}"
+                    aria-activedescendant="file-context-menu"
+                    has-tooltip hidden>
+              <files-toggle-ripple></files-toggle-ripple>
+              <div class="icon"></div>
+            </button>
+          </div>
+        </div>
         <div class="dialog-body">
           <div id="a11y-msg" aria-live="polite" style="display: inline-block; position: fixed; clip: rect(0, 0, 0, 0);"></div>
           <div class="main-panel">
