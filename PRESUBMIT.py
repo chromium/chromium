@@ -4663,7 +4663,7 @@ def CheckForWindowsLineEndings(input_api, output_api):
   """Check source code and known ascii text files for Windows style line
   endings.
   """
-  known_text_files = r'.*\.(txt|html|htm|mhtml|py|gyp|gypi|gn|isolate)$'
+  known_text_files = r'.*\.(txt|html|htm|mhtml|py|gyp|gypi|gn|isolate|icon)$'
 
   file_inclusion_pattern = (
     known_text_files,
@@ -4687,6 +4687,16 @@ def CheckForWindowsLineEndings(input_api, output_api):
         '\n'.join(problems))]
 
   return []
+
+def CheckIconFilesForLicenseHeaders(input_api, output_api):
+  """Check that .icon files (which are fragments of C++) have license headers.
+  """
+
+  icon_files = (r'.*\.icon$',)
+
+  icons = lambda x: input_api.FilterSourceFile(x, files_to_check=icon_files)
+  return input_api.canned_checks.CheckLicense(
+      input_api, output_api, source_file_filter=icons)
 
 def CheckForUseOfChromeAppsDeprecations(input_api, output_api):
   """Check source code for use of Chrome App technologies being
