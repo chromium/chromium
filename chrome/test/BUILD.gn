@@ -6596,6 +6596,10 @@ static_library("test_support_unit") {
 
     deps += [ "//ash:test_support" ]
   }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros:test_support" ]
+  }
 }
 
 if (!is_android) {

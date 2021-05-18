@@ -2626,6 +2626,7 @@ static_library("test_support") {
     "//chrome/test:accessibility_live_site_tests",
     "//chrome/test:captured_sites_interactive_tests",
     "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
     "//components/exo:*",
     "//components/exo/wayland:*",
     "//ash/public/cpp/external_arc:*",
