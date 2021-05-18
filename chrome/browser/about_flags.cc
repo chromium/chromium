@@ -7221,8 +7221,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"link-doctor-deprecation-android",
      flag_descriptions::kLinkDoctorDeprecationAndroidName,
      flag_descriptions::kLinkDoctorDeprecationAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kLinkDoctorDeprecationAndroid)}
+     FEATURE_VALUE_TYPE(features::kLinkDoctorDeprecationAndroid)},
 #endif
+
+#if defined(TOOLKIT_VIEWS)
+    {"download-shelf-webui", flag_descriptions::kDownloadShelfWebUI,
+     flag_descriptions::kDownloadShelfWebUIDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kWebUIDownloadShelf)},
+#endif  // defined(TOOLKIT_VIEWS)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

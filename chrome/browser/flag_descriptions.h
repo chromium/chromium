@@ -2885,12 +2885,14 @@ extern const char kZeroCopyVideoCaptureDescription[];
 extern const char kDesktopInProductHelpSnoozeName[];
 extern const char kDesktopInProductHelpSnoozeDescription[];
 
+extern const char kDownloadShelfWebUI[];
+extern const char kDownloadShelfWebUIDescription[];
+
 extern const char kEnableMDRoundedCornersOnDialogsName[];
 extern const char kEnableMDRoundedCornersOnDialogsDescription[];
 
 extern const char kInstallableInkDropName[];
 extern const char kInstallableInkDropDescription[];
-
 #endif  // defined(TOOLKIT_VIEWS)
 
 // Random platform combinations -----------------------------------------------
