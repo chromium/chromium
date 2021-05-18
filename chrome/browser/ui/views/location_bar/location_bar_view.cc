@@ -193,7 +193,7 @@ void LocationBarView::Init() {
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
 
   auto location_icon_view =
-      std::make_unique<LocationIconView>(font_list, this, this);
+      std::make_unique<LocationIconView>(font_list, this, this, profile_);
   location_icon_view->set_drag_controller(this);
   location_icon_view_ = AddChildView(std::move(location_icon_view));
 

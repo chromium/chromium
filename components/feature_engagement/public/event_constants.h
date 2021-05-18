@@ -66,6 +66,9 @@ extern const char kWebUITabStripOpened[];
 // The PWA was installed by the user.
 extern const char kDesktopPwaInstalled[];
 
+// Omnibox displayed the updated connection security indicator.
+extern const char kUpdatedConnectionSecurityIndicatorDisplayed[];
+
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 

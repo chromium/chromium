@@ -28309,6 +28309,8 @@ should be able to be added at any place in this file.
       label="For tab switcher with tab groups."/>
   <suffix name="TabSwitcherButton" label="For tab switcher button."/>
   <suffix name="TranslateMenuButton" label="For translate menu button."/>
+  <suffix name="UpdatedConnectionSecurityIndicators"
+      label="For updated omnibox connection security indicators."/>
   <suffix name="VideoTutorial_NTP_ChromeIntro"
       label="For Chrome intro video tutorial."/>
   <suffix name="VideoTutorial_NTP_Download"

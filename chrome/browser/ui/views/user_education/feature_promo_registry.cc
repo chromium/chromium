@@ -44,6 +44,11 @@ views::View* GetDesktopPwaInstallView(BrowserView* browser_view) {
       ->GetIconView(PageActionIconType::kPwaInstall);
 }
 
+// kIPHUpdatedConnectionSecurityIndicatorsFeature:
+views::View* GetLocationIconView(BrowserView* browser_view) {
+  return browser_view->toolbar()->location_bar()->location_icon_view();
+}
+
 // kIPHDesktopTabGroupsNewGroupFeature:
 views::View* GetTabGroupsAnchorView(BrowserView* browser_view) {
   constexpr int kPreferredAnchorTab = 2;
@@ -170,6 +175,18 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
 
     RegisterFeature(feature_engagement::kIPHDesktopPwaInstallFeature, params,
                     base::BindRepeating(GetDesktopPwaInstallView));
+  }
+
+  {
+    // kIPHUpdatedConnectionSecurityIndicatorsFeature:
+    FeaturePromoBubbleParams params;
+    params.body_string_specifier =
+        IDS_UPDATED_CONNECTION_SECURITY_INDICATORS_PROMO;
+    params.arrow = views::BubbleBorder::Arrow::TOP_LEFT;
+
+    RegisterFeature(
+        feature_engagement::kIPHUpdatedConnectionSecurityIndicatorsFeature,
+        params, base::BindRepeating(GetLocationIconView));
   }
 
   {

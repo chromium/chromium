@@ -8266,6 +8266,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="In product help for tab swticher button."/>
   <suffix name="IPH_TranslateMenuButton"
       label="In product help translate menu button."/>
+  <suffix name="IPH_UpdatedConnectionSecurityIndicators"
+      label="In product help for updated omnibox connection security
+             indicators."/>
   <suffix name="IPH_VideoTutorial_NTP_ChromeIntro"
       label="Video tutorial card on NTP about introduction to chrome."/>
   <suffix name="IPH_VideoTutorial_NTP_Download"
