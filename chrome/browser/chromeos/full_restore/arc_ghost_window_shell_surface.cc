@@ -6,13 +6,19 @@
 
 #include "ash/wm/desks/desks_util.h"
 #include "chrome/browser/chromeos/full_restore/arc_ghost_window_delegate.h"
+#include "chrome/browser/chromeos/full_restore/arc_ghost_window_view.h"
 #include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "components/exo/buffer.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "ui/aura/env.h"
-#include "ui/views/background.h"
 #include "ui/views/window/caption_button_types.h"
+
+namespace {
+
+constexpr int kDiameter = 24;
+
+}  // namespace
 
 namespace chromeos {
 namespace full_restore {
@@ -26,7 +32,6 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
     absl::optional<gfx::Size> maximum_size,
     absl::optional<gfx::Size> minimum_size,
     absl::optional<uint32_t> color,
-    std::unique_ptr<views::View> content,
     base::RepeatingClosure close_callback) {
   absl::optional<double> scale_factor = GetDisplayScaleFactor(display_id);
   DCHECK(scale_factor.has_value());
@@ -63,15 +68,9 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
       1 << views::CAPTION_BUTTON_ICON_BACK |
       1 << views::CAPTION_BUTTON_ICON_MENU;
   shell_surface->SetFrameButtons(kAllButtonMask, kAllButtonMask);
-
-  content->SetBackground(views::CreateSolidBackground(theme_color));
   shell_surface->OnSetFrameColors(theme_color, theme_color);
 
-  // Apply ghost window content view.
-  exo::ShellSurfaceBase::OverlayParams overlay_params(std::move(content));
-  overlay_params.translucent = true;
-  overlay_params.overlaps_frame = false;
-  shell_surface->AddOverlay(std::move(overlay_params));
+  shell_surface->InitContentOverlay(app_id, theme_color);
 
   // Relayout overlay.
   shell_surface->controller_surface()->Commit();
@@ -110,6 +109,15 @@ ArcGhostWindowShellSurface::~ArcGhostWindowShellSurface() {
 
 exo::Surface* ArcGhostWindowShellSurface::controller_surface() {
   return controller_surface_.get();
+}
+
+void ArcGhostWindowShellSurface::InitContentOverlay(const std::string& app_id,
+                                                    uint32_t theme_color) {
+  exo::ShellSurfaceBase::OverlayParams overlay_params(
+      std::make_unique<ArcGhostWindowView>(kDiameter, app_id, theme_color));
+  overlay_params.translucent = true;
+  overlay_params.overlaps_frame = false;
+  AddOverlay(std::move(overlay_params));
 }
 
 }  // namespace full_restore

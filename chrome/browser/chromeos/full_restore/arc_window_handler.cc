@@ -9,33 +9,6 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wm_helper.h"
 #include "components/full_restore/app_restore_data.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/views/controls/throbber.h"
-#include "ui/views/layout/box_layout.h"
-#include "ui/views/view.h"
-
-namespace {
-
-constexpr int kDiameter = 24;
-
-std::unique_ptr<views::View> GetGhostWindowContent() {
-  auto container = std::make_unique<views::View>();
-
-  auto* throbber_layout =
-      container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal));
-  throbber_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
-  throbber_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-
-  auto* throbber = container->AddChildView(std::make_unique<views::Throbber>());
-  throbber->SetPreferredSize({kDiameter, kDiameter});
-  throbber->Start();
-  return container;
-}
-
-}  // namespace
 
 namespace chromeos {
 namespace full_restore {
@@ -80,7 +53,6 @@ void ArcWindowHandler::LaunchArcGhostWindow(
           this, app_id, session_id, restore_data->display_id.value(),
           restore_data->current_bounds.value(), restore_data->maximum_size,
           restore_data->minimum_size, restore_data->status_bar_color,
-          GetGhostWindowContent(),
           base::BindRepeating(&ArcWindowHandler::CloseWindow,
                               weak_ptr_factory_.GetWeakPtr(), session_id)));
 }

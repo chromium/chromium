@@ -2309,6 +2309,8 @@ source_set("chromeos") {
     "full_restore/arc_ghost_window_delegate.h",
     "full_restore/arc_ghost_window_shell_surface.cc",
     "full_restore/arc_ghost_window_shell_surface.h",
+    "full_restore/arc_ghost_window_view.cc",
+    "full_restore/arc_ghost_window_view.h",
     "full_restore/arc_window_handler.cc",
     "full_restore/arc_window_handler.h",
     "full_restore/arc_window_utils.cc",

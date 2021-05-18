@@ -9,11 +9,6 @@
 
 #include "components/exo/client_controlled_shell_surface.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/view.h"
-
-namespace views {
-class View;
-}
 
 namespace chromeos {
 namespace full_restore {
@@ -29,7 +24,6 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
     absl::optional<gfx::Size> maximum_size,
     absl::optional<gfx::Size> minimum_size,
     absl::optional<uint32_t> color,
-    std::unique_ptr<views::View> content,
     base::RepeatingClosure close_callback);
 
 // ArcGhostWindowShellSurface class is a shell surface which controlled its
@@ -43,6 +37,8 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
   ArcGhostWindowShellSurface& operator=(const ArcGhostWindowShellSurface&) =
       delete;
   ~ArcGhostWindowShellSurface() override;
+
+  void InitContentOverlay(const std::string& app_id, uint32_t theme_color);
 
   exo::Surface* controller_surface();
 
