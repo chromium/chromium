@@ -18,52 +18,6 @@ namespace subresource_redirect {
 
 namespace {
 
-// Returns true if URL path matches the specified pattern. Pattern is anchored
-// at the beginning of path. '$' is special only at the end of pattern.
-// Algorithm taken from
-// https://github.com/google/robotstxt/blob/f465f0ede81099dd8bc4aeb2966b3a892bd488b3/robots.cc#L74
-bool IsMatchingRobotsRule(const std::string& path, const std::string& pattern) {
-  // Fast path return when pattern is a simple string and not a regex.
-  if (pattern.find('*') == std::string::npos &&
-      pattern.find('$') == std::string::npos) {
-    return base::StartsWith(path, pattern);
-  }
-
-  size_t numpos = 1;
-  std::vector<size_t> pos(path.length() + 1, 0);
-
-  // The pos[] array holds a sorted list of indexes of 'path', with length
-  // 'numpos'.  At the start and end of each iteration of the main loop below,
-  // the pos[] array will hold a list of the prefixes of the 'path' which can
-  // match the current prefix of 'pattern'. If this list is ever empty,
-  // return false. If we reach the end of 'pattern' with at least one element
-  // in pos[], return true.
-
-  for (auto pat = pattern.begin(); pat != pattern.end(); ++pat) {
-    if (*pat == '$' && pat + 1 == pattern.end()) {
-      return (pos[numpos - 1] == path.length());
-    }
-    if (*pat == '*') {
-      numpos = path.length() - pos[0] + 1;
-      for (size_t i = 1; i < numpos; i++) {
-        pos[i] = pos[i - 1] + 1;
-      }
-    } else {
-      // Includes '$' when not at end of pattern.
-      size_t newnumpos = 0;
-      for (size_t i = 0; i < numpos; i++) {
-        if (pos[i] < path.length() && path[pos[i]] == *pat) {
-          pos[newnumpos++] = pos[i] + 1;
-        }
-      }
-      numpos = newnumpos;
-      if (numpos == 0)
-        return false;
-    }
-  }
-  return true;
-}
-
 // Converts the given robots rule pattern to a pattern compatible with
 // |base::MatchPattern|.
 //
@@ -115,10 +69,7 @@ void RecordRobotsRulesApplyDurationHistogram(base::TimeDelta duration) {
 }  // namespace
 
 bool RobotsRulesParser::RobotsRule::Match(const std::string& path) const {
-  const bool kCanonicalResult = IsMatchingRobotsRule(path, pattern_);
-  const bool kGlobResult = base::MatchPattern(path, glob_);
-  CHECK_EQ(kCanonicalResult, kGlobResult);
-  return kGlobResult;
+  return base::MatchPattern(path, glob_);
 }
 
 RobotsRulesParser::RobotsRulesParser(
@@ -160,14 +111,12 @@ void RobotsRulesParser::UpdateRobotsRules(
       if (rule.has_allowed_pattern()) {
         const std::string& pattern = rule.allowed_pattern();
         if (allowed_pattern_set.insert(pattern).second) {
-          robots_rules_.emplace_back(true, ConvertRobotsRuleToGlob(pattern),
-                                     pattern);
+          robots_rules_.emplace_back(true, ConvertRobotsRuleToGlob(pattern));
         }
       } else if (rule.has_disallowed_pattern()) {
         const std::string& pattern = rule.disallowed_pattern();
         if (disallowed_pattern_set.insert(pattern).second) {
-          robots_rules_.emplace_back(false, ConvertRobotsRuleToGlob(pattern),
-                                     pattern);
+          robots_rules_.emplace_back(false, ConvertRobotsRuleToGlob(pattern));
         }
       }
     }
