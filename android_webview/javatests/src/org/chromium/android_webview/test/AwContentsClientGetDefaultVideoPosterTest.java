@@ -85,6 +85,24 @@ public class AwContentsClientGetDefaultVideoPosterTest {
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
+    public void testDefaultVideoPosterCSP() throws Throwable {
+        DefaultVideoPosterClient contentsClient = new DefaultVideoPosterClient(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
+        // Even though this content security policy does not allow loading from
+        // android-webview-video-poster: this should still work as it's exempt from CSP.
+        String data = "<html><head>"
+                + "<meta http-equiv='Content-Security-Policy' content=\"default-src 'self';\">"
+                + "<body><video id='video' control src='' /> </body></html>";
+        mActivityTestRule.loadDataAsync(
+                testContainerView.getAwContents(), data, "text/html", false);
+        contentsClient.waitForGetDefaultVideoPosterCalled();
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
     public void testInterceptDefaultVidoePosterURL() {
         DefaultVideoPosterClient contentsClient = new DefaultVideoPosterClient(
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
