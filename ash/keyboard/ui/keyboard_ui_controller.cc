@@ -29,6 +29,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -956,10 +957,13 @@ void KeyboardUIController::ReportLingeringState() {
 }
 
 gfx::Rect KeyboardUIController::GetWorkspaceOccludedBoundsInScreen() const {
-  // TODO(crbug.com/1157150): Investigate why the keyboard window may become
-  // null when adding a new monitor.
-  if (!ui_ || !GetKeyboardWindow())
+  // TODO(crbug.com/1157150): Investigate why the keyboard window or its root
+  // window is null or missing a ScreenPositionClient when adding a new monitor.
+  if (!ui_ || !GetKeyboardWindow() || !GetKeyboardWindow()->GetRootWindow() ||
+      !aura::client::GetScreenPositionClient(
+          GetKeyboardWindow()->GetRootWindow())) {
     return gfx::Rect();
+  }
 
   const gfx::Rect visual_bounds_in_window(visual_bounds_in_root_.size());
 
