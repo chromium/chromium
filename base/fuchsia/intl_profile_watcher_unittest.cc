@@ -109,8 +109,8 @@ class FakePropertyProviderAsync {
       fidl::InterfaceRequest<::fuchsia::intl::PropertyProvider>
           provider_request)
       : thread_("Property Provider Thread") {
-    base::Thread::Options options(base::MessagePumpType::IO, 0);
-    CHECK(thread_.StartWithOptions(std::move(options)));
+    CHECK(thread_.StartWithOptions(
+        base::Thread::Options(base::MessagePumpType::IO, 0)));
     property_provider_ = base::SequenceBound<FakePropertyProvider>(
         thread_.task_runner(), std::move(provider_request));
   }
