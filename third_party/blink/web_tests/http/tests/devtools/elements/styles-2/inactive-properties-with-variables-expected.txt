@@ -1,0 +1,33 @@
+Tests that longhands overridden by a shorthand with var() are displayed as inactive in the sidebar.
+
+display: block;
+    block - div user agent stylesheet
+margin-bottom: 100px;
+     - #inspected <style>
+margin-left: 100px;
+     - #inspected <style>
+margin-right: 100px;
+     - #inspected <style>
+margin-top: 100px;
+     - #inspected <style>
+    OVERLOADED 1px - div <style>
+[expanded] 
+element.style { ()
+
+[expanded] 
+#inspected { (<style>)
+    margin: var(--m, 100px);
+        margin-top: ;
+        margin-right: ;
+        margin-bottom: ;
+        margin-left: ;
+
+[expanded] 
+div { (<style>)
+/-- overloaded --/     margin-top: 1px;
+
+[expanded] 
+div { (user agent stylesheet)
+    display: block;
+
+

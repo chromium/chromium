@@ -791,9 +791,11 @@ void InspectorStyle::PopulateAllProperties(
     if (!source_property_names.insert(name.DeprecatedLower()).is_new_entry)
       continue;
 
-    String value = style_->getPropertyValue(name);
-    if (value.IsEmpty())
+    if (!IsValidCSSPropertyID(
+            CssPropertyID(style_->GetExecutionContext(), name)))
       continue;
+
+    String value = style_->getPropertyValue(name);
     bool important = !style_->getPropertyPriority(name).IsEmpty();
     if (important)
       value = value + " !important";
