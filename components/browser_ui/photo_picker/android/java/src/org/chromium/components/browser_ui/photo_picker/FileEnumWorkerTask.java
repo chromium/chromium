@@ -121,7 +121,7 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
 
         String whereClause = directoryColumnName + " LIKE ? OR " + directoryColumnName
                 + " LIKE ? OR " + directoryColumnName + " LIKE ? OR " + directoryColumnName
-                + " LIKE ?";
+                + " LIKE ? OR " + directoryColumnName + " LIKE ?";
         String additionalClause = "";
         if (mIncludeImages) {
             additionalClause = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
@@ -139,11 +139,16 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
         String downloadsDir = Environment.DIRECTORY_DOWNLOADS;
         // Files downloaded from the user's Google Photos library go to a Restored folder.
         String restoredDir = Environment.DIRECTORY_DCIM + "/Restored";
+        // On some devices, such as Samsung and Redmi, the Screenshots folder is located under
+        // DCIM/Screenshots, as opposed to DCIM/Pictures/Screenshots.
+        String screenshotsDir = Environment.DIRECTORY_DCIM + "/Screenshots";
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             cameraDir = Environment.getExternalStoragePublicDirectory(cameraDir).toString();
             picturesDir = Environment.getExternalStoragePublicDirectory(picturesDir).toString();
             downloadsDir = Environment.getExternalStoragePublicDirectory(downloadsDir).toString();
             restoredDir = Environment.getExternalStoragePublicDirectory(restoredDir).toString();
+            screenshotsDir =
+                    Environment.getExternalStoragePublicDirectory(screenshotsDir).toString();
         }
 
         String[] whereArgs = new String[] {
@@ -152,6 +157,7 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
                 picturesDir + "%",
                 downloadsDir + "%",
                 restoredDir + "%",
+                screenshotsDir + "%",
         };
 
         final String orderBy = MediaStore.MediaColumns.DATE_ADDED + " DESC";
