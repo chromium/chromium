@@ -135,9 +135,16 @@ message ChromeHashedPerformanceMark {
   optional string mark = 4;
 }
 
+// These IDs are generated at compile time and differ for each chrome version.
+// IDs are stable on for a given chrome version but are changing when resources
+// are added or removed to chrome.
+message ResourceBundle {
+  optional uint32 resource_id = 1;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1012
+  // Next ID: 1017
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -165,5 +172,9 @@ message ChromeTrackEvent {
     optional FrameTreeNodeInfo frame_tree_node_info = 1010;
 
     optional ChromeHashedPerformanceMark chrome_hashed_performance_mark = 1011;
+
+    // reserved 1012 to 1015.
+
+    optional ResourceBundle resource_bundle = 1016;
   }
 }

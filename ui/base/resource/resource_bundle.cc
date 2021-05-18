@@ -26,6 +26,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/filter/gzip_header.h"
@@ -576,6 +577,14 @@ base::RefCountedMemory* ResourceBundle::LoadDataResourceBytes(
 base::RefCountedMemory* ResourceBundle::LoadDataResourceBytesForScale(
     int resource_id,
     ScaleFactor scale_factor) const {
+  TRACE_EVENT("ui", "ResourceBundle::LoadDataResourceBytesForScale",
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                auto* data = event->set_resource_bundle();
+                data->set_resource_id(resource_id);
+              });
+
   if (delegate_) {
     base::RefCountedMemory* bytes =
         delegate_->LoadDataResourceBytes(resource_id, scale_factor);
