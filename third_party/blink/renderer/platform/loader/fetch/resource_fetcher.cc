@@ -785,6 +785,21 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
          resource_type == ResourceType::kRaw ||
          resource_type == ResourceType::kXSLStyleSheet);
 
+  KURL bundle_url_for_urn_resources;
+  if (resource_request.GetWebBundleTokenParams()) {
+    DCHECK_EQ(resource_request.GetRequestDestination(),
+              network::mojom::RequestDestination::kWebBundle);
+  } else {
+    AttachWebBundleTokenIfNeeded(resource_request);
+    if (resource_request.Url().Protocol() == "urn" &&
+        resource_request.GetWebBundleTokenParams()) {
+      // We use the bundle URL for urn resources for security checks.
+      bundle_url_for_urn_resources =
+          MemoryCache::RemoveFragmentIdentifierIfNeeded(
+              resource_request.GetWebBundleTokenParams()->bundle_url);
+    }
+  }
+
   params.OverrideContentType(factory.ContentType());
 
   // No CSP reports are sent for:
@@ -828,8 +843,10 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
   Context().CheckCSPForRequest(
       resource_request.GetRequestContext(),
       resource_request.GetRequestDestination(),
-      MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url()), options,
-      reporting_disposition,
+      MemoryCache::RemoveFragmentIdentifierIfNeeded(
+          bundle_url_for_urn_resources.IsValid() ? bundle_url_for_urn_resources
+                                                 : params.Url()),
+      options, reporting_disposition,
       MemoryCache::RemoveFragmentIdentifierIfNeeded(url_before_redirects),
       redirect_status);
 
@@ -893,8 +910,12 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
 
   KURL url = MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url());
   absl::optional<ResourceRequestBlockedReason> blocked_reason =
-      Context().CanRequest(resource_type, resource_request, url, options,
-                           reporting_disposition,
+      Context().CanRequest(resource_type, resource_request,
+                           MemoryCache::RemoveFragmentIdentifierIfNeeded(
+                               bundle_url_for_urn_resources.IsValid()
+                                   ? bundle_url_for_urn_resources
+                                   : params.Url()),
+                           options, reporting_disposition,
                            resource_request.GetRedirectInfo());
 
   if (Context().CalculateIfAdSubresource(resource_request,
@@ -917,13 +938,6 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
       network::mojom::CredentialsMode::kOmit) {
     // See comments at network::ResourceRequest::credentials_mode.
     resource_request.SetAllowStoredCredentials(false);
-  }
-
-  if (resource_request.GetWebBundleTokenParams()) {
-    DCHECK_EQ(resource_request.GetRequestDestination(),
-              network::mojom::RequestDestination::kWebBundle);
-  } else {
-    AttachWebBundleTokenIfNeeded(resource_request);
   }
 
   return absl::nullopt;

@@ -6,9 +6,16 @@
 />
 <meta
   http-equiv="Content-Security-Policy"
-  content="script-src urn: 'self' 'unsafe-inline';
-           img-src https://web-platform.test:8444/web-bundle/resources/wbn/pass.png;
-           frame-src urn:"
+  content="
+    script-src
+      https://web-platform.test:8444/web-bundle/resources/wbn/urn-uuid.wbn
+      https://web-platform.test:8444/resources/testharness.js
+      https://web-platform.test:8444/resources/testharnessreport.js
+      'unsafe-inline';
+    img-src
+      https://web-platform.test:8444/web-bundle/resources/wbn/pass.png;
+    frame-src
+      https://web-platform.test:8444/web-bundle/resources/wbn/urn-uuid.wbn"
 >
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -27,7 +34,8 @@
       img.onerror = reject;
       document.body.appendChild(img);
     });
-  }, 'URL matching of CSP should be done based on the subresource URL');
+  }, 'URL matching of CSP should be done based on the subresource URL ' +
+     'when the subresource URL is HTTPS URL.');
 
   promise_test(async () => {
     const result = await new Promise((resolve) => {
@@ -38,9 +46,10 @@
       document.body.appendChild(script);
     });
     assert_equals(result, 'OK');
-  }, '"script-src urn:" CSP directive should allow urn: scripts');
+  }, 'URL matching of script-src CSP should be done based on the bundle URL ' +
+     'when the subresource URL is urn:uuid URL.');
 
-  promise_test(() => {
+  promise_test(async () => {
     const frame_url = 'urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae';
     const iframe = document.createElement('iframe');
     iframe.src = frame_url;
@@ -48,7 +57,22 @@
       iframe.addEventListener('load', resolve);
     });
     document.body.appendChild(iframe);
-    return load_promise;
-  }, '"frame-src urn:" CSP directive should allow urn:uuid iframes');
+    await load_promise;
+    assert_equals(
+        await evalInIframe(iframe, 'location.href'),
+        frame_url);
+  }, 'URL matching of frame-src CSP should be done based on the bundle URL ' +
+     'when the frame URL is urn:uuid URL.');
+
+  async function evalInIframe(iframe, code) {
+    const message_promise = new Promise((resolve) => {
+        window.addEventListener(
+            'message',
+            (e) => { resolve(e.data); },
+            { once : true });
+      });
+    iframe.contentWindow.postMessage(code,'*');
+    return message_promise;
+  }
 </script>
 </body>

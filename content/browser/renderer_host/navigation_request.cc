@@ -4123,6 +4123,11 @@ bool NavigationRequest::IsAllowedByCSPDirective(
     GURL::Replacements replacements;
     replacements.SetSchemeStr(url::kHttpScheme);
     url = common_params_->url.ReplaceComponents(replacements);
+  } else if (common_params_->url.SchemeIs(url::kUrnScheme) &&
+             begin_params_->web_bundle_token.has_value()) {
+    // When navigating to a urn:uuid resource in a web bundle, we check the
+    // bundle URL instead of the urn:uuid URL.
+    url = begin_params_->web_bundle_token->bundle_url;
   } else {
     url = common_params_->url;
   }
