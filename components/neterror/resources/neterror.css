@@ -812,16 +812,9 @@ html[dir='rtl'].offline .icon-offline {
   display: none;
 }
 
-/* iOS WKWebView inverts the background color set at the HTML level
-whereas Blink does not. */
 .offline.inverted {
-  filter: invert(1);
-<if expr="not is_ios">
-  background-color: #000;
-</if>
-<if expr="is_ios">
   background-color: #fff;
-</if>
+  filter: invert(1);
 }
 
 .offline.inverted body {
@@ -835,6 +828,7 @@ whereas Blink does not. */
   margin: 0 auto;
   max-width: 600px;
   padding-top: 100px;
+  position: relative;
   width: 100%;
 }
 
@@ -896,6 +890,90 @@ whereas Blink does not. */
   font-size: xx-small;
   position: absolute;
   text-align: center;
+  transition: color 1.5s cubic-bezier(0.65, 0.05, 0.36, 1);
+}
+
+/* Custom toggle */
+.slow-speed-toggle {
+  align-items: center;
+  background: var(--google-gray-50);
+  border-radius: 24px/50%;
+  bottom: 0;
+  color: var(--error-code-color);
+  display: inline-flex;
+  font-size: 1em;
+  left: 0;
+  line-height: 1.1em;
+  margin: 5px auto;
+  padding: 2px 12px 3px 20px;
+  position: absolute;
+  right: 0;
+  width: max-content;
+  z-index: 999;
+}
+
+.slow-speed-toggle.hidden {
+  display: none;
+}
+
+.slow-speed-toggle [type=checkbox] {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.slow-speed-toggle .slow-speed-toggle {
+  cursor: pointer;
+  margin-inline-start: 8px;
+  padding: 8px 4px;
+  position: relative;
+}
+
+.slow-speed-toggle [type=checkbox] {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.slow-speed-toggle .slow-speed-toggle::before,
+.slow-speed-toggle .slow-speed-toggle::after {
+  content: '';
+  display: block;
+  margin: 0 3px;
+  transition: all 100ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+.slow-speed-toggle .slow-speed-toggle::before {
+  background: rgb(189,193,198);
+  border-radius: 0.65em;
+  height: 0.9em;
+  width: 2em;
+}
+
+.slow-speed-toggle .slow-speed-toggle::after {
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 40%);
+  height: 1.2em;
+  position: absolute;
+  top: 51%;
+  transform: translate(-20%, -50%);
+  width: 1.1em;
+}
+
+.slow-speed-toggle [type=checkbox]:focus + .slow-speed-toggle {
+  box-shadow: 0 0 8px rgb(94, 158, 214);
+  outline: 1px solid rgb(93, 157, 213);
+}
+
+.slow-speed-toggle [type=checkbox]:checked + .slow-speed-toggle::before {
+  background: var(--google-blue-600);
+  opacity: 0.5;
+}
+
+.slow-speed-toggle [type=checkbox]:checked + .slow-speed-toggle::after {
+  background: var(--google-blue-600);
+  transform: translate(calc(2em - 90%), -50%);
 }
 
 @media (max-width: 420px) {
@@ -1030,17 +1108,16 @@ whereas Blink does not. */
   }
 
   .offline.inverted {
-    filter: invert(0);
-  <if expr="not is_ios">
     background-color: var(--background-color);
-  </if>
-  <if expr="is_ios">
-    background-color: #fff;
-  </if>
+    filter: invert(0);
   }
 
   .offline.inverted body {
     background-color: #fff;
+  }
+
+  .offline.inverted .offline-runner-live-region {
+    color: #fff;
   }
 
   #suggestions-list a {
@@ -1049,5 +1126,19 @@ whereas Blink does not. */
 
   #error-information-button {
     filter: invert(0.6);
+  }
+
+  .slow-speed-toggle {
+    background: var(--google-gray-800);
+    color: var(--google-gray-100);
+  }
+
+  .slow-speed-toggle .slow-speed-toggle::before {
+     background: rgb(189,193,198);
+  }
+
+  .slow-speed-toggle [type=checkbox]:checked + .slow-speed-toggle::after,
+  .slow-speed-toggle [type=checkbox]:checked + .slow-speed-toggle::before {
+    background: var(--google-blue-300);
   }
 }

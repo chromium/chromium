@@ -23,7 +23,7 @@ function Runner(outerContainerId, opt_config) {
   // A div to intercept touch events. Only set while (playing && useTouch).
   this.touchController = null;
 
-  this.config = opt_config || Runner.config;
+  this.config = opt_config || Object.assign(Runner.config, Runner.normalConfig);
   // Logical dimensions of the container.
   this.dimensions = Runner.defaultDimensions;
 
@@ -50,6 +50,7 @@ function Runner(outerContainerId, opt_config) {
   this.runningTime = 0;
   this.msPerFrame = 1000 / FPS;
   this.currentSpeed = this.config.SPEED;
+  Runner.slowDown = false;
 
   this.obstacles = [];
 
@@ -132,14 +133,16 @@ const A11Y_STRINGS = {
   gameOver: 'dinoGameA11yGameOver',
   highScore: 'dinoGameA11yHighScore',
   jump: 'dinoGameA11yJump',
-  started: 'dinoGameA11yStartGame'
+  started: 'dinoGameA11yStartGame',
+  speedLabel: 'dinoGameA11ySpeedToggle'
 };
 
 /**
  * Default game configuration.
+ * Shared config for all  versions of the game. Additional parameters are
+ * defined in Runner.normalConfig and Runner.slowConfig.
  */
 Runner.config = {
-  ACCELERATION: 0.001,
   AUDIOCUE_PROXIMITY_THRESHOLD: 190,
   AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y: 250,
   BG_CLOUD_SPEED: 0.2,
@@ -151,23 +154,40 @@ Runner.config = {
   FADE_DURATION: 1,
   FLASH_DURATION: 1000,
   GAMEOVER_CLEAR_TIME: 1200,
-  GAP_COEFFICIENT: 0.6,
-  GRAVITY: 0.6,
   INITIAL_JUMP_VELOCITY: 12,
   INVERT_FADE_DURATION: 12000,
-  INVERT_DISTANCE: 700,
   MAX_BLINK_COUNT: 3,
   MAX_CLOUDS: 6,
   MAX_OBSTACLE_LENGTH: 3,
   MAX_OBSTACLE_DUPLICATION: 2,
-  MAX_SPEED: 13,
-  MIN_JUMP_HEIGHT: 35,
-  MOBILE_SPEED_COEFFICIENT: 1.2,
   RESOURCE_TEMPLATE_ID: 'audio-resources',
   SPEED: 6,
   SPEED_DROP_COEFFICIENT: 3,
   ARCADE_MODE_INITIAL_TOP_POSITION: 35,
   ARCADE_MODE_TOP_POSITION_PERCENT: 0.1
+};
+
+Runner.normalConfig = {
+  ACCELERATION: 0.001,
+  AUDIOCUE_PROXIMITY_THRESHOLD: 190,
+  AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y: 250,
+  GAP_COEFFICIENT: 0.6,
+  INVERT_DISTANCE: 700,
+  MAX_SPEED: 13,
+  MOBILE_SPEED_COEFFICIENT: 1.2,
+  SPEED: 6
+};
+
+
+Runner.slowConfig = {
+  ACCELERATION: 0.0005,
+  AUDIOCUE_PROXIMITY_THRESHOLD: 170,
+  AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y: 220,
+  GAP_COEFFICIENT: 0.3,
+  INVERT_DISTANCE: 350,
+  MAX_SPEED: 9,
+  MOBILE_SPEED_COEFFICIENT: 1.5,
+  SPEED: 4.2
 };
 
 
@@ -393,8 +413,9 @@ Runner.prototype = {
 
     // Reduce the speed on smaller mobile screens.
     if (this.dimensions.WIDTH < DEFAULT_WIDTH) {
-      const mobileSpeed = speed * this.dimensions.WIDTH / DEFAULT_WIDTH *
-          this.config.MOBILE_SPEED_COEFFICIENT;
+      const mobileSpeed = Runner.slowDown ? speed :
+                                            speed * this.dimensions.WIDTH /
+              DEFAULT_WIDTH * this.config.MOBILE_SPEED_COEFFICIENT;
       this.currentSpeed = mobileSpeed > speed ? speed : mobileSpeed;
     } else if (opt_speed) {
       this.currentSpeed = opt_speed;
@@ -431,6 +452,25 @@ Runner.prototype = {
     this.a11yStatusEl.textContent = '';
     Runner.a11yStatusEl = this.a11yStatusEl;
 
+    // Add checkbox to slow down the game.
+    this.slowSpeedCheckboxLabel = document.createElement('label');
+    this.slowSpeedCheckboxLabel.className = 'slow-speed-toggle hidden';
+    this.slowSpeedCheckboxLabel.textContent =
+        getA11yString(A11Y_STRINGS.speedLabel);
+
+    this.slowSpeedCheckbox = document.createElement('input');
+    this.slowSpeedCheckbox.setAttribute('type', 'checkbox');
+    this.slowSpeedCheckbox.setAttribute(
+        'title', getA11yString(A11Y_STRINGS.speedLabel));
+    this.slowSpeedCheckbox.setAttribute('tabindex', '0');
+    this.slowSpeedCheckbox.setAttribute('checked', 'checked');
+
+    this.slowSpeedToggleEl = document.createElement('span');
+    this.slowSpeedToggleEl.className = 'slow-speed-toggle';
+
+    this.slowSpeedCheckboxLabel.appendChild(this.slowSpeedCheckbox);
+    this.slowSpeedCheckboxLabel.appendChild(this.slowSpeedToggleEl);
+
     if (IS_IOS) {
       this.outerContainerEl.appendChild(this.a11yStatusEl);
     } else {
@@ -457,6 +497,7 @@ Runner.prototype = {
     this.tRex = new Trex(this.canvas, this.spriteDef.TREX);
 
     this.outerContainerEl.appendChild(this.containerEl);
+    this.outerContainerEl.appendChild(this.slowSpeedCheckboxLabel);
 
     this.startListening();
     this.update();
@@ -580,6 +621,7 @@ Runner.prototype = {
     if (this.isArcadeMode()) {
       this.setArcadeMode();
     }
+    this.toggleSpeed();
     this.runningTime = 0;
     this.playingIntro = false;
     this.tRex.playingIntro = false;
@@ -808,6 +850,7 @@ Runner.prototype = {
    */
   handleCanvasKeyPress(e) {
     if (!this.activated) {
+      this.toggleSpeed();
       Runner.audioCues = true;
       this.generatedSoundFx.init();
       Runner.generatedSoundFx = this.generatedSoundFx;
@@ -828,12 +871,62 @@ Runner.prototype = {
   },
 
   /**
+   * Toggle speed setting if toggle is shown.
+   */
+  toggleSpeed() {
+    if (Runner.audioCues) {
+      const speedChange = Runner.slowDown != this.slowSpeedCheckbox.checked;
+
+      if (speedChange) {
+        Runner.slowDown = this.slowSpeedCheckbox.checked;
+        const updatedConfig =
+            Runner.slowDown ? Runner.slowConfig : Runner.normalConfig;
+
+        Runner.config = Object.assign(Runner.config, updatedConfig);
+        this.currentSpeed = updatedConfig.SPEED;
+        this.tRex.enableSlowConfig();
+        this.horizon.adjustObstacleSpeed();
+      }
+      this.disableSpeedToggle(true);
+    }
+  },
+
+  /**
+   * Show the speed toggle.
+   * From focus event or when audio cues are activated.
+   * @param {Event=} e
+   */
+  showSpeedToggle(e) {
+    const isFocusEvent = e && e.type == 'focus';
+    if (Runner.audioCues || isFocusEvent) {
+      this.slowSpeedCheckboxLabel.classList.toggle(
+          HIDDEN_CLASS, isFocusEvent ? false : !this.crashed);
+    }
+  },
+
+  /**
+   * Disable the speed toggle.
+   * @param {boolean} disable
+   */
+  disableSpeedToggle(disable) {
+    if (disable) {
+      this.slowSpeedCheckbox.setAttribute('disabled', 'disabled');
+    } else {
+      this.slowSpeedCheckbox.removeAttribute('disabled');
+    }
+  },
+
+  /**
    * Bind relevant key / mouse / touch listeners.
    */
   startListening() {
     // A11y keyboard / screen reader activation.
     this.containerEl.addEventListener(
         Runner.events.KEYDOWN, this.handleCanvasKeyPress.bind(this));
+    if (!IS_MOBILE) {
+      this.containerEl.addEventListener(
+          Runner.events.FOCUS, this.showSpeedToggle.bind(this));
+    }
     this.canvas.addEventListener(
         Runner.events.KEYDOWN, this.preventScrolling.bind(this));
     this.canvas.addEventListener(
@@ -886,6 +979,12 @@ Runner.prototype = {
     }
 
     if (this.isCanvasInView()) {
+      // Allow toggling of speed toggle.
+      if (Runner.keycodes.JUMP[e.keyCode] &&
+          e.target == this.slowSpeedCheckbox) {
+        return;
+      }
+
       if (!this.crashed && !this.paused) {
         // For a11y, screen reader activation.
         const isMobileMouseInput = IS_MOBILE &&
@@ -937,11 +1036,6 @@ Runner.prototype = {
             this.tRex.setDuck(true);
           }
         }
-        // iOS only triggers touchstart and no pointer events.
-      } else if (
-          IS_IOS && this.crashed && e.type === Runner.events.TOUCHSTART &&
-          e.currentTarget === this.containerEl) {
-        this.handleGameOverClicks(e);
       }
     }
   },
@@ -1072,19 +1166,21 @@ Runner.prototype = {
    * @param {Event} e
    */
   handleGameOverClicks(e) {
-    e.preventDefault();
-    if (this.distanceMeter.hasClickedOnHighScore(e) && this.highestScore) {
-      if (this.distanceMeter.isHighScoreFlashing()) {
-        // Subsequent click, reset the high score.
-        this.saveHighScore(0, true);
-        this.distanceMeter.resetHighScore();
+    if (e.target != this.slowSpeedCheckbox) {
+      e.preventDefault();
+      if (this.distanceMeter.hasClickedOnHighScore(e) && this.highestScore) {
+        if (this.distanceMeter.isHighScoreFlashing()) {
+          // Subsequent click, reset the high score.
+          this.saveHighScore(0, true);
+          this.distanceMeter.resetHighScore();
+        } else {
+          // First click, flash the high score.
+          this.distanceMeter.startHighScoreFlashing();
+        }
       } else {
-        // First click, flash the high score.
-        this.distanceMeter.startHighScoreFlashing();
+        this.distanceMeter.cancelHighScoreFlashing();
+        this.restart();
       }
-    } else {
-      this.distanceMeter.cancelHighScoreFlashing();
-      this.restart();
     }
   },
 
@@ -1214,6 +1310,8 @@ Runner.prototype = {
                   this.distanceMeter.getActualDistance(this.highestScore)
                       .toString()));
     }
+    this.showSpeedToggle();
+    this.disableSpeedToggle(false);
   },
 
   stop() {
@@ -1240,6 +1338,7 @@ Runner.prototype = {
       this.playCount++;
       this.runningTime = 0;
       this.setPlayStatus(true);
+      this.toggleSpeed();
       this.paused = false;
       this.crashed = false;
       this.distanceRan = 0;
@@ -1531,8 +1630,8 @@ GeneratedSoundFx.prototype = {
   jump() {
     if (this.audioCues) {
       const now = this.context.currentTime;
-      this.playNote(659.25, now, 0.116, null, -0.6);
-      this.playNote(880, now + 0.116, 0.232, null, -0.6);
+      this.playNote(659.25, now, 0.116, 0.3, -0.6);
+      this.playNote(880, now + 0.116, 0.232, 0.3, -0.6);
     }
   },
 };
@@ -2089,7 +2188,7 @@ function Obstacle(
   this.canvasCtx = canvasCtx;
   this.spritePos = spriteImgPos;
   this.typeConfig = type;
-  this.gapCoefficient = gapCoefficient;
+  this.gapCoefficient = Runner.slowDown ? gapCoefficient * 2 : gapCoefficient;
   this.size = getRandomNum(1, Obstacle.MAX_OBSTACLE_LENGTH);
   this.dimensions = dimensions;
   this.remove = false;
@@ -2296,7 +2395,7 @@ function Trex(canvas, spritePos) {
   this.animStartTime = 0;
   this.timer = 0;
   this.msPerFrame = 1000 / FPS;
-  this.config = Trex.config;
+  this.config = Object.assign(Trex.config, Trex.normalJumpConfig);
   // Current status.
   this.status = Trex.status.WAITING;
   this.jumping = false;
@@ -2320,13 +2419,9 @@ Trex.config = {
   DROP_VELOCITY: -5,
   FLASH_OFF: 175,
   FLASH_ON: 100,
-  GRAVITY: 0.6,
   HEIGHT: 47,
   HEIGHT_DUCK: 25,
-  INITIAL_JUMP_VELOCITY: -10,
   INTRO_DURATION: 1500,
-  MAX_JUMP_HEIGHT: 30,
-  MIN_JUMP_HEIGHT: 30,
   SPEED_DROP_COEFFICIENT: 3,
   SPRITE_WIDTH: 262,
   START_X_POS: 50,
@@ -2334,22 +2429,30 @@ Trex.config = {
   WIDTH_DUCK: 59
 };
 
+Trex.slowJumpConfig = {
+  GRAVITY: 0.25,
+  MAX_JUMP_HEIGHT: 50,
+  MIN_JUMP_HEIGHT: 45,
+  INITIAL_JUMP_VELOCITY: -20,
+};
+
+Trex.normalJumpConfig = {
+  GRAVITY: 0.6,
+  MAX_JUMP_HEIGHT: 30,
+  MIN_JUMP_HEIGHT: 30,
+  INITIAL_JUMP_VELOCITY: -10,
+};
 
 /**
  * Used in collision detection.
  * @enum {Array<CollisionBox>}
  */
 Trex.collisionBoxes = {
-  DUCKING: [
-    new CollisionBox(1, 18, 55, 25)
-  ],
+  DUCKING: [new CollisionBox(1, 18, 55, 25)],
   RUNNING: [
-    new CollisionBox(22, 0, 17, 16),
-    new CollisionBox(1, 18, 30, 9),
-    new CollisionBox(10, 35, 14, 8),
-    new CollisionBox(1, 24, 29, 5),
-    new CollisionBox(5, 30, 21, 4),
-    new CollisionBox(9, 34, 15, 4)
+    new CollisionBox(22, 0, 17, 16), new CollisionBox(1, 18, 30, 9),
+    new CollisionBox(10, 35, 14, 8), new CollisionBox(1, 24, 29, 5),
+    new CollisionBox(5, 30, 21, 4), new CollisionBox(9, 34, 15, 4)
   ]
 };
 
@@ -2416,6 +2519,16 @@ Trex.prototype = {
     this.update(0, Trex.status.WAITING);
   },
 
+  /**
+   * Assign the appropriate jump parameters based on the game speed.
+   */
+  enableSlowConfig: function() {
+    const jumpConfig =
+        Runner.slowDown ? Trex.slowJumpConfig : Trex.normalJumpConfig;
+    Trex.config = Object.assign(Trex.config, jumpConfig);
+
+    this.adjustAltGameConfigForSlowSpeed();
+  },
 
   /**
    * Enables the alternative game. Redefines the dino config.
@@ -2450,6 +2563,7 @@ Trex.prototype = {
     Trex.config.WIDTH_JUMP = spriteDefinition.JUMPING.w;
     Trex.config.INVERT_JUMP = spriteDefinition.INVERT_JUMP;
 
+    this.adjustAltGameConfigForSlowSpeed(spriteDefinition.GRAVITY);
     this.config = Trex.config;
 
     // Adjust bottom horizon placement.
@@ -2457,6 +2571,22 @@ Trex.prototype = {
         Runner.spriteDefinition['BOTTOM_PAD'];
     this.yPos = this.groundYPos;
     this.reset();
+  },
+
+  /**
+   * Slow speeds adjustments for the alt game modes.
+   * @param {number=} opt_gravityValue
+   */
+  adjustAltGameConfigForSlowSpeed: function(opt_gravityValue) {
+    if (Runner.slowDown) {
+      if (opt_gravityValue) {
+        Trex.config.GRAVITY = opt_gravityValue / 1.5;
+      }
+      Trex.config.MIN_JUMP_HEIGHT *= 1.5;
+      Trex.config.MAX_JUMP_HEIGHT *= 1.5;
+      Trex.config.INITIAL_JUMP_VELOCITY =
+          Trex.config.INITIAL_JUMP_VELOCITY * 1.5;
+    }
   },
 
   /**
@@ -3739,6 +3869,25 @@ Horizon.prototype = {
   },
 
   /**
+   * Update obstacle definitions based on the speed of the game.
+   */
+  adjustObstacleSpeed: function() {
+    for (let i = 0; i < Obstacle.types.length; i++) {
+      if (Runner.slowDown) {
+        Obstacle.types[i].multipleSpeed = Obstacle.types[i].multipleSpeed / 2;
+        Obstacle.types[i].minGap *= 1.5;
+        Obstacle.types[i].minSpeed = Obstacle.types[i].minSpeed / 2;
+
+        // Convert variable y position obstacles to fixed.
+        if (typeof (Obstacle.types[i].yPos) == 'object') {
+          Obstacle.types[i].yPos = Obstacle.types[i].yPos[0];
+          Obstacle.types[i].yPosMobile = Obstacle.types[i].yPos[0];
+        }
+      }
+    }
+  },
+
+  /**
    * Update sprites to correspond to change in sprite sheet.
    * @param {number} spritePos
    */
@@ -3751,6 +3900,8 @@ Horizon.prototype = {
     this.spritePos = spritePos;
 
     Obstacle.types = Runner.spriteDefinition.OBSTACLES;
+    this.adjustObstacleSpeed();
+
     Obstacle.MAX_GAP_COEFFICIENT = Runner.spriteDefinition.MAX_GAP_COEFFICIENT;
     Obstacle.MAX_OBSTACLE_LENGTH = Runner.spriteDefinition.MAX_OBSTACLE_LENGTH;
 

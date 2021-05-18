@@ -397,4 +397,7 @@
   <message name="IDS_ERRORPAGE_DINO_JUMP" desc="Message to be spoken by a screen reader while the dino game is running to tell the user to jump because an obstacle is near.">
     Jump!
   </message>
+  <message name="IDS_ERRORPAGE_DINO_SLOW_SPEED_TOGGLE" desc="Label for a toggle which allows a user to select a slower speed for the dino game.">
+    Start slower
+  </message>
 </grit-part>

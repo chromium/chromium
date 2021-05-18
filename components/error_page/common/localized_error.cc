@@ -928,6 +928,9 @@ LocalizedError::PageState LocalizedError::GetPageState(
     result.strings.SetString(
         "dinoGameA11yStartGame",
         l10n_util::GetStringUTF16(IDS_ERRORPAGE_DINO_GAME_START));
+    result.strings.SetString(
+        "dinoGameA11ySpeedToggle",
+        l10n_util::GetStringUTF16(IDS_ERRORPAGE_DINO_SLOW_SPEED_TOGGLE));
 
     if (EnableAltGameMode()) {
       result.strings.SetBoolean("enableAltGameMode", true);
