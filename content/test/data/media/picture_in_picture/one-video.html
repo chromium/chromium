@@ -33,8 +33,29 @@
       return true;
     }
 
+    async function playToEnd() {
+      video.loop = false;
+      await video.play();
+      video.currentTime = video.duration;
+      await _waitForEnded();
+      return true;
+    }
+
+    function _waitForEnded() {
+      return new Promise(resolve => {
+        if (video.ended) {
+          resolve();
+          return;
+        }
+
+        video.addEventListener('ended', () => {
+          resolve();
+        }, { once: true });
+      });
+    }
+
     async function updateVideoSrcAndPlay() {
-      video.src="../tulip2.webm";
+      video.src = "../tulip2.webm";
       await video.play();
       return true;
     }
@@ -46,7 +67,7 @@
     }
 
     function _waitForMetadata() {
-      return new Promise((resolve, _) => {
+      return new Promise(resolve => {
         if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
           resolve();
           return;
@@ -72,6 +93,15 @@
     function setMediaSessionPauseActionHandler() {
       navigator.mediaSession.setActionHandler("pause", _ => {
         video.pause();
+      });
+    }
+
+    function setMediaSessionNextTrackActionHandler() {
+      navigator.mediaSession.setActionHandler("nexttrack", _ => {
+        // Simulates a playlist functionality (in this case the playlist has
+        // just one item).
+        video.src = "../tulip2.webm";
+        video.play();
       });
     }
   </script>

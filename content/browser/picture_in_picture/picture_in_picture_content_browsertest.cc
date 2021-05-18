@@ -31,10 +31,10 @@ class TestOverlayWindow : public OverlayWindow {
   ~TestOverlayWindow() override = default;
 
   bool IsActive() override { return false; }
-  void Close() override {}
-  void ShowInactive() override {}
-  void Hide() override {}
-  bool IsVisible() override { return false; }
+  void Close() override { visible_ = false; }
+  void ShowInactive() override { visible_ = true; }
+  void Hide() override { visible_ = false; }
+  bool IsVisible() override { return visible_; }
   bool IsAlwaysOnTop() override { return false; }
   gfx::Rect GetBounds() override { return gfx::Rect(size_); }
   void UpdateVideoSize(const gfx::Size& natural_size) override {
@@ -60,6 +60,11 @@ class TestOverlayWindow : public OverlayWindow {
   }
 
  private:
+  // We maintain the visibility state so that
+  // PictureInPictureWindowControllerImpl::Close() sees that the window is
+  // visible and proceeds to initiate leaving PiP.
+  bool visible_ = false;
+
   gfx::Size size_;
   absl::optional<PlaybackState> playback_state_;
 
@@ -457,6 +462,48 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
       TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
   ASSERT_EQ(overlay_window()->playback_state(),
             OverlayWindow::PlaybackState::kPlaying);
+}
+
+// Tests Media Session action availability upon reaching the end of stream by
+// verifying that the "nexttrack" action can be invoked after playing through
+// to the end of media.
+IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
+                       ActionAvailableAfterEndOfStreamAndSrcUpdate) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
+
+  ASSERT_TRUE(ExecJs(shell(), "setMediaSessionNextTrackActionHandler();"));
+  ASSERT_TRUE(ExecJs(shell(), "addPictureInPictureEventListeners();"));
+  ASSERT_EQ(true, EvalJs(shell(), "enterPictureInPicture();"));
+
+  // Check twice, because the action handler updates the 'src' attribute and we
+  // want to make sure this doesn't break the action handling.
+  for (int i = 0; i < 2; ++i) {
+    // Play through to the end of the media resource.
+    ASSERT_EQ(true, EvalJs(shell(), "playToEnd();"));
+    WaitForPlaybackState(OverlayWindow::PlaybackState::kEndOfVideo);
+
+    // Simulate the user clicking the "next track" button and verify the
+    // associated Media Session action that we set earlier is invoked.
+    window_controller()->NextTrack();
+    WaitForPlaybackState(OverlayWindow::PlaybackState::kPlaying);
+  }
+
+  // After closing and reopening the PiP window the Media Session action should
+  // still work.
+  ASSERT_EQ(true, EvalJs(shell(), "playToEnd();"));
+  WaitForPlaybackState(OverlayWindow::PlaybackState::kEndOfVideo);
+
+  window_controller()->Close(/*should_pause_video=*/false);
+  const std::u16string expected_title = u"leavepictureinpicture";
+  EXPECT_EQ(
+      expected_title,
+      TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
+
+  ASSERT_EQ(true, EvalJs(shell(), "enterPictureInPicture();"));
+
+  window_controller()->NextTrack();
+  WaitForPlaybackState(OverlayWindow::PlaybackState::kPlaying);
 }
 
 class AutoPictureInPictureContentBrowserTest
