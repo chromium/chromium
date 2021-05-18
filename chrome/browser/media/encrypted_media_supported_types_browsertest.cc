@@ -481,9 +481,10 @@ class EncryptedMediaSupportedTypesWidevineHwSecureTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EncryptedMediaSupportedTypesWidevineTest::SetUpCommandLine(command_line);
     // Pretend that we support hardware secure decryption for vp8 and vp9, but
-    // not for avc1.
+    // not for avc1. This will also pretend that there is support for vorbis
+    // audio.
     command_line->AppendSwitchASCII(
-        switches::kOverrideHardwareSecureCodecsForTesting, "vp8,vp9");
+        switches::kOverrideHardwareSecureCodecsForTesting, "vp8,vp9,vorbis");
   }
 
  private:
@@ -1256,24 +1257,25 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
 #endif
 
   // Audio proprietary codecs.
-  // Note that "hardware secure audio" is still supported since hardware secure
-  // decryption is supported (because hardware vp8 and vp9 are supported), and
-  // we only do decrypt-only for audio.
+  // "SW_SECURE_CRYPTO" is always supported.
   EXPECT_WV_PROPRIETARY(
       IsAudioMp4RobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
-  EXPECT_WV_PROPRIETARY(
-      IsAudioMp4RobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // "SW_SECURE_DECODE" and "HW_SECURE_ALL" supported on ChromeOS when the
-  // protected media identifier permission is allowed. See
-  // kUnsafelyAllowProtectedMediaIdentifierForDomain used above.
+  // "SW_SECURE_DECODE", "HW_SECURE_CRYPTO", and "HW_SECURE_ALL" supported
+  // on ChromeOS when the protected media identifier permission is allowed.
+  // See kUnsafelyAllowProtectedMediaIdentifierForDomain used above.
   EXPECT_WV_PROPRIETARY(
       IsAudioMp4RobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
+  EXPECT_WV_PROPRIETARY(
+      IsAudioMp4RobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
   EXPECT_WV_PROPRIETARY(
       IsAudioMp4RobustnessSupported(kWidevine, "HW_SECURE_ALL"));
 #else
+  // Test only enables audio codec Vorbis, so MP4 not supported.
   EXPECT_UNSUPPORTED(
       IsAudioMp4RobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
+  EXPECT_UNSUPPORTED(
+      IsAudioMp4RobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
   EXPECT_UNSUPPORTED(IsAudioMp4RobustnessSupported(kWidevine, "HW_SECURE_ALL"));
 #endif
 }

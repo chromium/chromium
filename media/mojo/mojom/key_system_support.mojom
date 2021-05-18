@@ -11,6 +11,7 @@ import "media/mojo/mojom/media_types.mojom";
 // TODO(crbug.com/796725) Find a way to include profiles and levels for
 // supported codecs.
 struct CdmCapability {
+  array<AudioCodec> audio_codecs;
   array<VideoCodec> video_codecs;
   array<EncryptionScheme> encryption_schemes;
   array<CdmSessionType> session_types;

@@ -31,6 +31,7 @@ namespace content {
 
 namespace {
 
+using AudioCodec = media::AudioCodec;
 using VideoCodec = media::VideoCodec;
 using EncryptionScheme = media::EncryptionScheme;
 using CdmSessionType = media::CdmSessionType;
@@ -55,6 +56,9 @@ bool StlEquals(const Container a, std::initializer_list<T> b) {
     EXPECT_THAT(container, ::testing::ElementsAre(__VA_ARGS__)); \
   } while (false)
 
+#define EXPECT_AUDIO_CODECS(...) \
+  EXPECT_STL_EQ(capability_->sw_secure_capability->audio_codecs, __VA_ARGS__)
+
 #define EXPECT_VIDEO_CODECS(...) \
   EXPECT_STL_EQ(capability_->sw_secure_capability->video_codecs, __VA_ARGS__)
 
@@ -65,6 +69,9 @@ bool StlEquals(const Container a, std::initializer_list<T> b) {
 #define EXPECT_SESSION_TYPES(...) \
   EXPECT_STL_EQ(capability_->sw_secure_capability->session_types, __VA_ARGS__)
 
+#define EXPECT_HW_SECURE_AUDIO_CODECS(...) \
+  EXPECT_STL_EQ(capability_->hw_secure_capability->audio_codecs, __VA_ARGS__)
+
 #define EXPECT_HW_SECURE_VIDEO_CODECS(...) \
   EXPECT_STL_EQ(capability_->hw_secure_capability->video_codecs, __VA_ARGS__)
 
@@ -74,6 +81,7 @@ bool StlEquals(const Container a, std::initializer_list<T> b) {
 
 #define EXPECT_HW_SECURE_SESSION_TYPES(...) \
   EXPECT_STL_EQ(capability_->hw_secure_capability->session_types, __VA_ARGS__)
+
 }  // namespace
 
 class KeySystemSupportImplTest : public testing::Test {
@@ -95,6 +103,7 @@ class KeySystemSupportImplTest : public testing::Test {
 
   media::CdmCapability TestCdmCapability() {
     return media::CdmCapability(
+        {AudioCodec::kCodecVorbis},
         {VideoCodec::kCodecVP8, VideoCodec::kCodecVP9},
         {EncryptionScheme::kCenc, EncryptionScheme::kCbcs},
         {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense});
@@ -145,6 +154,7 @@ TEST_F(KeySystemSupportImplTest, SoftwareSecureCapability) {
   EXPECT_TRUE(IsSupported("KeySystem"));
   EXPECT_TRUE(capability_->sw_secure_capability);
   EXPECT_FALSE(capability_->hw_secure_capability);
+  EXPECT_AUDIO_CODECS(AudioCodec::kCodecVorbis);
   EXPECT_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
   EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc, EncryptionScheme::kCbcs);
   EXPECT_SESSION_TYPES(CdmSessionType::kTemporary,
@@ -166,6 +176,7 @@ TEST_F(KeySystemSupportImplTest, HardwareSecureCapability) {
   EXPECT_TRUE(IsSupported("KeySystem"));
   EXPECT_FALSE(capability_->sw_secure_capability);
   EXPECT_TRUE(capability_->hw_secure_capability);
+  EXPECT_HW_SECURE_AUDIO_CODECS(AudioCodec::kCodecVorbis);
   EXPECT_HW_SECURE_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
   EXPECT_HW_SECURE_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc,
                                       EncryptionScheme::kCbcs);

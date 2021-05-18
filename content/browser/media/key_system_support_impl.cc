@@ -58,6 +58,7 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
       base::SplitStringPiece(overridden_codecs_string, ",",
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
+  std::vector<media::AudioCodec> audio_codecs;
   std::vector<media::VideoCodec> video_codecs;
   for (const auto& codec : overridden_codecs) {
     if (codec == "vp8")
@@ -66,6 +67,8 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
       video_codecs.push_back(media::VideoCodec::kCodecVP9);
     else if (codec == "avc1")
       video_codecs.push_back(media::VideoCodec::kCodecH264);
+    else if (codec == "vorbis")
+      audio_codecs.push_back(media::AudioCodec::kCodecVorbis);
     else
       DVLOG(1) << "Unsupported codec specified on command line: " << codec;
   }
@@ -78,7 +81,7 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
   // Overridden codecs assume CENC and temporary session support.
   // The EncryptedMediaSupportedTypesWidevineHwSecureTest tests depend
   // on 'cbcs' not being supported.
-  return media::CdmCapability(std::move(video_codecs),
+  return media::CdmCapability(std::move(audio_codecs), std::move(video_codecs),
                               {media::EncryptionScheme::kCenc},
                               {media::CdmSessionType::kTemporary});
 }

@@ -24,6 +24,7 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/video_codecs.h"
 #include "media/cdm/cdm_capability.h"
+#include "media/cdm/supported_audio_codecs.h"
 #include "media/cdm/supported_cdm_versions.h"
 #include "media/media_buildflags.h"
 
@@ -119,11 +120,87 @@ bool CheckForCompatibleVersion(const base::Value& manifest,
   return false;
 }
 
+// Returns true and updates |encryption_schemes| if the appropriate manifest
+// entry is valid. Returns false and does not modify |encryption_schemes| if the
+// manifest entry is incorrectly formatted. It is assumed that all CDMs support
+// 'cenc', so if the manifest entry is missing, the result will indicate support
+// for 'cenc' only. Incorrect types in the manifest entry will log the error and
+// fail. Unrecognized values will be reported but otherwise ignored.
+bool GetEncryptionSchemes(
+    const base::Value& manifest,
+    base::flat_set<media::EncryptionScheme>* encryption_schemes) {
+  DCHECK(manifest.is_dict());
+  DCHECK(encryption_schemes);
+
+  const base::Value* value =
+      manifest.FindKey(kCdmSupportedEncryptionSchemesName);
+  if (!value) {
+    // No manifest entry found, so assume only 'cenc' supported for backwards
+    // compatibility.
+    encryption_schemes->insert(media::EncryptionScheme::kCenc);
+    return true;
+  }
+
+  if (!value->is_list()) {
+    DLOG(ERROR) << "CDM manifest entry " << kCdmSupportedEncryptionSchemesName
+                << " is not a list.";
+    return false;
+  }
+
+  base::flat_set<media::EncryptionScheme> result;
+  for (const auto& item : value->GetList()) {
+    if (!item.is_string()) {
+      DLOG(ERROR) << "Unrecognized item type in CDM manifest entry "
+                  << kCdmSupportedEncryptionSchemesName;
+      return false;
+    }
+
+    const std::string& scheme = item.GetString();
+    if (scheme == kCdmSupportedEncryptionSchemeCenc) {
+      result.insert(media::EncryptionScheme::kCenc);
+    } else if (scheme == kCdmSupportedEncryptionSchemeCbcs) {
+      result.insert(media::EncryptionScheme::kCbcs);
+    } else {
+      DLOG(WARNING) << "Unrecognized encryption scheme '" << scheme
+                    << "' in CDM manifest entry "
+                    << kCdmSupportedEncryptionSchemesName;
+    }
+  }
+
+  // As the manifest entry exists, it must specify at least one valid value.
+  if (result.empty())
+    return false;
+
+  encryption_schemes->swap(result);
+  return true;
+}
+
+// Returns true and updates |audio_codecs| with the full set of audio
+// codecs that support decryption.
+bool GetAudioCodecs(const base::Value& manifest,
+                    std::vector<media::AudioCodec>* audio_codecs) {
+  DCHECK(manifest.is_dict());
+  DCHECK(audio_codecs);
+
+  // Note that desktop CDMs only support decryption of audio content,
+  // no decoding. Manifest does not contain any audio codecs, so return
+  // the standard set of audio codecs supported only if there is at least
+  // one encryption scheme specified.
+  base::flat_set<media::EncryptionScheme> encryption_schemes;
+  if (!GetEncryptionSchemes(manifest, &encryption_schemes)) {
+    return false;
+  }
+
+  DCHECK(!encryption_schemes.empty());
+  *audio_codecs = media::GetCdmSupportedAudioCodecs();
+  return true;
+}
+
 // Returns true and updates |video_codecs| if the appropriate manifest entry is
 // valid. Returns false and does not modify |video_codecs| if the manifest entry
 // is incorrectly formatted.
-bool GetCodecs(const base::Value& manifest,
-               std::vector<media::VideoCodec>* video_codecs) {
+bool GetVideoCodecs(const base::Value& manifest,
+                    std::vector<media::VideoCodec>* video_codecs) {
   DCHECK(manifest.is_dict());
   DCHECK(video_codecs);
 
@@ -192,61 +269,6 @@ bool GetSessionTypes(const base::Value& manifest,
   return true;
 }
 
-// Returns true and updates |encryption_schemes| if the appropriate manifest
-// entry is valid. Returns false and does not modify |encryption_schemes| if the
-// manifest entry is incorrectly formatted. It is assumed that all CDMs support
-// 'cenc', so if the manifest entry is missing, the result will indicate support
-// for 'cenc' only. Incorrect types in the manifest entry will log the error and
-// fail. Unrecognized values will be reported but otherwise ignored.
-bool GetEncryptionSchemes(
-    const base::Value& manifest,
-    base::flat_set<media::EncryptionScheme>* encryption_schemes) {
-  DCHECK(manifest.is_dict());
-  DCHECK(encryption_schemes);
-
-  const base::Value* value =
-      manifest.FindKey(kCdmSupportedEncryptionSchemesName);
-  if (!value) {
-    // No manifest entry found, so assume only 'cenc' supported for backwards
-    // compatibility.
-    encryption_schemes->insert(media::EncryptionScheme::kCenc);
-    return true;
-  }
-
-  if (!value->is_list()) {
-    DLOG(ERROR) << "CDM manifest entry " << kCdmSupportedEncryptionSchemesName
-                << " is not a list.";
-    return false;
-  }
-
-  base::flat_set<media::EncryptionScheme> result;
-  for (const auto& item : value->GetList()) {
-    if (!item.is_string()) {
-      DLOG(ERROR) << "Unrecognized item type in CDM manifest entry "
-                  << kCdmSupportedEncryptionSchemesName;
-      return false;
-    }
-
-    const std::string& scheme = item.GetString();
-    if (scheme == kCdmSupportedEncryptionSchemeCenc) {
-      result.insert(media::EncryptionScheme::kCenc);
-    } else if (scheme == kCdmSupportedEncryptionSchemeCbcs) {
-      result.insert(media::EncryptionScheme::kCbcs);
-    } else {
-      DLOG(WARNING) << "Unrecognized encryption scheme '" << scheme
-                    << "' in CDM manifest entry "
-                    << kCdmSupportedEncryptionSchemesName;
-    }
-  }
-
-  // As the manifest entry exists, it must specify at least one valid value.
-  if (result.empty())
-    return false;
-
-  encryption_schemes->swap(result);
-  return true;
-}
-
 bool GetVersion(const base::Value& manifest, base::Version* version) {
   DCHECK(manifest.is_dict());
   auto* version_string = manifest.FindStringKey(kCdmVersion);
@@ -282,7 +304,8 @@ bool ParseCdmManifest(const base::Value& manifest,
                       media::CdmCapability* capability) {
   DCHECK(manifest.is_dict());
 
-  return GetCodecs(manifest, &capability->video_codecs) &&
+  return GetAudioCodecs(manifest, &capability->audio_codecs) &&
+         GetVideoCodecs(manifest, &capability->video_codecs) &&
          GetEncryptionSchemes(manifest, &capability->encryption_schemes) &&
          GetSessionTypes(manifest, &capability->session_types);
 }

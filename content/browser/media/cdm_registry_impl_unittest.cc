@@ -19,12 +19,14 @@
 #include "content/public/common/cdm_info.h"
 #include "media/base/video_codecs.h"
 #include "media/cdm/cdm_capability.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 
 namespace {
 
+using AudioCodec = media::AudioCodec;
 using VideoCodec = media::VideoCodec;
 using EncryptionScheme = media::EncryptionScheme;
 using CdmSessionType = media::CdmSessionType;
@@ -44,10 +46,13 @@ bool StlEquals(const Container a, std::initializer_list<T> b) {
   return a == Container(b);
 }
 
-#define EXPECT_STL_EQ(a, ...)                 \
-  do {                                        \
-    EXPECT_TRUE(StlEquals(a, {__VA_ARGS__})); \
+#define EXPECT_STL_EQ(container, ...)                            \
+  do {                                                           \
+    EXPECT_THAT(container, ::testing::ElementsAre(__VA_ARGS__)); \
   } while (false)
+
+#define EXPECT_AUDIO_CODECS(...) \
+  EXPECT_STL_EQ(cdm.capability->audio_codecs, __VA_ARGS__)
 
 #define EXPECT_VIDEO_CODECS(...) \
   EXPECT_STL_EQ(cdm.capability->video_codecs, __VA_ARGS__)
@@ -70,7 +75,8 @@ class CdmRegistryImplTest : public testing::Test {
  protected:
   media::CdmCapability GetTestCdmCapability() {
     return media::CdmCapability(
-        {media::kCodecVP8, media::kCodecVP9}, {EncryptionScheme::kCenc},
+        {media::kCodecVorbis}, {media::kCodecVP8, media::kCodecVP9},
+        {EncryptionScheme::kCenc},
         {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense});
   }
 
@@ -128,6 +134,7 @@ TEST_F(CdmRegistryImplTest, Register) {
   EXPECT_EQ(kVersion1, cdm.version.GetString());
   EXPECT_EQ(kTestPath, cdm.path.MaybeAsASCII());
   EXPECT_EQ(kTestFileSystemId, cdm.file_system_id);
+  EXPECT_AUDIO_CODECS(AudioCodec::kCodecVorbis);
   EXPECT_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
   EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc);
   EXPECT_SESSION_TYPES(CdmSessionType::kTemporary,

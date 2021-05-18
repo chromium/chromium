@@ -12,6 +12,10 @@ namespace mojo {
 bool StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability>::
     Read(media::mojom::CdmCapabilityDataView input,
          media::CdmCapability* output) {
+  std::vector<media::AudioCodec> audio_codecs;
+  if (!input.ReadAudioCodecs(&audio_codecs))
+    return false;
+
   std::vector<media::VideoCodec> video_codecs;
   if (!input.ReadVideoCodecs(&video_codecs))
     return false;
@@ -26,9 +30,9 @@ bool StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability>::
 
   // |encryption_schemes| and |session_types| are convert to a base::flat_map
   // implicitly.
-  *output = media::CdmCapability(std::move(video_codecs),
-                                 std::move(encryption_schemes),
-                                 std::move(session_types));
+  *output = media::CdmCapability(
+      std::move(audio_codecs), std::move(video_codecs),
+      std::move(encryption_schemes), std::move(session_types));
   return true;
 }
 

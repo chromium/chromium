@@ -30,6 +30,7 @@
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "base/no_destructor.h"
 #include "components/cdm/common/cdm_manifest.h"
+#include "media/cdm/supported_audio_codecs.h"
 // TODO(crbug.com/663554): Needed for WIDEVINE_CDM_VERSION_STRING. Support
 // component updated CDM on all desktop platforms and remove this.
 // This file is In SHARED_INTERMEDIATE_DIR.
@@ -110,6 +111,12 @@ std::unique_ptr<content::CdmInfo> CreateCdmInfoForChromeOS(
   // As there is no manifest, set |capability| as if it came from one. These
   // values must match the CDM that is being bundled with Chrome.
   media::CdmCapability capability;
+
+  // Note that desktop CDMs only support decryption of audio content,
+  // no decoding. Manifest does not contain any audio codecs, as decoding
+  // will be done by the browser. So use the standard set of audio codecs
+  // supported.
+  capability.audio_codecs = media::GetCdmSupportedAudioCodecs();
 
   // Add the supported codecs as if they came from the component manifest.
   capability.video_codecs.push_back(media::VideoCodec::kCodecVP8);
@@ -229,7 +236,11 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   media::CdmCapability capability;
 
-  // We currently support VP9, H264 and HEVC.
+  // The following audio formats are supported for decrypt-only.
+  capability.audio_codecs = media::GetCdmSupportedAudioCodecs();
+
+  // We currently support VP9, H264 and HEVC video formats with
+  // decrypt-and-decode.
   capability.video_codecs.push_back(media::VideoCodec::kCodecVP9);
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   capability.video_codecs.push_back(media::VideoCodec::kCodecH264);
@@ -299,7 +310,7 @@ void AddExternalClearKey(std::vector<content::CdmInfo>* cdms) {
 
   // Supported codecs are hard-coded in ExternalClearKeyProperties.
   media::CdmCapability capability(
-      {}, {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs},
+      {}, {}, {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs},
       {media::CdmSessionType::kTemporary,
        media::CdmSessionType::kPersistentLicense});
 

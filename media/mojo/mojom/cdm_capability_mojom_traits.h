@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/video_codecs.h"
@@ -18,6 +19,11 @@ namespace mojo {
 
 template <>
 struct StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability> {
+  static const std::vector<media::AudioCodec>& audio_codecs(
+      const media::CdmCapability& input) {
+    return input.audio_codecs;
+  }
+
   static const std::vector<media::VideoCodec>& video_codecs(
       const media::CdmCapability& input) {
     return input.video_codecs;

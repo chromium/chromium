@@ -141,27 +141,33 @@ static void AddExternalClearKey(
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
 static SupportedCodecs GetSupportedCodecs(
-    const std::vector<media::VideoCodec>& supported_video_codecs,
+    const media::CdmCapability& capability,
     bool is_secure) {
   SupportedCodecs supported_codecs = media::EME_CODEC_NONE;
 
-  // Audio codecs are always supported because the CDM only does decrypt-only
-  // for audio. The only exception is when |is_secure| is true and there's no
-  // secure video decoder available, which is a signal that secure hardware
-  // decryption is not available either.
-  // TODO(sandersd): Distinguish these from those that are directly supported,
-  // as those may offer a higher level of protection.
-  if (!supported_video_codecs.empty() || !is_secure) {
-    supported_codecs |= media::EME_CODEC_OPUS;
-    supported_codecs |= media::EME_CODEC_VORBIS;
-    supported_codecs |= media::EME_CODEC_FLAC;
+  for (const auto& codec : capability.audio_codecs) {
+    switch (codec) {
+      case media::AudioCodec::kCodecOpus:
+        supported_codecs |= media::EME_CODEC_OPUS;
+        break;
+      case media::AudioCodec::kCodecVorbis:
+        supported_codecs |= media::EME_CODEC_VORBIS;
+        break;
+      case media::AudioCodec::kCodecFLAC:
+        supported_codecs |= media::EME_CODEC_FLAC;
+        break;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    supported_codecs |= media::EME_CODEC_AAC;
+      case media::AudioCodec::kCodecAAC:
+        supported_codecs |= media::EME_CODEC_AAC;
+        break;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+      default:
+        DVLOG(1) << "Unexpected supported codec: " << GetCodecName(codec);
+        break;
+    }
   }
 
-  // Video codecs are determined by what was registered for the CDM.
-  for (const auto& codec : supported_video_codecs) {
+  for (const auto& codec : capability.video_codecs) {
     switch (codec) {
       case media::VideoCodec::kCodecVP8:
         supported_codecs |= media::EME_CODEC_VP8;
@@ -267,7 +273,7 @@ static void AddWidevine(
   bool cdm_supports_persistent_license = false;
 
   if (capability->sw_secure_capability) {
-    codecs = GetSupportedCodecs(capability->sw_secure_capability->video_codecs,
+    codecs = GetSupportedCodecs(capability->sw_secure_capability.value(),
                                 /*is_secure=*/false);
     encryption_schemes = capability->sw_secure_capability->encryption_schemes;
     if (!base::Contains(capability->sw_secure_capability->session_types,
@@ -283,7 +289,7 @@ static void AddWidevine(
 
   if (capability->hw_secure_capability) {
     hw_secure_codecs = GetSupportedCodecs(
-        capability->hw_secure_capability->video_codecs, /*is_secure=*/true);
+        capability->hw_secure_capability.value(), /*is_secure=*/true);
     hw_secure_encryption_schemes =
         capability->hw_secure_capability->encryption_schemes;
     if (!base::Contains(capability->hw_secure_capability->session_types,

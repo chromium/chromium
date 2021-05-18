@@ -11,10 +11,12 @@ namespace media {
 CdmCapability::CdmCapability() = default;
 
 CdmCapability::CdmCapability(
+    std::vector<AudioCodec> audio_codecs,
     std::vector<VideoCodec> video_codecs,
     base::flat_set<EncryptionScheme> encryption_schemes,
     base::flat_set<CdmSessionType> session_types)
-    : video_codecs(std::move(video_codecs)),
+    : audio_codecs(std::move(audio_codecs)),
+      video_codecs(std::move(video_codecs)),
       encryption_schemes(std::move(encryption_schemes)),
       session_types(std::move(session_types)) {}
 
