@@ -71,7 +71,12 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Global methods.
   jboolean IsEnabled(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj);
-  void Enable(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Enable(JNIEnv* env,
+              const base::android::JavaParamRef<jobject>& obj,
+              jboolean screen_reader_mode);
+  void SetAXMode(JNIEnv* env,
+                 const base::android::JavaParamRef<jobject>& obj,
+                 jboolean screen_reader_mode);
 
   base::android::ScopedJavaLocalRef<jstring> GetSupportedHtmlElementTypes(
       JNIEnv* env,

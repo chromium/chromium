@@ -72,7 +72,7 @@ import java.util.Set;
 @JNINamespace("content")
 public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         implements AccessibilityStateChangeListener, WebContentsAccessibility, WindowEventObserver,
-                   UserData {
+                   UserData, BrowserAccessibilityState.Listener {
     // The following constants have been hard coded so we can support actions newer than our
     // minimum SDK without having to break methods into a series of subclasses.
     // Constants defined by AccessibilityNodeInfo per SDK
@@ -247,6 +247,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         }
         mDelegate.setOnScrollPositionChangedCallback(
                 () -> handleScrollPositionChanged(mAccessibilityFocusId));
+
+        BrowserAccessibilityState.addListener(this);
 
         // Define our delays on a per event type basis.
         Map<Integer, Integer> eventThrottleDelays = new HashMap<Integer, Integer>();
@@ -469,8 +471,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
             onNativeInit();
         }
         if (!isEnabled()) {
+            boolean screenReaderMode = BrowserAccessibilityState.screenReaderMode();
             WebContentsAccessibilityImplJni.get().enable(
-                    mNativeObj, WebContentsAccessibilityImpl.this);
+                    mNativeObj, WebContentsAccessibilityImpl.this, screenReaderMode);
             return null;
         }
         return this;
@@ -566,10 +569,23 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     }
 
     // AccessibilityStateChangeListener
+    // TODO(dmazzoni): have BrowserAccessibilityState monitor this and merge
+    // into BrowserAccessibilityStateListener.
 
     @Override
     public void onAccessibilityStateChanged(boolean enabled) {
         setState(enabled);
+    }
+
+    // BrowserAccessibilityStateListener
+
+    @Override
+    public void onBrowserAccessibilityStateChanged() {
+        if (!isAccessibilityEnabled()) return;
+
+        boolean screenReaderMode = BrowserAccessibilityState.screenReaderMode();
+        WebContentsAccessibilityImplJni.get().setAXMode(
+                mNativeObj, WebContentsAccessibilityImpl.this, screenReaderMode);
     }
 
     // WebContentsAccessibility
@@ -2096,8 +2112,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                 WebContentsAccessibilityImpl caller, int id);
         boolean isEnabled(
                 long nativeWebContentsAccessibilityAndroid, WebContentsAccessibilityImpl caller);
-        void enable(
-                long nativeWebContentsAccessibilityAndroid, WebContentsAccessibilityImpl caller);
+        void enable(long nativeWebContentsAccessibilityAndroid, WebContentsAccessibilityImpl caller,
+                boolean screenReaderMode);
+        void setAXMode(long nativeWebContentsAccessibilityAndroid,
+                WebContentsAccessibilityImpl caller, boolean screenReaderMode);
         boolean areInlineTextBoxesLoaded(long nativeWebContentsAccessibilityAndroid,
                 WebContentsAccessibilityImpl caller, int id);
         void loadInlineTextBoxes(long nativeWebContentsAccessibilityAndroid,

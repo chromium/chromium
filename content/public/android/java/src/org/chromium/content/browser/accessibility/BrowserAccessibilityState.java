@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.provider.Settings;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 
 import org.chromium.base.ContextUtils;
@@ -26,6 +27,8 @@ import org.chromium.base.annotations.NativeMethods;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 /**
  * Provides utility methods relating to measuring accessibility state on the current platform (i.e.
@@ -33,7 +36,22 @@ import java.util.List;
  */
 @JNINamespace("content")
 public class BrowserAccessibilityState {
+    /**
+     * An interface for classes that want to be notified whenever the accessibility
+     * state has changed, which can happen when accessibility services start or stop.
+     */
+    public interface Listener {
+        public void onBrowserAccessibilityStateChanged();
+    }
+
     private static final String TAG = "Accessibility";
+
+    // Analysis of the most popular accessibility services on Android suggests
+    // that any service that requests any of these three events is a screen reader
+    // or other complete assistive technology. If none of these events are requested,
+    // we can enable some optimizations.
+    private static final int SCREEN_READER_EVENT_TYPE_MASK = AccessibilityEvent.TYPE_VIEW_SELECTED
+            | AccessibilityEvent.TYPE_VIEW_SCROLLED | AccessibilityEvent.TYPE_ANNOUNCEMENT;
 
     private static boolean sInitialized;
 
@@ -44,10 +62,20 @@ public class BrowserAccessibilityState {
     private static int sFlagsMask;
     private static int sCapabilitiesMask;
 
+    // Whether we determine that genuine assistive technology such as a screen reader
+    // is running, based on the information from running accessibility services.
+    private static boolean sScreenReader;
+
     // The IDs of all running accessibility services.
     private static String[] sServiceIds;
 
     private static Handler sHandler;
+
+    // The set of listeners of BrowserAccessibilityState, implemented using
+    // a WeakHashSet behind the scenes so that listeners can be garbage-collected
+    // and will be automatically removed from this set.
+    private static Set<Listener> sListeners =
+            Collections.newSetFromMap(new WeakHashMap<Listener, Boolean>());
 
     // The number of milliseconds to wait before checking the set of running
     // accessibility services again, when we think it changed. Uses an exponential
@@ -55,6 +83,16 @@ public class BrowserAccessibilityState {
     private static final int MIN_DELAY_MILLIS = 500;
     private static final int MAX_DELAY_MILLIS = 60000;
     private static int sNextDelayMillis = MIN_DELAY_MILLIS;
+
+    public static void addListener(Listener listener) {
+        sListeners.add(listener);
+    }
+
+    public static boolean screenReaderMode() {
+        if (!sInitialized) updateAccessibilityServices();
+
+        return sScreenReader;
+    }
 
     private static class AnimatorDurationScaleObserver extends ContentObserver {
         public AnimatorDurationScaleObserver(Handler handler) {
@@ -163,6 +201,14 @@ public class BrowserAccessibilityState {
             Log.v(TAG, "Will check again after " + sNextDelayMillis + " milliseconds.");
             getHandler().postDelayed(() -> { updateAccessibilityServices(); }, sNextDelayMillis);
             if (sNextDelayMillis < MAX_DELAY_MILLIS) sNextDelayMillis *= 2;
+        }
+
+        boolean oldScreenReader = sScreenReader;
+        sScreenReader = (0 != (sEventTypeMask & SCREEN_READER_EVENT_TYPE_MASK));
+        if (sScreenReader != oldScreenReader) {
+            for (Listener listener : sListeners) {
+                listener.onBrowserAccessibilityStateChanged();
+            }
         }
     }
 

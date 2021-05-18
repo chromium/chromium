@@ -147,6 +147,15 @@ AX_BASE_EXPORT extern const base::Feature kSelectToSpeakNavigationControl;
 AX_BASE_EXPORT bool IsSelectToSpeakNavigationControlEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(OS_ANDROID)
+// Compute the AXMode based on AccessibilityServiceInfo. If disabled,
+// the AXMode is either entirely on or entirely off.
+AX_BASE_EXPORT extern const base::Feature kComputeAXMode;
+
+// Returns true if the IChromeAccessible COM API is enabled.
+AX_BASE_EXPORT bool IsComputeAXModeEnabled();
+#endif  // defined(OS_ANDROID)
+
 }  // namespace features
 
 #endif  // UI_ACCESSIBILITY_ACCESSIBILITY_FEATURES_H_

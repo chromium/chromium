@@ -29,6 +29,7 @@
 #include "content/public/android/content_jni_headers/WebContentsAccessibilityImpl_jni.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/events/android/motion_event_android.h"
 
@@ -268,7 +269,8 @@ jboolean WebContentsAccessibilityAndroid::IsEnabled(
 }
 
 void WebContentsAccessibilityAndroid::Enable(JNIEnv* env,
-                                             const JavaParamRef<jobject>& obj) {
+                                             const JavaParamRef<jobject>& obj,
+                                             jboolean screen_reader_mode) {
   BrowserAccessibilityStateImpl* accessibility_state =
       BrowserAccessibilityStateImpl::GetInstance();
   auto* manager = GetRootBrowserAccessibilityManager();
@@ -279,6 +281,13 @@ void WebContentsAccessibilityAndroid::Enable(JNIEnv* env,
   // web contents.
   if (manager) {
     manager->set_web_contents_accessibility(GetWeakPtr());
+    return;
+  }
+
+  if (features::IsComputeAXModeEnabled()) {
+    ui::AXMode mode =
+        screen_reader_mode ? ui::kAXModeComplete : ui::kAXModeBasic;
+    accessibility_state->AddAccessibilityModeFlags(mode);
     return;
   }
 
@@ -297,6 +306,28 @@ void WebContentsAccessibilityAndroid::SetIsRunningAsWebView(
   auto* manager = GetRootBrowserAccessibilityManager();
   if (manager) {
     manager->set_is_running_as_webview(is_webview);
+  }
+}
+
+void WebContentsAccessibilityAndroid::SetAXMode(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jboolean screen_reader_mode) {
+  if (!features::IsComputeAXModeEnabled())
+    return;
+
+  BrowserAccessibilityStateImpl* accessibility_state =
+      BrowserAccessibilityStateImpl::GetInstance();
+
+  if (screen_reader_mode) {
+    accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
+  } else {
+    // Remove the mode flags present in kAXModeComplete but not in
+    // kAXModeBasic, thereby reverting the mode to kAXModeBasic while
+    // not touching any other flags.
+    ui::AXMode remove_mode_flags(ui::kAXModeComplete.mode() &
+                                 ~ui::kAXModeBasic.mode());
+    accessibility_state->RemoveAccessibilityModeFlags(remove_mode_flags);
   }
 }
 
