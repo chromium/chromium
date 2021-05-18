@@ -266,6 +266,16 @@ class BasicStringPiece {
 
   constexpr size_type find(BasicStringPiece v,
                            size_type pos = 0) const noexcept {
+    if (is_constant_evaluated()) {
+      if (v.size() > size())
+        return npos;
+      for (size_type p = pos; p <= size() - v.size(); ++p) {
+        if (!compare(p, v.size(), v))
+          return p;
+      }
+      return npos;
+    }
+
     return internal::find(*this, v, pos);
   }
   constexpr size_type find(CharT ch, size_type pos = 0) const noexcept {
@@ -287,6 +297,18 @@ class BasicStringPiece {
 
   constexpr size_type rfind(BasicStringPiece v,
                             size_type pos = npos) const noexcept {
+    if (is_constant_evaluated()) {
+      if (v.size() > size())
+        return npos;
+      for (size_type p = std::min(size() - v.size(), pos);; --p) {
+        if (!compare(p, v.size(), v))
+          return p;
+        if (!p)
+          break;
+      }
+      return npos;
+    }
+
     return internal::rfind(*this, v, pos);
   }
   constexpr size_type rfind(CharT c, size_type pos = npos) const noexcept {
@@ -313,6 +335,16 @@ class BasicStringPiece {
 
   constexpr size_type find_first_of(BasicStringPiece v,
                                     size_type pos = 0) const noexcept {
+    if (is_constant_evaluated()) {
+      if (empty() || v.empty())
+        return npos;
+      for (size_type p = pos; p < size(); ++p) {
+        if (v.find(data()[p]) != npos)
+          return p;
+      }
+      return npos;
+    }
+
     return internal::find_first_of(*this, v, pos);
   }
   constexpr size_type find_first_of(CharT c, size_type pos = 0) const noexcept {
@@ -329,6 +361,18 @@ class BasicStringPiece {
 
   constexpr size_type find_last_of(BasicStringPiece v,
                                    size_type pos = npos) const noexcept {
+    if (is_constant_evaluated()) {
+      if (empty() || v.empty())
+        return npos;
+      for (size_type p = std::min(pos, size() - 1);; --p) {
+        if (v.find(data()[p]) != npos)
+          return p;
+        if (!p)
+          break;
+      }
+      return npos;
+    }
+
     return internal::find_last_of(*this, v, pos);
   }
   constexpr size_type find_last_of(CharT c,
@@ -346,6 +390,16 @@ class BasicStringPiece {
 
   constexpr size_type find_first_not_of(BasicStringPiece v,
                                         size_type pos = 0) const noexcept {
+    if (is_constant_evaluated()) {
+      if (empty())
+        return npos;
+      for (size_type p = pos; p < size(); ++p) {
+        if (v.find(data()[p]) == npos)
+          return p;
+      }
+      return npos;
+    }
+
     return internal::find_first_not_of(*this, v, pos);
   }
   constexpr size_type find_first_not_of(CharT c,
@@ -371,6 +425,18 @@ class BasicStringPiece {
 
   constexpr size_type find_last_not_of(BasicStringPiece v,
                                        size_type pos = npos) const noexcept {
+    if (is_constant_evaluated()) {
+      if (empty())
+        return npos;
+      for (size_type p = std::min(pos, size() - 1);; --p) {
+        if (v.find(data()[p]) == npos)
+          return p;
+        if (!p)
+          break;
+      }
+      return npos;
+    }
+
     return internal::find_last_not_of(*this, v, pos);
   }
   constexpr size_type find_last_not_of(CharT c,

@@ -144,11 +144,11 @@ size_t find_first_of(StringPiece16 self, StringPiece16 s, size_t pos) {
 
 // 8-bit version using lookup table.
 size_t find_first_not_of(StringPiece self, StringPiece s, size_t pos) {
-  if (self.size() == 0)
+  if (pos >= self.size())
     return StringPiece::npos;
 
   if (s.size() == 0)
-    return 0;
+    return pos;
 
   // Avoid the cost of BuildLookupTable() for a single-character search.
   if (s.size() == 1)

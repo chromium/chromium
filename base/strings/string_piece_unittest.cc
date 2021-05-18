@@ -399,6 +399,10 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(a.find_first_not_of(f), 0U);
   ASSERT_EQ(a.find_first_not_of(d), 0U);
   ASSERT_EQ(a.find_first_not_of(e), 0U);
+  ASSERT_EQ(a.find_first_not_of(d, 1), 1U);
+  ASSERT_EQ(a.find_first_not_of(e, 1), 1U);
+  ASSERT_EQ(a.find_first_not_of(d, a.size()), Piece::npos);
+  ASSERT_EQ(a.find_first_not_of(e, a.size()), Piece::npos);
   // empty string nonsense
   ASSERT_EQ(d.find_first_not_of(a), Piece::npos);
   ASSERT_EQ(e.find_first_not_of(a), Piece::npos);
@@ -840,6 +844,48 @@ TEST(StringPieceTest, Substr) {
   static_assert(piece.substr() == piece, "");
   static_assert(piece.substr(0) == piece, "");
   static_assert(piece.substr(0, 99) == piece, "");
+}
+
+TEST(StringPieceTest, Find) {
+  constexpr StringPiece foobar("foobar", 6);
+  constexpr StringPiece foo = foobar.substr(0, 3);
+  constexpr StringPiece bar = foobar.substr(3);
+
+  // find
+  static_assert(foobar.find(bar, 0) == 3, "");
+  static_assert(foobar.find('o', 0) == 1, "");
+  static_assert(foobar.find("ox", 0, 1) == 1, "");
+  static_assert(foobar.find("ox", 0) == StringPiece::npos, "");
+
+  // rfind
+  static_assert(foobar.rfind(bar, 5) == 3, "");
+  static_assert(foobar.rfind('o', 5) == 2, "");
+  static_assert(foobar.rfind("ox", 5, 1) == 2, "");
+  static_assert(foobar.rfind("ox", 5) == StringPiece::npos, "");
+
+  // find_first_of
+  static_assert(foobar.find_first_of(foo, 2) == 2, "");
+  static_assert(foobar.find_first_of('o', 2) == 2, "");
+  static_assert(foobar.find_first_of("ox", 2, 2) == 2, "");
+  static_assert(foobar.find_first_of("ox", 2) == 2, "");
+
+  // find_last_of
+  static_assert(foobar.find_last_of(foo, 5) == 2, "");
+  static_assert(foobar.find_last_of('o', 5) == 2, "");
+  static_assert(foobar.find_last_of("ox", 5, 2) == 2, "");
+  static_assert(foobar.find_last_of("ox", 5) == 2, "");
+
+  // find_first_not_of
+  static_assert(foobar.find_first_not_of(foo, 2) == 3, "");
+  static_assert(foobar.find_first_not_of('o', 2) == 3, "");
+  static_assert(foobar.find_first_not_of("ox", 2, 2) == 3, "");
+  static_assert(foobar.find_first_not_of("ox", 2) == 3, "");
+
+  // find_last_not_of
+  static_assert(foobar.find_last_not_of(bar, 5) == 2, "");
+  static_assert(foobar.find_last_not_of('a', 4) == 3, "");
+  static_assert(foobar.find_last_not_of("ox", 2, 2) == 0, "");
+  static_assert(foobar.find_last_not_of("ox", 2) == 0, "");
 }
 
 }  // namespace base
