@@ -29,13 +29,6 @@ constexpr int kColumnSetId = 0;
 constexpr int kIconSize = 16;
 constexpr int kValuesLabelWidth = 190;
 
-int AddressDetailsIconSize() {
-  // Use the line height of the body small text. This allows the icons to adapt
-  // if the user changes the font size.
-  return views::style::GetLineHeight(views::style::CONTEXT_LABEL,
-                                     views::style::STYLE_PRIMARY);
-}
-
 const gfx::VectorIcon& GetVectorIconForType(ServerFieldType type) {
   switch (type) {
     case NAME_FULL_WITH_HONORIFIC_PREFIX:
@@ -92,9 +85,8 @@ std::unique_ptr<views::View> CreateValuesView(
                     views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
 
     auto icon_view = std::make_unique<views::ImageView>();
-    icon_view->SetImage(
-        ui::ImageModel::FromVectorIcon(GetVectorIconForType(diff_entry.type),
-                                       icon_color, AddressDetailsIconSize()));
+    icon_view->SetImage(ui::ImageModel::FromVectorIcon(
+        GetVectorIconForType(diff_entry.type), icon_color, kIconSize));
 
     value_row->AddChildView(std::move(icon_view));
     auto label_view =
