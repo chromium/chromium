@@ -86,16 +86,10 @@
       '--version',
       '12.4'
     ],
-    'identifier': 'iPad Air 2 12.4'
-  },
-  'SIM_IPAD_AIR_2_13_6': {
-    'args': [
-      '--platform',
-      'iPad Air 2',
-      '--version',
-      '13.6'
+    'identifier': 'iPad Air 2 12.4',
+    'mixins': [
+      'ios_runtime_cache_12_4',
     ],
-    'identifier': 'iPad Air 2 13.6'
   },
   'SIM_IPAD_AIR_2_13_5': {
     'args': [
@@ -104,7 +98,10 @@
       '--version',
       '13.5'
     ],
-    'identifier': 'iPad Air 2 13.5'
+    'identifier': 'iPad Air 2 13.5',
+    'mixins': [
+      'ios_runtime_cache_13_5',
+    ],
   },
   'SIM_IPAD_AIR_2_13_6': {
     'args': [
@@ -113,7 +110,10 @@
       '--version',
       '13.6'
     ],
-    'identifier': 'iPad Air 2 13.6'
+    'identifier': 'iPad Air 2 13.6',
+    'mixins': [
+      'ios_runtime_cache_13_6',
+    ],
   },
   'SIM_IPAD_AIR_2_14_4': {
     'args': [
@@ -122,16 +122,10 @@
       '--version',
       '14.4'
     ],
-    'identifier': 'iPad Air 2 14.4'
-  },
-  'SIM_IPAD_AIR_2_14_4': {
-    'args': [
-      '--platform',
-      'iPad Air 2',
-      '--version',
-      '14.4'
+    'identifier': 'iPad Air 2 14.4',
+    'mixins': [
+      'ios_runtime_cache_14_4',
     ],
-    'identifier': 'iPad Air 2 14.4'
   },
   'SIM_IPAD_AIR_3RD_GEN_14_4': {
     'args': [
@@ -140,7 +134,10 @@
       '--version',
       '14.4'
     ],
-    'identifier': 'iPad Air (3rd generation) 14.4'
+    'identifier': 'iPad Air (3rd generation) 14.4',
+    'mixins': [
+      'ios_runtime_cache_14_4',
+    ],
   },
   # In Xcode 12, "iPad Pro (12.9-inch)" requires a generation suffix in
   # "platform" arg.
@@ -151,7 +148,10 @@
       '--version',
       '14.4',
     ],
-    'identifier': 'iPad Pro (12.9-inch) (2nd generation) 14.4'
+    'identifier': 'iPad Pro (12.9-inch) (2nd generation) 14.4',
+    'mixins': [
+      'ios_runtime_cache_14_4',
+    ],
   },
   'SIM_IPAD_6_GEN_14_4': {
     'args': [
@@ -160,7 +160,10 @@
       '--version',
       '14.4',
     ],
-    'identifier': 'iPad (6th generation) 14.4'
+    'identifier': 'iPad (6th generation) 14.4',
+    'mixins': [
+      'ios_runtime_cache_14_4',
+    ],
   },
   'SIM_IPHONE_6S_12_4': {
     'args': [
@@ -169,7 +172,10 @@
       '--version',
       '12.4',
     ],
-    'identifier': 'iPhone 6s 12.4'
+    'identifier': 'iPhone 6s 12.4',
+    'mixins': [
+      'ios_runtime_cache_12_4',
+    ],
   },
   'SIM_IPHONE_6S_13_6': {
     'args': [
@@ -178,7 +184,10 @@
       '--version',
       '13.6',
     ],
-    'identifier': 'iPhone 6s 13.6'
+    'identifier': 'iPhone 6s 13.6',
+    'mixins': [
+      'ios_runtime_cache_13_6',
+    ],
   },
   'SIM_IPHONE_6S_14_4': {
     'args': [
@@ -187,16 +196,10 @@
       '--version',
       '14.4',
     ],
-    'identifier': 'iPhone 6s 14.4'
-  },
-  'SIM_IPHONE_6S_14_4': {
-    'args': [
-      '--platform',
-      'iPhone 6s',
-      '--version',
-      '14.4',
+    'identifier': 'iPhone 6s 14.4',
+    'mixins': [
+      'ios_runtime_cache_14_4',
     ],
-    'identifier': 'iPhone 6s 14.4'
   },
   'SIM_IPHONE_6S_PLUS_13_6': {
     'args': [
@@ -205,16 +208,10 @@
       '--version',
       '13.6',
     ],
-    'identifier': 'iPhone 6s Plus 13.6'
-  },
-  'SIM_IPHONE_6S_PLUS_13_6': {
-    'args': [
-      '--platform',
-      'iPhone 6s Plus',
-      '--version',
-      '13.6',
+    'identifier': 'iPhone 6s Plus 13.6',
+    'mixins': [
+      'ios_runtime_cache_13_6',
     ],
-    'identifier': 'iPhone 6s Plus 13.6'
   },
   'SIM_IPHONE_6S_PLUS_14_4': {
     'args': [
@@ -223,16 +220,10 @@
       '--version',
       '14.4',
     ],
-    'identifier': 'iPhone 6s Plus 14.4'
-  },
-  'SIM_IPHONE_6S_PLUS_14_4': {
-    'args': [
-      '--platform',
-      'iPhone 6s Plus',
-      '--version',
-      '14.4',
+    'identifier': 'iPhone 6s Plus 14.4',
+    'mixins': [
+      'ios_runtime_cache_14_4',
     ],
-    'identifier': 'iPhone 6s Plus 14.4'
   },
   'SIM_IPHONE_7_13_6': {
     'args': [
@@ -241,16 +232,10 @@
       '--version',
       '13.6',
     ],
-    'identifier': 'iPhone 7 13.6'
-  },
-  'SIM_IPHONE_7_13_6': {
-    'args': [
-      '--platform',
-      'iPhone 7',
-      '--version',
-      '13.6',
+    'identifier': 'iPhone 7 13.6',
+    'mixins': [
+      'ios_runtime_cache_13_6',
     ],
-    'identifier': 'iPhone 7 13.6'
   },
   'SIM_IPHONE_7_14_4': {
     'args': [
@@ -259,16 +244,10 @@
       '--version',
       '14.4',
     ],
-    'identifier': 'iPhone 7 14.4'
-  },
-  'SIM_IPHONE_7_14_4': {
-    'args': [
-      '--platform',
-      'iPhone 7',
-      '--version',
-      '14.4',
+    'identifier': 'iPhone 7 14.4',
+    'mixins': [
+      'ios_runtime_cache_14_4',
     ],
-    'identifier': 'iPhone 7 14.4'
   },
   'SIM_IPHONE_SE_1ST_GEN_13_6': {
     'args': [
@@ -277,7 +256,10 @@
       '--version',
       '13.6',
     ],
-    'identifier': 'iPhone SE (1st generation) 13.6'
+    'identifier': 'iPhone SE (1st generation) 13.6',
+    'mixins': [
+      'ios_runtime_cache_13_6',
+    ],
   },
   'SIM_IPHONE_SE_1ST_GEN_14_4': {
     'args': [
@@ -286,7 +268,10 @@
       '--version',
       '14.4',
     ],
-    'identifier': 'iPhone SE (1st generation) 14.4'
+    'identifier': 'iPhone SE (1st generation) 14.4',
+    'mixins': [
+      'ios_runtime_cache_14_4',
+    ],
   },
   'SIM_IPHONE_X_12_4': {
     'args': [
@@ -295,7 +280,10 @@
       '--version',
       '12.4',
     ],
-    'identifier': 'iPhone X 12.4'
+    'identifier': 'iPhone X 12.4',
+    'mixins': [
+      'ios_runtime_cache_12_4',
+    ],
   },
   'SIM_IPHONE_X_13_5': {
     'args': [
@@ -304,7 +292,10 @@
       '--version',
       '13.5',
     ],
-    'identifier': 'iPhone X 13.5'
+    'identifier': 'iPhone X 13.5',
+    'mixins': [
+      'ios_runtime_cache_13_5',
+    ],
   },
   'SIM_IPHONE_X_13_6': {
     'args': [
@@ -313,7 +304,10 @@
       '--version',
       '13.6',
     ],
-    'identifier': 'iPhone X 13.6'
+    'identifier': 'iPhone X 13.6',
+    'mixins': [
+      'ios_runtime_cache_13_6',
+    ],
   },
   'SIM_IPHONE_X_14_0': {
     'args': [
@@ -322,7 +316,10 @@
       '--version',
       '14.0',
     ],
-    'identifier': 'iPhone X 14.0'
+    'identifier': 'iPhone X 14.0',
+    'mixins': [
+      'ios_runtime_cache_14_0',
+    ],
   },
   'SIM_IPHONE_X_14_4': {
     'args': [
@@ -331,7 +328,10 @@
       '--version',
       '14.4',
     ],
-    'identifier': 'iPhone X 14.4'
+    'identifier': 'iPhone X 14.4',
+    'mixins': [
+      'ios_runtime_cache_14_4',
+    ],
   },
   'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE': {
     'args': [
