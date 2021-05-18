@@ -203,7 +203,6 @@ void ConversionHost::VerifyAndStoreImpression(
       !network::IsOriginPotentiallyTrustworthy(reporting_origin) ||
       !network::IsOriginPotentiallyTrustworthy(
           impression.conversion_destination)) {
-    // TODO (1049654): This should log a console error when it occurs.
     return;
   }
 
