@@ -25,6 +25,11 @@ struct StructTraits<viz::mojom::ReturnedResourceDataView,
     return resource.sync_token;
   }
 
+  static gfx::GpuFenceHandle release_fence(
+      const viz::ReturnedResource& resource) {
+    return resource.release_fence.Clone();
+  }
+
   static int32_t count(const viz::ReturnedResource& resource) {
     return resource.count;
   }
@@ -35,7 +40,8 @@ struct StructTraits<viz::mojom::ReturnedResourceDataView,
 
   static bool Read(viz::mojom::ReturnedResourceDataView data,
                    viz::ReturnedResource* out) {
-    if (!data.ReadSyncToken(&out->sync_token) || !data.ReadId(&out->id)) {
+    if (!data.ReadSyncToken(&out->sync_token) ||
+        !data.ReadReleaseFence(&out->release_fence) || !data.ReadId(&out->id)) {
       return false;
     }
     out->count = data.count();

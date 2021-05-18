@@ -6,11 +6,13 @@ module viz.mojom;
 
 import "gpu/ipc/common/sync_token.mojom";
 import "services/viz/public/mojom/compositing/resource_id.mojom";
+import "ui/gfx/mojom/gpu_fence_handle.mojom";
 
 // See components/viz/common/resources/returned_resource.h.
 struct ReturnedResource {
   ResourceId id;
   gpu.mojom.SyncToken sync_token;
+  gfx.mojom.GpuFenceHandle? release_fence;
   int32 count;
   bool lost;
 };

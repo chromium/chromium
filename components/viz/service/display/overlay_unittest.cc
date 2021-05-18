@@ -3450,10 +3450,12 @@ class GLRendererWithOverlaysTest : public testing::Test {
   }
   void SwapBuffers() {
     renderer_->SwapBuffers({});
-    renderer_->SwapBuffersComplete();
+    renderer_->SwapBuffersComplete(/*release_fence=*/gfx::GpuFenceHandle());
   }
   void SwapBuffersWithoutComplete() { renderer_->SwapBuffers({}); }
-  void SwapBuffersComplete() { renderer_->SwapBuffersComplete(); }
+  void SwapBuffersComplete() {
+    renderer_->SwapBuffersComplete(/*release_fence=*/gfx::GpuFenceHandle());
+  }
   void ReturnResourceInUseQuery(ResourceId id) {
     DisplayResourceProviderGL::ScopedReadLockGL lock(resource_provider_.get(),
                                                      id);

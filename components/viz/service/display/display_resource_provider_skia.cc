@@ -85,6 +85,7 @@ DisplayResourceProviderSkia::DeleteAndReturnUnusedResourcesToChildImpl(
     const bool is_lost = can_delete == CanDeleteNowResult::kYesButLoseResource;
 
     to_return.emplace_back(child_id, resource.sync_token(),
+                           std::move(resource.release_fence),
                            resource.imported_count, is_lost);
     auto& returned = to_return.back();
 

@@ -19,6 +19,7 @@
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/test/in_process_context_provider.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace exo {
@@ -69,6 +70,7 @@ TEST_F(BufferTest, ReleaseCallback) {
   // Release buffer.
   std::vector<viz::ReturnedResource> resources;
   resources.emplace_back(resource.id, resource.mailbox_holder.sync_token,
+                         /*release_fence=*/gfx::GpuFenceHandle(),
                          /*count=*/0, /*lost=*/false);
   frame_sink_holder->ReclaimResources(std::move(resources));
 
@@ -109,6 +111,7 @@ TEST_F(BufferTest, IsLost) {
   // Release buffer.
   std::vector<viz::ReturnedResource> resources;
   resources.emplace_back(resource.id, gpu::SyncToken(),
+                         /*release_fence=*/gfx::GpuFenceHandle(),
                          /*count=*/0, /*lost=*/true);
   frame_sink_holder->ReclaimResources(std::move(resources));
   base::RunLoop().RunUntilIdle();
@@ -123,6 +126,7 @@ TEST_F(BufferTest, IsLost) {
 
   std::vector<viz::ReturnedResource> resources2;
   resources2.emplace_back(new_resource.id, gpu::SyncToken(),
+                          /*release_fence=*/gfx::GpuFenceHandle(),
                           /*count=*/0, /*lost=*/false);
   frame_sink_holder->ReclaimResources(std::move(resources2));
   base::RunLoop().RunUntilIdle();
@@ -252,6 +256,7 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
     // when frame sink id changes.
     std::vector<viz::ReturnedResource> resources;
     resources.emplace_back(resource.id, resource.mailbox_holder.sync_token,
+                           /*release_fence=*/gfx::GpuFenceHandle(),
                            /*count=*/0, /*lost=*/false);
     frame_sink_holder->ReclaimResources(std::move(resources));
   }

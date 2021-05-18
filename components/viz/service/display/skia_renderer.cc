@@ -810,7 +810,14 @@ void SkiaRenderer::SwapBuffersSkipped() {
   FlushOutputSurface();
 }
 
-void SkiaRenderer::SwapBuffersComplete() {
+void SkiaRenderer::SwapBuffersComplete(gfx::GpuFenceHandle release_fence) {
+  if (!release_fence.is_null()) {
+    // Set release fences for returning for last frame overlay resources.
+    for (auto& lock : committed_overlay_locks_) {
+      lock.SetReleaseFence(release_fence.Clone());
+    }
+  }
+
   // Right now, only macOS needs to return mailboxes of released overlays, so
   // we should not release |committed_overlay_locks_| here. The resources in it
   // will be released by DidReceiveReleasedOverlays() later.

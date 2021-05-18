@@ -35,6 +35,7 @@ DisplayResourceProviderNull::DeleteAndReturnUnusedResourcesToChildImpl(
     DCHECK_EQ(can_delete, CanDeleteNowResult::kYes);
 
     to_return.emplace_back(child_id, resource.sync_token(),
+                           std::move(resource.release_fence),
                            resource.imported_count, /*is_lost=*/false);
 
     child_info.child_to_parent_map.erase(child_id);

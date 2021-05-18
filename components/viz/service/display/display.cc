@@ -969,7 +969,7 @@ void Display::DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings,
   if (overlay_processor_)
     overlay_processor_->OverlayPresentationComplete();
   if (renderer_)
-    renderer_->SwapBuffersComplete();
+    renderer_->SwapBuffersComplete(std::move(release_fence));
 
   // It's possible to receive multiple calls to DidReceiveSwapBuffersAck()
   // before DidReceivePresentationFeedback(). Ensure that we're not setting
