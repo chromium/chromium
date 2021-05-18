@@ -1225,6 +1225,13 @@ TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {
     EXPECT_EQ("", result_.interest_group_name);
     EXPECT_TRUE(result_.seller_report_url.is_empty());
     EXPECT_TRUE(result_.bidder_report_url.is_empty());
+    EXPECT_THAT(
+        result_.errors,
+        testing::UnorderedElementsAre(
+            base::StringPrintf("%s crashed while trying to run generateBid().",
+                               kBidder1Url.spec().c_str()),
+            base::StringPrintf("%s crashed while trying to run generateBid().",
+                               kBidder2Url.spec().c_str())));
 
     // Reset the service, so callbacks can be destroyed without DCHECKing.
     mock_worklet_service_.reset();
@@ -1286,7 +1293,7 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
       bidder2_worklet->WaitForReportWin();
       bidder2_worklet->InvokeReportWinCallback();
 
-      // Bidder2 won.
+      // Bidder2 won, Bidder1 crashed.
       auction_run_loop_->Run();
       EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
       EXPECT_EQ(R"({"render_url":"https://ad2.com/"})", result_.ad_metadata);
@@ -1294,6 +1301,10 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
       EXPECT_EQ(kBidder2Name, result_.interest_group_name);
       EXPECT_TRUE(result_.seller_report_url.is_empty());
       EXPECT_TRUE(result_.bidder_report_url.is_empty());
+      EXPECT_THAT(result_.errors,
+                  testing::ElementsAre(base::StringPrintf(
+                      "%s crashed while trying to run generateBid().",
+                      kBidder1Url.spec().c_str())));
 
       // Reset the service, so `bidder1_callback` can be destroyed without
       // DCHECKing.
@@ -1346,6 +1357,8 @@ TEST_F(AuctionRunnerTest, LosingBidderCrashWhileScoring) {
   EXPECT_EQ(kBidder2Name, result_.interest_group_name);
   EXPECT_TRUE(result_.seller_report_url.is_empty());
   EXPECT_TRUE(result_.bidder_report_url.is_empty());
+  // Since Bidder1 crashed after bidding, don't report anything.
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
 }
 
 // If the winning bidder crashes while scoring, the auction should fail.
@@ -1385,13 +1398,16 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileScoring) {
   // method.
   auction_run_loop_->Run();
 
-  // No bidder won.
+  // No bidder won, Bidder1 crashed.
   EXPECT_TRUE(result_.ad_url.is_empty());
   EXPECT_TRUE(result_.ad_metadata.empty());
   EXPECT_TRUE(result_.interest_group_owner.opaque());
   EXPECT_EQ("", result_.interest_group_name);
   EXPECT_TRUE(result_.seller_report_url.is_empty());
   EXPECT_TRUE(result_.bidder_report_url.is_empty());
+  EXPECT_THAT(result_.errors,
+              testing::ElementsAre(base::StringPrintf(
+                  "%s crashed while idle.", kBidder1Url.spec().c_str())));
 }
 
 // If the winning bidder crashes while coming up with the reporting URL, the
@@ -1430,13 +1446,16 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   bidder1_worklet.reset();
   auction_run_loop_->Run();
 
-  // No bidder won.
+  // No bidder won, Bidder1 crashed.
   EXPECT_TRUE(result_.ad_url.is_empty());
   EXPECT_TRUE(result_.ad_metadata.empty());
   EXPECT_TRUE(result_.interest_group_owner.opaque());
   EXPECT_EQ("", result_.interest_group_name);
   EXPECT_TRUE(result_.seller_report_url.is_empty());
   EXPECT_TRUE(result_.bidder_report_url.is_empty());
+  EXPECT_THAT(result_.errors, testing::ElementsAre(base::StringPrintf(
+                                  "%s crashed while trying to run reportWin().",
+                                  kBidder1Url.spec().c_str())));
 }
 
 // If the seller crashes at any point in the auction, the auction fails.
@@ -1517,13 +1536,15 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
     // Wait for auction to complete.
     auction_run_loop_->Run();
 
-    // No bidder won.
+    // No bidder won, seller crashed.
     EXPECT_TRUE(result_.ad_url.is_empty());
     EXPECT_TRUE(result_.ad_metadata.empty());
     EXPECT_TRUE(result_.interest_group_owner.opaque());
     EXPECT_EQ("", result_.interest_group_name);
     EXPECT_TRUE(result_.seller_report_url.is_empty());
     EXPECT_TRUE(result_.bidder_report_url.is_empty());
+    EXPECT_THAT(result_.errors, testing::ElementsAre(base::StringPrintf(
+                                    "%s crashed.", kSellerUrl.spec().c_str())));
   }
 }
 

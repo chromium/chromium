@@ -180,6 +180,8 @@ class CONTENT_EXPORT AuctionRunner {
   // calls into `this` by closing mojo pipes and disposing of weak pointers. The
   // owner must be able to safely delete `this` when the callback is invoked.
   void FailAuction();
+  // Appends `error` to `errors_` before calling FailAuciton().
+  void FailAuctionWithError(std::string error);
   void ReportSuccess(const BidState* state);
 
   // Closes all open pipes, to avoid receiving any Mojo callbacks after

@@ -143,7 +143,8 @@ void AuctionRunner::StartBidding() {
                      weak_ptr_factory_.GetWeakPtr()));
   // Fail auction if the seller worklet pipe is disconnected.
   seller_worklet_.set_disconnect_handler(base::BindOnce(
-      &AuctionRunner::FailAuction, weak_ptr_factory_.GetWeakPtr()));
+      &AuctionRunner::FailAuctionWithError, weak_ptr_factory_.GetWeakPtr(),
+      base::StrCat({auction_config_->decision_logic_url.spec(), " crashed."})));
 }
 
 void AuctionRunner::OnGenerateBidCrashed(BidState* state) {
@@ -329,7 +330,9 @@ void AuctionRunner::ReportBidWin(BidState* best_bid) {
   // TODO(mmenke): Make this FailAuction call (And likely others as well) add
   // a failure to `messages_`.
   if (!best_bid->bidder_worklet.is_connected()) {
-    FailAuction();
+    FailAuctionWithError(
+        base::StrCat({best_bid->bidder->group->bidding_url->spec(),
+                      " crashed while idle."}));
     return;
   }
 
@@ -339,7 +342,9 @@ void AuctionRunner::ReportBidWin(BidState* best_bid) {
       base::BindOnce(&AuctionRunner::OnReportBidWinComplete,
                      weak_ptr_factory_.GetWeakPtr(), best_bid));
   best_bid->bidder_worklet.set_disconnect_handler(base::BindOnce(
-      &AuctionRunner::FailAuction, weak_ptr_factory_.GetWeakPtr()));
+      &AuctionRunner::FailAuctionWithError, weak_ptr_factory_.GetWeakPtr(),
+      base::StrCat({best_bid->bidder->group->bidding_url->spec(),
+                    " crashed while trying to run reportWin()."})));
 }
 
 void AuctionRunner::OnReportBidWinComplete(
@@ -363,6 +368,11 @@ void AuctionRunner::FailAuction() {
 
   std::move(callback_).Run(GURL(), std::string(), url::Origin(), std::string(),
                            GURL(), GURL(), errors_);
+}
+
+void AuctionRunner::FailAuctionWithError(std::string error) {
+  errors_.emplace_back(std::move(error));
+  FailAuction();
 }
 
 void AuctionRunner::ReportSuccess(const BidState* state) {
