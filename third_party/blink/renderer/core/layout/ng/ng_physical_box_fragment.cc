@@ -1230,6 +1230,8 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
   NGInlineCursor cursor(*container);
   cursor.MoveTo(*layout_object);
   DCHECK(cursor);
+  const PhysicalOffset this_offset_in_container =
+      cursor.Current()->OffsetInContainerFragment();
 #if DCHECK_IS_ON()
   bool has_this_fragment = false;
 #endif
@@ -1255,9 +1257,10 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
   if (rects->size() <= initial_rects_size)
     return;
 
+  // At this point, |rects| are in the container coordinate space.
   // Adjust the rectangles using |additional_offset| and |container_relative|.
   if (!container_relative)
-    additional_offset -= (*rects)[initial_rects_size].offset;
+    additional_offset -= this_offset_in_container;
   if (additional_offset.IsZero())
     return;
   for (PhysicalRect& rect :
