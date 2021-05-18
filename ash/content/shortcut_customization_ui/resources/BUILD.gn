@@ -12,10 +12,12 @@ preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 
 polymer_element_files = [
-  "shortcut_customization_app.js",
-  "shortcut_input.js",
+  "accessibility_shortcuts_page.js",
+  "android_shortcuts_page.js",
   "browser_shortcuts_page.js",
   "chromeos_shortcuts_page.js",
+  "shortcut_customization_app.js",
+  "shortcut_input.js",
 ]
 
 generate_grd("build_grd") {
@@ -58,6 +60,20 @@ js_library("browser_shortcuts_page") {
 }
 
 js_library("chromeos_shortcuts_page") {
+  deps = [
+    ":shortcut_input",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("android_shortcuts_page") {
+  deps = [
+    ":shortcut_input",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("accessibility_shortcuts_page") {
   deps = [
     ":shortcut_input",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
