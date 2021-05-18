@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2011 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -15,8 +15,8 @@ For more info, see:
 
 from __future__ import print_function
 
-import StringIO
 import ast
+import io
 import os
 import re
 import select
@@ -225,8 +225,8 @@ def StartTest(compiler, sourcefile_path, tempfile_dir, cflags, config):
     cmdline.append('-D%s' % name)
   cmdline.extend(['-o', '/dev/null', '-c', '-x', 'c++',
                   sourcefile_path])
-  test_stdout = tempfile.TemporaryFile(dir=tempfile_dir)
-  test_stderr = tempfile.TemporaryFile(dir=tempfile_dir)
+  test_stdout = tempfile.TemporaryFile(dir=tempfile_dir, mode='w+')
+  test_stderr = tempfile.TemporaryFile(dir=tempfile_dir, mode='w+')
 
   process = subprocess.Popen(cmdline, stdout=test_stdout, stderr=test_stderr)
   now = time.time()
@@ -448,8 +448,8 @@ def main():
   test_configs = ExtractTestConfigs(sourcefile_path, suite_name)
   timings['extract_done'] = time.time()
 
-  resultfile = StringIO.StringIO()
-  resultlog = StringIO.StringIO()
+  resultfile = io.StringIO()
+  resultlog = io.StringIO()
   resultfile.write(RESULT_FILE_HEADER % sourcefile_path)
 
   # Run the no-compile tests, but ensure we do not run more than |parallelism|
