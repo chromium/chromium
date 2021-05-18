@@ -296,6 +296,17 @@ Polymer({
 
     /** @private {string} */
     lastUsedScannerId_: String,
+
+    /**
+     * Used to track the number of completed scans during a single session of
+     * the Scan app being open. This value is recorded whenever the app window
+     * is closed or refreshed.
+     * @private {number}
+     */
+    numCompletedScansInSession_: {
+      type: Number,
+      value: 0,
+    },
   },
 
   observers:
@@ -328,6 +339,9 @@ Polymer({
   /** @override */
   ready() {
     window.addEventListener('beforeunload', event => {
+      this.browserProxy_.recordNumCompletedScans(
+          this.numCompletedScansInSession_);
+
       // When the user tries to close the app while a scan is in progress,
       // show the 'Leave site' dialog.
       if (this.appState_ === AppState.SCANNING) {
@@ -387,6 +401,7 @@ Polymer({
       return;
     }
 
+    ++this.numCompletedScansInSession_;
     this.scannedFilePaths_ = scannedFilePaths;
     this.setAppState_(AppState.DONE);
   },

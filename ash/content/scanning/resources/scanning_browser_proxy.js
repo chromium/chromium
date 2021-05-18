@@ -106,6 +106,13 @@ export class ScanningBrowserProxy {
    * @return {!Promise<!SelectedPath>}
    */
   ensureValidFilePath(filePath) {}
+
+  /**
+   * Records the number of completed scans during a session of the Scan app
+   * being open.
+   * @param {number} numCompletedScans
+   */
+  recordNumCompletedScans(numCompletedScans) {}
 }
 
 /** @implements {ScanningBrowserProxy} */
@@ -168,6 +175,11 @@ export class ScanningBrowserProxyImpl {
   /** @override */
   ensureValidFilePath(filePath) {
     return sendWithPromise('ensureValidFilePath', filePath);
+  }
+
+  /** @override */
+  recordNumCompletedScans(numCompletedScans) {
+    chrome.send('recordNumCompletedScans', [numCompletedScans]);
   }
 }
 

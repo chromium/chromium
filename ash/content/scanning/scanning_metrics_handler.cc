@@ -46,6 +46,11 @@ void ScanningMetricsHandler::RegisterMessages() {
       "recordScanJobSettings",
       base::BindRepeating(&ScanningMetricsHandler::HandleRecordScanJobSettings,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "recordNumCompletedScans",
+      base::BindRepeating(
+          &ScanningMetricsHandler::HandleRecordNumCompletedScans,
+          base::Unretained(this)));
 }
 
 void ScanningMetricsHandler::HandleRecordNumScanSettingChanges(
@@ -98,6 +103,15 @@ void ScanningMetricsHandler::HandleRecordScanJobSettings(
     base::UmaHistogramEnumeration("Scanning.ScanJobSettings.Resolution",
                                   resolution);
   }
+}
+
+void ScanningMetricsHandler::HandleRecordNumCompletedScans(
+    const base::ListValue* args) {
+  AllowJavascript();
+
+  CHECK_EQ(1U, args->GetSize());
+  base::UmaHistogramCounts100("Scanning.NumCompletedScanScansInSession",
+                              args->GetList()[0].GetInt());
 }
 
 }  // namespace ash

@@ -21,6 +21,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Scanning.NumCompletedScanScansInSession" units="scans"
+    expires_after="2021-11-17">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of completed scans in a single session of the Scan app
+    being open. This value gets recorded whenever the Scan app is closed or
+    refreshed.
+  </summary>
+</histogram>
+
 <histogram name="Scanning.NumDetectedScanners" units="scanners"
     expires_after="2021-12-04">
   <owner>gavinwill@chromium.org</owner>

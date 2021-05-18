@@ -34,6 +34,9 @@ class ScanningMetricsHandler : public content::WebUIMessageHandler {
 
   // Records the settings for a scan job.
   void HandleRecordScanJobSettings(const base::ListValue* args);
+
+  // Records the number of completed scans in a Scan app session.
+  void HandleRecordNumCompletedScans(const base::ListValue* args);
 };
 
 }  // namespace ash

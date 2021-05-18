@@ -31,6 +31,7 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
       'saveScanSettings',
       'getScanSettings',
       'ensureValidFilePath',
+      'recordNumCompletedScans',
     ]);
 
     /** @private {!SelectedPath} */
@@ -126,6 +127,9 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
             this.savedSettingsSelectedPath_ :
             EMPTY_SELECTED_PATH);
   }
+
+  /** @override */
+  recordNumCompletedScans() {}
 
   /** @param {!SelectedPath} selectedPath */
   setSelectedPath(selectedPath) {
