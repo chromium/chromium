@@ -77,7 +77,7 @@ class MockPlatformKeysService : public PlatformKeysService {
 
   MOCK_METHOD(void,
               SelectClientCertificates,
-              (const std::vector<std::string>& certificate_authorities,
+              (std::vector<std::string> certificate_authorities,
                SelectCertificatesCallback callback),
               (override));
 

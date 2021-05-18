@@ -183,7 +183,7 @@ class PlatformKeysService : public KeyedService {
   // certificates will be returned. |callback| will be invoked with the matches
   // or an error status.
   virtual void SelectClientCertificates(
-      const std::vector<std::string>& certificate_authorities,
+      std::vector<std::string> certificate_authorities,
       const SelectCertificatesCallback callback) = 0;
 
   // Returns the list of all certificates with stored private key available from
@@ -347,7 +347,7 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
                        HashAlgorithm hash_algorithm,
                        SignCallback callback) override;
   void SelectClientCertificates(
-      const std::vector<std::string>& certificate_authorities,
+      std::vector<std::string> certificate_authorities,
       SelectCertificatesCallback callback) override;
   void GetCertificates(TokenId token_id,
                        GetCertificatesCallback callback) override;

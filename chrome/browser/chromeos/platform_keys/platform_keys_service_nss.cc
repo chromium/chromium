@@ -1605,7 +1605,7 @@ void PlatformKeysServiceImpl::SignECDSADigest(
 }
 
 void PlatformKeysServiceImpl::SelectClientCertificates(
-    const std::vector<std::string>& certificate_authorities,
+    std::vector<std::string> certificate_authorities,
     SelectCertificatesCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -1615,7 +1615,7 @@ void PlatformKeysServiceImpl::SelectClientCertificates(
   // layer, as it does not support filtering certificates by type. Rather, we
   // do not constrain the certificate type here, instead the caller has to apply
   // filtering afterwards.
-  cert_request_info->cert_authorities = certificate_authorities;
+  cert_request_info->cert_authorities = std::move(certificate_authorities);
 
   auto state = std::make_unique<SelectCertificatesState>(
       weak_factory_.GetWeakPtr(), cert_request_info, std::move(callback));
