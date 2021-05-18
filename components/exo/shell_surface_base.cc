@@ -292,14 +292,13 @@ class CustomWindowStateDelegate : public ash::WindowStateDelegate {
   DISALLOW_COPY_AND_ASSIGN(CustomWindowStateDelegate);
 };
 
-void CloseAllTransientChildren(aura::Window* window) {
-  // Deleting a window may delete other transient children, so
-  // delete them by popping from the list.
-  for (;;) {
-    auto list = wm::GetTransientChildren(window);
-    if (list.empty())
-      return;
-    wm::RemoveTransientChild(window, *list.begin());
+void CloseAllShellSurfaceTransientChildren(aura::Window* window) {
+  // Deleting a window may delete other transient children. Remove other shell
+  // surface bases first so they don't get deleted.
+  auto list = wm::GetTransientChildren(window);
+  for (size_t i = 0; i < list.size(); ++i) {
+    if (GetShellSurfaceBaseForWindow(list[i]))
+      wm::RemoveTransientChild(window, list[i]);
   }
 }
 
@@ -355,8 +354,9 @@ ShellSurfaceBase::~ShellSurfaceBase() {
   if (widget_) {
     widget_->GetNativeWindow()->RemoveObserver(this);
     widget_->RemoveObserver(this);
-    // Remove transient children so they are not automatically destroyed.
-    CloseAllTransientChildren(widget_->GetNativeWindow());
+    // Remove transient children which are shell surfaces so they are not
+    // automatically destroyed.
+    CloseAllShellSurfaceTransientChildren(widget_->GetNativeWindow());
     if (widget_->IsVisible())
       widget_->Hide();
     widget_->CloseNow();
@@ -806,8 +806,9 @@ void ShellSurfaceBase::OnSurfaceDestroying(Surface* surface) {
   // Hide widget before surface is destroyed. This allows hide animations to
   // run using the current surface contents.
   if (widget_) {
-    // Remove transient children so they are not automatically hidden.
-    CloseAllTransientChildren(widget_->GetNativeWindow());
+    // Remove transient children which are shell surfaces so they are not
+    // automatically hidden.
+    CloseAllShellSurfaceTransientChildren(widget_->GetNativeWindow());
     widget_->Hide();
   }
 

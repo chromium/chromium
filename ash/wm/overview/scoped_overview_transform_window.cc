@@ -595,13 +595,9 @@ void ScopedOverviewTransformWindow::SetImmediateCloseForTests(bool immediate) {
 }
 
 void ScopedOverviewTransformWindow::CloseWidget() {
-  // Close all the windows in the transient tree. Note that is only really
-  // necessary for exo windows, as non-exo windows we would only need to close
-  // the tranisent root. We will close all widgets in the tree for both exo and
-  // non-exo anyways to simplify things and Widget::CloseWithReason handles this
-  // nicely.
-  for (auto* transient : GetTransientTreeIterator(window_))
-    window_util::CloseWidgetForWindow(transient);
+  aura::Window* parent_window = wm::GetTransientRoot(window_);
+  if (parent_window)
+    window_util::CloseWidgetForWindow(parent_window);
 }
 
 void ScopedOverviewTransformWindow::AddHiddenTransientWindows(
