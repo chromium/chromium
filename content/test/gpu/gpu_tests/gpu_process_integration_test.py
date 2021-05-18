@@ -464,7 +464,6 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           'OES_vertex_array_object',
           'WEBGL_compressed_texture_etc1',
           'WEBGL_debug_renderer_info',
-          'WEBGL_debug_shaders',
           'WEBGL_depth_texture',
           'WEBKIT_WEBGL_depth_texture',
           'WEBGL_draw_buffers',
