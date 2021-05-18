@@ -2532,6 +2532,12 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
   csp->AddPolicies(
       mojo::Clone(policy_container_->GetPolicies().content_security_policies));
 
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_policies =
+      ParseContentSecurityPolicyHeaders(
+          ContentSecurityPolicyResponseHeaders(response_));
+  policy_container_->AddContentSecurityPolicies(mojo::Clone(parsed_policies));
+  csp->AddPolicies(std::move(parsed_policies));
+
   // Retrieve CSP stored in the OriginPolicy and add them to the policy
   // container.
   if (origin_policy_) {
