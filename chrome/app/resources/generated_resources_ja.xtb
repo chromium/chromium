@@ -921,7 +921,7 @@
 <translation id="1976928778492259496">指紋認証センサーは <ph name="DEVICE_TYPE" /> の左側にあります。いずれかの指で軽く触れてください。</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> のロックを解除するにはスマートフォンを近づけます。</translation>
 <translation id="1978057560491495741">住所を削除</translation>
-<translation id="1979095679518582070">この機能をオフにしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。</translation>
+<translation id="1979095679518582070">この機能を OFF にしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。</translation>
 <translation id="1979280758666859181">古いバージョンの <ph name="PRODUCT_NAME" /> のチャンネルに変更しようとしています。このチャンネル変更は、チャンネルのバージョンとお使いのデバイスにインストールされているバージョンとが一致したときに適用されます。</translation>
 <translation id="197989455406964291">KDC でサポートされていない暗号化タイプです</translation>
 <translation id="1983497378699148207">Linux の設定を完了するには、Chrome OS を更新してからもう一度お試しください。</translation>
@@ -7196,7 +7196,7 @@
 <translation id="9022847679183471841">このアカウントは既にこのパソコンで <ph name="AVATAR_NAME" /> によって使用されています。</translation>
 <translation id="9023009238991294202">このデバイスの他のユーザーもこのネットワークを使用できます。</translation>
 <translation id="9023015617655685412">このタブをブックマークに追加...</translation>
-<translation id="9023909777842748145">この機能をオフにしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。</translation>
+<translation id="9023909777842748145">この機能を OFF にしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。</translation>
 <translation id="9024127637873500333">新しいタブで開く(&amp;O)</translation>
 <translation id="9024158959543687197">共有フォルダのマウントエラー。ファイルの共有 URL を確認してもう一度お試しください。</translation>
 <translation id="9026731007018893674">ダウンロード</translation>
