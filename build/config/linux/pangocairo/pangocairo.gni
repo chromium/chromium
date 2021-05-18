@@ -6,8 +6,5 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 
 declare_args() {
-  use_pangocairo =
-      # TODO(crbug.com/1052397): Remove !chromeos_is_browser_only once
-      # lacros-chrome switches to target_os="chromeos"
-      is_linux && !is_chromecast && !chromeos_is_browser_only
+  use_pangocairo = is_linux && !is_chromecast
 }
