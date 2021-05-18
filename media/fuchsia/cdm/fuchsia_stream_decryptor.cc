@@ -131,42 +131,22 @@ void FuchsiaStreamDecryptorBase::AllocateInputBuffers(
     const fuchsia::media::StreamBufferConstraints& stream_constraints) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto buffer_constraints = VmoBuffer::GetRecommendedConstraints(
-      kMinBufferCount, min_buffer_size_, /*writable=*/true);
-
-  input_pool_creator_ =
-      allocator_.MakeBufferPoolCreator(/*num_shared_token=*/1);
-
-  input_pool_creator_->Create(
-      std::move(buffer_constraints),
-      base::BindOnce(&FuchsiaStreamDecryptorBase::OnInputBufferPoolCreated,
+  input_buffer_collection_ = allocator_.AllocateNewCollection();
+  input_buffer_collection_->CreateSharedToken(
+      base::BindOnce(&StreamProcessorHelper::CompleteInputBuffersAllocation,
+                     base::Unretained(&processor_)));
+  input_buffer_collection_->Initialize(
+      VmoBuffer::GetRecommendedConstraints(kMinBufferCount, min_buffer_size_,
+                                           /*writable=*/true),
+      "CrStreamDecryptorInput");
+  input_buffer_collection_->AcquireBuffers(
+      base::BindOnce(&FuchsiaStreamDecryptorBase::OnInputBuffersAcquired,
                      base::Unretained(this)));
 }
 
 void FuchsiaStreamDecryptorBase::OnOutputFormat(
     fuchsia::media::StreamOutputFormat format) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void FuchsiaStreamDecryptorBase::OnInputBufferPoolCreated(
-    std::unique_ptr<SysmemBufferPool> pool) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!pool) {
-    DLOG(ERROR) << "Fail to allocate input buffer.";
-    OnError();
-    return;
-  }
-
-  input_pool_ = std::move(pool);
-
-  // Provide token before enabling writer. Tokens must be provided to
-  // StreamProcessor before getting the allocated buffers.
-  processor_.CompleteInputBuffersAllocation(input_pool_->TakeToken());
-
-  input_pool_->AcquireBuffers(
-      base::BindOnce(&FuchsiaStreamDecryptorBase::OnInputBuffersAcquired,
-                     base::Unretained(this)));
 }
 
 void FuchsiaStreamDecryptorBase::OnInputBuffersAcquired(
@@ -248,12 +228,16 @@ void FuchsiaClearStreamDecryptor::CancelDecrypt() {
 void FuchsiaClearStreamDecryptor::AllocateOutputBuffers(
     const fuchsia::media::StreamBufferConstraints& stream_constraints) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  output_pool_creator_ =
-      allocator_.MakeBufferPoolCreator(1 /* num_shared_token */);
-  output_pool_creator_->Create(
+  output_buffer_collection_ = allocator_.AllocateNewCollection();
+  output_buffer_collection_->CreateSharedToken(
+      base::BindOnce(&StreamProcessorHelper::CompleteOutputBuffersAllocation,
+                     base::Unretained(&processor_)));
+  output_buffer_collection_->Initialize(
       VmoBuffer::GetRecommendedConstraints(kMinBufferCount, min_buffer_size_,
                                            /*writable=*/false),
-      base::BindOnce(&FuchsiaClearStreamDecryptor::OnOutputBufferPoolCreated,
+      "CrFuchsiaStreamDecryptor");
+  output_buffer_collection_->AcquireBuffers(
+      base::BindOnce(&FuchsiaClearStreamDecryptor::OnOutputBuffersAcquired,
                      base::Unretained(this)));
 }
 
@@ -268,12 +252,6 @@ void FuchsiaClearStreamDecryptor::OnOutputPacket(
     StreamProcessorHelper::IoPacket packet) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(decrypt_cb_);
-
-  DCHECK(output_buffers_.empty());
-  if (!output_pool_->is_live()) {
-    DLOG(ERROR) << "Output buffer pool is dead.";
-    return;
-  }
 
   size_t buffer_index = packet.buffer_index();
   if (buffer_index >= output_buffers_.size()) {
@@ -350,27 +328,6 @@ void FuchsiaClearStreamDecryptor::OnError() {
   ResetStream();
   if (decrypt_cb_)
     std::move(decrypt_cb_).Run(Decryptor::kError, nullptr);
-}
-
-void FuchsiaClearStreamDecryptor::OnOutputBufferPoolCreated(
-    std::unique_ptr<SysmemBufferPool> pool) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!pool) {
-    LOG(ERROR) << "Fail to allocate output buffer.";
-    OnError();
-    return;
-  }
-
-  output_pool_ = std::move(pool);
-
-  // Provide token before enabling reader. Tokens must be provided to
-  // StreamProcessor before getting the allocated buffers.
-  processor_.CompleteOutputBuffersAllocation(output_pool_->TakeToken());
-
-  output_pool_->AcquireBuffers(
-      base::BindOnce(&FuchsiaClearStreamDecryptor::OnOutputBuffersAcquired,
-                     base::Unretained(this)));
 }
 
 void FuchsiaClearStreamDecryptor::OnOutputBuffersAcquired(

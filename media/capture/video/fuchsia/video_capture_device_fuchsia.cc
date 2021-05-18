@@ -179,7 +179,6 @@ void VideoCaptureDeviceFuchsia::OnStreamError(zx_status_t status) {
 
 void VideoCaptureDeviceFuchsia::DisconnectStream() {
   stream_.Unbind();
-  buffer_collection_creator_.reset();
   buffer_collection_.reset();
   buffers_.clear();
   frame_size_.reset();
@@ -251,12 +250,14 @@ void VideoCaptureDeviceFuchsia::InitializeBufferCollection(
   // Initialize the new collection.
   fuchsia::sysmem::BufferCollectionTokenPtr token;
   token.Bind(std::move(token_handle));
-  buffer_collection_creator_ =
-      sysmem_allocator_.MakeBufferPoolCreatorFromToken(std::move(token));
 
   // Request just one buffer in collection constraints: each frame is copied as
   // soon as it's received.
   const size_t kMaxUsedOutputFrames = 1;
+
+  // This is not an actual device driver, so the priority should be > 1. It's
+  // also not a high-level system, so the name should be < 100.
+  constexpr uint32_t kNamePriority = 10;
 
   // Sysmem calculates buffer size based on image constraints, so it doesn't
   // need to be specified explicitly.
@@ -264,27 +265,9 @@ void VideoCaptureDeviceFuchsia::InitializeBufferCollection(
       VmoBuffer::GetRecommendedConstraints(kMaxUsedOutputFrames,
                                            /*min_buffer_size=*/absl::nullopt,
                                            /*writable=*/false);
-  // This is not an actual device driver, so the priority should be > 1. It's
-  // also not a high-level system, so the name should be < 100.
-  constexpr uint32_t kNamePriority = 10;
-  buffer_collection_creator_->SetName(kNamePriority,
-                                      "CrVideoCaptureDeviceFuchsia");
-  buffer_collection_creator_->Create(
-      std::move(constraints),
-      base::BindOnce(&VideoCaptureDeviceFuchsia::OnBufferCollectionCreated,
-                     base::Unretained(this)));
-}
-
-void VideoCaptureDeviceFuchsia::OnBufferCollectionCreated(
-    std::unique_ptr<SysmemBufferPool> collection) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // Buffer collection allocation has failed. This case is not treated as an
-  // error because the camera may create a new collection.
-  if (!collection)
-    return;
-
-  buffer_collection_ = std::move(collection);
+  buffer_collection_ = sysmem_allocator_.BindSharedCollection(std::move(token));
+  buffer_collection_->Initialize(std::move(constraints), "CrVideoCaptureDevice",
+                                 kNamePriority);
   buffer_collection_->AcquireBuffers(base::BindOnce(
       &VideoCaptureDeviceFuchsia::OnBuffersAcquired, base::Unretained(this)));
 }

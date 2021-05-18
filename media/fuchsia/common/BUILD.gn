@@ -8,8 +8,8 @@ source_set("common") {
   sources = [
     "stream_processor_helper.cc",
     "stream_processor_helper.h",
-    "sysmem_buffer_pool.cc",
-    "sysmem_buffer_pool.h",
+    "sysmem_client.cc",
+    "sysmem_client.h",
     "vmo_buffer.cc",
     "vmo_buffer.h",
     "vmo_buffer_writer_queue.cc",
