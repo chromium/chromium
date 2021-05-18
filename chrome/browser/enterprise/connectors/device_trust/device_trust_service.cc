@@ -11,15 +11,13 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation_ca.pb.h"
-#include "chrome/browser/enterprise/connectors/device_trust/interface.pb.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_attestation_ca.pb.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_interface.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signal_reporter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 
 namespace enterprise_connectors {
-
-DeviceTrustService::DeviceTrustService() = default;
 
 DeviceTrustService::DeviceTrustService(Profile* profile)
     : prefs_(profile->GetPrefs()),
@@ -27,11 +25,7 @@ DeviceTrustService::DeviceTrustService(Profile* profile)
       signal_report_callback_(
           base::BindOnce(&DeviceTrustService::OnSignalReported,
                          base::Unretained(this))) {
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-  key_pair_ = std::make_unique<DeviceTrustKeyPair>();
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-
-  attestation_service_ = std::make_unique<attestation::AttestationService>();
+  attestation_service_ = std::make_unique<AttestationService>();
   pref_observer_.Init(prefs_);
   pref_observer_.Add(kContextAwareAccessSignalsAllowlistPref,
                      base::BindRepeating(&DeviceTrustService::OnPolicyUpdated,
@@ -69,9 +63,6 @@ void DeviceTrustService::OnPolicyUpdated() {
   }
 
   if (!first_report_sent_ && IsEnabled()) {  // Policy enabled for the 1st time.
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-    key_pair_->Init();
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
     reporter_->Init(MakePolicyCheck(),
                     base::BindOnce(&DeviceTrustService::OnReporterInitialized,
                                    weak_factory_.GetWeakPtr()));
@@ -95,7 +86,7 @@ void DeviceTrustService::OnReporterInitialized(bool success) {
   auto* credential = report.mutable_attestation_credential();
   credential->set_format(
       DeviceTrustReportEvent::Credential::EC_NID_X9_62_PRIME256V1_PUBLIC_DER);
-  credential->set_credential(key_pair_->ExportPEMPublicKey());
+  credential->set_credential(attestation_service_->ExportPEMPublicKey());
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
   reporter_->SendReport(&report, std::move(signal_report_callback_));
@@ -128,21 +119,14 @@ void DeviceTrustService::SetSignalReportCallbackForTesting(
 
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 std::string DeviceTrustService::GetAttestationCredentialForTesting() const {
-  return key_pair_->ExportPEMPublicKey();
+  return attestation_service_->ExportPEMPublicKey();
 }
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
-std::string DeviceTrustService::BuildChallengeResponse(
-    const std::string& challenge) {
-  ::attestation::SignEnterpriseChallengeRequest request;
-  ::attestation::SignEnterpriseChallengeReply result;
-  // Get the challenge from the SignedData json and create request.
-  request.set_challenge(
-      attestation_service_->JsonChallengeToProtobufChallenge(challenge));
-  attestation_service_->SignEnterpriseChallenge(request, &result);
-
-  return attestation_service_->ProtobufChallengeToJsonChallenge(
-      result.challenge_response());
+void DeviceTrustService::BuildChallengeResponse(const std::string& challenge,
+                                                AttestationCallback callback) {
+  attestation_service_->BuildChallengeResponseForVAChallenge(
+      challenge, std::move(callback));
 }
 
 }  // namespace enterprise_connectors

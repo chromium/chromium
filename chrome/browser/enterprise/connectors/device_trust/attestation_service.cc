@@ -5,14 +5,17 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation_service.h"
 
 #include "base/base64.h"
+#include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/connectors/device_trust/crypto_utility.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_key_pair.h"
 
-namespace attestation {
+namespace enterprise_connectors {
 
 AttestationService::AttestationService() {
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
@@ -23,9 +26,20 @@ AttestationService::AttestationService() {
 
 AttestationService::~AttestationService() = default;
 
+bool AttestationService::ChallengeComesFromVerifiedAccess(
+    const std::string& serialized_signed_data,
+    const std::string& public_key_modulus_hex) {
+  SignedData signed_challenge;
+  signed_challenge.ParseFromString(serialized_signed_data);
+  // Verify challenge signature.
+  return enterprise_connector::CryptoUtility::VerifySignatureUsingHexKey(
+      public_key_modulus_hex, signed_challenge.data(),
+      signed_challenge.signature());
+}
+
 std::string AttestationService::JsonChallengeToProtobufChallenge(
     const std::string& challenge) {
-  attestation::SignedData signed_challenge;
+  SignedData signed_challenge;
   // Get challenge and decode it.
   absl::optional<base::Value> data = base::JSONReader::Read(
       challenge, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
@@ -137,4 +151,55 @@ bool AttestationService::SignChallengeData(const std::string& data,
   return true;
 }
 
-}  // namespace attestation
+void AttestationService::BuildChallengeResponseForVAChallenge(
+    const std::string& challenge,
+    AttestationCallback callback) {
+  std::string serialized_signed_data =
+      JsonChallengeToProtobufChallenge(challenge);
+
+  AttestationCallback reply = base::BindOnce(
+      &AttestationService::PaserChallengeResponseAndRunCallback,
+      weak_factory_.GetWeakPtr(), challenge, std::move(callback));
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(
+          &AttestationService::VerifyChallengeAndMaybeCreateChallengeResponse,
+          base::Unretained(this), JsonChallengeToProtobufChallenge(challenge),
+          google_keys_.va_signing_key(VAType::DEFAULT_VA).modulus_in_hex()),
+      std::move(reply));
+}
+
+std::string AttestationService::VerifyChallengeAndMaybeCreateChallengeResponse(
+    const std::string& serialized_signed_data,
+    const std::string& public_key_modulus_hex) {
+  if (!ChallengeComesFromVerifiedAccess(serialized_signed_data,
+                                        public_key_modulus_hex)) {
+    LOG(ERROR) << "Challenge signature verification did not succeed.";
+    return std::string();
+  }
+  // If the verification that the challenge comes from Verified Access succeed,
+  // generate the challenge response.
+  SignEnterpriseChallengeRequest request;
+  SignEnterpriseChallengeReply result;
+  request.set_challenge(serialized_signed_data);
+  SignEnterpriseChallenge(request, &result);
+  return result.challenge_response();
+}
+
+void AttestationService::PaserChallengeResponseAndRunCallback(
+    const std::string& challenge,
+    AttestationCallback callback,
+    const std::string& challenge_response_proto) {
+  if (challenge_response_proto != std::string()) {
+    // Return to callback (throttle with the challenge response) with empty
+    // challenge response.
+    std::move(callback).Run(
+        ProtobufChallengeToJsonChallenge(challenge_response_proto));
+  } else {
+    // Make challenge response
+    std::move(callback).Run("");
+  }
+}
+
+}  // namespace enterprise_connectors

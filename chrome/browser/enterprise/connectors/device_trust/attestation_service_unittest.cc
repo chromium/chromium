@@ -6,7 +6,6 @@
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
-#include "base/logging.h"
 #include "base/values.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -34,7 +33,7 @@ constexpr char challenge[] =
 
 }  // namespace
 
-namespace attestation {
+namespace enterprise_connectors {
 
 class AttestationServiceTest : public testing::Test {
  public:
@@ -84,4 +83,4 @@ TEST_F(AttestationServiceTest, BuildChallengeResponse) {
             std::string());
 }
 
-}  // namespace attestation
+}  // namespace enterprise_connectors

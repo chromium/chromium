@@ -34,7 +34,7 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   static std::unique_ptr<DeviceTrustNavigationThrottle> MaybeCreateThrottleFor(
       content::NavigationHandle* navigation_handle);
 
-  using AttestationCallback = base::OnceCallback<void(std::string)>;
+  using AttestationCallback = base::OnceCallback<void(const std::string&)>;
 
   explicit DeviceTrustNavigationThrottle(
       content::NavigationHandle* navigation_handle);
@@ -61,13 +61,7 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   // Set `challege_response` into the header
   // `X-Verified-Access-Challenge-Response` of the redirection request to the
   // IdP and resume the navigation.
-  void ReplyChallengeResponseAndResume(std::string challenge_response);
-
-  // Call `DeviceTrustService::BuildChallengeResponse` which is the method that
-  // actually builds the challenge response, and return it as a string with the
-  // format described in `AttestationService::ProtobufChallengeToJsonChallenge`.
-  std::string StartSignChallengeAndReplyWithResponse(
-      const std::string& challenge);
+  void ReplyChallengeResponseAndResume(const std::string& challenge_response);
 
   // The URL matcher created from the ContextAwareAccessSignalsAllowlist policy.
   std::unique_ptr<url_matcher::URLMatcher> matcher_;

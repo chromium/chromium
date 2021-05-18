@@ -5,17 +5,15 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_SERVICE_H_
 
+#include "base/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation_ca.pb.h"
-#include "chrome/browser/enterprise/connectors/device_trust/interface.pb.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_attestation_ca.pb.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_interface.pb.h"
+#include "chrome/browser/enterprise/connectors/device_trust/google_keys.h"
 
 namespace enterprise_connectors {
 
 class DeviceTrustKeyPair;
-
-}
-
-namespace attestation {
 
 // This class is in charge of handling the key pair used for attestation. Also
 // provides the methods needed in the handshake between Chrome, an IdP and
@@ -25,6 +23,8 @@ namespace attestation {
 // `SignEnterpriseChallengeReply`.
 class AttestationService {
  public:
+  using AttestationCallback = base::OnceCallback<void(const std::string&)>;
+
   AttestationService();
   ~AttestationService();
 
@@ -64,6 +64,21 @@ class AttestationService {
   std::string ProtobufChallengeToJsonChallenge(
       const std::string& challenge_response);
 
+  // Verify challenge comes from Verify Access.
+  bool ChallengeComesFromVerifiedAccess(
+      const std::string& serialized_signed_data,
+      const std::string& public_key_modulus_hex);
+
+  // Returns the challenge response proto.
+  std::string VerifyChallengeAndMaybeCreateChallengeResponse(
+      const std::string& serialized_signed_data,
+      const std::string& public_key_modulus_hex);
+
+  // If the challenge comes from Verified Access, generate the
+  // proper challenge response, otherwise reply with empty string.
+  void BuildChallengeResponseForVAChallenge(const std::string& challenge,
+                                            AttestationCallback callback);
+
  private:
   // Sign the challenge and return the challenge response in
   // `result.challenge_response`.
@@ -74,11 +89,19 @@ class AttestationService {
   // Sign `data` using `key_pair_` and store that value in `signature`.
   bool SignChallengeData(const std::string& data, std::string* response);
 
+  void PaserChallengeResponseAndRunCallback(
+      const std::string& challenge,
+      AttestationCallback callback,
+      const std::string& challenge_response_proto);
+
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   std::unique_ptr<enterprise_connectors::DeviceTrustKeyPair> key_pair_;
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+
+  GoogleKeys google_keys_;
+  base::WeakPtrFactory<AttestationService> weak_factory_{this};
 };
 
-}  // namespace attestation
+}  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_SERVICE_H_

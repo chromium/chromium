@@ -5,14 +5,12 @@
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_factory.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_interface.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
-#include "chrome/browser/enterprise/connectors/device_trust/interface.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/url_util.h"
 #include "components/prefs/pref_service.h"
@@ -135,40 +133,37 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
     std::string challenge;
     if (headers->GetNormalizedHeader(kVerifiedAccessChallengeHeader,
                                      &challenge)) {
-      // Post a task to get the challenge response. It will defer the navigation
-      // and it will be resumed after it's built.
-      // `StartSignChallengeAndReplyWithResponse` won't run in the main thread,
-      // and then reply to `ReplyChallengeResponseAndResume` which makes use of
-      // `weak_ptr_factory_.GetWeakPtr()` so it won't run in case the object is
-      // destroyed.
-      AttestationCallback reply = base::BindOnce(
+      // Create callback for `ReplyChallengeResponseAndResume` which will
+      // be called after the challenge response is created. With this
+      // we can defer the navigation to unblock the main thread.
+      AttestationCallback resume_navigation_callback = base::BindOnce(
           &DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume,
           weak_ptr_factory_.GetWeakPtr());
 
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-          base::BindOnce(&DeviceTrustNavigationThrottle::
-                             StartSignChallengeAndReplyWithResponse,
-                         base::Unretained(this), challenge),
-          std::move(reply));
+      // Call `DeviceTrustService::BuildChallengeResponse` which is one step on
+      // the chain that builds the challenge response. In this chain we post a
+      // task that won't run in the main thread.
+      device_trust_service_->BuildChallengeResponse(
+          challenge, std::move(resume_navigation_callback));
 
       return DEFER;
     }
+  } else {
+    LOG(ERROR) << "No challenge in the response.";
   }
   return PROCEED;
 }
 
-std::string
-DeviceTrustNavigationThrottle::StartSignChallengeAndReplyWithResponse(
-    const std::string& challenge) {
-  return device_trust_service_->BuildChallengeResponse(challenge);
-}
-
 void DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume(
-    std::string challenge_response) {
-  navigation_handle()->SetRequestHeader(kVerifiedAccessResponseHeader,
-                                        challenge_response);
-  Resume();
+    const std::string& challenge_response) {
+  if (challenge_response == std::string()) {
+    // Cancel the navigation if challenge signature is invalid.
+    CancelDeferredNavigation(content::NavigationThrottle::CANCEL_AND_IGNORE);
+  } else {
+    navigation_handle()->SetRequestHeader(kVerifiedAccessResponseHeader,
+                                          challenge_response);
+    Resume();
+  }
 }
 
 }  // namespace enterprise_connectors

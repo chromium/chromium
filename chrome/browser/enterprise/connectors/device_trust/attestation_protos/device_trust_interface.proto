@@ -10,10 +10,10 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-import "attestation_ca.proto";
-import "keystore.proto";
+import "device_trust_attestation_ca.proto";
+import "device_trust_keystore.proto";
 
-package attestation;
+package enterprise_connectors;
 
 enum AttestationStatus {
   STATUS_SUCCESS = 0;
