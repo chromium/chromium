@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -22,7 +21,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
-import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -111,13 +109,8 @@ public final class FirstRunSignInProcessor {
      */
     private static void openSignInSettings(Activity activity) {
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-            settingsLauncher.launchSettingsActivity(
-                    activity, ManageSyncSettings.class, ManageSyncSettings.createArguments(true));
-        } else {
-            settingsLauncher.launchSettingsActivity(activity, SyncAndServicesSettings.class,
-                    SyncAndServicesSettings.createArguments(true));
-        }
+        settingsLauncher.launchSettingsActivity(
+                activity, ManageSyncSettings.class, ManageSyncSettings.createArguments(true));
     }
 
     /**

@@ -17,7 +17,6 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
@@ -31,7 +30,6 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
-import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
 import org.chromium.chrome.browser.usage_stats.UsageStatsConsentDialog;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
@@ -119,17 +117,6 @@ public class PrivacySettings
 
     private SpannableString buildSyncAndServicesLink() {
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-            NoUnderlineClickableSpan syncAndServicesLink =
-                    new NoUnderlineClickableSpan(getResources(), v -> {
-                        settingsLauncher.launchSettingsActivity(getActivity(),
-                                SyncAndServicesSettings.class,
-                                SyncAndServicesSettings.createArguments(false));
-                    });
-            return SpanApplier.applySpans(getString(R.string.privacy_sync_and_services_link_legacy),
-                    new SpanApplier.SpanInfo("<link>", "</link>", syncAndServicesLink));
-        }
-
         NoUnderlineClickableSpan servicesLink = new NoUnderlineClickableSpan(getResources(), v -> {
             settingsLauncher.launchSettingsActivity(getActivity(), GoogleServicesSettings.class);
         });

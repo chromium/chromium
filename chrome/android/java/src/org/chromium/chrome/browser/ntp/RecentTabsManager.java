@@ -12,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.invalidation.SessionsInvalidationManager;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionTab;
@@ -374,10 +373,8 @@ public class RecentTabsManager implements ProfileSyncService.SyncStateChangedLis
             if (!mSignInManager.isSignInAllowed()) {
                 return PromoState.PROMO_NONE;
             }
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                    && mSignInManager.getIdentityManager().getPrimaryAccountInfo(
-                               ConsentLevel.SIGNIN)
-                            != null) {
+            if (mSignInManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN)
+                    != null) {
                 return PromoState.PROMO_SYNC_PERSONALIZED;
             }
             return PromoState.PROMO_SIGNIN_PERSONALIZED;
