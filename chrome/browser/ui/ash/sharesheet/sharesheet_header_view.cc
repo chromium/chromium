@@ -49,9 +49,8 @@ namespace {
 
 // Concatenates all the strings in |file_names| with a comma delineator.
 const std::u16string ConcatenateFileNames(
-    const std::vector<std::string>& file_names) {
-  auto all_file_names = base::JoinString(file_names, ", ");
-  return base::ASCIIToUTF16(all_file_names);
+    const std::vector<std::u16string>& file_names) {
+  return base::JoinString(file_names, u", ");
 }
 
 gfx::ImageSkia CreateMimeTypeIcon(const gfx::ImageSkia& file_type_icon,
@@ -270,13 +269,14 @@ void SharesheetHeaderView::ShowTextPreview() {
 
   std::u16string filenames_tooltip_text = u"";
   if (intent_->file_urls.has_value() && !intent_->file_urls.value().empty()) {
-    std::vector<std::string> file_names;
+    std::vector<std::u16string> file_names;
     for (const auto& file_url : intent_->file_urls.value()) {
-      file_names.push_back(file_url.ExtractFileName());
+      const auto& file_path = GetFilePathFromFileSystemUrl(file_url);
+      file_names.push_back(file_path.BaseName().LossyDisplayName());
     }
     std::u16string file_text;
     if (file_names.size() == 1) {
-      file_text = base::ASCIIToUTF16(file_names[0]);
+      file_text = file_names[0];
     } else {
       // If there is more than 1 file, show an enumeration of the number of
       // files.
@@ -389,14 +389,10 @@ void SharesheetHeaderView::ResolveImages() {
 }
 
 void SharesheetHeaderView::ResolveImage(size_t index) {
-  base::FilePath file_path;
-  storage::FileSystemContext* fs_context =
-      file_manager::util::GetFileManagerFileSystemContext(profile_);
-  storage::FileSystemURL fs_url =
-      fs_context->CrackURL(intent_->file_urls.value()[index]);
-  file_path = fs_url.path();
+  const auto& file_path =
+      GetFilePathFromFileSystemUrl(intent_->file_urls.value()[index]);
 
-  const auto size =
+  const auto& size =
       GetImagePreviewSize(index, intent_->file_urls.value().size());
   auto image = std::make_unique<HoldingSpaceImage>(
       size, file_path,
@@ -435,6 +431,14 @@ void SharesheetHeaderView::OnImageLoaded(const gfx::Size& size, size_t index) {
   DCHECK_GT(image_preview_->GetImageViewCount(), index);
   image_preview_->GetImageViewAt(index)->SetImage(
       images_[index]->GetImageSkia(size));
+}
+
+const base::FilePath SharesheetHeaderView::GetFilePathFromFileSystemUrl(
+    const GURL& file_system_url) {
+  storage::FileSystemContext* fs_context =
+      file_manager::util::GetFileManagerFileSystemContext(profile_);
+  storage::FileSystemURL fs_url = fs_context->CrackURL(file_system_url);
+  return fs_url.path();
 }
 
 BEGIN_METADATA(SharesheetHeaderView, views::View)
