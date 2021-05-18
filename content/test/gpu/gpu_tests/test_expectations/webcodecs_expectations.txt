@@ -58,16 +58,6 @@
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
 
-# crbug.com/1204831: VideoEncoder on CrOS kevin can't resize frames, except for
-# frames coming from a camera.
-crbug.com/1204831 [ chromeos-board-kevin ] WebCodecs_Encode_offscreen_vp8_require [ Failure ]
-crbug.com/1204831 [ chromeos-board-kevin ] WebCodecs_Encode_offscreen_avc1.42001E_require [ Failure ]
-crbug.com/1204831 [ chromeos-board-kevin ] WebCodecs_Encode_sw_decoder_vp8_require [ Failure ]
-crbug.com/1204831 [ chromeos-board-kevin ] WebCodecs_Encode_sw_decoder_avc1.42001E_require [ Failure ]
-crbug.com/1204831 [ chromeos-board-kevin ] WebCodecs_Encode_hw_decoder_vp8_require [ Failure ]
-crbug.com/1204831 [ chromeos-board-kevin ] WebCodecs_Encode_hw_decoder_avc1.42001E_require [ Failure ]
-crbug.com/1204831 [ chromeos-board-kevin ] WebCodecs_Encode_capture_vp8_require [ Failure ]
-crbug.com/1204831 [ chromeos-board-kevin ] WebCodecs_Encode_capture_avc1.42001E_require [ Failure ]
 crbug.com/1208827 [ chromeos-board-amd64-generic ] WebCodecs_Encode_capture_avc1.42001E_require [ RetryOnFailure ]
 
 crbug.com/1207682 [ android ] WebCodecs_* [ RetryOnFailure ]
