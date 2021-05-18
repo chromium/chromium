@@ -421,7 +421,8 @@ void NetworkConnectionHandlerImpl::DisconnectNetwork(
   }
   const std::string connection_state = network->connection_state();
   if (!NetworkState::StateIsConnected(connection_state) &&
-      !NetworkState::StateIsConnecting(connection_state)) {
+      !NetworkState::StateIsConnecting(connection_state) &&
+      !GetPendingRequest(service_path)) {
     NET_LOG(ERROR) << "Disconnect Error: Not Connected: " << NetworkId(network);
     network_handler::RunErrorCallback(std::move(error_callback), service_path,
                                       kErrorNotConnected, "");
