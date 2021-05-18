@@ -405,7 +405,11 @@ bool WebContentsDelegateAndroid::ShouldAnimateBrowserControlsHeightChanges() {
 
 bool WebContentsDelegateAndroid::DoBrowserControlsShrinkRendererSize(
     content::WebContents* contents) {
-  return contents->GetNativeView()->ControlsResizeView();
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null())
+    return false;
+  return Java_WebContentsDelegateAndroid_controlsResizeView(env, obj);
 }
 
 blink::mojom::DisplayMode WebContentsDelegateAndroid::GetDisplayMode(

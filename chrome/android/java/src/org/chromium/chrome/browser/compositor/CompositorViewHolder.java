@@ -975,7 +975,7 @@ public class CompositorViewHolder extends FrameLayout
      */
     private void updateViewportSize() {
         if (mInGesture || mContentViewScrolling) return;
-
+        boolean controlsResizeViewChanged = false;
         if (mBrowserControlsManager != null) {
             // Update content viewport size only if the browser controls are not moving, i.e. not
             // scrolling or animating.
@@ -985,12 +985,17 @@ public class CompositorViewHolder extends FrameLayout
                     BrowserControlsUtils.controlsResizeView(mBrowserControlsManager);
             if (controlsResizeView != mControlsResizeView) {
                 mControlsResizeView = controlsResizeView;
-                onControlsResizeViewChanged(getWebContents(), mControlsResizeView);
+                controlsResizeViewChanged = true;
             }
         }
         // Reflect the changes that may have happened in in view/control size.
         Point viewportSize = getViewportSize();
         setSize(getWebContents(), getContentView(), viewportSize.x, viewportSize.y);
+        if (controlsResizeViewChanged) {
+            // Send this after setSize, so that RenderWidgetHost doesn't SynchronizeVisualProperties
+            // in a partly-updated state.
+            onControlsResizeViewChanged(getWebContents(), mControlsResizeView);
+        }
     }
 
     // View.OnHierarchyChangeListener implementation
@@ -1263,6 +1268,13 @@ public class CompositorViewHolder extends FrameLayout
     public int getBottomControlsHeightPixels() {
         return mBrowserControlsManager != null ? mBrowserControlsManager.getBottomControlsHeight()
                                                : 0;
+    }
+
+    /**
+     * @return {@code true} if browser controls shrink Blink view's size.
+     */
+    public boolean controlsResizeView() {
+        return mControlsResizeView;
     }
 
     @Override

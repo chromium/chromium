@@ -355,6 +355,12 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
+    public boolean controlsResizeView() {
+        return mCompositorViewHolderSupplier.hasValue()
+                && mCompositorViewHolderSupplier.get().controlsResizeView();
+    }
+
+    @Override
     public void enterFullscreenModeForTab(boolean prefersNavigationBar) {
         if (mFullscreenManager != null) {
             mFullscreenManager.onEnterFullscreen(mTab, new FullscreenOptions(prefersNavigationBar));

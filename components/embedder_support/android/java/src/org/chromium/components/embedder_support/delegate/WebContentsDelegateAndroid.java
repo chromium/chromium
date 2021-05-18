@@ -175,6 +175,14 @@ public class WebContentsDelegateAndroid {
     }
 
     /**
+     * @return Whether or not the browser controls resize Blink's view size.
+     */
+    @CalledByNative
+    public boolean controlsResizeView() {
+        return false;
+    }
+
+    /**
      * Check and return the {@link DisplayMode} value.
      *
      * @return The {@link DisplayMode} value.

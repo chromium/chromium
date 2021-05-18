@@ -561,10 +561,6 @@ void ViewAndroid::OnControlsResizeViewChanged(bool controls_resize_view) {
     child->OnControlsResizeViewChanged(controls_resize_view);
 }
 
-bool ViewAndroid::ControlsResizeView() {
-  return controls_resize_view_;
-}
-
 gfx::Size ViewAndroid::GetPhysicalBackingSize() const {
   return physical_size_;
 }

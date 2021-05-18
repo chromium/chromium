@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.fullscreen;
 // (http://crbug/642336)
 // import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.os.Build;
@@ -36,6 +37,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -53,6 +55,7 @@ import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -134,6 +137,24 @@ public class FullscreenManagerTest {
                     + "<body style='height:10000px;' onclick='toggleFullScreen();'>"
                     + "</body>"
                     + "</html>");
+    private static final String SCROLL_OFFSET_TEST_PAGE = UrlUtils.encodeHtmlDataUri("<html>"
+            + "<head>"
+            + "  <meta name=viewport content='width=device-width, initial-scale=1.0'>"
+            + "</head>"
+            + "<body style='margin: 0; height: 200vh'>"
+            + "  <div style='width: 150vw'>wide</div>"
+            + "  <script>"
+            + "    load_promise = new Promise(r => {onload = r});"
+            + "    resize_promise = new Promise(r => {onresize = r});"
+            + "    reached_bottom = () => {"
+            + "      return Math.abs("
+            + "        (se => se.scrollHeight - (se.scrollTop + visualViewport.offsetTop +"
+            + "          visualViewport.height))(document.scrollingElement)"
+            + "      ) < 1;"
+            + "    };"
+            + "  </script>"
+            + "</body>"
+            + "</html>");
 
     @Before
     public void setUp() {
@@ -402,6 +423,36 @@ public class FullscreenManagerTest {
         // Additional manual test that this is working:
         // - adb shell dumpsys SurfaceFlinger
         // - Observe that there is no 'Chrome' related overlay listed, only 'Surfaceview'.
+    }
+
+    @Test
+    @LargeTest
+    @Features.DisableFeatures({ChromeFeatureList.OFFLINE_INDICATOR})
+    public void testHidingBrowserControlsPreservesScrollOffset() throws TimeoutException {
+        FullscreenManagerTestUtils.disableBrowserOverrides();
+        mActivityTestRule.startMainActivityWithURL(SCROLL_OFFSET_TEST_PAGE);
+
+        ChromeActivity activity = mActivityTestRule.getActivity();
+        BrowserControlsManager browserControlsManager = activity.getBrowserControlsManager();
+
+        CriteriaHelper.pollUiThread(
+                () -> { return browserControlsManager.getTopControlOffset() == 0f; });
+
+        Point displaySize = new Point();
+        activity.getWindowManager().getDefaultDisplay().getSize(displaySize);
+
+        WebContents webContents = activity.getActivityTab().getWebContents();
+        FullscreenManagerTestUtils.waitForPageToBeScrollable(activity.getActivityTab());
+
+        JavaScriptUtils.runJavascriptWithAsyncResult(
+                webContents, "load_promise.then(() => { domAutomationController.send(true); });");
+
+        FullscreenManagerTestUtils.fling(mActivityTestRule, 0, -displaySize.y * 20);
+        Assert.assertEquals("true",
+                JavaScriptUtils.runJavascriptWithAsyncResult(webContents,
+                        "resize_promise.then(() => {"
+                                + "  domAutomationController.send(reached_bottom());"
+                                + "});"));
     }
 
     @Test
