@@ -77,23 +77,19 @@ public interface SurfaceScopeDependencyProvider extends FeedLoggingDependencyPro
         // Events applying muted autoplay only.
 
         /**
-         * Auto-play is triggered, but not started yet. This occurs when the video card becomes
-         * fully visible.
-         */
-        int AUTOPLAY_REQUESTED = 0;
-        /**
          * Auto-play stops before reaching the end. This occurs when the video card becomes
          * partially visible or invisible.
          */
-        int AUTOPLAY_STOPPED = 1;
+        int AUTOPLAY_STOPPED = 0;
         /** Auto-play reaches the end. */
-        int AUTOPLAY_ENDED = 2;
+        int AUTOPLAY_ENDED = 1;
         /** User clicks on the auto-play video. */
-        int AUTOPLAY_CLICKED = 3;
+        int AUTOPLAY_CLICKED = 2;
 
         // Events applying to both muted autoplay and regular play.
 
         /** The player starts to play the video. */
+        int PLAY_REQUESTED = 3;
         int PLAY_STARTED = 4;
         int PLAY_ERROR = 5;
         int NUM_ENTRIES = 6;
@@ -124,7 +120,8 @@ public interface SurfaceScopeDependencyProvider extends FeedLoggingDependencyPro
         int AUTOPLAY_DISABLED = 4;
         int UNEXPECTED_SERVICE_DISCONNECTION = 5;
         int NOT_PLAYABLE_MUTED = 6;
-        int NUM_ENTRIES = 7;
+        int NETWORK_ERROR = 7;
+        int NUM_ENTRIES = 8;
     }
 
     /**
