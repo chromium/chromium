@@ -77,18 +77,6 @@ ProxyServer::ProxyServer(Scheme scheme, const HostPortPair& host_port_pair)
   }
 }
 
-ProxyServer::ProxyServer(Scheme scheme,
-                         const HostPortPair& host_port_pair,
-                         bool is_trusted_proxy)
-    : ProxyServer(scheme, host_port_pair) {
-  if (is_trusted_proxy) {
-    is_trusted_proxy_ = true;
-    // TODO(https://crbug.com/778010): Update this when cross-origin server
-    // push is allowed for QUIC proxies.
-    DCHECK_EQ(SCHEME_HTTPS, scheme_);
-  }
-}
-
 const HostPortPair& ProxyServer::host_port_pair() const {
   // Doesn't make sense to call this if the URI scheme doesn't
   // have concept of a host.

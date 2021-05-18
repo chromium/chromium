@@ -31,22 +31,7 @@ void TestProxyDelegate::OnResolveProxy(
     const GURL& url,
     const std::string& method,
     const ProxyRetryInfoMap& proxy_retry_info,
-    ProxyInfo* result) {
-  if (!trusted_spdy_proxy_.is_valid())
-    return;
-  ProxyList new_proxy_list;
-  for (const auto& proxy_server : result->proxy_list().GetAll()) {
-    if (proxy_server == trusted_spdy_proxy_) {
-      new_proxy_list.AddProxyServer(ProxyServer(
-          proxy_server.scheme(), proxy_server.host_port_pair(), true));
-    } else {
-      new_proxy_list.AddProxyServer(proxy_server);
-    }
-  }
-  result->UseProxyList(new_proxy_list);
-  result->set_traffic_annotation(
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
-}
+    ProxyInfo* result) {}
 
 void TestProxyDelegate::OnFallback(const ProxyServer& bad_proxy,
                                    int net_error) {}

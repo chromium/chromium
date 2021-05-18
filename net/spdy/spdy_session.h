@@ -347,7 +347,6 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
               bool enable_ping_based_connection_checking,
               bool is_http_enabled,
               bool is_quic_enabled,
-              bool is_trusted_proxy,
               size_t session_max_recv_window_size,
               int session_max_queued_capped_frames,
               const spdy::SettingsMap& initial_settings,
@@ -1261,10 +1260,6 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
 
   const bool is_http2_enabled_;
   const bool is_quic_enabled_;
-
-  // If true, this session is being made to a trusted SPDY/HTTP2 proxy that is
-  // allowed to push cross-origin resources.
-  const bool is_trusted_proxy_;
 
   // If true, accept pushed streams from server.
   // If false, reset pushed streams immediately.

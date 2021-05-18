@@ -224,14 +224,12 @@ void ParamTraits<net::ProxyServer>::Write(base::Pickle* m,
       scheme != net::ProxyServer::SCHEME_INVALID) {
     WriteParam(m, p.host_port_pair());
   }
-  WriteParam(m, p.is_trusted_proxy());
 }
 
 bool ParamTraits<net::ProxyServer>::Read(const base::Pickle* m,
                                          base::PickleIterator* iter,
                                          param_type* r) {
   net::ProxyServer::Scheme scheme;
-  bool is_trusted_proxy = false;
   if (!ReadParam(m, iter, &scheme))
     return false;
 
@@ -244,10 +242,7 @@ bool ParamTraits<net::ProxyServer>::Read(const base::Pickle* m,
     return false;
   }
 
-  if (!ReadParam(m, iter, &is_trusted_proxy))
-    return false;
-
-  *r = net::ProxyServer(scheme, host_port_pair, is_trusted_proxy);
+  *r = net::ProxyServer(scheme, host_port_pair);
   return true;
 }
 

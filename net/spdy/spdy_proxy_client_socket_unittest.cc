@@ -110,9 +110,8 @@ base::WeakPtr<SpdySession> CreateSpdyProxySession(
 
   base::WeakPtr<SpdySession> spdy_session =
       http_session->spdy_session_pool()->CreateAvailableSessionFromSocket(
-          key, false /* is_trusted_proxy */,
-          connect_job_delegate.ReleaseSocket(), LoadTimingInfo::ConnectTiming(),
-          NetLogWithSource());
+          key, connect_job_delegate.ReleaseSocket(),
+          LoadTimingInfo::ConnectTiming(), NetLogWithSource());
   // Failure is reported asynchronously.
   EXPECT_TRUE(spdy_session);
   EXPECT_TRUE(HasSpdySession(http_session->spdy_session_pool(), key));

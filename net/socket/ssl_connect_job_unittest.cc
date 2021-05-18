@@ -112,7 +112,6 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
                                       nullptr /* ssl_params */,
                                       false /* is_quic */,
                                       HostPortPair("host", 80),
-                                      /*is_trusted_proxy=*/false,
                                       /*tunnel=*/true,
                                       TRAFFIC_ANNOTATION_FOR_TESTS,
                                       NetworkIsolationKey())),

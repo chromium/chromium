@@ -144,7 +144,6 @@ SpdySessionPool::~SpdySessionPool() {
 
 int SpdySessionPool::CreateAvailableSessionFromSocketHandle(
     const SpdySessionKey& key,
-    bool is_trusted_proxy,
     std::unique_ptr<ClientSocketHandle> client_socket_handle,
     const NetLogWithSource& net_log,
     base::WeakPtr<SpdySession>* session) {
@@ -152,7 +151,7 @@ int SpdySessionPool::CreateAvailableSessionFromSocketHandle(
                "SpdySessionPool::CreateAvailableSessionFromSocketHandle");
 
   std::unique_ptr<SpdySession> new_session =
-      CreateSession(key, is_trusted_proxy, net_log.net_log());
+      CreateSession(key, net_log.net_log());
   std::vector<std::string> dns_aliases =
       client_socket_handle->socket()->GetDnsAliases();
 
@@ -179,7 +178,6 @@ int SpdySessionPool::CreateAvailableSessionFromSocketHandle(
 
 base::WeakPtr<SpdySession> SpdySessionPool::CreateAvailableSessionFromSocket(
     const SpdySessionKey& key,
-    bool is_trusted_proxy,
     std::unique_ptr<StreamSocket> socket_stream,
     const LoadTimingInfo::ConnectTiming& connect_timing,
     const NetLogWithSource& net_log) {
@@ -187,7 +185,7 @@ base::WeakPtr<SpdySession> SpdySessionPool::CreateAvailableSessionFromSocket(
                "SpdySessionPool::CreateAvailableSessionFromSocket");
 
   std::unique_ptr<SpdySession> new_session =
-      CreateSession(key, is_trusted_proxy, net_log.net_log());
+      CreateSession(key, net_log.net_log());
   std::vector<std::string> dns_aliases = socket_stream->GetDnsAliases();
 
   new_session->InitializeWithSocket(std::move(socket_stream), connect_timing,
@@ -684,7 +682,6 @@ void SpdySessionPool::CloseCurrentSessionsHelper(Error error,
 
 std::unique_ptr<SpdySession> SpdySessionPool::CreateSession(
     const SpdySessionKey& key,
-    bool is_trusted_proxy,
     NetLog* net_log) {
   UMA_HISTOGRAM_ENUMERATION("Net.SpdySessionGet", IMPORTED_FROM_SOCKET,
                             SPDY_SESSION_GET_MAX);
@@ -708,7 +705,7 @@ std::unique_ptr<SpdySession> SpdySessionPool::CreateSession(
       ssl_client_context_ ? ssl_client_context_->ssl_config_service() : nullptr,
       quic_supported_versions_, enable_sending_initial_data_,
       enable_ping_based_connection_checking_, is_http2_enabled_,
-      is_quic_enabled_, is_trusted_proxy, session_max_recv_window_size_,
+      is_quic_enabled_, session_max_recv_window_size_,
       session_max_queued_capped_frames_, initial_settings_,
       greased_http2_frame_, http2_end_stream_with_data_frame_,
       enable_priority_update_, time_func_, push_delegate_,

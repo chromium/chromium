@@ -170,7 +170,6 @@ class NET_EXPORT SpdySessionPool
   // if the first read of |client_socket_handle| fails.
   int CreateAvailableSessionFromSocketHandle(
       const SpdySessionKey& key,
-      bool is_trusted_proxy,
       std::unique_ptr<ClientSocketHandle> client_socket_handle,
       const NetLogWithSource& net_log,
       base::WeakPtr<SpdySession>* session);
@@ -185,7 +184,6 @@ class NET_EXPORT SpdySessionPool
   // can have sockets above them for tunnels, which are put in a socket pool.
   base::WeakPtr<SpdySession> CreateAvailableSessionFromSocket(
       const SpdySessionKey& key,
-      bool is_trusted_proxy,
       std::unique_ptr<StreamSocket> socket_stream,
       const LoadTimingInfo::ConnectTiming& connect_timing,
       const NetLogWithSource& net_log);
@@ -387,7 +385,6 @@ class NET_EXPORT SpdySessionPool
   // Creates a new session. The session must be initialized before
   // InsertSession() is invoked.
   std::unique_ptr<SpdySession> CreateSession(const SpdySessionKey& key,
-                                             bool is_trusted_proxy,
                                              NetLog* net_log);
   // Adds a new session previously created with CreateSession to the pool.
   // |source_net_log| is the NetLog for the object that created the session.

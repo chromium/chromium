@@ -6614,19 +6614,11 @@ class SpdyNetworkTransactionPushUrlTest
     // NetworkIsolationKeys are respected.
     request_.network_isolation_key = NetworkIsolationKey::CreateTransient();
 
-    // Enable cross-origin push. Since we are not using a proxy, this should
-    // not actually enable cross-origin SPDY push.
-    auto session_deps = std::make_unique<SpdySessionDependencies>();
-    auto proxy_delegate = std::make_unique<TestProxyDelegate>();
-    proxy_delegate->set_trusted_spdy_proxy(net::ProxyServer::FromURI(
-        "https://123.45.67.89:443", net::ProxyServer::SCHEME_HTTP));
-    session_deps->proxy_resolution_service->SetProxyDelegate(
-        proxy_delegate.get());
-
     auto ssl_provider = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
     ssl_provider->ssl_info.client_cert_sent = GetParam().client_cert_sent;
     ssl_provider->ssl_info.cert =
         ImportCertFromFile(GetTestCertsDirectory(), "spdy_pooling.pem");
+    auto session_deps = std::make_unique<SpdySessionDependencies>();
     if (GetParam().expect_ct_error) {
       ssl_provider->ssl_info.ct_policy_compliance =
           ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;

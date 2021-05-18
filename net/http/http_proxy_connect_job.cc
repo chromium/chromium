@@ -134,7 +134,6 @@ HttpProxySocketParams::HttpProxySocketParams(
     scoped_refptr<SSLSocketParams> ssl_params,
     bool is_quic,
     const HostPortPair& endpoint,
-    bool is_trusted_proxy,
     bool tunnel,
     const NetworkTrafficAnnotationTag traffic_annotation,
     const NetworkIsolationKey& network_isolation_key)
@@ -142,7 +141,6 @@ HttpProxySocketParams::HttpProxySocketParams(
       ssl_params_(std::move(ssl_params)),
       is_quic_(is_quic),
       endpoint_(endpoint),
-      is_trusted_proxy_(is_trusted_proxy),
       tunnel_(tunnel),
       network_isolation_key_(network_isolation_key),
       traffic_annotation_(traffic_annotation) {
@@ -603,8 +601,7 @@ int HttpProxyConnectJob::DoSpdyProxyCreateStream() {
     // Create a session direct to the proxy itself
     spdy_session = common_connect_job_params()
                        ->spdy_session_pool->CreateAvailableSessionFromSocket(
-                           key, params_->is_trusted_proxy(),
-                           nested_connect_job_->PassSocket(),
+                           key, nested_connect_job_->PassSocket(),
                            nested_connect_job_->connect_timing(), net_log());
     DCHECK(spdy_session);
     nested_connect_job_.reset();

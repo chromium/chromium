@@ -264,13 +264,6 @@ base::WeakPtr<SpdySession> CreateSpdySession(HttpNetworkSession* http_session,
                                              const SpdySessionKey& key,
                                              const NetLogWithSource& net_log);
 
-// Like CreateSpdySession(), but the host is considered a trusted proxy and
-// allowed to push cross-origin resources.
-base::WeakPtr<SpdySession> CreateTrustedSpdySession(
-    HttpNetworkSession* http_session,
-    const SpdySessionKey& key,
-    const NetLogWithSource& net_log);
-
 // Like CreateSpdySession(), but does not fail if there is already an IP
 // pooled session for |key|.
 base::WeakPtr<SpdySession> CreateSpdySessionWithIpBasedPoolingDisabled(

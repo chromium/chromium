@@ -5911,12 +5911,6 @@ class SameProxyWithDifferentSchemesProxyResolver : public ProxyResolver {
       results->UsePacString("HTTPS " + ProxyHostPortPairAsString());
       return OK;
     }
-    if (url.path() == "/https_trusted") {
-      results->UseProxyServer(ProxyServer(ProxyServer::SCHEME_HTTPS,
-                                          ProxyHostPortPair(),
-                                          true /* is_trusted_proxy */));
-      return OK;
-    }
     NOTREACHED();
     return ERR_NOT_IMPLEMENTED;
   }
@@ -6035,21 +6029,6 @@ TEST_F(HttpNetworkTransactionTest, SameDestinationForDifferentProxyTypes) {
   SSLSocketDataProvider ssl(SYNCHRONOUS, OK);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
 
-  MockWrite https_trusted_writes[] = {
-      MockWrite(SYNCHRONOUS,
-                "GET http://test/https_trusted HTTP/1.1\r\n"
-                "Host: test\r\n"
-                "Proxy-Connection: keep-alive\r\n\r\n"),
-  };
-  MockRead https_trusted_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"
-               "Proxy-Connection: keep-alive\r\n"
-               "Content-Length: 22\r\n\r\n"
-               "HTTPS Trusted Response"),
-  };
-  StaticSocketDataProvider trusted_https_data(https_trusted_reads,
-                                              https_trusted_writes);
-  session_deps_.socket_factory->AddSocketDataProvider(&trusted_https_data);
   SSLSocketDataProvider ssl2(SYNCHRONOUS, OK);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
 
@@ -6064,16 +6043,11 @@ TEST_F(HttpNetworkTransactionTest, SameDestinationForDifferentProxyTypes) {
     // pools after the test.
     int expected_idle_http_sockets;
     int expected_idle_https_sockets;
-    // How many idle sockets there should be in the HTTPS proxy socket pool with
-    // the ProxyServer's |is_trusted_proxy| bit set after the test.
-    int expected_idle_trusted_https_sockets;
   } const kTestCases[] = {
-      {GURL("http://test/socks4"), "SOCKS4 Response", 1, 0, 0, 0, 0},
-      {GURL("http://test/socks5"), "SOCKS5 Response", 1, 1, 0, 0, 0},
-      {GURL("http://test/http"), "HTTP Response", 1, 1, 1, 0, 0},
-      {GURL("http://test/https"), "HTTPS Response", 1, 1, 1, 1, 0},
-      {GURL("http://test/https_trusted"), "HTTPS Trusted Response", 1, 1, 1, 1,
-       1},
+      {GURL("http://test/socks4"), "SOCKS4 Response", 1, 0, 0, 0},
+      {GURL("http://test/socks5"), "SOCKS5 Response", 1, 1, 0, 0},
+      {GURL("http://test/http"), "HTTP Response", 1, 1, 1, 0},
+      {GURL("http://test/https"), "HTTPS Response", 1, 1, 1, 1},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -6152,15 +6126,6 @@ TEST_F(HttpNetworkTransactionTest, SameDestinationForDifferentProxyTypes) {
                       ProxyServer(ProxyServer::SCHEME_HTTPS,
                                   SameProxyWithDifferentSchemesProxyResolver::
                                       ProxyHostPortPair()))
-                  ->IdleSocketCount());
-    EXPECT_EQ(test_case.expected_idle_trusted_https_sockets,
-              session
-                  ->GetSocketPool(
-                      HttpNetworkSession::NORMAL_SOCKET_POOL,
-                      ProxyServer(ProxyServer::SCHEME_HTTPS,
-                                  SameProxyWithDifferentSchemesProxyResolver::
-                                      ProxyHostPortPair(),
-                                  true /* is_trusted_proxy */))
                   ->IdleSocketCount());
   }
 }
@@ -11818,306 +11783,6 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthSpdyProxy) {
   EXPECT_TRUE(trans->GetLoadTimingInfo(&load_timing_info));
   TestLoadTimingNotReusedWithPac(load_timing_info,
                                  CONNECT_TIMING_HAS_SSL_TIMES);
-
-  trans.reset();
-  session->CloseAllConnections(ERR_FAILED, "Very good reason");
-}
-
-// Test that an explicitly trusted SPDY proxy can push a resource from an
-// origin that is different from that of its associated resource.
-TEST_F(HttpNetworkTransactionTest, CrossOriginSpdyProxyPush) {
-  // Configure the proxy delegate to allow cross-origin SPDY pushes.
-  auto proxy_delegate = std::make_unique<TestProxyDelegate>();
-  proxy_delegate->set_trusted_spdy_proxy(net::ProxyServer::FromURI(
-      "https://myproxy:443", net::ProxyServer::SCHEME_HTTP));
-  HttpRequestInfo request;
-  HttpRequestInfo push_request;
-  request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-
-  request.method = "GET";
-  request.url = GURL("http://www.example.org/");
-  push_request.method = "GET";
-  push_request.url = GURL("http://www.another-origin.com/foo.dat");
-  push_request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-
-  // Configure against https proxy server "myproxy:443".
-  session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
-          "HTTPS myproxy:443", TRAFFIC_ANNOTATION_FOR_TESTS);
-  RecordingBoundTestNetLog log;
-  session_deps_.net_log = log.bound().net_log();
-
-  session_deps_.proxy_resolution_service->SetProxyDelegate(
-      proxy_delegate.get());
-
-  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
-
-  spdy::SpdySerializedFrame stream1_syn(
-      spdy_util_.ConstructSpdyGet("http://www.example.org/", 1, LOWEST));
-  spdy::SpdySerializedFrame stream2_priority(
-      spdy_util_.ConstructSpdyPriority(2, 1, IDLE, true));
-
-  MockWrite spdy_writes[] = {
-      CreateMockWrite(stream1_syn, 0, ASYNC),
-      CreateMockWrite(stream2_priority, 3, ASYNC),
-  };
-
-  spdy::SpdySerializedFrame stream2_syn(spdy_util_.ConstructSpdyPush(
-      nullptr, 0, 2, 1, "http://www.another-origin.com/foo.dat"));
-
-  spdy::SpdySerializedFrame stream1_reply(
-      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
-
-  spdy::SpdySerializedFrame stream1_body(
-      spdy_util_.ConstructSpdyDataFrame(1, true));
-
-  spdy::SpdySerializedFrame stream2_body(
-      spdy_util_.ConstructSpdyDataFrame(2, "pushed", true));
-
-  MockRead spdy_reads[] = {
-      CreateMockRead(stream2_syn, 1, ASYNC),
-      CreateMockRead(stream1_reply, 2, ASYNC),
-      CreateMockRead(stream1_body, 4, ASYNC),
-      CreateMockRead(stream2_body, 5, ASYNC),
-      MockRead(SYNCHRONOUS, ERR_IO_PENDING, 6),  // Force a hang
-  };
-
-  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
-  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
-  // Negotiate SPDY to the proxy
-  SSLSocketDataProvider proxy(ASYNC, OK);
-  proxy.next_proto = kProtoHTTP2;
-  session_deps_.socket_factory->AddSSLSocketDataProvider(&proxy);
-
-  auto trans =
-      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
-  TestCompletionCallback callback;
-  int rv = trans->Start(&request, callback.callback(), log.bound());
-  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-
-  rv = callback.WaitForResult();
-  EXPECT_THAT(rv, IsOk());
-  const HttpResponseInfo* response = trans->GetResponseInfo();
-
-  auto push_trans =
-      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
-  rv = push_trans->Start(&push_request, callback.callback(), log.bound());
-  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-
-  rv = callback.WaitForResult();
-  EXPECT_THAT(rv, IsOk());
-  const HttpResponseInfo* push_response = push_trans->GetResponseInfo();
-
-  ASSERT_TRUE(response);
-  EXPECT_TRUE(response->headers->IsKeepAlive());
-
-  EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
-
-  std::string response_data;
-  rv = ReadTransaction(trans.get(), &response_data);
-  EXPECT_THAT(rv, IsOk());
-  EXPECT_EQ("hello!", response_data);
-
-  LoadTimingInfo load_timing_info;
-  EXPECT_TRUE(trans->GetLoadTimingInfo(&load_timing_info));
-  TestLoadTimingNotReusedWithPac(load_timing_info,
-                                 CONNECT_TIMING_HAS_CONNECT_TIMES_ONLY);
-
-  // Verify the pushed stream.
-  EXPECT_TRUE(push_response->headers);
-  EXPECT_EQ(200, push_response->headers->response_code());
-
-  rv = ReadTransaction(push_trans.get(), &response_data);
-  EXPECT_THAT(rv, IsOk());
-  EXPECT_EQ("pushed", response_data);
-
-  LoadTimingInfo push_load_timing_info;
-  EXPECT_TRUE(push_trans->GetLoadTimingInfo(&push_load_timing_info));
-  TestLoadTimingReusedWithPac(push_load_timing_info);
-  // The transactions should share a socket ID, despite being for different
-  // origins.
-  EXPECT_EQ(load_timing_info.socket_log_id,
-            push_load_timing_info.socket_log_id);
-
-  trans.reset();
-  push_trans.reset();
-  session->CloseAllConnections(ERR_FAILED, "Very good reason");
-}
-
-// Test that an explicitly trusted SPDY proxy cannot push HTTPS content.
-TEST_F(HttpNetworkTransactionTest, CrossOriginProxyPushCorrectness) {
-  // Configure the proxy delegate to allow cross-origin SPDY pushes.
-  auto proxy_delegate = std::make_unique<TestProxyDelegate>();
-  proxy_delegate->set_trusted_spdy_proxy(net::ProxyServer::FromURI(
-      "https://myproxy:443", net::ProxyServer::SCHEME_HTTP));
-  HttpRequestInfo request;
-
-  request.method = "GET";
-  request.url = GURL("http://www.example.org/");
-  request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-
-  session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixed(
-          "https://myproxy:443", TRAFFIC_ANNOTATION_FOR_TESTS);
-  RecordingBoundTestNetLog log;
-  session_deps_.net_log = log.bound().net_log();
-
-  // Enable cross-origin push.
-  session_deps_.proxy_resolution_service->SetProxyDelegate(
-      proxy_delegate.get());
-
-  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
-
-  spdy::SpdySerializedFrame stream1_syn(
-      spdy_util_.ConstructSpdyGet("http://www.example.org/", 1, LOWEST));
-
-  spdy::SpdySerializedFrame push_rst(
-      spdy_util_.ConstructSpdyRstStream(2, spdy::ERROR_CODE_REFUSED_STREAM));
-
-  MockWrite spdy_writes[] = {
-      CreateMockWrite(stream1_syn, 0, ASYNC), CreateMockWrite(push_rst, 3),
-  };
-
-  spdy::SpdySerializedFrame stream1_reply(
-      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
-
-  spdy::SpdySerializedFrame stream1_body(
-      spdy_util_.ConstructSpdyDataFrame(1, true));
-
-  spdy::SpdySerializedFrame stream2_syn(spdy_util_.ConstructSpdyPush(
-      nullptr, 0, 2, 1, "https://www.another-origin.com/foo.dat"));
-
-  MockRead spdy_reads[] = {
-      CreateMockRead(stream1_reply, 1, ASYNC),
-      CreateMockRead(stream2_syn, 2, ASYNC),
-      CreateMockRead(stream1_body, 4, ASYNC),
-      MockRead(SYNCHRONOUS, ERR_IO_PENDING, 5),  // Force a hang
-  };
-
-  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
-  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
-  // Negotiate SPDY to the proxy
-  SSLSocketDataProvider proxy(ASYNC, OK);
-  proxy.next_proto = kProtoHTTP2;
-  session_deps_.socket_factory->AddSSLSocketDataProvider(&proxy);
-
-  auto trans =
-      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
-  TestCompletionCallback callback;
-  int rv = trans->Start(&request, callback.callback(), log.bound());
-  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-
-  rv = callback.WaitForResult();
-  EXPECT_THAT(rv, IsOk());
-  const HttpResponseInfo* response = trans->GetResponseInfo();
-
-  ASSERT_TRUE(response);
-  EXPECT_TRUE(response->headers->IsKeepAlive());
-
-  EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
-
-  std::string response_data;
-  rv = ReadTransaction(trans.get(), &response_data);
-  EXPECT_THAT(rv, IsOk());
-  EXPECT_EQ("hello!", response_data);
-
-  trans.reset();
-  session->CloseAllConnections(ERR_FAILED, "Very good reason");
-}
-
-// Test that an explicitly trusted SPDY proxy can push same-origin HTTPS
-// resources.
-TEST_F(HttpNetworkTransactionTest, SameOriginProxyPushCorrectness) {
-  // Configure the proxy delegate to allow cross-origin SPDY pushes.
-  auto proxy_delegate = std::make_unique<TestProxyDelegate>();
-  proxy_delegate->set_trusted_spdy_proxy(
-      net::ProxyServer::FromURI("myproxy:70", net::ProxyServer::SCHEME_HTTP));
-
-  HttpRequestInfo request;
-
-  request.method = "GET";
-  request.url = GURL("http://www.example.org/");
-  request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-
-  // Configure against https proxy server "myproxy:70".
-  session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixed(
-          "https://myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  RecordingBoundTestNetLog log;
-  session_deps_.net_log = log.bound().net_log();
-
-  // Enable cross-origin push.
-  session_deps_.proxy_resolution_service->SetProxyDelegate(
-      proxy_delegate.get());
-
-  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
-
-  spdy::SpdySerializedFrame stream1_syn(
-      spdy_util_.ConstructSpdyGet("http://www.example.org/", 1, LOWEST));
-  spdy::SpdySerializedFrame stream2_priority(
-      spdy_util_.ConstructSpdyPriority(2, 1, IDLE, true));
-
-  MockWrite spdy_writes[] = {
-      CreateMockWrite(stream1_syn, 0, ASYNC),
-      CreateMockWrite(stream2_priority, 3, ASYNC),
-  };
-
-  spdy::SpdySerializedFrame stream1_reply(
-      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
-
-  spdy::SpdySerializedFrame stream2_syn(spdy_util_.ConstructSpdyPush(
-      nullptr, 0, 2, 1, "http://www.example.org/foo.dat"));
-
-  spdy::SpdySerializedFrame stream1_body(
-      spdy_util_.ConstructSpdyDataFrame(1, true));
-
-  spdy::SpdySerializedFrame stream2_reply(
-      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
-
-  spdy::SpdySerializedFrame stream2_body(
-      spdy_util_.ConstructSpdyDataFrame(1, true));
-
-  MockRead spdy_reads[] = {
-      CreateMockRead(stream1_reply, 1, ASYNC),
-      CreateMockRead(stream2_syn, 2, ASYNC),
-      CreateMockRead(stream1_body, 4, ASYNC),
-      CreateMockRead(stream2_body, 5, ASYNC),
-      MockRead(SYNCHRONOUS, ERR_IO_PENDING, 6),  // Force a hang
-  };
-
-  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
-  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
-  // Negotiate SPDY to the proxy
-  SSLSocketDataProvider proxy(ASYNC, OK);
-  proxy.next_proto = kProtoHTTP2;
-  session_deps_.socket_factory->AddSSLSocketDataProvider(&proxy);
-
-  auto trans =
-      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
-  TestCompletionCallback callback;
-  int rv = trans->Start(&request, callback.callback(), log.bound());
-  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-
-  rv = callback.WaitForResult();
-  EXPECT_THAT(rv, IsOk());
-  const HttpResponseInfo* response = trans->GetResponseInfo();
-
-  ASSERT_TRUE(response);
-  EXPECT_TRUE(response->headers->IsKeepAlive());
-
-  EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
-
-  std::string response_data;
-  rv = ReadTransaction(trans.get(), &response_data);
-  EXPECT_THAT(rv, IsOk());
-  EXPECT_EQ("hello!", response_data);
 
   trans.reset();
   session->CloseAllConnections(ERR_FAILED, "Very good reason");

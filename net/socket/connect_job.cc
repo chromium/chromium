@@ -138,9 +138,8 @@ std::unique_ptr<ConnectJob> ConnectJob::CreateConnectJob(
 
       http_proxy_params = base::MakeRefCounted<HttpProxySocketParams>(
           std::move(proxy_tcp_params), std::move(ssl_params),
-          proxy_server.is_quic(), endpoint, proxy_server.is_trusted_proxy(),
-          force_tunnel || using_ssl, *proxy_annotation_tag,
-          network_isolation_key);
+          proxy_server.is_quic(), endpoint, force_tunnel || using_ssl,
+          *proxy_annotation_tag, network_isolation_key);
     } else {
       DCHECK(proxy_server.is_socks());
       socks_params = base::MakeRefCounted<SOCKSSocketParams>(

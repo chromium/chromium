@@ -45,9 +45,6 @@ class NET_EXPORT ProxyServer {
   ProxyServer() {}
 
   ProxyServer(Scheme scheme, const HostPortPair& host_port_pair);
-  ProxyServer(Scheme scheme,
-              const HostPortPair& host_port_pair,
-              bool is_trusted_proxy);
 
   bool is_valid() const { return scheme_ != SCHEME_INVALID; }
 
@@ -82,10 +79,6 @@ class NET_EXPORT ProxyServer {
   // Returns true if the proxy server has HTTP semantics, AND
   // the channel between the client and proxy server is secure.
   bool is_secure_http_like() const { return is_https() || is_quic(); }
-
-  // Returns true if the proxy is trusted to push cross-origin resources from
-  // HTTP hosts.
-  bool is_trusted_proxy() const { return is_trusted_proxy_; }
 
   const HostPortPair& host_port_pair() const;
 
@@ -161,17 +154,15 @@ class NET_EXPORT ProxyServer {
 
   bool operator==(const ProxyServer& other) const {
     return scheme_ == other.scheme_ &&
-           host_port_pair_.Equals(other.host_port_pair_) &&
-           is_trusted_proxy_ == other.is_trusted_proxy_;
+           host_port_pair_.Equals(other.host_port_pair_);
   }
 
   bool operator!=(const ProxyServer& other) const { return !(*this == other); }
 
   // Comparator function so this can be placed in a std::map.
   bool operator<(const ProxyServer& other) const {
-    return std::tie(scheme_, host_port_pair_, is_trusted_proxy_) <
-           std::tie(other.scheme_, other.host_port_pair_,
-                    other.is_trusted_proxy_);
+    return std::tie(scheme_, host_port_pair_) <
+           std::tie(other.scheme_, other.host_port_pair_);
   }
 
   // Returns the estimate of dynamically allocated memory in bytes.
@@ -185,7 +176,6 @@ class NET_EXPORT ProxyServer {
 
   Scheme scheme_ = SCHEME_INVALID;
   HostPortPair host_port_pair_;
-  bool is_trusted_proxy_ = false;
 };
 
 typedef std::pair<HostPortPair, ProxyServer> HostPortProxyPair;
