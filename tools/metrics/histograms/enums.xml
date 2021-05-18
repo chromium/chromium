@@ -32642,6 +32642,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="83" label="SharedAutofill"/>
   <int value="84" label="DirectSockets"/>
   <int value="85" label="ClientHintPrefersColorScheme"/>
+  <int value="86" label="WindowPlacement"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

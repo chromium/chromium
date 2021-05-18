@@ -15,7 +15,7 @@ WindowPlacementPermissionContext::WindowPlacementPermissionContext(
     : permissions::PermissionContextBase(
           browser_context,
           ContentSettingsType::WINDOW_PLACEMENT,
-          blink::mojom::PermissionsPolicyFeature::kNotFound) {}
+          blink::mojom::PermissionsPolicyFeature::kWindowPlacement) {}
 
 WindowPlacementPermissionContext::~WindowPlacementPermissionContext() = default;
 

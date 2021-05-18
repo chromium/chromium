@@ -308,5 +308,10 @@
       permissions_policy_name: "xr-spatial-tracking",
       depends_on: ["WebXR"],
     },
+    {
+      name: "WindowPlacement",
+      permissions_policy_name: "window-placement",
+      depends_on: ["WindowPlacement"],
+    },
   ],
 }

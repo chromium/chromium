@@ -6499,6 +6499,7 @@ domain Page
       usb
       vertical-scroll
       web-share
+      window-placement
       xr-spatial-tracking
 
   # Reason for a permissions policy feature to be disabled.

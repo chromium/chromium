@@ -54,5 +54,6 @@ sync-xhr
 trust-token-redemption
 usb
 vertical-scroll
+window-placement
 xr-spatial-tracking
 
