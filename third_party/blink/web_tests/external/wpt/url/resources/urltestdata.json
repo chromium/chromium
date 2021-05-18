@@ -3156,7 +3156,8 @@
   {
     "input": "http:/:@/www.example.com",
     "base": "about:blank",
-    "failure": true
+    "failure": true,
+    "inputCanBeRelative": true
   },
   {
     "input": "http://user@/www.example.com",
@@ -3166,12 +3167,14 @@
   {
     "input": "http:@/www.example.com",
     "base": "about:blank",
-    "failure": true
+    "failure": true,
+    "inputCanBeRelative": true
   },
   {
     "input": "http:/@/www.example.com",
     "base": "about:blank",
-    "failure": true
+    "failure": true,
+    "inputCanBeRelative": true
   },
   {
     "input": "http://@/www.example.com",
@@ -3181,17 +3184,20 @@
   {
     "input": "https:@/www.example.com",
     "base": "about:blank",
-    "failure": true
+    "failure": true,
+    "inputCanBeRelative": true
   },
   {
     "input": "http:a:b@/www.example.com",
     "base": "about:blank",
-    "failure": true
+    "failure": true,
+    "inputCanBeRelative": true
   },
   {
     "input": "http:/a:b@/www.example.com",
     "base": "about:blank",
-    "failure": true
+    "failure": true,
+    "inputCanBeRelative": true
   },
   {
     "input": "http://a:b@/www.example.com",
@@ -3201,7 +3207,8 @@
   {
     "input": "http::@/www.example.com",
     "base": "about:blank",
-    "failure": true
+    "failure": true,
+    "inputCanBeRelative": true
   },
   {
     "input": "http:a:@www.example.com",
@@ -7331,17 +7338,20 @@
   {
     "input": "a",
     "base": "about:blank",
-    "failure": true
+    "failure": true,
+    "inputCanBeRelative": true
   },
   {
     "input": "a/",
     "base": "about:blank",
-    "failure": true
+    "failure": true,
+    "inputCanBeRelative": true
   },
   {
     "input": "a//",
     "base": "about:blank",
-    "failure": true
+    "failure": true,
+    "inputCanBeRelative": true
   },
   "Bases that don't fail to parse but fail to be bases",
   {
