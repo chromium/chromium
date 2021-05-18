@@ -38,6 +38,9 @@
 #include <malloc.h>
 #include "base/test/malloc_wrapper.h"
 #endif
+#if defined(OS_ANDROID)
+#include "base/android/build_info.h"
+#endif
 
 #if defined(OS_WIN)
 
@@ -170,11 +173,21 @@ class OutOfMemoryDeathTest : public OutOfMemoryTest {
     base::allocator::UninterceptMallocZonesForTesting();
   }
 #endif
+
+  // These tests don't work properly on old x86 Android; crbug.com/1181112
+  bool ShouldSkipTest() {
+#if defined(OS_ANDROID) && defined(ARCH_CPU_X86)
+    return base::android::BuildInfo::GetInstance()->sdk_int() <
+           base::android::SDK_VERSION_NOUGAT;
+#endif
+    return false;
+  }
 };
 
-// Failing on x86 android, crbug.com/1181112
-#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86)
 TEST_F(OutOfMemoryDeathTest, New) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = operator new(test_size_);
@@ -182,6 +195,9 @@ TEST_F(OutOfMemoryDeathTest, New) {
 }
 
 TEST_F(OutOfMemoryDeathTest, NewArray) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = new char[test_size_];
@@ -189,6 +205,9 @@ TEST_F(OutOfMemoryDeathTest, NewArray) {
 }
 
 TEST_F(OutOfMemoryDeathTest, Malloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = malloc(test_size_);
@@ -196,6 +215,9 @@ TEST_F(OutOfMemoryDeathTest, Malloc) {
 }
 
 TEST_F(OutOfMemoryDeathTest, Realloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = realloc(nullptr, test_size_);
@@ -203,6 +225,9 @@ TEST_F(OutOfMemoryDeathTest, Realloc) {
 }
 
 TEST_F(OutOfMemoryDeathTest, Calloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = calloc(1024, test_size_ / 1024L);
@@ -210,16 +235,21 @@ TEST_F(OutOfMemoryDeathTest, Calloc) {
 }
 
 TEST_F(OutOfMemoryDeathTest, AlignedAlloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = base::AlignedAlloc(test_size_, 8);
   });
 }
-#endif
 
 // POSIX does not define an aligned realloc function.
 #if defined(OS_WIN)
 TEST_F(OutOfMemoryDeathTest, AlignedRealloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = _aligned_realloc(nullptr, test_size_, 8);
