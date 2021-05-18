@@ -183,7 +183,8 @@
       "contexts": ["webui"],
       "matches": [
         "chrome://feedback/*",
-        "chrome://cast-feedback/*"
+        "chrome://cast-feedback/*",
+        "chrome://os-feedback/*"
       ]
     }
   ],
