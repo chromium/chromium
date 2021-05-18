@@ -37,6 +37,7 @@ static_library("backend") {
   ]
 
   deps = [
+    "//ash/constants:constants",
     "//ash/public/cpp",
     "//base",
     "//chromeos/components/diagnostics_ui/mojom",
