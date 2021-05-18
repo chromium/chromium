@@ -16,6 +16,8 @@ class ToggleMicrophoneButton : public views::ImageButton {
 
   void SetMutedState(bool is_muted);
 
+  bool is_muted_for_testing() const { return is_muted_; }
+
  protected:
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
