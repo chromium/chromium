@@ -65,7 +65,8 @@ suite('history-toolbar', function() {
     testService.setQueryResult(
         {info: createHistoryInfo('Test'), value: TEST_HISTORY_RESULTS});
     toolbar.shadowRoot.querySelector('cr-toolbar')
-        .fire('search-changed', 'Test');
+        .dispatchEvent(new CustomEvent(
+            'search-changed', {bubbles: true, composed: true, detail: 'Test'}));
     return testService.whenCalled('queryHistory').then(query => {
       assertEquals('Test', query);
     });
@@ -79,7 +80,9 @@ suite('history-toolbar', function() {
       value: TEST_HISTORY_RESULTS,
     });
     toolbar.shadowRoot.querySelector('cr-toolbar')
-        .fire('search-changed', 'Test2');
+        .dispatchEvent(new CustomEvent(
+            'search-changed',
+            {bubbles: true, composed: true, detail: 'Test2'}));
     return testService.whenCalled('queryHistory')
         .then(flushTasks)
         .then(() => {

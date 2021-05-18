@@ -257,6 +257,8 @@ os_settings_auto_imports = settings_auto_imports +
                              "chrome/browser/resources/settings/chromeos/os_settings_page/main_page_behavior.html|MainPageBehavior",
                              "chrome/browser/resources/settings/chromeos/search_handler.html|getSearchHandler, setSearchHandlerForTesting",
                              "ui/webui/resources/cr_components/chromeos/network/network_listener_behavior.html|NetworkListenerBehavior",
+                             "ui/webui/resources/cr_elements/cr_toolbar/cr_toolbar.html|CrToolbarElement",
+                             "ui/webui/resources/cr_elements/cr_toolbar/cr_toolbar_search_field.html|CrToolbarSearchFieldElement",
                              "ui/webui/resources/cr_elements/cr_slider/cr_slider.html|SliderTick",
                              "ui/webui/resources/html/assert.html|assert,assertNotReached",
                              "ui/webui/resources/html/cr.html|sendWithPromise,removeWebUIListener,addWebUIListener,WebUIListener",

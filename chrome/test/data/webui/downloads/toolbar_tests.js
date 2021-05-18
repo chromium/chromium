@@ -38,13 +38,15 @@ suite('toolbar tests', function() {
   });
 
   test('search starts spinner', function() {
-    toolbar.$.toolbar.fire('search-changed', 'a');
+    toolbar.$.toolbar.dispatchEvent(new CustomEvent(
+        'search-changed', {composed: true, bubbles: true, detail: 'a'}));
     assertTrue(toolbar.spinnerActive);
 
     // Pretend the manager got results and set this to false.
     toolbar.spinnerActive = false;
 
-    toolbar.$.toolbar.fire('search-changed', 'a ');  // Same term plus a space.
+    toolbar.$.toolbar.dispatchEvent(new CustomEvent(
+        'search-changed', {composed: true, bubbles: true, detail: 'a '}));
     assertFalse(toolbar.spinnerActive);
   });
 

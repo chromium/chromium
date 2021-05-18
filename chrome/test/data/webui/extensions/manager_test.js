@@ -82,7 +82,10 @@ suite(extension_manager_tests.suiteName, function() {
   });
 
   test(assert(extension_manager_tests.TestNames.ChangePages), function() {
-    manager.$$('extensions-toolbar').$$('cr-toolbar').$$('#menuButton').click();
+    manager.$$('extensions-toolbar')
+        .$$('cr-toolbar')
+        .shadowRoot.querySelector('#menuButton')
+        .click();
     flush();
 
     // We start on the item list.
