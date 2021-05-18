@@ -43,10 +43,19 @@ ExternallyManagedAppManagerImpl::ExternallyManagedAppManagerImpl(
 
 ExternallyManagedAppManagerImpl::~ExternallyManagedAppManagerImpl() = default;
 
-void ExternallyManagedAppManagerImpl::Install(
+void ExternallyManagedAppManagerImpl::InstallNow(
     ExternalInstallOptions install_options,
     OnceInstallCallback callback) {
   pending_installs_.push_front(std::make_unique<TaskAndCallback>(
+      CreateInstallationTask(std::move(install_options)), std::move(callback)));
+
+  PostMaybeStartNext();
+}
+
+void ExternallyManagedAppManagerImpl::Install(
+    ExternalInstallOptions install_options,
+    OnceInstallCallback callback) {
+  pending_installs_.push_back(std::make_unique<TaskAndCallback>(
       CreateInstallationTask(std::move(install_options)), std::move(callback)));
 
   PostMaybeStartNext();

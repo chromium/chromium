@@ -91,6 +91,14 @@ class ExternallyManagedAppManager {
   //
   // Fails if the same operation has been queued before. Should only be used in
   // response to a user action e.g. the user clicked an install button.
+  virtual void InstallNow(ExternalInstallOptions install_options,
+                          OnceInstallCallback callback) = 0;
+
+  // Queues an installation operation the end of current tasks. Runs its
+  // callback with the URL in |install_options| and with the id of the installed
+  // app or an empty string if the installation fails.
+  //
+  // Fails if the same operation has been queued before.
   virtual void Install(ExternalInstallOptions install_options,
                        OnceInstallCallback callback) = 0;
 

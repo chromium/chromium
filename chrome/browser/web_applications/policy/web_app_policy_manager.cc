@@ -147,8 +147,8 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
 
   // If the app is not a placeholder app, ExternallyManagedAppManager will
   // ignore the request.
-  externally_managed_app_manager_->Install(std::move(install_options),
-                                           base::DoNothing());
+  externally_managed_app_manager_->InstallNow(std::move(install_options),
+                                              base::DoNothing());
 }
 
 // static

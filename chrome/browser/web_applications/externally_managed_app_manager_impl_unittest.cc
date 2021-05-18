@@ -453,7 +453,7 @@ class ExternallyManagedAppManagerImplTest
     absl::optional<GURL> url;
     absl::optional<InstallResultCode> code;
 
-    externally_managed_app_manager_impl()->Install(
+    externally_managed_app_manager_impl()->InstallNow(
         std::move(install_options),
         base::BindLambdaForTesting(
             [&](const GURL& u,
@@ -649,7 +649,7 @@ TEST_F(ExternallyManagedAppManagerImplTest,
       FooWebAppUrl(), InstallResultCode::kSuccessNewInstall);
 
   base::RunLoop run_loop;
-  externally_managed_app_manager_impl()->Install(
+  externally_managed_app_manager_impl()->InstallNow(
       GetFooInstallOptions(),
       base::BindLambdaForTesting(
           [&](const GURL& url,
@@ -665,7 +665,7 @@ TEST_F(ExternallyManagedAppManagerImplTest,
 
             run_loop.Quit();
           }));
-  externally_managed_app_manager_impl()->Install(
+  externally_managed_app_manager_impl()->InstallNow(
       GetBarInstallOptions(),
       base::BindLambdaForTesting(
           [&](const GURL& url,
@@ -691,7 +691,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_PendingSuccessfulTask) {
   base::RunLoop foo_run_loop;
   base::RunLoop bar_run_loop;
 
-  externally_managed_app_manager_impl()->Install(
+  externally_managed_app_manager_impl()->InstallNow(
       GetFooInstallOptions(),
       base::BindLambdaForTesting(
           [&](const GURL& url,
@@ -709,7 +709,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_PendingSuccessfulTask) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(install_task_manager().num_pending_tasks(), 1u);
 
-  externally_managed_app_manager_impl()->Install(
+  externally_managed_app_manager_impl()->InstallNow(
       GetBarInstallOptions(),
       base::BindLambdaForTesting(
           [&](const GURL& url,
@@ -739,7 +739,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, InstallWithWebAppInfo_Succeeds) {
 
   base::RunLoop foo_run_loop;
 
-  externally_managed_app_manager_impl()->Install(
+  externally_managed_app_manager_impl()->InstallNow(
       GetFooInstallOptionsWithWebAppInfo(),
       base::BindLambdaForTesting(
           [&](const GURL& url,
@@ -833,7 +833,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_PendingFailingTask) {
   base::RunLoop foo_run_loop;
   base::RunLoop bar_run_loop;
 
-  externally_managed_app_manager_impl()->Install(
+  externally_managed_app_manager_impl()->InstallNow(
       GetFooInstallOptions(),
       base::BindLambdaForTesting(
           [&](const GURL& url,
@@ -849,7 +849,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_PendingFailingTask) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(install_task_manager().num_pending_tasks(), 1u);
 
-  externally_managed_app_manager_impl()->Install(
+  externally_managed_app_manager_impl()->InstallNow(
       GetBarInstallOptions(),
       base::BindLambdaForTesting(
           [&](const GURL& url,
@@ -897,13 +897,13 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_ReentrantCallback) {
         EXPECT_EQ(1u, install_run_count());
         EXPECT_EQ(GetFooInstallOptions(), last_install_options());
 
-        externally_managed_app_manager_impl()->Install(GetBarInstallOptions(),
-                                                       final_callback);
+        externally_managed_app_manager_impl()->InstallNow(
+            GetBarInstallOptions(), final_callback);
       });
 
   // Call Install() with a callback that tries to install another app.
-  externally_managed_app_manager_impl()->Install(GetFooInstallOptions(),
-                                                 reentrant_callback);
+  externally_managed_app_manager_impl()->InstallNow(GetFooInstallOptions(),
+                                                    reentrant_callback);
   run_loop.Run();
 }
 
@@ -944,7 +944,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_ConcurrentCallsSameApp) {
   base::RunLoop run_loop;
   bool first_callback_ran = false;
 
-  externally_managed_app_manager_impl()->Install(
+  externally_managed_app_manager_impl()->InstallNow(
       GetFooInstallOptions(),
       base::BindLambdaForTesting(
           [&](const GURL& url,
@@ -963,7 +963,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_ConcurrentCallsSameApp) {
             run_loop.Quit();
           }));
 
-  externally_managed_app_manager_impl()->Install(
+  externally_managed_app_manager_impl()->InstallNow(
       GetFooInstallOptions(),
       base::BindLambdaForTesting(
           [&](const GURL& url,
@@ -1226,7 +1226,7 @@ TEST_F(ExternallyManagedAppManagerImplTest,
           }));
 
   // Queue through Install.
-  externally_managed_app_manager_impl()->Install(
+  externally_managed_app_manager_impl()->InstallNow(
       GetQuxInstallOptions(),
       base::BindLambdaForTesting(
           [&](const GURL& url,
@@ -1260,7 +1260,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, InstallApps_PendingInstall) {
   base::RunLoop run_loop;
 
   // Queue through Install.
-  externally_managed_app_manager_impl()->Install(
+  externally_managed_app_manager_impl()->InstallNow(
       GetQuxInstallOptions(),
       base::BindLambdaForTesting(
           [&](const GURL& url,
@@ -1452,7 +1452,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, UninstallApps_PendingInstall) {
       FooWebAppUrl(), InstallResultCode::kSuccessNewInstall);
 
   base::RunLoop run_loop;
-  externally_managed_app_manager_impl()->Install(
+  externally_managed_app_manager_impl()->InstallNow(
       GetFooInstallOptions(),
       base::BindLambdaForTesting(
           [&](const GURL& url,

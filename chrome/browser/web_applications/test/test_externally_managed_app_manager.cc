@@ -42,6 +42,12 @@ void TestExternallyManagedAppManager::SetInstallResultCode(
   install_result_code_ = result_code;
 }
 
+void TestExternallyManagedAppManager::InstallNow(
+    ExternalInstallOptions install_options,
+    OnceInstallCallback callback) {
+  Install(install_options, std::move(callback));
+}
+
 void TestExternallyManagedAppManager::Install(
     ExternalInstallOptions install_options,
     OnceInstallCallback callback) {
