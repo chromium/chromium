@@ -740,6 +740,33 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   StartSigninFlow();
 }
 
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       OpenPickerAndClose) {
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  WaitForLayoutWithoutToolbar();
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  ProfilePicker::Hide();
+  WaitForPickerClosed();
+}
+
+// Regression test for https://crbug.com/1205147.
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       OpenPickerWhileClosing) {
+  // Open the first picker.
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  WaitForLayoutWithoutToolbar();
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+
+  // Request to open the second picker window while the first one is still
+  // closing.
+  ProfilePicker::Hide();
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+
+  // The first picker should be closed and the second picker should be
+  // displayed.
+  WaitForPickerClosedAndReopenedImmediately();
+}
+
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, OpenProfile) {
   AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
       base::TimeDelta::FromSeconds(0));

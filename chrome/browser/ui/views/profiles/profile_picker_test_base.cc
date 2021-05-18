@@ -157,6 +157,12 @@ void ProfilePickerTestBase::WaitForPickerClosed() {
   ASSERT_FALSE(ProfilePicker::IsOpen());
 }
 
+void ProfilePickerTestBase::WaitForPickerClosedAndReopenedImmediately() {
+  ASSERT_TRUE(ProfilePicker::IsOpen());
+  ViewDeletedWaiter(view()).Wait();
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+}
+
 content::WebContents* ProfilePickerTestBase::web_contents() {
   if (!web_view())
     return nullptr;

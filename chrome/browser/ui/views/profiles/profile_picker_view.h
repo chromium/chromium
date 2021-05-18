@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
@@ -98,7 +99,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   ProfilePickerView();
   ~ProfilePickerView() override;
 
-  enum State { kNotStarted = 0, kInitializing = 1, kReady = 2 };
+  enum State { kNotStarted = 0, kInitializing = 1, kReady = 2, kClosing = 3 };
 
   class NavigationFinishedObserver : public content::WebContentsObserver {
    public:
@@ -201,6 +202,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
   ProfilePicker::EntryPoint entry_point_ =
       ProfilePicker::EntryPoint::kOnStartup;
   State state_ = State::kNotStarted;
+  absl::optional<ProfilePicker::EntryPoint>
+      restart_with_entry_point_on_window_closing_;
 
   // A mapping between accelerators and command IDs.
   std::map<ui::Accelerator, int> accelerator_table_;

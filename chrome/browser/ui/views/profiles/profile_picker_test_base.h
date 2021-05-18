@@ -44,6 +44,7 @@ class ProfilePickerTestBase : public InProcessBrowserTest {
 
   // Waits until the picker gets closed.
   void WaitForPickerClosed();
+  void WaitForPickerClosedAndReopenedImmediately();
 
   // Gets the picker's web contents.
   content::WebContents* web_contents();

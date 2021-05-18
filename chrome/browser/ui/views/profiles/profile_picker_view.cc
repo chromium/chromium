@@ -421,8 +421,12 @@ void ProfilePickerView::CreateToolbarBackButton() {
 }
 
 void ProfilePickerView::Clear() {
+  if (state_ == kClosing)
+    return;
+
   if (state_ == kReady) {
     GetWidget()->Close();
+    state_ = kClosing;
     return;
   }
 
@@ -514,6 +518,12 @@ void ProfilePickerView::Display(ProfilePicker::EntryPoint entry_point) {
 
   if (state_ == kInitializing)
     return;
+
+  if (state_ == kClosing) {
+    if (!restart_with_entry_point_on_window_closing_.has_value())
+      restart_with_entry_point_on_window_closing_ = entry_point;
+    return;
+  }
 
   GetWidget()->Activate();
 }
@@ -665,6 +675,12 @@ void ProfilePickerView::WindowClosing() {
   // may have already opened a new instance).
   if (g_profile_picker_view == this)
     g_profile_picker_view = nullptr;
+
+  // Show a new profile window if it has been requested while the current window
+  // was closing.
+  if (state_ == kClosing && restart_with_entry_point_on_window_closing_) {
+    ProfilePicker::Show(*restart_with_entry_point_on_window_closing_);
+  }
 }
 
 views::ClientView* ProfilePickerView::CreateClientView(views::Widget* widget) {
