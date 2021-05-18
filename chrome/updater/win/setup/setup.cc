@@ -176,6 +176,11 @@ int Setup(UpdaterScope scope) {
   AddComInterfacesWorkItems(key, versioned_dir->Append(kUpdaterExe),
                             install_list.get());
 
+  if (scope == UpdaterScope::kSystem) {
+    AddComServiceWorkItems(versioned_dir->Append(kUpdaterExe),
+                           install_list.get());
+  }
+
   base::CommandLine run_updater_wake_command(
       versioned_dir->Append(kUpdaterExe));
   run_updater_wake_command.AppendSwitch(kWakeSwitch);
