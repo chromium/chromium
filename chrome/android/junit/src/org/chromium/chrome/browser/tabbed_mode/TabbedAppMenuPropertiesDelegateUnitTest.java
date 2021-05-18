@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettingsJni;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
@@ -61,9 +60,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.prefs.PrefService;
-import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content.browser.ContentFeatureListImpl;
 import org.chromium.content.browser.ContentFeatureListImplJni;
@@ -117,10 +113,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock
     Profile mProfileMock;
     @Mock
-    private UserPrefs.Natives mUserPrefsJniMock;
-    @Mock
-    private PrefService mPrefServiceMock;
-    @Mock
     private DataReductionProxySettings.Natives mDataReductionJniMock;
     @Mock
     private ContentFeatureListImpl.Natives mContentFeatureListJniMock;
@@ -170,10 +162,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mTabModelFilter);
         when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
         jniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
-        jniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         when(mProfileJniMock.fromWebContents(any(WebContents.class))).thenReturn(mProfileMock);
-        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefServiceMock);
-        when(mPrefServiceMock.getBoolean(Pref.ENABLE_WEB_FEED_UI)).thenReturn(true);
         jniMocker.mock(ManagedBrowserUtilsJni.TEST_HOOKS, mManagedBrowserUtilsJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
         jniMocker.mock(DataReductionProxySettingsJni.TEST_HOOKS, mDataReductionJniMock);

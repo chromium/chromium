@@ -40,7 +40,6 @@ const char kClientInstanceId[] = "feedv2.client_instance_id";
 // This pref applies to all discover APIs despite the string.
 const char kDiscoverAPIEndpointOverride[] = "feedv2.actions_endpoint_override";
 const char kExperiments[] = "feedv2.experiments";
-const char kEnableWebFeedUI[] = "webfeed_ui.enable";
 const char kEnableWebFeedFollowIntroDebug[] =
     "webfeed_follow_intro_debug.enable";
 const char kReliabilityLoggingIdSalt[] = "feedv2.reliability_logging_id_salt";
@@ -50,6 +49,7 @@ const char kIsWebFeedSubscriber[] = "webfeed.is_subscriber";
 
 // Deprecated prefs:
 namespace {
+// Deprecated 02/2021
 const char kLastRefreshWasSignedIn[] = "feed.last_refresh_was_signed_in";
 const char kBackgroundRefreshPeriod[] = "feed.background_refresh_period";
 const char kThrottlerRequestCount[] = "feed.refresh_throttler.count";
@@ -58,18 +58,19 @@ const char kUserClassifierAverageSuggestionsViwedPerHour[] =
     "feed.user_classifier.average_suggestions_veiwed_per_hour";
 const char kUserClassifierAverageSuggestionsUsedPerHour[] =
     "feed.user_classifier.average_suggestions_used_per_hour";
-
 const char kUserClassifierLastTimeToViewSuggestions[] =
     "feed.user_classifier.last_time_to_view_suggestions";
 const char kUserClassifierLastTimeToUseSuggestions[] =
     "feed.user_classifier.last_time_to_use_suggestions";
+
+// Deprecated 05/2021 (can be removed along with 02/2021)
+const char kEnableWebFeedUI[] = "webfeed_ui.enable";
 
 void RegisterObsoletePrefsFeb_2021(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kLastRefreshWasSignedIn, false);
   registry->RegisterTimeDeltaPref(kBackgroundRefreshPeriod, base::TimeDelta());
   registry->RegisterIntegerPref(kThrottlerRequestCount, 0);
   registry->RegisterIntegerPref(kThrottlerRequestsDay, 0);
-
   registry->RegisterDoublePref(kUserClassifierAverageSuggestionsViwedPerHour,
                                0.0);
   registry->RegisterDoublePref(kUserClassifierAverageSuggestionsUsedPerHour,
@@ -78,6 +79,7 @@ void RegisterObsoletePrefsFeb_2021(PrefRegistrySimple* registry) {
                              base::Time());
   registry->RegisterTimePref(kUserClassifierLastTimeToUseSuggestions,
                              base::Time());
+  registry->RegisterBooleanPref(kEnableWebFeedUI, false);
 }
 }  // namespace
 
@@ -101,7 +103,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(feed::prefs::kNoticeCardViewsCount, 0);
   registry->RegisterIntegerPref(feed::prefs::kNoticeCardClicksCount, 0);
   registry->RegisterDictionaryPref(feed::prefs::kExperiments);
-  registry->RegisterBooleanPref(feed::prefs::kEnableWebFeedUI, false);
   registry->RegisterBooleanPref(feed::prefs::kEnableWebFeedFollowIntroDebug,
                                 false);
   registry->RegisterUint64Pref(feed::prefs::kReliabilityLoggingIdSalt, 0);
@@ -120,11 +121,11 @@ void MigrateObsoleteProfilePrefsFeb_2021(PrefService* prefs) {
   prefs->ClearPref(kBackgroundRefreshPeriod);
   prefs->ClearPref(kThrottlerRequestCount);
   prefs->ClearPref(kThrottlerRequestsDay);
-
   prefs->ClearPref(kUserClassifierAverageSuggestionsViwedPerHour);
   prefs->ClearPref(kUserClassifierAverageSuggestionsUsedPerHour);
   prefs->ClearPref(kUserClassifierLastTimeToViewSuggestions);
   prefs->ClearPref(kUserClassifierLastTimeToUseSuggestions);
+  prefs->ClearPref(kEnableWebFeedUI);
 }
 
 }  // namespace feed

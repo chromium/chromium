@@ -32,8 +32,7 @@ public final class FeedFeatures {
      * @return Whether the WebFeed UI is enabled.
      */
     public static boolean isWebFeedUIEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
-                && getPrefService().getBoolean(Pref.ENABLE_WEB_FEED_UI);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED);
     }
 
     /**

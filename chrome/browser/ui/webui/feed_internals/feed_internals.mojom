@@ -21,9 +21,6 @@ struct Properties {
   // Whether prefetching for offline availability is enabled.
   bool is_prefetching_enabled;
 
-  // Whether the WebFeed UI is enabled.
-  bool is_web_feed_ui_enabled;
-
   // Whether debugging the WebFeed follow intro is enabled.
   bool is_web_feed_follow_intro_debug_enabled;
 
@@ -138,9 +135,6 @@ interface PageHandler {
   // Overrides the feed stream data with the payload inside a feedui::Slice for
   // testing purpose. See go/feed-stream-data-testing for more details.
   OverrideFeedStreamData(array<uint8> data);
-
-  // Sets whether the WebFeed UI is enabled.
-  SetWebFeedUIEnabled(bool enabled);
 
   // Sets whether debugging the WebFeed follow intro is enabled.
   SetWebFeedFollowIntroDebugEnabled(bool enabled);
