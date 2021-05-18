@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_CROSAPI_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_CROSAPI_H_
 
+#include <string>
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom-forward.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -66,6 +70,8 @@ class WebAppsCrosapi : public KeyedService,
   void OnApps(std::vector<apps::mojom::AppPtr> deltas) override;
   void RegisterAppController(
       mojo::PendingRemote<crosapi::mojom::AppController> controller) override;
+  void OnCapabilityAccesses(
+      std::vector<apps::mojom::CapabilityAccessPtr> deltas) override;
 
   void OnCrosapiDisconnected();
   void OnControllerDisconnected();

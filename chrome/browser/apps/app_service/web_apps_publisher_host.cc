@@ -11,12 +11,15 @@
 #include "chrome/browser/apps/app_service/web_apps_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 namespace apps {
@@ -74,12 +77,14 @@ void WebAppsPublisherHost::Init() {
         service->GetRemote<crosapi::mojom::AppPublisher>().get();
   }
 
+  media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
+
   provider_->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&WebAppsPublisherHost::OnReady,
                                 weak_ptr_factory_.GetWeakPtr()));
   registrar_observation_.Observe(&registrar());
   content_settings_observation_.Observe(
-      HostContentSettingsMapFactory::GetForProfile(profile_));
+      HostContentSettingsMapFactory::GetForProfile(profile()));
 }
 
 web_app::WebAppRegistrar& WebAppsPublisherHost::registrar() const {
@@ -113,7 +118,7 @@ void WebAppsPublisherHost::Uninstall(
     return;
   }
 
-  apps_util::UninstallWebApp(profile_, web_app, uninstall_source,
+  apps_util::UninstallWebApp(profile(), web_app, uninstall_source,
                              clear_site_data, report_abuse);
 }
 
@@ -142,6 +147,12 @@ void WebAppsPublisherHost::OnWebAppWillBeUninstalled(
   if (!web_app) {
     return;
   }
+
+  // TODO(crbug.com/1194709): Keep consistent behavior with WebAppsChromeOs:
+  // remove notifications for app, update paused apps.
+
+  auto result = media_requests_.RemoveRequests(app_id);
+  ModifyCapabilityAccess(app_id, result.camera, result.microphone);
 
   Publish(
       apps_util::ConvertUninstalledWebApp(web_app, apps::mojom::AppType::kWeb));
@@ -192,12 +203,69 @@ void WebAppsPublisherHost::OnContentSettingChanged(
       apps::mojom::AppPtr app = apps::mojom::App::New();
       app->app_type = apps::mojom::AppType::kWeb;
       app->app_id = web_app.app_id();
-      apps_util::PopulateWebAppPermissions(profile_, &web_app,
+      apps_util::PopulateWebAppPermissions(profile(), &web_app,
                                            &app->permissions);
 
       Publish(std::move(app));
     }
   }
+}
+
+void WebAppsPublisherHost::OnRequestUpdate(
+    int render_process_id,
+    int render_frame_id,
+    blink::mojom::MediaStreamType stream_type,
+    const content::MediaRequestState state) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(
+          content::RenderFrameHost::FromID(render_process_id, render_frame_id));
+
+  if (!web_contents) {
+    return;
+  }
+
+  absl::optional<web_app::AppId> app_id =
+      web_app::FindInstalledAppWithUrlInScope(profile(), web_contents->GetURL(),
+                                              /*window_only=*/false);
+  if (!app_id.has_value()) {
+    return;
+  }
+
+  const web_app::WebApp* web_app = GetWebApp(app_id.value());
+  if (!web_app) {
+    return;
+  }
+
+  if (media_requests_.IsNewRequest(app_id.value(), web_contents, state)) {
+    content::WebContentsUserData<AppWebContentsData>::CreateForWebContents(
+        web_contents, this);
+  }
+
+  auto result = media_requests_.UpdateRequests(app_id.value(), web_contents,
+                                               stream_type, state);
+  ModifyCapabilityAccess(app_id.value(), result.camera, result.microphone);
+}
+
+void WebAppsPublisherHost::OnWebContentsDestroyed(
+    content::WebContents* web_contents) {
+  DCHECK(web_contents);
+
+  absl::optional<web_app::AppId> app_id =
+      web_app::FindInstalledAppWithUrlInScope(
+          profile(), web_contents->GetLastCommittedURL(),
+          /*window_only=*/false);
+  if (!app_id.has_value()) {
+    return;
+  }
+
+  const web_app::WebApp* web_app = GetWebApp(app_id.value());
+  if (!web_app) {
+    return;
+  }
+
+  auto result =
+      media_requests_.OnWebContentsDestroyed(app_id.value(), web_contents);
+  ModifyCapabilityAccess(app_id.value(), result.camera, result.microphone);
 }
 
 const web_app::WebApp* WebAppsPublisherHost::GetWebApp(
@@ -209,7 +277,7 @@ apps::mojom::AppPtr WebAppsPublisherHost::Convert(
     const web_app::WebApp* web_app,
     apps::mojom::Readiness readiness) {
   apps::mojom::AppPtr app = apps_util::ConvertWebApp(
-      profile_, web_app, apps::mojom::AppType::kWeb, readiness);
+      profile(), web_app, apps::mojom::AppType::kWeb, readiness);
   app->icon_key = icon_key_factory_.MakeIconKey(GetIconEffects(web_app));
   return app;
 }
@@ -222,6 +290,38 @@ void WebAppsPublisherHost::Publish(apps::mojom::AppPtr app) {
   std::vector<apps::mojom::AppPtr> apps;
   apps.push_back(std::move(app));
   remote_publisher_->OnApps(std::move(apps));
+}
+
+void WebAppsPublisherHost::ModifyCapabilityAccess(
+    const std::string& app_id,
+    absl::optional<bool> accessing_camera,
+    absl::optional<bool> accessing_microphone) {
+  if (!remote_publisher_) {
+    return;
+  }
+
+  if (!accessing_camera.has_value() && !accessing_microphone.has_value()) {
+    return;
+  }
+
+  std::vector<apps::mojom::CapabilityAccessPtr> capability_accesses;
+  auto capability_access = apps::mojom::CapabilityAccess::New();
+  capability_access->app_id = app_id;
+
+  if (accessing_camera.has_value()) {
+    capability_access->camera = accessing_camera.value()
+                                    ? apps::mojom::OptionalBool::kTrue
+                                    : apps::mojom::OptionalBool::kFalse;
+  }
+
+  if (accessing_microphone.has_value()) {
+    capability_access->microphone = accessing_microphone.value()
+                                        ? apps::mojom::OptionalBool::kTrue
+                                        : apps::mojom::OptionalBool::kFalse;
+  }
+
+  capability_accesses.push_back(std::move(capability_access));
+  remote_publisher_->OnCapabilityAccesses(std::move(capability_accesses));
 }
 
 }  // namespace apps

@@ -10,14 +10,19 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/location.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
@@ -34,6 +39,11 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
@@ -50,13 +60,21 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
     run_loop_ = std::make_unique<base::RunLoop>();
   }
 
-  const std::vector<apps::mojom::AppPtr>& get_deltas() const { return deltas_; }
+  const std::vector<apps::mojom::AppPtr>& get_deltas() const {
+    return app_deltas_;
+  }
+
+  const std::vector<apps::mojom::CapabilityAccessPtr>&
+  get_capability_access_deltas() const {
+    return capability_access_deltas_;
+  }
 
  private:
   // crosapi::mojom::AppPublisher:
   void OnApps(std::vector<apps::mojom::AppPtr> deltas) override {
-    deltas_.insert(deltas_.end(), std::make_move_iterator(deltas.begin()),
-                   std::make_move_iterator(deltas.end()));
+    app_deltas_.insert(app_deltas_.end(),
+                       std::make_move_iterator(deltas.begin()),
+                       std::make_move_iterator(deltas.end()));
     run_loop_->Quit();
   }
 
@@ -65,7 +83,16 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
     NOTIMPLEMENTED();
   }
 
-  std::vector<apps::mojom::AppPtr> deltas_;
+  void OnCapabilityAccesses(
+      std::vector<apps::mojom::CapabilityAccessPtr> deltas) override {
+    capability_access_deltas_.insert(capability_access_deltas_.end(),
+                                     std::make_move_iterator(deltas.begin()),
+                                     std::make_move_iterator(deltas.end()));
+    run_loop_->Quit();
+  }
+
+  std::vector<apps::mojom::AppPtr> app_deltas_;
+  std::vector<apps::mojom::CapabilityAccessPtr> capability_access_deltas_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
@@ -284,6 +311,56 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ContentSettings) {
             apps::mojom::PermissionValueType::kTriState);
   EXPECT_EQ((*camera_permission)->value,
             static_cast<uint32_t>(apps::mojom::TriState::kAllow));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, MediaRequest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
+  web_app::AppId app_id =
+      web_app::InstallWebAppFromManifest(browser(), app_url);
+  Browser* browser = LaunchWebAppBrowserAndWait(app_id);
+  content::RenderFrameHost* render_frame_host =
+      browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  const int render_process_id = render_frame_host->GetProcess()->GetID();
+  const int render_frame_id = render_frame_host->GetRoutingID();
+
+  MockAppPublisher mock_app_publisher;
+  WebAppsPublisherHost web_apps_publisher_host(profile());
+  web_apps_publisher_host.SetPublisherForTesting(&mock_app_publisher);
+  web_apps_publisher_host.Init();
+  mock_app_publisher.Wait();
+  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 1U);
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([render_process_id, render_frame_id,
+                                             app_url]() {
+        MediaCaptureDevicesDispatcher::GetInstance()
+            ->OnMediaRequestStateChanged(
+                render_process_id, render_frame_id,
+                /*page_request_id=*/0, app_url,
+                blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
+                content::MEDIA_REQUEST_STATE_DONE);
+      }));
+  mock_app_publisher.Wait();
+  EXPECT_EQ(mock_app_publisher.get_capability_access_deltas().size(), 1U);
+  EXPECT_EQ(mock_app_publisher.get_capability_access_deltas().back()->app_id,
+            app_id);
+  EXPECT_EQ(mock_app_publisher.get_capability_access_deltas().back()->camera,
+            apps::mojom::OptionalBool::kUnknown);
+  EXPECT_EQ(
+      mock_app_publisher.get_capability_access_deltas().back()->microphone,
+      apps::mojom::OptionalBool::kTrue);
+
+  browser->tab_strip_model()->CloseAllTabs();
+  mock_app_publisher.Wait();
+  EXPECT_EQ(mock_app_publisher.get_capability_access_deltas().size(), 2U);
+  EXPECT_EQ(mock_app_publisher.get_capability_access_deltas().back()->app_id,
+            app_id);
+  EXPECT_EQ(mock_app_publisher.get_capability_access_deltas().back()->camera,
+            apps::mojom::OptionalBool::kUnknown);
+  EXPECT_EQ(
+      mock_app_publisher.get_capability_access_deltas().back()->microphone,
+      apps::mojom::OptionalBool::kFalse);
 }
 
 }  // namespace apps

@@ -44,6 +44,22 @@ void PushOneApp() {
   service->GetRemote<crosapi::mojom::AppPublisher>()->OnApps(std::move(apps));
 }
 
+// Test push one test capability_access.
+void PushOneCapabilityAccess() {
+  auto* service = chromeos::LacrosService::Get();
+
+  std::vector<apps::mojom::CapabilityAccessPtr> capability_accesses;
+
+  apps::mojom::CapabilityAccessPtr capability_access =
+      apps::mojom::CapabilityAccess::New();
+  capability_access->app_id = "abcdefg";
+  capability_access->camera = apps::mojom::OptionalBool::kTrue;
+  capability_access->microphone = apps::mojom::OptionalBool::kFalse;
+  capability_accesses.push_back(std::move(capability_access));
+  service->GetRemote<crosapi::mojom::AppPublisher>()->OnCapabilityAccesses(
+      std::move(capability_accesses));
+}
+
 }  // namespace
 
 namespace apps {
@@ -66,6 +82,7 @@ void FakeLacrosWebAppsHost::Init() {
     service->GetRemote<crosapi::mojom::AppPublisher>()->RegisterAppController(
         receiver_.BindNewPipeAndPassRemote());
     PushOneApp();
+    PushOneCapabilityAccess();
   }
 }
 

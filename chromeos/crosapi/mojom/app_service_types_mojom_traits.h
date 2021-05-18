@@ -249,6 +249,27 @@ struct EnumTraits<crosapi::mojom::UninstallSource,
                         apps::mojom::UninstallSource* output);
 };
 
+template <>
+struct StructTraits<crosapi::mojom::CapabilityAccessDataView,
+                    apps::mojom::CapabilityAccessPtr> {
+  static const std::string& app_id(const apps::mojom::CapabilityAccessPtr& r) {
+    return r->app_id;
+  }
+
+  static const apps::mojom::OptionalBool& camera(
+      const apps::mojom::CapabilityAccessPtr& r) {
+    return r->camera;
+  }
+
+  static const apps::mojom::OptionalBool& microphone(
+      const apps::mojom::CapabilityAccessPtr& r) {
+    return r->microphone;
+  }
+
+  static bool Read(crosapi::mojom::CapabilityAccessDataView,
+                   apps::mojom::CapabilityAccessPtr* out);
+};
+
 }  // namespace mojo
 
 #endif  // CHROMEOS_CROSAPI_MOJOM_APP_SERVICE_TYPES_MOJOM_TRAITS_H_

@@ -12,7 +12,10 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/app_web_contents_data.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "chrome/browser/apps/app_service/media_requests.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -22,9 +25,14 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ContentSettingsPattern;
 class Profile;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace web_app {
 class WebApp;
@@ -38,7 +46,9 @@ namespace apps {
 // WebAppsCrosapi to inform the Ash browser of the current set of web apps.
 class WebAppsPublisherHost : public crosapi::mojom::AppController,
                              public web_app::AppRegistrarObserver,
-                             content_settings::Observer {
+                             public content_settings::Observer,
+                             public MediaCaptureDevicesDispatcher::Observer,
+                             public AppWebContentsData::Client {
  public:
   explicit WebAppsPublisherHost(Profile* profile);
   WebAppsPublisherHost(const WebAppsPublisherHost&) = delete;
@@ -47,6 +57,7 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
 
   void Init();
 
+  Profile* profile() { return profile_; }
   web_app::WebAppRegistrar& registrar() const;
 
   void SetPublisherForTesting(crosapi::mojom::AppPublisher* publisher);
@@ -79,10 +90,23 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
 
   // TODO(crbug.com/1194709): Add more overrides, guided by WebAppsChromeOs.
 
+  // MediaCaptureDevicesDispatcher::Observer:
+  void OnRequestUpdate(int render_process_id,
+                       int render_frame_id,
+                       blink::mojom::MediaStreamType stream_type,
+                       const content::MediaRequestState state) override;
+
+  // AppWebContentsData::Client:
+  void OnWebContentsDestroyed(content::WebContents* contents) override;
+
   const web_app::WebApp* GetWebApp(const web_app::AppId& app_id) const;
   apps::mojom::AppPtr Convert(const web_app::WebApp* web_app,
                               apps::mojom::Readiness readiness);
   void Publish(apps::mojom::AppPtr app);
+
+  void ModifyCapabilityAccess(const std::string& app_id,
+                              absl::optional<bool> accessing_camera,
+                              absl::optional<bool> accessing_microphone);
 
   Profile* const profile_;
   web_app::WebAppProvider* const provider_;
@@ -97,6 +121,12 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
+
+  base::ScopedObservation<MediaCaptureDevicesDispatcher,
+                          MediaCaptureDevicesDispatcher::Observer>
+      media_dispatcher_{this};
+
+  MediaRequests media_requests_;
 
   base::WeakPtrFactory<WebAppsPublisherHost> weak_ptr_factory_{this};
 };

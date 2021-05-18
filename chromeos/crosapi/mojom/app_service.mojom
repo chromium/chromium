@@ -18,6 +18,11 @@ interface AppPublisher {
   // launch, or otherwise interact with Web Apps that run in Lacros.
   [MinVersion=1]
   RegisterAppController@1(pending_remote<AppController> controller);
+
+  // Receives a stream of accesses from lacros-chrome, and saves to
+  // AppCapabilityAccess.
+  [MinVersion=2]
+  OnCapabilityAccesses@2(array<CapabilityAccess> deltas);
 };
 
 // Interacts with the app service. Implemented in lacros-chrome and called in

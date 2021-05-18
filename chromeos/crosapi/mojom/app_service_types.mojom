@@ -197,3 +197,16 @@ enum UninstallSource {
   kShelf,         // Uninstall by the user from the Shelf
   kMigration,     // Uninstall by app migration.
 };
+
+// Information about whether an app is accessing some capability, e.g. camera,
+// microphone.
+[Stable]
+struct CapabilityAccess {
+  string app_id;
+
+  // Whether the app is accessing camera.
+  OptionalBool camera;
+
+  // Whether the app is accessing microphone.
+  OptionalBool microphone;
+};

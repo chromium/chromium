@@ -30,6 +30,15 @@ std::vector<apps::mojom::AppPtr> CloneApps(
   return clone_to;
 }
 
+std::vector<apps::mojom::CapabilityAccessPtr> CloneCapabilityAccesses(
+    const std::vector<apps::mojom::CapabilityAccessPtr>& clone_from) {
+  std::vector<apps::mojom::CapabilityAccessPtr> clone_to;
+  for (const auto& capability_access : clone_from) {
+    clone_to.push_back(capability_access->Clone());
+  }
+  return clone_to;
+}
+
 }  // namespace
 
 namespace apps {
@@ -131,6 +140,15 @@ void WebAppsCrosapi::RegisterAppController(
   controller_.Bind(std::move(controller));
   controller_.set_disconnect_handler(base::BindOnce(
       &WebAppsCrosapi::OnControllerDisconnected, base::Unretained(this)));
+}
+
+void WebAppsCrosapi::OnCapabilityAccesses(
+    std::vector<apps::mojom::CapabilityAccessPtr> deltas) {
+  if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi))
+    return;
+  for (auto& subscriber : subscribers_) {
+    subscriber->OnCapabilityAccesses(CloneCapabilityAccesses(deltas));
+  }
 }
 
 void WebAppsCrosapi::OnCrosapiDisconnected() {

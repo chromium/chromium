@@ -72,6 +72,11 @@ mojom("mojom") {
           mojom = "crosapi.mojom.UninstallSource"
           cpp = "::apps::mojom::UninstallSource"
         },
+        {
+          mojom = "crosapi.mojom.CapabilityAccess"
+          cpp = "::apps::mojom::CapabilityAccessPtr"
+          move_only = true
+        },
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",

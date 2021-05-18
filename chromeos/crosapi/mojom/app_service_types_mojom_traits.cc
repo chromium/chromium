@@ -526,4 +526,28 @@ bool EnumTraits<crosapi::mojom::UninstallSource, apps::mojom::UninstallSource>::
   return false;
 }
 
+bool StructTraits<crosapi::mojom::CapabilityAccessDataView,
+                  apps::mojom::CapabilityAccessPtr>::
+    Read(crosapi::mojom::CapabilityAccessDataView data,
+         apps::mojom::CapabilityAccessPtr* out) {
+  std::string app_id;
+  if (!data.ReadAppId(&app_id))
+    return false;
+
+  apps::mojom::OptionalBool camera;
+  if (!data.ReadCamera(&camera))
+    return false;
+
+  apps::mojom::OptionalBool microphone;
+  if (!data.ReadMicrophone(&microphone))
+    return false;
+
+  auto capability_access = apps::mojom::CapabilityAccess::New();
+  capability_access->app_id = std::move(app_id);
+  capability_access->camera = std::move(camera);
+  capability_access->microphone = std::move(microphone);
+  *out = std::move(capability_access);
+  return true;
+}
+
 }  // namespace mojo
