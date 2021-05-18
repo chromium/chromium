@@ -12,6 +12,10 @@
 namespace app_list {
 namespace {
 
+// The minimum value of a top match, as defined in top_match_ranker.cc.
+// TODO(crbug.com/1199206): Move these score constants into a common file.
+constexpr double kTopMatchMinScore = 1000.0;
+
 // The different categories of search result to display in launcher search.
 // Every search result type maps to one category. These values are not stable,
 // and should not be used for metrics.
@@ -138,6 +142,11 @@ void CategoryRanker::Rank(ResultsMap& results, ProviderType provider) {
   DCHECK(it != results.end());
   for (const auto& result : it->second) {
     const double old_relevance = result->relevance();
+
+    // Don't change the score of top matches.
+    if (old_relevance >= kTopMatchMinScore)
+      continue;
+
     DCHECK(0.0 <= old_relevance && old_relevance <= 1);
     const auto category = ResultTypeToCategory(result->result_type());
     const double new_relevance = 10 * category_ranks_[category] + old_relevance;
