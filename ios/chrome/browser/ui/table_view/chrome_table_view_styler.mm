@@ -18,7 +18,7 @@
   if ((self = [super init])) {
     if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
       _tableViewBackgroundColor =
-          [UIColor colorNamed:kSecondaryBackgroundColor];
+          [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
       _cellBackgroundColor =
           [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
     } else {

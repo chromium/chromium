@@ -38,9 +38,11 @@
 
   if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
     self.navigationBar.barTintColor =
-        [UIColor colorNamed:kSecondaryBackgroundColor];
-    self.toolbar.barTintColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-    self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+    self.toolbar.barTintColor =
+        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+    self.view.backgroundColor =
+        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   } else {
     self.navigationBar.barTintColor =
         [UIColor colorNamed:kPrimaryBackgroundColor];

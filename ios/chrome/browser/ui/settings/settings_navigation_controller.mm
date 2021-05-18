@@ -331,8 +331,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     self.toolbar.translucent = NO;
     self.navigationBar.barTintColor =
         [UIColor colorNamed:kSecondaryBackgroundColor];
-    self.toolbar.barTintColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-    self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+    self.toolbar.barTintColor =
+        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+    self.view.backgroundColor =
+        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   }
 
   self.navigationBar.prefersLargeTitles = YES;
