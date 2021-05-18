@@ -253,7 +253,18 @@ class CartServiceTest : public testing::Test {
     return *res;
   }
 
-  void TearDown() override {}
+  void CacheUsedDiscounts(const cart_db::ChromeCartContentProto& proto) {
+    service_->CacheUsedDiscounts(proto);
+  }
+
+  void CleanUpDiscounts(const cart_db::ChromeCartContentProto& proto) {
+    service_->CleanUpDiscounts(proto);
+  }
+
+  void TearDown() override {
+    // Clean up the used discounts dictionary prefs.
+    profile_.GetPrefs()->ClearPref(prefs::kCartUsedDiscounts);
+  }
 
  protected:
   // This needs to be destroyed after task_environment, so that any tasks on
@@ -301,7 +312,7 @@ TEST_F(CartServiceTest, TestUpdateDiscounts) {
   cart_db::ChromeCartContentProto proto =
       BuildProto(kMockMerchantA, kMockMerchantURLA);
 
-  base::RunLoop run_loop[3];
+  base::RunLoop run_loop[4];
   cart_db->AddCart(
       kMockMerchantA, proto,
       base::BindOnce(&CartServiceTest::OperationEvaluation,
@@ -322,7 +333,6 @@ TEST_F(CartServiceTest, TestUpdateDiscounts) {
                          kMockMerchantADiscountsRawMerchantOfferId);
 
   service_->UpdateDiscounts(GURL(kMockMerchantURLA), cart_with_discount_proto);
-  task_environment_.RunUntilIdle();
 
   const ShoppingCarts expected = {{kMockMerchantA, cart_with_discount_proto}};
 
@@ -331,6 +341,14 @@ TEST_F(CartServiceTest, TestUpdateDiscounts) {
                                    base::Unretained(this),
                                    run_loop[2].QuitClosure(), expected));
   run_loop[2].Run();
+
+  CacheUsedDiscounts(cart_with_discount_proto);
+  service_->UpdateDiscounts(GURL(kMockMerchantURLA), cart_with_discount_proto);
+  cart_db->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationEmptyDiscount,
+                     base::Unretained(this), run_loop[3].QuitClosure()));
+  run_loop[3].Run();
 }
 
 // Test adding a cart with the same key and no product image won't overwrite
@@ -938,6 +956,50 @@ TEST_F(CartServiceTest, CartURLPriority) {
   service_->AddCart(amazon_domain, amazon_cart, merchant_A_proto);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(GetCartURL(amazon_domain), amazon_cart.spec());
+}
+
+TEST_F(CartServiceTest, TestCacheUsedDiscounts) {
+  EXPECT_FALSE(service_->IsDiscountUsed(kMockMerchantADiscountRuleId));
+
+  cart_db::ChromeCartContentProto cart_with_discount_proto = AddDiscountToProto(
+      BuildProto(kMockMerchantA, kMockMerchantURLA), 1,
+      kMockMerchantADiscountRuleId, kMockMerchantADiscountsPercentOff,
+      kMockMerchantADiscountsRawMerchantOfferId);
+
+  CacheUsedDiscounts(cart_with_discount_proto);
+  EXPECT_TRUE(service_->IsDiscountUsed(kMockMerchantADiscountRuleId));
+}
+
+TEST_F(CartServiceTest, TestCleanUpDiscounts) {
+  cart_db::ChromeCartContentProto cart_with_discount_proto = AddDiscountToProto(
+      BuildProto(kMockMerchantA, kMockMerchantURLA), 1,
+      kMockMerchantADiscountRuleId, kMockMerchantADiscountsPercentOff,
+      kMockMerchantADiscountsRawMerchantOfferId);
+  const ShoppingCarts has_discount_cart = {
+      {kMockMerchantA, cart_with_discount_proto}};
+  CartDB* cart_db = service_->GetDB();
+
+  base::RunLoop run_loop[3];
+  cart_db->AddCart(
+      kMockMerchantA, cart_with_discount_proto,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  cart_db->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationDiscount,
+                     base::Unretained(this), run_loop[1].QuitClosure(),
+                     has_discount_cart));
+  run_loop[1].Run();
+
+  CleanUpDiscounts(cart_with_discount_proto);
+
+  cart_db->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationEmptyDiscount,
+                     base::Unretained(this), run_loop[2].QuitClosure()));
+  run_loop[2].Run();
 }
 
 class CartServiceFakeDataTest : public CartServiceTest {

@@ -3221,6 +3221,8 @@ const char kCartDiscountAcknowledged[] = "cart_discount_acknowledged";
 // Boolean pref indicating whether user has enabled rule-based discount in cart
 // module.
 const char kCartDiscountEnabled[] = "cart_discount_enabled";
+// Map pref recording the discounts used by users.
+const char kCartUsedDiscounts[] = "cart_used_discounts";
 #endif
 
 #if defined(OS_ANDROID)

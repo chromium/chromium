@@ -92,6 +92,8 @@ class CartService : public history::HistoryServiceObserver,
   // history::HistoryServiceObserver:
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
+  // Returns whether a discount with |rule_id| is used or not.
+  bool IsDiscountUsed(const std::string& rule_id);
   // KeyedService:
   void Shutdown() override;
 
@@ -145,6 +147,9 @@ class CartService : public history::HistoryServiceObserver,
   void HasPartnerCarts(base::OnceCallback<void(bool)> callback,
                        bool success,
                        std::vector<CartDB::KeyAndValue> proto_pairs);
+
+  void CacheUsedDiscounts(const cart_db::ChromeCartContentProto& proto);
+  void CleanUpDiscounts(cart_db::ChromeCartContentProto proto);
 
   Profile* profile_;
   std::unique_ptr<CartDB> cart_db_;
