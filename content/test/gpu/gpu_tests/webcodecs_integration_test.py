@@ -50,7 +50,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     arg_obj = args[0]
     tab.Navigate(url)
     tab.action_runner.WaitForJavaScriptCondition(
-        'document.readyState == "complete"', timeout=5)
+        'document.readyState == "complete"')
     tab.EvaluateJavaScript('TEST.run(' + str(arg_obj) + ')')
     tab.action_runner.WaitForJavaScriptCondition('TEST.finished', timeout=60)
     if not tab.EvaluateJavaScript('TEST.success'):
