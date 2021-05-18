@@ -11,11 +11,7 @@
 
 namespace ui {
 
-// static
-bool EventHandler::check_targets_ = true;
-
-EventHandler::EventHandler() {
-}
+EventHandler::EventHandler() = default;
 
 EventHandler::~EventHandler() {
   while (!dispatchers_.empty()) {
@@ -23,9 +19,6 @@ EventHandler::~EventHandler() {
     dispatchers_.pop();
     dispatcher->OnHandlerDestroyed(this);
   }
-
-  // Should have been removed from all pre-target handlers.
-  CHECK(!check_targets_ || targets_installed_on_.empty());
 }
 
 void EventHandler::OnEvent(Event* event) {

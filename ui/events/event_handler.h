@@ -5,12 +5,8 @@
 #ifndef UI_EVENTS_EVENT_HANDLER_H_
 #define UI_EVENTS_EVENT_HANDLER_H_
 
-#include <vector>
-
 #include "base/containers/stack.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
-#include "ui/events/event_constants.h"
 #include "ui/events/events_export.h"
 
 namespace ui {
@@ -30,12 +26,9 @@ class TouchEvent;
 class EVENTS_EXPORT EventHandler {
  public:
   EventHandler();
+  EventHandler(const EventHandler&) = delete;
+  EventHandler& operator=(const EventHandler&) = delete;
   virtual ~EventHandler();
-
-  // Disables a CHECK() that this has been removed from all pre-target
-  // handlers in the destructor.
-  // TODO(sky): remove, used to track https://crbug.com/867035.
-  static void DisableCheckTargets() { check_targets_ = false; }
 
   // This is called for all events. The default implementation routes the event
   // to one of the event-specific callbacks (OnKeyEvent, OnMouseEvent etc.). If
@@ -66,19 +59,9 @@ class EVENTS_EXPORT EventHandler {
   // EventDispatcher pushes itself on the top of this stack while dispatching
   // events to this then pops itself off when done.
   base::stack<EventDispatcher*> dispatchers_;
-
-  // Set of EventTargets |this| has been installed as a pre-target handler on.
-  // This is a vector as AddPreTargetHandler() may be called multiple times for
-  // the same EventTarget.
-  // TODO(sky): remove, used to track https://crbug.com/867035.
-  std::vector<EventTarget*> targets_installed_on_;
-
-  static bool check_targets_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventHandler);
 };
 
-typedef std::vector<EventHandler*> EventHandlerList;
+using EventHandlerList = std::vector<EventHandler*>;
 
 }  // namespace ui
 

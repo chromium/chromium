@@ -260,13 +260,6 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
     view_observations_.AddObservation(top_container_);
 #endif  // defined(OS_WIN)
 
-    // Our observed Widget's NativeView may be destroyed before us. We
-    // have no reasonable way of un-registering our pre-target handler
-    // from the NativeView while the Widget is destroying. This disables
-    // EventHandler's check that it has been removed from all
-    // EventTargets.
-    DisableCheckTargets();
-
     content_area_->GetWidget()->GetNativeView()->AddPreTargetHandler(this);
     pretarget_handler_added_ = true;
   }

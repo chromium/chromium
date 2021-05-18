@@ -561,9 +561,6 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
       shutdown_controller_(std::make_unique<ShutdownControllerImpl>()),
       system_tray_notifier_(std::make_unique<SystemTrayNotifier>()),
       native_cursor_manager_(nullptr) {
-  // Ash doesn't properly remove pre-target-handlers.
-  ui::EventHandler::DisableCheckTargets();
-
   AccelerometerReader::GetInstance()->Initialize();
 
   login_screen_controller_ =
