@@ -56,6 +56,10 @@ PermissionSet::PermissionSet(APIPermissionSet apis,
 
 PermissionSet::~PermissionSet() {}
 
+PermissionSet::PermissionSet(PermissionSet&& other) = default;
+
+PermissionSet& PermissionSet::operator=(PermissionSet&& other) = default;
+
 // static
 std::unique_ptr<const PermissionSet> PermissionSet::CreateDifference(
     const PermissionSet& set1,

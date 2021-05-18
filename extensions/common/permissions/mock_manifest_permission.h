@@ -21,6 +21,8 @@ namespace extensions {
 class MockManifestPermission : public ManifestPermission {
  public:
   explicit MockManifestPermission(const std::string& name);
+  explicit MockManifestPermission(const std::string& name,
+                                  const std::string& value);
 
   std::string name() const override;
   std::string id() const override;
@@ -40,6 +42,8 @@ class MockManifestPermission : public ManifestPermission {
 
  private:
   std::string name_;
+  // value_ is ignored for the Diff, Union and Intersect operations
+  std::string value_;
 
   DISALLOW_COPY_AND_ASSIGN(MockManifestPermission);
 };

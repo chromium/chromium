@@ -314,65 +314,6 @@ struct ExtensionMsg_PermissionSetStruct {
   DISALLOW_COPY_AND_ASSIGN(ExtensionMsg_PermissionSetStruct);
 };
 
-struct ExtensionMsg_Loaded_Params {
-  ExtensionMsg_Loaded_Params();
-  ~ExtensionMsg_Loaded_Params();
-  ExtensionMsg_Loaded_Params(const extensions::Extension* extension,
-                             bool include_tab_permissions,
-                             absl::optional<extensions::ActivationSequence>
-                                 worker_activation_sequence);
-
-  ExtensionMsg_Loaded_Params(ExtensionMsg_Loaded_Params&& other);
-  ExtensionMsg_Loaded_Params& operator=(ExtensionMsg_Loaded_Params&& other);
-
-  // Creates a new extension from the data in this object.
-  // A context_id needs to be passed because each browser context can have
-  // different values for default_policy_blocked/allowed_hosts.
-  // (see extension_util.cc#GetBrowserContextId)
-  scoped_refptr<extensions::Extension> ConvertToExtension(
-      int context_id,
-      std::string* error) const;
-
-  // The subset of the extension manifest data we send to renderers.
-  base::DictionaryValue manifest;
-
-  // The location the extension was installed from.
-  extensions::mojom::ManifestLocation location;
-
-  // The path the extension was loaded from. This is used in the renderer only
-  // to generate the extension ID for extensions that are loaded unpacked.
-  base::FilePath path;
-
-  // The extension's active and withheld permissions.
-  ExtensionMsg_PermissionSetStruct active_permissions;
-  ExtensionMsg_PermissionSetStruct withheld_permissions;
-  std::map<int, ExtensionMsg_PermissionSetStruct> tab_specific_permissions;
-
-  // Contains URLPatternSets defining which URLs an extension may not interact
-  // with by policy.
-  extensions::URLPatternSet policy_blocked_hosts;
-  extensions::URLPatternSet policy_allowed_hosts;
-
-  // If the extension uses the default list of blocked / allowed URLs.
-  bool uses_default_policy_blocked_allowed_hosts = true;
-
-  // We keep this separate so that it can be used in logging.
-  std::string id;
-
-  // If this extension is Service Worker based, then this contains the
-  // activation sequence of the extension.
-  absl::optional<extensions::ActivationSequence> worker_activation_sequence;
-
-  // Send creation flags so extension is initialized identically.
-  int creation_flags;
-
-  // Reuse the extension guid when creating the extension in the renderer.
-  extensions::ExtensionGuid guid;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMsg_Loaded_Params);
-};
-
 struct ExtensionHostMsg_AutomationQuerySelector_Error {
   enum Value { kNone, kNoDocument, kNodeDestroyed };
 
@@ -442,17 +383,6 @@ struct ParamTraits<ExtensionMsg_PermissionSetStruct> {
                    param_type* p);
   static void Log(const param_type& p, std::string* l);
 };
-
-template <>
-struct ParamTraits<ExtensionMsg_Loaded_Params> {
-  typedef ExtensionMsg_Loaded_Params param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* p);
-  static void Log(const param_type& p, std::string* l);
-};
-
 }  // namespace IPC
 
 #endif  // INTERNAL_EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_
@@ -483,10 +413,6 @@ IPC_STRUCT_END()
 IPC_MESSAGE_CONTROL2(ExtensionMsg_DispatchEvent,
                      ExtensionMsg_DispatchEvent_Params /* params */,
                      base::ListValue /* event_args */)
-
-// Notifies the renderer that extensions were loaded in the browser.
-IPC_MESSAGE_CONTROL1(ExtensionMsg_Loaded,
-                     std::vector<ExtensionMsg_Loaded_Params>)
 
 // Tell the render view which browser window it's being attached to.
 IPC_MESSAGE_ROUTED1(ExtensionMsg_UpdateBrowserWindowId,

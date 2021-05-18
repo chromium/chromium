@@ -42,7 +42,6 @@ class GURL;
 class ModuleSystem;
 struct ExtensionMsg_DispatchEvent_Params;
 struct ExtensionMsg_ExternalConnectionInfo;
-struct ExtensionMsg_Loaded_Params;
 struct ExtensionMsg_TabConnectionInfo;
 struct ExtensionMsg_UpdatePermissions_Params;
 
@@ -223,6 +222,8 @@ class Dispatcher : public content::RenderThreadObserver,
   // mojom::Renderer implementation:
   void ActivateExtension(const std::string& extension_id) override;
   void SetActivityLoggingEnabled(bool enabled) override;
+  void LoadExtensions(std::vector<extensions::mojom::ExtensionLoadedParamsPtr>
+                          loaded_extensions) override;
   void UnloadExtension(const std::string& extension_id) override;
   void SuspendExtension(
       const std::string& extension_id,
@@ -239,10 +240,10 @@ class Dispatcher : public content::RenderThreadObserver,
   void ShouldSuspend(ShouldSuspendCallback callback) override;
   void TransferBlobs(TransferBlobsCallback callback) override;
   void UpdateDefaultPolicyHostRestrictions(
-      const extensions::URLPatternSet& default_policy_blocked_hosts,
-      const extensions::URLPatternSet& default_policy_allowed_hosts) override;
+      extensions::URLPatternSet default_policy_blocked_hosts,
+      extensions::URLPatternSet default_policy_allowed_hosts) override;
   void UpdateTabSpecificPermissions(const std::string& extension_id,
-                                    const extensions::URLPatternSet& new_hosts,
+                                    extensions::URLPatternSet new_hosts,
                                     int tab_id,
                                     bool update_origin_whitelist) override;
   void UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
@@ -266,8 +267,6 @@ class Dispatcher : public content::RenderThreadObserver,
   void OnDispatchOnDisconnect(int worker_thread_id,
                               const PortId& port_id,
                               const std::string& error_message);
-  void OnLoaded(
-      const std::vector<ExtensionMsg_Loaded_Params>& loaded_extensions);
   void OnDispatchEvent(const ExtensionMsg_DispatchEvent_Params& params,
                        const base::ListValue& event_args);
   void OnUpdatePermissions(const ExtensionMsg_UpdatePermissions_Params& params);

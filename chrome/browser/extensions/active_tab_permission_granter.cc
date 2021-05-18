@@ -52,8 +52,8 @@ void UpdateTabSpecificPermissions(const std::string& extension_id,
           process->GetBrowserContext())
           ->GetRenderer(process);
   if (renderer) {
-    renderer->UpdateTabSpecificPermissions(extension_id, new_hosts, tab_id,
-                                           update_origin_whitelist);
+    renderer->UpdateTabSpecificPermissions(extension_id, new_hosts.Clone(),
+                                           tab_id, update_origin_whitelist);
   }
 }
 

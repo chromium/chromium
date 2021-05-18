@@ -5,10 +5,55 @@
 module extensions.mojom;
 
 import "mojo/public/mojom/base/shared_memory.mojom";
+import "extensions/common/mojom/activation_sequence.mojom";
+import "extensions/common/mojom/api_permission_id.mojom";
 import "extensions/common/mojom/channel.mojom";
 import "extensions/common/mojom/host_id.mojom";
 import "extensions/common/mojom/feature_session_type.mojom";
+import "extensions/common/mojom/manifest.mojom";
+import "extensions/common/mojom/permission_set.mojom";
 import "extensions/common/mojom/url_pattern_set.mojom";
+import "mojo/public/mojom/base/values.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+
+// Mojo struct to be used as argument on the LoadExtension method.
+struct ExtensionLoadedParams {
+  // The subset of the extension manifest data we send to renderers.
+  mojo_base.mojom.Value manifest;
+
+  // The location the extension was installed from. This is used in the renderer
+  // only to generate the extension ID for extensions that are loaded unpacked.
+  ManifestLocation location;
+
+  // The path the extension was loaded from.
+  mojo_base.mojom.FilePath path;
+
+  // The extension's active and withheld permissions.
+  PermissionSet active_permissions;
+  PermissionSet withheld_permissions;
+  map<int32, PermissionSet> tab_specific_permissions;
+
+  // Contains URLPatternSets defining which URLs an extension may not interact
+  // with by policy.
+  URLPatternSet policy_blocked_hosts;
+  URLPatternSet policy_allowed_hosts;
+
+  // If the extension uses the default list of blocked / allowed URLs.
+  bool uses_default_policy_blocked_allowed_hosts;
+
+  // We keep this separate so that it can be used in logging and testing.
+  string id;
+
+  // If this extension is Service Worker based, then this contains the
+  // activation sequence of the extension
+  ActivationSequence? worker_activation_sequence;
+
+  // Send creation flags so that extension is initialized identically.
+  int32 creation_flags;
+
+  // Reuse the extension guid when creating the extension in the renderer.
+  string guid;
+};
 
 // This should be used for implementing browser-to-renderer control messages
 // which need to retain FIFO with respect to other mojo interfaces like
@@ -23,6 +68,9 @@ interface Renderer {
   // sent if logging is or was previously enabled; not being enabled is assumed
   // otherwise.
   SetActivityLoggingEnabled(bool enabled);
+
+  // Notifies the renderer that extensions were loaded in the browser.
+  LoadExtensions(array<ExtensionLoadedParams> params);
 
   // Notifies the renderer that an extension was unloaded in the browser.
   UnloadExtension(string extension_id);

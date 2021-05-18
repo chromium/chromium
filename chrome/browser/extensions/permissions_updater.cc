@@ -42,6 +42,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
+#include "extensions/common/mojom/permission_set.mojom.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -699,7 +700,8 @@ void PermissionsUpdater::NotifyDefaultPolicyHostRestrictionsUpdated(
               ->GetRenderer(host);
       if (renderer) {
         renderer->UpdateDefaultPolicyHostRestrictions(
-            default_runtime_blocked_hosts, default_runtime_allowed_hosts);
+            default_runtime_blocked_hosts.Clone(),
+            default_runtime_allowed_hosts.Clone());
       }
     }
   }

@@ -40,6 +40,7 @@ if (enable_extensions) {
 
     sources = [
       "mojom/action_type.mojom",
+      "mojom/activation_sequence.mojom",
       "mojom/api_permission_id.mojom",
       "mojom/app_window.mojom",
       "mojom/channel.mojom",
@@ -52,6 +53,7 @@ if (enable_extensions) {
       "mojom/injection_type.mojom",
       "mojom/keep_alive.mojom",
       "mojom/manifest.mojom",
+      "mojom/permission_set.mojom",
       "mojom/renderer.mojom",
       "mojom/run_location.mojom",
       "mojom/url_pattern_set.mojom",
@@ -80,18 +82,64 @@ if (enable_extensions) {
       {
         types = [
           {
+            mojom = "extensions.mojom.APIPermission"
+            cpp = "::std::unique_ptr<::extensions::APIPermission>"
+            move_only = true
+          },
+          {
+            mojom = "extensions.mojom.APIPermissionSet"
+            cpp = "::extensions::APIPermissionSet"
+            move_only = true
+          },
+          {
+            mojom = "extensions.mojom.ManifestPermission"
+            cpp = "::std::unique_ptr<::extensions::ManifestPermission>"
+            move_only = true
+          },
+          {
+            mojom = "extensions.mojom.ManifestPermissionSet"
+            cpp = "::extensions::ManifestPermissionSet"
+            move_only = true
+          },
+          {
+            mojom = "extensions.mojom.PermissionSet"
+            cpp = "::extensions::PermissionSet"
+            move_only = true
+          },
+        ]
+        traits_headers =
+            [ "//extensions/common/mojom/permission_set_mojom_traits.h" ]
+        traits_sources =
+            [ "//extensions/common/mojom/permission_set_mojom_traits.cc" ]
+      },
+      {
+        types = [
+          {
             mojom = "extensions.mojom.URLPattern"
             cpp = "::URLPattern"
           },
           {
             mojom = "extensions.mojom.URLPatternSet"
             cpp = "::extensions::URLPatternSet"
+            move_only = true
           },
         ]
         traits_headers =
             [ "//extensions/common/mojom/url_pattern_set_mojom_traits.h" ]
         traits_sources =
             [ "//extensions/common/mojom/url_pattern_set_mojom_traits.cc" ]
+      },
+      {
+        types = [
+          {
+            mojom = "extensions.mojom.ActivationSequence"
+            cpp = "::extensions::ActivationSequence"
+          },
+        ]
+        traits_headers =
+            [ "//extensions/common/mojom/activation_sequence_mojom_traits.h" ]
+        traits_sources =
+            [ "//extensions/common/mojom/activation_sequence_mojom_traits.cc" ]
       },
     ]
     overridden_deps = [ "//content/public/common:interfaces" ]
@@ -369,6 +417,10 @@ if (enable_extensions) {
       "//skia",
     ]
 
+    # Allows including manifest_handler.h and permissions/permissions_info.h
+    # from mojom/permission_set_mojom_traits.cc.
+    allow_circular_includes_from = [ ":mojom" ]
+
     deps = [
       "//base",
       "//build:branding_buildflags",
@@ -469,7 +521,6 @@ if (enable_extensions) {
       "extension_builder_unittest.cc",
       "extension_icon_set_unittest.cc",
       "extension_l10n_util_unittest.cc",
-      "extension_messages_unittest.cc",
       "extension_resource_path_normalizer_unittest.cc",
       "extension_resource_unittest.cc",
       "extension_set_unittest.cc",
@@ -501,6 +552,7 @@ if (enable_extensions) {
       "manifest_handlers/web_app_shortcut_icons_handler_unittest.cc",
       "manifest_unittest.cc",
       "message_bundle_unittest.cc",
+      "mojom/permission_set_mojom_traits_unittest.cc",
       "mojom/url_pattern_set_mojom_traits_unittest.cc",
       "permissions/api_permission_set_unittest.cc",
       "permissions/api_permission_unittest.cc",

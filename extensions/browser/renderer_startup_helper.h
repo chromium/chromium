@@ -81,6 +81,7 @@ class RendererStartupHelper : public KeyedService,
 
  private:
   friend class RendererStartupHelperTest;
+  friend class RendererStartupHelperInterceptor;
 
   // Initializes the specified process, informing it of system state and loaded
   // extensions.

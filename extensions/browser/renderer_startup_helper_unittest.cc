@@ -23,16 +23,30 @@ namespace extensions {
 
 // Class that implements the binding of a new Renderer mojom interface and
 // can receive callbacks on it for testing validation.
-class InterceptingRendererStartupHelper : public RendererStartupHelper,
-                                          public mojom::Renderer {
+class RendererStartupHelperInterceptor : public RendererStartupHelper,
+                                         public mojom::Renderer {
  public:
-  explicit InterceptingRendererStartupHelper(
+  explicit RendererStartupHelperInterceptor(
       content::BrowserContext* browser_context)
-      : RendererStartupHelper(browser_context) {}
+      : RendererStartupHelper(browser_context),
+        browser_context_(browser_context) {}
 
   size_t num_activated_extensions() { return activated_extensions_.size(); }
 
+  size_t num_loaded_extensions() { return num_loaded_extensions_; }
+
+  size_t num_loaded_extensions_in_incognito() {
+    return num_loaded_extensions_in_incognito_;
+  }
+
   size_t num_unloaded_extensions() { return unloaded_extensions_.size(); }
+
+  void clear_extensions() {
+    activated_extensions_.clear();
+    num_loaded_extensions_ = 0;
+    num_loaded_extensions_in_incognito_ = 0;
+    unloaded_extensions_.clear();
+  }
 
   const URLPatternSet& default_policy_blocked_hosts() const {
     return default_blocked_hosts_;
@@ -56,6 +70,25 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
     activated_extensions_.push_back(extension_id);
   }
   void SetActivityLoggingEnabled(bool enabled) override {}
+
+  void LoadExtensions(
+      std::vector<mojom::ExtensionLoadedParamsPtr> loaded_extensions) override {
+    for (const auto& param : loaded_extensions) {
+      const std::set<content::RenderProcessHost*>& process_set =
+          extension_process_map_[param->id];
+      for (content::RenderProcessHost* process : process_set) {
+        // Count the invocation of the LoadExtensions method on the normal
+        // renderer or the incognito renderer.
+        if (process->GetBrowserContext() == browser_context_) {
+          num_loaded_extensions_++;
+        } else {
+          // If RenderProcessHost's context isn't the same as |browser_context_|
+          // , assume that the RenderProcessHost is the incognito renderer.
+          num_loaded_extensions_in_incognito_++;
+        }
+      }
+    }
+  }
 
   void UnloadExtension(const std::string& extension_id) override {
     unloaded_extensions_.push_back(extension_id);
@@ -89,14 +122,14 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   }
 
   void UpdateDefaultPolicyHostRestrictions(
-      const URLPatternSet& default_policy_blocked_hosts,
-      const URLPatternSet& default_policy_allowed_hosts) override {
+      URLPatternSet default_policy_blocked_hosts,
+      URLPatternSet default_policy_allowed_hosts) override {
     default_blocked_hosts_.AddPatterns(default_policy_blocked_hosts);
     default_allowed_hosts_.AddPatterns(default_policy_allowed_hosts);
   }
 
   void UpdateTabSpecificPermissions(const std::string& extension_id,
-                                    const URLPatternSet& new_hosts,
+                                    URLPatternSet new_hosts,
                                     int tab_id,
                                     bool update_origin_whitelist) override {}
 
@@ -113,7 +146,10 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   URLPatternSet default_blocked_hosts_;
   URLPatternSet default_allowed_hosts_;
   std::vector<std::string> activated_extensions_;
+  size_t num_loaded_extensions_;
+  size_t num_loaded_extensions_in_incognito_;
   std::vector<std::string> unloaded_extensions_;
+  content::BrowserContext* browser_context_;
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
 };
 
@@ -125,7 +161,7 @@ class RendererStartupHelperTest : public ExtensionsTest {
   void SetUp() override {
     ExtensionsTest::SetUp();
     helper_ =
-        std::make_unique<InterceptingRendererStartupHelper>(browser_context());
+        std::make_unique<RendererStartupHelperInterceptor>(browser_context());
     registry_ =
         ExtensionRegistryFactory::GetForBrowserContext(browser_context());
     render_process_host_ =
@@ -222,7 +258,7 @@ class RendererStartupHelperTest : public ExtensionsTest {
                           extension.id());
   }
 
-  std::unique_ptr<InterceptingRendererStartupHelper> helper_;
+  std::unique_ptr<RendererStartupHelperInterceptor> helper_;
   ExtensionRegistry* registry_;  // Weak.
   std::unique_ptr<content::MockRenderProcessHost> render_process_host_;
   std::unique_ptr<content::MockRenderProcessHost>
@@ -248,12 +284,11 @@ TEST_F(RendererStartupHelperTest, NormalExtensionLifecycle) {
   // Initialize render process.
   EXPECT_FALSE(IsProcessInitialized(render_process_host_.get()));
   SimulateRenderProcessCreated(render_process_host_.get());
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsProcessInitialized(render_process_host_.get()));
 
-  IPC::TestSink& sink = render_process_host_->sink();
-
   // Enable extension.
-  sink.ClearMessages();
+  helper_->clear_extensions();
   EXPECT_FALSE(IsExtensionLoaded(*extension_));
   AddExtensionToRegistry(extension_);
   helper_->OnExtensionLoaded(*extension_);
@@ -261,12 +296,10 @@ TEST_F(RendererStartupHelperTest, NormalExtensionLifecycle) {
       IsExtensionLoadedInProcess(*extension_, render_process_host_.get()));
   EXPECT_FALSE(IsExtensionPendingActivationInProcess(
       *extension_, render_process_host_.get()));
-  ASSERT_EQ(1u, sink.message_count());
-  EXPECT_EQ(static_cast<uint32_t>(ExtensionMsg_Loaded::ID),
-            sink.GetMessageAt(0)->type());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1u, helper_->num_loaded_extensions());
 
   // Activate extension.
-  sink.ClearMessages();
   helper_->ActivateExtensionInProcess(*extension_, render_process_host_.get());
   EXPECT_FALSE(IsExtensionPendingActivationInProcess(
       *extension_, render_process_host_.get()));
@@ -274,7 +307,7 @@ TEST_F(RendererStartupHelperTest, NormalExtensionLifecycle) {
   ASSERT_EQ(1u, helper_->num_activated_extensions());
 
   // Disable extension.
-  sink.ClearMessages();
+  helper_->clear_extensions();
   RemoveExtensionFromRegistry(extension_);
   helper_->OnExtensionUnloaded(*extension_);
   EXPECT_FALSE(IsExtensionLoaded(*extension_));
@@ -282,16 +315,15 @@ TEST_F(RendererStartupHelperTest, NormalExtensionLifecycle) {
   ASSERT_EQ(1u, helper_->num_unloaded_extensions());
 
   // Extension enabled again.
-  sink.ClearMessages();
+  helper_->clear_extensions();
   AddExtensionToRegistry(extension_);
   helper_->OnExtensionLoaded(*extension_);
   EXPECT_TRUE(
       IsExtensionLoadedInProcess(*extension_, render_process_host_.get()));
   EXPECT_FALSE(IsExtensionPendingActivationInProcess(
       *extension_, render_process_host_.get()));
-  ASSERT_EQ(1u, sink.message_count());
-  EXPECT_EQ(static_cast<uint32_t>(ExtensionMsg_Loaded::ID),
-            sink.GetMessageAt(0)->type());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1u, helper_->num_loaded_extensions());
 
   // Render Process terminated.
   SimulateRenderProcessTerminated(render_process_host_.get());
@@ -307,15 +339,14 @@ TEST_F(RendererStartupHelperTest, NormalExtensionLifecycle) {
 // fine.
 TEST_F(RendererStartupHelperTest, EnabledBeforeProcessInitialized) {
   EXPECT_FALSE(IsProcessInitialized(render_process_host_.get()));
-  IPC::TestSink& sink = render_process_host_->sink();
 
   // Enable extension. The render process isn't initialized yet, so the
   // extension should be added to the list of extensions awaiting activation.
-  sink.ClearMessages();
+  helper_->clear_extensions();
   AddExtensionToRegistry(extension_);
   helper_->OnExtensionLoaded(*extension_);
   helper_->ActivateExtensionInProcess(*extension_, render_process_host_.get());
-  EXPECT_EQ(0u, sink.message_count());
+  ASSERT_EQ(0u, helper_->num_loaded_extensions());
   EXPECT_TRUE(IsExtensionLoaded(*extension_));
   EXPECT_FALSE(
       IsExtensionLoadedInProcess(*extension_, render_process_host_.get()));
@@ -339,7 +370,8 @@ TEST_F(RendererStartupHelperTest, EnabledBeforeProcessInitialized) {
   SimulateRenderProcessCreated(render_process_host_.get());
   // The renderer would have been sent multiple initialization messages
   // including the loading and activation messages for the extension.
-  EXPECT_LE(1u, sink.message_count());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1u, helper_->num_loaded_extensions());
 
   // Method UpdateDefaultPolicyHostRestrictions() from mojom::Renderer should
   // have been called with the default policy for blocked/allowed hosts given by
@@ -395,19 +427,15 @@ TEST_F(RendererStartupHelperTest, ExtensionInIncognitoRenderer) {
   SimulateRenderProcessCreated(incognito_render_process_host_.get());
   EXPECT_TRUE(IsProcessInitialized(incognito_render_process_host_.get()));
 
-  IPC::TestSink& sink = render_process_host_->sink();
-  IPC::TestSink& incognito_sink = incognito_render_process_host_->sink();
-
   // Enable the extension. It should not be loaded in the initialized incognito
   // renderer.
-  sink.ClearMessages();
-  incognito_sink.ClearMessages();
+  helper_->clear_extensions();
   EXPECT_FALSE(util::IsIncognitoEnabled(extension_->id(), browser_context()));
   EXPECT_FALSE(IsExtensionLoaded(*extension_));
   AddExtensionToRegistry(extension_);
   helper_->OnExtensionLoaded(*extension_);
-  EXPECT_EQ(0u, sink.message_count());
-  EXPECT_EQ(0u, incognito_sink.message_count());
+  EXPECT_EQ(0u, helper_->num_loaded_extensions());
+  EXPECT_EQ(0u, helper_->num_loaded_extensions_in_incognito());
   EXPECT_TRUE(IsExtensionLoaded(*extension_));
   EXPECT_FALSE(IsExtensionLoadedInProcess(
       *extension_, incognito_render_process_host_.get()));
@@ -415,8 +443,7 @@ TEST_F(RendererStartupHelperTest, ExtensionInIncognitoRenderer) {
       IsExtensionLoadedInProcess(*extension_, render_process_host_.get()));
 
   // Initialize the normal renderer. The extension should get loaded in it.
-  sink.ClearMessages();
-  incognito_sink.ClearMessages();
+  helper_->clear_extensions();
   EXPECT_FALSE(IsProcessInitialized(render_process_host_.get()));
   SimulateRenderProcessCreated(render_process_host_.get());
   EXPECT_TRUE(IsProcessInitialized(render_process_host_.get()));
@@ -426,12 +453,12 @@ TEST_F(RendererStartupHelperTest, ExtensionInIncognitoRenderer) {
       *extension_, incognito_render_process_host_.get()));
   // Multiple initialization messages including the extension load message
   // should be dispatched to the non-incognito renderer.
-  EXPECT_LE(1u, sink.message_count());
-  EXPECT_EQ(0u, incognito_sink.message_count());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1u, helper_->num_loaded_extensions());
+  ASSERT_EQ(0u, helper_->num_loaded_extensions_in_incognito());
 
   // Enable the extension in incognito mode. This will reload the extension.
-  sink.ClearMessages();
-  incognito_sink.ClearMessages();
+  helper_->clear_extensions();
   ExtensionPrefs::Get(browser_context())
       ->SetIsIncognitoEnabled(extension_->id(), true);
   helper_->OnExtensionUnloaded(*extension_);
@@ -442,15 +469,17 @@ TEST_F(RendererStartupHelperTest, ExtensionInIncognitoRenderer) {
       IsExtensionLoadedInProcess(*extension_, render_process_host_.get()));
   // The extension would not have been unloaded from the incognito renderer
   // since it wasn't loaded.
-  ASSERT_EQ(1u, incognito_sink.message_count());
-  EXPECT_EQ(static_cast<uint32_t>(ExtensionMsg_Loaded::ID),
-            incognito_sink.GetMessageAt(0)->type());
+  base::RunLoop().RunUntilIdle();
+  // LoadExtensions are called twice because it's also called by
+  // RendererStartupHelper::InitializeProcess as soon as a RenderProcessHost
+  // instance is created.
+  ASSERT_EQ(2u, helper_->num_loaded_extensions_in_incognito());
+
   // The extension would be first unloaded and then loaded from the normal
   // renderer.
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1u, helper_->num_unloaded_extensions());
-  EXPECT_EQ(static_cast<uint32_t>(ExtensionMsg_Loaded::ID),
-            sink.GetMessageAt(0)->type());
+  ASSERT_EQ(2u, helper_->num_loaded_extensions());
 }
 
 // Tests that platform apps are always loaded in an incognito renderer.
@@ -458,9 +487,8 @@ TEST_F(RendererStartupHelperTest, PlatformAppInIncognitoRenderer) {
   // Initialize the incognito renderer.
   EXPECT_FALSE(IsProcessInitialized(incognito_render_process_host_.get()));
   SimulateRenderProcessCreated(incognito_render_process_host_.get());
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsProcessInitialized(incognito_render_process_host_.get()));
-
-  IPC::TestSink& incognito_sink = incognito_render_process_host_->sink();
 
   scoped_refptr<const Extension> platform_app(
       CreatePlatformApp("platform_app"));
@@ -471,14 +499,13 @@ TEST_F(RendererStartupHelperTest, PlatformAppInIncognitoRenderer) {
   // Enable the app. It should get loaded in the incognito renderer even though
   // IsIncognitoEnabled returns false for it, since it can't be enabled for
   // incognito.
-  incognito_sink.ClearMessages();
+  helper_->clear_extensions();
   AddExtensionToRegistry(platform_app);
   helper_->OnExtensionLoaded(*platform_app);
   EXPECT_TRUE(IsExtensionLoadedInProcess(*platform_app,
                                          incognito_render_process_host_.get()));
-  ASSERT_EQ(1u, incognito_sink.message_count());
-  EXPECT_EQ(static_cast<uint32_t>(ExtensionMsg_Loaded::ID),
-            incognito_sink.GetMessageAt(0)->type());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1u, helper_->num_loaded_extensions_in_incognito());
 }
 
 }  // namespace extensions

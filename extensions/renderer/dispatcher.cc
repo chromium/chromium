@@ -207,6 +207,49 @@ class HandleScopeHelper {
 base::LazyInstance<WorkerScriptContextSet>::DestructorAtExit
     g_worker_script_context_set = LAZY_INSTANCE_INITIALIZER;
 
+// Creates a new extension from the data in the mojom::ExtensionLoadedParams
+// object. A context_id needs to be passed because each browser context can have
+// different values for default_policy_blocked/allowed_hosts.
+// (see extension_util.cc#GetBrowserContextId)
+scoped_refptr<extensions::Extension> ConvertToExtension(
+    mojom::ExtensionLoadedParamsPtr params,
+    int context_id,
+    std::string* error) {
+  // We pass in the |id| to the create call because it will save work in the
+  // normal case, and because in tests, extensions may not have paths or keys,
+  // but it's important to retain the same id.
+  scoped_refptr<Extension> extension =
+      Extension::Create(params->path, params->location,
+                        base::Value::AsDictionaryValue(params->manifest),
+                        params->creation_flags, params->id, error);
+
+  if (!extension.get())
+    return extension;
+
+  const extensions::PermissionsData* permissions_data =
+      extension->permissions_data();
+  permissions_data->SetPermissions(
+      std::make_unique<const extensions::PermissionSet>(
+          std::move(params->active_permissions)),
+      std::make_unique<const extensions::PermissionSet>(
+          std::move(params->withheld_permissions)));
+
+  if (params->uses_default_policy_blocked_allowed_hosts) {
+    permissions_data->SetUsesDefaultHostRestrictions(context_id);
+  } else {
+    permissions_data->SetPolicyHostRestrictions(params->policy_blocked_hosts,
+                                                params->policy_allowed_hosts);
+  }
+
+  for (const auto& pair : params->tab_specific_permissions) {
+    permissions_data->UpdateTabSpecificPermissions(pair.first, pair.second);
+  }
+
+  extension->SetGUID(params->guid);
+
+  return extension;
+}
+
 }  // namespace
 
 Dispatcher::PendingServiceWorker::PendingServiceWorker(
@@ -892,7 +935,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   IPC_MESSAGE_HANDLER(ExtensionMsg_DeliverMessage, OnDeliverMessage)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnConnect, OnDispatchOnConnect)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnDisconnect, OnDispatchOnDisconnect)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_Loaded, OnLoaded)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchEvent, OnDispatchEvent)
   IPC_MESSAGE_HANDLER(ExtensionMsg_UpdatePermissions, OnUpdatePermissions)
   IPC_MESSAGE_UNHANDLED(handled = false)
@@ -965,6 +1007,71 @@ void Dispatcher::ActivateExtension(const std::string& extension_id) {
   InitOriginPermissions(extension);
 
   UpdateActiveExtensions();
+}
+
+void Dispatcher::LoadExtensions(
+    std::vector<mojom::ExtensionLoadedParamsPtr> loaded_extensions) {
+  for (auto& param : loaded_extensions) {
+    std::string error;
+    std::string id = param->id;
+    absl::optional<::extensions::ActivationSequence>
+        worker_activation_sequence = param->worker_activation_sequence;
+
+    scoped_refptr<const Extension> extension =
+        ConvertToExtension(std::move(param), kRendererProfileId, &error);
+    if (!extension.get()) {
+      NOTREACHED() << error;
+      // Note: in tests |param.id| has been observed to be empty (see comment
+      // just below) so this isn't all that reliable.
+      extension_load_errors_[id] = error;
+      continue;
+    }
+
+    RendererExtensionRegistry* extension_registry =
+        RendererExtensionRegistry::Get();
+    // TODO(kalman): This test is deliberately not a CHECK (though I wish it
+    // could be) and uses extension->id() not params.id:
+    // 1. For some reason params.id can be empty. I've only seen it with
+    //    the webstore extension, in tests, and I've spent some time trying to
+    //    figure out why - but cost/benefit won.
+    // 2. The browser only sends this IPC to RenderProcessHosts once, but the
+    //    Dispatcher is attached to a RenderThread. Presumably there is a
+    //    mismatch there. In theory one would think it's possible for the
+    //    browser to figure this out itself - but again, cost/benefit.
+    if (!extension_registry->Insert(extension)) {
+      // TODO(devlin): This may be fixed by crbug.com/528026. Monitor, and
+      // consider making this a release CHECK.
+      NOTREACHED();
+    }
+
+    if (worker_activation_sequence.has_value()) {
+      extension_registry->SetWorkerActivationSequence(
+          extension, std::move(*worker_activation_sequence));
+    }
+
+    ExtensionsRendererClient::Get()->OnExtensionLoaded(*extension);
+
+    // Resume service worker if it is suspended.
+    {
+      base::AutoLock lock(service_workers_paused_for_on_loaded_message_lock_);
+      auto it =
+          service_workers_paused_for_on_loaded_message_.find(extension->id());
+      if (it != service_workers_paused_for_on_loaded_message_.end()) {
+        scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+            std::move(it->second->task_runner);
+        // Using base::Unretained() should be fine as this won't get destructed.
+        task_runner->PostTask(
+            FROM_HERE,
+            base::BindOnce(&Dispatcher::ResumeEvaluationOnWorkerThread,
+                           base::Unretained(this), extension->id()));
+      }
+    }
+  }
+
+  // Update the available bindings for all contexts. These may have changed if
+  // an externally_connectable extension was loaded that can connect to an
+  // open webpage.
+  UpdateAllBindings();
 }
 
 void Dispatcher::UnloadExtension(const std::string& extension_id) {
@@ -1056,8 +1163,8 @@ void Dispatcher::SetScriptingAllowlist(
 }
 
 void Dispatcher::UpdateDefaultPolicyHostRestrictions(
-    const URLPatternSet& default_policy_blocked_hosts,
-    const URLPatternSet& default_policy_allowed_hosts) {
+    URLPatternSet default_policy_blocked_hosts,
+    URLPatternSet default_policy_allowed_hosts) {
   PermissionsData::SetDefaultPolicyHostRestrictions(
       kRendererProfileId, default_policy_blocked_hosts,
       default_policy_allowed_hosts);
@@ -1075,7 +1182,7 @@ void Dispatcher::UpdateDefaultPolicyHostRestrictions(
 }
 
 void Dispatcher::UpdateTabSpecificPermissions(const std::string& extension_id,
-                                              const URLPatternSet& new_hosts,
+                                              URLPatternSet new_hosts,
                                               int tab_id,
                                               bool update_origin_whitelist) {
   const Extension* extension =
@@ -1148,72 +1255,6 @@ void Dispatcher::OnDispatchOnDisconnect(int worker_thread_id,
   bindings_system_->messaging_service()->DispatchOnDisconnect(
       script_context_set_.get(), port_id, error_message,
       NULL);  // All render frames.
-}
-
-void Dispatcher::OnLoaded(
-    const std::vector<ExtensionMsg_Loaded_Params>& loaded_extensions) {
-  for (const auto& param : loaded_extensions) {
-    std::string error;
-    scoped_refptr<const Extension> extension =
-        param.ConvertToExtension(kRendererProfileId, &error);
-    if (!extension.get()) {
-      NOTREACHED() << error;
-      // Note: in tests |param.id| has been observed to be empty (see comment
-      // just below) so this isn't all that reliable.
-      extension_load_errors_[param.id] = error;
-      continue;
-    }
-    RendererExtensionRegistry* extension_registry =
-        RendererExtensionRegistry::Get();
-    // TODO(kalman): This test is deliberately not a CHECK (though I wish it
-    // could be) and uses extension->id() not params.id:
-    // 1. For some reason params.id can be empty. I've only seen it with
-    //    the webstore extension, in tests, and I've spent some time trying to
-    //    figure out why - but cost/benefit won.
-    // 2. The browser only sends this IPC to RenderProcessHosts once, but the
-    //    Dispatcher is attached to a RenderThread. Presumably there is a
-    //    mismatch there. In theory one would think it's possible for the
-    //    browser to figure this out itself - but again, cost/benefit.
-    if (!extension_registry->Insert(extension)) {
-      // TODO(devlin): This may be fixed by crbug.com/528026. Monitor, and
-      // consider making this a release CHECK.
-      NOTREACHED();
-    }
-    if (param.worker_activation_sequence) {
-      extension_registry->SetWorkerActivationSequence(
-          extension, *param.worker_activation_sequence);
-    }
-    if (param.uses_default_policy_blocked_allowed_hosts) {
-      extension->permissions_data()->SetUsesDefaultHostRestrictions(
-          kRendererProfileId);
-    } else {
-      extension->permissions_data()->SetPolicyHostRestrictions(
-          param.policy_blocked_hosts, param.policy_allowed_hosts);
-    }
-
-    ExtensionsRendererClient::Get()->OnExtensionLoaded(*extension);
-
-    // Resume service worker if it is suspended.
-    {
-      base::AutoLock lock(service_workers_paused_for_on_loaded_message_lock_);
-      auto it =
-          service_workers_paused_for_on_loaded_message_.find(extension->id());
-      if (it != service_workers_paused_for_on_loaded_message_.end()) {
-        scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-            std::move(it->second->task_runner);
-        // Using base::Unretained() should be fine as this won't get destructed.
-        task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(&Dispatcher::ResumeEvaluationOnWorkerThread,
-                           base::Unretained(this), extension->id()));
-      }
-    }
-  }
-
-  // Update the available bindings for all contexts. These may have changed if
-  // an externally_connectable extension was loaded that can connect to an
-  // open webpage.
-  UpdateAllBindings();
 }
 
 void Dispatcher::OnDispatchEvent(

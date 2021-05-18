@@ -56,75 +56,6 @@ ExtensionMsg_PermissionSetStruct::ToPermissionSet() const {
       scriptable_hosts.Clone());
 }
 
-ExtensionMsg_Loaded_Params::ExtensionMsg_Loaded_Params()
-    : location(ManifestLocation::kInvalidLocation),
-      creation_flags(Extension::NO_FLAGS) {}
-
-ExtensionMsg_Loaded_Params::~ExtensionMsg_Loaded_Params() {}
-
-ExtensionMsg_Loaded_Params::ExtensionMsg_Loaded_Params(
-    const Extension* extension,
-    bool include_tab_permissions,
-    absl::optional<ActivationSequence> worker_activation_sequence)
-    : manifest(static_cast<base::DictionaryValue&&>(
-          extension->manifest()->value()->Clone())),
-      location(extension->location()),
-      path(extension->path()),
-      active_permissions(extension->permissions_data()->active_permissions()),
-      withheld_permissions(
-          extension->permissions_data()->withheld_permissions()),
-      policy_blocked_hosts(
-          extension->permissions_data()->policy_blocked_hosts().Clone()),
-      policy_allowed_hosts(
-          extension->permissions_data()->policy_allowed_hosts().Clone()),
-      uses_default_policy_blocked_allowed_hosts(
-          extension->permissions_data()->UsesDefaultPolicyHostRestrictions()),
-      id(extension->id()),
-      worker_activation_sequence(worker_activation_sequence),
-      creation_flags(extension->creation_flags()),
-      guid(extension->guid()) {
-  if (include_tab_permissions) {
-    for (const auto& pair :
-         extension->permissions_data()->tab_specific_permissions()) {
-      tab_specific_permissions[pair.first] =
-          ExtensionMsg_PermissionSetStruct(*pair.second);
-    }
-  }
-}
-
-ExtensionMsg_Loaded_Params::ExtensionMsg_Loaded_Params(
-    ExtensionMsg_Loaded_Params&& other) = default;
-ExtensionMsg_Loaded_Params& ExtensionMsg_Loaded_Params::operator=(
-    ExtensionMsg_Loaded_Params&& other) = default;
-
-scoped_refptr<Extension> ExtensionMsg_Loaded_Params::ConvertToExtension(
-    const int context_id,
-    std::string* error) const {
-  // We pass in the |id| to the create call because it will save work in the
-  // normal case, and because in tests, extensions may not have paths or keys,
-  // but it's important to retain the same id.
-  scoped_refptr<Extension> extension =
-      Extension::Create(path, location, manifest, creation_flags, id, error);
-  if (extension.get()) {
-    const extensions::PermissionsData* permissions_data =
-        extension->permissions_data();
-    permissions_data->SetPermissions(active_permissions.ToPermissionSet(),
-                                     withheld_permissions.ToPermissionSet());
-    if (uses_default_policy_blocked_allowed_hosts) {
-      permissions_data->SetUsesDefaultHostRestrictions(context_id);
-    } else {
-      permissions_data->SetPolicyHostRestrictions(policy_blocked_hosts,
-                                                  policy_allowed_hosts);
-    }
-    for (const auto& pair : tab_specific_permissions) {
-      permissions_data->UpdateTabSpecificPermissions(
-          pair.first, *pair.second.ToPermissionSet());
-    }
-    extension->SetGUID(guid);
-  }
-  return extension;
-}
-
 namespace IPC {
 
 void ParamTraits<URLPattern>::Write(base::Pickle* m, const param_type& p) {
@@ -294,45 +225,6 @@ void ParamTraits<ExtensionMsg_PermissionSetStruct>::Log(const param_type& p,
   LogParam(p.manifest_permissions, l);
   LogParam(p.explicit_hosts, l);
   LogParam(p.scriptable_hosts, l);
-}
-
-void ParamTraits<ExtensionMsg_Loaded_Params>::Write(base::Pickle* m,
-                                                    const param_type& p) {
-  WriteParam(m, p.location);
-  WriteParam(m, p.path);
-  WriteParam(m, p.manifest);
-  WriteParam(m, p.creation_flags);
-  WriteParam(m, p.id);
-  WriteParam(m, p.active_permissions);
-  WriteParam(m, p.withheld_permissions);
-  WriteParam(m, p.tab_specific_permissions);
-  WriteParam(m, p.policy_blocked_hosts);
-  WriteParam(m, p.policy_allowed_hosts);
-  WriteParam(m, p.uses_default_policy_blocked_allowed_hosts);
-  WriteParam(m, p.worker_activation_sequence);
-  WriteParam(m, p.guid);
-}
-
-bool ParamTraits<ExtensionMsg_Loaded_Params>::Read(const base::Pickle* m,
-                                                   base::PickleIterator* iter,
-                                                   param_type* p) {
-  p->manifest.Clear();
-  return ReadParam(m, iter, &p->location) && ReadParam(m, iter, &p->path) &&
-         ReadParam(m, iter, &p->manifest) &&
-         ReadParam(m, iter, &p->creation_flags) && ReadParam(m, iter, &p->id) &&
-         ReadParam(m, iter, &p->active_permissions) &&
-         ReadParam(m, iter, &p->withheld_permissions) &&
-         ReadParam(m, iter, &p->tab_specific_permissions) &&
-         ReadParam(m, iter, &p->policy_blocked_hosts) &&
-         ReadParam(m, iter, &p->policy_allowed_hosts) &&
-         ReadParam(m, iter, &p->uses_default_policy_blocked_allowed_hosts) &&
-         ReadParam(m, iter, &p->worker_activation_sequence) &&
-         ReadParam(m, iter, &p->guid);
-}
-
-void ParamTraits<ExtensionMsg_Loaded_Params>::Log(const param_type& p,
-                                                  std::string* l) {
-  l->append(p.id);
 }
 
 }  // namespace IPC
