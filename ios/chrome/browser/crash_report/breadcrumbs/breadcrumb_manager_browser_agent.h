@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ios/chrome/browser/main/browser_observer.h"
 #include "ios/chrome/browser/main/browser_user_data.h"
 #include "ios/chrome/browser/overlays/public/overlay_presenter.h"
@@ -136,7 +136,8 @@ class BreadcrumbManagerBrowserAgent
   std::unique_ptr<BatchOperation> batch_operation_;
 
   // Observes overlays presentation.
-  ScopedObserver<OverlayPresenter, OverlayPresenterObserver> overlay_observer_;
+  base::ScopedObservation<OverlayPresenter, OverlayPresenterObserver>
+      overlay_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_BREADCRUMB_MANAGER_BROWSER_AGENT_H_

@@ -37,14 +37,14 @@ const char kBreadcrumbOverlayJsPrompt[] = "#js-prompt";
 BROWSER_USER_DATA_KEY_IMPL(BreadcrumbManagerBrowserAgent)
 
 BreadcrumbManagerBrowserAgent::BreadcrumbManagerBrowserAgent(Browser* browser)
-    : browser_(browser), overlay_observer_(this) {
+    : browser_(browser) {
   static int next_unique_id = 1;
   unique_id_ = next_unique_id++;
 
   browser_->AddObserver(this);
   browser_->GetWebStateList()->AddObserver(this);
 
-  overlay_observer_.Add(
+  overlay_observation_.Observe(
       OverlayPresenter::FromBrowser(browser, OverlayModality::kWebContentArea));
 }
 
@@ -208,5 +208,6 @@ void BreadcrumbManagerBrowserAgent::WillShowOverlay(OverlayPresenter* presenter,
 
 void BreadcrumbManagerBrowserAgent::OverlayPresenterDestroyed(
     OverlayPresenter* presenter) {
-  overlay_observer_.Remove(presenter);
+  DCHECK(overlay_observation_.IsObservingSource(presenter));
+  overlay_observation_.Reset();
 }

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -154,8 +154,9 @@ class BreadcrumbManagerTabHelper
   int sequentially_scrolled_ = 0;
 
   // Manages this object as an observer of infobars.
-  ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-      infobar_observer_;
+  base::ScopedObservation<infobars::InfoBarManager,
+                          infobars::InfoBarManager::Observer>
+      infobar_observation_{this};
 
   // Allows observing Objective-C object for Scroll and Zoom events.
   __strong id<CRWWebViewScrollViewProxyObserver> scroll_observer_;
