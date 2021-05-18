@@ -8,6 +8,7 @@ cr.define('cellular_setup', function() {
     PROFILE_LOADING: 'profileLoadingPage',
     PROFILE_DISCOVERY: 'profileDiscoveryPage',
     ACTIVATION_CODE: 'activationCodePage',
+    ACTIVATION_VERIFCATION: 'activationVerificationPage',
     CONFIRMATION_CODE: 'confirmationCodePage',
     FINAL: 'finalPage',
   };
@@ -364,8 +365,10 @@ cr.define('cellular_setup', function() {
           break;
         case ESimUiState.ACTIVATION_CODE_ENTRY:
         case ESimUiState.ACTIVATION_CODE_ENTRY_READY:
-        case ESimUiState.ACTIVATION_CODE_ENTRY_INSTALLING:
           this.selectedESimPageName_ = ESimPageName.ACTIVATION_CODE;
+          break;
+        case ESimUiState.ACTIVATION_CODE_ENTRY_INSTALLING:
+          this.selectedESimPageName_ = ESimPageName.ACTIVATION_VERIFCATION;
           break;
         case ESimUiState.CONFIRMATION_CODE_ENTRY:
         case ESimUiState.CONFIRMATION_CODE_ENTRY_READY:

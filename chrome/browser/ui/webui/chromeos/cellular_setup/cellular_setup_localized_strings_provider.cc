@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/oobe_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -83,11 +84,18 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"confirmationCodeError",
      IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_ERROR},
     {"confirmationCodeLoading",
-     IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_LOADING}};  // namespace
+     IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_LOADING},
+    {"verifyingActivationCode",
+     IDS_CELLULAR_SETUP_ESIM_PAGE_VERIFYING_ACTIVATION_CODE}};
 
 struct NamedBoolean {
   const char* name;
   bool value;
+};
+
+struct NamedResourceId {
+  const char* name;
+  int value;
 };
 
 const std::vector<const NamedBoolean>& GetBooleanValues() {
@@ -98,6 +106,12 @@ const std::vector<const NamedBoolean>& GetBooleanValues() {
         base::FeatureList::IsEnabled(
             chromeos::features::kCellularUseExternalEuicc)}});
   return *named_bools;
+}
+
+const std::vector<const NamedResourceId>& GetResourceIdValues() {
+  static const base::NoDestructor<std::vector<const NamedResourceId>>
+      named_resource_ids({{"spinner.json", IDR_LOGIN_SPINNER_ANIMATION}});
+  return *named_resource_ids;
 }
 
 }  //  namespace
@@ -114,11 +128,17 @@ void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
 void AddNonStringLoadTimeData(content::WebUIDataSource* html_source) {
   for (const auto& entry : GetBooleanValues())
     html_source->AddBoolean(entry.name, entry.value);
+
+  for (const auto& entry : GetResourceIdValues())
+    html_source->AddResourcePath(entry.name, entry.value);
 }
 
 void AddNonStringLoadTimeDataToDict(base::DictionaryValue* dict) {
   for (const auto& entry : GetBooleanValues())
     dict->SetBoolean(entry.name, entry.value);
+
+  for (const auto& entry : GetResourceIdValues())
+    dict->SetInteger(entry.name, entry.value);
 }
 
 }  // namespace cellular_setup

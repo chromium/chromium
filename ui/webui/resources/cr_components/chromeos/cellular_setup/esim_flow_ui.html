@@ -12,6 +12,7 @@
 <link rel="import" href="cellular_setup_delegate.html">
 <link rel="import" href="setup_loading_page.html">
 <link rel="import" href="activation_code_page.html">
+<link rel="import" href="activation_verification_page.html">
 <link rel="import" href="final_page.html">
 <link rel="import" href="profile_discovery_list_page.html">
 <link rel="import" href="confirmation_code_page.html">
@@ -43,6 +44,8 @@
           show-error="{{showError_}}"
           show-busy="[[shouldShowSubpageBusy_(state_)]]">
       </activation-code-page>
+      <activation-verification-page id="activationVerificationPage">
+      </activation-verification-page>
       <confirmation-code-page id="confirmationCodePage"
           confirmation-code="{{confirmationCode_}}"
           profile="[[selectedProfile_]]"

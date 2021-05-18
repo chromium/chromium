@@ -13,6 +13,7 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":activation_code_page.m",
+    ":activation_verification_page.m",
     ":base_page.m",
     ":button_bar.m",
     ":cellular_eid_dialog.m",
@@ -52,6 +53,17 @@ js_library("final_page.m") {
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":final_page_module" ]
+}
+
+js_library("activation_verification_page.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/activation_verification_page.m.js" ]
+  deps = [
+    ":base_page.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  extra_deps = [ ":activation_verification_page_module" ]
 }
 
 js_library("activation_code_page.m") {
@@ -201,6 +213,7 @@ js_library("esim_flow_ui.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.js" ]
   deps = [
     ":activation_code_page.m",
+    ":activation_verification_page.m",
     ":cellular_setup_delegate.m",
     ":cellular_types.m",
     ":confirmation_code_page.m",
@@ -245,6 +258,7 @@ js_library("cellular_setup.m") {
 group("polymer3_elements") {
   public_deps = [
     ":activation_code_page_module",
+    ":activation_verification_page_module",
     ":base_page_module",
     ":button_bar_module",
     ":cellular_eid_dialog_module",
@@ -273,6 +287,14 @@ polymer_modulizer("base_page") {
 polymer_modulizer("final_page") {
   js_file = "final_page.js"
   html_file = "final_page.html"
+  html_type = "dom-module"
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  auto_imports = cr_components_chromeos_auto_imports
+}
+
+polymer_modulizer("activation_verification_page") {
+  js_file = "activation_verification_page.js"
+  html_file = "activation_verification_page.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
   auto_imports = cr_components_chromeos_auto_imports
