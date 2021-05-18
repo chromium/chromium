@@ -27,7 +27,7 @@ def ReadSerializedData(input_path):
 
   linebreak = data.index(b'\n')
   # First line is comma-separated list of languages.
-  language_codes = data[:linebreak].strip().split(b',')
+  language_codes = data[:linebreak].strip().decode(encoding="utf-8").split(',')
   # Rest of the file is the serialized tree.
   tree_bytes = data[linebreak+1:]
 
