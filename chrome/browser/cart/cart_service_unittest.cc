@@ -316,14 +316,15 @@ TEST_F(CartServiceTest, TestUpdateDiscounts) {
 
   const double timestamp = 1;
 
-  service_->UpdateDiscounts(kMockMerchantA, timestamp, kMockMerchantADiscounts);
+  cart_db::ChromeCartContentProto cart_with_discount_proto =
+      AddDiscountToProto(proto, timestamp, kMockMerchantADiscountRuleId,
+                         kMockMerchantADiscountsPercentOff,
+                         kMockMerchantADiscountsRawMerchantOfferId);
+
+  service_->UpdateDiscounts(GURL(kMockMerchantURLA), cart_with_discount_proto);
   task_environment_.RunUntilIdle();
 
-  const ShoppingCarts expected = {
-      {kMockMerchantA,
-       AddDiscountToProto(proto, timestamp, kMockMerchantADiscountRuleId,
-                          kMockMerchantADiscountsPercentOff,
-                          kMockMerchantADiscountsRawMerchantOfferId)}};
+  const ShoppingCarts expected = {{kMockMerchantA, cart_with_discount_proto}};
 
   cart_db->LoadCart(kMockMerchantA,
                     base::BindOnce(&CartServiceTest::GetEvaluationDiscount,

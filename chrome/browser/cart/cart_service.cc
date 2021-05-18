@@ -580,53 +580,15 @@ void CartService::OnAddCart(const std::string& domain,
                                    weak_ptr_factory_.GetWeakPtr()));
 }
 
-void CartService::UpdateDiscounts(
-    const std::string& domain,
-    const double timestamp,
-    const std::vector<cart_db::DiscountInfoProto> discount_infos) {
-  auto update_discounts_callback = base::BindOnce(
-      &CartService::OnUpdateDiscount, weak_ptr_factory_.GetWeakPtr(), domain,
-      std::move(discount_infos), timestamp);
-
-  cart_db_->LoadCart(domain, std::move(update_discounts_callback));
-}
-
-void CartService::OnUpdateDiscount(
-    const std::string& domain,
-    const std::vector<cart_db::DiscountInfoProto> discount_infos,
-    const double timestamp,
-    bool success,
-    std::vector<CartDB::KeyAndValue> proto_pairs) {
-  if (!success || proto_pairs.size() == 0) {
+void CartService::UpdateDiscounts(const GURL& cart_url,
+                                  cart_db::ChromeCartContentProto new_proto) {
+  if (!cart_url.is_valid()) {
+    VLOG(1) << __func__
+            << "update discounts with invalid cart_url: " << cart_url;
     return;
   }
-
-  DCHECK_EQ(1U, proto_pairs.size());
-
-  auto cart_proto = proto_pairs[0].second;
-
-  cart_proto.mutable_discount_info()->set_last_fetched_timestamp(timestamp);
-
-  if (discount_infos.empty()) {
-    cart_proto.mutable_discount_info()->clear_discount_info();
-  } else {
-    for (cart_db::DiscountInfoProto discount_info : discount_infos) {
-      cart_db::DiscountInfoProto* added_discount =
-          cart_proto.mutable_discount_info()->add_discount_info();
-
-      added_discount->set_rule_id(discount_info.rule_id());
-      if (discount_info.has_amount_off()) {
-        added_discount->set_allocated_amount_off(
-            discount_info.release_amount_off());
-      } else {
-        added_discount->set_percent_off(discount_info.percent_off());
-      }
-      added_discount->set_raw_merchant_offer_id(
-          discount_info.raw_merchant_offer_id());
-    }
-  }
-
-  cart_db_->AddCart(domain, std::move(cart_proto),
+  std::string domain = eTLDPlusOne(cart_url);
+  cart_db_->AddCart(domain, std::move(new_proto),
                     base::BindOnce(&CartService::OnOperationFinished,
                                    weak_ptr_factory_.GetWeakPtr()));
 }

@@ -17,12 +17,6 @@ namespace {
 // 30 minutes.
 const int64_t kDelayFetchMs = 1800000;
 const int kImmediateFetchMs = 0;
-
-std::string eTLDPlusOne(const GURL& url) {
-  return net::registry_controlled_domains::GetDomainAndRegistry(
-      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-}
-
 }  // namespace
 
 CartLoader::CartLoader(Profile* profile)
@@ -42,9 +36,8 @@ CartDiscountUpdater::~CartDiscountUpdater() = default;
 void CartDiscountUpdater::update(
     const std::string& cart_url,
     const cart_db::ChromeCartContentProto new_proto) {
-  const GURL url(cart_url);
-  std::string domain = eTLDPlusOne(url);
-  cart_service_->AddCart(domain, url, std::move(new_proto));
+  GURL url(cart_url);
+  cart_service_->UpdateDiscounts(url, std::move(new_proto));
 }
 
 CartLoaderAndUpdaterFactory::CartLoaderAndUpdaterFactory(Profile* profile)
