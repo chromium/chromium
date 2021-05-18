@@ -185,9 +185,9 @@ class Surface final : public ui::PropertyHandler {
   // Request that surface should have a specific application ID string.
   void SetApplicationId(const char* application_id);
 
-  // Whether to hide the shelf when fullscreen. If true, shelf is inaccessible
-  // (plain fullscreen). If false, shelf auto-hides and can be shown with a
-  // mouse gesture (immersive fullscreen).
+  // Whether to show/hide the shelf when fullscreen. If true, the titlebar/shelf
+  // will show when the mouse moves to the top/bottom of the screen. If false
+  // (plain fullscreen), the titlebar and shelf are always hidden.
   void SetUseImmersiveForFullscreen(bool value);
 
   // Called to show the snap preview to the right or left, or to hide it.

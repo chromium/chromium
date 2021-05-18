@@ -46,9 +46,9 @@ void SetShellStartupId(ui::PropertyHandler* property_handler,
                        const absl::optional<std::string>& id);
 const std::string* GetShellStartupId(const aura::Window* window);
 
-// Hides/shows the shelf when fullscreen. If true, shelf is inaccessible
-// (plain fullscreen). If false, shelf auto-hides and can be shown with a
-// mouse gesture (immersive fullscreen).
+// Shows/hides the shelf when fullscreen. If true, titlebar/shelf will show when
+// the mouse moves to the top/bottom of the screen. If false (plain fullscreen),
+// the titlebar and shelf are always hidden.
 void SetShellUseImmersiveForFullscreen(aura::Window* window, bool value);
 
 // Sets the client accessibility ID for the window. The accessibility ID
