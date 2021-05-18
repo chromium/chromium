@@ -8,7 +8,7 @@
 #include <map>
 #include <memory>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/chrome/browser/overlays/public/overlay_browser_agent_base.h"
@@ -65,7 +65,9 @@ class InfobarOverlayBrowserAgent
     void OverlayPresenterDestroyed(OverlayPresenter* presenter) override;
 
     InfobarOverlayBrowserAgent* browser_agent_ = nullptr;
-    ScopedObserver<OverlayPresenter, OverlayPresenterObserver> scoped_observer_;
+    base::ScopedMultiSourceObservation<OverlayPresenter,
+                                       OverlayPresenterObserver>
+        scoped_observations_{this};
   };
 
   // The interaction handlers for each InfobarType.

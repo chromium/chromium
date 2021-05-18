@@ -9,7 +9,7 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "ios/web/public/web_state_observer.h"
@@ -74,9 +74,9 @@ class TranslateOverlayTabHelper
         translate::TranslateInfoBarDelegate* delegate) override;
 
     // Scoped observer that facilitates observing a TranslateInfoBarDelegate.
-    ScopedObserver<translate::TranslateInfoBarDelegate,
-                   translate::TranslateInfoBarDelegate::Observer>
-        translate_scoped_observer_;
+    base::ScopedObservation<translate::TranslateInfoBarDelegate,
+                            translate::TranslateInfoBarDelegate::Observer>
+        translate_scoped_observation_{this};
     // TranslateOverlayTabHelper instance.
     TranslateOverlayTabHelper* tab_helper_;
     infobars::InfoBar* translate_infobar_ = nil;
@@ -95,8 +95,9 @@ class TranslateOverlayTabHelper
     void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
 
     // Scoped observer that facilitates observing an InfoBarManager
-    ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-        infobar_manager_scoped_observer_;
+    base::ScopedObservation<infobars::InfoBarManager,
+                            infobars::InfoBarManager::Observer>
+        infobar_manager_scoped_observation_{this};
     // TranslateOverlayTabHelper instance.
     TranslateOverlayTabHelper* tab_helper_;
   };
@@ -114,8 +115,8 @@ class TranslateOverlayTabHelper
     void WebStateDestroyed(web::WebState* web_state) override;
 
     // Scoped observer that facilitates observing an InfoBarManager
-    ScopedObserver<web::WebState, web::WebStateObserver>
-        web_state_scoped_observer_;
+    base::ScopedObservation<web::WebState, web::WebStateObserver>
+        web_state_scoped_observation_{this};
     // TranslateOverlayTabHelper instance.
     TranslateOverlayTabHelper* tab_helper_;
   };

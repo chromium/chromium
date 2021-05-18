@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_cancel_handler.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/translate_overlay_tab_helper.h"
 
@@ -49,9 +49,9 @@ class PlaceholderRequestCancelHandler
 
     PlaceholderRequestCancelHandler* cancel_handler_;
 
-    ScopedObserver<TranslateOverlayTabHelper,
-                   TranslateOverlayTabHelper::Observer>
-        scoped_observer_;
+    base::ScopedObservation<TranslateOverlayTabHelper,
+                            TranslateOverlayTabHelper::Observer>
+        scoped_observation_{this};
   };
 
   // Indicates to the cancel handler that the translation has finished.

@@ -34,11 +34,11 @@ InfobarOverlayTabHelper::~InfobarOverlayTabHelper() = default;
 InfobarOverlayTabHelper::OverlayRequestScheduler::OverlayRequestScheduler(
     web::WebState* web_state,
     InfobarOverlayTabHelper* tab_helper)
-    : tab_helper_(tab_helper), web_state_(web_state), scoped_observer_(this) {
+    : tab_helper_(tab_helper), web_state_(web_state) {
   DCHECK(tab_helper_);
   InfoBarManager* manager = InfoBarManagerImpl::FromWebState(web_state);
   DCHECK(manager);
-  scoped_observer_.Add(manager);
+  scoped_observation_.Observe(manager);
 }
 
 InfobarOverlayTabHelper::OverlayRequestScheduler::~OverlayRequestScheduler() =
@@ -67,5 +67,6 @@ void InfobarOverlayTabHelper::OverlayRequestScheduler::OnInfoBarAdded(
 
 void InfobarOverlayTabHelper::OverlayRequestScheduler::OnManagerShuttingDown(
     InfoBarManager* manager) {
-  scoped_observer_.Remove(manager);
+  DCHECK(scoped_observation_.IsObservingSource(manager));
+  scoped_observation_.Reset();
 }

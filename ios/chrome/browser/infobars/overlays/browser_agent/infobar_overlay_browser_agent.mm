@@ -58,11 +58,11 @@ InfobarInteractionHandler* InfobarOverlayBrowserAgent::GetInteractionHandler(
 InfobarOverlayBrowserAgent::OverlayVisibilityObserver::
     OverlayVisibilityObserver(Browser* browser,
                               InfobarOverlayBrowserAgent* browser_agent)
-    : browser_agent_(browser_agent), scoped_observer_(this) {
+    : browser_agent_(browser_agent) {
   DCHECK(browser_agent_);
-  scoped_observer_.Add(
+  scoped_observations_.AddObservation(
       OverlayPresenter::FromBrowser(browser, OverlayModality::kInfobarBanner));
-  scoped_observer_.Add(
+  scoped_observations_.AddObservation(
       OverlayPresenter::FromBrowser(browser, OverlayModality::kInfobarModal));
 }
 
@@ -98,5 +98,5 @@ void InfobarOverlayBrowserAgent::OverlayVisibilityObserver::DidHideOverlay(
 
 void InfobarOverlayBrowserAgent::OverlayVisibilityObserver::
     OverlayPresenterDestroyed(OverlayPresenter* presenter) {
-  scoped_observer_.Remove(presenter);
+  scoped_observations_.RemoveObservation(presenter);
 }

@@ -37,8 +37,8 @@ void PlaceholderRequestCancelHandler::TranslationHasFinished() {
 PlaceholderRequestCancelHandler::TranslationFinishedObserver::
     TranslationFinishedObserver(TranslateOverlayTabHelper* tab_helper,
                                 PlaceholderRequestCancelHandler* cancel_handler)
-    : cancel_handler_(cancel_handler), scoped_observer_(this) {
-  scoped_observer_.Add(tab_helper);
+    : cancel_handler_(cancel_handler) {
+  scoped_observation_.Observe(tab_helper);
 }
 
 PlaceholderRequestCancelHandler::TranslationFinishedObserver::
@@ -51,7 +51,8 @@ void PlaceholderRequestCancelHandler::TranslationFinishedObserver::
 
 void PlaceholderRequestCancelHandler::TranslationFinishedObserver::
     TranslateOverlayTabHelperDestroyed(TranslateOverlayTabHelper* tab_helper) {
-  scoped_observer_.Remove(tab_helper);
+  DCHECK(scoped_observation_.IsObservingSource(tab_helper));
+  scoped_observation_.Reset();
 }
 
 }  // namespace translate_infobar_overlays

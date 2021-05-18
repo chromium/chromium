@@ -67,13 +67,11 @@ InfobarBannerOverlayRequestCancelHandler::InsertionObserver::InsertionObserver(
     InfobarOverlayRequestInserter* inserter,
     InfoBarIOS* infobar,
     InfobarBannerOverlayRequestCancelHandler* cancel_handler)
-    : cancel_handler_(cancel_handler),
-      infobar_(infobar),
-      scoped_observer_(this) {
+    : cancel_handler_(cancel_handler), infobar_(infobar) {
   DCHECK(inserter);
   DCHECK(infobar);
   DCHECK(cancel_handler);
-  scoped_observer_.Add(inserter);
+  scoped_observation_.Observe(inserter);
 }
 
 InfobarBannerOverlayRequestCancelHandler::InsertionObserver::
@@ -89,7 +87,8 @@ void InfobarBannerOverlayRequestCancelHandler::InsertionObserver::
 
 void InfobarBannerOverlayRequestCancelHandler::InsertionObserver::
     InserterDestroyed(InfobarOverlayRequestInserter* inserter) {
-  scoped_observer_.Remove(inserter);
+  DCHECK(scoped_observation_.IsObservingSource(inserter));
+  scoped_observation_.Reset();
 }
 
 #pragma mark - InfobarBannerOverlayRequestCancelHandler::ModalCompletionObserver
@@ -99,13 +98,11 @@ InfobarBannerOverlayRequestCancelHandler::ModalCompletionObserver::
         InfobarBannerOverlayRequestCancelHandler* cancel_handler,
         InfobarModalCompletionNotifier* completion_notifier,
         InfoBarIOS* infobar)
-    : cancel_handler_(cancel_handler),
-      infobar_(infobar),
-      scoped_observer_(this) {
+    : cancel_handler_(cancel_handler), infobar_(infobar) {
   DCHECK(cancel_handler_);
   DCHECK(infobar_);
   DCHECK(completion_notifier);
-  scoped_observer_.Add(completion_notifier);
+  scoped_observation_.Observe(completion_notifier);
 }
 
 InfobarBannerOverlayRequestCancelHandler::ModalCompletionObserver::
@@ -124,7 +121,8 @@ void InfobarBannerOverlayRequestCancelHandler::ModalCompletionObserver::
 void InfobarBannerOverlayRequestCancelHandler::ModalCompletionObserver::
     InfobarModalCompletionNotifierDestroyed(
         InfobarModalCompletionNotifier* notifier) {
-  scoped_observer_.Remove(notifier);
+  DCHECK(scoped_observation_.IsObservingSource(notifier));
+  scoped_observation_.Reset();
   cancel_handler_->ModalCompleted();
   // The cancel handler is destroyed after CancelForModalCompletion(), so no
   // code can be added after this call.

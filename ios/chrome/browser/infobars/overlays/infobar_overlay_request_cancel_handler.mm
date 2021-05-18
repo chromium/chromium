@@ -48,11 +48,11 @@ void InfobarOverlayRequestCancelHandler::CancelForInfobarRemoval() {
 
 InfobarOverlayRequestCancelHandler::RemovalObserver::RemovalObserver(
     InfobarOverlayRequestCancelHandler* cancel_handler)
-    : cancel_handler_(cancel_handler), scoped_observer_(this) {
+    : cancel_handler_(cancel_handler) {
   DCHECK(cancel_handler_);
   InfoBarManager* manager = cancel_handler_->infobar()->owner();
   DCHECK(manager);
-  scoped_observer_.Add(manager);
+  scoped_observation_.Observe(manager);
 }
 
 InfobarOverlayRequestCancelHandler::RemovalObserver::~RemovalObserver() =
@@ -81,7 +81,8 @@ void InfobarOverlayRequestCancelHandler::RemovalObserver::OnInfoBarReplaced(
 
 void InfobarOverlayRequestCancelHandler::RemovalObserver::OnManagerShuttingDown(
     infobars::InfoBarManager* manager) {
-  scoped_observer_.Remove(manager);
+  DCHECK(scoped_observation_.IsObservingSource(manager));
+  scoped_observation_.Reset();
   cancel_handler_->CancelForInfobarRemoval();
   // The cancel handler is destroyed after Cancel(), so no code can be added
   // after this call.

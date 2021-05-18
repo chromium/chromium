@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/infobars/overlays/infobar_modal_completion_notifier.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_queue.h"
@@ -34,9 +34,8 @@ class MockInfobarModalCompletionNotifierObserver
 // Test fixture for InfobarModalCompletionNotifier.
 class InfobarModalCompletionNotifierTest : public PlatformTest {
  public:
-  InfobarModalCompletionNotifierTest()
-      : notifier_(&web_state_), scoped_observer_(&observer_) {
-    scoped_observer_.Add(&notifier_);
+  InfobarModalCompletionNotifierTest() : notifier_(&web_state_) {
+    scoped_observation_.Observe(&notifier_);
   }
 
   OverlayRequestQueue* queue() {
@@ -49,9 +48,9 @@ class InfobarModalCompletionNotifierTest : public PlatformTest {
   FakeInfobarIOS infobar_;
   InfobarModalCompletionNotifier notifier_;
   MockInfobarModalCompletionNotifierObserver observer_;
-  ScopedObserver<InfobarModalCompletionNotifier,
-                 InfobarModalCompletionNotifier::Observer>
-      scoped_observer_;
+  base::ScopedObservation<InfobarModalCompletionNotifier,
+                          InfobarModalCompletionNotifier::Observer>
+      scoped_observation_{&observer_};
 };
 
 // Tests that the observer is notified when all modal requests for |infobar_|

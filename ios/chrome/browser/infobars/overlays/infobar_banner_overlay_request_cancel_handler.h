@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_cancel_handler.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_modal_completion_notifier.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 
@@ -44,9 +44,9 @@ class InfobarBannerOverlayRequestCancelHandler
     InfobarBannerOverlayRequestCancelHandler* cancel_handler_ = nullptr;
     // The infobar for which to look for modal insertions.
     InfoBarIOS* infobar_ = nullptr;
-    ScopedObserver<InfobarOverlayRequestInserter,
-                   InfobarOverlayRequestInserter::Observer>
-        scoped_observer_;
+    base::ScopedObservation<InfobarOverlayRequestInserter,
+                            InfobarOverlayRequestInserter::Observer>
+        scoped_observation_{this};
   };
 
   // Helper object that triggers request cancellation for the completion of
@@ -71,9 +71,9 @@ class InfobarBannerOverlayRequestCancelHandler
     InfobarBannerOverlayRequestCancelHandler* cancel_handler_ = nullptr;
     // The infobar whose modal dismissals should trigger cancellation.
     InfoBarIOS* infobar_ = nullptr;
-    ScopedObserver<InfobarModalCompletionNotifier,
-                   InfobarModalCompletionNotifier::Observer>
-        scoped_observer_;
+    base::ScopedObservation<InfobarModalCompletionNotifier,
+                            InfobarModalCompletionNotifier::Observer>
+        scoped_observation_{this};
   };
 
   // Indicates to the cancel handler that its banner presented a modal.
