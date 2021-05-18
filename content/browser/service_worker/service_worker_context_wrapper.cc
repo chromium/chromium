@@ -1740,22 +1740,4 @@ void ServiceWorkerContextWrapper::DidGetRegisteredOrigins(
     std::move(on_registrations_initialized_).Run();
 }
 
-// static
-void ServiceWorkerContextWrapper::
-    DidGetRegisteredOriginsForGetInstalledRegistrationOrigins(
-        absl::optional<std::string> host_filter,
-        GetInstalledRegistrationOriginsCallback callback,
-        scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_callback,
-        const std::vector<url::Origin>& origins) {
-  std::vector<url::Origin> filtered_origins;
-  for (auto& origin : origins) {
-    if (host_filter.has_value() && host_filter.value() != origin.host())
-      continue;
-    filtered_origins.push_back(std::move(origin));
-  }
-  task_runner_for_callback->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), std::move(filtered_origins)));
-}
-
 }  // namespace content
