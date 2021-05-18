@@ -1070,6 +1070,7 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
         reporter->set_state(state);
         reporter->set_frame_source(args_.frame_id.source_id);
         reporter->set_frame_sequence(args_.frame_id.sequence_number);
+        reporter->set_layer_tree_host_id(layer_tree_host_id_);
         reporter->set_has_missing_content(has_missing_content_);
         if (IsDroppedFrameAffectingSmoothness()) {
           DCHECK(state == ChromeFrameReporter::STATE_DROPPED ||
