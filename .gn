@@ -65,8 +65,6 @@ default_args = {
 no_check_targets = [
   "//chrome/test:browser_tests",
   "//chrome/test:browser_tests_runner",
-  "//chrome/test:chrome_app_unittests",
-  "//chrome/test:chrome_app_unittests__library",
   "//chrome/test:interactive_ui_tests",
   "//chrome/test:test_support_ui",
   "//chrome/test:test_support_unit",
