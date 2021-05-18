@@ -251,8 +251,7 @@ TEST(JsonSchemaCompilerArrayTest, ReturnIntegerArrayResultCreate) {
   std::vector<int> integers;
   integers.push_back(1);
   integers.push_back(2);
-  base::Value results = base::Value::FromUniquePtrValue(
-      arrays::ReturnIntegerArray::Results::Create(integers));
+  base::Value results(arrays::ReturnIntegerArray::Results::Create(integers));
 
   base::Value expected(base::Value::Type::LIST);
   base::Value expected_argument(base::Value::Type::LIST);
@@ -268,8 +267,7 @@ TEST(JsonSchemaCompilerArrayTest, ReturnRefArrayResultCreate) {
   items.push_back(arrays::Item());
   items[0].val = 1;
   items[1].val = 2;
-  base::Value results = base::Value::FromUniquePtrValue(
-      arrays::ReturnRefArray::Results::Create(items));
+  base::Value results(arrays::ReturnRefArray::Results::Create(items));
 
   base::ListValue expected;
   auto expected_argument = std::make_unique<base::ListValue>();

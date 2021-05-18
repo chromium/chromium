@@ -4,7 +4,6 @@
 
 #include "tools/json_schema_compiler/test/returns_async.h"
 
-#include <memory>
 #include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,7 +14,7 @@
 TEST(JsonSchemaCompilerReturnsAsyncTest, ReturnsObjectResultCreate) {
   test::api::returns_async::SupportsPromises::Results::SomeObject some_object;
   some_object.state = test::api::returns_async::ENUMERATION_FOO;
-  base::Value results = base::Value::FromUniquePtrValue(
+  base::Value results(
       test::api::returns_async::SupportsPromises::Results::Create(some_object));
 
   base::Value expected_dict = base::Value(base::Value::Type::DICTIONARY);

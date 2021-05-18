@@ -12,7 +12,7 @@
 TEST(JsonSchemaCompilerCallbacksTest, ReturnsObjectResultCreate) {
   test::api::callbacks::ReturnsObject::Results::SomeObject some_object;
   some_object.state = test::api::callbacks::ENUMERATION_FOO;
-  base::Value results = base::Value::FromUniquePtrValue(
+  base::Value results(
       test::api::callbacks::ReturnsObject::Results::Create(some_object));
 
   auto expected_dict = std::make_unique<base::DictionaryValue>();
@@ -25,7 +25,7 @@ TEST(JsonSchemaCompilerCallbacksTest, ReturnsObjectResultCreate) {
 TEST(JsonSchemaCompilerCallbacksTest, ReturnsMultipleResultCreate) {
   test::api::callbacks::ReturnsMultiple::Results::SomeObject some_object;
   some_object.state = test::api::callbacks::ENUMERATION_FOO;
-  base::Value results = base::Value::FromUniquePtrValue(
+  base::Value results(
       test::api::callbacks::ReturnsMultiple::Results::Create(5, some_object));
 
   auto expected_dict = std::make_unique<base::DictionaryValue>();

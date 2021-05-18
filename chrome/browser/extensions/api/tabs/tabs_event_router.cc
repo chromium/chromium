@@ -290,7 +290,8 @@ void TabsEventRouter::OnZoomChanged(
       Profile::FromBrowserContext(data.web_contents->GetBrowserContext());
   DispatchEvent(profile, events::TABS_ON_ZOOM_CHANGE,
                 api::tabs::OnZoomChange::kEventName,
-                api::tabs::OnZoomChange::Create(zoom_change_info),
+                std::make_unique<base::ListValue>(
+                    api::tabs::OnZoomChange::Create(zoom_change_info)),
                 EventRouter::USER_GESTURE_UNKNOWN);
 }
 

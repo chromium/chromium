@@ -73,7 +73,7 @@ class ImeObserver : public InputMethodEngineBase::Observer {
   virtual void DispatchEventToExtension(
       extensions::events::HistogramValue histogram_value,
       const std::string& event_name,
-      std::unique_ptr<base::ListValue> args) = 0;
+      std::vector<base::Value> args) = 0;
 
   // Returns the type of the current screen.
   virtual std::string GetCurrentScreenType() = 0;

@@ -62,19 +62,16 @@ TEST(IdlCompiler, Basics) {
 
   // Test functions that take a callback function as a parameter, with varying
   // callback signatures.
-  base::Value f4_results =
-      base::Value::FromUniquePtrValue(Function4::Results::Create());
+  base::Value f4_results(Function4::Results::Create());
   base::ListValue expected;
   EXPECT_EQ(expected, f4_results);
 
-  base::Value f5_results =
-      base::Value::FromUniquePtrValue(Function5::Results::Create(13));
+  base::Value f5_results(Function5::Results::Create(13));
   ASSERT_TRUE(f5_results.is_list());
   ASSERT_EQ(1u, f5_results.GetList().size());
   EXPECT_TRUE(f5_results.GetList()[0].is_int());
 
-  base::Value f6_results =
-      base::Value::FromUniquePtrValue(Function6::Results::Create(a));
+  base::Value f6_results(Function6::Results::Create(a));
   ASSERT_TRUE(f6_results.is_list());
   ASSERT_EQ(1u, f6_results.GetList().size());
   MyType1 c;

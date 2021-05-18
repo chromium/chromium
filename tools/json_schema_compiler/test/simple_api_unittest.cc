@@ -59,8 +59,7 @@ void PopulateManifestKeys(base::StringPiece manifest_json,
 }  // namespace
 
 TEST(JsonSchemaCompilerSimpleTest, IncrementIntegerResultCreate) {
-  base::Value results = base::Value::FromUniquePtrValue(
-      simple_api::IncrementInteger::Results::Create(5));
+  base::Value results(simple_api::IncrementInteger::Results::Create(5));
   base::ListValue expected;
   expected.AppendInteger(5);
   EXPECT_EQ(expected, results);
@@ -146,8 +145,7 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalBeforeRequired) {
 }
 
 TEST(JsonSchemaCompilerSimpleTest, NoParamsResultCreate) {
-  base::Value results = base::Value::FromUniquePtrValue(
-      simple_api::OptionalString::Results::Create());
+  base::Value results(simple_api::OptionalString::Results::Create());
   base::ListValue expected;
   EXPECT_EQ(expected, results);
 }
@@ -176,18 +174,16 @@ TEST(JsonSchemaCompilerSimpleTest, GetTestType) {
     std::unique_ptr<base::DictionaryValue> value = CreateTestTypeDictionary();
     auto test_type = std::make_unique<simple_api::TestType>();
     EXPECT_TRUE(simple_api::TestType::Populate(*value, test_type.get()));
-    base::Value results = base::Value::FromUniquePtrValue(
-        simple_api::GetTestType::Results::Create(*test_type));
-    ASSERT_TRUE(results.is_list());
-    ASSERT_EQ(1u, results.GetList().size());
-    EXPECT_TRUE(results.GetList()[0].Equals(value.get()));
+    std::vector<base::Value> results =
+        simple_api::GetTestType::Results::Create(*test_type);
+    ASSERT_EQ(1u, results.size());
+    EXPECT_TRUE(results[0].Equals(value.get()));
   }
 }
 
 TEST(JsonSchemaCompilerSimpleTest, OnIntegerFiredCreate) {
   {
-    base::Value results =
-        base::Value::FromUniquePtrValue(simple_api::OnIntegerFired::Create(5));
+    base::Value results(simple_api::OnIntegerFired::Create(5));
     base::ListValue expected;
     expected.AppendInteger(5);
     EXPECT_EQ(expected, results);
@@ -196,8 +192,7 @@ TEST(JsonSchemaCompilerSimpleTest, OnIntegerFiredCreate) {
 
 TEST(JsonSchemaCompilerSimpleTest, OnStringFiredCreate) {
   {
-    base::Value results = base::Value::FromUniquePtrValue(
-        simple_api::OnStringFired::Create("yo dawg"));
+    base::Value results(simple_api::OnStringFired::Create("yo dawg"));
     base::ListValue expected;
     expected.AppendString("yo dawg");
     EXPECT_EQ(expected, results);
@@ -214,8 +209,7 @@ TEST(JsonSchemaCompilerSimpleTest, OnTestTypeFiredCreate) {
     ASSERT_TRUE(expected->GetInteger("integer", &some_test_type.integer));
     ASSERT_TRUE(expected->GetBoolean("boolean", &some_test_type.boolean));
 
-    base::Value results = base::Value::FromUniquePtrValue(
-        simple_api::OnTestTypeFired::Create(some_test_type));
+    base::Value results(simple_api::OnTestTypeFired::Create(some_test_type));
     ASSERT_TRUE(results.is_list());
     ASSERT_EQ(1u, results.GetList().size());
     EXPECT_EQ(*expected, results.GetList()[0]);

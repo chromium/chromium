@@ -56,15 +56,14 @@ bool WriteFile::Execute(int request_id) {
       "data",
       base::Value(base::as_bytes(base::make_span(buffer_->data(), length_))));
 
-  base::Value event_args(base::Value::Type::LIST);
-  event_args.Append(std::move(options_as_value));
+  std::vector<base::Value> event_args;
+  event_args.push_back(std::move(options_as_value));
 
   return SendEvent(
       request_id,
       extensions::events::FILE_SYSTEM_PROVIDER_ON_WRITE_FILE_REQUESTED,
       extensions::api::file_system_provider::OnWriteFileRequested::kEventName,
-      base::ListValue::From(
-          base::Value::ToUniquePtrValue(std::move(event_args))));
+      std::move(event_args));
 }
 
 void WriteFile::OnSuccess(int /* request_id */,

@@ -55,8 +55,6 @@ class DashboardPrivateShowPermissionPromptForDelegatedInstallFunction
   ExtensionFunction::ResponseValue BuildResponse(
       api::dashboard_private::Result result,
       const std::string& error);
-  std::unique_ptr<base::ListValue> CreateResults(
-      api::dashboard_private::Result result) const;
 
   const Params::Details& details() const { return params_->details; }
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,14 +56,14 @@ TEST(JsonSchemaCompilerAdditionalPropertiesTest,
   result_object.integer = 5;
   result_object.additional_properties["key"] = "value";
 
-  base::ListValue expected;
+  std::vector<base::Value> expected;
   {
-    auto dict = std::make_unique<base::DictionaryValue>();
-    dict->SetInteger("integer", 5);
-    dict->SetString("key", "value");
-    expected.Append(std::move(dict));
+    base::Value dict(base::Value::Type::DICTIONARY);
+    dict.SetIntKey("integer", 5);
+    dict.SetStringKey("key", "value");
+    expected.push_back(std::move(dict));
   }
 
   EXPECT_EQ(expected,
-            *ap::ReturnAdditionalProperties::Results::Create(result_object));
+            ap::ReturnAdditionalProperties::Results::Create(result_object));
 }

@@ -581,7 +581,7 @@ void VpnService::SendSignalToExtension(
     const std::string& extension_id,
     extensions::events::HistogramValue histogram_value,
     const std::string& event_name,
-    std::unique_ptr<base::ListValue> event_args) {
+    std::vector<base::Value> event_args) {
   std::unique_ptr<extensions::Event> event(new extensions::Event(
       histogram_value, event_name, std::move(event_args), browser_context_));
 

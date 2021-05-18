@@ -57,8 +57,7 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
 TEST(JsonSchemaCompilerObjectsTest, ReturnsObjectResultCreate) {
   test::api::objects::ReturnsObject::Results::Info info;
   info.state = test::api::objects::FIRST_STATE_FOO;
-  base::Value results = base::Value::FromUniquePtrValue(
-      test::api::objects::ReturnsObject::Results::Create(info));
+  base::Value results(test::api::objects::ReturnsObject::Results::Create(info));
   ASSERT_TRUE(results.is_list());
   ASSERT_EQ(1u, results.GetList().size());
 
@@ -70,8 +69,7 @@ TEST(JsonSchemaCompilerObjectsTest, ReturnsObjectResultCreate) {
 TEST(JsonSchemaCompilerObjectsTest, OnObjectFiredCreate) {
   test::api::objects::OnObjectFired::SomeObject object;
   object.state = test::api::objects::FIRST_STATE_BAR;
-  base::Value results = base::Value::FromUniquePtrValue(
-      test::api::objects::OnObjectFired::Create(object));
+  base::Value results(test::api::objects::OnObjectFired::Create(object));
   ASSERT_TRUE(results.is_list());
   ASSERT_EQ(1u, results.GetList().size());
 

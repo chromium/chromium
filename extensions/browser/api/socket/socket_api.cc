@@ -1162,7 +1162,8 @@ void SocketSecureFunction::TlsConnectDone(
   if (result != net::OK) {
     RemoveSocket(params_->socket_id);
     error_ = net::ErrorToString(result);
-    results_ = api::socket::Secure::Results::Create(result);
+    results_ = std::make_unique<base::ListValue>(
+        api::socket::Secure::Results::Create(result));
     AsyncWorkCompleted();
     return;
   }
@@ -1172,7 +1173,8 @@ void SocketSecureFunction::TlsConnectDone(
                                   std::move(receive_pipe_handle),
                                   std::move(send_pipe_handle), extension_id());
   ReplaceSocket(params_->socket_id, socket.release());
-  results_ = api::socket::Secure::Results::Create(result);
+  results_ = std::make_unique<base::ListValue>(
+      api::socket::Secure::Results::Create(result));
   AsyncWorkCompleted();
 }
 

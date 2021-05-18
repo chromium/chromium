@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
@@ -29,12 +30,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/bluetooth_low_energy.h"
-
-namespace base {
-
-class ListValue;
-
-}  // namespace base
 
 namespace content {
 
@@ -407,12 +402,12 @@ class BluetoothLowEnergyEventRouter
       const std::string& event_name,
       const device::BluetoothUUID& uuid,
       const std::string& characteristic_id,
-      std::unique_ptr<base::ListValue> args);
+      std::vector<base::Value> args);
 
   void DispatchEventToExtension(const std::string& extension_id,
                                 events::HistogramValue histogram_value,
                                 const std::string& event_name,
-                                std::unique_ptr<base::ListValue> args);
+                                std::vector<base::Value> args);
 
   // Returns a BluetoothRemoteGattService by its instance ID |instance_id|.
   // Returns

@@ -486,12 +486,11 @@ ExtensionFunction::ResponseAction TabsGetCurrentFunction::Run() {
   int index = GetActiveWebContentsIndex();
   const CastWebContents* active = GetWebViewForIndex(index);
   WebContents* caller_contents = GetSenderWebContents();
-  std::unique_ptr<base::ListValue> results;
   if (caller_contents && caller_contents == active->web_contents()) {
-    results = tabs::Get::Results::Create(
-        *CreateTabObject(active, extension(), index));
+    return RespondNow(ArgumentList(tabs::Get::Results::Create(
+        *CreateTabObject(active, extension(), index))));
   }
-  return RespondNow(results ? ArgumentList(std::move(results)) : NoArguments());
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {

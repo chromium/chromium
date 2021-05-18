@@ -101,7 +101,7 @@ bool IsRecoveryToolRunning(Profile* profile) {
 void BroadcastEvent(Profile* profile,
                     extensions::events::HistogramValue histogram_value,
                     const std::string& event_name,
-                    std::unique_ptr<base::ListValue> event_args) {
+                    std::vector<base::Value> event_args) {
   extensions::EventRouter::Get(profile)->BroadcastEvent(
       std::make_unique<extensions::Event>(histogram_value, event_name,
                                           std::move(event_args)));
@@ -114,7 +114,7 @@ void DispatchEventToExtension(
     const std::string& extension_id,
     extensions::events::HistogramValue histogram_value,
     const std::string& event_name,
-    std::unique_ptr<base::ListValue> event_args) {
+    std::vector<base::Value> event_args) {
   extensions::EventRouter::Get(profile)->DispatchEventToExtension(
       extension_id, std::make_unique<extensions::Event>(
                         histogram_value, event_name, std::move(event_args)));
@@ -409,7 +409,7 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
       const std::string& extension_id,
       extensions::events::HistogramValue histogram_value,
       const std::string& event_name,
-      std::unique_ptr<base::ListValue> event_args) override {
+      std::vector<base::Value> event_args) override {
     extensions::EventRouter::Get(profile_)->DispatchEventToExtension(
         extension_id, std::make_unique<extensions::Event>(
                           histogram_value, event_name, std::move(event_args)));

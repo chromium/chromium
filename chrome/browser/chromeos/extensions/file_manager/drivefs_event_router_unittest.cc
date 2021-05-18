@@ -29,13 +29,12 @@ using testing::_;
 
 namespace {
 
-class ListValueMatcher
-    : public testing::MatcherInterface<const base::ListValue&> {
+class ValueMatcher : public testing::MatcherInterface<const base::Value&> {
  public:
-  explicit ListValueMatcher(base::ListValue expected)
+  explicit ValueMatcher(base::Value expected)
       : expected_(std::move(expected)) {}
 
-  bool MatchAndExplain(const base::ListValue& actual,
+  bool MatchAndExplain(const base::Value& actual,
                        testing::MatchResultListener* listener) const override {
     *listener << actual;
     return actual == expected_;
@@ -44,10 +43,10 @@ class ListValueMatcher
   void DescribeTo(::std::ostream* os) const override { *os << expected_; }
 
  private:
-  base::ListValue expected_;
+  base::Value expected_;
 };
 
-testing::Matcher<const base::ListValue&> MatchFileTransferStatus(
+testing::Matcher<const base::Value&> MatchFileTransferStatus(
     std::string file_url,
     file_manager_private::TransferState transfer_state,
     double processed,
@@ -60,14 +59,14 @@ testing::Matcher<const base::ListValue&> MatchFileTransferStatus(
   status.total = total;
   status.num_total_jobs = num_total_jobs;
   status.hide_when_zero_jobs = true;
-  return testing::MakeMatcher(new ListValueMatcher(std::move(
-      *file_manager_private::OnFileTransfersUpdated::Create(status))));
+  return testing::MakeMatcher(new ValueMatcher(base::Value(
+      file_manager_private::OnFileTransfersUpdated::Create(status))));
 }
 
-testing::Matcher<const base::ListValue&> MatchFileWatchEvent(
+testing::Matcher<const base::Value&> MatchFileWatchEvent(
     const FileWatchEvent& event) {
-  return testing::MakeMatcher(new ListValueMatcher(
-      std::move(*file_manager_private::OnDirectoryChanged::Create(event))));
+  return testing::MakeMatcher(new ValueMatcher(
+      base::Value(file_manager_private::OnDirectoryChanged::Create(event))));
 }
 
 class TestDriveFsEventRouter : public DriveFsEventRouter {
@@ -83,15 +82,16 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
       const std::string& extension_id,
       extensions::events::HistogramValue histogram_value,
       const std::string& event_name,
-      std::unique_ptr<base::ListValue> event_args) override {
-    DispatchEventToExtensionImpl(extension_id, event_name, *event_args);
+      std::vector<base::Value> event_args) override {
+    DispatchEventToExtensionImpl(extension_id, event_name,
+                                 base::Value(std::move(event_args)));
   }
 
   MOCK_METHOD(void,
               DispatchEventToExtensionImpl,
               (const std::string& extension_id,
                const std::string& name,
-               const base::ListValue& event));
+               const base::Value& event));
   MOCK_METHOD(bool, IsPathWatched, (const base::FilePath&));
 
   GURL ConvertDrivePathToFileSystemUrl(const base::FilePath& file_path,
@@ -767,8 +767,8 @@ TEST_F(DriveFsEventRouterTest, OnError_CantUploadStorageFull) {
       mock(),
       DispatchEventToExtensionImpl(
           "ext", file_manager_private::OnDriveSyncError::kEventName,
-          testing::MakeMatcher(new ListValueMatcher(std::move(
-              *file_manager_private::OnDriveSyncError::Create(event))))));
+          testing::MakeMatcher(new ValueMatcher(base::Value(
+              file_manager_private::OnDriveSyncError::Create(event))))));
 
   observer().OnError({drivefs::mojom::DriveError::Type::kCantUploadStorageFull,
                       base::FilePath("/a")});
@@ -782,8 +782,8 @@ TEST_F(DriveFsEventRouterTest, OnError_CantPinDiskFull) {
       mock(),
       DispatchEventToExtensionImpl(
           "ext", file_manager_private::OnDriveSyncError::kEventName,
-          testing::MakeMatcher(new ListValueMatcher(std::move(
-              *file_manager_private::OnDriveSyncError::Create(event))))));
+          testing::MakeMatcher(new ValueMatcher(base::Value(
+              file_manager_private::OnDriveSyncError::Create(event))))));
 
   observer().OnError({drivefs::mojom::DriveError::Type::kPinningFailedDiskFull,
                       base::FilePath("a")});
@@ -797,8 +797,8 @@ TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_Display) {
   EXPECT_CALL(mock(),
               DispatchEventToExtensionImpl(
                   "ext", file_manager_private::OnDriveConfirmDialog::kEventName,
-                  testing::MakeMatcher(new ListValueMatcher(std::move(
-                      *file_manager_private::OnDriveConfirmDialog::Create(
+                  testing::MakeMatcher(new ValueMatcher(base::Value(
+                      file_manager_private::OnDriveConfirmDialog::Create(
                           expected_event))))));
 
   drivefs::mojom::DialogReason reason;
@@ -824,8 +824,8 @@ TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_OneDialogAtATime) {
   EXPECT_CALL(mock(),
               DispatchEventToExtensionImpl(
                   "ext", file_manager_private::OnDriveConfirmDialog::kEventName,
-                  testing::MakeMatcher(new ListValueMatcher(std::move(
-                      *file_manager_private::OnDriveConfirmDialog::Create(
+                  testing::MakeMatcher(new ValueMatcher(base::Value(
+                      file_manager_private::OnDriveConfirmDialog::Create(
                           expected_event))))));
 
   drivefs::mojom::DialogReason reason;
@@ -860,8 +860,8 @@ TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_UnmountBeforeResult) {
   EXPECT_CALL(mock(),
               DispatchEventToExtensionImpl(
                   "ext", file_manager_private::OnDriveConfirmDialog::kEventName,
-                  testing::MakeMatcher(new ListValueMatcher(std::move(
-                      *file_manager_private::OnDriveConfirmDialog::Create(
+                  testing::MakeMatcher(new ValueMatcher(base::Value(
+                      file_manager_private::OnDriveConfirmDialog::Create(
                           expected_event))))))
       .Times(2);
 

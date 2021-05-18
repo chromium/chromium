@@ -26,8 +26,7 @@ class AlarmsApiTest : public ExtensionApiTest,
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
 
-  static std::unique_ptr<base::ListValue> BuildEventArguments(
-      const bool last_message) {
+  static std::vector<base::Value> BuildEventArguments(const bool last_message) {
     api::test::OnMessage::Info info;
     info.data = "";
     info.last_message = last_message;

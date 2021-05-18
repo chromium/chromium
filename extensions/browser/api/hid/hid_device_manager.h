@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observer.h"
 #include "base/threading/thread_checker.h"
+#include "base/values.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
@@ -121,7 +122,7 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
 
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     std::unique_ptr<base::ListValue> event_args,
+                     std::vector<base::Value> event_args,
                      const device::mojom::HidDeviceInfo& device_info);
 
   base::ThreadChecker thread_checker_;

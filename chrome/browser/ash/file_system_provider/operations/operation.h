@@ -7,17 +7,15 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/files/file.h"
 #include "base/macros.h"
+#include "base/values.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "storage/browser/file_system/async_file_util.h"
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 namespace extensions {
 struct Event;
@@ -57,7 +55,7 @@ class Operation : public RequestManager::HandlerInterface {
   bool SendEvent(int request_id,
                  extensions::events::HistogramValue histogram_value,
                  const std::string& event_name,
-                 std::unique_ptr<base::ListValue> event_args);
+                 std::vector<base::Value> event_args);
 
   ProvidedFileSystemInfo file_system_info_;
 

@@ -112,8 +112,6 @@ class WebstorePrivateBeginInstallWithManifest3Function
   ExtensionFunction::ResponseValue BuildResponse(
       api::webstore_private::Result result,
       const std::string& error);
-  std::unique_ptr<base::ListValue> CreateResults(
-      api::webstore_private::Result result) const;
 
   bool ShouldShowFrictionDialog(Profile* profile);
   void ShowInstallFrictionDialog(content::WebContents* contents);

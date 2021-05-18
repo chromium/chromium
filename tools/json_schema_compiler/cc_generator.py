@@ -1237,18 +1237,20 @@ class _Generator(object):
     c = Code()
     c.Concat(self._GeneratePropertyFunctions(function_scope, params))
 
-    (c.Sblock('std::unique_ptr<base::ListValue> %(function_scope)s'
+    (c.Sblock('std::vector<base::Value> %(function_scope)s'
                   'Create(%(declaration_list)s) {')
-      .Append('auto create_results = std::make_unique<base::ListValue>();')
+      .Append('std::vector<base::Value> create_results;')
+      .Append('create_results.reserve(%d);' % len(params))
     )
     declaration_list = []
     for param in params:
       declaration_list.append(cpp_util.GetParameterDeclaration(
           param, self._type_helper.GetCppType(param.type_)))
-      c.Cblock(self._CreateValueFromType('create_results->Append(%s);',
-                                         param.name,
-                                         param.type_,
-                                         param.unix_name))
+      c.Cblock(self._CreateValueFromType(
+          'create_results.push_back(base::Value::FromUniquePtrValue(%s));',
+          param.name,
+          param.type_,
+          param.unix_name))
     c.Append('return create_results;')
     c.Eblock('}')
     c.Substitute({

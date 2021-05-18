@@ -92,13 +92,13 @@ void ExtensionSyncEventObserver::OnFileSynced(
     ::sync_file_system::SyncFileStatus status,
     ::sync_file_system::SyncAction action,
     ::sync_file_system::SyncDirection direction) {
-  std::unique_ptr<base::ListValue> params(new base::ListValue());
+  std::vector<base::Value> params;
 
   std::unique_ptr<base::DictionaryValue> entry =
       CreateDictionaryValueForFileSystemEntry(url, file_type);
   if (!entry)
     return;
-  params->Append(std::move(entry));
+  params.push_back(base::Value::FromUniquePtrValue(std::move(entry)));
 
   // Status, SyncAction and any optional notes to go here.
   sync_file_system::FileStatus status_enum =
@@ -106,9 +106,9 @@ void ExtensionSyncEventObserver::OnFileSynced(
   sync_file_system::SyncAction action_enum = SyncActionToExtensionEnum(action);
   sync_file_system::SyncDirection direction_enum =
       SyncDirectionToExtensionEnum(direction);
-  params->AppendString(sync_file_system::ToString(status_enum));
-  params->AppendString(sync_file_system::ToString(action_enum));
-  params->AppendString(sync_file_system::ToString(direction_enum));
+  params.push_back(base::Value(sync_file_system::ToString(status_enum)));
+  params.push_back(base::Value(sync_file_system::ToString(action_enum)));
+  params.push_back(base::Value(sync_file_system::ToString(direction_enum)));
 
   BroadcastOrDispatchEvent(
       url.origin().GetURL(),
@@ -120,7 +120,7 @@ void ExtensionSyncEventObserver::BroadcastOrDispatchEvent(
     const GURL& app_origin,
     extensions::events::HistogramValue histogram_value,
     const std::string& event_name,
-    std::unique_ptr<base::ListValue> values) {
+    std::vector<base::Value> values) {
   // Check to see whether the event should be broadcasted to all listening
   // extensions or sent to a specific extension ID.
   bool broadcast_mode = app_origin.is_empty();

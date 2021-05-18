@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,11 +79,10 @@ TEST(JsonSchemaCompilerCrossrefTest, GetTestType) {
   auto test_type = std::make_unique<simple_api::TestType>();
   EXPECT_TRUE(simple_api::TestType::Populate(*value, test_type.get()));
 
-  base::Value results = base::Value::FromUniquePtrValue(
-      crossref::GetTestType::Results::Create(*test_type));
-  ASSERT_TRUE(results.is_list());
-  ASSERT_EQ(1u, results.GetList().size());
-  EXPECT_EQ(*value, results.GetList()[0]);
+  std::vector<base::Value> results =
+      crossref::GetTestType::Results::Create(*test_type);
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(*value, results[0]);
 }
 
 TEST(JsonSchemaCompilerCrossrefTest, TestTypeInObjectParamsCreate) {

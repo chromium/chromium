@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TAB_GROUPS_TAB_GROUPS_EVENT_ROUTER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TAB_GROUPS_TAB_GROUPS_EVENT_ROUTER_H_
 
-#include <memory>
 #include <string>
+#include <vector>
 
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
@@ -46,7 +47,7 @@ class TabGroupsEventRouter : public TabStripModelObserver,
 
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     std::unique_ptr<base::ListValue> args);
+                     std::vector<base::Value> args);
 
   Profile* const profile_;
   EventRouter* const event_router_ = nullptr;

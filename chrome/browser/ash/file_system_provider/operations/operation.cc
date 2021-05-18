@@ -49,7 +49,7 @@ void Operation::SetDispatchEventImplForTesting(
 bool Operation::SendEvent(int request_id,
                           extensions::events::HistogramValue histogram_value,
                           const std::string& event_name,
-                          std::unique_ptr<base::ListValue> event_args) {
+                          std::vector<base::Value> event_args) {
   return dispatch_event_impl_.Run(std::make_unique<extensions::Event>(
       histogram_value, event_name, std::move(event_args)));
 }

@@ -120,7 +120,8 @@ void SocketsUdpCreateFunction::Work() {
 
   sockets_udp::CreateInfo create_info;
   create_info.socket_id = AddSocket(socket);
-  results_ = sockets_udp::Create::Results::Create(create_info);
+  results_ = std::make_unique<base::ListValue>(
+      sockets_udp::Create::Results::Create(create_info));
 }
 
 SocketsUdpUpdateFunction::SocketsUdpUpdateFunction() {}
@@ -141,7 +142,8 @@ void SocketsUdpUpdateFunction::Work() {
   }
 
   SetSocketProperties(socket, &params_->properties);
-  results_ = sockets_udp::Update::Results::Create();
+  results_ =
+      std::make_unique<base::ListValue>(sockets_udp::Update::Results::Create());
 }
 
 SocketsUdpSetPausedFunction::SocketsUdpSetPausedFunction()
@@ -177,7 +179,8 @@ void SocketsUdpSetPausedFunction::Work() {
     }
   }
 
-  results_ = sockets_udp::SetPaused::Results::Create();
+  results_ = std::make_unique<base::ListValue>(
+      sockets_udp::SetPaused::Results::Create());
 }
 
 SocketsUdpBindFunction::SocketsUdpBindFunction()
@@ -224,7 +227,8 @@ void SocketsUdpBindFunction::OnCompleted(int net_result) {
     AsyncWorkCompleted();
     return;
   }
-  results_ = sockets_udp::Bind::Results::Create(net_result);
+  results_ = std::make_unique<base::ListValue>(
+      sockets_udp::Bind::Results::Create(net_result));
   if (net_result == net::OK) {
     socket_event_dispatcher_->OnSocketBind(extension_->id(),
                                            params_->socket_id);
@@ -309,7 +313,8 @@ void SocketsUdpSendFunction::SetSendResult(int net_result, int bytes_sent) {
 
   if (net_result != net::OK)
     error_ = net::ErrorToString(net_result);
-  results_ = sockets_udp::Send::Results::Create(send_info);
+  results_ = std::make_unique<base::ListValue>(
+      sockets_udp::Send::Results::Create(send_info));
   AsyncWorkCompleted();
 }
 
@@ -332,7 +337,8 @@ void SocketsUdpCloseFunction::Work() {
 
   socket->Disconnect(false /* socket_destroying */);
   RemoveSocket(params_->socket_id);
-  results_ = sockets_udp::Close::Results::Create();
+  results_ =
+      std::make_unique<base::ListValue>(sockets_udp::Close::Results::Create());
 }
 
 SocketsUdpGetInfoFunction::SocketsUdpGetInfoFunction() {}
@@ -354,7 +360,8 @@ void SocketsUdpGetInfoFunction::Work() {
 
   sockets_udp::SocketInfo socket_info =
       CreateSocketInfo(params_->socket_id, socket);
-  results_ = sockets_udp::GetInfo::Results::Create(socket_info);
+  results_ = std::make_unique<base::ListValue>(
+      sockets_udp::GetInfo::Results::Create(socket_info));
 }
 
 SocketsUdpGetSocketsFunction::SocketsUdpGetSocketsFunction() {}
@@ -374,7 +381,8 @@ void SocketsUdpGetSocketsFunction::Work() {
       }
     }
   }
-  results_ = sockets_udp::GetSockets::Results::Create(socket_infos);
+  results_ = std::make_unique<base::ListValue>(
+      sockets_udp::GetSockets::Results::Create(socket_infos));
 }
 
 SocketsUdpJoinGroupFunction::SocketsUdpJoinGroupFunction() {}
@@ -413,7 +421,8 @@ void SocketsUdpJoinGroupFunction::AsyncWorkStart() {
 void SocketsUdpJoinGroupFunction::OnCompleted(int net_result) {
   if (net_result != net::OK)
     error_ = net::ErrorToString(net_result);
-  results_ = sockets_udp::JoinGroup::Results::Create(net_result);
+  results_ = std::make_unique<base::ListValue>(
+      sockets_udp::JoinGroup::Results::Create(net_result));
   AsyncWorkCompleted();
 }
 
@@ -452,7 +461,8 @@ void SocketsUdpLeaveGroupFunction::AsyncWorkStart() {
 void SocketsUdpLeaveGroupFunction::OnCompleted(int result) {
   if (result != net::OK)
     error_ = net::ErrorToString(result);
-  results_ = sockets_udp::LeaveGroup::Results::Create(result);
+  results_ = std::make_unique<base::ListValue>(
+      sockets_udp::LeaveGroup::Results::Create(result));
   AsyncWorkCompleted();
 }
 
@@ -478,7 +488,8 @@ void SocketsUdpSetMulticastTimeToLiveFunction::Work() {
   int net_result = socket->SetMulticastTimeToLive(params_->ttl);
   if (net_result != net::OK)
     error_ = net::ErrorToString(net_result);
-  results_ = sockets_udp::SetMulticastTimeToLive::Results::Create(net_result);
+  results_ = std::make_unique<base::ListValue>(
+      sockets_udp::SetMulticastTimeToLive::Results::Create(net_result));
 }
 
 SocketsUdpSetMulticastLoopbackModeFunction::
@@ -503,7 +514,8 @@ void SocketsUdpSetMulticastLoopbackModeFunction::Work() {
   int net_result = socket->SetMulticastLoopbackMode(params_->enabled);
   if (net_result != net::OK)
     error_ = net::ErrorToString(net_result);
-  results_ = sockets_udp::SetMulticastLoopbackMode::Results::Create(net_result);
+  results_ = std::make_unique<base::ListValue>(
+      sockets_udp::SetMulticastLoopbackMode::Results::Create(net_result));
 }
 
 SocketsUdpGetJoinedGroupsFunction::SocketsUdpGetJoinedGroupsFunction() {}
@@ -533,7 +545,8 @@ void SocketsUdpGetJoinedGroupsFunction::Work() {
   }
 
   const std::vector<std::string>& groups = socket->GetJoinedGroups();
-  results_ = sockets_udp::GetJoinedGroups::Results::Create(groups);
+  results_ = std::make_unique<base::ListValue>(
+      sockets_udp::GetJoinedGroups::Results::Create(groups));
 }
 
 SocketsUdpSetBroadcastFunction::SocketsUdpSetBroadcastFunction() {
@@ -564,7 +577,8 @@ void SocketsUdpSetBroadcastFunction::AsyncWorkStart() {
 void SocketsUdpSetBroadcastFunction::OnCompleted(int net_result) {
   if (net_result != net::OK)
     error_ = net::ErrorToString(net_result);
-  results_ = sockets_udp::SetBroadcast::Results::Create(net_result);
+  results_ = std::make_unique<base::ListValue>(
+      sockets_udp::SetBroadcast::Results::Create(net_result));
   AsyncWorkCompleted();
 }
 

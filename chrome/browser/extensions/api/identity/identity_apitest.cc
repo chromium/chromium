@@ -3520,7 +3520,7 @@ class OnSignInChangedEventTest : public IdentityTestWithSignin {
   // been added. This is because the order of multiple events firing due to the
   // same underlying state change is undefined in the
   // chrome.identity.onSignInEventChanged() API.
-  void AddExpectedEvent(std::unique_ptr<base::ListValue> args) {
+  void AddExpectedEvent(std::vector<base::Value> args) {
     expected_events_.insert(
         std::make_unique<Event>(events::IDENTITY_ON_SIGN_IN_CHANGED,
                                 api::identity::OnSignInChanged::kEventName,

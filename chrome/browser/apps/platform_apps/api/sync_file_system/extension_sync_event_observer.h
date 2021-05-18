@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_APPS_PLATFORM_APPS_API_SYNC_FILE_SYSTEM_EXTENSION_SYNC_EVENT_OBSERVER_H_
 #define CHROME_BROWSER_APPS_PLATFORM_APPS_API_SYNC_FILE_SYSTEM_EXTENSION_SYNC_EVENT_OBSERVER_H_
 
-#include <memory>
 #include <string>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/values.h"
@@ -76,7 +76,7 @@ class ExtensionSyncEventObserver : public sync_file_system::SyncEventObserver,
       const GURL& app_origin,
       extensions::events::HistogramValue histogram_value,
       const std::string& event_name,
-      std::unique_ptr<base::ListValue> value);
+      std::vector<base::Value> value);
 };
 
 }  // namespace api

@@ -1264,12 +1264,12 @@ ExtensionFunction::ResponseAction TabsGetCurrentFunction::Run() {
   // Return the caller, if it's a tab. If not the result isn't an error but an
   // empty tab (hence returning true).
   WebContents* caller_contents = GetSenderWebContents();
-  std::unique_ptr<base::ListValue> results;
   if (caller_contents && ExtensionTabUtil::GetTabId(caller_contents) >= 0) {
-    results = tabs::Get::Results::Create(*CreateTabObjectHelper(
-        caller_contents, extension(), source_context_type(), nullptr, -1));
+    return RespondNow(ArgumentList(tabs::Get::Results::Create(
+        *CreateTabObjectHelper(caller_contents, extension(),
+                               source_context_type(), nullptr, -1))));
   }
-  return RespondNow(results ? ArgumentList(std::move(results)) : NoArguments());
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {

@@ -92,10 +92,9 @@ void TabGroupsEventRouter::DispatchGroupUpdated(tab_groups::TabGroupId group) {
                 api::tab_groups::OnUpdated::kEventName, std::move(args));
 }
 
-void TabGroupsEventRouter::DispatchEvent(
-    events::HistogramValue histogram_value,
-    const std::string& event_name,
-    std::unique_ptr<base::ListValue> args) {
+void TabGroupsEventRouter::DispatchEvent(events::HistogramValue histogram_value,
+                                         const std::string& event_name,
+                                         std::vector<base::Value> args) {
   // |event_router_| can be null in tests.
   if (!event_router_)
     return;
