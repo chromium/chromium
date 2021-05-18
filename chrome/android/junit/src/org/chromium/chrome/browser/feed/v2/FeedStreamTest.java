@@ -37,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
@@ -75,6 +76,8 @@ import java.util.Map;
 /** Unit tests for {@link FeedStream}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowPostTask.class, ShadowRecordHistogram.class})
+// TODO(crbug.com/1210371): Rewrite using paused loop. See crbug for details.
+@LooperMode(LooperMode.Mode.LEGACY)
 public class FeedStreamTest {
     private static final int LOAD_MORE_TRIGGER_LOOKAHEAD = 5;
     private static final int LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP = 100;
