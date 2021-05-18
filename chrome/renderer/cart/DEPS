@@ -3,6 +3,7 @@ include_rules = [
   "+chrome/browser/signin",
   "+chrome/browser",
   "+components/signin/public/identity_manager",
+  "+components/prefs",
 ]
 
 specific_include_rules = {

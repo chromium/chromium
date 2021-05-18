@@ -12,9 +12,11 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -529,7 +531,9 @@ class CommerceHintProductInfoTest : public CommerceHintAgentTest {
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{ntp_features::kNtpChromeCartModule,
-          {{"partner-merchant-pattern", "(guitarcenter.com)"},
+          {{ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam,
+            "true"},
+           {"partner-merchant-pattern", "(guitarcenter.com)"},
            {"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"}}}},
         {optimization_guide::features::kOptimizationHints});
   }
@@ -587,6 +591,22 @@ IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest,
           {"foo_123", "bar_456"});
   const ShoppingCarts expected_carts = {{kMockExample, expected_cart_protos}};
   WaitForProductCount(expected_carts);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest,
+                       RBDPartnerCartURLNotOverwrite) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  profile->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+  EXPECT_TRUE(service_->IsCartDiscountEnabled());
+
+  NavigateToURL("https://www.guitarcenter.com/");
+  SendXHR("/add-to-cart", "product: 123");
+
+  WaitForCartCount(kExpectedExampleFallbackCart);
+  NavigateToURL("https://www.guitarcenter.com/cart.html");
+
+  WaitForCartCount(kExpectedExampleFallbackCart);
 }
 
 }  // namespace

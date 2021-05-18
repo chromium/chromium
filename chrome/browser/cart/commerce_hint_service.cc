@@ -15,21 +15,44 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/search/ntp_features.h"
 #include "content/public/browser/frame_service_base.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace cart {
 
 namespace {
+// TODO(crbug.com/1207197): Pull below methods to a utility class to share with
+// other classes.
+constexpr base::FeatureParam<std::string> kPartnerMerchantPattern{
+    &ntp_features::kNtpChromeCartModule, "partner-merchant-pattern",
+    // This regex does not match anything.
+    "\\b\\B"};
 
 // TODO(crbug/1164236): support multiple cart systems in the same domain.
 // Returns eTLB+1 domain.
 std::string GetDomain(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+const re2::RE2& GetPartnerMerchantPattern() {
+  re2::RE2::Options options;
+  options.set_case_sensitive(false);
+  static base::NoDestructor<re2::RE2> instance(kPartnerMerchantPattern.Get(),
+                                               options);
+  return *instance;
+}
+
+bool IsPartnerMerchant(const GURL& url) {
+  const std::string& url_string = url.spec();
+  return RE2::PartialMatch(
+      re2::StringPiece(url_string.data(), url_string.size()),
+      GetPartnerMerchantPattern());
 }
 
 void ConstructCartProto(cart_db::ChromeCartContentProto* proto,
@@ -170,6 +193,12 @@ void CommerceHintService::OnAddToCart(const GURL& navigation_url,
     DVLOG(1) << "Reject cart URL with different eTLD+1 domain.";
     validated_cart = absl::nullopt;
   }
+  // When rule-based discount is enabled, do not accept cart page URLs from
+  // partner merchants as there could be things like discount tokens in them.
+  if (service_->IsCartDiscountEnabled() && IsPartnerMerchant(navigation_url) &&
+      product_id.empty()) {
+    validated_cart = absl::nullopt;
+  }
   cart_db::ChromeCartContentProto proto;
   std::vector<mojom::ProductPtr> products;
   if (!product_id.empty()) {
@@ -191,9 +220,15 @@ void CommerceHintService::OnCartUpdated(
     std::vector<mojom::ProductPtr> products) {
   if (ShouldSkip(cart_url))
     return;
+  absl::optional<GURL> validated_cart = cart_url;
+  // When rule-based discount is enabled, do not accept cart page URLs from
+  // partner merchants as there could be things like discount tokens in them.
+  if (service_->IsCartDiscountEnabled() && IsPartnerMerchant(cart_url)) {
+    validated_cart = absl::nullopt;
+  }
   cart_db::ChromeCartContentProto proto;
   ConstructCartProto(&proto, cart_url, std::move(products));
-  service_->AddCart(proto.key(), cart_url, std::move(proto));
+  service_->AddCart(proto.key(), validated_cart, std::move(proto));
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CommerceHintService)
