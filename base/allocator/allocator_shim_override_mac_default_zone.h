@@ -11,6 +11,8 @@
 #error This header must be included iff PartitionAlloc-Everywhere is enabled.
 #endif
 
+#include "base/notreached.h"
+
 namespace base {
 namespace allocator {
 
