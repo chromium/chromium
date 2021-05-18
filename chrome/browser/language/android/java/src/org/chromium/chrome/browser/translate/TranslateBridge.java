@@ -270,7 +270,7 @@ public class TranslateBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void manualTranslateWhenReady(WebContents webContents);
         void translateToLanguage(WebContents webContents, String targetLanguageCode);
         boolean canManuallyTranslate(WebContents webContents, boolean menuLogging);

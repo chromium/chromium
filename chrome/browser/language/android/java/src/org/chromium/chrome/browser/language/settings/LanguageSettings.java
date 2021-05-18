@@ -147,7 +147,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
         appLanguagePreference.setLanguageItem(AppLocaleUtils.getAppLanguagePref());
         appLanguagePreference.useLanguageItemForTitle(true);
         setSelectLanguageLauncher(appLanguagePreference,
-                AddLanguageFragment.LANGUAGE_OPTIONS_UI_LANGUAGES, REQUEST_CODE_CHANGE_APP_LANGUAGE,
+                LanguagesManager.LanguageListType.UI_LANGUAGES, REQUEST_CODE_CHANGE_APP_LANGUAGE,
                 LanguagesManager.LanguageSettingsPageType.CHANGE_CHROME_LANGUAGE);
 
         mAppLanguageDelegate.setup(this, appLanguagePreference);
@@ -176,7 +176,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
                 (LanguageItemPickerPreference) findPreference(TARGET_LANGUAGE_KEY);
         targetLanguagePreference.setLanguageItem(TranslateBridge.getTargetLanguageForChromium());
         setSelectLanguageLauncher(targetLanguagePreference,
-                AddLanguageFragment.LANGUAGE_OPTIONS_TRANSLATE_LANGUAGES,
+                LanguagesManager.LanguageListType.TARGET_LANGUAGES,
                 REQUEST_CODE_CHANGE_TARGET_LANGUAGE,
                 LanguagesManager.LanguageSettingsPageType.CHANGE_TARGET_LANGUAGE);
         mPrefChangeRegistrar.addObserver(Pref.PREF_TRANSLATE_RECENT_TARGET, () -> {
@@ -278,7 +278,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
     public void launchAddLanguage() {
         LanguagesManager.recordImpression(
                 LanguagesManager.LanguageSettingsPageType.CONTENT_LANGUAGE_ADD_LANGUAGE);
-        launchSelectLanguage(AddLanguageFragment.LANGUAGE_OPTIONS_ACCEPT_LANGUAGES,
+        launchSelectLanguage(LanguagesManager.LanguageListType.ACCEPT_LANGUAGES,
                 REQUEST_CODE_ADD_ACCEPT_LANGUAGE);
     }
 
@@ -305,13 +305,14 @@ public class LanguageSettings extends PreferenceFragmentCompat
      * @param int requestCode The code to return from the select language fragment with.
      * @param int pageType The LanguageSettingsPageType to record impression for.
      */
-    private void setSelectLanguageLauncher(Preference preference, int launchCode, int requestCode,
+    private void setSelectLanguageLauncher(Preference preference,
+            @LanguagesManager.LanguageListType int languageListType, int requestCode,
             @LanguagesManager.LanguageSettingsPageType int pageType) {
         preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 LanguagesManager.recordImpression(pageType);
-                launchSelectLanguage(launchCode, requestCode);
+                launchSelectLanguage(languageListType, requestCode);
                 return true;
             }
         });
@@ -322,10 +323,11 @@ public class LanguageSettings extends PreferenceFragmentCompat
      * @param int launchCode The language options code to filter selectable languages.
      * @param int requestCode The code to return from the select language fragment with.
      */
-    private void launchSelectLanguage(int launchCode, int requestCode) {
+    private void launchSelectLanguage(
+            @LanguagesManager.LanguageListType int languageListType, int requestCode) {
         Intent intent = mSettingsLauncher.createSettingsActivityIntent(
                 getActivity(), AddLanguageFragment.class.getName());
-        intent.putExtra(AddLanguageFragment.INTENT_LANGUAGE_OPTIONS, launchCode);
+        intent.putExtra(AddLanguageFragment.INTENT_POTENTIAL_LANGUAGES, languageListType);
         startActivityForResult(intent, requestCode);
     }
 

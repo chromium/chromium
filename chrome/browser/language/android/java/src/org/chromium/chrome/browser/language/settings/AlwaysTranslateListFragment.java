@@ -27,6 +27,11 @@ public class AlwaysTranslateListFragment extends LanguageItemListFragment {
     }
 
     @Override
+    protected @LanguagesManager.LanguageListType int getPotentialLanguageType() {
+        return LanguagesManager.LanguageListType.ALWAYS_LANGUAGES;
+    }
+
+    @Override
     protected void recordFragmentImpression() {
         LanguagesManager.recordImpression(
                 LanguagesManager.LanguageSettingsPageType.VIEW_ALWAYS_TRANSLATE_LANGUAGES);

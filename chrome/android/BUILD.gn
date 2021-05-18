@@ -1196,6 +1196,7 @@ android_library("chrome_test_java") {
     "//chrome/browser/incognito/interstitial/android:javatests",
     "//chrome/browser/language/android:base_module_java",
     "//chrome/browser/language/android:java",
+    "//chrome/browser/language/android:javatests",
     "//chrome/browser/lens:java",
     "//chrome/browser/locale:java",
     "//chrome/browser/notifications:java",

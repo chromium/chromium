@@ -136,8 +136,8 @@ public abstract class LanguageItemListFragment
             recordAddLanguageImpression();
             Intent intent = mSettingsLauncher.createSettingsActivityIntent(
                     getActivity(), AddLanguageFragment.class.getName());
-            intent.putExtra(AddLanguageFragment.INTENT_LANGUAGE_OPTIONS,
-                    AddLanguageFragment.LANGUAGE_OPTIONS_TRANSLATE_LANGUAGES);
+            intent.putExtra(
+                    AddLanguageFragment.INTENT_POTENTIAL_LANGUAGES, getPotentialLanguageType());
             startActivityForResult(intent, REQUEST_CODE_SELECT_LANGUAGE);
         });
 
@@ -161,7 +161,7 @@ public abstract class LanguageItemListFragment
     }
 
     /**
-     * Return the ListDelegate that will be used to populate the LangaugeItemList for a subclass.
+     * Return the ListDelegate that will be used to populate the LanguageItemList for a subclass.
      */
     protected abstract LanguageItemListFragment.ListDelegate makeFragmentListDelegate();
 
@@ -171,25 +171,30 @@ public abstract class LanguageItemListFragment
     protected abstract String getLanguageListTitle(Context context);
 
     /**
-     * Records the {@link LangaugesManager.LanguageSettingsPageType} impression for viewing this
+     * Return the type of potential languages to populate the add language fragment with.
+     */
+    protected abstract @LanguagesManager.LanguageListType int getPotentialLanguageType();
+
+    /**
+     * Records the {@link LanguagesManager.LanguageSettingsPageType} impression for viewing this
      * LanguageItemListFragment.
      */
     protected abstract void recordFragmentImpression();
 
     /**
-     * Records the {@link LangaugesManager.LanguageSettingsPageType} impression for viewing the
+     * Records the {@link LanguagesManager.LanguageSettingsPageType} impression for viewing the
      * Add Language page from this LanguageItemListFragment.
      */
     protected abstract void recordAddLanguageImpression();
 
     /**
-     * Records the {@link LangaugesManager.LanguageSettingsActionType} for adding to this
+     * Records the {@link LanguagesManager.LanguageSettingsActionType} for adding to this
      * LanguageItemListFragment.
      */
     protected abstract void recordAddAction();
 
     /**
-     * Records the {@link LangaugesManager.LanguageSettingsActionType} for removing from this
+     * Records the {@link LanguagesManager.LanguageSettingsActionType} for removing from this
      * LanguageItemListFragment.
      */
     protected abstract void recordRemoveAction();

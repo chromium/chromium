@@ -72,6 +72,7 @@ generate_jni("jni_headers") {
   sources =
       [ "java/src/org/chromium/chrome/browser/translate/TranslateBridge.java" ]
 }
+
 android_resources("java_resources") {
   sources = [
     "java/res/layout/accept_languages_item.xml",
@@ -93,5 +94,49 @@ android_resources("java_resources") {
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/widget/android:java_resources",
     "//ui/android:ui_java_resources",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/language/settings/LanguagesManagerTest.java",
+    "java/src/org/chromium/chrome/browser/translate/FakeTranslateBridgeJni.java",
+  ]
+  deps = [
+    ":base_module_java",
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:java",
+    "//chrome/browser/settings:test_support_java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:browser_context_java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_support_test_runner:rules_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

@@ -28,6 +28,11 @@ public class NeverTranslateListFragment extends LanguageItemListFragment {
     }
 
     @Override
+    protected @LanguagesManager.LanguageListType int getPotentialLanguageType() {
+        return LanguagesManager.LanguageListType.NEVER_LANGUAGES;
+    }
+
+    @Override
     protected void recordFragmentImpression() {
         LanguagesManager.recordImpression(
                 LanguagesManager.LanguageSettingsPageType.VIEW_NEVER_TRANSLATE_LANGUAGES);
