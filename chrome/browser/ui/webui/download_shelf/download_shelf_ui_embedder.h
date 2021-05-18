@@ -14,6 +14,8 @@ class DownloadShelfUIEmbedder {
   DownloadShelfUIEmbedder() = default;
   virtual ~DownloadShelfUIEmbedder() = default;
 
+  virtual void DoClose() = 0;
+
   // Show the context menu for |download| at |position| in container's
   // coordinate.
   virtual void ShowDownloadContextMenu(

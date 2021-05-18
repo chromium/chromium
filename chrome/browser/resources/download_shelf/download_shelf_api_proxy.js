@@ -11,6 +11,8 @@ export class DownloadShelfApiProxy {
   /** @return {!PageCallbackRouter} */
   getCallbackRouter() {}
 
+  doClose() {}
+
   /**
    * @return {!Promise<{
         downloadItems: !Array<!DownloadItem>,
@@ -51,6 +53,11 @@ export class DownloadShelfApiProxyImpl {
   /** @override */
   getCallbackRouter() {
     return this.callbackRouter;
+  }
+
+  /** @override */
+  doClose() {
+    this.handler.doClose();
   }
 
   /** @override */

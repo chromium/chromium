@@ -32,6 +32,10 @@ DownloadShelfPageHandler::DownloadShelfPageHandler(
 
 DownloadShelfPageHandler::~DownloadShelfPageHandler() = default;
 
+void DownloadShelfPageHandler::DoClose() {
+  download_shelf_ui_->DoClose();
+}
+
 void DownloadShelfPageHandler::GetDownloads(GetDownloadsCallback callback) {
   TRACE_EVENT0("browser",
                "custom_metric:DownloadShelfPageHandler:GetDownloads");

@@ -79,6 +79,7 @@ grit("resources") {
 }
 
 js_type_check("closure_compile") {
+  is_polymer3 = true
   closure_flags = default_closure_args + mojom_js_args + [
                     "js_module_root=" + rebase_path(".", root_build_dir),
                     "js_module_root=" + rebase_path(
@@ -128,7 +129,10 @@ js_library("download_list") {
 js_library("app") {
   deps = [
     ":download_list",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/js:custom_element",
+    "//ui/webui/resources/js:icon.m",
   ]
 }
 

@@ -10,6 +10,7 @@ import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 export class TestDownloadShelfApiProxy extends TestBrowserProxy {
   constructor() {
     super([
+      'doClose',
       'getDownloads',
       'getFileIcon',
       'showContextMenu',
@@ -24,6 +25,11 @@ export class TestDownloadShelfApiProxy extends TestBrowserProxy {
 
     /** @private {!Array<DownloadItem>} */
     this.downloadItems_ = [];
+  }
+
+  /** @override */
+  doClose() {
+    this.methodCalled('doClose');
   }
 
   /** @override */

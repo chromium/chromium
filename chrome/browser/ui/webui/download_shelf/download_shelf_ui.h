@@ -39,6 +39,8 @@ class DownloadShelfUI : public ui::MojoWebUIController,
   void set_embedder(DownloadShelfUIEmbedder* embedder) { embedder_ = embedder; }
   DownloadShelfUIEmbedder* embedder() const { return embedder_; }
 
+  void DoClose();
+
   void ShowContextMenu(uint32_t download_id,
                        int32_t client_x,
                        int32_t client_y,
@@ -49,6 +51,8 @@ class DownloadShelfUI : public ui::MojoWebUIController,
 
   std::vector<DownloadUIModel*> GetDownloads();
   base::TimeTicks GetShowDownloadTime(uint32_t download_id);
+
+  void RemoveDownload(uint32_t download_id);
 
  protected:
   void SetPageHandlerForTesting(

@@ -192,6 +192,9 @@ interface PageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
+  // Notify the Views component to hide itself.
+  DoClose();
+
   // Returns an array of download items.
   GetDownloads() => (array<DownloadItem> download_items);
 

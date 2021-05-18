@@ -107,6 +107,27 @@ void DownloadShelfWebView::AnimationEnded(const gfx::Animation* animation) {
   DCHECK_EQ(&shelf_animation_, animation);
   const bool shown = shelf_animation_.IsShowing();
   parent_->SetDownloadShelfVisible(shown);
+
+  // If the shelf was explicitly closed by the user, there are further steps to
+  // take to complete closing.
+  if (shown || is_hidden())
+    return;
+
+  DownloadShelfUI* download_shelf_ui = GetDownloadShelfUI();
+  if (download_shelf_ui) {
+    // Remove all downloads that are not in progress.
+    for (DownloadUIModel* model : download_shelf_ui->GetDownloads()) {
+      // Treat the item as opened when the shelf closes. This way if it gets
+      // shown again the user need not open the item for the shelf to
+      // auto-close.
+      if ((model->GetState() == download::DownloadItem::IN_PROGRESS) ||
+          model->IsDangerous()) {
+        model->SetOpened(true);
+      } else {
+        download_shelf_ui->RemoveDownload(model->download()->GetId());
+      }
+    }
+  }
 }
 
 views::View* DownloadShelfWebView::GetView() {

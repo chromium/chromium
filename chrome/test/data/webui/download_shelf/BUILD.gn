@@ -5,6 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
+  is_polymer3 = true
   closure_flags = default_closure_args + mojom_js_args + [
                     "browser_resolver_prefix_replacements=\"chrome://download-shelf.top-chrome/=./\"",
                     "js_module_root=" +

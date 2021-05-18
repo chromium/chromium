@@ -6,6 +6,7 @@
  * @fileoverview UI element of a download item.
  */
 
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './download_button.js';
 import './strings.m.js';
 

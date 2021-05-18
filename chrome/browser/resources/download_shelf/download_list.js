@@ -44,27 +44,22 @@ export class DownloadListElement extends CustomElement {
     this.resizeObserver_ = new ResizeObserver(() => this.updateElements_());
     this.resizeObserver_.observe(this.listElement_);
 
-    this.apiProxy_.getDownloads().then(({downloadItems}) => {
-      this.items_ = downloadItems;
+    this.getDownloads_(true);
+    this.addDownloadListeners_();
 
-      if (this.items_.length !== 0) {
-        // Sort by descending show time so that the most recent download shows
-        // first on the row.
-        this.items_.sort((first, second) => {
-          return second.showDownloadStartTime - first.showDownloadStartTime;
-        });
-        this.updateElements_();
-
-        // Record the time it took to show the first download, that is, the
-        // download that has the least recent showDownloadStartTime.
-        this.recordDownloadPaintTime_(
-            this.items_[this.items_.length - 1].showDownloadStartTime, true);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        this.getDownloads_(false);
+        this.addDownloadListeners_();
+      } else {
+        this.clear_();
       }
     });
+  }
 
+  /** @private */
+  addDownloadListeners_() {
     const callbackRouter = this.apiProxy_.getCallbackRouter();
-    // TODO(romanarora): Once we implement a close panel button, we should
-    // ensure it removes all listeners from this.listenerIds_ when triggered.
 
     // Triggers for downloads other than the first one, as the page handler will
     // not be ready by the first download.
@@ -94,6 +89,46 @@ export class DownloadListElement extends CustomElement {
             this.updateElements_();
           }
         }));
+  }
+
+  /**
+   * @param {boolean} firstCall Whether this is the first call to the method.
+   * @private
+   */
+  getDownloads_(firstCall) {
+    this.apiProxy_.getDownloads().then(({downloadItems}) => {
+      this.items_ = downloadItems;
+
+      if (this.items_.length !== 0) {
+        // Sort by descending show time so that the most recent download shows
+        // first on the row.
+        this.items_.sort(
+            (first, second) =>
+                second.showDownloadStartTime - first.showDownloadStartTime);
+        this.updateElements_();
+
+        // Record the time it took to show the first download, that is, the
+        // download that has the least recent showDownloadStartTime.
+        if (firstCall) {
+          this.recordDownloadPaintTime_(
+              this.items_[this.items_.length - 1].showDownloadStartTime, true);
+        }
+      }
+    });
+  }
+
+  clear_() {
+    while (this.listenerIds_.length) {
+      this.apiProxy_.getCallbackRouter().removeListener(
+          this.listenerIds_.shift());
+    }
+
+    while (this.listElement_.firstChild) {
+      this.listElement_.removeChild(this.listElement_.firstChild);
+    }
+
+    this.elements_ = [];
+    this.items_ = [];
   }
 
   /**

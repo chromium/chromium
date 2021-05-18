@@ -6,6 +6,8 @@
  * @fileoverview Button UI for "Discard" and "Show All".
  */
 
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 export class DownloadButtonElement extends CustomElement {

@@ -13,6 +13,7 @@
 #include "chrome/grit/download_shelf_resources.h"
 #include "chrome/grit/download_shelf_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -41,6 +42,7 @@ DownloadShelfUI::DownloadShelfUI(content::WebUI* web_ui)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIDownloadShelfHost);
   static constexpr webui::LocalizedString kStrings[] = {
+      {"close", IDS_ACCNAME_CLOSE},
       {"discardButtonText", IDS_DISCARD_DOWNLOAD}};
   source->AddLocalizedStrings(kStrings);
 
@@ -72,6 +74,11 @@ void DownloadShelfUI::CreatePageHandler(
     mojo::PendingReceiver<download_shelf::mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<DownloadShelfPageHandler>(
       std::move(receiver), std::move(page), this);
+}
+
+void DownloadShelfUI::DoClose() {
+  if (embedder())
+    embedder()->DoClose();
 }
 
 void DownloadShelfUI::ShowContextMenu(
@@ -114,6 +121,16 @@ std::vector<DownloadUIModel*> DownloadShelfUI::GetDownloads() {
 
 base::TimeTicks DownloadShelfUI::GetShowDownloadTime(uint32_t download_id) {
   return show_download_time_map_[download_id];
+}
+
+void DownloadShelfUI::RemoveDownload(uint32_t download_id) {
+  DownloadUIModel* download_ui_model = items_.at(download_id).get();
+  download_ui_model->download()->RemoveObserver(this);
+  items_.erase(download_id);
+
+  if (show_download_time_map_.count(download_id)) {
+    show_download_time_map_.erase(download_id);
+  }
 }
 
 void DownloadShelfUI::OnDownloadUpdated(DownloadItem* download) {
