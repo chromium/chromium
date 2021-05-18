@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"

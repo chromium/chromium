@@ -6,7 +6,6 @@
 #define CHROME_TEST_CHROMEDRIVER_WINDOW_COMMANDS_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback_forward.h"
 #include "base/values.h"

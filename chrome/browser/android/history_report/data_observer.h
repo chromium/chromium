@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_HISTORY_REPORT_DATA_OBSERVER_H_
 #define CHROME_BROWSER_ANDROID_HISTORY_REPORT_DATA_OBSERVER_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/scoped_observation.h"

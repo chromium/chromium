@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <set>
-#include <string>
 
 #include "base/macros.h"
 #include "base/scoped_observation.h"

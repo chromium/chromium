@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_SCREEN_EXTENSION_UI_WEB_DIALOG_VIEW_H_
 
 #include <memory>
-#include <string>
 
 #include "ash/public/cpp/system_tray_observer.h"
 #include "base/macros.h"

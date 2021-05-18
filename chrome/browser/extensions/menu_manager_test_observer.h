@@ -8,7 +8,6 @@
 #include "chrome/browser/extensions/menu_manager.h"
 
 #include <set>
-#include <string>
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"

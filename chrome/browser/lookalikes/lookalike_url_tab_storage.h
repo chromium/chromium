@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_LOOKALIKES_LOOKALIKE_URL_TAB_STORAGE_H_
 
 #include <set>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

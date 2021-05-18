@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_SPELLING_OPTIONS_SUBMENU_OBSERVER_H_
 
 #include <cstddef>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

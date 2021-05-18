@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_INTENT_PICKER_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_INTENT_PICKER_TAB_HELPER_H_
 
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

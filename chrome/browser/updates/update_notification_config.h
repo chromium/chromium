@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UPDATES_UPDATE_NOTIFICATION_CONFIG_H_
 
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "base/macros.h"

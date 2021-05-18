@@ -5,8 +5,6 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_EXTENSION_APP_INVENTORY_MANAGER_H_
 #define CHROME_CREDENTIAL_PROVIDER_EXTENSION_APP_INVENTORY_MANAGER_H_
 
-#include <string>
-
 #include "base/time/time.h"
 #include "base/win/windows_types.h"
 #include "chrome/credential_provider/extension/task_manager.h"

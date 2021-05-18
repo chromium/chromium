@@ -6,7 +6,6 @@
 #define CHROME_TEST_BASE_CHROME_RENDER_VIEW_TEST_H_
 
 #include <memory>
-#include <string>
 
 #include "content/public/test/render_view_test.h"
 #include "services/service_manager/public/cpp/binder_registry.h"

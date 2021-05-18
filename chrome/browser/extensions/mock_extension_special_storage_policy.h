@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_MOCK_EXTENSION_SPECIAL_STORAGE_POLICY_H_
 
 #include <set>
-#include <string>
 
 #include "base/macros.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"

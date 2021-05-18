@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PROFILES_PROFILE_STATISTICS_H_
 
 #include <memory>
-#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"

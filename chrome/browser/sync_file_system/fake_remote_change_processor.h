@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SYNC_FILE_SYSTEM_FAKE_REMOTE_CHANGE_PROCESSOR_H_
 
 #include <map>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

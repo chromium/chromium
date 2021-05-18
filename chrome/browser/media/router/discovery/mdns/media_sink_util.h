@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_MDNS_MEDIA_SINK_UTIL_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_MDNS_MEDIA_SINK_UTIL_H_
 
-#include <string>
 #include <vector>
 
 #include "components/media_router/common/discovery/media_sink_internal.h"

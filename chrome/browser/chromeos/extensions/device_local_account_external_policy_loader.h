@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_DEVICE_LOCAL_ACCOUNT_EXTERNAL_POLICY_LOADER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"

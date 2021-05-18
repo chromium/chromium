@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_ARC_TRACING_ARC_APP_PERFORMANCE_TRACING_SESSION_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

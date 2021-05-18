@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_QUIESCE_STATUS_CHANGE_CHECKER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"

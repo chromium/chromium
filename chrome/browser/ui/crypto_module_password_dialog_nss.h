@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_CRYPTO_MODULE_PASSWORD_DIALOG_NSS_H_
 #define CHROME_BROWSER_UI_CRYPTO_MODULE_PASSWORD_DIALOG_NSS_H_
 
-#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"

@@ -6,7 +6,6 @@
 #define CHROME_SERVICES_SPEECH_CROS_SPEECH_RECOGNITION_RECOGNIZER_IMPL_H_
 
 #include <memory>
-#include <string>
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"

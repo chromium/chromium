@@ -10,7 +10,6 @@
 // any gtest based tests that are linked into your executable.
 
 #include <memory>
-#include <string>
 
 #include "base/at_exit.h"
 #include "base/check.h"

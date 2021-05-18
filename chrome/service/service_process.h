@@ -6,7 +6,6 @@
 #define CHROME_SERVICE_SERVICE_PROCESS_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"

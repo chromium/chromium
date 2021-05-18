@@ -7,7 +7,6 @@
 
 #include <map>
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "chrome/common/extensions/api/autofill_private.h"

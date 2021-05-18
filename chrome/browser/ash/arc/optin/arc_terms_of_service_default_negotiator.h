@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_ARC_OPTIN_ARC_TERMS_OF_SERVICE_DEFAULT_NEGOTIATOR_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"

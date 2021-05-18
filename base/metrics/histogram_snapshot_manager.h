@@ -9,7 +9,6 @@
 
 #include <atomic>
 #include <map>
-#include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"

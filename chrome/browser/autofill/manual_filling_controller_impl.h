@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_AUTOFILL_MANUAL_FILLING_CONTROLLER_IMPL_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_THUMBNAIL_GENERATOR_ANDROID_THUMBNAIL_GENERATOR_H_
 
 #include <memory>
-#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/memory/weak_ptr.h"

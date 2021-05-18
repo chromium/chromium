@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_PRINTING_PRINTER_EVENT_TRACKER_H_
 #define CHROME_BROWSER_CHROMEOS_PRINTING_PRINTER_EVENT_TRACKER_H_
 
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

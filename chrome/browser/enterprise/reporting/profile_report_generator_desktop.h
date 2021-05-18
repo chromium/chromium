@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_PROFILE_REPORT_GENERATOR_DESKTOP_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "components/enterprise/browser/reporting/profile_report_generator.h"

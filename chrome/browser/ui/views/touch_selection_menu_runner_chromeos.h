@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_TOUCH_SELECTION_MENU_RUNNER_CHROMEOS_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "components/arc/mojom/intent_helper.mojom-forward.h"

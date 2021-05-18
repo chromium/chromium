@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_INSTALL_MANAGER_H_
 
 #include <map>
-#include <string>
 
 #include "chrome/browser/ash/system_extensions/system_extension.h"
 

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_POLICY_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_IMPL_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

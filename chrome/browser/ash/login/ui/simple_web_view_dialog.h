@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_SIMPLE_WEB_VIEW_DIALOG_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/observer_list.h"

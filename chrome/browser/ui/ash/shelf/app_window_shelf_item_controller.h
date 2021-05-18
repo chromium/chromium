@@ -7,7 +7,6 @@
 
 #include <list>
 #include <memory>
-#include <string>
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "base/macros.h"

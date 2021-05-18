@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SECURITY_EVENTS_SECURITY_EVENT_RECORDER_IMPL_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

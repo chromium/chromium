@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_VR_SCOPED_GPU_TRACE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/time/time.h"

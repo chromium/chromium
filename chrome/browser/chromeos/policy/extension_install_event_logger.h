@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <set>
-#include <string>
 
 #include "chrome/browser/chromeos/policy/extension_install_event_log_collector.h"
 #include "chrome/browser/chromeos/policy/install_event_logger_base.h"

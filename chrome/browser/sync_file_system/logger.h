@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_FILE_SYSTEM_LOGGER_H_
 #define CHROME_BROWSER_SYNC_FILE_SYSTEM_LOGGER_H_
 
-#include <string>
 #include <vector>
 
 #include "base/location.h"

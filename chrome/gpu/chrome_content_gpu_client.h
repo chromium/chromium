@@ -6,7 +6,6 @@
 #define CHROME_GPU_CHROME_CONTENT_GPU_CLIENT_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"

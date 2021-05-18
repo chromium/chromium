@@ -6,7 +6,6 @@
 #define CHROME_SERVICES_MEDIA_GALLERY_UTIL_VIDEO_THUMBNAIL_PARSER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"

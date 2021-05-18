@@ -7,7 +7,6 @@
 
 #include <functional>
 #include <map>
-#include <string>
 
 #include "base/containers/flat_map.h"
 #include "chrome/common/extensions/api/passwords_private.h"

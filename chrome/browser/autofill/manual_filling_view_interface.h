@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_AUTOFILL_MANUAL_FILLING_VIEW_INTERFACE_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "build/build_config.h"

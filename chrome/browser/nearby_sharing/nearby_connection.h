@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTION_H_
 
 #include <stdint.h>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

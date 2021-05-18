@@ -6,7 +6,6 @@
 #define CHROME_CHROME_CLEANER_ENGINES_CONTROLLERS_SCANNER_IMPL_H_
 
 #include <set>
-#include <string>
 
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_FILEAPI_RECENT_ARC_MEDIA_SOURCE_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"

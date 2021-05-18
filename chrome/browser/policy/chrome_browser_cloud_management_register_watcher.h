@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_POLICY_CHROME_BROWSER_CLOUD_MANAGEMENT_REGISTER_WATCHER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"

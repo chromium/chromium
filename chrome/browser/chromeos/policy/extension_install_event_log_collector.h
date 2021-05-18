@@ -9,7 +9,6 @@
 
 #include <memory>
 #include <set>
-#include <string>
 
 #include "base/logging.h"
 #include "base/scoped_observation.h"

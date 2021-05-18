@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_PERMISSIONS_UPDATER_H__
 
 #include <memory>
-#include <string>
 
 #include "base/callback_forward.h"
 #include "base/macros.h"

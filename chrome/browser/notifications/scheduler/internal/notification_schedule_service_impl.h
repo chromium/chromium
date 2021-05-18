@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_INTERNAL_NOTIFICATION_SCHEDULE_SERVICE_IMPL_H_
 
 #include <memory>
-#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"

@@ -6,7 +6,6 @@
 #define CHROME_TEST_MEDIA_ROUTER_MEDIA_ROUTER_E2E_BROWSERTEST_H_
 
 #include <memory>
-#include <string>
 
 #include "chrome/test/media_router/media_router_integration_browsertest.h"
 #include "chrome/test/media_router/test_media_sinks_observer.h"
@@ -27,7 +26,6 @@ class MediaRouterE2EBrowserTest : public MediaRouterIntegrationBrowserTest {
   // InProcessBrowserTest Overrides
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
-
 
   // Callback from MediaRouter when a response to a media route request is
   // received.

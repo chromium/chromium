@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_INTERNAL_INIT_AWARE_SCHEDULER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_WEBAUTHN_AUTHENTICATOR_REQUEST_SCHEDULER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 

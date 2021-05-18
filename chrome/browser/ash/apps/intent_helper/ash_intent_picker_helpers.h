@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_APPS_INTENT_HELPER_ASH_INTENT_PICKER_HELPERS_H_
 #define CHROME_BROWSER_ASH_APPS_INTENT_HELPER_ASH_INTENT_PICKER_HELPERS_H_
 
-#include <string>
 #include <vector>
 
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"

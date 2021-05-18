@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_INPUT_METHOD_UI_INFOLIST_WINDOW_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

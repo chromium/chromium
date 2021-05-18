@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_FILE_HANDLER_MANAGER_H_
 
 #include <set>
-#include <string>
 #include <vector>
 
 #include "chrome/browser/web_applications/components/app_registrar.h"

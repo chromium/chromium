@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_APPS_INTENT_HELPER_COMMON_APPS_NAVIGATION_THROTTLE_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

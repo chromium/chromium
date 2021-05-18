@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DATA_REDUCTION_PROXY_DATA_REDUCTION_PROXY_CHROME_SETTINGS_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_request_options.h"

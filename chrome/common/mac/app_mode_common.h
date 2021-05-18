@@ -7,8 +7,6 @@
 
 #include <CoreServices/CoreServices.h>
 
-#include <string>
-
 #include "base/strings/stringize_macros.h"
 
 #ifdef __OBJC__

@@ -6,7 +6,6 @@
 
 #include <map>
 #include <memory>
-#include <string>
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"

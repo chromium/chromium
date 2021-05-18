@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_MODE_DETECTOR_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

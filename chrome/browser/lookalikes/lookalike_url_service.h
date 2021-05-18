@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_LOOKALIKES_LOOKALIKE_URL_SERVICE_H_
 #define CHROME_BROWSER_LOOKALIKES_LOOKALIKE_URL_SERVICE_H_
 
-#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"

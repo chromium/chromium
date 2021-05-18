@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_NET_SYSTEM_NETWORK_CONTEXT_MANAGER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"

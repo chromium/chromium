@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_BROWSING_DATA_SITE_DATA_SIZE_COLLECTOR_H_
 
 #include <list>
-#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"

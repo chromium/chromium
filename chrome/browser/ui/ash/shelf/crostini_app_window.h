@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ASH_SHELF_CROSTINI_APP_WINDOW_H_
 
 #include <memory>
-#include <string>
 
 #include "ash/public/cpp/shelf_types.h"
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"

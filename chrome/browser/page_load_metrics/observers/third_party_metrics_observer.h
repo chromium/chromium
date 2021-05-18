@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_THIRD_PARTY_METRICS_OBSERVER_H_
 
 #include <map>
-#include <string>
 
 #include "base/macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"

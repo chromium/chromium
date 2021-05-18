@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_STARTER_ANDROID_H_
 
 #include <memory>
-#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"

@@ -6,7 +6,6 @@
 #define CHROME_RENDERER_SYNC_ENCRYPTION_KEYS_EXTENSION_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

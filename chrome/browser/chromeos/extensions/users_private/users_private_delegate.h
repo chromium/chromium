@@ -7,7 +7,6 @@
 
 #include <map>
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"

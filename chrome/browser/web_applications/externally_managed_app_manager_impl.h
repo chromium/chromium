@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_MANAGER_IMPL_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

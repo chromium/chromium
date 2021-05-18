@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_MEDIA_WEBRTC_DISPLAY_MEDIA_ACCESS_HANDLER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"

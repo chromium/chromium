@@ -6,7 +6,6 @@
 #define CHROME_CHROME_CLEANER_ENGINES_BROKER_SANDBOX_SETUP_H_
 
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "base/callback.h"

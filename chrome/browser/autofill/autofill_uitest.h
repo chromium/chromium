@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOFILL_AUTOFILL_UITEST_H_
 #define CHROME_BROWSER_AUTOFILL_AUTOFILL_UITEST_H_
 
-#include <string>
-
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"

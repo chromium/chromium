@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_LONG_SCREENSHOTS_LONG_SCREENSHOTS_TAB_SERVICE_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/android/jni_android.h"

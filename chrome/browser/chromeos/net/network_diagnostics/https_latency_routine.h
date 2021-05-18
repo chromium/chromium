@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_NET_NETWORK_DIAGNOSTICS_HTTPS_LATENCY_ROUTINE_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"

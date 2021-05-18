@@ -29,7 +29,6 @@
 #define CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_BLOCKING_PAGE_H_
 
 #include <map>
-#include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"

@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <string>
-
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"

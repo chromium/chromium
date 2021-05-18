@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SUBRESOURCE_REDIRECT_ORIGIN_ROBOTS_RULES_CACHE_H_
 #define CHROME_BROWSER_SUBRESOURCE_REDIRECT_ORIGIN_ROBOTS_RULES_CACHE_H_
 
-#include <string>
-
 #include "base/containers/mru_cache.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"

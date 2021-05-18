@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_PERMISSION_REQUEST_CREATOR_MOCK_H_
 #define CHROME_BROWSER_SUPERVISED_USER_PERMISSION_REQUEST_CREATOR_MOCK_H_
 
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

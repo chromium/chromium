@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_POLICY_SCHEDULED_UPDATE_CHECKER_DEVICE_SCHEDULED_UPDATE_CHECKER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

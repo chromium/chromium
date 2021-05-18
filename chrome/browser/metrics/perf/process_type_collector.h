@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_METRICS_PERF_PROCESS_TYPE_COLLECTOR_H_
 
 #include <map>
-#include <string>
 #include <vector>
 
 #include "third_party/metrics_proto/execution_context.pb.h"

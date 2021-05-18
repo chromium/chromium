@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ASH_SHELF_APP_SHORTCUT_SHELF_ITEM_CONTROLLER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "ash/public/cpp/shelf_item_delegate.h"

@@ -7,7 +7,6 @@
 
 #include <map>
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"

@@ -6,7 +6,6 @@
 #define CHROME_COMMON_EXTENSIONS_PERMISSIONS_CHROME_PERMISSION_MESSAGE_PROVIDER_H_
 
 #include <set>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

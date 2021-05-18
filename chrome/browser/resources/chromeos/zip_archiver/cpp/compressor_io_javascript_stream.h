@@ -7,7 +7,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <string>
 
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"

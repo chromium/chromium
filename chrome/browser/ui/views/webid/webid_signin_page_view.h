@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBID_WEBID_SIGNIN_PAGE_VIEW_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback.h"
 #include "chrome/browser/ui/views/webid/webid_dialog_views.h"

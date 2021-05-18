@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_CAPTIVE_PORTAL_VIEW_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_CAPTIVE_PORTAL_VIEW_H_
 
-#include <string>
 #include "base/macros.h"
 #include "chrome/browser/ash/login/ui/simple_web_view_dialog.h"
 

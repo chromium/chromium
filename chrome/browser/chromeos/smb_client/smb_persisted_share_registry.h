@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_SMB_CLIENT_SMB_PERSISTED_SHARE_REGISTRY_H_
 #define CHROME_BROWSER_CHROMEOS_SMB_CLIENT_SMB_PERSISTED_SHARE_REGISTRY_H_
 
-#include <string>
 #include <vector>
 
 #include "chrome/browser/chromeos/smb_client/smb_share_info.h"

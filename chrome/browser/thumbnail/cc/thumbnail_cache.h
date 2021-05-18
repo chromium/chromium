@@ -10,7 +10,6 @@
 #include <list>
 #include <map>
 #include <set>
-#include <string>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"

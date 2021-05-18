@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_UI_VIEW_MOCK_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

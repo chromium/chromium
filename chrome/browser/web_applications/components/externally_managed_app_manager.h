@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 #include <ostream>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

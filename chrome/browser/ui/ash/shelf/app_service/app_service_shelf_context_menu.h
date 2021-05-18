@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ASH_SHELF_APP_SERVICE_APP_SERVICE_SHELF_CONTEXT_MENU_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"

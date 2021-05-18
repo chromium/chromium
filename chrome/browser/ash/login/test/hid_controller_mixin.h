@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_TEST_HID_CONTROLLER_MIXIN_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"

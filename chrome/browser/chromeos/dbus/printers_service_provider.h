@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_DBUS_PRINTERS_SERVICE_PROVIDER_H_
 #define CHROME_BROWSER_CHROMEOS_DBUS_PRINTERS_SERVICE_PROVIDER_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"

@@ -8,7 +8,6 @@
 #include <list>
 #include <map>
 #include <set>
-#include <string>
 
 #include "chrome/browser/extensions/api/identity/extension_token_key.h"
 

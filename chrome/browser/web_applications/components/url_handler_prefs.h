@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_URL_HANDLER_PREFS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_URL_HANDLER_PREFS_H_
 
-#include <string>
 #include <vector>
 
 #include "base/time/time.h"

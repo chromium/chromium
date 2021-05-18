@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_ARC_ENTERPRISE_ARC_FORCE_INSTALLED_APPS_TRACKER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"

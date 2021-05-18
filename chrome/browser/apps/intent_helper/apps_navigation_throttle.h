@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_APPS_INTENT_HELPER_APPS_NAVIGATION_THROTTLE_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"

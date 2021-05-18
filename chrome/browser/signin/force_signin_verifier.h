@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SIGNIN_FORCE_SIGNIN_VERIFIER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/time/time.h"

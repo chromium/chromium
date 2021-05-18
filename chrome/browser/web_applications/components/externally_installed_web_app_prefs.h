@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_EXTERNALLY_INSTALLED_WEB_APP_PREFS_H_
 
 #include <map>
-#include <string>
 
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
