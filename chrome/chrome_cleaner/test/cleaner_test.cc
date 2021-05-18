@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 #include <tuple>
+#include <utility>
+#include <vector>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -12,10 +16,15 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/windows_version.h"
 #include "chrome/chrome_cleaner/buildflags.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
+#include "chrome/chrome_cleaner/ipc/chrome_prompt_test_util.h"
 #include "chrome/chrome_cleaner/logging/proto/chrome_cleaner_report.pb.h"
 #include "chrome/chrome_cleaner/logging/proto/reporter_logs.pb.h"
 #include "chrome/chrome_cleaner/logging/proto/shared_data.pb.h"
@@ -29,6 +38,7 @@
 #include "chrome/chrome_cleaner/zip_archiver/sandboxed_zip_archiver.h"
 #include "components/chrome_cleaner/public/constants/constants.h"
 #include "components/chrome_cleaner/public/constants/result_codes.h"
+#include "components/chrome_cleaner/public/proto/chrome_prompt.pb.h"
 #include "components/chrome_cleaner/test/test_name_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,8 +46,13 @@ namespace {
 
 using chrome_cleaner::Engine;
 using chrome_cleaner::ExecutionMode;
+using chrome_cleaner::MockChromePromptResponder;
+using chrome_cleaner::PromptUserResponse;
 using chrome_cleaner::PUPData;
 using ::testing::Combine;
+using ::testing::InvokeWithoutArgs;
+using ::testing::IsEmpty;
+using ::testing::UnorderedElementsAre;
 using ::testing::Values;
 using ::testing::ValuesIn;
 
@@ -222,41 +237,10 @@ bool CheckCleanerReportForUnsanitizedPaths(
   return !::testing::Test::HasFailure();
 }
 
-enum class TestFeatures {
-  kNone,
-  kWithoutSandbox,
-};
-
-// We can't use testing::Range with an enum so create an array to use with
-// testing::ValuesIn.
-// clang-format off
-constexpr TestFeatures kAllTestFeatures[] = {
-    TestFeatures::kNone,
-    TestFeatures::kWithoutSandbox,
-};
-// clang-format on
-
-std::ostream& operator<<(std::ostream& stream, TestFeatures features) {
-  switch (features) {
-    case TestFeatures::kNone:
-      stream << "None";
-      break;
-    case TestFeatures::kWithoutSandbox:
-      stream << "WithoutSandbox";
-      break;
-    default:
-      stream << "Unknown" << static_cast<int>(features);
-      break;
-  }
-  return stream;
-}
-
-class CleanerTest
-    : public ::testing::TestWithParam<std::tuple<TestFeatures, Engine::Name>> {
+// Base class for tests that use various engines.
+class CleanerTestBase : public ::testing::Test {
  public:
   void SetUp() override {
-    std::tie(test_features_, engine_) = GetParam();
-
     // Make sure the test UwS has the flags we expect.
     ASSERT_FALSE(PUPData::IsConfirmedUwS(chrome_cleaner::kGoogleTestAUwSID));
     ASSERT_FALSE(PUPData::IsRemovable(chrome_cleaner::kGoogleTestAUwSID));
@@ -267,8 +251,10 @@ class CleanerTest
     CHECK(base::PathService::Get(base::DIR_START_MENU, &start_menu_folder));
     base::FilePath startup_dir = start_menu_folder.Append(L"Startup");
 
-    scan_only_test_uws_ = startup_dir.Append(chrome_cleaner::kTestUwsAFilename);
-    removable_test_uws_ = startup_dir.Append(chrome_cleaner::kTestUwsBFilename);
+    scan_only_test_uws_ = chrome_cleaner::NormalizePath(
+        startup_dir.Append(chrome_cleaner::kTestUwsAFilename));
+    removable_test_uws_ = chrome_cleaner::NormalizePath(
+        startup_dir.Append(chrome_cleaner::kTestUwsBFilename));
 
     // Always create scan-only UwS. Only some tests will have removable UwS.
     ASSERT_NE(-1, base::WriteFile(scan_only_test_uws_,
@@ -315,17 +301,42 @@ class CleanerTest
                                                      base::File::FLAG_WRITE);
   }
 
+  // Launches the process given on |command_line|, and expects it to exit with
+  // |expected_exit_code|. The child process is also given access to
+  // |handles_to_inherit| if it isn't empty. If |mock_responder| is not null,
+  // it will read ChromePrompt requests from the child process in a background
+  // thread while the child is running.
   void ExpectExitCode(const base::CommandLine& command_line,
-                      int expected_exit_code) {
+                      int expected_exit_code,
+                      base::HandlesToInheritVector handles_to_inherit = {},
+                      MockChromePromptResponder* mock_responder = nullptr) {
     chrome_cleaner::ChildProcessLogger logger;
     ASSERT_TRUE(logger.Initialize());
 
     base::LaunchOptions options;
+    options.handles_to_inherit = handles_to_inherit;
     logger.UpdateLaunchOptions(&options);
     base::Process process(base::LaunchProcess(command_line, options));
     if (!process.IsValid())
       logger.DumpLogs();
     ASSERT_TRUE(process.IsValid());
+
+    // Past this point, do not return without waiting on |done_reading_event|,
+    // so that it doesn't go out of scope while another thread has a pointer to
+    // it.
+    base::WaitableEvent done_reading_event;
+    if (!mock_responder) {
+      // Nothing to read.
+      done_reading_event.Signal();
+    } else {
+      // Unretained is safe because this function will not return until
+      // |done_reading_event| is signalled.
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::MayBlock()},
+          base::BindOnce(&MockChromePromptResponder::ReadRequests,
+                         base::Unretained(mock_responder),
+                         base::Unretained(&done_reading_event)));
+    }
 
     int exit_code = -1;
     bool exited_within_timeout = process.WaitForExitWithTimeout(
@@ -336,9 +347,12 @@ class CleanerTest
       logger.DumpLogs();
     if (!exited_within_timeout)
       process.Terminate(/*exit_code=*/-1, /*wait=*/false);
+
+    // Wait until any last messages the child process wrote are processed.
+    done_reading_event.TimedWait(TestTimeouts::action_timeout());
   }
 
-  base::CommandLine BuildCommandLine(
+  virtual base::CommandLine BuildCommandLine(
       const wchar_t* executable_path,
       ExecutionMode execution_mode = ExecutionMode::kNone) {
     base::FilePath path(executable_path);
@@ -354,7 +368,63 @@ class CleanerTest
     }
     command_line.AppendSwitchPath(chrome_cleaner::kQuarantineDirSwitch,
                                   temp_dir_.GetPath());
+    return command_line;
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  Engine::Name engine_ = Engine::TEST_ONLY;
+  base::FilePath scan_only_test_uws_;
+  base::FilePath removable_test_uws_;
+  base::FilePath expected_uws_archive_;
+  base::File locked_file_;
+
+ private:
+  base::ScopedTempDir temp_dir_;
+};
+
+enum class TestFeatures {
+  kNone,
+  kWithoutSandbox,
+};
+
+// We can't use testing::Range with an enum so create an array to use with
+// testing::ValuesIn.
+// clang-format off
+constexpr TestFeatures kAllTestFeatures[] = {
+    TestFeatures::kNone,
+    TestFeatures::kWithoutSandbox,
+};
+// clang-format on
+
+std::ostream& operator<<(std::ostream& stream, TestFeatures features) {
+  switch (features) {
+    case TestFeatures::kNone:
+      stream << "None";
+      break;
+    case TestFeatures::kWithoutSandbox:
+      stream << "WithoutSandbox";
+      break;
+    default:
+      stream << "Unknown" << static_cast<int>(features);
+      break;
+  }
+  return stream;
+}
+
+class CleanerTest : public CleanerTestBase,
+                    public ::testing::WithParamInterface<
+                        std::tuple<TestFeatures, Engine::Name>> {
+ public:
+  CleanerTest() { std::tie(test_features_, engine_) = GetParam(); }
+
+  base::CommandLine BuildCommandLine(
+      const wchar_t* executable_path,
+      ExecutionMode execution_mode = ExecutionMode::kNone) override {
+    base::CommandLine command_line =
+        CleanerTestBase::BuildCommandLine(executable_path, execution_mode);
 #if !BUILDFLAG(IS_OFFICIAL_CHROME_CLEANER_BUILD)
+    // WithoutSandbox switch is not supported in the official build.
     if (test_features_ == TestFeatures::kWithoutSandbox) {
       command_line.AppendSwitch(
           chrome_cleaner::kRunWithoutSandboxForTestingSwitch);
@@ -374,14 +444,6 @@ class CleanerTest
 
  protected:
   TestFeatures test_features_;
-  Engine::Name engine_;
-  base::FilePath scan_only_test_uws_;
-  base::FilePath removable_test_uws_;
-  base::FilePath expected_uws_archive_;
-  base::File locked_file_;
-
- private:
-  base::ScopedTempDir temp_dir_;
 };
 
 TEST_P(CleanerTest, Scanner_ScanOnly) {
@@ -487,7 +549,6 @@ TEST_P(CleanerTest, NoUnsanitizedPaths) {
   CreateRemovableUwS();
 
   base::CommandLine command_line = BuildCommandLine(kCleanerExecutable);
-  LOG(ERROR) << command_line.GetCommandLineString();
   command_line.AppendSwitch(chrome_cleaner::kDumpRawLogsSwitch);
   command_line.AppendSwitchASCII(
       chrome_cleaner::kExecutionModeSwitch,
@@ -521,5 +582,131 @@ INSTANTIATE_TEST_SUITE_P(EsetFeatures,
                          chrome_cleaner::GetParamNameForTest());
 #endif  // NDEBUG
 #endif  // BUILDFLAG(IS_INTERNAL_CHROME_CLEANER_BUILD)
+
+// In Scanning mode, the cleaner communicates with Chrome over a ChromePrompt
+// IPC connection, to report the names of found UwS and receive the user's
+// permission to start cleaning. These tests validate the behaviour of the
+// cleaner depending on the response from Chrome. They only run under the
+// test-only engine, because the ESET engine is slower and they don't depend on
+// the implementation of the UwS scanner, only on its output.
+class CleanerScanningModeTest : public CleanerTestBase {
+ public:
+  using StrictMockChromePromptResponder =
+      ::testing::StrictMock<MockChromePromptResponder>;
+
+  void SetUp() override {
+    CleanerTestBase::SetUp();
+    command_line_ =
+        BuildCommandLine(kCleanerExecutable, ExecutionMode::kScanning);
+    chrome_cleaner::ChromePromptPipeHandles pipe_handles =
+        chrome_cleaner::CreateTestChromePromptMessagePipes(
+            chrome_cleaner::ChromePromptServerProcess::kChromeIsServer,
+            &command_line_, &handles_to_inherit_);
+    ASSERT_TRUE(pipe_handles.IsValid());
+    mock_responder_ = std::make_unique<StrictMockChromePromptResponder>(
+        std::move(pipe_handles));
+  }
+
+  void LaunchCleanerAndExpectExitCode(int expected_exit_code) {
+    ExpectExitCode(command_line_, expected_exit_code, handles_to_inherit_,
+                   mock_responder_.get());
+  }
+
+  void ExpectCloseConnectionRequest() {
+    EXPECT_CALL(*mock_responder_, CloseConnectionRequest())
+        .WillOnce(
+            InvokeWithoutArgs([this] { mock_responder_->StopReading(); }));
+  }
+
+ protected:
+  base::CommandLine command_line_{base::CommandLine::NO_PROGRAM};
+  base::HandlesToInheritVector handles_to_inherit_;
+  std::unique_ptr<StrictMockChromePromptResponder> mock_responder_;
+};
+
+TEST_F(CleanerScanningModeTest, ReportOnly) {
+  // Report-only UwS should not be reported to the user (files to remove should
+  // be empty). Chrome will automatically reply with DENIED instead of showing
+  // a prompt.
+  {
+    ::testing::InSequence seq;
+    EXPECT_CALL(*mock_responder_, PromptUserRequest(IsEmpty(), IsEmpty()))
+        .WillOnce(InvokeWithoutArgs([this] {
+          mock_responder_->SendPromptUserResponse(PromptUserResponse::DENIED);
+        }));
+    ExpectCloseConnectionRequest();
+  }
+  LaunchCleanerAndExpectExitCode(
+      chrome_cleaner::RESULT_CODE_REPORT_ONLY_PUPS_FOUND);
+
+  EXPECT_TRUE(base::PathExists(scan_only_test_uws_));
+}
+
+TEST_F(CleanerScanningModeTest, RemovableDenied) {
+  CreateRemovableUwS();
+
+  // Removable UwS is reported to the user, who denies the cleanup.
+  {
+    ::testing::InSequence seq;
+    EXPECT_CALL(*mock_responder_,
+                PromptUserRequest(
+                    UnorderedElementsAre(removable_test_uws_.AsUTF8Unsafe()),
+                    IsEmpty()))
+        .WillOnce(InvokeWithoutArgs([this] {
+          mock_responder_->SendPromptUserResponse(PromptUserResponse::DENIED);
+        }));
+    ExpectCloseConnectionRequest();
+  }
+  LaunchCleanerAndExpectExitCode(
+      chrome_cleaner::RESULT_CODE_CLEANUP_PROMPT_DENIED);
+
+  EXPECT_TRUE(base::PathExists(scan_only_test_uws_));
+  EXPECT_TRUE(base::PathExists(removable_test_uws_));
+}
+
+TEST_F(CleanerScanningModeTest, RemovableAcceptedWithLogs) {
+  CreateRemovableUwS();
+
+  // Removable UwS is reported to the user, who accepts the cleanup.
+  {
+    ::testing::InSequence seq;
+    EXPECT_CALL(*mock_responder_,
+                PromptUserRequest(
+                    UnorderedElementsAre(removable_test_uws_.AsUTF8Unsafe()),
+                    IsEmpty()))
+        .WillOnce(InvokeWithoutArgs([this] {
+          mock_responder_->SendPromptUserResponse(
+              PromptUserResponse::ACCEPTED_WITH_LOGS);
+        }));
+    ExpectCloseConnectionRequest();
+  }
+  LaunchCleanerAndExpectExitCode(chrome_cleaner::RESULT_CODE_SUCCESS);
+
+  EXPECT_TRUE(base::PathExists(scan_only_test_uws_));
+  EXPECT_FALSE(base::PathExists(removable_test_uws_));
+}
+
+TEST_F(CleanerScanningModeTest, RemovableAcceptedWithoutLogs) {
+  CreateRemovableUwS();
+
+  // Removable UwS is reported to the user, who accepts the cleanup but denies
+  // logs uploads.
+  {
+    ::testing::InSequence seq;
+    EXPECT_CALL(*mock_responder_,
+                PromptUserRequest(
+                    UnorderedElementsAre(removable_test_uws_.AsUTF8Unsafe()),
+                    IsEmpty()))
+        .WillOnce(InvokeWithoutArgs([this] {
+          mock_responder_->SendPromptUserResponse(
+              PromptUserResponse::ACCEPTED_WITHOUT_LOGS);
+        }));
+    ExpectCloseConnectionRequest();
+  }
+  LaunchCleanerAndExpectExitCode(chrome_cleaner::RESULT_CODE_SUCCESS);
+
+  EXPECT_TRUE(base::PathExists(scan_only_test_uws_));
+  EXPECT_FALSE(base::PathExists(removable_test_uws_));
+}
 
 }  // namespace

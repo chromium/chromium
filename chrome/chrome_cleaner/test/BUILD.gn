@@ -225,6 +225,7 @@ source_set("integration_test_sources") {
     "//base/test:test_support",
     "//chrome/chrome_cleaner:buildflags",
     "//chrome/chrome_cleaner/constants:common_strings",
+    "//chrome/chrome_cleaner/ipc:chrome_prompt_test_util",
     "//chrome/chrome_cleaner/logging/proto:chrome_cleaner_report_proto",
     "//chrome/chrome_cleaner/logging/proto:reporter_logs_proto",
     "//chrome/chrome_cleaner/logging/proto:shared_data_proto",
@@ -234,6 +235,7 @@ source_set("integration_test_sources") {
     "//chrome/chrome_cleaner/test:test_util",
     "//chrome/chrome_cleaner/zip_archiver:common",
     "//components/chrome_cleaner/public/constants",
+    "//components/chrome_cleaner/public/proto",
     "//components/chrome_cleaner/test:test_name_helper",
     "//testing/gtest",
   ]

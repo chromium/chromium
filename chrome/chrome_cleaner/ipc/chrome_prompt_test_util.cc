@@ -8,18 +8,24 @@
 
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/unguessable_token.h"
 #include "base/win/win_util.h"
 #include "components/chrome_cleaner/public/constants/constants.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome_cleaner {
 
 using base::win::ScopedHandle;
+using ::testing::_;
+using ::testing::InvokeWithoutArgs;
 
 namespace {
 
@@ -123,6 +129,128 @@ ChromePromptPipeHandles::ChromePromptPipeHandles(
 
 ChromePromptPipeHandles& ChromePromptPipeHandles::operator=(
     ChromePromptPipeHandles&& other) = default;
+
+MockChromePromptResponder::MockChromePromptResponder(
+    ChromePromptPipeHandles handles)
+    : handles_(std::move(handles)) {
+  // Stop reading immediately on receiving an unhandled mock call, since the
+  // other end of the pipe may be waiting on a response.
+  ON_CALL(*this, CloseConnectionRequest())
+      .WillByDefault(
+          InvokeWithoutArgs(this, &MockChromePromptResponder::StopReading));
+  ON_CALL(*this, QueryCapabilityRequest())
+      .WillByDefault(
+          InvokeWithoutArgs(this, &MockChromePromptResponder::StopReading));
+  ON_CALL(*this, PromptUserRequest(_, _))
+      .WillByDefault(
+          InvokeWithoutArgs(this, &MockChromePromptResponder::StopReading));
+}
+
+MockChromePromptResponder::~MockChromePromptResponder() = default;
+
+// This is basically ServiceChromePromptRequests from
+// chrome/browser/safe_browsing/chrome_cleaner/chrome_prompt_channel_win.cc
+// with assertions instead of error handling.
+void MockChromePromptResponder::ReadRequests(
+    base::WaitableEvent* done_reading_event) {
+  DCHECK(handles_.IsValid());
+
+  // Close our copy of the handles that the child reads and writes. They are
+  // unused in this process.
+  handles_.request_write_handle.Close();
+  handles_.response_read_handle.Close();
+
+  DCHECK(done_reading_event);
+  base::ScopedClosureRunner done_reading(
+      base::BindLambdaForTesting([this, done_reading_event]() {
+        // Close the parent's handles when exiting the read loop. If the child
+        // is still running the handles on the other end of the pipe will get
+        // errors, causing it to exit. If the child exited normally it will
+        // already have closed its handles so this will be harmless.
+        handles_.request_read_handle.Close();
+        handles_.response_write_handle.Close();
+        done_reading_event->Signal();
+      }));
+
+  HANDLE read_handle = handles_.request_read_handle.Get();
+
+  // Read the protocol version handshake.
+  uint8_t version;
+  ASSERT_TRUE(
+      ::ReadFile(read_handle, &version, sizeof(version), nullptr, nullptr))
+      << "errno " << ::GetLastError();
+  ASSERT_EQ(version, 1);  // kVersion from proto_chrome_prompt_ipc.cc
+
+  while (!stop_reading_) {
+    // Read the length of the next message.
+    uint32_t message_length;
+    ASSERT_TRUE(::ReadFile(read_handle, &message_length, sizeof(message_length),
+                           nullptr, nullptr))
+        << "errno " << ::GetLastError();
+
+    // Read the next message.
+    std::string message;
+    ASSERT_TRUE(::ReadFile(read_handle,
+                           base::WriteInto(&message, message_length + 1),
+                           message_length, nullptr, nullptr))
+        << "errno " << ::GetLastError();
+
+    // Parse the message into a proto and invoke a mocked function for each
+    // message type.
+    ChromePromptRequest request;
+    ASSERT_TRUE(request.ParseFromString(message));
+    switch (request.request_case()) {
+      case ChromePromptRequest::kCloseConnection:
+        CloseConnectionRequest();
+        break;
+      case ChromePromptRequest::kQueryCapability:
+        QueryCapabilityRequest();
+        break;
+      case ChromePromptRequest::kPromptUser: {
+        ASSERT_TRUE(request.prompt_user().extension_ids().empty())
+            << "RemoveExtensions is deprecated and unsupported.";
+        std::vector<std::string> files_to_delete(
+            request.prompt_user().files_to_delete().begin(),
+            request.prompt_user().files_to_delete().end());
+        std::vector<std::string> registry_keys(
+            request.prompt_user().registry_keys().begin(),
+            request.prompt_user().registry_keys().end());
+        PromptUserRequest(files_to_delete, registry_keys);
+      } break;
+      case ChromePromptRequest::kRemoveExtensions:
+        FAIL() << "RemoveExtensions is deprecated and unsupported.";
+        break;
+      default:
+        FAIL() << "Unhandled ChromePromptRequest " << request.request_case();
+        break;
+    }
+  }
+}
+
+void MockChromePromptResponder::SendQueryCapabilityResponse() {
+  chrome_cleaner::QueryCapabilityResponse response;
+  WriteResponseMessage(response);
+}
+
+void MockChromePromptResponder::SendPromptUserResponse(
+    PromptUserResponse::PromptAcceptance acceptance) {
+  chrome_cleaner::PromptUserResponse response;
+  response.set_prompt_acceptance(acceptance);
+  WriteResponseMessage(response);
+}
+
+void MockChromePromptResponder::WriteResponseMessage(
+    const google::protobuf::MessageLite& message) {
+  std::string response_string;
+  ASSERT_TRUE(message.SerializeToString(&response_string));
+
+  HANDLE write_handle = handles_.response_write_handle.Get();
+  uint32_t message_size = response_string.size();
+  ASSERT_TRUE(::WriteFile(write_handle, &message_size, sizeof(uint32_t),
+                          nullptr, nullptr));
+  ASSERT_TRUE(::WriteFile(write_handle, response_string.data(), message_size,
+                          nullptr, nullptr));
+}
 
 ChromePromptPipeHandles CreateTestChromePromptMessagePipes(
     ChromePromptServerProcess server_process,

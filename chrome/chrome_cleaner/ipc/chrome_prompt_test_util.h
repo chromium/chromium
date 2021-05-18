@@ -11,8 +11,10 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/process/launch.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/chrome_cleaner/ipc/chrome_prompt_ipc.h"
+#include "components/chrome_cleaner/public/proto/chrome_prompt.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chrome_cleaner {
@@ -68,6 +70,48 @@ struct ChromePromptPipeHandles {
   // Handles for the cleaner.
   base::win::ScopedHandle request_write_handle;
   base::win::ScopedHandle response_read_handle;
+};
+
+// A mock class that can send replies to ChromePrompt requests, faking the
+// Chrome side of an IPC connection. This is suitable for high-level tests of
+// cleaner and Chrome behaviour.
+class MockChromePromptResponder {
+ public:
+  explicit MockChromePromptResponder(ChromePromptPipeHandles handles);
+  ~MockChromePromptResponder();
+
+  MockChromePromptResponder(const MockChromePromptResponder& other) = delete;
+  MockChromePromptResponder& operator=(const MockChromePromptResponder& other) =
+      delete;
+
+  // Enters a loop reading ChromePrompt requests, calling the appropriate
+  // mock method for each request. When the other end of the pipe closes or
+  // there is an error this will signal |done_reading_event| and return. It
+  // will also log a gtest failure for any error.
+  //
+  // This must be called after passing the client end of the handles to the
+  // child side of the IPC connection, because it will close the parent's copy
+  // of those handles.
+  void ReadRequests(base::WaitableEvent* done_reading_event);
+
+  // Exits the ReadRequests loop.
+  void StopReading() { stop_reading_ = true; }
+
+  void SendQueryCapabilityResponse();
+  void SendPromptUserResponse(PromptUserResponse::PromptAcceptance acceptance);
+
+  MOCK_METHOD(void, CloseConnectionRequest, ());
+  MOCK_METHOD(void, QueryCapabilityRequest, ());
+  MOCK_METHOD(void,
+              PromptUserRequest,
+              (const std::vector<std::string>& files_to_delete,
+               const std::vector<std::string>& registry_keys));
+
+ private:
+  void WriteResponseMessage(const google::protobuf::MessageLite& message);
+
+  ChromePromptPipeHandles handles_;
+  bool stop_reading_ = false;
 };
 
 // The parent process (which is generally the test framework) must always be
