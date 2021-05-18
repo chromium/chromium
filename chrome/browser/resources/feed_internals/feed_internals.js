@@ -26,8 +26,9 @@ function updatePageWithProperties() {
     $('load-stream-status').textContent = properties.loadStreamStatus;
     $('feed-fetch-url').textContent = properties.feedFetchUrl.url;
     $('feed-actions-url').textContent = properties.feedActionsUrl.url;
-    $('webfeed-follow-intro-debug-enabled-status').textContent =
+    $('enable-webfeed-follow-intro-debug').checked =
         properties.isWebFeedFollowIntroDebugEnabled;
+    $('enable-webfeed-follow-intro-debug').disabled = false;
   });
 }
 
@@ -169,11 +170,11 @@ function setupEventListeners() {
     }
   });
 
-  $('enable-webfeed-follow-intro-debug-apply')
-      .addEventListener('click', function() {
-        pageHandler.setWebFeedFollowIntroDebugEnabled(
-            $('enable-webfeed-follow-intro-debug').checked);
-      });
+  $('enable-webfeed-follow-intro-debug').addEventListener('click', function() {
+    pageHandler.setWebFeedFollowIntroDebugEnabled(
+        $('enable-webfeed-follow-intro-debug').checked);
+    $('enable-webfeed-follow-intro-debug').disabled = true;
+  });
 }
 
 function updatePage() {
