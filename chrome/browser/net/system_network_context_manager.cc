@@ -560,7 +560,7 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
               // invocation of this callback.
               network::mojom::NetworkService* network_service =
                   content::GetNetworkService();
-              network_service->SetPreloadedFirstPartySets(raw_sets);
+              network_service->SetFirstPartySets(raw_sets);
             }));
   }
 

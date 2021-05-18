@@ -185,8 +185,7 @@ void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
           /*on_sets_ready=*/base::BindRepeating(
               [](const std ::string& raw_sets) {
                 VLOG(1) << "Received Sets: \"" << raw_sets << "\"";
-                content::GetNetworkService()->SetPreloadedFirstPartySets(
-                    raw_sets);
+                content::GetNetworkService()->SetFirstPartySets(raw_sets);
               })));
   installer->Register(cus, base::OnceClosure());
 }

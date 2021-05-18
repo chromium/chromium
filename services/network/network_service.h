@@ -191,7 +191,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 #endif
   void BindTestInterface(
       mojo::PendingReceiver<mojom::NetworkServiceTest> receiver) override;
-  void SetPreloadedFirstPartySets(const std::string& raw_sets) override;
+  void SetFirstPartySets(const std::string& raw_sets) override;
   void SetExplicitlyAllowedPorts(const std::vector<uint16_t>& ports) override;
 
   // Returns an HttpAuthHandlerFactory for the given NetworkContext.

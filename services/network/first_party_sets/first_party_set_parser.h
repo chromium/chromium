@@ -32,11 +32,11 @@ class FirstPartySetParser {
   // representation of a list of set declarations according to the format
   // specified in this document: https://github.com/privacycg/first-party-sets.
   // This function does not check versions or assertions, since it is intended
-  // only for *preloaded* sets.
+  // only for sets received by Component Updater.
   //
   // Returns nullptr if parsing or validation of any set failed.
   static std::unique_ptr<base::flat_map<net::SchemefulSite, net::SchemefulSite>>
-  ParsePreloadedSets(base::StringPiece raw_sets);
+  ParseSetsFromComponentUpdater(base::StringPiece raw_sets);
 
   // Canonicalizes the passed in origin to a registered domain. In particular,
   // this ensures that the origin is non-opaque, is HTTPS, and has a registered

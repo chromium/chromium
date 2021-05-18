@@ -735,7 +735,7 @@ void NetworkService::BindTestInterface(
   }
 }
 
-void NetworkService::SetPreloadedFirstPartySets(const std::string& raw_sets) {
+void NetworkService::SetFirstPartySets(const std::string& raw_sets) {
   first_party_sets_->ParseAndSet(raw_sets);
 }
 

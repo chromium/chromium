@@ -468,11 +468,11 @@ NetworkContext::NetworkContext(
           std::make_unique<NetworkContextApplicationStatusListener>()),
 #endif
       receiver_(this, std::move(receiver)),
-      cookie_manager_(std::make_unique<CookieManager>(
-          url_request_context,
-          nullptr,
-          nullptr /* preloaded_first_party_sets */,
-          nullptr)),
+      cookie_manager_(
+          std::make_unique<CookieManager>(url_request_context,
+                                          nullptr,
+                                          nullptr /* first_party_sets */,
+                                          nullptr)),
       socket_factory_(
           std::make_unique<SocketFactory>(url_request_context_->net_log(),
                                           url_request_context)),

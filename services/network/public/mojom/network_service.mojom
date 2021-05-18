@@ -341,16 +341,14 @@ interface NetworkService {
   // environments.
   BindTestInterface(pending_receiver<NetworkServiceTest> receiver);
 
-  // Sets the preloaded First-Party Sets data. |raw_sets| is the JSON-encoded
+  // Sets the First-Party Sets data. |raw_sets| is the JSON-encoded
   // string representation of a collection of set declarations according to the
   // format specified in this document:
   // https://github.com/privacycg/first-party-sets
-  // Note that by setting the preloaded First-Party Sets, any previous notion of
-  // preloaded First-Party Sets is cleared. This method can be partially
-  // successful in the event of malformed input (which also clears previously-
-  // known First-Party Sets), but does nothing if given non-JSON input or JSON
-  // which is not a dictionary.
-  SetPreloadedFirstPartySets(string raw_sets);
+  // Note that by setting the First-Party Sets, any previous notion of
+  // First-Party Sets is cleared. On any kind of error, all First-Party Sets are
+  // cleared (except for the manually-specified set, if one exists).
+  SetFirstPartySets(string raw_sets);
 
   // Sets the list of ports which will be permitted even if they normally would
   // be restricted.

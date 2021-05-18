@@ -60,7 +60,7 @@ const char kFirstPartySetMembersField[] = "members";
 
 // Parses a single First-Party Set into a map from member to owner (including an
 // entry owner -> owner). Note that this is intended for use *only* on sets that
-// were preloaded via the component updater, so this does not check assertions
+// were received via the Component Updater, so this does not check assertions
 // or versions. It rejects sets which are non-disjoint with
 // previously-encountered sets (i.e. sets which have non-empty intersections
 // with `elements`), and singleton sets (i.e. sets must have an owner and at
@@ -70,10 +70,9 @@ const char kFirstPartySetMembersField[] = "members";
 // and augments `elements` to include the elements of the set that was parsed.
 //
 // Returns true if parsing and validation were successful, false otherwise.
-bool ParsePreloadedSet(
-    const base::Value& value,
-    base::flat_map<net::SchemefulSite, net::SchemefulSite>& map,
-    base::flat_set<net::SchemefulSite>& elements) {
+bool ParseSet(const base::Value& value,
+              base::flat_map<net::SchemefulSite, net::SchemefulSite>& map,
+              base::flat_set<net::SchemefulSite>& elements) {
   if (!value.is_dict())
     return false;
 
@@ -127,7 +126,7 @@ FirstPartySetParser::CanonicalizeRegisteredDomain(
 }
 
 std::unique_ptr<base::flat_map<net::SchemefulSite, net::SchemefulSite>>
-FirstPartySetParser::ParsePreloadedSets(base::StringPiece raw_sets) {
+FirstPartySetParser::ParseSetsFromComponentUpdater(base::StringPiece raw_sets) {
   absl::optional<base::Value> maybe_value = base::JSONReader::Read(
       raw_sets, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
   if (!maybe_value.has_value())
@@ -139,7 +138,7 @@ FirstPartySetParser::ParsePreloadedSets(base::StringPiece raw_sets) {
       base::flat_map<net::SchemefulSite, net::SchemefulSite>>();
   base::flat_set<net::SchemefulSite> elements;
   for (const auto& value : maybe_value->GetList()) {
-    if (!ParsePreloadedSet(value, *map, elements))
+    if (!ParseSet(value, *map, elements))
       return nullptr;
   }
 

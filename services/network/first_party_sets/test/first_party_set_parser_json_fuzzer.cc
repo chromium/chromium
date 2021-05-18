@@ -19,5 +19,5 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
   if (getenv("LPM_DUMP_NATIVE_INPUT"))
     std::cout << native_input << std::endl;
 
-  network::FirstPartySetParser::ParsePreloadedSets(native_input);
+  network::FirstPartySetParser::ParseSetsFromComponentUpdater(native_input);
 }

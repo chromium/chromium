@@ -69,7 +69,7 @@ void FirstPartySets::SetManuallySpecifiedSet(const std::string& flag_value) {
 base::flat_map<net::SchemefulSite, net::SchemefulSite>*
 FirstPartySets::ParseAndSet(base::StringPiece raw_sets) {
   std::unique_ptr<base::flat_map<net::SchemefulSite, net::SchemefulSite>>
-      parsed = FirstPartySetParser::ParsePreloadedSets(raw_sets);
+      parsed = FirstPartySetParser::ParseSetsFromComponentUpdater(raw_sets);
   if (parsed) {
     sets_.swap(*parsed);
   } else {

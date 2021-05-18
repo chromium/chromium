@@ -13,7 +13,7 @@ namespace network {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   base::StringPiece string_input(reinterpret_cast<const char*>(data), size);
-  FirstPartySetParser::ParsePreloadedSets(string_input);
+  FirstPartySetParser::ParseSetsFromComponentUpdater(string_input);
   return 0;
 }
 
