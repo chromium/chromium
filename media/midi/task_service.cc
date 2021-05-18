@@ -151,7 +151,7 @@ scoped_refptr<base::SingleThreadTaskRunner> TaskService::GetTaskRunner(
 #elif defined(OS_MAC)
     options.message_pump_type = base::MessagePumpType::UI;
 #endif
-    threads_[thread]->StartWithOptions(options);
+    threads_[thread]->StartWithOptions(std::move(options));
   }
   return threads_[thread]->task_runner();
 }
