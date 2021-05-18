@@ -96,9 +96,9 @@ void UseAddressAction::InternalProcessAction(
         return;
       }
       auto* profile = delegate_->GetUserModel()->GetProfile(
-          profile_value->profiles().values(0).guid());
+          profile_value->profiles().values(0));
       if (profile == nullptr) {
-        VLOG(1) << "UseAddress failed: profile not found for guid "
+        VLOG(1) << "UseAddress failed: profile not found for: "
                 << *profile_value;
         EndAction(ClientStatus(PRECONDITION_FAILED));
         return;

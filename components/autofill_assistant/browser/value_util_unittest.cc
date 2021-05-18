@@ -398,5 +398,34 @@ TEST_F(ValueUtilTest, TestContainsClientOnlyValues) {
   EXPECT_FALSE(ContainsClientOnlyValue({value_a, value_c}));
 }
 
+TEST_F(ValueUtilTest, TestEqualOperatorForAutofillProfile) {
+  AutofillProfileProto profile_a;
+  AutofillProfileProto profile_b;
+  EXPECT_TRUE(profile_a == profile_b);
+
+  profile_a.set_guid("guid_a");
+  EXPECT_FALSE(profile_a == profile_b);
+
+  profile_b.set_guid("guid_b");
+  EXPECT_FALSE(profile_a == profile_b);
+
+  profile_b.set_guid("guid_a");
+  EXPECT_TRUE(profile_a == profile_b);
+
+  profile_a.clear_guid();
+  profile_a.set_selected_profile_name("name_a");
+  EXPECT_FALSE(profile_a == profile_b);
+
+  profile_b.clear_guid();
+  profile_b.set_selected_profile_name("name_b");
+  EXPECT_FALSE(profile_a == profile_b);
+
+  profile_b.set_selected_profile_name("name_a");
+  EXPECT_TRUE(profile_a == profile_b);
+
+  profile_a.clear_selected_profile_name();
+  EXPECT_FALSE(profile_a == profile_b);
+}
+
 }  // namespace value_util
 }  // namespace autofill_assistant

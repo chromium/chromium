@@ -348,8 +348,13 @@ TEST_F(UserModelTest, SetProfiles) {
   profiles->emplace_back(
       std::make_unique<autofill::AutofillProfile>(profile_b));
   model_.SetAutofillProfiles(std::move(profiles));
-  EXPECT_THAT(model_.GetProfile(profile_a.guid())->Compare(profile_a), Eq(0));
-  EXPECT_THAT(model_.GetProfile(profile_b.guid())->Compare(profile_b), Eq(0));
+  AutofillProfileProto profile_a_proto;
+  profile_a_proto.set_guid(profile_a.guid());
+  AutofillProfileProto profile_b_proto;
+  profile_b_proto.set_guid(profile_b.guid());
+
+  EXPECT_THAT(model_.GetProfile(profile_a_proto)->Compare(profile_a), Eq(0));
+  EXPECT_THAT(model_.GetProfile(profile_b_proto)->Compare(profile_b), Eq(0));
 }
 
 TEST_F(UserModelTest, ClientSideOnlyNotifications) {
@@ -383,6 +388,21 @@ TEST_F(UserModelTest, SetSelectedAutofillProfile) {
   model_.SetSelectedAutofillProfile("contact", nullptr, &user_data);
   EXPECT_THAT(model_.GetSelectedAutofillProfile("contact"), IsNull());
   EXPECT_THAT(user_data.selected_address("contact"), IsNull());
+}
+
+TEST_F(UserModelTest, GetProfileByProfileName) {
+  autofill::AutofillProfile profile(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(
+      &profile, "Marion", "Mitchell", "Morrison", "marion@me.xyz", "Fox",
+      "123 Zoo St.", "unit 5", "Hollywood", "CA", "91601", "US", "16505678910");
+
+  UserData user_data;
+  model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(profile),
+      &user_data);
+  AutofillProfileProto profile_proto;
+  profile_proto.set_selected_profile_name("contact");
+  EXPECT_THAT(model_.GetProfile(profile_proto)->Compare(profile), Eq(0));
 }
 
 TEST_F(UserModelTest, SetSelectedCreditCard) {

@@ -69,6 +69,7 @@ import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantDimension;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.AutofillFormatProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.AutofillProfileProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.BooleanAndProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.BooleanList;
 import org.chromium.chrome.browser.autofill_assistant.proto.BooleanNotProto;
@@ -105,12 +106,14 @@ import org.chromium.chrome.browser.autofill_assistant.proto.InteractionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.InteractionsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.LinearLayoutProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ModelProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ModelProto.ModelValue;
 import org.chromium.chrome.browser.autofill_assistant.proto.OnModelValueChangedEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.OnTextLinkClickedProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.OnUserActionCalled;
 import org.chromium.chrome.browser.autofill_assistant.proto.OnViewClickedEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionStatusProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ProfileList;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetModelValueProto;
@@ -3517,5 +3520,80 @@ public class AutofillAssistantGenericUiTest {
         onView(withText("Clear")).perform(click());
         waitUntilViewMatchesCondition(withText("End"), isDisplayed());
         onView(withText("callback")).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    public void testDisplaySelectedAddressInfo() throws Exception {
+        mHelper.addDummyCreditCard(
+                mHelper.addDummyProfile("Jane Doe", "johndoe@google.com"), "4111111111111111");
+
+        ViewProto rootView =
+                (ViewProto) ViewProto.newBuilder()
+                        .setTextView(TextViewProto.newBuilder().setModelIdentifier("profile_name"))
+                        .setIdentifier("textView")
+                        .build();
+
+        List<InteractionProto> interactions = new ArrayList<>();
+        interactions.add(
+                (InteractionProto) InteractionProto.newBuilder()
+                        .addTriggerEvent(EventProto.newBuilder().setOnValueChanged(
+                                OnModelValueChangedEventProto.newBuilder().setModelIdentifier(
+                                        "profile")))
+                        .addCallbacks(createAutofillToStringCallback("profile[0]", "profile_name",
+                                ValueExpression.newBuilder().addChunk(
+                                        Chunk.newBuilder().setKey(3))))
+                        .build());
+        List<ModelProto.ModelValue> modelValues = new ArrayList<>();
+        modelValues.add(
+                ModelValue.newBuilder()
+                        .setValue(ValueProto.newBuilder().setProfiles(
+                                ProfileList.newBuilder().addValues(
+                                        AutofillProfileProto.newBuilder().setSelectedProfileName(
+                                                "SHIPPING_ADDRESS"))))
+                        .setIdentifier("profile")
+                        .build());
+
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setCollectUserData(
+                                 CollectUserDataProto.newBuilder()
+                                         .setRequestTermsAndConditions(false)
+                                         .setShippingAddressSectionTitle("Delivery address")
+                                         .setShippingAddressName("SHIPPING_ADDRESS"))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setSetPersistentUi(
+                                 SetPersistentUiProto.newBuilder().setGenericUserInterface(
+                                         GenericUserInterfaceProto.newBuilder()
+                                                 .setRootView(rootView)
+                                                 .setModel(ModelProto.newBuilder().addAllValues(
+                                                         modelValues))
+                                                 .setInteractions(InteractionsProto.newBuilder()
+                                                                          .addAllInteractions(
+                                                                                  interactions))))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().setMessage("End").addChoices(
+                                 PromptProto.Choice.newBuilder()))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                        .setPath("autofill_assistant_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
+                                ChipProto.newBuilder().setText("Autostart")))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+
+        waitUntilViewMatchesCondition(withText("Continue"), isDisplayed());
+        onView(withText("Continue")).perform(click());
+
+        waitUntilViewMatchesCondition(withText("End"), isDisplayed());
+        waitUntilViewMatchesCondition(withText("Jane"), isCompletelyDisplayed());
     }
 }

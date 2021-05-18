@@ -109,8 +109,10 @@ class UserModel {
   // Returns the selected credit card or nullptr if no card has been selected.
   const autofill::CreditCard* GetSelectedCreditCard() const;
 
-  // Returns the profile with |guid| or nullptr if there is no such profile.
-  const autofill::AutofillProfile* GetProfile(const std::string& guid) const;
+  // Returns the profile specified by |proto| or nullptr if there is no such
+  // profile.
+  const autofill::AutofillProfile* GetProfile(
+      const AutofillProfileProto& proto) const;
 
   // Returns the selected profile for the specified |profile_name| or nullptr if
   // there is no such profile.

@@ -168,7 +168,17 @@ bool operator==(const AutofillCreditCardProto& value_a,
 
 bool operator==(const AutofillProfileProto& value_a,
                 const AutofillProfileProto& value_b) {
-  return value_a.guid() == value_b.guid();
+  if (value_a.identifier_case() != value_b.identifier_case())
+    return false;
+
+  switch (value_a.identifier_case()) {
+    case AutofillProfileProto::kGuid:
+      return value_a.guid() == value_b.guid();
+    case AutofillProfileProto::kSelectedProfileName:
+      return value_a.selected_profile_name() == value_b.selected_profile_name();
+    case AutofillProfileProto::IDENTIFIER_NOT_SET:
+      return true;
+  }
 }
 
 bool operator==(const LoginOptionProto& value_a,
@@ -227,7 +237,16 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 std::ostream& operator<<(std::ostream& out, const AutofillProfileProto& value) {
-  out << value.guid();
+  switch (value.identifier_case()) {
+    case AutofillProfileProto::kGuid:
+      out << "guid:" << value.guid();
+      break;
+    case AutofillProfileProto::kSelectedProfileName:
+      out << "profile name:" << value.selected_profile_name();
+      break;
+    case AutofillProfileProto::IDENTIFIER_NOT_SET:
+      break;
+  }
   return out;
 }
 

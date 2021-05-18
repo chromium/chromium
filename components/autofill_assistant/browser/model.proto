@@ -370,8 +370,12 @@ message CreditCardResponseProto {
 }
 
 message AutofillProfileProto {
-  // The GUID of the profile.
-  optional string guid = 1;
+  oneof identifier {
+    // The GUID of the profile.
+    string guid = 1;
+    // The selected profile for the given profile name.
+    string selected_profile_name = 2;
+  }
 }
 
 message LoginOptionProto {

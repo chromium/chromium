@@ -187,8 +187,7 @@ bool ValueToString(UserModel* user_model,
           DVLOG(2) << "Error evaluating " << __func__ << ": pattern not set";
           return false;
         }
-        auto* profile =
-            user_model->GetProfile(value->profiles().values(i).guid());
+        auto* profile = user_model->GetProfile(value->profiles().values(i));
         if (!profile) {
           DVLOG(2) << "Error evaluating " << __func__ << ": profile not found";
           return false;

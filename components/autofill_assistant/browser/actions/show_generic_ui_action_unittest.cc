@@ -254,6 +254,9 @@ TEST_F(ShowGenericUiActionTest, RequestProfiles) {
   autofill::test::SetProfileInfo(
       &profile_a, "Marion", "Mitchell", "Morrison", "marion@me.xyz", "Fox",
       "123 Zoo St.", "unit 5", "Hollywood", "CA", "91601", "US", "16505678910");
+  AutofillProfileProto profile_a_proto;
+  profile_a_proto.set_guid(profile_a.guid());
+
   ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
       .WillByDefault(Return(true));
   ON_CALL(mock_personal_data_manager_, GetProfiles)
@@ -264,7 +267,7 @@ TEST_F(ShowGenericUiActionTest, RequestProfiles) {
   // Keep action alive by storing it in local variable.
   auto action = Run();
 
-  EXPECT_THAT(user_model_.GetProfile(profile_a.guid())->Compare(profile_a),
+  EXPECT_THAT(user_model_.GetProfile(profile_a_proto)->Compare(profile_a),
               Eq(0));
   ValueProto expected_value;
   expected_value.set_is_client_side_only(true);
@@ -277,13 +280,15 @@ TEST_F(ShowGenericUiActionTest, RequestProfiles) {
                                  "editor@gmail.com", "", "203 Barfield Lane",
                                  "", "Mountain View", "CA", "94043", "US",
                                  "+12345678901");
+  AutofillProfileProto profile_b_proto;
+  profile_b_proto.set_guid(profile_b.guid());
   ON_CALL(mock_personal_data_manager_, GetProfiles)
       .WillByDefault(Return(
           std::vector<autofill::AutofillProfile*>({&profile_a, &profile_b})));
   mock_personal_data_manager_.NotifyPersonalDataObserver();
-  EXPECT_THAT(user_model_.GetProfile(profile_a.guid())->Compare(profile_a),
+  EXPECT_THAT(user_model_.GetProfile(profile_a_proto)->Compare(profile_a),
               Eq(0));
-  EXPECT_THAT(user_model_.GetProfile(profile_b.guid())->Compare(profile_b),
+  EXPECT_THAT(user_model_.GetProfile(profile_b_proto)->Compare(profile_b),
               Eq(0));
   expected_value.mutable_profiles()->add_values()->set_guid(profile_b.guid());
   EXPECT_THAT(user_model_.GetValue("profiles")->profiles().values(),
@@ -294,8 +299,8 @@ TEST_F(ShowGenericUiActionTest, RequestProfiles) {
       .WillByDefault(
           Return(std::vector<autofill::AutofillProfile*>({&profile_b})));
   mock_personal_data_manager_.NotifyPersonalDataObserver();
-  EXPECT_EQ(user_model_.GetProfile(profile_a.guid()), nullptr);
-  EXPECT_THAT(user_model_.GetProfile(profile_b.guid())->Compare(profile_b),
+  EXPECT_EQ(user_model_.GetProfile(profile_a_proto), nullptr);
+  EXPECT_THAT(user_model_.GetProfile(profile_b_proto)->Compare(profile_b),
               Eq(0));
   expected_value.Clear();
   expected_value.set_is_client_side_only(true);
@@ -309,8 +314,8 @@ TEST_F(ShowGenericUiActionTest, RequestProfiles) {
       .WillByDefault(Return(
           std::vector<autofill::AutofillProfile*>({&profile_a, &profile_b})));
   mock_personal_data_manager_.NotifyPersonalDataObserver();
-  EXPECT_EQ(user_model_.GetProfile(profile_a.guid()), nullptr);
-  EXPECT_THAT(user_model_.GetProfile(profile_b.guid())->Compare(profile_b),
+  EXPECT_EQ(user_model_.GetProfile(profile_a_proto), nullptr);
+  EXPECT_THAT(user_model_.GetProfile(profile_b_proto)->Compare(profile_b),
               Eq(0));
   expected_value.Clear();
   expected_value.set_is_client_side_only(true);
