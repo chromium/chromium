@@ -28318,6 +28318,9 @@ should be able to be added at any place in this file.
       label="For video tutorial summary card."/>
   <suffix name="VideoTutorial_NTP_VoiceSearch"
       label="For voice search video tutorial."/>
+  <suffix name="WebFeedFollow" label="For Web Feed follow recommendations."/>
+  <suffix name="WebFeedPostFollowDialog"
+      label="For Web Feed successful follow operations."/>
   <suffix name="WebUITabStrip" label="For the WebUI tab strip."/>
   <affected-action name="InProductHelp.NotifyEvent.IPH"/>
   <affected-action name="InProductHelp.NotifyUsedEvent.IPH"/>

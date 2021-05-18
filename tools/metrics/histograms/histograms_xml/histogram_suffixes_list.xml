@@ -8276,6 +8276,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Video tutorial summary card on NTP."/>
   <suffix name="IPH_VideoTutorial_NTP_VoiceSearch"
       label="Video tutorial card on NTP about voice search in chrome."/>
+  <suffix name="IPH_WebFeedFollow"
+      label="In product help for proactive Web Feed follow recommendations."/>
+  <suffix name="IPH_WebFeedPostFollowDialog"
+      label="In product help for Web Feed successful follow operations."/>
   <suffix name="IPH_WebUITabStrip"
       label="In product help for opening the WebUI tab strip."/>
   <affected-histogram name="InProductHelp.NotifyEventReadyState"/>
