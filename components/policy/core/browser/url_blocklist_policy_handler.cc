@@ -49,7 +49,7 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
   bool type_error = false;
   std::string policy;
-  std::vector<base::StringPiece> invalid_policies;
+  std::vector<std::string> invalid_policies;
   for (const auto& policy_iter : url_blocklist->GetList()) {
     if (!policy_iter.is_string()) {
       type_error = true;
