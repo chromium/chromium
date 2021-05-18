@@ -2,11 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/python.gni")
 import("//third_party/blink/renderer/core/core.gni")
 
-# TODO(crbug.com/1194277): Investigate non-determinism in Py3 builds.
-python2_action("instrumentation_probes") {
+action("instrumentation_probes") {
   script = "../../build/scripts/make_instrumenting_probes.py"
 
   inputs = [

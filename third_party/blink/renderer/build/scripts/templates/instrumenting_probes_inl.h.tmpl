@@ -60,7 +60,7 @@ class {{export_symbol}} {{probe.name}} : public ProbeBase {
 {{export_symbol}} void {{probe.name}}Impl({{ params_decl(probe) }});
 inline void {{probe.name}}({{params_list(probe)}}) {
   if (!{{sink_class}}::HasAgentsGlobal(
-    {%- for agent in probe.agents %}
+    {%- for agent in probe.agents|sort %}
     {% if not loop.first %} | {% endif -%}
     {{sink_class}}::k{{agent}}
     {%- endfor %}))
