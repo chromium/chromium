@@ -5,6 +5,7 @@
 #include "components/viz/test/test_gles2_interface.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"

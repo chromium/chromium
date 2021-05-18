@@ -4,6 +4,7 @@
 
 #include "gpu/ipc/host/gpu_memory_buffer_support.h"
 
+#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
