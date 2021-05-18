@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/download/public/background_service/download_params.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 class DownloadService;

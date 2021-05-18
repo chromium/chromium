@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "components/power_scheduler/power_mode.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace power_scheduler {
 

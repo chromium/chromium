@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/geometry/scroll_offset.h"
 

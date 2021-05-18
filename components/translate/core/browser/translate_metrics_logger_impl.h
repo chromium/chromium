@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;

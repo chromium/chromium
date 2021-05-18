@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace breadcrumbs {
 

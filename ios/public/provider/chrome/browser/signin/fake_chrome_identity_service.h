@@ -8,6 +8,7 @@
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 @class FakeChromeIdentityInteractionManager;
 @class NSMutableArray;

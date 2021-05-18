@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"

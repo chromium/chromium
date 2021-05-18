@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "chrome/browser/video_tutorials/internal/tutorial_group.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace video_tutorials {
 

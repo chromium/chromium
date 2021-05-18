@@ -17,6 +17,7 @@
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 @class NSURLRequest;

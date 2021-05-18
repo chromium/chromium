@@ -27,6 +27,7 @@
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ChromeBrowserState;
 

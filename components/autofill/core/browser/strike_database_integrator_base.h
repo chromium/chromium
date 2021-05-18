@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/strike_database_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 

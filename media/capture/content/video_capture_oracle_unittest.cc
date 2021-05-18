@@ -5,6 +5,7 @@
 #include "media/capture/content/video_capture_oracle.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

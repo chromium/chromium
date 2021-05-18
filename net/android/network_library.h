@@ -20,6 +20,7 @@
 #include "net/base/mime_util.h"
 #include "net/base/net_export.h"
 #include "net/socket/socket_descriptor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 namespace android {

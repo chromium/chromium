@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/arc/enterprise/arc_snapshot_reboot_notification.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 namespace data_snapshotd {

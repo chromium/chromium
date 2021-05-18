@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_FRAME_DEADLINE_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_FRAME_DEADLINE_H_
 
-#include "components/viz/common/viz_common_export.h"
+#include <string>
 
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "components/viz/common/viz_common_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 

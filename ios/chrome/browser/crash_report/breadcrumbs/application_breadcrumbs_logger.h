@@ -12,6 +12,7 @@
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/user_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeTicks;

@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web {
 

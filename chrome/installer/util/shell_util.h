@@ -27,6 +27,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/installer/util/work_item_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class RegistryEntry;
 

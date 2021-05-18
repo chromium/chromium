@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/viz/common/viz_vulkan_context_provider_export.h"
 #include "gpu/vulkan/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include <vulkan/vulkan.h>

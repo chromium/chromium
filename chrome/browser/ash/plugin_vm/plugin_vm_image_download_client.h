@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "components/download/public/background_service/client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 struct CompletionInfo;

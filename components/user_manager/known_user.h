@@ -11,6 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/user_manager/user_manager_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 enum class AccountType;

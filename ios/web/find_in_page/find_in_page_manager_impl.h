@@ -11,6 +11,7 @@
 #import "ios/web/find_in_page/find_in_page_request.h"
 #import "ios/web/public/find_in_page/find_in_page_manager.h"
 #include "ios/web/public/web_state_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 @class NSString;
 

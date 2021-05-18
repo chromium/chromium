@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZWP_POINTER_GESTURES_H_
 
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 

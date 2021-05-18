@@ -8,6 +8,7 @@
 #include "ash/accessibility/switch_access/point_scan_layer_animation_info.h"
 #include "ash/accessibility/ui/accessibility_layer.h"
 #include "ash/ash_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ash {

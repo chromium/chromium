@@ -8,6 +8,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/timer/timer.h"
 #include "components/system_media_controls/system_media_controls.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 @class NowPlayingInfoCenterDelegateCocoa;
 

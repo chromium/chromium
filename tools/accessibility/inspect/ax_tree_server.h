@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 
 #if defined(OS_WIN)

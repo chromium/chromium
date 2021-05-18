@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframe_animation_export.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"

@@ -21,6 +21,7 @@
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libwebm/source/mkvmuxer.hpp"
 #include "ui/gfx/geometry/size.h"
 

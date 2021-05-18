@@ -7,6 +7,7 @@
 
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/vaapi/test/video_decoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // For libgav1::ObuSequenceHeader. absl::optional demands ObuSequenceHeader to
 // fulfill std::is_trivially_constructible if it is forward-declared. But
 // ObuSequenceHeader doesn't.

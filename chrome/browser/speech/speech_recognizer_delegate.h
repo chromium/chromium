@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Requires cleanup. See crbug.com/800374.
 enum SpeechRecognizerStatus {

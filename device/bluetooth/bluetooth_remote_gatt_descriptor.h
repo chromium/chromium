@@ -14,6 +14,7 @@
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_descriptor.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 

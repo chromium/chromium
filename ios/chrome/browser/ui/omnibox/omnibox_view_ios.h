@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #include "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_suggestions_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AutocompleteResult;
 class ChromeBrowserState;

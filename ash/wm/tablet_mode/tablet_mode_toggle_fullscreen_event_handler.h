@@ -5,6 +5,7 @@
 #ifndef ASH_WM_TABLET_MODE_TABLET_MODE_TOGGLE_FULLSCREEN_EVENT_HANDLER_H_
 #define ASH_WM_TABLET_MODE_TABLET_MODE_TOGGLE_FULLSCREEN_EVENT_HANDLER_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
 

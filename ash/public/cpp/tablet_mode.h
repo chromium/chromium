@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/run_loop.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

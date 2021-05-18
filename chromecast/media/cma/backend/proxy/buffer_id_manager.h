@@ -12,6 +12,7 @@
 #include "base/sequence_checker.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/cma/backend/proxy/audio_decoder_pipeline_node.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 namespace media {

@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class SceneUrlLoadingService;
 class Browser;
