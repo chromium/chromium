@@ -28,6 +28,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -159,6 +160,19 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   // Returns a proxy object that can be used on any thread.
   QuotaManagerProxy* proxy() { return proxy_.get(); }
+
+  // Creates a bucket for `origin` with `bucket_name` and returns the BucketId
+  // to the callback. Will return a QuotaError to the callback on failure.
+  void CreateBucket(const url::Origin& origin,
+                    const std::string& bucket_name,
+                    base::OnceCallback<void(QuotaErrorOr<BucketId>)>);
+
+  // Retrieves the BucketId of the bucket with `bucket_name` for `origin` and
+  // returns it to the callback. Will return an empty BucketId if a bucket does
+  // not exist. Will return a QuotaError on operation failure.
+  void GetBucketId(const url::Origin& origin,
+                   const std::string& bucket_name,
+                   base::OnceCallback<void(QuotaErrorOr<BucketId>)>);
 
   // Called by clients or webapps. Returns usage per host.
   void GetUsageInfo(GetUsageInfoCallback callback);
@@ -481,6 +495,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   void DidDatabaseWork(bool success);
 
+  void DidGetBucketId(base::OnceCallback<void(QuotaErrorOr<BucketId>)> callback,
+                      QuotaErrorOr<BucketId> result);
+
   void DeleteOnCorrectThread() const;
 
   void MaybeRunStoragePressureCallback(const url::Origin& origin,
@@ -500,10 +517,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   absl::optional<int64_t> GetQuotaOverrideForOrigin(const url::Origin&);
 
+  // TODO(ayui): Replace instances to use result with QuotaErrorOr.
   void PostTaskAndReplyWithResultForDBThread(
       const base::Location& from_here,
       base::OnceCallback<bool(QuotaDatabase*)> task,
       base::OnceCallback<void(bool)> reply);
+
+  template <typename ValueType>
+  void PostTaskAndReplyWithResultForDBThread(
+      base::OnceCallback<QuotaErrorOr<ValueType>(QuotaDatabase*)> task,
+      base::OnceCallback<void(QuotaErrorOr<ValueType>)> reply,
+      const base::Location& from_here = base::Location::Current());
 
   static std::tuple<int64_t, int64_t> CallGetVolumeInfo(
       GetVolumeInfoFn get_volume_info_fn,

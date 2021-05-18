@@ -90,6 +90,20 @@ bool IsSupportedIncognitoType(StorageType type) {
   return type == StorageType::kTemporary || type == StorageType::kPersistent;
 }
 
+QuotaErrorOr<BucketId> CreateBucketOnDBThread(const url::Origin& origin,
+                                              const std::string& bucket_name,
+                                              QuotaDatabase* database) {
+  DCHECK(database);
+  return database->CreateBucket(origin, bucket_name);
+}
+
+QuotaErrorOr<BucketId> GetBucketIdOnDBThread(const url::Origin& origin,
+                                             const std::string& bucket_name,
+                                             QuotaDatabase* database) {
+  DCHECK(database);
+  return database->GetBucketId(origin, bucket_name);
+}
+
 bool GetPersistentHostQuotaOnDBThread(const std::string& host,
                                       int64_t* quota,
                                       QuotaDatabase* database) {
@@ -937,6 +951,32 @@ void QuotaManagerImpl::SetQuotaSettings(const QuotaSettings& settings) {
 
   settings_ = settings;
   settings_timestamp_ = base::TimeTicks::Now();
+}
+
+void QuotaManagerImpl::CreateBucket(
+    const url::Origin& origin,
+    const std::string& bucket_name,
+    base::OnceCallback<void(QuotaErrorOr<BucketId>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LazyInitialize();
+
+  PostTaskAndReplyWithResultForDBThread(
+      base::BindOnce(&CreateBucketOnDBThread, origin, bucket_name),
+      base::BindOnce(&QuotaManagerImpl::DidGetBucketId,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void QuotaManagerImpl::GetBucketId(
+    const url::Origin& origin,
+    const std::string& bucket_name,
+    base::OnceCallback<void(QuotaErrorOr<BucketId>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LazyInitialize();
+
+  PostTaskAndReplyWithResultForDBThread(
+      base::BindOnce(&GetBucketIdOnDBThread, origin, bucket_name),
+      base::BindOnce(&QuotaManagerImpl::DidGetBucketId,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void QuotaManagerImpl::GetUsageInfo(GetUsageInfoCallback callback) {
@@ -1950,10 +1990,33 @@ void QuotaManagerImpl::DidDatabaseWork(bool success) {
   db_disabled_ = !success;
 }
 
+void QuotaManagerImpl::DidGetBucketId(
+    base::OnceCallback<void(QuotaErrorOr<BucketId>)> callback,
+    QuotaErrorOr<BucketId> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DidDatabaseWork(result.ok());
+  std::move(callback).Run(std::move(result));
+}
+
 void QuotaManagerImpl::PostTaskAndReplyWithResultForDBThread(
     const base::Location& from_here,
     base::OnceCallback<bool(QuotaDatabase*)> task,
     base::OnceCallback<void(bool)> reply) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Deleting manager will post another task to DB sequence to delete
+  // |database_|, therefore we can be sure that database_ is alive when this
+  // task runs.
+  base::PostTaskAndReplyWithResult(
+      db_runner_.get(), from_here,
+      base::BindOnce(std::move(task), base::Unretained(database_.get())),
+      std::move(reply));
+}
+
+template <typename ValueType>
+void QuotaManagerImpl::PostTaskAndReplyWithResultForDBThread(
+    base::OnceCallback<QuotaErrorOr<ValueType>(QuotaDatabase*)> task,
+    base::OnceCallback<void(QuotaErrorOr<ValueType>)> reply,
+    const base::Location& from_here) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Deleting manager will post another task to DB sequence to delete
   // |database_|, therefore we can be sure that database_ is alive when this

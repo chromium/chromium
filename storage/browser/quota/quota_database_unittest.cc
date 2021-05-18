@@ -199,6 +199,50 @@ TEST_P(QuotaDatabaseTest, HostQuota) {
   EXPECT_FALSE(db.GetHostQuota(kHost, kPerm, &quota));
 }
 
+TEST_P(QuotaDatabaseTest, CreateBucket) {
+  QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
+  EXPECT_TRUE(LazyOpen(&db, /*create_if_needed=*/true));
+  url::Origin origin = ToOrigin("http://google/");
+  std::string bucket_name = "google_bucket";
+
+  QuotaErrorOr<BucketId> result = db.CreateBucket(origin, bucket_name);
+  ASSERT_TRUE(result.ok());
+  ASSERT_FALSE(result.value().is_null());
+
+  // Trying to create an existing bucket should return false.
+  result = db.CreateBucket(origin, bucket_name);
+  ASSERT_FALSE(result.ok());
+  EXPECT_EQ(result.error(), QuotaError::kEntryExistsError);
+}
+
+TEST_P(QuotaDatabaseTest, GetBucketId) {
+  QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
+  EXPECT_TRUE(LazyOpen(&db, /*create_if_needed=*/true));
+
+  // Add a bucket entry into the bucket table.
+  url::Origin origin = ToOrigin("http://google/");
+  std::string bucket_name = "google_bucket";
+  QuotaErrorOr<BucketId> result = db.CreateBucket(origin, bucket_name);
+  ASSERT_TRUE(result.ok());
+
+  BucketId created_bucket_id = result.value();
+  ASSERT_FALSE(created_bucket_id.is_null());
+
+  db.GetBucketId(origin, bucket_name);
+  ASSERT_TRUE(result.ok());
+  EXPECT_EQ(result.value(), created_bucket_id);
+
+  // Can't retrieve buckets with name mismatch.
+  result = db.GetBucketId(origin, "does_not_exist");
+  ASSERT_TRUE(result.ok());
+  EXPECT_TRUE(result.value().is_null());
+
+  // Can't retrieve buckets with origin mismatch.
+  result = db.GetBucketId(ToOrigin("http://example/"), bucket_name);
+  ASSERT_TRUE(result.ok());
+  EXPECT_TRUE(result.value().is_null());
+}
+
 TEST_P(QuotaDatabaseTest, OriginLastAccessTimeLRU) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, /*create_if_needed=*/true));

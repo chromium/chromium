@@ -8,6 +8,7 @@ component("cpp") {
   public = [
     "constants.h",
     "quota_client_callback_wrapper.h",
+    "quota_error_or.h",
   ]
 
   sources = [

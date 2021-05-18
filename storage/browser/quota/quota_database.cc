@@ -165,6 +165,79 @@ bool QuotaDatabase::SetHostQuota(const std::string& host,
   return true;
 }
 
+QuotaErrorOr<BucketId> QuotaDatabase::CreateBucket(
+    const url::Origin& origin,
+    const std::string& bucket_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug/1210259): Add DCHECKs for input validation.
+  if (!LazyOpen(/*create_if_needed=*/true))
+    return QuotaError::kDatabaseError;
+
+  // TODO(crbug/1210252): Update to not execute 2 sql statements on creation.
+  QuotaErrorOr<BucketId> bucket_result = GetBucketId(origin, bucket_name);
+  if (!bucket_result.ok())
+    return bucket_result.error();
+
+  if (!bucket_result.value().is_null())
+    return QuotaError::kEntryExistsError;
+
+  base::Time now = base::Time::Now();
+  static constexpr char kSql[] =
+      // clang-format off
+      "INSERT INTO buckets("
+        "origin,"
+        "type,"
+        "name,"
+        "use_count,"
+        "last_accessed,"
+        "last_modified,"
+        "expiration,"
+        "quota) "
+        "VALUES (?, 0, ?, 0, ?, ?, ?, 0)";
+  // clang-format on
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
+  // Bucket usage is only for temporary storage types.
+  static_assert(static_cast<int>(StorageType::kTemporary) == 0,
+                "The type value baked in the SQL statement above is wrong.");
+  statement.BindString(0, origin.GetURL().spec());
+  statement.BindString(1, bucket_name);
+  statement.BindTime(2, now);
+  statement.BindTime(3, now);
+  statement.BindTime(4, base::Time::Max());
+
+  if (!statement.Run())
+    return QuotaError::kDatabaseError;
+
+  ScheduleCommit();
+
+  int64_t bucket_id = db_->GetLastInsertRowId();
+  DCHECK_GT(bucket_id, 0);
+  return BucketId(bucket_id);
+}
+
+QuotaErrorOr<BucketId> QuotaDatabase::GetBucketId(
+    const url::Origin& origin,
+    const std::string& bucket_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!LazyOpen(/*create_if_needed=*/true))
+    return QuotaError::kDatabaseError;
+
+  static constexpr char kSql[] =
+      "SELECT id FROM buckets WHERE origin = ? AND type = ? AND name = ?";
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindString(0, origin.GetURL().spec());
+  // Bucket usage is only for temporary storage types.
+  statement.BindInt(1, static_cast<int>(StorageType::kTemporary));
+  statement.BindString(2, bucket_name);
+
+  if (!statement.Step()) {
+    return statement.Succeeded()
+               ? QuotaErrorOr<BucketId>(BucketId())
+               : QuotaErrorOr<BucketId>(QuotaError::kDatabaseError);
+  }
+  return BucketId(statement.ColumnInt64(0));
+}
+
 bool QuotaDatabase::SetOriginLastAccessTime(const url::Origin& origin,
                                             StorageType type,
                                             base::Time last_accessed) {

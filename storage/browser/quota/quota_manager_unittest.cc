@@ -159,6 +159,20 @@ class QuotaManagerImplTest : public testing::Test {
     return mock_quota_client_ptr;
   }
 
+  void CreateBucket(const url::Origin& origin, const std::string& bucket_name) {
+    quota_manager_impl_->CreateBucket(
+        origin, bucket_name,
+        base::BindOnce(&QuotaManagerImplTest::DidGetBucketId,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  void GetBucketId(const url::Origin& origin, const std::string& bucket_name) {
+    quota_manager_impl_->GetBucketId(
+        origin, bucket_name,
+        base::BindOnce(&QuotaManagerImplTest::DidGetBucketId,
+                       weak_factory_.GetWeakPtr()));
+  }
+
   void GetUsageInfo() {
     usage_info_.clear();
     quota_manager_impl_->GetUsageInfo(base::BindOnce(
@@ -371,6 +385,10 @@ class QuotaManagerImplTest : public testing::Test {
         &QuotaManagerImplTest::DidDumpBucketTable, weak_factory_.GetWeakPtr()));
   }
 
+  void DidGetBucketId(QuotaErrorOr<BucketId> result) {
+    bucket_id_ = std::move(result);
+  }
+
   void DidGetUsageInfo(UsageInfoEntries entries) {
     usage_info_ = std::move(entries);
   }
@@ -521,13 +539,13 @@ class QuotaManagerImplTest : public testing::Test {
   const QuotaTableEntries& quota_entries() const { return quota_entries_; }
   const BucketTableEntries& bucket_entries() const { return bucket_entries_; }
   const QuotaSettings& settings() const { return settings_; }
-  base::FilePath profile_path() const { return data_dir_.GetPath(); }
   int status_callback_count() const { return status_callback_count_; }
   void reset_status_callback_count() { status_callback_count_ = 0; }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
+  QuotaErrorOr<BucketId> bucket_id_;
 
   static std::vector<QuotaClientType> AllClients() {
     // TODO(pwnall): Implement using something other than an empty vector?
@@ -612,6 +630,40 @@ TEST_F(QuotaManagerImplTest, GetUsageInfo) {
                     << static_cast<int>(info.type);
     }
   }
+}
+
+TEST_F(QuotaManagerImplTest, CreateBucket) {
+  url::Origin origin = ToOrigin("http://a.com/");
+  std::string bucket_name = "BucketA";
+
+  CreateBucket(origin, bucket_name);
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(bucket_id_.ok());
+
+  // Try creating a bucket with the same name.
+  CreateBucket(origin, bucket_name);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(bucket_id_.ok());
+}
+
+TEST_F(QuotaManagerImplTest, GetBucketId) {
+  url::Origin origin = ToOrigin("http://a.com/");
+  std::string bucket_name = "BucketA";
+
+  CreateBucket(origin, bucket_name);
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(bucket_id_.ok());
+  BucketId created_bucket_id = bucket_id_.value();
+
+  GetBucketId(origin, bucket_name);
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(bucket_id_.ok());
+  BucketId retrieved_bucket_id = bucket_id_.value();
+  EXPECT_EQ(created_bucket_id, retrieved_bucket_id);
+
+  GetBucketId(origin, "BucketB");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(bucket_id_.value().is_null());
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Simple) {

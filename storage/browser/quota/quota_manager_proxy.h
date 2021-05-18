@@ -18,6 +18,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/quota_client.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/quota/quota_callbacks.h"
@@ -75,6 +76,24 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       mojo::PendingRemote<mojom::QuotaClient> client,
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types);
+
+  // Creates a bucket for `origin` with `bucket_name` and returns the BucketId
+  // to the callback. Will return an QuotaError to the callback on failure.
+  virtual void CreateBucket(
+      const url::Origin& origin,
+      const std::string& bucket_name,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<BucketId>)> callback);
+
+  // Retrieves the BucketId of the bucket with `bucket_name` for `origin` and
+  // returns it to the callback. Will return an empty BucketId if a bucket does
+  // not exist. Will return a QuotaError on operation failure.
+  virtual void GetBucketId(
+      const url::Origin& origin,
+      const std::string& bucket_name,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<BucketId>)> callback);
+
   virtual void NotifyStorageAccessed(const url::Origin& origin,
                                      blink::mojom::StorageType type,
                                      base::Time access_time);
