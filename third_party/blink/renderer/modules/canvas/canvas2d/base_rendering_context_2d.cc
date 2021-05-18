@@ -2046,6 +2046,7 @@ ImageData* BaseRenderingContext2D::createImageData(
     ExceptionState& exception_state) const {
   ImageData::ValidateAndCreateParams params;
   params.context_2d_error_mode = true;
+  params.default_color_space = GetCanvas2DColorParams().ColorSpace();
   return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), absl::nullopt,
                                       image_data_settings, params,
                                       exception_state);
@@ -2115,6 +2116,8 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
 
   ImageData::ValidateAndCreateParams validate_and_create_params;
   validate_and_create_params.context_2d_error_mode = true;
+  validate_and_create_params.default_color_space =
+      GetCanvas2DColorParams().ColorSpace();
 
   if (!CanCreateCanvas2dResourceProvider() || isContextLost()) {
     return ImageData::ValidateAndCreate(

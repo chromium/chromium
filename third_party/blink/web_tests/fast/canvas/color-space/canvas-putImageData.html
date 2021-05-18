@@ -119,7 +119,7 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
 
   // Read back as 8-bit sRGB.
   for (var j = 0; j < num_subtests; ++j) {
-    var data_from_get = ctx.getImageData(data_width * (j + 0.5), data_height / 2, 1, 1);
+    var data_from_get = ctx.getImageData(data_width * (j + 0.5), data_height / 2, 1, 1, {colorSpace:'srgb'});
     var passed = true;
     var pixel_expected = [50, 100, 150, 255];
     var pixel_actual = data_from_get.data;
