@@ -1410,7 +1410,7 @@
   },
   {
     "name": "enable-bluetooth-spp-in-serial-api",
-    "owners": [ "mattreynolds", "odejesush", "vickymin@google.com" ],
+    "owners": [ "mattreynolds", "odejesush" ],
     "expiry_milestone": 90
   },
   {
