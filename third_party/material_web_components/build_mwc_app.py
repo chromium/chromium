@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -284,12 +284,13 @@ def main(argv):
 
     # Output a manifest file that will be used to auto-generate a grd file later.
     if args.out_manifest:
-        manifest_data = {}
-        manifest_data['base_dir'] = '%s' % args.out_folder
-        manifest_data['files'] = manifest.keys()
-        manifest_file = open(
-            os.path.normpath(os.path.join(_CWD, args.out_manifest)), 'wb')
-        json.dump(manifest_data, manifest_file)
+        manifest_data = {
+            'base_dir': args.out_folder,
+            'files': list(manifest.keys()),
+        }
+        with open(os.path.normpath(os.path.join(_CWD, args.out_manifest)), 'w') \
+                as manifest_file:
+            json.dump(manifest_data, manifest_file)
 
     _update_dep_file(args.input, args, manifest)
 

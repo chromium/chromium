@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 
 import argparse
+import collections
 import json
 import os
 import re
 import sys
-from collections import OrderedDict
 
 _CWD = os.getcwd()
 _HERE_DIR = os.path.dirname(__file__)
@@ -44,13 +44,13 @@ def main(argv):
   out_dir = os.path.relpath(args.out_dir, args.gen_dir)
   TSCONFIG_BASE_PATH = os.path.join(_HERE_DIR, 'tsconfig_base.json')
 
-  tsconfig = OrderedDict()
+  tsconfig = collections.OrderedDict()
 
   tsconfig['extends'] = args.tsconfig_base \
       if args.tsconfig_base is not None \
       else os.path.relpath(TSCONFIG_BASE_PATH, args.gen_dir)
 
-  tsconfig['compilerOptions'] = OrderedDict()
+  tsconfig['compilerOptions'] = collections.OrderedDict()
   tsconfig['compilerOptions']['tsBuildInfoFile'] = 'tsconfig.tsbuildinfo'
   tsconfig['compilerOptions']['rootDir'] = root_dir
   tsconfig['compilerOptions']['outDir'] = out_dir
@@ -69,11 +69,9 @@ def main(argv):
 
   # Handle custom path mappings, for example chrome://resources/ URLs.
   if args.path_mappings is not None:
-    path_mappings = {}
+    path_mappings = collections.defaultdict(list)
     for m in args.path_mappings:
       mapping = m.split('|')
-      if not path_mappings.has_key(mapping[0]):
-        path_mappings[mapping[0]] = []
       path_mappings[mapping[0]].append(os.path.join('./', mapping[1]))
     tsconfig['compilerOptions']['paths'] = path_mappings
 

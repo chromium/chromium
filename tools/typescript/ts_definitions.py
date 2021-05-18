@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import argparse
+import collections
 import json
 import os
 import re
@@ -51,11 +52,9 @@ def main(argv):
 
   # Handle custom path mappings, for example chrome://resources/ URLs.
   if args.path_mappings is not None:
-    path_mappings = {}
+    path_mappings = collections.defaultdict(list)
     for m in args.path_mappings:
       mapping = m.split('|')
-      if not path_mappings.has_key(mapping[0]):
-        path_mappings[mapping[0]] = []
       path_mappings[mapping[0]].append(os.path.join('./', mapping[1]))
     tsconfig['compilerOptions']['paths'] = path_mappings
 
