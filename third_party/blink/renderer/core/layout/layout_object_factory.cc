@@ -75,7 +75,6 @@ inline Element* GetElementForLayoutObject(Node& node) {
 
 template <typename BaseType, typename NGType, typename LegacyType = BaseType>
 inline BaseType* CreateObject(Node& node,
-                              const ComputedStyle& style,
                               LegacyLayout legacy,
                               bool disable_ng_for_type = false) {
   Element* element = GetElementForLayoutObject(node);
@@ -110,11 +109,11 @@ LayoutBlockFlow* LayoutObjectFactory::CreateBlockFlow(
   if (style.Display() == EDisplay::kListItem) {
     // Create a LayoutBlockFlow with a list marker
     return CreateObject<LayoutBlockFlow, LayoutNGListItem, LayoutListItem>(
-        node, style, legacy);
+        node, legacy);
   }
 
   // Create a plain LayoutBlockFlow
-  return CreateObject<LayoutBlockFlow, LayoutNGBlockFlow>(node, style, legacy);
+  return CreateObject<LayoutBlockFlow, LayoutNGBlockFlow>(node, legacy);
 }
 
 // static
@@ -123,14 +122,14 @@ LayoutBlock* LayoutObjectFactory::CreateBlockForLineClamp(
     const ComputedStyle& style,
     LegacyLayout legacy) {
   return CreateObject<LayoutBlock, LayoutNGBlockFlow,
-                      LayoutDeprecatedFlexibleBox>(node, style, legacy);
+                      LayoutDeprecatedFlexibleBox>(node, legacy);
 }
 
 LayoutBlock* LayoutObjectFactory::CreateFlexibleBox(Node& node,
                                                     const ComputedStyle& style,
                                                     LegacyLayout legacy) {
   return CreateObject<LayoutBlock, LayoutNGFlexibleBox, LayoutFlexibleBox>(
-      node, style, legacy);
+      node, legacy);
 }
 
 LayoutBlock* LayoutObjectFactory::CreateGrid(Node& node,
@@ -140,7 +139,7 @@ LayoutBlock* LayoutObjectFactory::CreateGrid(Node& node,
   if (disable_ng_for_type)
     UseCounter::Count(node.GetDocument(), WebFeature::kLegacyLayoutByGrid);
   return CreateObject<LayoutBlock, LayoutNGGrid, LayoutGrid>(
-      node, style, legacy, disable_ng_for_type);
+      node, legacy, disable_ng_for_type);
 }
 
 LayoutBlock* LayoutObjectFactory::CreateMath(Node& node,
@@ -151,11 +150,10 @@ LayoutBlock* LayoutObjectFactory::CreateMath(Node& node,
   bool disable_ng_for_type = !RuntimeEnabledFeatures::MathMLCoreEnabled();
   if (To<MathMLElement>(node).IsTokenElement()) {
     return CreateObject<LayoutBlockFlow, LayoutNGMathMLBlockFlow,
-                        LayoutBlockFlow>(node, style, legacy,
-                                         disable_ng_for_type);
+                        LayoutBlockFlow>(node, legacy, disable_ng_for_type);
   }
   return CreateObject<LayoutBlock, LayoutNGMathMLBlock, LayoutBlockFlow>(
-      node, style, legacy, disable_ng_for_type);
+      node, legacy, disable_ng_for_type);
 }
 
 LayoutObject* LayoutObjectFactory::CreateListMarker(Node& node,
@@ -169,17 +167,17 @@ LayoutObject* LayoutObjectFactory::CreateListMarker(Node& node,
   if (style.ContentBehavesAsNormal()) {
     if (is_inside) {
       return CreateObject<LayoutObject, LayoutNGInsideListMarker,
-                          LayoutListMarker>(node, style, legacy);
+                          LayoutListMarker>(node, legacy);
     }
     return CreateObject<LayoutObject, LayoutNGOutsideListMarker,
-                        LayoutListMarker>(node, style, legacy);
+                        LayoutListMarker>(node, legacy);
   }
   if (is_inside) {
     return CreateObject<LayoutObject, LayoutNGInsideListMarker,
-                        LayoutInsideListMarker>(node, style, legacy);
+                        LayoutInsideListMarker>(node, legacy);
   }
   return CreateObject<LayoutObject, LayoutNGOutsideListMarker,
-                      LayoutOutsideListMarker>(node, style, legacy);
+                      LayoutOutsideListMarker>(node, legacy);
 }
 
 LayoutBlock* LayoutObjectFactory::CreateTable(Node& node,
@@ -189,15 +187,14 @@ LayoutBlock* LayoutObjectFactory::CreateTable(Node& node,
   if (disable_ng_for_type)
     UseCounter::Count(node.GetDocument(), WebFeature::kLegacyLayoutByTable);
   return CreateObject<LayoutBlock, LayoutNGTable, LayoutTable>(
-      node, style, legacy, disable_ng_for_type);
+      node, legacy, disable_ng_for_type);
 }
 
 LayoutTableCaption* LayoutObjectFactory::CreateTableCaption(
     Node& node,
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  return CreateObject<LayoutTableCaption, LayoutNGTableCaption>(node, style,
-                                                                legacy);
+  return CreateObject<LayoutTableCaption, LayoutNGTableCaption>(node, legacy);
 }
 
 LayoutBlockFlow* LayoutObjectFactory::CreateTableCell(
@@ -206,10 +203,10 @@ LayoutBlockFlow* LayoutObjectFactory::CreateTableCell(
     LegacyLayout legacy) {
   if (RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
     return CreateObject<LayoutBlockFlow, LayoutNGTableCell, LayoutTableCell>(
-        node, style, legacy);
+        node, legacy);
   } else {
     return CreateObject<LayoutBlockFlow, LayoutNGTableCellLegacy,
-                        LayoutTableCell>(node, style, legacy);
+                        LayoutTableCell>(node, legacy);
   }
 }
 
@@ -220,7 +217,7 @@ LayoutBox* LayoutObjectFactory::CreateTableColumn(Node& node,
   if (disable_ng_for_type)
     UseCounter::Count(node.GetDocument(), WebFeature::kLegacyLayoutByTable);
   return CreateObject<LayoutBox, LayoutNGTableColumn, LayoutTableCol>(
-      node, style, legacy, disable_ng_for_type);
+      node, legacy, disable_ng_for_type);
 }
 
 LayoutBox* LayoutObjectFactory::CreateTableRow(Node& node,
@@ -230,7 +227,7 @@ LayoutBox* LayoutObjectFactory::CreateTableRow(Node& node,
   if (disable_ng_for_type)
     UseCounter::Count(node.GetDocument(), WebFeature::kLegacyLayoutByTable);
   return CreateObject<LayoutBox, LayoutNGTableRow, LayoutTableRow>(
-      node, style, legacy, disable_ng_for_type);
+      node, legacy, disable_ng_for_type);
 }
 
 LayoutBox* LayoutObjectFactory::CreateTableSection(Node& node,
@@ -240,21 +237,20 @@ LayoutBox* LayoutObjectFactory::CreateTableSection(Node& node,
   if (disable_ng_for_type)
     UseCounter::Count(node.GetDocument(), WebFeature::kLegacyLayoutByTable);
   return CreateObject<LayoutBox, LayoutNGTableSection, LayoutTableSection>(
-      node, style, legacy, disable_ng_for_type);
+      node, legacy, disable_ng_for_type);
 }
 
 LayoutObject* LayoutObjectFactory::CreateButton(Node& node,
                                                 const ComputedStyle& style,
                                                 LegacyLayout legacy) {
-  return CreateObject<LayoutBlock, LayoutNGButton, LayoutButton>(node, style,
-                                                                 legacy);
+  return CreateObject<LayoutBlock, LayoutNGButton, LayoutButton>(node, legacy);
 }
 
 LayoutBlock* LayoutObjectFactory::CreateFieldset(Node& node,
                                                  const ComputedStyle& style,
                                                  LegacyLayout legacy) {
-  return CreateObject<LayoutBlock, LayoutNGFieldset, LayoutFieldset>(
-      node, style, legacy);
+  return CreateObject<LayoutBlock, LayoutNGFieldset, LayoutFieldset>(node,
+                                                                     legacy);
 }
 
 LayoutBlockFlow* LayoutObjectFactory::CreateFileUploadControl(
@@ -262,14 +258,14 @@ LayoutBlockFlow* LayoutObjectFactory::CreateFileUploadControl(
     const ComputedStyle& style,
     LegacyLayout legacy) {
   return CreateObject<LayoutBlockFlow, LayoutNGBlockFlow,
-                      LayoutFileUploadControl>(node, style, legacy);
+                      LayoutFileUploadControl>(node, legacy);
 }
 
 LayoutObject* LayoutObjectFactory::CreateSliderTrack(Node& node,
                                                      const ComputedStyle& style,
                                                      LegacyLayout legacy) {
   return CreateObject<LayoutBlock, LayoutNGBlockFlow, LayoutSliderTrack>(
-      node, style, legacy);
+      node, legacy);
 }
 
 LayoutObject* LayoutObjectFactory::CreateTextControlInnerEditor(
@@ -277,7 +273,7 @@ LayoutObject* LayoutObjectFactory::CreateTextControlInnerEditor(
     const ComputedStyle& style,
     LegacyLayout legacy) {
   return CreateObject<LayoutBlockFlow, LayoutNGTextControlInnerEditor,
-                      LayoutTextControlInnerEditor>(node, style, legacy);
+                      LayoutTextControlInnerEditor>(node, legacy);
 }
 
 LayoutObject* LayoutObjectFactory::CreateTextControlMultiLine(
@@ -285,7 +281,7 @@ LayoutObject* LayoutObjectFactory::CreateTextControlMultiLine(
     const ComputedStyle& style,
     LegacyLayout legacy) {
   return CreateObject<LayoutBlockFlow, LayoutNGTextControlMultiLine,
-                      LayoutTextControlMultiLine>(node, style, legacy);
+                      LayoutTextControlMultiLine>(node, legacy);
 }
 
 LayoutObject* LayoutObjectFactory::CreateTextControlSingleLine(
@@ -293,7 +289,7 @@ LayoutObject* LayoutObjectFactory::CreateTextControlSingleLine(
     const ComputedStyle& style,
     LegacyLayout legacy) {
   return CreateObject<LayoutBlockFlow, LayoutNGTextControlSingleLine,
-                      LayoutTextControlSingleLine>(node, style, legacy);
+                      LayoutTextControlSingleLine>(node, legacy);
 }
 
 LayoutText* LayoutObjectFactory::CreateText(Node* node,
@@ -333,21 +329,20 @@ LayoutTextFragment* LayoutObjectFactory::CreateTextFragment(
 LayoutProgress* LayoutObjectFactory::CreateProgress(Node* node,
                                                     const ComputedStyle& style,
                                                     LegacyLayout legacy) {
-  return CreateObject<LayoutProgress, LayoutNGProgress>(*node, style, legacy);
+  return CreateObject<LayoutProgress, LayoutNGProgress>(*node, legacy);
 }
 
 LayoutRubyAsBlock* LayoutObjectFactory::CreateRubyAsBlock(
     Node* node,
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  return CreateObject<LayoutRubyAsBlock, LayoutNGRubyAsBlock>(*node, style,
-                                                              legacy);
+  return CreateObject<LayoutRubyAsBlock, LayoutNGRubyAsBlock>(*node, legacy);
 }
 
 LayoutObject* LayoutObjectFactory::CreateRubyText(Node* node,
                                                   const ComputedStyle& style,
                                                   LegacyLayout legacy) {
-  return CreateObject<LayoutRubyText, LayoutNGRubyText>(*node, style, legacy);
+  return CreateObject<LayoutRubyText, LayoutNGRubyText>(*node, legacy);
 }
 
 LayoutObject* LayoutObjectFactory::CreateSVGText(Node& node,
@@ -355,7 +350,7 @@ LayoutObject* LayoutObjectFactory::CreateSVGText(Node& node,
                                                  LegacyLayout legacy) {
   const bool disable_ng_for_type = !RuntimeEnabledFeatures::SVGTextNGEnabled();
   return CreateObject<LayoutBlockFlow, LayoutNGSVGText, LayoutSVGText>(
-      node, style, legacy, disable_ng_for_type);
+      node, legacy, disable_ng_for_type);
 }
 
 LayoutBox* LayoutObjectFactory::CreateAnonymousTableWithParent(
