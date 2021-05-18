@@ -74,6 +74,20 @@ IN_PROC_BROWSER_TEST_F(MediaSourceTest, Playback_AudioOnly_WebM) {
   TestSimplePlayback("bear-320x240-audio-only.webm", media::kEnded);
 }
 
+IN_PROC_BROWSER_TEST_F(MediaSourceTest, Playback_AudioOnly_MP3) {
+  TestSimplePlayback("sfx.mp3", media::kEnded);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    MediaSourceTest,
+    Playback_AudioOnly_MP3_With_Codecs_Parameter_Should_Fail) {
+  // We override the correct media type for this file with one which erroneously
+  // includes a codecs parameter that is valid for progressive but invalid for
+  // MSE type support.
+  DCHECK_EQ(media::GetMimeTypeForFile("sfx.mp3"), "audio/mpeg");
+  TestSimplePlayback("sfx.mp3", "audio/mpeg; codecs=\"mp3\"", media::kFailed);
+}
+
 // Test the case where test file and mime type mismatch.
 IN_PROC_BROWSER_TEST_F(MediaSourceTest, Playback_Type_Error) {
   const char kWebMAudioOnly[] = "audio/webm; codecs=\"vorbis\"";
