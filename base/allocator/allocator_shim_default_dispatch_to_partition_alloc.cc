@@ -350,28 +350,28 @@ void* PartitionRealloc(const AllocatorDispatch*,
                        void* address,
                        size_t size,
                        void* context) {
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   if (!base::IsManagedByPartitionAlloc(address)) {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `realloc` which supports zone-
     // dispatching so that it appropriately selects the right zone.
     return realloc(address, size);
   }
-#endif  // defined(OS_MAC)
+#endif  // defined(OS_APPLE)
 
   return Allocator()->ReallocFlags(base::PartitionAllocNoHooks, address,
                                    MaybeAdjustSize(size), "");
 }
 
 void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   if (!base::IsManagedByPartitionAlloc(address)) {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `free` which supports zone-
     // dispatching so that it appropriately selects the right zone.
     return free(address);
   }
-#endif  // defined(OS_MAC)
+#endif  // defined(OS_APPLE)
 
   base::ThreadSafePartitionRoot::FreeNoHooks(address);
 }
@@ -379,18 +379,23 @@ void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
 size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
                                 void* address,
                                 void* context) {
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   if (!base::IsManagedByPartitionAlloc(address)) {
     // The object pointed to by `address` is not allocated by the
     // PartitionAlloc.  The return value `0` means that the pointer does not
     // belong to this malloc zone.
     return 0;
   }
-#endif  // defined(OS_MAC)
+#endif  // defined(OS_APPLE)
 
   // TODO(lizeb): Returns incorrect values for aligned allocations.
   const size_t size = base::ThreadSafePartitionRoot::GetUsableSize(address);
+#if defined(OS_APPLE)
+  // The object pointed to by `address` is allocated by the PartitionAlloc.
+  // So, this function must not return zero so that the malloc zone dispatcher
+  // finds the appropriate malloc zone.
   PA_DCHECK(size);
+#endif  // defined(OS_APPLE)
   return size;
 }
 

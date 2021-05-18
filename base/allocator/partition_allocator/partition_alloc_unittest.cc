@@ -1292,7 +1292,9 @@ TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
   static_assert(kExtraAllocSize < 64, "");
   size_t very_small_size =
       (kExtraAllocSize <= 32) ? (32 - kExtraAllocSize) : (64 - kExtraAllocSize);
-  bucket_index = SizeToIndex(very_small_size + kExtraAllocSize);
+  size_t very_small_adjusted_size =
+      allocator.root()->AdjustSize0IfNeeded(very_small_size);
+  bucket_index = SizeToIndex(very_small_adjusted_size + kExtraAllocSize);
   bucket = &allocator.root()->buckets[bucket_index];
   EXPECT_EQ(nullptr, bucket->empty_slot_spans_head);
 
@@ -1301,11 +1303,12 @@ TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
   slot_span = SlotSpan::FromSlotStartPtr(
       allocator.root()->AdjustPointerForExtrasSubtract(ptr));
   EXPECT_EQ(1, slot_span->num_allocated_slots);
+  size_t very_small_actual_size = allocator.root()->GetUsableSize(ptr);
   total_slots =
       (slot_span->bucket->num_system_pages_per_slot_span * SystemPageSize()) /
-      (very_small_size + kExtraAllocSize);
+      (very_small_actual_size + kExtraAllocSize);
   first_slot_span_slots =
-      SystemPageSize() / (very_small_size + kExtraAllocSize);
+      SystemPageSize() / (very_small_actual_size + kExtraAllocSize);
   EXPECT_EQ(total_slots - first_slot_span_slots,
             slot_span->num_unprovisioned_slots);
 

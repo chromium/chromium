@@ -470,6 +470,25 @@ struct BASE_EXPORT PartitionRoot {
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR) &&
         // (!BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) ||
         // defined(PA_REF_COUNT_FILLS_ENTIRE_SMALLEST_SLOT))
+
+#if defined(OS_APPLE) && DCHECK_IS_ON()
+    // On macOS and iOS, malloc zone's `size` function is used for two purposes;
+    // as a zone dispatcher and as an underlying implementation of
+    // malloc_size(3).  As a zone dispatcher, `size` function must not return
+    // zero as long as the given pointer belongs to this zone.  At the same
+    // time, the return value of `size` function is used as the result of
+    // malloc_size(3), so we have to actually allocate at least that size of
+    // memory.
+    //
+    // When DCHECK_IS_ON() and the requested size is zero, extras occupy the
+    // allocated memory entirely and the size of user data will be zero.  In
+    // order to avoid an allocation of zero bytes of user data, always allocate
+    // at least 1 byte memory.  When DCHECK is off, there is no extras and
+    // there is no case of zero bytes of user data.
+    if (UNLIKELY(size == 0))
+      return 1;
+#endif  // defined(OS_APPLE) && DCHECK_IS_ON()
+
     return size;
   }
 
