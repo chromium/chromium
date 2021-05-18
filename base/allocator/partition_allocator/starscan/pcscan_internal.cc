@@ -211,14 +211,12 @@ SimdSupport DetectSimdSupport() {
 
 void CommitCardTable() {
 #if defined(PA_HAS_64_BITS_POINTERS)
-  if (features::IsPartitionAllocGigaCageEnabled()) {
-    // First, make sure that GigaCage is initialized.
-    PartitionAddressSpace::Init();
-    // Then, commit the card table.
-    RecommitSystemPages(
-        reinterpret_cast<void*>(PartitionAddressSpace::BRPPoolBase()),
-        sizeof(QuarantineCardTable), PageReadWrite, PageUpdatePermissions);
-  }
+  // First, make sure that GigaCage is initialized.
+  PartitionAddressSpace::Init();
+  // Then, commit the card table.
+  RecommitSystemPages(
+      reinterpret_cast<void*>(PartitionAddressSpace::BRPPoolBase()),
+      sizeof(QuarantineCardTable), PageReadWrite, PageUpdatePermissions);
 #endif
 }
 
@@ -409,16 +407,6 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
     [[maybe_unused]] const PCScanSnapshot& snapshot;
   };
 
-  struct NoGigaCageLookupPolicy {
-    ALWAYS_INLINE bool TestOnHeapPointer(uintptr_t maybe_ptr) const {
-      const auto super_page_base = maybe_ptr & kSuperPageBaseMask;
-      const auto& super_pages = snapshot.quarantinable_super_pages();
-      auto it = super_pages.lower_bound(super_page_base);
-      return it != super_pages.end() && *it == super_page_base;
-    }
-    const PCScanSnapshot& snapshot;
-  };
-
   // This is used:
   // - to synchronize all scanning threads (mutators and the scanner);
   // - for the scanner, to transition through the state machine
@@ -594,19 +582,17 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
 void PCScanTask::ClearQuarantinedObjectsAndPrepareCardTable() {
   using AccessType = QuarantineBitmap::AccessType;
 
-  const bool giga_cage_enabled = features::IsPartitionAllocGigaCageEnabled();
   const PCScan::ClearType clear_type = pcscan_.clear_type_;
 
   PCScanSnapshot::SuperPagesWorklist::RandomizedView super_pages(
       snapshot_.quarantinable_super_pages_worklist());
-  super_pages.Visit([this, giga_cage_enabled,
-                     clear_type](uintptr_t super_page_base) {
+  super_pages.Visit([this, clear_type](uintptr_t super_page_base) {
     auto* bitmap = QuarantineBitmapFromPointer(
         QuarantineBitmapType::kScanner, pcscan_epoch_,
         reinterpret_cast<char*>(super_page_base));
     auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page_base));
     bitmap->template Iterate<AccessType::kNonAtomic>(
-        [root, giga_cage_enabled, clear_type](uintptr_t ptr) {
+        [root, clear_type](uintptr_t ptr) {
           auto* object = reinterpret_cast<void*>(ptr);
           auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
           // Use zero as a zapping value to speed up the fast bailout check in
@@ -615,12 +601,8 @@ void PCScanTask::ClearQuarantinedObjectsAndPrepareCardTable() {
           if (clear_type == PCScan::ClearType::kLazy)
             memset(object, 0, size);
 #if defined(PA_HAS_64_BITS_POINTERS)
-          if (giga_cage_enabled) {
-            // Set card(s) for this quarantined object.
-            QuarantineCardTable::GetFrom(ptr).Quarantine(ptr, size);
-          }
-#else
-          (void)giga_cage_enabled;
+          // Set card(s) for this quarantined object.
+          QuarantineCardTable::GetFrom(ptr).Quarantine(ptr, size);
 #endif
         });
   });
@@ -641,9 +623,6 @@ class PCScanScanLoop final : public ScanLoop<PCScanScanLoop> {
   size_t quarantine_size() const { return quarantine_size_; }
 
  private:
-  ALWAYS_INLINE bool WithCage() const {
-    return features::IsPartitionAllocGigaCageEnabled();
-  }
   ALWAYS_INLINE uintptr_t CageBase() const { return giga_cage_base_; }
   ALWAYS_INLINE static constexpr uintptr_t CageMask() {
 #if defined(PA_HAS_64_BITS_POINTERS)
@@ -656,12 +635,6 @@ class PCScanScanLoop final : public ScanLoop<PCScanScanLoop> {
   ALWAYS_INLINE void CheckPointer(uintptr_t maybe_ptr) {
     quarantine_size_ +=
         task_.TryMarkObjectInNormalBuckets<PCScanTask::GigaCageLookupPolicy>(
-            maybe_ptr);
-  }
-
-  ALWAYS_INLINE void CheckPointerNoGigaCage(uintptr_t maybe_ptr) {
-    quarantine_size_ +=
-        task_.TryMarkObjectInNormalBuckets<PCScanTask::NoGigaCageLookupPolicy>(
             maybe_ptr);
   }
 
@@ -759,7 +732,6 @@ void PCScanTask::ScanPartitions() {
 void PCScanTask::SweepQuarantine() {
   using AccessType = QuarantineBitmap::AccessType;
 
-  const bool giga_cage_enabled = features::IsPartitionAllocGigaCageEnabled();
   size_t swept_bytes = 0;
 
   for (uintptr_t super_page : snapshot_.quarantinable_super_pages()) {
@@ -768,23 +740,19 @@ void PCScanTask::SweepQuarantine() {
         reinterpret_cast<char*>(super_page));
     auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page));
     bitmap->template IterateAndClear<AccessType::kNonAtomic>(
-        [root, giga_cage_enabled, &swept_bytes](uintptr_t ptr) {
+        [root, &swept_bytes](uintptr_t ptr) {
           auto* object = reinterpret_cast<void*>(ptr);
           auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
           swept_bytes += slot_span->bucket->slot_size;
           root->FreeNoHooksImmediate(object, slot_span);
 #if defined(PA_HAS_64_BITS_POINTERS)
-          if (giga_cage_enabled) {
-            // Reset card(s) for this quarantined object. Please note that the
-            // cards may still contain quarantined objects (which were promoted
-            // in this scan cycle), but
-            // ClearQuarantinedObjectsAndFilterSuperPages() will set them again
-            // in the next PCScan cycle.
-            QuarantineCardTable::GetFrom(ptr).Unquarantine(
-                ptr, slot_span->GetUsableSize(root));
-          }
-#else
-          (void)giga_cage_enabled;
+          // Reset card(s) for this quarantined object. Please note that the
+          // cards may still contain quarantined objects (which were promoted
+          // in this scan cycle), but
+          // ClearQuarantinedObjectsAndFilterSuperPages() will set them again
+          // in the next PCScan cycle.
+          QuarantineCardTable::GetFrom(ptr).Unquarantine(
+              ptr, slot_span->GetUsableSize(root));
 #endif
         });
   }

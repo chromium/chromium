@@ -17,14 +17,11 @@ namespace internal {
 
 namespace {
 
-enum class Cage { kOn, kOff };
-
 class TestScanLoop final : public ScanLoop<TestScanLoop> {
   friend class ScanLoop<TestScanLoop>;
 
  public:
-  TestScanLoop(SimdSupport ss, Cage cage)
-      : ScanLoop(ss), with_cage_(cage == Cage::kOn) {}
+  TestScanLoop(SimdSupport ss) : ScanLoop(ss) {}
 
   size_t visited() const { return visited_; }
 
@@ -34,15 +31,12 @@ class TestScanLoop final : public ScanLoop<TestScanLoop> {
   static constexpr uintptr_t kCageMask = 0xffffff0000000000;
   static constexpr uintptr_t kBasePtr = 0x1234560000000000;
 
-  bool WithCage() const { return with_cage_; }
   uintptr_t CageBase() const { return kBasePtr; }
   static constexpr uintptr_t CageMask() { return kCageMask; }
 
   void CheckPointer(uintptr_t maybe_ptr) { ++visited_; }
-  void CheckPointerNoGigaCage(uintptr_t maybe_ptr) { ++visited_; }
 
   size_t visited_ = 0;
-  bool with_cage_ = false;
 };
 
 static constexpr uintptr_t kValidPtr = 0x123456789abcdef0;
@@ -67,44 +61,23 @@ void TestOnRangeWithAlignment(TestScanLoop& sl,
 
 TEST(ScanLoopTest, UnvectorizedWithCage) {
   {
-    TestScanLoop sl(SimdSupport::kUnvectorized, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kUnvectorized);
     TestOnRangeWithAlignment<8>(sl, 0u, kInvalidPtr, kInvalidPtr, kInvalidPtr);
   }
   {
-    TestScanLoop sl(SimdSupport::kUnvectorized, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kUnvectorized);
     TestOnRangeWithAlignment<8>(sl, 1u, kValidPtr, kInvalidPtr, kInvalidPtr);
   }
   {
-    TestScanLoop sl(SimdSupport::kUnvectorized, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kUnvectorized);
     TestOnRangeWithAlignment<8>(sl, 2u, kValidPtr, kValidPtr, kInvalidPtr);
   }
   {
     // Make sure zeros are skipped.
-    TestScanLoop sl(SimdSupport::kUnvectorized, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kUnvectorized);
     TestOnRangeWithAlignment<8>(sl, 1u, kValidPtr, kInvalidPtr, kZeroPtr);
   }
 }
-
-TEST(ScanLoopTest, UnvectorizedNoCage) {
-  // Without the cage all non-zero pointers are visited.
-  {
-    TestScanLoop sl(SimdSupport::kUnvectorized, Cage::kOff);
-    TestOnRangeWithAlignment<8>(sl, 3u, kInvalidPtr, kInvalidPtr, kInvalidPtr);
-  }
-  {
-    TestScanLoop sl(SimdSupport::kUnvectorized, Cage::kOff);
-    TestOnRangeWithAlignment<8>(sl, 3u, kValidPtr, kInvalidPtr, kInvalidPtr);
-  }
-  {
-    // Make sure zeros are skipped.
-    TestScanLoop sl(SimdSupport::kUnvectorized, Cage::kOff);
-    TestOnRangeWithAlignment<8>(sl, 2u, kValidPtr, kInvalidPtr, kZeroPtr);
-  }
-}
-
-// The vectorized tests try to test the part that can be scanned with vectorized
-// instructions (aligned by the vector size) and also the residual part, which
-// is scanned wwithout vectorization.
 
 #if defined(ARCH_CPU_X86_64)
 TEST(ScanLoopTest, VectorizedSSE4) {
@@ -112,19 +85,19 @@ TEST(ScanLoopTest, VectorizedSSE4) {
   if (!cpu.has_sse41())
     return;
   {
-    TestScanLoop sl(SimdSupport::kSSE41, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kSSE41);
     TestOnRangeWithAlignment<16>(sl, 0u, kInvalidPtr, kInvalidPtr, kInvalidPtr);
   }
   {
-    TestScanLoop sl(SimdSupport::kSSE41, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kSSE41);
     TestOnRangeWithAlignment<16>(sl, 1u, kValidPtr, kInvalidPtr, kInvalidPtr);
   }
   {
-    TestScanLoop sl(SimdSupport::kSSE41, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kSSE41);
     TestOnRangeWithAlignment<16>(sl, 2u, kValidPtr, kValidPtr, kInvalidPtr);
   }
   {
-    TestScanLoop sl(SimdSupport::kSSE41, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kSSE41);
     TestOnRangeWithAlignment<16>(sl, 3u, kValidPtr, kValidPtr, kValidPtr);
   }
 }
@@ -134,33 +107,33 @@ TEST(ScanLoopTest, VectorizedAVX2) {
   if (!cpu.has_avx2())
     return;
   {
-    TestScanLoop sl(SimdSupport::kAVX2, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kAVX2);
     TestOnRangeWithAlignment<32>(sl, 0u, kInvalidPtr, kInvalidPtr, kInvalidPtr,
                                  kInvalidPtr, kInvalidPtr);
   }
   {
-    TestScanLoop sl(SimdSupport::kAVX2, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kAVX2);
     TestOnRangeWithAlignment<32>(sl, 1u, kValidPtr, kInvalidPtr, kInvalidPtr,
                                  kInvalidPtr, kInvalidPtr);
   }
   {
-    TestScanLoop sl(SimdSupport::kAVX2, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kAVX2);
     TestOnRangeWithAlignment<32>(sl, 2u, kValidPtr, kValidPtr, kInvalidPtr,
                                  kInvalidPtr, kInvalidPtr);
   }
   {
-    TestScanLoop sl(SimdSupport::kAVX2, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kAVX2);
     TestOnRangeWithAlignment<32>(sl, 3u, kValidPtr, kValidPtr, kValidPtr,
                                  kInvalidPtr, kInvalidPtr);
   }
   {
-    TestScanLoop sl(SimdSupport::kAVX2, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kAVX2);
     TestOnRangeWithAlignment<32>(sl, 4u, kValidPtr, kValidPtr, kValidPtr,
                                  kValidPtr, kInvalidPtr);
   }
   {
     // Check that the residual pointer is also visited.
-    TestScanLoop sl(SimdSupport::kAVX2, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kAVX2);
     TestOnRangeWithAlignment<32>(sl, 5u, kValidPtr, kValidPtr, kValidPtr,
                                  kValidPtr, kValidPtr);
   }
@@ -170,24 +143,24 @@ TEST(ScanLoopTest, VectorizedAVX2) {
 #if defined(PA_STARSCAN_NEON_SUPPORTED)
 TEST(ScanLoopTest, VectorizedNEON) {
   {
-    TestScanLoop sl(SimdSupport::kNEON, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kNEON);
     TestOnRangeWithAlignment<16>(sl, 0u, kInvalidPtr, kInvalidPtr, kInvalidPtr);
   }
   {
-    TestScanLoop sl(SimdSupport::kNEON, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kNEON);
     TestOnRangeWithAlignment<16>(sl, 1u, kValidPtr, kInvalidPtr, kInvalidPtr);
   }
   {
-    TestScanLoop sl(SimdSupport::kNEON, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kNEON);
     TestOnRangeWithAlignment<16>(sl, 2u, kValidPtr, kValidPtr, kInvalidPtr);
   }
   {
-    TestScanLoop sl(SimdSupport::kNEON, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kNEON);
     TestOnRangeWithAlignment<16>(sl, 3u, kValidPtr, kValidPtr, kValidPtr);
   }
   {
     // Don't visit zeroes.
-    TestScanLoop sl(SimdSupport::kNEON, Cage::kOn);
+    TestScanLoop sl(SimdSupport::kNEON);
     TestOnRangeWithAlignment<16>(sl, 1u, kInvalidPtr, kValidPtr, kZeroPtr);
   }
 }

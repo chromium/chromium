@@ -695,11 +695,6 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "BackupRefPtrNoEnterprise", group_name);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "PartitionAllocGigaCageSynthetic",
-      base::features::IsPartitionAllocGigaCageEnabled() ? "Enabled"
-                                                        : "Disabled");
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {

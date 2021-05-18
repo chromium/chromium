@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/logging.h"
 #include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
@@ -732,10 +731,6 @@ static constexpr PartitionOptions kOpts = {
     PartitionOptions::Cookies::kAllowed, PartitionOptions::RefCount::kAllowed};
 
 TEST(BackupRefPtrImpl, Basic) {
-  // This test works only if GigaCage is enabled. Bail out otherwise.
-  if (!features::IsPartitionAllocGigaCageEnabled())
-    return;
-
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
   // new/delete once PartitionAlloc Everywhere is fully enabled.
   PartitionAllocGlobalInit(HandleOOM);
@@ -772,10 +767,6 @@ TEST(BackupRefPtrImpl, Basic) {
 }
 
 TEST(BackupRefPtrImpl, ZeroSized) {
-  // This test works only if GigaCage is enabled. Bail out otherwise.
-  if (!features::IsPartitionAllocGigaCageEnabled())
-    return;
-
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
   // new/delete once PartitionAlloc Everywhere is fully enabled.
   PartitionAllocGlobalInit(HandleOOM);
@@ -792,10 +783,6 @@ TEST(BackupRefPtrImpl, ZeroSized) {
 }
 
 TEST(BackupRefPtrImpl, EndPointer) {
-  // This test works only if GigaCage is enabled. Bail out otherwise.
-  if (!features::IsPartitionAllocGigaCageEnabled())
-    return;
-
   // This test requires a fresh partition with an empty free list.
   PartitionAllocGlobalInit(HandleOOM);
   PartitionAllocator<ThreadSafe> allocator;
@@ -832,10 +819,6 @@ TEST(BackupRefPtrImpl, EndPointer) {
 
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 TEST(BackupRefPtrImpl, ReinterpretCast) {
-  // This test works only if GigaCage is enabled. Bail out otherwise.
-  if (!features::IsPartitionAllocGigaCageEnabled())
-    return;
-
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
   // new/delete once PartitionAlloc Everywhere is fully enabled.
   PartitionAllocGlobalInit(HandleOOM);

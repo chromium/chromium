@@ -405,13 +405,11 @@ struct BASE_EXPORT PartitionRoot {
     // limit before calling. This also guards against integer overflow in the
     // calculation here.
     PA_DCHECK(raw_size <= MaxDirectMapped());
-    // Align to allocation granularity. However, when 64-bit GigaCage is used,
-    // the granularity is super page size.
+    // Align to allocation granularity. However, in 64-bit mode, the granularity
+    // is super page size.
     size_t alignment = PageAllocationGranularity();
 #if defined(PA_HAS_64_BITS_POINTERS)
-    if (features::IsPartitionAllocGigaCageEnabled()) {
-      alignment = kSuperPageSize;
-    }
+    alignment = kSuperPageSize;
 #endif
     return bits::AlignUp(raw_size + GetDirectMapMetadataAndGuardPagesSize(),
                          alignment);
@@ -442,11 +440,10 @@ struct BASE_EXPORT PartitionRoot {
     // DCHECK_IS_ON(), but we prefer not to change codepaths between Release and
     // Debug.
     //
-    // In theory, this can be further refined using run-time checks. No need
-    // for this adjustment if |!extras_offset || (extras_size - extras_offset)|,
-    // or IsPartitionAllocGigaCageEnabled() is false (because BackupRefPtr is
-    // effectively disabled without GigaCage), but we prefer not to add more
-    // checks, as this function may be called on hot paths.
+    // In theory, this can be further refined using run-time checks. No need for
+    // this adjustment if |!extras_offset || (extras_size - extras_offset)|, but
+    // we prefer not to add more checks, as this function may be called on hot
+    // paths.
     //
     // We use this technique in another situation. When putting refcount in the
     // previous slot, the previous slot may be free. In this case, the slot
@@ -984,8 +981,6 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   // forward allocations we don't own to the system malloc() implementation in
   // these rare cases, assuming that some remain.
 #if defined(OS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  // GigaCage is always enabled on Android and is needed for PA_CHECK below.
-  PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
   PA_CHECK(IsManagedByPartitionAlloc(ptr));
 #endif
 
@@ -1072,7 +1067,6 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (allow_ref_count) {
-    PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
     if (LIKELY(!IsDirectMappedBucket(slot_span->bucket))) {
       auto* ref_count = internal::PartitionRefCountPointer(slot_start);
       // If there are no more references to the allocation, it can be freed
@@ -1476,7 +1470,6 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   bool is_direct_mapped = raw_size > kMaxBucketed;
   // LIKELY: Direct mapped allocations are large and rare.
   if (allow_ref_count && LIKELY(!is_direct_mapped)) {
-    PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
     new (internal::PartitionRefCountPointer(slot_start))
         internal::PartitionRefCount();
   }

@@ -477,18 +477,13 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
 
 #if defined(PA_HAS_64_BITS_POINTERS)
     // Reserve address space for partition alloc.
-    if (features::IsPartitionAllocGigaCageEnabled())
-      internal::PartitionAddressSpace::Init();
+    internal::PartitionAddressSpace::Init();
 #endif
 
     allow_aligned_alloc =
         opts.aligned_alloc == PartitionOptions::AlignedAlloc::kAllowed;
     allow_cookies = opts.cookies == PartitionOptions::Cookies::kAllowed;
-    // Allow ref-count if it's expressly allowed *and* GigaCage is enabled.
-    // Without GigaCage it'd be unused, thus wasteful.
-    allow_ref_count =
-        (opts.ref_count == PartitionOptions::RefCount::kAllowed) &&
-        features::IsPartitionAllocGigaCageEnabled();
+    allow_ref_count = opts.ref_count == PartitionOptions::RefCount::kAllowed;
 
     // Cookies and ref-count mess up alignment needed for AlignedAlloc, making
     // those options incompatible. However, ref-count is acceptable in the
@@ -734,7 +729,6 @@ bool PartitionRoot<thread_safe>::TryReallocInPlace(void* ptr,
     void* slot_start = AdjustPointerForExtrasSubtract(ptr);
     internal::PartitionRefCount* old_ref_count;
     if (allow_ref_count) {
-      PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
       old_ref_count = internal::PartitionRefCountPointer(slot_start);
     }
 #endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)

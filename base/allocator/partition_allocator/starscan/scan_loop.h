@@ -66,15 +66,12 @@ class ScanLoop {
 #endif
 
   void RunUnvectorized(uintptr_t*, uintptr_t*);
-  void RunUnvectorizedNoCage(uintptr_t*, uintptr_t*);
 
   SimdSupport simd_type_;
 };
 
 template <typename Derived>
 void ScanLoop<Derived>::Run(uintptr_t* begin, uintptr_t* end) {
-  if (UNLIKELY(!derived().WithCage()))
-    return RunUnvectorizedNoCage(begin, end);
 // We allow vectorization only for 64bit since they require support of the
 // 64bit cage, and only for x86 because a special instruction set is required.
 #if defined(ARCH_CPU_X86_64)
@@ -106,18 +103,6 @@ void ScanLoop<Derived>::RunUnvectorized(uintptr_t* begin, uintptr_t* end) {
       continue;
 #endif
     derived().CheckPointer(maybe_ptr);
-  }
-}
-
-template <typename Derived>
-void ScanLoop<Derived>::RunUnvectorizedNoCage(uintptr_t* begin,
-                                              uintptr_t* end) {
-  PA_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % sizeof(uintptr_t)));
-  for (; begin < end; ++begin) {
-    const uintptr_t maybe_ptr = *begin;
-    if (!maybe_ptr)
-      continue;
-    derived().CheckPointerNoGigaCage(maybe_ptr);
   }
 }
 

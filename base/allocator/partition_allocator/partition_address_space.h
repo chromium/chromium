@@ -151,17 +151,10 @@ class BASE_EXPORT PartitionAddressSpace {
 };
 
 ALWAYS_INLINE internal::pool_handle GetNonBRPPool() {
-  // This file is included from checked_ptr.h. This will result in a cycle if it
-  // includes partition_alloc_features.h where IsPartitionAllocGigaCageEnabled
-  // resides, because it includes Finch headers which may include checked_ptr.h.
-  // TODO(bartekn): Uncomment once Finch is no longer used there.
-  // PA_DCHECK(IsPartitionAllocGigaCageEnabled());
   return PartitionAddressSpace::GetNonBRPPool();
 }
 
 ALWAYS_INLINE internal::pool_handle GetBRPPool() {
-  // TODO(bartekn): Uncomment once Finch is no longer used there (see above).
-  // PA_DCHECK(IsPartitionAllocGigaCageEnabled());
   return PartitionAddressSpace::GetBRPPool();
 }
 

@@ -98,17 +98,11 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     PA_DCHECK(slot_size <= map_size);
 
     char* ptr = nullptr;
-    // Allocate from GigaCage, if enabled. In this case, use non-BRP pool,
-    // because BackupRefPtr isn't supported in direct maps.
-    const bool with_giga_cage = features::IsPartitionAllocGigaCageEnabled();
-    if (with_giga_cage) {
-      ptr = internal::AddressPoolManager::GetInstance()->Reserve(
-          GetNonBRPPool(), nullptr, reserved_size);
-    } else {
-      ptr = reinterpret_cast<char*>(
-          AllocPages(nullptr, reserved_size, kSuperPageAlignment,
-                     PageInaccessible, PageTag::kPartitionAlloc));
-    }
+    // Allocate from GigaCage, from the non-BRP pool, because BackupRefPtr isn't
+    // supported in direct maps.
+    ptr = internal::AddressPoolManager::GetInstance()->Reserve(
+        GetNonBRPPool(), nullptr, reserved_size);
+
     if (UNLIKELY(!ptr)) {
       if (return_null)
         return nullptr;
@@ -145,12 +139,8 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
         IMMEDIATE_CRASH();  // Not required, kept as documentation.
       }
 
-      if (with_giga_cage) {
-        internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-            GetNonBRPPool(), ptr, reserved_size);
-      } else {
-        FreePages(ptr, reserved_size);
-      }
+      internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+          GetNonBRPPool(), ptr, reserved_size);
       return nullptr;
     }
 
@@ -346,57 +336,51 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   // architectures.
   char* requested_address = root->next_super_page;
   char* super_page = nullptr;
-  // Allocate from GigaCage, if enabled. Route to the appropriate GigaCage pool
-  // based on BackupRefPtr support.
-  if (features::IsPartitionAllocGigaCageEnabled()) {
-    super_page = AddressPoolManager::GetInstance()->Reserve(
-        root->UseBRPPool() ? GetBRPPool() : GetNonBRPPool(), requested_address,
-        kSuperPageSize);
+  // Allocate from GigaCage. Route to the appropriate GigaCage pool based on
+  // BackupRefPtr support.
+  super_page = AddressPoolManager::GetInstance()->Reserve(
+      root->UseBRPPool() ? GetBRPPool() : GetNonBRPPool(), requested_address,
+      kSuperPageSize);
 
 #if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
-    if (root->UseBRPPool()) {
-      constexpr int kMaxRandomAddressTries = 10;
-      for (int i = 0; i < kMaxRandomAddressTries; ++i) {
-        if (!super_page ||
-            AddressPoolManagerBitmap::IsAllowedSuperPageForBRPPool(super_page))
-          break;
-        AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-            GetBRPPool(), super_page, kSuperPageSize);
-        super_page = AddressPoolManager::GetInstance()->Reserve(
-            GetBRPPool(), nullptr, kSuperPageSize);
-      }
-
-      // If the allocation attempt succeeds, we will break out of the following
-      // loop immediately.
-      //
-      // Last resort: sequentially scan the whole 32-bit address space. The
-      // number of blocked super-pages should be very small, so we expect to
-      // practically never need to run the following code. Note that it may fail
-      // to find an available page, e.g., when it becomes available after the
-      // scan passes through it, but we accept the risk.
-      for (uintptr_t ptr = kSuperPageSize; ptr != 0; ptr += kSuperPageSize) {
-        if (!super_page ||
-            AddressPoolManagerBitmap::IsAllowedSuperPageForBRPPool(super_page))
-          break;
-        AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-            GetBRPPool(), super_page, kSuperPageSize);
-        super_page = AddressPoolManager::GetInstance()->Reserve(
-            GetBRPPool(), reinterpret_cast<void*>(ptr), kSuperPageSize);
-      }
-
-      if (super_page &&
-          !AddressPoolManagerBitmap::IsAllowedSuperPageForBRPPool(super_page)) {
-        AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-            GetBRPPool(), super_page, kSuperPageSize);
-        super_page = nullptr;
-      }
+  if (root->UseBRPPool()) {
+    constexpr int kMaxRandomAddressTries = 10;
+    for (int i = 0; i < kMaxRandomAddressTries; ++i) {
+      if (!super_page ||
+          AddressPoolManagerBitmap::IsAllowedSuperPageForBRPPool(super_page))
+        break;
+      AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+          GetBRPPool(), super_page, kSuperPageSize);
+      super_page = AddressPoolManager::GetInstance()->Reserve(
+          GetBRPPool(), nullptr, kSuperPageSize);
     }
-#endif
-  } else {
-    super_page = reinterpret_cast<char*>(
-        AllocPages(requested_address, kSuperPageSize, kSuperPageAlignment,
-                   PageInaccessible, PageTag::kPartitionAlloc));
+
+    // If the allocation attempt succeeds, we will break out of the following
+    // loop immediately.
+    //
+    // Last resort: sequentially scan the whole 32-bit address space. The number
+    // of blocked super-pages should be very small, so we expect to practically
+    // never need to run the following code. Note that it may fail to find an
+    // available page, e.g., when it becomes available after the scan passes
+    // through it, but we accept the risk.
+    for (uintptr_t ptr = kSuperPageSize; ptr != 0; ptr += kSuperPageSize) {
+      if (!super_page ||
+          AddressPoolManagerBitmap::IsAllowedSuperPageForBRPPool(super_page))
+        break;
+      AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+          GetBRPPool(), super_page, kSuperPageSize);
+      super_page = AddressPoolManager::GetInstance()->Reserve(
+          GetBRPPool(), reinterpret_cast<void*>(ptr), kSuperPageSize);
+    }
+
+    if (super_page &&
+        !AddressPoolManagerBitmap::IsAllowedSuperPageForBRPPool(super_page)) {
+      AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+          GetBRPPool(), super_page, kSuperPageSize);
+      super_page = nullptr;
+    }
   }
+#endif
   if (UNLIKELY(!super_page))
     return nullptr;
 

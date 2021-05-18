@@ -894,11 +894,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_LT(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-  if (features::IsPartitionAllocGigaCageEnabled()) {
-    for (size_t offset = 0; offset < requested_size; ++offset) {
-      EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-                slot_start);
-    }
+  for (size_t offset = 0; offset < requested_size; ++offset) {
+    EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
+              slot_start);
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   allocator.root()->Free(ptr);
@@ -915,11 +913,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_EQ(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-  if (features::IsPartitionAllocGigaCageEnabled()) {
-    for (size_t offset = 0; offset < requested_size; offset += 877) {
-      EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-                slot_start);
-    }
+  for (size_t offset = 0; offset < requested_size; offset += 877) {
+    EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
+              slot_start);
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   allocator.root()->Free(ptr);
@@ -941,11 +937,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_EQ(requested_size + SystemPageSize(), actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-  if (features::IsPartitionAllocGigaCageEnabled()) {
-    for (size_t offset = 0; offset < requested_size; offset += 4999) {
-      EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-                slot_start);
-    }
+  for (size_t offset = 0; offset < requested_size; offset += 4999) {
+    EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
+              slot_start);
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -960,11 +954,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_EQ(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-  if (features::IsPartitionAllocGigaCageEnabled()) {
-    for (size_t offset = 0; offset < requested_size; offset += 4999) {
-      EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-                slot_start);
-    }
+  for (size_t offset = 0; offset < requested_size; offset += 4999) {
+    EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
+              slot_start);
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -998,9 +990,6 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 TEST_F(PartitionAllocTest, GetSlotStartMultiplePages) {
-  if (!features::IsPartitionAllocGigaCageEnabled())
-    return;
-
   const size_t real_size = 80;
   const size_t requested_size = real_size - kExtraAllocSize;
   // Double check we don't end up with 0 or negative size.
@@ -2883,8 +2872,7 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
         PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize();
     size_t alignment = PageAllocationGranularity();
 #if defined(PA_HAS_64_BITS_POINTERS)
-    if (features::IsPartitionAllocGigaCageEnabled())
-      alignment = kSuperPageSize;
+    alignment = kSuperPageSize;
 #endif
     size_t expected_direct_map_size =
         bits::AlignUp(aligned_size + surrounding_pages_size, alignment);

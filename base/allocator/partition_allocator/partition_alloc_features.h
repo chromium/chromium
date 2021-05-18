@@ -31,11 +31,6 @@ extern const BASE_EXPORT Feature kPartitionAllocPCScanStackScanning;
 
 extern const BASE_EXPORT Feature kPartitionAllocLazyCommit;
 
-// TODO(bartekn): Clean up.
-ALWAYS_INLINE bool IsPartitionAllocGigaCageEnabled() {
-  return true;
-}
-
 }  // namespace features
 }  // namespace base
 
