@@ -147,6 +147,9 @@ class ExtensionUninstallDialog
   // The implementations of this method are platform-specific.
   virtual void Show() = 0;
 
+  // Forcefully closes the dialog view.
+  virtual void Close() = 0;
+
   // Resets to nullptr when the Profile is deleted.
   Profile* profile_;
 
@@ -176,6 +179,10 @@ class ExtensionUninstallDialog
 
   // True if a checkbox for removing associated data is shown.
   bool show_remove_data_checkbox_ = false;
+
+  // Whether the extension was uninstalled before the user closed the dialog
+  // (e.g. by another source).
+  bool extension_uninstalled_early_ = false;
 
   UninstallReason uninstall_reason_ = UNINSTALL_REASON_FOR_TESTING;
 
