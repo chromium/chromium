@@ -333,6 +333,7 @@ blink_core_sources_layout = [
   "ng/grid/ng_grid_track_collection.cc",
   "ng/grid/ng_grid_track_collection.h",
   "ng/inline/empty_offset_mapping_builder.h",
+  "ng/inline/layout_ng_br.h",
   "ng/inline/layout_ng_text.h",
   "ng/inline/layout_ng_text_fragment.h",
   "ng/inline/ng_abstract_inline_text_box.cc",

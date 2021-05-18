@@ -1341,6 +1341,7 @@ source_set("unit_tests") {
     "layout/layout_list_marker_test.cc",
     "layout/layout_media_test.cc",
     "layout/layout_multi_column_flow_thread_test.cc",
+    "layout/layout_object_factory_test.cc",
     "layout/layout_object_test.cc",
     "layout/layout_progress_test.cc",
     "layout/layout_replaced_test.cc",

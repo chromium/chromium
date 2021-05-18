@@ -27,7 +27,7 @@
 // support for CSS2 :before and :after pseudo elements.
 namespace blink {
 
-class LayoutBR final : public LayoutText {
+class LayoutBR : public LayoutText {
  public:
   explicit LayoutBR(Node*);
   ~LayoutBR() override;

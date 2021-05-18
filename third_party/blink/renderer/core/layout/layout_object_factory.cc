@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_br.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
@@ -351,6 +352,10 @@ LayoutObject* LayoutObjectFactory::CreateSVGText(Node& node,
   const bool disable_ng_for_type = !RuntimeEnabledFeatures::SVGTextNGEnabled();
   return CreateObject<LayoutBlockFlow, LayoutNGSVGText, LayoutSVGText>(
       node, legacy, disable_ng_for_type);
+}
+
+LayoutObject* LayoutObjectFactory::CreateBR(Node* node, LegacyLayout legacy) {
+  return CreateObject<LayoutObject, LayoutNGBR, LayoutBR>(*node, legacy);
 }
 
 LayoutBox* LayoutObjectFactory::CreateAnonymousTableWithParent(

@@ -106,7 +106,9 @@ class LayoutObjectFactory {
                                      const ComputedStyle& style,
                                      LegacyLayout legacy);
 
-  // Anonoymous creation methods
+  static LayoutObject* CreateBR(Node*, LegacyLayout);
+
+  // Anonymous creation methods
 
   // |child_forces_legacy| true if creating parents boxes for legacy child.
   // Table must match child's type.

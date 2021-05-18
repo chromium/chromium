@@ -25,7 +25,8 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/layout/layout_br.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 
 namespace blink {
 
@@ -63,7 +64,8 @@ void HTMLBRElement::CollectStyleForPresentationAttribute(
 LayoutObject* HTMLBRElement::CreateLayoutObject(const ComputedStyle& style,
                                                 LegacyLayout legacy) {
   if (style.ContentBehavesAsNormal())
-    return new LayoutBR(this);
+    return LayoutObjectFactory::CreateBR(this, legacy);
+
   return LayoutObject::CreateObject(this, style, legacy);
 }
 
