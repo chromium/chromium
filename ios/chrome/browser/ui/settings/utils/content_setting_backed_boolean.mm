@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/utils/content_setting_backed_boolean.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/content_settings/core/browser/content_settings_details.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -32,8 +32,9 @@
 
 namespace {
 
-typedef ScopedObserver<HostContentSettingsMap, content_settings::Observer>
-    ContentSettingsObserver;
+typedef base::ScopedObservation<HostContentSettingsMap,
+                                content_settings::Observer>
+    ContentSettingsObseration;
 
 class ContentSettingsObserverBridge : public content_settings::Observer {
  public:
@@ -84,7 +85,7 @@ void ContentSettingsObserverBridge::OnContentSettingChanged(
   ContentSettingsType _settingID;
   scoped_refptr<HostContentSettingsMap> _settingsMap;
   std::unique_ptr<ContentSettingsObserverBridge> _adaptor;
-  std::unique_ptr<ContentSettingsObserver> _content_settings_observer;
+  std::unique_ptr<ContentSettingsObseration> _content_settings_observer;
 }
 
 @synthesize settingID = _settingID;
@@ -103,8 +104,8 @@ void ContentSettingsObserverBridge::OnContentSettingChanged(
     // Listen for changes to the content setting.
     _adaptor.reset(new ContentSettingsObserverBridge(self));
     _content_settings_observer.reset(
-        new ContentSettingsObserver(_adaptor.get()));
-    _content_settings_observer->Add(settingsMap);
+        new ContentSettingsObseration(_adaptor.get()));
+    _content_settings_observer->Observe(settingsMap);
   }
   return self;
 }
