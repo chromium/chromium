@@ -17,11 +17,17 @@ let wrapper = null;
 let hovered = null;
 
 /**
- * Positions the tooltip wrapper over the hovered element.
+ * Name of event triggered for positioning tooltip.
+ * @const {string}
  */
-function position() {
+export const TOOLTIP_POSITION_EVENT_NAME = 'tooltipposition';
+
+/**
+ * Positions tooltip relative to UI.
+ * @param {!DOMRectReadOnly} rect UI's reference region.
+ */
+export function position(rect) {
   const [edgeMargin, elementMargin] = [5, 8];
-  const rect = hovered.getBoundingClientRect();
   let tooltipTop = rect.top - wrapper.offsetHeight - elementMargin;
   if (tooltipTop < edgeMargin) {
     tooltipTop = rect.bottom + elementMargin;
@@ -29,7 +35,7 @@ function position() {
   wrapper.style.top = tooltipTop + 'px';
 
   // Center over the hovered element but avoid touching edges.
-  const hoveredCenter = rect.left + hovered.offsetWidth / 2;
+  const hoveredCenter = rect.left + rect.width / 2;
   const left = Math.min(
       Math.max(hoveredCenter - wrapper.clientWidth / 2, edgeMargin),
       document.body.offsetWidth - wrapper.offsetWidth - edgeMargin);
@@ -64,7 +70,12 @@ function show(element) {
   }
   wrapper.textContent = message;
   hovered = element;
-  position();
+  const positionEvent = new CustomEvent(
+      TOOLTIP_POSITION_EVENT_NAME, {cancelable: true, target: hovered});
+  const doDefault = hovered.dispatchEvent(positionEvent);
+  if (doDefault) {
+    position(hovered.getBoundingClientRect());
+  }
   wrapper.classList.add('visible');
 }
 

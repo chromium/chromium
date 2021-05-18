@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 import {AsyncJobQueue} from '../async_job_queue.js';
+import {assertInstanceof} from '../chrome_util.js';
 import * as dom from '../dom.js';
 import * as focusRing from '../focus_ring.js';
 import * as metrics from '../metrics.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as nav from '../nav.js';
 import * as state from '../state.js';
+import * as tooltip from '../tooltip.js';
 import {ViewName} from '../type.js';
 
 // eslint-disable-next-line no-unused-vars
@@ -211,6 +213,26 @@ export class PTZPanel extends View {
         nav.close(this.name);
       }
     });
+    [this.panRight_, this.panLeft_, this.tiltUp_, this.tiltDown_].forEach(
+        (btn) => {
+          btn.addEventListener(tooltip.TOOLTIP_POSITION_EVENT_NAME, (e) => {
+            const target = assertInstanceof(e.target, HTMLElement);
+            const pRect = target.offsetParent.getBoundingClientRect();
+            const style = getComputedStyle(target, '::before');
+            const getStyleValue = (attr) => {
+              const px = style.getPropertyValue(attr);
+              return Number(px.replace(/^([\d.]+)px$/, '$1'));
+            };
+            const offsetX = getStyleValue('left');
+            const offsetY = getStyleValue('top');
+            const width = getStyleValue('width');
+            const height = getStyleValue('height');
+            tooltip.position(new DOMRectReadOnly(
+                /* x */ pRect.left + offsetX, /* y */ pRect.top + offsetY,
+                width, height));
+            e.preventDefault();
+          });
+        });
   }
 
   /**
