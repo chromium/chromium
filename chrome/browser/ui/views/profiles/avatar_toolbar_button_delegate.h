@@ -18,6 +18,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
 class Profile;
@@ -133,7 +134,7 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
 
   // Caches the value of the last error so the class can detect when it changes
   // and notify |avatar_toolbar_button_|.
-  sync_ui_util::AvatarSyncErrorType last_avatar_error_;
+  absl::optional<sync_ui_util::AvatarSyncErrorType> last_avatar_error_;
 
   base::WeakPtrFactory<AvatarToolbarButtonDelegate> weak_ptr_factory_{this};
 

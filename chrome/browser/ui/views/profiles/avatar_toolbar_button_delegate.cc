@@ -183,8 +183,11 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
   }
 
   // Show any existing sync errors.
-  const sync_ui_util::AvatarSyncErrorType error =
+  const absl::optional<sync_ui_util::AvatarSyncErrorType> error =
       sync_ui_util::GetAvatarSyncErrorType(profile_);
+  if (!error)
+    return AvatarToolbarButton::State::kNormal;
+
   if (error == sync_ui_util::AUTH_ERROR &&
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_)) {
     return AvatarToolbarButton::State::kSyncPaused;
@@ -193,9 +196,7 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
   if (error == sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_PASSWORDS_ERROR)
     return AvatarToolbarButton::State::kPasswordsOnlySyncError;
 
-  return error == sync_ui_util::NO_SYNC_ERROR
-             ? AvatarToolbarButton::State::kNormal
-             : AvatarToolbarButton::State::kSyncError;
+  return AvatarToolbarButton::State::kSyncError;
 }
 
 void AvatarToolbarButtonDelegate::ShowHighlightAnimation() {
@@ -354,7 +355,7 @@ void AvatarToolbarButtonDelegate::OnExtendedAccountInfoRemoved(
 }
 
 void AvatarToolbarButtonDelegate::OnStateChanged(syncer::SyncService*) {
-  sync_ui_util::AvatarSyncErrorType error =
+  const absl::optional<sync_ui_util::AvatarSyncErrorType> error =
       sync_ui_util::GetAvatarSyncErrorType(profile_);
   if (last_avatar_error_ == error)
     return;

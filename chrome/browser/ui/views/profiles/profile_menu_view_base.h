@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
@@ -66,21 +67,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     kMaxValue = kCreateIncognitoShortcutButton,
   };
 
-  // TODO(crbug.com/1191411): Remove this enum and plumb the color ids directly.
-  enum class SyncInfoContainerBackgroundState {
-    kPaused,
-    kError,
-    kNoPrimaryAccount,
-  };
-
-  // TODO(crbug.com/1191411): Dismantle this struct, it doesn't cover all sync
-  // info cases.
-  struct SyncInfo {
-    int description_string_id;
-    int button_string_id;
-    SyncInfoContainerBackgroundState background_state;
-  };
-
   struct EditButtonParams {
     EditButtonParams(const gfx::VectorIcon* edit_icon,
                      const std::u16string& edit_tooltip_text,
@@ -136,13 +122,15 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       const ui::ThemedVectorIcon& avatar_header_art = ui::ThemedVectorIcon());
   // Displays the sync info section as a rounded rectangle with text on top and
   // a button on the bottom. Clicking the button triggers |action|.
-  // |sync_info.background_state| determines the rectangle's background color.
-  void BuildSyncInfoWithCallToAction(const SyncInfo& sync_info,
-                                     const base::RepeatingClosure& action,
-                                     bool show_badge);
+  void BuildSyncInfoWithCallToAction(
+      const std::u16string& description,
+      const std::u16string& button_text,
+      ui::NativeTheme::ColorId background_color_id,
+      const base::RepeatingClosure& action,
+      bool show_badge);
   // Displays the sync info section as a rectangle with text. Clicking the
   // rectangle triggers |action|.
-  void BuildSyncInfoWithoutCallToAction(int text_string_id,
+  void BuildSyncInfoWithoutCallToAction(const std::u16string& text,
                                         const base::RepeatingClosure& action);
   void AddShortcutFeatureButton(const gfx::VectorIcon& icon,
                                 const std::u16string& text,
@@ -193,7 +181,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   void FocusButtonOnKeyboardOpen();
 
   void BuildSyncInfoCallToActionBackground(
-      SyncInfoContainerBackgroundState background_state,
+      ui::NativeTheme::ColorId background_color_id,
       ui::NativeTheme* native_theme);
 
   // views::BubbleDialogDelegateView:

@@ -71,63 +71,61 @@ namespace {
 
 // Helpers --------------------------------------------------------------------
 
-// Most error cases get displayed the same way, only the button string changes.
-ProfileMenuViewBase::SyncInfo GetStandardSyncErrorInfo(int button_string_id) {
-  return {IDS_SYNC_ERROR_USER_MENU_TITLE, button_string_id,
-          ProfileMenuViewBase::SyncInfoContainerBackgroundState::kError};
-}
-
-ProfileMenuViewBase::SyncInfo GetSyncInfoForAvatarErrorType(
-    sync_ui_util::AvatarSyncErrorType error) {
+std::u16string GetSyncErrorButtonText(sync_ui_util::AvatarSyncErrorType error) {
   switch (error) {
-    case sync_ui_util::NO_SYNC_ERROR:
-      NOTREACHED();
-      // TODO(crbug.com/1191411): Convert NO_SYNC_ERROR to absl::nullopt. This
-      // case is treated differently in a few places in this file today, and
-      // will be even more in the future.
-      return {42, 42,
-              ProfileMenuViewBase::SyncInfoContainerBackgroundState::kError};
     case sync_ui_util::AUTH_ERROR:
-      // Sync paused. The user can reauth to resolve the signin error.
-      return {IDS_PROFILES_DICE_SYNC_PAUSED_TITLE,
-              IDS_SYNC_ERROR_USER_MENU_SIGNIN_BUTTON,
-              ProfileMenuViewBase::SyncInfoContainerBackgroundState::kPaused};
-    case sync_ui_util::MANAGED_USER_UNRECOVERABLE_ERROR:
-      // For a managed user, the user is directed to the signout confirmation
-      // dialogue in the settings page.
-      return GetStandardSyncErrorInfo(IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON);
     case sync_ui_util::UNRECOVERABLE_ERROR:
-      // For a non-managed user, we sign out on the user's behalf and prompt the
-      // user to sign in again.
-      return GetStandardSyncErrorInfo(
-          IDS_SYNC_ERROR_USER_MENU_SIGNIN_AGAIN_BUTTON);
+      // The user was signed out. Offer them to sign in again.
+      return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_SIGNIN_BUTTON);
+    case sync_ui_util::MANAGED_USER_UNRECOVERABLE_ERROR:
+      // As opposed to the corresponding error in an unmanaged account
+      // (sync_ui_util::UNRECOVERABLE_ERROR), sign-out hasn't happened here yet.
+      // The button directs to the sign-out confirmation dialog in settings.
+      return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON);
     case sync_ui_util::UPGRADE_CLIENT_ERROR:
-      return GetStandardSyncErrorInfo(IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON);
+      return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON);
     case sync_ui_util::PASSPHRASE_ERROR:
-      return GetStandardSyncErrorInfo(
+      return l10n_util::GetStringUTF16(
           IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON);
     case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_EVERYTHING_ERROR:
-      return GetStandardSyncErrorInfo(
-          IDS_SYNC_ERROR_USER_MENU_RETRIEVE_KEYS_BUTTON);
     case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_PASSWORDS_ERROR:
-      return {IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE,
-              IDS_SYNC_ERROR_USER_MENU_RETRIEVE_KEYS_BUTTON,
-              ProfileMenuViewBase::SyncInfoContainerBackgroundState::kError};
+      return l10n_util::GetStringUTF16(
+          IDS_SYNC_ERROR_USER_MENU_RETRIEVE_KEYS_BUTTON);
     case sync_ui_util::
         TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR:
-      return {
-          IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_USER_MENU_TITLE,
-          IDS_SYNC_ERROR_USER_MENU_RECOVERABILITY_BUTTON,
-          ProfileMenuViewBase::SyncInfoContainerBackgroundState::kError};
     case sync_ui_util::
         TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR:
-      return {
-          IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_TITLE,
-          IDS_SYNC_ERROR_USER_MENU_RECOVERABILITY_BUTTON,
-          ProfileMenuViewBase::SyncInfoContainerBackgroundState::kError};
+      return l10n_util::GetStringUTF16(
+          IDS_SYNC_ERROR_USER_MENU_RECOVERABILITY_BUTTON);
     case sync_ui_util::SETTINGS_UNCONFIRMED_ERROR:
-      return GetStandardSyncErrorInfo(
+      return l10n_util::GetStringUTF16(
           IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON);
+  }
+}
+
+std::u16string GetSyncErrorDescription(
+    sync_ui_util::AvatarSyncErrorType error) {
+  switch (error) {
+    case sync_ui_util::AUTH_ERROR:
+      return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PAUSED_TITLE);
+    case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_PASSWORDS_ERROR:
+      return l10n_util::GetStringUTF16(
+          IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE);
+    case sync_ui_util::
+        TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR:
+      return l10n_util::GetStringUTF16(
+          IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_TITLE);
+    case sync_ui_util::
+        TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR:
+      return l10n_util::GetStringUTF16(
+          IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_USER_MENU_TITLE);
+    case sync_ui_util::SETTINGS_UNCONFIRMED_ERROR:
+    case sync_ui_util::MANAGED_USER_UNRECOVERABLE_ERROR:
+    case sync_ui_util::UNRECOVERABLE_ERROR:
+    case sync_ui_util::UPGRADE_CLIENT_ERROR:
+    case sync_ui_util::PASSPHRASE_ERROR:
+    case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_EVERYTHING_ERROR:
+      return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
   }
 }
 
@@ -223,7 +221,6 @@ void ProfileMenuView::BuildMenu() {
 
 gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
   Profile* profile = browser()->profile();
-
   if (profile->IsOffTheRecord())
     return gfx::ImageSkia();
 
@@ -232,34 +229,20 @@ gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
     return ColoredImageForMenu(kSyncPausedCircleIcon, gfx::kGoogleGrey500);
   }
 
-  const gfx::VectorIcon* icon = nullptr;
-  ui::NativeTheme::ColorId color_id;
-  switch (sync_ui_util::GetAvatarSyncErrorType(profile)) {
-    case sync_ui_util::NO_SYNC_ERROR:
-      icon = &kSyncCircleIcon;
-      color_id = ui::NativeTheme::kColorId_AlertSeverityLow;
-      break;
-    case sync_ui_util::AUTH_ERROR:
-      icon = &kSyncPausedCircleIcon;
-      color_id = ui::NativeTheme::kColorId_ProminentButtonColor;
-      break;
-    case sync_ui_util::MANAGED_USER_UNRECOVERABLE_ERROR:
-    case sync_ui_util::UNRECOVERABLE_ERROR:
-    case sync_ui_util::UPGRADE_CLIENT_ERROR:
-    case sync_ui_util::PASSPHRASE_ERROR:
-    case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_EVERYTHING_ERROR:
-    case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_PASSWORDS_ERROR:
-    case sync_ui_util::
-        TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR:
-    case sync_ui_util::
-        TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR:
-    case sync_ui_util::SETTINGS_UNCONFIRMED_ERROR:
-      icon = &kSyncPausedCircleIcon;
-      color_id = ui::NativeTheme::kColorId_AlertSeverityHigh;
-      break;
+  absl::optional<sync_ui_util::AvatarSyncErrorType> error =
+      sync_ui_util::GetAvatarSyncErrorType(profile);
+  if (!error) {
+    return ColoredImageForMenu(kSyncCircleIcon,
+                               GetNativeTheme()->GetSystemColor(
+                                   ui::NativeTheme::kColorId_AlertSeverityLow));
   }
-  const SkColor image_color = GetNativeTheme()->GetSystemColor(color_id);
-  return ColoredImageForMenu(*icon, image_color);
+
+  ui::NativeTheme::ColorId color_id =
+      error == sync_ui_util::AUTH_ERROR
+          ? ui::NativeTheme::kColorId_ProminentButtonColor
+          : ui::NativeTheme::kColorId_AlertSeverityHigh;
+  return ColoredImageForMenu(kSyncPausedCircleIcon,
+                             GetNativeTheme()->GetSystemColor(color_id));
 }
 
 std::u16string ProfileMenuView::GetAccessibleWindowTitle() const {
@@ -390,9 +373,6 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
     case sync_ui_util::PASSPHRASE_ERROR:
     case sync_ui_util::SETTINGS_UNCONFIRMED_ERROR:
       chrome::ShowSettingsSubPage(browser(), chrome::kSyncSetupSubPage);
-      break;
-    case sync_ui_util::NO_SYNC_ERROR:
-      NOTREACHED();
       break;
   }
 #endif
@@ -578,20 +558,22 @@ void ProfileMenuView::BuildSyncInfo() {
 
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     // Show sync state.
-    const sync_ui_util::AvatarSyncErrorType error =
+    const absl::optional<sync_ui_util::AvatarSyncErrorType> error =
         sync_ui_util::GetAvatarSyncErrorType(browser()->profile());
-
-    if (error == sync_ui_util::NO_SYNC_ERROR) {
+    if (error) {
+      BuildSyncInfoWithCallToAction(
+          GetSyncErrorDescription(*error), GetSyncErrorButtonText(*error),
+          error == sync_ui_util::AUTH_ERROR
+              ? ui::NativeTheme::kColorId_SyncInfoContainerPaused
+              : ui::NativeTheme::kColorId_SyncInfoContainerError,
+          base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
+                              base::Unretained(this), *error),
+          /*show_badge=*/true);
+    } else {
       BuildSyncInfoWithoutCallToAction(
-          IDS_PROFILES_OPEN_SYNC_SETTINGS_BUTTON,
+          l10n_util::GetStringUTF16(IDS_PROFILES_OPEN_SYNC_SETTINGS_BUTTON),
           base::BindRepeating(&ProfileMenuView::OnSyncSettingsButtonClicked,
                               base::Unretained(this)));
-    } else {
-      BuildSyncInfoWithCallToAction(
-          GetSyncInfoForAvatarErrorType(error),
-          base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
-                              base::Unretained(this), error),
-          /*show_badge=*/true);
     }
     return;
   }
@@ -605,8 +587,9 @@ void ProfileMenuView::BuildSyncInfo() {
 
   if (account_info.has_value()) {
     BuildSyncInfoWithCallToAction(
-        {IDS_PROFILES_DICE_NOT_SYNCING_TITLE, IDS_PROFILES_DICE_SIGNIN_BUTTON,
-         SyncInfoContainerBackgroundState::kNoPrimaryAccount},
+        l10n_util::GetStringUTF16(IDS_PROFILES_DICE_NOT_SYNCING_TITLE),
+        l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON),
+        ui::NativeTheme::kColorId_SyncInfoContainerNoPrimaryAccount,
         base::BindRepeating(&ProfileMenuView::OnSigninAccountButtonClicked,
                             base::Unretained(this), account_info.value()),
         /*show_badge=*/true);
@@ -616,8 +599,9 @@ void ProfileMenuView::BuildSyncInfo() {
     NOTREACHED();
 #else
     BuildSyncInfoWithCallToAction(
-        {IDS_PROFILES_DICE_SYNC_PROMO, IDS_PROFILES_DICE_SIGNIN_BUTTON,
-         SyncInfoContainerBackgroundState::kNoPrimaryAccount},
+        l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO),
+        l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON),
+        ui::NativeTheme::kColorId_SyncInfoContainerNoPrimaryAccount,
         base::BindRepeating(&ProfileMenuView::OnSigninButtonClicked,
                             base::Unretained(this)),
         /*show_badge=*/false);

@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "components/sync/driver/sync_service_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
 class GURL;
@@ -55,8 +56,6 @@ enum ActionType {
 
 // Sync errors that should be exposed to the user through the avatar button.
 enum AvatarSyncErrorType {
-  // No sync error.
-  NO_SYNC_ERROR,
   // Unrecoverable error for managed users.
   MANAGED_USER_UNRECOVERABLE_ERROR,
   // Unrecoverable error for regular users.
@@ -105,7 +104,7 @@ MessageType GetStatus(Profile* profile);
 
 // Gets the error type (if any) that should be exposed to the user through the
 // titlebar avatar button.
-AvatarSyncErrorType GetAvatarSyncErrorType(Profile* profile);
+absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile);
 
 // Whether sync is currently blocked from starting because the sync
 // confirmation dialog hasn't been shown. Note that once the dialog is

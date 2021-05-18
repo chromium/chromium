@@ -683,13 +683,11 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
 }
 
 void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
-    const SyncInfo& sync_info,
+    const std::u16string& description,
+    const std::u16string& button_text,
+    ui::NativeTheme::ColorId background_color_id,
     const base::RepeatingClosure& action,
     bool show_badge) {
-  const std::u16string description =
-      l10n_util::GetStringUTF16(sync_info.description_string_id);
-  const std::u16string clickable_text =
-      l10n_util::GetStringUTF16(sync_info.button_string_id);
   const int kDescriptionIconSpacing =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_LABEL_HORIZONTAL);
@@ -755,23 +753,23 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
       sync_info_container_->AddChildView(std::make_unique<views::MdTextButton>(
           base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                               base::Unretained(this), std::move(action)),
-          clickable_text));
+          button_text));
   button->SetProminent(true);
 
   sync_info_background_callback_ = base::BindRepeating(
       &ProfileMenuViewBase::BuildSyncInfoCallToActionBackground,
-      base::Unretained(this), sync_info.background_state);
+      base::Unretained(this), background_color_id);
 }
 
 void ProfileMenuViewBase::BuildSyncInfoWithoutCallToAction(
-    int text_string_id,
+    const std::u16string& text,
     const base::RepeatingClosure& action) {
   sync_info_container_->RemoveAllChildViews(/*delete_children=*/true);
   sync_info_container_->SetLayoutManager(std::make_unique<views::FillLayout>());
   sync_info_container_->AddChildView(std::make_unique<SyncButton>(
       base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                           base::Unretained(this), std::move(action)),
-      this, l10n_util::GetStringUTF16(text_string_id)));
+      this, text));
 
   // No background required, so ui::NativeTheme isn't needed and
   // |sync_info_background_callback_| can be set to base::DoNothing().
@@ -1029,23 +1027,12 @@ void ProfileMenuViewBase::FocusButtonOnKeyboardOpen() {
 }
 
 void ProfileMenuViewBase::BuildSyncInfoCallToActionBackground(
-    SyncInfoContainerBackgroundState background_state,
+    ui::NativeTheme::ColorId background_color_id,
     ui::NativeTheme* native_theme) {
-  ui::NativeTheme::ColorId bg_color;
-  switch (background_state) {
-    case SyncInfoContainerBackgroundState::kPaused:
-      bg_color = ui::NativeTheme::kColorId_SyncInfoContainerPaused;
-      break;
-    case SyncInfoContainerBackgroundState::kError:
-      bg_color = ui::NativeTheme::kColorId_SyncInfoContainerError;
-      break;
-    case SyncInfoContainerBackgroundState::kNoPrimaryAccount:
-      bg_color = ui::NativeTheme::kColorId_SyncInfoContainerNoPrimaryAccount;
-  }
   const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);
   sync_info_container_->SetBackground(views::CreateRoundedRectBackground(
-      native_theme->GetSystemColor(bg_color), radius));
+      native_theme->GetSystemColor(background_color_id), radius));
   sync_info_container_->SetBorder(views::CreatePaddedBorder(
       views::CreateRoundedRectBorder(
           1, radius,

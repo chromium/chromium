@@ -637,8 +637,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Verify the profile-menu error string is empty.
-  EXPECT_EQ(sync_ui_util::NO_SYNC_ERROR,
-            sync_ui_util::GetAvatarSyncErrorType(GetProfile(0)));
+  EXPECT_FALSE(sync_ui_util::GetAvatarSyncErrorType(GetProfile(0)).has_value());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -698,8 +697,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Verify the profile-menu error string is empty.
-  EXPECT_EQ(sync_ui_util::NO_SYNC_ERROR,
-            sync_ui_util::GetAvatarSyncErrorType(GetProfile(0)));
+  EXPECT_FALSE(sync_ui_util::GetAvatarSyncErrorType(GetProfile(0)).has_value());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -1109,8 +1107,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Verify the profile-menu error string is empty.
-  EXPECT_EQ(sync_ui_util::NO_SYNC_ERROR,
-            sync_ui_util::GetAvatarSyncErrorType(GetProfile(0)));
+  EXPECT_FALSE(sync_ui_util::GetAvatarSyncErrorType(GetProfile(0)).has_value());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
