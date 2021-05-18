@@ -106,12 +106,11 @@ class NET_EXPORT TransportSecurityPersister
 
   // Clears any existing non-static entries, and then re-populates
   // |transport_security_state_|.
-  bool LoadEntries(const std::string& serialized);
+  void LoadEntries(const std::string& serialized);
 
  private:
-  // Populates |state| from the JSON string |serialized|. Returns true if
-  // all entries were parsed and deserialized correctly.
-  static bool Deserialize(const std::string& serialized,
+  // Populates |state| from the JSON string |serialized|.
+  static void Deserialize(const std::string& serialized,
                           TransportSecurityState* state);
 
   void CompleteLoad(const std::string& state);

@@ -361,25 +361,25 @@ bool TransportSecurityPersister::SerializeData(std::string* output) {
   return true;
 }
 
-bool TransportSecurityPersister::LoadEntries(const std::string& serialized) {
+void TransportSecurityPersister::LoadEntries(const std::string& serialized) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
 
   transport_security_state_->ClearDynamicData();
-  return Deserialize(serialized, transport_security_state_);
+  Deserialize(serialized, transport_security_state_);
 }
 
-bool TransportSecurityPersister::Deserialize(const std::string& serialized,
+void TransportSecurityPersister::Deserialize(const std::string& serialized,
                                              TransportSecurityState* state) {
   absl::optional<base::Value> value = base::JSONReader::Read(serialized);
   if (!value || !value->is_dict())
-    return false;
+    return;
 
   absl::optional<int> version = value->FindIntKey(kVersionKey);
 
   // Stop if the data is out of date (or in the previous format that didn't have
   // a version number).
   if (!version || *version != kCurrentVersionValue)
-    return false;
+    return;
 
   base::Value* sts_value = value->FindKey(kSTSKey);
   if (sts_value)
@@ -392,7 +392,6 @@ bool TransportSecurityPersister::Deserialize(const std::string& serialized,
   UMA_HISTOGRAM_CUSTOM_COUNTS("Net.ExpectCT.EntriesOnLoad",
                               state->num_expect_ct_entries(), 1 /* min */,
                               2000 /* max */, 40 /* buckets */);
-  return true;
 }
 
 void TransportSecurityPersister::CompleteLoad(const std::string& state) {

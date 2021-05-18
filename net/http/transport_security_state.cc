@@ -1072,6 +1072,10 @@ size_t TransportSecurityState::num_expect_ct_entries() const {
   return enabled_expect_ct_hosts_.size();
 }
 
+size_t TransportSecurityState::num_sts_entries() const {
+  return enabled_sts_hosts_.size();
+}
+
 // static
 bool TransportSecurityState::IsBuildTimely() {
   const base::Time build_time = base::GetBuildTime();

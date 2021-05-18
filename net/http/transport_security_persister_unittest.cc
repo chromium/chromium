@@ -105,18 +105,24 @@ TEST_P(TransportSecurityPersisterTest, LoadEntriesClearsExistingState) {
   EXPECT_TRUE(state_->GetDynamicExpectCTState(
       kYahooDomain, NetworkIsolationKey(), &expect_ct_state));
 
-  EXPECT_TRUE(persister_->LoadEntries("{\"version\":2}"));
+  persister_->LoadEntries("{\"version\":2}");
 
   EXPECT_FALSE(state_->GetDynamicSTSState(kYahooDomain, &sts_state));
   EXPECT_FALSE(state_->GetDynamicExpectCTState(
       kYahooDomain, NetworkIsolationKey(), &expect_ct_state));
 }
 
+// Tests that serializing -> deserializing -> reserializing results in the same
+// output.
 TEST_P(TransportSecurityPersisterTest, SerializeData1) {
   std::string output;
 
   EXPECT_TRUE(persister_->SerializeData(&output));
-  EXPECT_TRUE(persister_->LoadEntries(output));
+  persister_->LoadEntries(output);
+
+  std::string output2;
+  EXPECT_TRUE(persister_->SerializeData(&output2));
+  EXPECT_EQ(output, output2);
 }
 
 TEST_P(TransportSecurityPersisterTest, SerializeData2) {
@@ -132,7 +138,7 @@ TEST_P(TransportSecurityPersisterTest, SerializeData2) {
 
   std::string output;
   EXPECT_TRUE(persister_->SerializeData(&output));
-  EXPECT_TRUE(persister_->LoadEntries(output));
+  persister_->LoadEntries(output);
 
   EXPECT_TRUE(state_->GetDynamicSTSState(kYahooDomain, &sts_state));
   EXPECT_EQ(sts_state.upgrade_mode,
@@ -196,7 +202,7 @@ TEST_P(TransportSecurityPersisterTest, SerializeData3) {
   std::string persisted;
   EXPECT_TRUE(base::ReadFileToString(path, &persisted));
   EXPECT_EQ(persisted, serialized);
-  EXPECT_TRUE(persister_->LoadEntries(persisted));
+  persister_->LoadEntries(persisted);
 
   // Check that states are the same as saved.
   size_t count = 0;
@@ -216,12 +222,28 @@ TEST_P(TransportSecurityPersisterTest, SerializeData3) {
   EXPECT_EQ(count, expect_ct_saved.size());
 }
 
+// Tests that deserializing bad data shouldn't result in any ExpectCT or STS
+// entries being added to the transport security state.
 TEST_P(TransportSecurityPersisterTest, DeserializeBadData) {
-  EXPECT_FALSE(persister_->LoadEntries(""));
-  EXPECT_FALSE(persister_->LoadEntries("Foopy"));
-  EXPECT_FALSE(persister_->LoadEntries("15"));
-  EXPECT_FALSE(persister_->LoadEntries("[15]"));
-  EXPECT_FALSE(persister_->LoadEntries("{\"version\":1}"));
+  persister_->LoadEntries("");
+  EXPECT_EQ(0u, state_->num_expect_ct_entries());
+  EXPECT_EQ(0u, state_->num_sts_entries());
+
+  persister_->LoadEntries("Foopy");
+  EXPECT_EQ(0u, state_->num_expect_ct_entries());
+  EXPECT_EQ(0u, state_->num_sts_entries());
+
+  persister_->LoadEntries("15");
+  EXPECT_EQ(0u, state_->num_expect_ct_entries());
+  EXPECT_EQ(0u, state_->num_sts_entries());
+
+  persister_->LoadEntries("[15]");
+  EXPECT_EQ(0u, state_->num_expect_ct_entries());
+  EXPECT_EQ(0u, state_->num_sts_entries());
+
+  persister_->LoadEntries("{\"version\":1}");
+  EXPECT_EQ(0u, state_->num_expect_ct_entries());
+  EXPECT_EQ(0u, state_->num_sts_entries());
 }
 
 TEST_P(TransportSecurityPersisterTest, DeserializeDataOldWithoutCreationDate) {
@@ -235,7 +257,9 @@ TEST_P(TransportSecurityPersisterTest, DeserializeDataOldWithoutCreationDate) {
       "\"mode\": \"strict\" "
       "}"
       "}";
-  EXPECT_FALSE(persister_->LoadEntries(kInput));
+  persister_->LoadEntries(kInput);
+  EXPECT_EQ(0u, state_->num_expect_ct_entries());
+  EXPECT_EQ(0u, state_->num_sts_entries());
 }
 
 TEST_P(TransportSecurityPersisterTest, DeserializeDataOldMergedDictionary) {
@@ -275,7 +299,9 @@ TEST_P(TransportSecurityPersisterTest, DeserializeDataOldMergedDictionary) {
       "   }"
       "}";
 
-  EXPECT_FALSE(persister_->LoadEntries(kInput));
+  persister_->LoadEntries(kInput);
+  EXPECT_EQ(0u, state_->num_expect_ct_entries());
+  EXPECT_EQ(0u, state_->num_sts_entries());
 }
 
 // Tests that dynamic Expect-CT state is serialized and deserialized correctly.
@@ -298,7 +324,7 @@ TEST_P(TransportSecurityPersisterTest, ExpectCT) {
   EXPECT_TRUE(persister_->SerializeData(&serialized));
   // LoadEntries() clears existing dynamic data before loading entries from
   // |serialized|.
-  EXPECT_TRUE(persister_->LoadEntries(serialized));
+  persister_->LoadEntries(serialized);
 
   TransportSecurityState::ExpectCTState new_expect_ct_state;
   EXPECT_TRUE(state_->GetDynamicExpectCTState(
@@ -312,7 +338,7 @@ TEST_P(TransportSecurityPersisterTest, ExpectCT) {
   state_->AddExpectCT(kTestDomain, expiry, false /* enforce */, report_uri,
                       NetworkIsolationKey());
   EXPECT_TRUE(persister_->SerializeData(&serialized));
-  EXPECT_TRUE(persister_->LoadEntries(serialized));
+  persister_->LoadEntries(serialized);
   EXPECT_TRUE(state_->GetDynamicExpectCTState(
       kTestDomain, NetworkIsolationKey(), &new_expect_ct_state));
   EXPECT_FALSE(new_expect_ct_state.enforce);
@@ -343,7 +369,7 @@ TEST_P(TransportSecurityPersisterTest, ExpectCTWithSTSDataPresent) {
   EXPECT_TRUE(persister_->SerializeData(&serialized));
   // LoadEntries() clears existing dynamic data before loading entries from
   // |serialized|.
-  EXPECT_TRUE(persister_->LoadEntries(serialized));
+  persister_->LoadEntries(serialized);
 
   TransportSecurityState::ExpectCTState new_expect_ct_state;
   EXPECT_TRUE(state_->GetDynamicExpectCTState(
@@ -377,7 +403,7 @@ TEST_P(TransportSecurityPersisterTest, ExpectCTDisabled) {
                       NetworkIsolationKey());
   std::string serialized;
   EXPECT_TRUE(persister_->SerializeData(&serialized));
-  EXPECT_TRUE(persister_->LoadEntries(serialized));
+  persister_->LoadEntries(serialized);
 
   TransportSecurityState::ExpectCTState new_expect_ct_state;
   EXPECT_FALSE(state_->GetDynamicExpectCTState(
@@ -437,7 +463,7 @@ TEST_P(TransportSecurityPersisterTest, ExpectCTWithNetworkIsolationKey) {
   }
 
   // Load entries into the other persister.
-  EXPECT_TRUE(persister_->LoadEntries(serialized));
+  persister_->LoadEntries(serialized);
 
   if (partition_expect_ct_state()) {
     TransportSecurityState::ExpectCTState new_expect_ct_state;
@@ -521,7 +547,7 @@ TEST_P(TransportSecurityPersisterTest,
                                          "\"Not a valid NIK\"");
 
   // Load entries into the other persister.
-  EXPECT_TRUE(persister_->LoadEntries(serialized));
+  persister_->LoadEntries(serialized);
 
   // The entry with the non-empty NetworkIsolationKey should be dropped, since
   // its NIK is now invalid. The other entry should be preserved.

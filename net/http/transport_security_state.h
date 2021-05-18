@@ -576,6 +576,9 @@ class NET_EXPORT TransportSecurityState {
   // The number of cached ExpectCTState entries.
   size_t num_expect_ct_entries() const;
 
+  // The number of cached STSState entries.
+  size_t num_sts_entries() const;
+
  private:
   friend class TransportSecurityStateTest;
   friend class TransportSecurityStateStaticFuzzer;
