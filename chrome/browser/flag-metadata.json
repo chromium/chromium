@@ -3421,7 +3421,7 @@
   },
   {
     "name": "location-permissions-prompt",
-    "owners": [ "thegreenfrog", "bling-team" ],
+    "owners": [ "thegreenfrog", "bling-flags@google.com" ],
     "expiry_milestone": 91
   },
   {
