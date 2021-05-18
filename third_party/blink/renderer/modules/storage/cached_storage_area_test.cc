@@ -38,7 +38,7 @@ class CachedStorageAreaTest : public testing::Test {
                            : CachedStorageArea::AreaType::kLocalStorage;
     cached_area_ = base::MakeRefCounted<CachedStorageArea>(
         area_type, kOrigin, scheduler::GetSingleThreadTaskRunnerForTesting(),
-        nullptr);
+        nullptr, /*is_session_storage_for_prerendering=*/false);
     cached_area_->SetRemoteAreaForTesting(
         mock_storage_area_.GetInterfaceRemote());
     source_area_ = MakeGarbageCollected<FakeAreaSource>(kPageUrl);

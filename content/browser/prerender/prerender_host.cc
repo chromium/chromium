@@ -16,6 +16,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_controller.h"
@@ -77,10 +78,20 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
                                         &web_contents,
                                         &web_contents,
                                         FrameTree::Type::kPrerender)) {
-    frame_tree_->Init(
-        SiteInstance::Create(web_contents.GetBrowserContext()).get(),
-        /*renderer_initiated_creation=*/false,
-        /*main_frame_name=*/"");
+    scoped_refptr<SiteInstance> site_instance =
+        SiteInstance::Create(web_contents.GetBrowserContext());
+    frame_tree_->Init(site_instance.get(),
+                      /*renderer_initiated_creation=*/false,
+                      /*main_frame_name=*/"");
+
+    const auto& site_info =
+        static_cast<SiteInstanceImpl*>(site_instance.get())->GetSiteInfo();
+    // Use the same SessionStorageNamespace as the primary page for the
+    // prerendering page.
+    frame_tree_->controller().SetSessionStorageNamespace(
+        site_info.GetStoragePartitionId(site_instance->GetBrowserContext()),
+        web_contents_.GetFrameTree()->controller().GetSessionStorageNamespace(
+            site_info));
 
     // TODO(https://crbug.com/1199679): This should be moved to FrameTree::Init
     web_contents_.NotifySwappedFromRenderManager(

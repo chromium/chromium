@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/modules/storage/storage_namespace.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -73,6 +74,11 @@ StorageArea::StorageArea(LocalDOMWindow* window,
   DCHECK(window);
   DCHECK(cached_area_);
   cached_area_->RegisterSource(this);
+  if (cached_area_->is_session_storage_for_prerendering()) {
+    DomWindow()->document()->AddWillDispatchPrerenderingchangeCallback(
+        WTF::Bind(&StorageArea::OnDocumentActivatedForPrerendering,
+                  WrapWeakPersistent(this)));
+  }
 }
 
 unsigned StorageArea::length(ExceptionState& exception_state) const {
@@ -244,6 +250,20 @@ blink::WebScopedVirtualTimePauser StorageArea::CreateWebScopedVirtualTimePauser(
       ->GetFrame()
       ->GetFrameScheduler()
       ->CreateWebScopedVirtualTimePauser(name, duration);
+}
+
+void StorageArea::OnDocumentActivatedForPrerendering() {
+  StorageNamespace* storage_namespace =
+      StorageNamespace::From(DomWindow()->GetFrame()->GetPage());
+  if (!storage_namespace)
+    return;
+
+  // Swap out the session storage state used within prerendering, and replace it
+  // with the normal session storage state. For more details:
+  // https://docs.google.com/document/d/1I5Hr8I20-C1GBr4tAXdm0U8a1RDUKHt4n7WcH4fxiSE/edit?usp=sharing
+  cached_area_ =
+      storage_namespace->GetCachedArea(DomWindow()->GetSecurityOrigin());
+  cached_area_->RegisterSource(this);
 }
 
 }  // namespace blink
