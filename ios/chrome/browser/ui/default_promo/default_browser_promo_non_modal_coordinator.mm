@@ -44,6 +44,7 @@
   if (self) {
     self.baseViewController = viewController;
     self.browser = browser;
+    self.shouldUseDefaultDismissal = NO;
   }
   return self;
 }

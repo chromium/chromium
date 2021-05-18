@@ -82,6 +82,7 @@
     _presented = YES;
     _hasBadge = badgeSupport;
     _infobarType = infobarType;
+    _shouldUseDefaultDismissal = YES;
   }
   return self;
 }
@@ -153,7 +154,7 @@
                  }];
 
   // Dismisses the presented banner after a certain number of seconds.
-  if (!UIAccessibilityIsVoiceOverRunning()) {
+  if (!UIAccessibilityIsVoiceOverRunning() && self.shouldUseDefaultDismissal) {
     NSTimeInterval timeInterval =
         self.highPriorityPresentation
             ? kInfobarBannerLongPresentationDurationInSeconds

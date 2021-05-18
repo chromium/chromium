@@ -119,6 +119,10 @@ enum class InfobarBannerPresentationState;
 // etc.
 @property(nonatomic, assign) BOOL highPriorityPresentation;
 
+// If YES, then InfobarCoordinator will handle dismissing any infobar shown.
+// If NO, then the coordinator should handle dismissal itself. Defaults to YES.
+@property(nonatomic, assign) BOOL shouldUseDefaultDismissal;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_COORDINATORS_INFOBAR_COORDINATOR_H_
