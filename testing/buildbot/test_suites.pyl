@@ -383,6 +383,12 @@
       },
     },
 
+    'blink_unittests': {
+      'blink_unit_tests': {
+        'test': 'blink_unittests',
+      },
+    },
+
     'cast_audio_specific_chromium_gtests': {
       'cast_audio_backend_unittests': {},
       'cast_base_unittests': {},
@@ -5949,7 +5955,7 @@
 
     'devtools_gtests': [
       'devtools_browser_tests',
-      'layout_ng_gtests',
+      'blink_unittests',
     ],
 
     'fuchsia_arm64_isolated_scripts': [
