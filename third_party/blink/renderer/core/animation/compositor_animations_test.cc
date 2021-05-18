@@ -57,7 +57,6 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -75,6 +74,7 @@
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -160,13 +160,18 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
     // Having an animation would normally ensure this but these tests don't
     // explicitly construct a full animation on the element.
     SetBodyInnerHTML(R"HTML(
-        <div id='test' style='will-change: opacity,filter,transform; height:100px; background: green;'></div>
-        <span id='inline' style='will-change: opacity,filter,transform;'>text</div>
+      <div id='test' style='will-change: opacity,filter,transform;
+                            height:100px; background: green;'>
+      </div>
+      <span id='inline' style='will-change: opacity,filter,transform;'>
+        text
+      </span>
     )HTML");
     element_ = GetDocument().getElementById("test");
     inline_ = GetDocument().getElementById("inline");
 
     helper_.Initialize(nullptr, nullptr, nullptr);
+    helper_.Resize(gfx::Size(800, 600));
     base_url_ = "http://www.test.com/";
   }
 
@@ -1047,12 +1052,6 @@ TEST_P(AnimationCompositorAnimationsTest,
 
 TEST_P(AnimationCompositorAnimationsTest,
        CanStartElementOnCompositorEffectFilter) {
-  // TODO(https://crbug.com/960953): Create a filter effect node when
-  // will-change: filter is specified so that filter effects can be tested
-  // without compositing changes.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   // Filter Properties use a different ID namespace
   StringKeyframeEffectModel* effect1 = CreateKeyframeEffectModel(
       CreateReplaceOpKeyframe(CSSPropertyID::kFilter, "none", 0),
@@ -2052,10 +2051,6 @@ TEST_P(AnimationCompositorAnimationsTest, CompositedCustomProperty) {
 }
 
 TEST_P(AnimationCompositorAnimationsTest, CompositedTransformAnimation) {
-  // TODO(wangxianzhu): Fix this test for CompositeAfterPaint.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   LoadTestData("transform-animation.html");
   Document* document = GetFrame()->GetDocument();
   Element* target = document->getElementById("target");
@@ -2086,10 +2081,6 @@ TEST_P(AnimationCompositorAnimationsTest, CompositedTransformAnimation) {
 }
 
 TEST_P(AnimationCompositorAnimationsTest, CompositedScaleAnimation) {
-  // TODO(wangxianzhu): Fix this test for CompositeAfterPaint.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   LoadTestData("scale-animation.html");
   Document* document = GetFrame()->GetDocument();
   Element* target = document->getElementById("target");
@@ -2121,10 +2112,6 @@ TEST_P(AnimationCompositorAnimationsTest, CompositedScaleAnimation) {
 
 TEST_P(AnimationCompositorAnimationsTest,
        NonAnimatedTransformPropertyChangeGetsUpdated) {
-  // TODO(wangxianzhu): Fix this test for CompositeAfterPaint.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   LoadTestData("transform-animation-update.html");
   Document* document = GetFrame()->GetDocument();
   Element* target = document->getElementById("target");
@@ -2155,10 +2142,8 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_FALSE(transform->Matrix().IsIdentity());  // Rotated
   EXPECT_EQ(transform->GetBackfaceVisibilityForTesting(),
             TransformPaintPropertyNode::BackfaceVisibility::kVisible);
-  const CompositedLayerMapping* composited_layer_mapping =
-      target->GetLayoutBoxModelObject()->Layer()->GetCompositedLayerMapping();
-  ASSERT_NE(nullptr, composited_layer_mapping);
-  const auto& layer = composited_layer_mapping->MainGraphicsLayer()->CcLayer();
+  const auto& layer =
+      *CcLayersByDOMElementId(document->View()->RootCcLayer(), "target")[0];
   EXPECT_FALSE(layer.should_check_backface_visibility());
 
   // Change the backface visibility, while the compositor animation is
