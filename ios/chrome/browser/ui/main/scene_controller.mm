@@ -1209,6 +1209,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   self.firstRunCoordinator = [[FirstRunCoordinator alloc]
       initWithBaseViewController:self.mainInterface.bvc
                          browser:self.mainInterface.browser
+                   syncPresenter:self.mainInterface.bvc
                   screenProvider:provider];
   self.firstRunCoordinator.delegate = self;
   self.sceneState.presentingFirstRunUI = YES;

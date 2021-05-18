@@ -9,6 +9,7 @@
 #import "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "ios/chrome/browser/first_run/first_run_metrics.h"
+#include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_type.h"
@@ -16,6 +17,8 @@
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_coordinator.h"
+#import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,6 +31,8 @@
 @property(nonatomic, strong) UINavigationController* navigationController;
 // Whether the remaining screens have been skipped.
 @property(nonatomic, assign) BOOL screensSkipped;
+// Presenter for showing sync-related UI.
+@property(nonatomic, readonly, weak) id<SyncPresenter> presenter;
 
 @end
 
@@ -35,10 +40,12 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+                             syncPresenter:(id<SyncPresenter>)presenter
                             screenProvider:
                                 (FirstRunScreenProvider*)screenProvider {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
+    _presenter = presenter;
     _screenProvider = screenProvider;
     _navigationController =
         [[UINavigationController alloc] initWithNavigationBarClass:nil
@@ -63,6 +70,12 @@
   void (^completion)(void) = ^{
     base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kComplete);
     WriteFirstRunSentinel();
+    // Display the sync errors infobar.
+    web::WebState* webState =
+        self.browser->GetWebStateList()->GetActiveWebState();
+    DisplaySyncErrors(self.browser->GetBrowserState(), webState,
+                      self.presenter);
+
     // If the remaining screens have been skipped, additional actions will be
     // executed.
     [self.delegate didFinishPresentingScreensWithSubsequentActionsTriggered:

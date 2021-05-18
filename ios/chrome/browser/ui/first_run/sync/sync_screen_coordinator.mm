@@ -83,7 +83,6 @@
 }
 
 - (void)stop {
-  // TODO(crbug.com/1189840): Display the sync errors infobar.
   self.delegate = nil;
   self.viewController = nil;
   self.mediator = nil;

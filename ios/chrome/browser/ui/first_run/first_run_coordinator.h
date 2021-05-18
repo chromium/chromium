@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
 @class FirstRunScreenProvider;
+@protocol SyncPresenter;
 
 // The delegate for the FirstRunCoordinator.
 @protocol FirstRunCoordinatorDelegate <NSObject>
@@ -24,10 +25,12 @@
 // Coordinator to present first run screens.
 @interface FirstRunCoordinator : ChromeCoordinator
 
-// Initiate the coordinator.|screenProvider| will help decide which screen to
-// show.
+// Initiate the coordinator.
+// |syncPresenter| helps present sync related UI.
+// |screenProvider| helps decide which screen to show.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+                             syncPresenter:(id<SyncPresenter>)presenter
                             screenProvider:
                                 (FirstRunScreenProvider*)screenProvider
     NS_DESIGNATED_INITIALIZER;
