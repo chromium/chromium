@@ -627,6 +627,26 @@ TEST_F(WebMemoryAggregatorTest, BlinkMemory) {
   }
 }
 
+TEST_F(WebMemoryAggregatorTest, BlinkMemoryWithoutFrameBytes) {
+  FrameNodeImpl* a_com = AddFrameNode("https://a.com/", absl::nullopt);
+  SetBlinkMemory(Bytes{1000});
+  {
+    WebMemoryAggregator aggregator(a_com);
+    auto expected_result =
+        CreateExpectedMemoryMeasurement({ExpectedMemoryBreakdown(
+            absl::nullopt, AttributionScope::kWindow, "https://a.com/")});
+    expected_result->blink_memory = mojom::WebMemoryUsage::New();
+    expected_result->blink_memory->bytes = 1000;
+    expected_result->shared_memory = mojom::WebMemoryUsage::New();
+    expected_result->shared_memory->bytes = 0;
+    expected_result->detached_memory = mojom::WebMemoryUsage::New();
+    expected_result->detached_memory->bytes = 0;
+    auto result = aggregator.AggregateMeasureMemoryResult();
+    EXPECT_EQ(NormalizeMeasurement(result),
+              NormalizeMeasurement(expected_result));
+  }
+}
+
 TEST_F(WebMemoryAggregatorTest, BlinkMemoryMultipleBrowsingInstances) {
   FrameNodeImpl* a_com = AddFrameNode("https://a.com/", Bytes{10});
   AddCrossBrowsingInstanceFrameNode("https://b.com/", Bytes{30});

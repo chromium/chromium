@@ -438,7 +438,10 @@ double GetBrowsingInstanceV8BytesFraction(const ProcessNode* process_node,
         return true;
       },
       browsing_instance_id, &bytes_used, &total_bytes_used));
-  return static_cast<double>(bytes_used) / total_bytes_used;
+  DCHECK_LE(bytes_used, total_bytes_used);
+  return total_bytes_used == 0
+             ? 1
+             : static_cast<double>(bytes_used) / total_bytes_used;
 }
 
 }  // anonymous namespace
