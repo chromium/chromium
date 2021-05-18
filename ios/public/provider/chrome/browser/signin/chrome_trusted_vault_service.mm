@@ -22,6 +22,12 @@ void ChromeTrustedVaultService::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
+void ChromeTrustedVaultService::GetIsRecoverabilityDegraded(
+    ChromeIdentity* chrome_identity,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(false);
+}
+
 void ChromeTrustedVaultService::NotifyKeysChanged() {
   for (Observer& observer : observer_list_) {
     observer.OnTrustedVaultKeysChanged();
