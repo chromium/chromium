@@ -135,6 +135,8 @@ and [calendar](https://calendar.google.com/calendar/embed?src=c_188b8oq5puj67tl3
    and `Performance-Size` [here](https://bugs.chromium.org/p/chromium/issues/list?q=label:Performance-Sheriff%20label:Performance-Size&sort=-modified).
  * After resolving the bug by finding an owner or debugging or commenting,
    remove the `Performance-Sheriff` label.
+ * Process for Chrome OS bugs is at [go/cros-image-size-triage](https://goto.google.com/cros-image-size-triage).
+   * Generally just expected to ignore these.
 
 ## Step 2: Check Alerts Regularly
 
