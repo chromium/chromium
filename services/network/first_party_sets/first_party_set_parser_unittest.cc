@@ -8,11 +8,10 @@
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::IsEmpty;
-using ::testing::IsNull;
 using ::testing::Pair;
-using ::testing::Pointee;
 using ::testing::UnorderedElementsAre;
 
 namespace network {
@@ -27,7 +26,8 @@ TEST(FirstPartySetParser, RejectsEmpty) {
   // reject it. In particular, we should reject
   // empty input.
 
-  EXPECT_FALSE(FirstPartySetParser::ParseSetsFromComponentUpdater(""));
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(""),
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsNonemptyMalformed) {
@@ -38,7 +38,8 @@ TEST(FirstPartySetParser, RejectsNonemptyMalformed) {
   // Sanity check that the input is not valid JSON.
   ASSERT_FALSE(base::JSONReader::Read(input));
 
-  EXPECT_FALSE(FirstPartySetParser::ParseSetsFromComponentUpdater(input));
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsNonListInput) {
@@ -46,7 +47,8 @@ TEST(FirstPartySetParser, RejectsNonListInput) {
   const std::string input = "{}";
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_FALSE(FirstPartySetParser::ParseSetsFromComponentUpdater(input));
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, AcceptsTrivial) {
@@ -56,7 +58,7 @@ TEST(FirstPartySetParser, AcceptsTrivial) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              Pointee(IsEmpty()));
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsSingletonSet) {
@@ -69,7 +71,8 @@ TEST(FirstPartySetParser, RejectsSingletonSet) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_FALSE(FirstPartySetParser::ParseSetsFromComponentUpdater(input));
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, AcceptsMinimal) {
@@ -83,11 +86,10 @@ TEST(FirstPartySetParser, AcceptsMinimal) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              Pointee(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       SerializesTo("https://example.test")),
-                  Pair(SerializesTo("https://aaaa.test"),
-                       SerializesTo("https://example.test")))));
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://aaaa.test"),
+                                        SerializesTo("https://example.test"))));
 }
 
 TEST(FirstPartySetParser, RejectsMissingOwner) {
@@ -97,7 +99,7 @@ TEST(FirstPartySetParser, RejectsMissingOwner) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsNull());
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsTypeUnsafeOwner) {
@@ -108,7 +110,7 @@ TEST(FirstPartySetParser, RejectsTypeUnsafeOwner) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsNull());
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsNonHTTPSOwner) {
@@ -122,7 +124,7 @@ TEST(FirstPartySetParser, RejectsNonHTTPSOwner) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsNull());
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsNonOriginOwner) {
@@ -136,7 +138,7 @@ TEST(FirstPartySetParser, RejectsNonOriginOwner) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsNull());
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsOwnerWithoutRegisteredDomain) {
@@ -150,7 +152,7 @@ TEST(FirstPartySetParser, RejectsOwnerWithoutRegisteredDomain) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsNull());
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsMissingMembers) {
@@ -160,7 +162,7 @@ TEST(FirstPartySetParser, RejectsMissingMembers) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsNull());
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsTypeUnsafeMembers) {
@@ -174,7 +176,7 @@ TEST(FirstPartySetParser, RejectsTypeUnsafeMembers) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsNull());
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsNonHTTPSMember) {
@@ -188,7 +190,7 @@ TEST(FirstPartySetParser, RejectsNonHTTPSMember) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsNull());
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsNonOriginMember) {
@@ -202,7 +204,7 @@ TEST(FirstPartySetParser, RejectsNonOriginMember) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsNull());
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsMemberWithoutRegisteredDomain) {
@@ -216,7 +218,7 @@ TEST(FirstPartySetParser, RejectsMemberWithoutRegisteredDomain) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsNull());
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, TruncatesSubdomain_Owner) {
@@ -230,11 +232,10 @@ TEST(FirstPartySetParser, TruncatesSubdomain_Owner) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              Pointee(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       SerializesTo("https://example.test")),
-                  Pair(SerializesTo("https://aaaa.test"),
-                       SerializesTo("https://example.test")))));
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://aaaa.test"),
+                                        SerializesTo("https://example.test"))));
 }
 
 TEST(FirstPartySetParser, TruncatesSubdomain_Member) {
@@ -248,11 +249,10 @@ TEST(FirstPartySetParser, TruncatesSubdomain_Member) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              Pointee(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       SerializesTo("https://example.test")),
-                  Pair(SerializesTo("https://aaaa.test"),
-                       SerializesTo("https://example.test")))));
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://aaaa.test"),
+                                        SerializesTo("https://example.test"))));
 }
 
 TEST(FirstPartySetParser, AcceptsMultipleSets) {
@@ -272,16 +272,15 @@ TEST(FirstPartySetParser, AcceptsMultipleSets) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(
-      FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
                                         SerializesTo("https://example.test")),
                                    Pair(SerializesTo("https://member1.test"),
                                         SerializesTo("https://example.test")),
                                    Pair(SerializesTo("https://foo.test"),
                                         SerializesTo("https://foo.test")),
                                    Pair(SerializesTo("https://member2.test"),
-                                        SerializesTo("https://foo.test")))));
+                                        SerializesTo("https://foo.test"))));
 }
 
 TEST(FirstPartySetParser, RejectsInvalidSets_InvalidOwner) {
@@ -302,7 +301,7 @@ TEST(FirstPartySetParser, RejectsInvalidSets_InvalidOwner) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsNull());
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsInvalidSets_InvalidMember) {
@@ -323,7 +322,7 @@ TEST(FirstPartySetParser, RejectsInvalidSets_InvalidMember) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsNull());
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, AllowsTrailingCommas) {
@@ -341,11 +340,10 @@ TEST(FirstPartySetParser, AllowsTrailingCommas) {
       input, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              Pointee(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       SerializesTo("https://example.test")),
-                  Pair(SerializesTo("https://member1.test"),
-                       SerializesTo("https://example.test")))));
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test"))));
 }
 
 TEST(FirstPartySetParser, Rejects_SameOwner) {
@@ -366,7 +364,7 @@ TEST(FirstPartySetParser, Rejects_SameOwner) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsNull());
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, Rejects_MemberAsOwner) {
@@ -387,7 +385,7 @@ TEST(FirstPartySetParser, Rejects_MemberAsOwner) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsNull());
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, Rejects_SameMember) {
@@ -408,7 +406,7 @@ TEST(FirstPartySetParser, Rejects_SameMember) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsNull());
+              IsEmpty());
 }
 
 TEST(FirstPartySetParser, Rejects_OwnerAsMember) {
@@ -429,7 +427,7 @@ TEST(FirstPartySetParser, Rejects_OwnerAsMember) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsNull());
+              IsEmpty());
 }
 
 }  // namespace network

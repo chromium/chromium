@@ -5,7 +5,9 @@
 #include "services/network/first_party_sets/first_party_sets.h"
 
 #include <initializer_list>
-#include <memory>
+#include <set>
+#include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
@@ -68,15 +70,7 @@ void FirstPartySets::SetManuallySpecifiedSet(const std::string& flag_value) {
 
 base::flat_map<net::SchemefulSite, net::SchemefulSite>*
 FirstPartySets::ParseAndSet(base::StringPiece raw_sets) {
-  std::unique_ptr<base::flat_map<net::SchemefulSite, net::SchemefulSite>>
-      parsed = FirstPartySetParser::ParseSetsFromComponentUpdater(raw_sets);
-  if (parsed) {
-    sets_.swap(*parsed);
-  } else {
-    // On any error, we clear the sets, to avoid using the old data and to make
-    // the failure as obvious as possible.
-    sets_.clear();
-  }
+  sets_ = FirstPartySetParser::ParseSetsFromComponentUpdater(raw_sets);
   ApplyManuallySpecifiedSet();
   return &sets_;
 }

@@ -4,8 +4,6 @@
 
 #include "services/network/first_party_sets/first_party_set_parser.h"
 
-#include <iterator>
-#include <memory>
 #include <string>
 #include <utility>
 
@@ -125,21 +123,20 @@ FirstPartySetParser::CanonicalizeRegisteredDomain(
   return Canonicalize(origin_string, emit_errors);
 }
 
-std::unique_ptr<base::flat_map<net::SchemefulSite, net::SchemefulSite>>
+base::flat_map<net::SchemefulSite, net::SchemefulSite>
 FirstPartySetParser::ParseSetsFromComponentUpdater(base::StringPiece raw_sets) {
   absl::optional<base::Value> maybe_value = base::JSONReader::Read(
       raw_sets, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
   if (!maybe_value.has_value())
-    return nullptr;
+    return {};
   if (!maybe_value->is_list())
-    return nullptr;
+    return {};
 
-  auto map = std::make_unique<
-      base::flat_map<net::SchemefulSite, net::SchemefulSite>>();
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> map;
   base::flat_set<net::SchemefulSite> elements;
   for (const auto& value : maybe_value->GetList()) {
-    if (!ParseSet(value, *map, elements))
-      return nullptr;
+    if (!ParseSet(value, map, elements))
+      return {};
   }
 
   return map;
