@@ -11,11 +11,41 @@
 #include "chrome/browser/chromeos/full_restore/arc_window_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "ui/gfx/color_utils.h"
+#include "ui/gfx/paint_throbber.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+
+namespace {
+
+class Throbber : public views::View {
+ public:
+  explicit Throbber(uint32_t color) : color_(color) {
+    start_time_ = base::TimeTicks::Now();
+    timer_.Start(
+        FROM_HERE, base::TimeDelta::FromMilliseconds(30),
+        base::BindRepeating(&Throbber::SchedulePaint, base::Unretained(this)));
+    SchedulePaint();  // paint right away
+  }
+  Throbber(const Throbber&) = delete;
+  Throbber operator=(const Throbber&) = delete;
+  ~Throbber() override { timer_.Stop(); }
+
+  void OnPaint(gfx::Canvas* canvas) override {
+    base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time_;
+    gfx::PaintThrobberSpinning(canvas, GetContentsBounds(), color_,
+                               elapsed_time);
+  }
+
+ private:
+  uint32_t color_;              // Throbber color.
+  base::TimeTicks start_time_;  // Time when Start was called.
+  base::RepeatingTimer timer_;  // Used to schedule Run calls.
+};
+
+}  // namespace
 
 namespace chromeos {
 namespace full_restore {
@@ -43,9 +73,9 @@ void ArcGhostWindowView::InitLayout(uint32_t theme_color, int diameter) {
 
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
 
-  auto* throbber = AddChildView(std::make_unique<views::Throbber>());
+  auto* throbber = AddChildView(std::make_unique<Throbber>(
+      color_utils::GetColorWithMaxContrast(theme_color)));
   throbber->SetPreferredSize({diameter, diameter});
-  throbber->Start();
 }
 
 void ArcGhostWindowView::LoadIcon(const std::string& app_id) {

@@ -36,7 +36,6 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
   absl::optional<double> scale_factor = GetDisplayScaleFactor(display_id);
   DCHECK(scale_factor.has_value());
 
-  // Set throbber color by |color_utils::GetColorWithMaxContrast(color)|.
   uint32_t theme_color = color.has_value() ? color.value() : SK_ColorWHITE;
 
   // TODO(sstan): Handle the desk container from full_restore data.
