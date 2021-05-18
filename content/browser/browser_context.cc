@@ -64,9 +64,6 @@ namespace content {
 
 namespace {
 
-using perfetto::protos::pbzero::ChromeBrowserContext;
-using perfetto::protos::pbzero::ChromeTrackEvent;
-
 void SaveSessionStateOnIOThread(AppCacheServiceImpl* appcache_service) {
   appcache_service->set_force_keep_session_state();
 }
@@ -80,23 +77,33 @@ base::WeakPtr<storage::BlobStorageContext> BlobStorageContextGetterForBrowser(
 }  // namespace
 
 BrowserContext::BrowserContext() {
-  impl_ = std::make_unique<Impl>(this);
   TRACE_EVENT("shutdown", "BrowserContext::BrowserContext",
-              ChromeTrackEvent::kChromeBrowserContext, *this);
-  TRACE_EVENT_BEGIN("shutdown", "Browser.BrowserContext",
-                    perfetto::Track::FromPointer(this),
-                    ChromeTrackEvent::kChromeBrowserContext, *this);
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                event->set_chrome_browser_context()->set_ptr(
+                    reinterpret_cast<uint64_t>(this));
+              });
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("shutdown", "Browser.BrowserContext", this,
+                                    "browser_context",
+                                    static_cast<void*>(this));
+
+  impl_ = std::make_unique<Impl>(this);
 }
 
 BrowserContext::~BrowserContext() {
   TRACE_EVENT("shutdown", "BrowserContext::~BrowserContext",
-              ChromeTrackEvent::kChromeBrowserContext, *this);
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                event->set_chrome_browser_context()->set_ptr(
+                    reinterpret_cast<uint64_t>(this));
+              });
 
   impl_.reset();
 
-  // End for ASYNC event "Browser.BrowserContext".
-  TRACE_EVENT_END("shutdown", perfetto::Track::FromPointer(this),
-                  ChromeTrackEvent::kChromeBrowserContext, *this);
+  TRACE_EVENT_NESTABLE_ASYNC_END1("shutdown", "Browser.BrowserContext", this,
+                                  "browser_context", static_cast<void*>(this));
 }
 
 DownloadManager* BrowserContext::GetDownloadManager() {
@@ -346,11 +353,6 @@ void BrowserContext::WriteIntoTrace(perfetto::TracedValue context) {
   // exist when producing traces from underneath the destructor.
   if (impl())
     dict.Add("id", impl()->UniqueId());
-}
-
-void BrowserContext::WriteIntoTrace(
-    perfetto::TracedProto<ChromeBrowserContext> proto) {
-  proto->set_id(impl()->UniqueId());
 }
 
 //////////////////////////////////////////////////////////////////////////////
