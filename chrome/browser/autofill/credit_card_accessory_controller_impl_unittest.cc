@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/strings/grit/components_strings.h"
@@ -121,6 +122,8 @@ class CreditCardAccessoryControllerTest
                                                         &data_manager_)) {}
 
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillShowUnmaskedCachedCardInManualFillingView);
     ChromeRenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GURL(kExampleSite));
     SetFormOrigin(GURL(kExampleSite));
@@ -160,6 +163,25 @@ class CreditCardAccessoryControllerTest
   TestBrowserAutofillManager af_manager_;
   base::MockCallback<AccessoryController::FillingSourceObserver>
       filling_source_observer_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class CreditCardAccessoryControllerTestWithoutSupportingUnmaskedCards
+    : public CreditCardAccessoryControllerTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        autofill::features::kAutofillShowUnmaskedCachedCardInManualFillingView);
+    ChromeRenderViewHostTestHarness::SetUp();
+    NavigateAndCommit(GURL(kExampleSite));
+    SetFormOrigin(GURL(kExampleSite));
+    FocusWebContentsOnMainFrame();
+
+    CreditCardAccessoryControllerImpl::CreateForWebContentsForTesting(
+        web_contents(), mock_mf_controller_.AsWeakPtr(), &data_manager_,
+        &af_manager_, &mock_af_driver_);
+    data_manager_.SetPrefService(profile()->GetPrefs());
+  }
 };
 
 TEST_F(CreditCardAccessoryControllerTest, RefreshSuggestions) {
@@ -185,6 +207,7 @@ TEST_F(CreditCardAccessoryControllerTest, RefreshSuggestions) {
           .AppendSimpleField(card.Expiration2DigitMonthAsString())
           .AppendSimpleField(card.Expiration4DigitYearAsString())
           .AppendSimpleField(card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
+          .AppendSimpleField(std::u16string())
           .Build());
 }
 
@@ -220,6 +243,9 @@ TEST_F(CreditCardAccessoryControllerTest, PreventsFillingInsecureContexts) {
                              /*selectable=*/false)
                 .AppendField(card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL),
                              card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL),
+                             /*is_obfuscated=*/false,
+                             /*selectable=*/false)
+                .AppendField(std::u16string(), std::u16string(),
                              /*is_obfuscated=*/false,
                              /*selectable=*/false)
                 .Build());
@@ -258,6 +284,123 @@ TEST_F(CreditCardAccessoryControllerTest, ServerCardUnmask) {
               RendererShouldFillFieldWithValue(field_id, expected_number));
 
   controller()->OnFillingTriggered(field_id, field);
+}
+
+TEST_F(CreditCardAccessoryControllerTest,
+       RefreshSuggestionsUnmaskedCachedCard) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      autofill::features::kAutofillShowUnmaskedCachedCardInManualFillingView);
+  // Store a full server card in the credit_card_access_manager's
+  // unmasked_cards_cache.
+  autofill::CreditCard card = test::GetCreditCard();
+  card.set_record_type(CreditCard::FULL_SERVER_CARD);
+  data_manager_.AddCreditCard(card);
+  std::u16string cvc = u"123";
+  af_manager_.credit_card_access_manager()->CacheUnmaskedCardInfo(card, cvc);
+  autofill::AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
+                                      std::u16string());
+
+  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
+      .WillOnce(SaveArg<0>(&result));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+
+  EXPECT_EQ(result, controller()->GetSheetData());
+  // Verify that the full card number and the cvc fields are added to the
+  // accessory sheet data.
+  EXPECT_EQ(
+      result,
+      CreditCardAccessorySheetDataBuilder()
+          .AddUserInfo(kVisaCard)
+          .AppendSimpleField(card.GetRawInfo(autofill::CREDIT_CARD_NUMBER))
+          .AppendSimpleField(card.Expiration2DigitMonthAsString())
+          .AppendSimpleField(card.Expiration4DigitYearAsString())
+          .AppendSimpleField(card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
+          .AppendSimpleField(cvc)
+          .Build());
+}
+
+TEST_F(CreditCardAccessoryControllerTest, UnmaskedCacheCardsReorderedToTheTop) {
+  // Add a masked card to PersonalDataManager.
+  autofill::CreditCard masked_card = test::GetMaskedServerCard();
+  data_manager_.AddCreditCard(masked_card);
+  // Add a full server card to PersonalDataManager and also cache it in hte
+  // CreditCardAccessManager.
+  autofill::CreditCard unmasked_card = test::GetCreditCard();
+  unmasked_card.set_record_type(CreditCard::FULL_SERVER_CARD);
+  data_manager_.AddCreditCard(unmasked_card);
+  std::u16string cvc = u"123";
+  af_manager_.credit_card_access_manager()->CacheUnmaskedCardInfo(unmasked_card,
+                                                                  cvc);
+  autofill::AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
+                                      std::u16string());
+
+  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
+      .WillOnce(SaveArg<0>(&result));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+
+  EXPECT_EQ(result, controller()->GetSheetData());
+  // Verify that the unmasked card is at the top followed by the masked card.
+  EXPECT_EQ(
+      result,
+      CreditCardAccessorySheetDataBuilder()
+          .AddUserInfo(kVisaCard)
+          .AppendSimpleField(
+              unmasked_card.GetRawInfo(autofill::CREDIT_CARD_NUMBER))
+          .AppendSimpleField(unmasked_card.Expiration2DigitMonthAsString())
+          .AppendSimpleField(unmasked_card.Expiration4DigitYearAsString())
+          .AppendSimpleField(
+              unmasked_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
+          .AppendSimpleField(cvc)
+          .AddUserInfo(kMasterCard)
+          .AppendField(masked_card.ObfuscatedLastFourDigits(),
+                       masked_card.ObfuscatedLastFourDigits(),
+                       masked_card.guid(),
+                       /*is_obfuscated=*/false,
+                       /*selectable=*/true)
+          .AppendSimpleField(masked_card.Expiration2DigitMonthAsString())
+          .AppendSimpleField(masked_card.Expiration4DigitYearAsString())
+          .AppendSimpleField(
+              masked_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
+          .AppendSimpleField(std::u16string())
+          .Build());
+}
+
+TEST_F(CreditCardAccessoryControllerTestWithoutSupportingUnmaskedCards,
+       RefreshSuggestionsUnmaskedCachedCard) {
+  // Store a full server card in the credit_card_access_manager's
+  // unmasked_cards_cache.
+  autofill::CreditCard card = test::GetCreditCard();
+  card.set_record_type(CreditCard::FULL_SERVER_CARD);
+  data_manager_.AddCreditCard(card);
+  std::u16string cvc = u"123";
+  af_manager_.credit_card_access_manager()->CacheUnmaskedCardInfo(card, cvc);
+  autofill::AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
+                                      std::u16string());
+
+  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
+      .WillOnce(SaveArg<0>(&result));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+
+  EXPECT_EQ(result, controller()->GetSheetData());
+  // Since the experiment is disabled, verify that the only the obfuscated last
+  // four and no cvc is added to the accessory sheet data.
+  EXPECT_EQ(
+      result,
+      CreditCardAccessorySheetDataBuilder()
+          .AddUserInfo(kVisaCard)
+          .AppendField(card.ObfuscatedLastFourDigits(),
+                       card.ObfuscatedLastFourDigits(), card.guid(),
+                       /*is_obfuscated=*/false,
+                       /*selectable=*/true)
+          .AppendSimpleField(card.Expiration2DigitMonthAsString())
+          .AppendSimpleField(card.Expiration4DigitYearAsString())
+          .AppendSimpleField(card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
+          .AppendSimpleField(std::u16string())
+          .Build());
 }
 
 }  // namespace autofill

@@ -77,6 +77,11 @@ class CreditCardAccessoryControllerImpl
   autofill::BrowserAutofillManager* af_manager_for_testing_ = nullptr;
   autofill::AutofillDriver* af_driver_for_testing_ = nullptr;
 
+  // Cached cards that are already unmasked by the user. These are shown to the
+  // user in plaintext and won't require any authentication when filling is
+  // triggered.
+  std::vector<const CachedServerCardInfo*> cached_server_cards_;
+
   // The observer to notify if available suggestions change.
   FillingSourceObserver source_observer_;
 

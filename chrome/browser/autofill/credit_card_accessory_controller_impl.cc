@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -41,6 +42,27 @@ void AddSimpleField(const std::u16string& data,
                                        /*is_password=*/false, enabled));
 }
 
+void AddCardDetailsToUserInfo(const CreditCard& card,
+                              UserInfo* user_info,
+                              std::u16string cvc,
+                              bool enabled) {
+  if (card.HasValidExpirationDate()) {
+    AddSimpleField(card.Expiration2DigitMonthAsString(), user_info, enabled);
+    AddSimpleField(card.Expiration4DigitYearAsString(), user_info, enabled);
+  } else {
+    AddSimpleField(std::u16string(), user_info, enabled);
+    AddSimpleField(std::u16string(), user_info, enabled);
+  }
+
+  if (card.HasNameOnCard()) {
+    AddSimpleField(card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL), user_info,
+                   enabled);
+  } else {
+    AddSimpleField(std::u16string(), user_info, enabled);
+  }
+  AddSimpleField(cvc, user_info, enabled);
+}
+
 UserInfo TranslateCard(const CreditCard* data, bool enabled) {
   DCHECK(data);
 
@@ -50,21 +72,20 @@ UserInfo TranslateCard(const CreditCard* data, bool enabled) {
   user_info.add_field(UserInfo::Field(obfuscated_number, obfuscated_number,
                                       data->guid(), /*is_password=*/false,
                                       enabled));
+  AddCardDetailsToUserInfo(*data, &user_info, std::u16string(), enabled);
 
-  if (data->HasValidExpirationDate()) {
-    AddSimpleField(data->Expiration2DigitMonthAsString(), &user_info, enabled);
-    AddSimpleField(data->Expiration4DigitYearAsString(), &user_info, enabled);
-  } else {
-    AddSimpleField(std::u16string(), &user_info, enabled);
-    AddSimpleField(std::u16string(), &user_info, enabled);
-  }
+  return user_info;
+}
 
-  if (data->HasNameOnCard()) {
-    AddSimpleField(data->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL),
-                   &user_info, enabled);
-  } else {
-    AddSimpleField(std::u16string(), &user_info, enabled);
-  }
+UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
+  DCHECK(data);
+
+  const CreditCard& card = data->card;
+  UserInfo user_info(card.network());
+
+  AddSimpleField(card.GetRawInfo(autofill::CREDIT_CARD_NUMBER), &user_info,
+                 enabled);
+  AddCardDetailsToUserInfo(card, &user_info, data->cvc, enabled);
 
   return user_info;
 }
@@ -88,11 +109,26 @@ CreditCardAccessoryControllerImpl::GetSheetData() const {
   bool allow_filling = valid_manager && ShouldAllowCreditCardFallbacks(
                                             GetManager()->client(),
                                             GetManager()->last_query_form());
-  std::transform(cards_cache_.begin(), cards_cache_.end(),
-                 std::back_inserter(info_to_add),
-                 [allow_filling](const CreditCard* data) {
-                   return TranslateCard(data, allow_filling);
-                 });
+
+  if (!cached_server_cards_.empty()) {
+    // Add the cached server cards first, so that they show up on the top of the
+    // manual filling view.
+    std::transform(cached_server_cards_.begin(), cached_server_cards_.end(),
+                   std::back_inserter(info_to_add),
+                   [allow_filling](const CachedServerCardInfo* data) {
+                     return TranslateCachedCard(data, allow_filling);
+                   });
+  }
+  // Only add cards that are not present in the cache. Otherwise, we might
+  // show duplicates.
+  for (auto* card : cards_cache_) {
+    if (cached_server_cards_.empty() ||
+        !GetManager()
+             ->credit_card_access_manager()
+             ->IsCardPresentInUnmaskedCache(card->server_id())) {
+      info_to_add.push_back(TranslateCard(card, allow_filling));
+    }
+  }
 
   const std::vector<FooterCommand> footer_commands = {FooterCommand(
       l10n_util::GetStringUTF16(
@@ -200,6 +236,7 @@ void CreditCardAccessoryControllerImpl::RefreshSuggestions() {
     FetchSuggestionsFromPersonalDataManager();
   } else {
     cards_cache_.clear();  // If cards cannot be filled, don't show them.
+    cached_server_cards_.clear();
   }
   absl::optional<AccessorySheetData> data = GetSheetData();
   if (source_observer_) {
@@ -287,6 +324,18 @@ void CreditCardAccessoryControllerImpl::
   } else {
     cards_cache_ = personal_data_manager_->GetCreditCardsToSuggest(
         /*include_server_cards=*/true);
+  }
+  // TODO(crbug.com/1196021) Update the below logic to allow for showing only
+  // virtual cards if the kAutofillShowUnmaskedCachedCardInManualFillingView is
+  // disabled.
+  if (GetManager() && GetManager()->credit_card_access_manager() &&
+      base::FeatureList::IsEnabled(
+          autofill::features::
+              kAutofillShowUnmaskedCachedCardInManualFillingView)) {
+    cached_server_cards_ =
+        GetManager()->credit_card_access_manager()->GetCachedUnmaskedCards();
+  } else {
+    cached_server_cards_.clear();  // No data available.
   }
 }
 

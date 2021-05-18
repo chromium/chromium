@@ -80,9 +80,13 @@ namespace autofill {
 namespace {
 
 const char kTestGUID[] = "00000000-0000-0000-0000-000000000001";
+const char kTestGUID2[] = "00000000-0000-0000-0000-000000000002";
 const char kTestNumber[] = "4234567890123456";  // Visa
+const char kTestNumber2[] = "5454545454545454";
 const char16_t kTestNumber16[] = u"4234567890123456";
 const char16_t kTestCvc16[] = u"123";
+const char kTestServerId[] = "server_id_1";
+const char kTestServerId2[] = "server_id_2";
 
 #if !defined(OS_IOS)
 const char kTestCvc[] = "123";
@@ -218,7 +222,8 @@ class CreditCardAccessManagerTest : public testing::Test {
 
   void CreateServerCard(std::string guid,
                         std::string number = std::string(),
-                        bool masked = true) {
+                        bool masked = true,
+                        std::string server_id = std::string()) {
     CreditCard server_card = CreditCard();
     test::SetCreditCardInfo(&server_card, "Elvis Presley", number.c_str(),
                             test::NextMonth().c_str(), test::NextYear().c_str(),
@@ -226,7 +231,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     server_card.set_guid(guid);
     server_card.set_record_type(masked ? CreditCard::MASKED_SERVER_CARD
                                        : CreditCard::FULL_SERVER_CARD);
-
+    server_card.set_server_id(server_id);
     personal_data_manager_.AddServerCreditCard(server_card);
   }
 
@@ -1859,6 +1864,40 @@ TEST_F(CreditCardAccessManagerTest, FetchCreditCardUsesUnmaskedCardCache) {
   credit_card_access_manager_->FetchCreditCard(masked_card,
                                                accessor_->GetWeakPtr());
   histogram_tester.ExpectBucketCount("Autofill.UsedCachedServerCard", 2, 1);
+}
+
+TEST_F(CreditCardAccessManagerTest, GetCachedUnmaskedCards) {
+  // Assert that there are no cards cached initially.
+  EXPECT_EQ(0U, credit_card_access_manager_->GetCachedUnmaskedCards().size());
+
+  CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
+  CreateServerCard(kTestGUID2, kTestNumber2, /*masked=*/true, kTestServerId2);
+  // Add a card to the cache.
+  CreditCard* unmasked_card =
+      credit_card_access_manager_->GetCreditCard(kTestGUID);
+  credit_card_access_manager_->CacheUnmaskedCardInfo(*unmasked_card,
+                                                     kTestCvc16);
+
+  // Verify that only the card added to the cache is returned.
+  ASSERT_EQ(1U, credit_card_access_manager_->GetCachedUnmaskedCards().size());
+  EXPECT_EQ(*unmasked_card,
+            credit_card_access_manager_->GetCachedUnmaskedCards()[0]->card);
+}
+
+TEST_F(CreditCardAccessManagerTest, IsCardPresentInUnmaskedCache) {
+  CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
+  CreateServerCard(kTestGUID2, kTestNumber2, /*masked=*/true, kTestServerId2);
+  // Add a card to the cache.
+  CreditCard* unmasked_card =
+      credit_card_access_manager_->GetCreditCard(kTestGUID);
+  credit_card_access_manager_->CacheUnmaskedCardInfo(*unmasked_card,
+                                                     kTestCvc16);
+
+  // Verify that only one card is present in the cache.
+  EXPECT_TRUE(credit_card_access_manager_->IsCardPresentInUnmaskedCache(
+      unmasked_card->server_id()));
+  EXPECT_FALSE(credit_card_access_manager_->IsCardPresentInUnmaskedCache(
+      credit_card_access_manager_->GetCreditCard(kTestGUID2)->server_id()));
 }
 
 }  // namespace autofill

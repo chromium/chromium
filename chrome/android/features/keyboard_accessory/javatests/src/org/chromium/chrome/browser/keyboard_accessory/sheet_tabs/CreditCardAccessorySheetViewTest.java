@@ -116,7 +116,7 @@ public class CreditCardAccessorySheetViewTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.add(new AccessorySheetDataPiece(
-                    createInfo("4111111111111111", "04", "2034", "Kirby Puckett", clicked),
+                    createInfo("4111111111111111", "04", "2034", "Kirby Puckett", "123", clicked),
                     AccessorySheetDataPiece.Type.CREDIT_CARD_INFO));
             mModel.add(new AccessorySheetDataPiece(
                     new KeyboardAccessoryData.FooterCommand("Manage credit cards", null),
@@ -151,6 +151,7 @@ public class CreditCardAccessorySheetViewTest {
             infoWithUnclickableField.addField(new UserInfoField("", "", "month", false, null));
             infoWithUnclickableField.addField(new UserInfoField("", "", "year", false, null));
             infoWithUnclickableField.addField(new UserInfoField("", "", "name", false, null));
+            infoWithUnclickableField.addField(new UserInfoField("", "", "cvc", false, null));
             mModel.add(new AccessorySheetDataPiece(
                     infoWithUnclickableField, AccessorySheetDataPiece.Type.CREDIT_CARD_INFO));
             mModel.add(new AccessorySheetDataPiece(
@@ -174,7 +175,7 @@ public class CreditCardAccessorySheetViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.add(new AccessorySheetDataPiece(
                     // Cardholder name is empty
-                    createInfo("4111111111111111", "04", "2034", "", clicked),
+                    createInfo("4111111111111111", "04", "2034", "", "", clicked),
                     AccessorySheetDataPiece.Type.CREDIT_CARD_INFO));
             mModel.add(new AccessorySheetDataPiece(
                     new KeyboardAccessoryData.FooterCommand("Manage credit cards", null),
@@ -184,6 +185,7 @@ public class CreditCardAccessorySheetViewTest {
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(2)));
 
         assertThat(findChipView(R.id.cardholder).isShown(), is(false));
+        assertThat(findChipView(R.id.cvc).isShown(), is(false));
     }
 
     @Test
@@ -209,14 +211,15 @@ public class CreditCardAccessorySheetViewTest {
         assertThat(warningText.getText(), is(kWarning));
     }
 
-    private UserInfo createInfo(
-            String number, String month, String year, String name, AtomicBoolean clickRecorder) {
+    private UserInfo createInfo(String number, String month, String year, String name, String cvc,
+            AtomicBoolean clickRecorder) {
         UserInfo info = new UserInfo("", false);
         info.addField(
                 new UserInfoField(number, number, "", false, item -> clickRecorder.set(true)));
         info.addField(new UserInfoField(month, month, "", false, item -> clickRecorder.set(true)));
         info.addField(new UserInfoField(year, year, "", false, item -> clickRecorder.set(true)));
         info.addField(new UserInfoField(name, name, "", false, item -> clickRecorder.set(true)));
+        info.addField(new UserInfoField(cvc, cvc, "", false, item -> clickRecorder.set(true)));
         return info;
     }
 

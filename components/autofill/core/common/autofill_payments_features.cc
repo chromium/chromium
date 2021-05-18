@@ -131,6 +131,12 @@ const base::Feature kAutofillSaveCardDismissOnNavigation{
 const base::Feature kAutofillSaveCardInfobarEditSupport{
     "AutofillSaveCardInfobarEditSupport", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// When enabled, the entire PAN and the CVC details of the unmasked cached card
+// will be shown in the manual filling view.
+const base::Feature kAutofillShowUnmaskedCachedCardInManualFillingView{
+    "AutofillShowUnmaskedCachedCardInManualFillingView",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, suggestions with offers will be shown at the top.
 const base::Feature kAutofillSortSuggestionsBasedOnOfferPresence{
     "AutofillSortSuggestionsBasedOnOfferPresence",

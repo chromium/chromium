@@ -131,6 +131,14 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // TODO(crbug/1069929): Add browsertests for this.
   void CacheUnmaskedCardInfo(const CreditCard& card, const std::u16string& cvc);
 
+  // Return the info for the server cards present in the
+  // |unamsked_cards_cache_|.
+  std::vector<const CachedServerCardInfo*> GetCachedUnmaskedCards() const;
+
+  // Returns true if a |unmasked_cards_cache| contains an entry for the card
+  // with |server_id|.
+  bool IsCardPresentInUnmaskedCache(const std::string& server_id) const;
+
   CreditCardCVCAuthenticator* GetOrCreateCVCAuthenticator();
 
 #if !defined(OS_IOS)

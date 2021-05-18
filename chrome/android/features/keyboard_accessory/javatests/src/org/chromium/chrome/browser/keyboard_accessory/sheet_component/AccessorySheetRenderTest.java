@@ -196,6 +196,8 @@ public class AccessorySheetRenderTest {
                 new UserInfoField("2021", "2021", "-1", false, result -> {}));
         sheet.getUserInfoList().get(0).addField(
                 new UserInfoField("Todd Tester", "Todd Tester", "0", false, result -> {}));
+        sheet.getUserInfoList().get(0).addField(
+                new UserInfoField("123", "123", "-1", false, result -> {}));
         sheet.getUserInfoList().add(new KeyboardAccessoryData.UserInfo("", false));
         sheet.getUserInfoList().get(1).addField(
                 new UserInfoField("**** 8012", "Card for Maya Park", "1", false, result -> {}));
@@ -205,6 +207,8 @@ public class AccessorySheetRenderTest {
                 new UserInfoField("", "", "-1", false, result -> {}));
         sheet.getUserInfoList().get(1).addField( // Unused card holder field.
                 new UserInfoField("", "", "1", false, result -> {}));
+        sheet.getUserInfoList().get(1).addField(
+                new UserInfoField("", "", "-1", false, result -> {}));
         sheet.getFooterCommands().add(
                 new KeyboardAccessoryData.FooterCommand("Manage payment methods", cb -> {}));
 

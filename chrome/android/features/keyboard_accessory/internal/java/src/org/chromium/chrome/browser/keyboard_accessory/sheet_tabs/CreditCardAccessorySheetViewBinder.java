@@ -51,6 +51,7 @@ class CreditCardAccessorySheetViewBinder {
             bindChipView(view.getExpMonth(), info.getFields().get(1));
             bindChipView(view.getExpYear(), info.getFields().get(2));
             bindChipView(view.getCardholder(), info.getFields().get(3));
+            bindChipView(view.getCvc(), info.getFields().get(4));
 
             view.getExpiryGroup().setVisibility(view.getExpYear().getVisibility() == View.VISIBLE
                                     || view.getExpMonth().getVisibility() == View.VISIBLE

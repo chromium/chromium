@@ -112,6 +112,20 @@ bool CreditCardAccessManager::UnmaskedCardCacheIsEmpty() {
   return unmasked_card_cache_.empty();
 }
 
+std::vector<const CachedServerCardInfo*>
+CreditCardAccessManager::GetCachedUnmaskedCards() const {
+  std::vector<const CachedServerCardInfo*> unmasked_cards;
+  for (auto const& iter : unmasked_card_cache_) {
+    unmasked_cards.push_back(&iter.second);
+  }
+  return unmasked_cards;
+}
+
+bool CreditCardAccessManager::IsCardPresentInUnmaskedCache(
+    const std::string& server_id) const {
+  return unmasked_card_cache_.find(server_id) != unmasked_card_cache_.end();
+}
+
 bool CreditCardAccessManager::ServerCardsAvailable() {
   for (const CreditCard* credit_card : GetCreditCardsToSuggest()) {
     if (!IsLocalCard(credit_card))
