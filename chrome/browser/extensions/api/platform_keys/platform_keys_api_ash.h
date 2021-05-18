@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "extensions/browser/extension_function.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -77,7 +78,7 @@ class PlatformKeysInternalSignFunction : public ExtensionFunction {
   // Called when the signature was generated. If an error occurred,
   // |signature| will be empty.
   void OnSigned(const std::string& signature,
-                chromeos::platform_keys::Status status);
+                absl::optional<crosapi::mojom::KeystoreError> error);
 
   DECLARE_EXTENSION_FUNCTION("platformKeysInternal.sign",
                              PLATFORMKEYSINTERNAL_SIGN)

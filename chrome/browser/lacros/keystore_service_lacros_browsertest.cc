@@ -5,16 +5,22 @@
 #include <string>
 
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom-shared.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 
-// During GenerateKey* call this error means that the key was created, but
-// Ash-Chrome failed to tag it properly. It happens because Ash-Chrome is trying
-// to work with the real NSS, but in browser tests (i.e. on Linux) it doesn't
-// work the same way as on ChromeOS.
+// During ExtensionGenerateKey* call this error means that the key was created,
+// but Ash-Chrome failed to tag it properly. It happens because Ash-Chrome is
+// trying to work with the real NSS, but in browser tests (i.e. on Linux) it
+// doesn't work the same way as on ChromeOS.
 const char kFailedToSetAttribute[] = "Setting key attribute value failed.";
+// During ExtensionSign call this error means that Ash-Chrome wasn't able to
+// find the key in a list of allowed keys.
+const char kErrorKeyNotAllowedForSigning[] =
+    "This key is not allowed for signing. Either it was used for "
+    "signing before or it was not correctly generated.";
 
 // This class provides integration testing for the keystore service crosapi.
 // TODO(https://crbug.com/1134340): The logic being tested does not rely on
@@ -64,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, GetCertificatesEmpty) {
   EXPECT_EQ(0u, result->get_certificates().size());
 }
 
-// Tests that generate key works.
+// Tests that extension generate key works.
 IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
                        ExtensionGenerateKeyPKCS) {
   crosapi::mojom::ExtensionKeystoreBinaryResultPtr result;
@@ -107,6 +113,23 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
   // Errors out because Ash-Chrome is not running on ChromeOS.
   ASSERT_TRUE(result->is_error_message());
   EXPECT_EQ(result->get_error_message(), kFailedToSetAttribute);
+}
+
+// Tests that extension sign works.
+IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, ExtensionSign) {
+  crosapi::mojom::ExtensionKeystoreBinaryResultPtr result;
+  crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
+      keystore_service_remote().get());
+  async_waiter.ExtensionSign(
+      crosapi::mojom::KeystoreType::kUser,
+      /*public_key=*/{1, 2, 3, 4, 5},
+      /*scheme=*/crosapi::mojom::KeystoreSigningScheme::kRsassaPkcs1V15Sha256,
+      /*data=*/{10, 11, 12, 13, 14, 15},
+      /*extension_id=*/"123", &result);
+  // Errors out because the public key is not valid. Currently there's no way to
+  // create a valid key in Ash-Chrome during browser tests.
+  ASSERT_TRUE(result->is_error_message());
+  EXPECT_EQ(result->get_error_message(), kErrorKeyNotAllowedForSigning);
 }
 
 // Tests that trying to add/remove an incorrectly formatted certificate results

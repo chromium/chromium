@@ -45,6 +45,7 @@ using crosapi::mojom::KeystoreBinaryResult;
 using crosapi::mojom::KeystoreBinaryResultPtr;
 using crosapi::mojom::KeystoreECDSAParams;
 using crosapi::mojom::KeystoreECDSAParamsPtr;
+using crosapi::mojom::KeystoreError;
 using crosapi::mojom::KeystorePKCS115Params;
 using crosapi::mojom::KeystorePKCS115ParamsPtr;
 using crosapi::mojom::KeystoreService;
@@ -82,6 +83,44 @@ KeystoreType KeystoreTypeFromTokenId(platform_keys::TokenId token_id) {
     case platform_keys::TokenId::kSystem:
       return KeystoreType::kDevice;
   }
+}
+
+KeystoreSigningScheme GetKeystoreSigningScheme(
+    platform_keys::KeyType key_type,
+    platform_keys::HashAlgorithm hash_algorithm) {
+  switch (key_type) {
+    case platform_keys::KeyType::kRsassaPkcs1V15: {
+      switch (hash_algorithm) {
+        case platform_keys::HASH_ALGORITHM_NONE:
+          return KeystoreSigningScheme::kRsassaPkcs1V15None;
+        case platform_keys::HASH_ALGORITHM_SHA1:
+          return KeystoreSigningScheme::kRsassaPkcs1V15Sha1;
+        case platform_keys::HASH_ALGORITHM_SHA256:
+          return KeystoreSigningScheme::kRsassaPkcs1V15Sha256;
+        case platform_keys::HASH_ALGORITHM_SHA384:
+          return KeystoreSigningScheme::kRsassaPkcs1V15Sha384;
+        case platform_keys::HASH_ALGORITHM_SHA512:
+          return KeystoreSigningScheme::kRsassaPkcs1V15Sha512;
+      }
+    }
+    case platform_keys::KeyType::kEcdsa: {
+      switch (hash_algorithm) {
+        case platform_keys::HASH_ALGORITHM_NONE:
+          // This combination is not supported.
+          return KeystoreSigningScheme::kUnknown;
+        case platform_keys::HASH_ALGORITHM_SHA1:
+          return KeystoreSigningScheme::kEcdsaSha1;
+        case platform_keys::HASH_ALGORITHM_SHA256:
+          return KeystoreSigningScheme::kEcdsaSha256;
+        case platform_keys::HASH_ALGORITHM_SHA384:
+          return KeystoreSigningScheme::kEcdsaSha384;
+        case platform_keys::HASH_ALGORITHM_SHA512:
+          return KeystoreSigningScheme::kEcdsaSha512;
+      }
+    }
+  }
+  NOTREACHED();
+  return KeystoreSigningScheme::kUnknown;
 }
 
 }  // namespace
@@ -333,13 +372,14 @@ class ExtensionPlatformKeysService::SignTask : public Task {
            SignCallback callback,
            ExtensionPlatformKeysService* service)
       : token_id_(token_id),
-        data_(data),
+        data_(data.begin(), data.end()),
         public_key_spki_der_(public_key_spki_der),
-        key_type_(key_type),
-        hash_algorithm_(hash_algorithm),
         extension_id_(extension_id),
         callback_(std::move(callback)),
-        service_(service) {}
+        service_(service) {
+    signing_scheme_ = GetKeystoreSigningScheme(key_type, hash_algorithm);
+    DCHECK(signing_scheme_ != KeystoreSigningScheme::kUnknown);
+  }
 
   ~SignTask() override {}
 
@@ -410,9 +450,8 @@ class ExtensionPlatformKeysService::SignTask : public Task {
 
   void OnCanUseKeyForSigningKnown(bool allowed) {
     if (!allowed) {
-      std::move(callback_).Run(
-          std::string() /* no signature */,
-          platform_keys::Status::kErrorKeyNotAllowedForSigning);
+      std::move(callback_).Run(std::string() /* no signature */,
+                               KeystoreError::kKeyNotAllowedForSigning);
       next_step_ = Step::DONE;
       DoStep();
       return;
@@ -434,7 +473,8 @@ class ExtensionPlatformKeysService::SignTask : public Task {
       LOG(ERROR) << "Marking a key used for signing failed: "
                  << platform_keys::StatusToString(status);
       next_step_ = Step::DONE;
-      std::move(callback_).Run(std::string() /* no signature */, status);
+      std::move(callback_).Run(std::string() /* no signature */,
+                               platform_keys::StatusToKeystoreError(status));
       DoStep();
       return;
     }
@@ -445,42 +485,45 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   // Starts the actual signing operation and afterwards passes the signature (or
   // error) to |callback_|.
   void Sign() {
-    switch (key_type_) {
-      case platform_keys::KeyType::kRsassaPkcs1V15: {
-        if (hash_algorithm_ ==
-            platform_keys::HashAlgorithm::HASH_ALGORITHM_NONE) {
-          service_->platform_keys_service_->SignRSAPKCS1Raw(
-              token_id_, data_, public_key_spki_der_,
-              base::BindOnce(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
-        } else {
-          service_->platform_keys_service_->SignRSAPKCS1Digest(
-              token_id_, data_, public_key_spki_der_, hash_algorithm_,
-              base::BindOnce(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
-        }
-        break;
-      }
-      case platform_keys::KeyType::kEcdsa: {
-        service_->platform_keys_service_->SignECDSADigest(
-            token_id_, data_, public_key_spki_der_, hash_algorithm_,
-            base::BindOnce(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
-        break;
-      }
+    // TODO(crbug.com/657632): This can be simplified when mojo supports
+    // optional enums.
+    bool is_keystore_provided = false;
+    KeystoreType keystore = KeystoreType::kUser;
+    if (token_id_.has_value()) {
+      is_keystore_provided = true;
+      keystore = KeystoreTypeFromTokenId(token_id_.value());
     }
+    std::vector<uint8_t> public_key(public_key_spki_der_.begin(),
+                                    public_key_spki_der_.end());
+
+    service_->keystore_service_->Sign(
+        is_keystore_provided, keystore, std::move(public_key), signing_scheme_,
+        data_, base::BindOnce(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
   }
 
-  void DidSign(const std::string& signature, platform_keys::Status status) {
-    std::move(callback_).Run(signature, status);
+  void DidSign(KeystoreBinaryResultPtr result) {
+    switch (result->which()) {
+      case KeystoreBinaryResult::Tag::ERROR:
+        std::move(callback_).Run(/*signature=*/std::string(),
+                                 result->get_error());
+        break;
+      case KeystoreBinaryResult::Tag::BLOB:
+        const std::vector<uint8_t>& blob = result->get_blob();
+        std::move(callback_).Run(
+            /*signature=*/std::string(blob.begin(), blob.end()),
+            /*error=*/absl::nullopt);
+        break;
+    }
     DoStep();
   }
 
   Step next_step_ = Step::GET_EXTENSION_PERMISSIONS;
 
   absl::optional<platform_keys::TokenId> token_id_;
-  const std::string data_;
+  const std::vector<uint8_t> data_;
   const std::string public_key_spki_der_;
 
-  const platform_keys::KeyType key_type_;
-  const platform_keys::HashAlgorithm hash_algorithm_;
+  KeystoreSigningScheme signing_scheme_;
   const std::string extension_id_;
   SignCallback callback_;
   std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>

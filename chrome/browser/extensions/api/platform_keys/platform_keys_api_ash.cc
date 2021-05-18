@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api.h"
 #include "chrome/common/extensions/api/platform_keys_internal.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
+#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/net_errors.h"
@@ -348,14 +349,16 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
 
 void PlatformKeysInternalSignFunction::OnSigned(
     const std::string& signature,
-    chromeos::platform_keys::Status status) {
+    absl::optional<crosapi::mojom::KeystoreError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (status == chromeos::platform_keys::Status::kSuccess)
+  if (!error) {
     Respond(ArgumentList(api_pki::Sign::Results::Create(
         std::vector<uint8_t>(signature.begin(), signature.end()))));
-  else
-    Respond(Error(chromeos::platform_keys::StatusToString(status)));
+  } else {
+    Respond(
+        Error(chromeos::platform_keys::KeystoreErrorToString(error.value())));
+  }
 }
 
 PlatformKeysVerifyTLSServerCertificateFunction::

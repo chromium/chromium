@@ -111,8 +111,9 @@ class ExtensionPlatformKeysService : public KeyedService {
 
   // If signing was successful, |signature| will contain the signature. If it
   // failed, |signature| will be empty.
-  using SignCallback = base::OnceCallback<void(const std::string& signature,
-                                               platform_keys::Status status)>;
+  using SignCallback = base::OnceCallback<void(
+      const std::string& signature,
+      absl::optional<crosapi::mojom::KeystoreError> error)>;
 
   // Digests |data|, applies PKCS1 padding if specified by |hash_algorithm| and
   // chooses the signature algorithm according to |key_type| and signs the data

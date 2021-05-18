@@ -69,6 +69,12 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
   void GenerateKey(mojom::KeystoreType keystore,
                    mojom::KeystoreSigningAlgorithmPtr algorithm,
                    GenerateKeyCallback callback) override;
+  void Sign(bool is_keystore_provided,
+            KeystoreType keystore,
+            const std::vector<uint8_t>& public_key,
+            SigningScheme scheme,
+            const std::vector<uint8_t>& data,
+            SignCallback callback) override;
 
  private:
   // |challenge| is used as a opaque identifier to match against the unique_ptr
@@ -95,10 +101,13 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
       absl::optional<crosapi::mojom::KeystoreError> error);
   static void DidExtensionSign(ExtensionSignCallback callback,
                                const std::string& signature,
-                               chromeos::platform_keys::Status status);
+                               absl::optional<mojom::KeystoreError> error);
   static void DidGenerateKey(GenerateKeyCallback callback,
                              const std::string& public_key,
                              chromeos::platform_keys::Status status);
+  static void DidSign(SignCallback callback,
+                      const std::string& signature,
+                      chromeos::platform_keys::Status status);
 
   // Container to keep outstanding challenges alive.
   std::vector<std::unique_ptr<ash::attestation::TpmChallengeKey>>
