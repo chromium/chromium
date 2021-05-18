@@ -5,6 +5,7 @@
 #include "media/cdm/win/media_foundation_cdm_factory.h"
 
 #include "base/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "media/base/mock_filters.h"
@@ -15,6 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::IsEmpty;
@@ -97,8 +99,8 @@ TEST_F(MediaFoundationCdmFactoryTest, Create) {
   COM_EXPECT_CALL(mf_cdm_factory_, CreateContentDecryptionModuleAccess(
                                        NotNull(), NotNull(), _, _))
       .WillOnce(DoAll(SetComPointee<3>(mf_cdm_access_.Get()), Return(S_OK)));
-  EXPECT_CALL(*cdm_helper_, GetCdmOriginId())
-      .WillOnce(Return(base::UnguessableToken::Create()));
+  EXPECT_CALL(*cdm_helper_, GetCdmOriginId(_))
+      .WillOnce(RunOnceCallback<0>(base::UnguessableToken::Create()));
   COM_EXPECT_CALL(mf_cdm_access_, CreateContentDecryptionModule(NotNull(), _))
       .WillOnce(DoAll(SetComPointee<1>(mf_cdm_.Get()), Return(S_OK)));
 
@@ -109,6 +111,9 @@ TEST_F(MediaFoundationCdmFactoryTest, Create) {
 TEST_F(MediaFoundationCdmFactoryTest, CreateCdmFactoryFail) {
   SetCreateCdmFactoryCallbackForTesting(/*expect_success=*/false);
 
+  EXPECT_CALL(*cdm_helper_, GetCdmOriginId(_))
+      .WillOnce(RunOnceCallback<0>(base::UnguessableToken::Create()));
+
   EXPECT_CALL(cdm_created_cb_, Run(IsNull(), _));
   Create();
 }
@@ -118,6 +123,8 @@ TEST_F(MediaFoundationCdmFactoryTest, IsTypeSupportedFail) {
 
   COM_EXPECT_CALL(mf_cdm_factory_, IsTypeSupported(NotNull(), IsNull()))
       .WillOnce(Return(FALSE));
+  EXPECT_CALL(*cdm_helper_, GetCdmOriginId(_))
+      .WillOnce(RunOnceCallback<0>(base::UnguessableToken::Create()));
 
   EXPECT_CALL(cdm_created_cb_, Run(IsNull(), _));
   Create();
@@ -131,6 +138,8 @@ TEST_F(MediaFoundationCdmFactoryTest, CreateCdmAccessFail) {
   COM_EXPECT_CALL(mf_cdm_factory_, CreateContentDecryptionModuleAccess(
                                        NotNull(), NotNull(), _, _))
       .WillOnce(Return(E_FAIL));
+  EXPECT_CALL(*cdm_helper_, GetCdmOriginId(_))
+      .WillOnce(RunOnceCallback<0>(base::UnguessableToken::Create()));
 
   EXPECT_CALL(cdm_created_cb_, Run(IsNull(), _));
   Create();
@@ -139,13 +148,8 @@ TEST_F(MediaFoundationCdmFactoryTest, CreateCdmAccessFail) {
 TEST_F(MediaFoundationCdmFactoryTest, NullCdmOriginIdFail) {
   SetCreateCdmFactoryCallbackForTesting(/*expect_success=*/true);
 
-  COM_EXPECT_CALL(mf_cdm_factory_, IsTypeSupported(NotNull(), IsNull()))
-      .WillOnce(Return(TRUE));
-  COM_EXPECT_CALL(mf_cdm_factory_, CreateContentDecryptionModuleAccess(
-                                       NotNull(), NotNull(), _, _))
-      .WillOnce(DoAll(SetComPointee<3>(mf_cdm_access_.Get()), Return(S_OK)));
-  EXPECT_CALL(*cdm_helper_, GetCdmOriginId())
-      .WillOnce(Return(base::UnguessableToken::Null()));
+  EXPECT_CALL(*cdm_helper_, GetCdmOriginId(_))
+      .WillOnce(RunOnceCallback<0>(base::UnguessableToken::Null()));
 
   EXPECT_CALL(cdm_created_cb_, Run(IsNull(), _));
   Create();
@@ -159,8 +163,8 @@ TEST_F(MediaFoundationCdmFactoryTest, CreateCdmFail) {
   COM_EXPECT_CALL(mf_cdm_factory_, CreateContentDecryptionModuleAccess(
                                        NotNull(), NotNull(), _, _))
       .WillOnce(DoAll(SetComPointee<3>(mf_cdm_access_.Get()), Return(S_OK)));
-  EXPECT_CALL(*cdm_helper_, GetCdmOriginId())
-      .WillOnce(Return(base::UnguessableToken::Create()));
+  EXPECT_CALL(*cdm_helper_, GetCdmOriginId(_))
+      .WillOnce(RunOnceCallback<0>(base::UnguessableToken::Create()));
   COM_EXPECT_CALL(mf_cdm_access_, CreateContentDecryptionModule(NotNull(), _))
       .WillOnce(DoAll(SetComPointee<1>(mf_cdm_.Get()), Return(E_FAIL)));
 

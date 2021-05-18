@@ -22,10 +22,6 @@ url::Origin CdmAuxiliaryHelper::GetCdmOrigin() {
   return url::Origin();
 }
 
-base::UnguessableToken CdmAuxiliaryHelper::GetCdmOriginId() {
-  return base::UnguessableToken::Null();
-}
-
 cdm::Buffer* CdmAuxiliaryHelper::CreateCdmBuffer(size_t capacity) {
   return nullptr;
 }
@@ -51,6 +47,10 @@ void CdmAuxiliaryHelper::ChallengePlatform(const std::string& service_id,
 
 void CdmAuxiliaryHelper::GetStorageId(uint32_t version, StorageIdCB callback) {
   std::move(callback).Run(version, std::vector<uint8_t>());
+}
+
+void CdmAuxiliaryHelper::GetCdmOriginId(GetCdmOriginIdCB callback) {
+  std::move(callback).Run(base::UnguessableToken::Null());
 }
 
 }  // namespace media

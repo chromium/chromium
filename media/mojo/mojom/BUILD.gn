@@ -19,6 +19,7 @@ mojom("mojom") {
     "audio_parameters.mojom",
     "audio_stream_factory.mojom",
     "capture_handle.mojom",
+    "cdm_pref_service.mojom",
     "cdm_service.mojom",
     "cdm_storage.mojom",
     "content_decryption_module.mojom",

@@ -4831,6 +4831,8 @@ static_library("browser") {
       "install_verification/win/module_list.h",
       "install_verification/win/module_verification_common.cc",
       "install_verification/win/module_verification_common.h",
+      "media/cdm_pref_service_impl.cc",
+      "media/cdm_pref_service_impl.h",
       "media/webrtc/window_icon_util_win.cc",
       "media_galleries/win/mtp_device_delegate_impl_win.cc",
       "media_galleries/win/mtp_device_delegate_impl_win.h",
