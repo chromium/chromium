@@ -306,4 +306,16 @@ TEST_F(NetworkConnectTest, ConnectToCellularNetwork_OutOfCredits) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(NetworkConnectTest, ConnectToCellularNetwork_SimLocked) {
+  EXPECT_CALL(*mock_delegate_, ShowNetworkSettings(kCellular1Guid)).Times(0);
+
+  service_test_->SetServiceProperty(kCellular1ServicePath,
+                                    shill::kErrorProperty,
+                                    base::Value(shill::kErrorSimLocked));
+  service_test_->SetErrorForNextConnectionAttempt(shill::kErrorConnectFailed);
+
+  NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
+  base::RunLoop().RunUntilIdle();
+}
+
 }  // namespace chromeos

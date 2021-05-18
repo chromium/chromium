@@ -153,6 +153,12 @@ void NetworkConnectImpl::HandleUnconfiguredNetwork(
       ShowCarrierAccountDetail(network_id);
       return;
     }
+
+    // If network is unconfigured because it's SIM locked, do nothing, as this
+    // is handled by NetworkStateNotifier.
+    if (network->GetError() == shill::kErrorSimLocked)
+      return;
+
     // No special configure or setup for |network|, show the settings UI.
     if (LoginState::Get()->IsUserLoggedIn())
       delegate_->ShowNetworkSettings(network_id);
