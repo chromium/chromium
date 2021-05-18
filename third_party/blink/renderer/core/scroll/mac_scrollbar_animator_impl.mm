@@ -62,12 +62,12 @@ ScrollbarPainter ScrollbarPainterForScrollbar(blink::Scrollbar& scrollbar) {
 @interface BlinkScrollbarPainterControllerDelegate : NSObject {
   blink::ScrollableArea* _scrollableArea;
 }
-- (id)initWithScrollableArea:(blink::ScrollableArea*)scrollableArea;
+- (instancetype)initWithScrollableArea:(blink::ScrollableArea*)scrollableArea;
 @end
 
 @implementation BlinkScrollbarPainterControllerDelegate
 
-- (id)initWithScrollableArea:(blink::ScrollableArea*)scrollableArea {
+- (instancetype)initWithScrollableArea:(blink::ScrollableArea*)scrollableArea {
   self = [super init];
   if (!self)
     return nil;
@@ -236,23 +236,24 @@ class BlinkScrollbarPartAnimationTimer {
   CGFloat _startValue;
   CGFloat _endValue;
 }
-- (id)initWithScrollbar:(blink::Scrollbar*)scrollbar
-       featureToAnimate:(FeatureToAnimate)featureToAnimate
-            animateFrom:(CGFloat)startValue
-              animateTo:(CGFloat)endValue
-               duration:(NSTimeInterval)duration
-             taskRunner:(scoped_refptr<base::SingleThreadTaskRunner>)taskRunner;
+- (instancetype)initWithScrollbar:(blink::Scrollbar*)scrollbar
+                 featureToAnimate:(FeatureToAnimate)featureToAnimate
+                      animateFrom:(CGFloat)startValue
+                        animateTo:(CGFloat)endValue
+                         duration:(NSTimeInterval)duration
+                       taskRunner:(scoped_refptr<base::SingleThreadTaskRunner>)
+                                      taskRunner;
 @end
 
 @implementation BlinkScrollbarPartAnimation
 
-- (id)initWithScrollbar:(blink::Scrollbar*)scrollbar
-       featureToAnimate:(FeatureToAnimate)featureToAnimate
-            animateFrom:(CGFloat)startValue
-              animateTo:(CGFloat)endValue
-               duration:(NSTimeInterval)duration
-             taskRunner:
-                 (scoped_refptr<base::SingleThreadTaskRunner>)taskRunner {
+- (instancetype)initWithScrollbar:(blink::Scrollbar*)scrollbar
+                 featureToAnimate:(FeatureToAnimate)featureToAnimate
+                      animateFrom:(CGFloat)startValue
+                        animateTo:(CGFloat)endValue
+                         duration:(NSTimeInterval)duration
+                       taskRunner:(scoped_refptr<base::SingleThreadTaskRunner>)
+                                      taskRunner {
   self = [super init];
   if (!self)
     return nil;
@@ -353,17 +354,18 @@ class BlinkScrollbarPartAnimationTimer {
       _expansionTransitionAnimation;
   BOOL _hasExpandedSinceInvisible;
 }
-- (id)initWithScrollbar:(blink::Scrollbar*)scrollbar
-             taskRunner:(scoped_refptr<base::SingleThreadTaskRunner>)taskRunner;
+- (instancetype)initWithScrollbar:(blink::Scrollbar*)scrollbar
+                       taskRunner:(scoped_refptr<base::SingleThreadTaskRunner>)
+                                      taskRunner;
 - (void)updateVisibilityImmediately:(bool)show;
 - (void)cancelAnimations;
 @end
 
 @implementation BlinkScrollbarPainterDelegate
 
-- (id)initWithScrollbar:(blink::Scrollbar*)scrollbar
-             taskRunner:
-                 (scoped_refptr<base::SingleThreadTaskRunner>)taskRunner {
+- (instancetype)initWithScrollbar:(blink::Scrollbar*)scrollbar
+                       taskRunner:(scoped_refptr<base::SingleThreadTaskRunner>)
+                                      taskRunner {
   self = [super init];
   if (!self)
     return nil;

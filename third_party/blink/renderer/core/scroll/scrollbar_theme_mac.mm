@@ -48,15 +48,16 @@
   BOOL _suppressSetScrollbarsHidden;
   CGFloat _saved_knob_alpha;
 }
-- (id)initWithScrollbar:(blink::Scrollbar*)scrollbar
-                painter:(const base::scoped_nsobject<ScrollbarPainter>&)painter;
+- (instancetype)
+    initWithScrollbar:(blink::Scrollbar*)scrollbar
+              painter:(const base::scoped_nsobject<ScrollbarPainter>&)painter;
 @end
 
 @implementation BlinkScrollbarObserver
 
-- (id)initWithScrollbar:(blink::Scrollbar*)scrollbar
-                painter:
-                    (const base::scoped_nsobject<ScrollbarPainter>&)painter {
+- (instancetype)
+    initWithScrollbar:(blink::Scrollbar*)scrollbar
+              painter:(const base::scoped_nsobject<ScrollbarPainter>&)painter {
   if (!(self = [super init]))
     return nil;
   _scrollbar = scrollbar;

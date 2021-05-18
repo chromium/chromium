@@ -106,18 +106,16 @@ NSAttributedString* AttributedSubstringFromRange(const EphemeralRange& range,
                                           .ComputedSize() *
                                       font_scale];
     }
-    [attrs setObject:font forKey:NSFontAttributeName];
+    attrs[NSFontAttributeName] = font;
 
     if (style->VisitedDependentColor(GetCSSPropertyColor()).Alpha())
-      [attrs
-          setObject:NsColor(style->VisitedDependentColor(GetCSSPropertyColor()))
-             forKey:NSForegroundColorAttributeName];
+      attrs[NSForegroundColorAttributeName] =
+          NsColor(style->VisitedDependentColor(GetCSSPropertyColor()));
     else
       [attrs removeObjectForKey:NSForegroundColorAttributeName];
     if (style->VisitedDependentColor(GetCSSPropertyBackgroundColor()).Alpha())
-      [attrs setObject:NsColor(style->VisitedDependentColor(
-                           GetCSSPropertyBackgroundColor()))
-                forKey:NSBackgroundColorAttributeName];
+      attrs[NSBackgroundColorAttributeName] = NsColor(
+          style->VisitedDependentColor(GetCSSPropertyBackgroundColor()));
     else
       [attrs removeObjectForKey:NSBackgroundColorAttributeName];
 
@@ -145,7 +143,7 @@ gfx::Point GetBaselinePoint(LocalFrameView* frame_view,
   if ([string length]) {
     NSDictionary* attributes = [string attributesAtIndex:0
                                           effectiveRange:nullptr];
-    if (NSFont* font = [attributes objectForKey:NSFontAttributeName])
+    if (NSFont* font = attributes[NSFontAttributeName])
       string_point.Move(0, ceil([font descender]));
   }
   return string_point;

@@ -233,14 +233,13 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
   unsigned n = [fonts count];
   unsigned i;
   for (i = 0; i < n; i++) {
-    NSArray* font_info = [fonts objectAtIndex:i];
+    NSArray* font_info = fonts[i];
 
     // Array indices must be hard coded because of lame AppKit API.
-    NSString* font_full_name = [font_info objectAtIndex:0];
-    NSInteger font_weight = [[font_info objectAtIndex:2] intValue];
+    NSString* font_full_name = font_info[0];
+    NSInteger font_weight = [font_info[2] intValue];
 
-    NSFontTraitMask font_traits =
-        [[font_info objectAtIndex:3] unsignedIntValue];
+    NSFontTraitMask font_traits = [font_info[3] unsignedIntValue];
 
     BOOL new_winner;
     if (!chose_font)
