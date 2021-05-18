@@ -1268,7 +1268,7 @@
   {
     "name": "enable-aria-element-reflection",
     "owners": [ "aboxhall", "chrishall", "dmazzoni", "meredithl" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 98
   },
   {
     "name": "enable-assistant-aec",
