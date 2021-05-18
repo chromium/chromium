@@ -68,6 +68,8 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
+  // TODO(https://crbug.com/1171429): Remove these two member functions
+  // once all the call sites of been migrated.
   bool RunExtensionTest(const RunOptions& run_options,
                         const LoadOptions& load_options) WARN_UNUSED_RESULT;
 
@@ -76,6 +78,13 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   // Loads the extension with |extension_name| and default RunOptions and
   // LoadOptions.
   bool RunExtensionTest(const char* extension_name) WARN_UNUSED_RESULT;
+
+  bool RunExtensionTest(const char* extension_name,
+                        const RunOptions& run_options) WARN_UNUSED_RESULT;
+
+  bool RunExtensionTest(const char* extension_name,
+                        const RunOptions& run_options,
+                        const LoadOptions& load_options) WARN_UNUSED_RESULT;
 
   // Opens the given |url| and waits for the next result from the
   // chrome.test API. If |open_in_incognito| is true, the URL is opened

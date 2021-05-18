@@ -88,19 +88,29 @@ void ExtensionApiTest::TearDownOnMainThread() {
   test_config_.reset(NULL);
 }
 
-bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options) {
-  return RunExtensionTest(run_options, {});
+bool ExtensionApiTest::RunExtensionTest(const char* extension_name) {
+  return RunExtensionTest(extension_name, {}, {});
 }
 
-bool ExtensionApiTest::RunExtensionTest(const char* extension_name) {
-  return RunExtensionTest({.name = extension_name}, {});
+bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options) {
+  return RunExtensionTest(run_options.name, run_options, {});
 }
 
 bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options,
                                         const LoadOptions& load_options) {
+  return RunExtensionTest(run_options.name, run_options, load_options);
+}
+
+bool ExtensionApiTest::RunExtensionTest(const char* extension_name,
+                                        const RunOptions& run_options) {
+  return RunExtensionTest(extension_name, run_options, {});
+}
+
+bool ExtensionApiTest::RunExtensionTest(const char* extension_name,
+                                        const RunOptions& run_options,
+                                        const LoadOptions& load_options) {
   // Do some sanity checks for options that are mutually exclusive or
   // only valid with other options.
-  CHECK(run_options.name) << "Must specify 'name'";
   CHECK(!(run_options.extension_url && run_options.page_url))
       << "'extension_url' and 'page_url' are mutually exclusive.";
   CHECK(!run_options.open_in_incognito || run_options.page_url)
@@ -116,7 +126,7 @@ bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options,
   const base::FilePath& root_path = run_options.use_extensions_root_dir
                                         ? shared_test_data_dir_
                                         : test_data_dir_;
-  base::FilePath extension_path = root_path.AppendASCII(run_options.name);
+  base::FilePath extension_path = root_path.AppendASCII(extension_name);
   const Extension* extension = LoadExtension(extension_path, load_options);
   if (!extension) {
     message_ = "Failed to load extension.";
