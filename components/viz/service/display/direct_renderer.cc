@@ -33,7 +33,6 @@
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "ui/gfx/geometry/quad_f.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/transform.h"
@@ -741,6 +740,18 @@ bool DirectRenderer::CanSkipRenderPass(
   if (render_pass == current_frame()->root_render_pass)
     return false;
 
+  // TODO(crbug.com/783275): It's possible to skip a child RenderPass if damage
+  // does not overlap it, since that means nothing has changed:
+  //   ComputeScissorRectForRenderPass(render_pass).IsEmpty()
+  // However that caused crashes where the RenderPass' texture was not present
+  // (never seen the RenderPass before, or the texture was deleted when not used
+  // for a frame). It could avoid skipping if there is no texture present, which
+  // is what was done for a while, but this seems to papering over a missing
+  // damage problem, or we're failing to understand the system wholey.
+  // If attempted again this should probably CHECK() that the texture exists,
+  // and attempt to figure out where the new RenderPass texture without damage
+  // is coming from.
+
   // If the RenderPass wants to be cached, then we only draw it if we need to.
   // When damage is present, then we can't skip the RenderPass. Or if the
   // texture does not exist (first frame, or was deleted) then we can't skip
@@ -749,13 +760,6 @@ bool DirectRenderer::CanSkipRenderPass(
     if (render_pass->has_damage_from_contributing_content)
       return false;
     return IsRenderPassResourceAllocated(render_pass->id);
-  }
-
-  // Only render what is damaged. If there are copy requests associated with
-  // this pass the damage should always be the full |output_rect|.
-  if (use_partial_swap_ &&
-      ComputeScissorRectForRenderPass(render_pass).IsEmpty()) {
-    return true;
   }
 
   return false;
@@ -874,10 +878,8 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
 
   // If the root damage rect has been expanded due to overlays, all the other
   // damage rect calculations are incorrect.
-  if (!root_damage_rect.IsEmpty() &&
-      !root_render_pass->damage_rect.Contains(root_damage_rect)) {
+  if (!root_render_pass->damage_rect.Contains(root_damage_rect))
     return render_pass->output_rect;
-  }
 
   DCHECK(render_pass->copy_requests.empty() ||
          (render_pass->damage_rect == render_pass->output_rect));
