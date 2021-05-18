@@ -38,7 +38,10 @@
 namespace blink {
 
 DocumentLoadTiming::DocumentLoadTiming(DocumentLoader& document_loader)
-    : redirect_count_(0),
+    : user_timing_mark_fully_loaded_(absl::nullopt),
+      user_timing_mark_fully_visible_(absl::nullopt),
+      user_timing_mark_interactive_(absl::nullopt),
+      redirect_count_(0),
       has_cross_origin_redirect_(false),
       can_request_from_previous_document_(false),
       clock_(base::DefaultClock::GetInstance()),

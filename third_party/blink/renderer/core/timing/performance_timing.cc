@@ -666,6 +666,8 @@ absl::optional<base::TimeTicks> PerformanceTiming::CommitNavigationEnd() const {
 absl::optional<base::TimeDelta> PerformanceTiming::UserTimingMarkFullyLoaded()
     const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
+  if (!timing)
+    return absl::nullopt;
 
   return timing->UserTimingMarkFullyLoaded();
 }
@@ -673,6 +675,8 @@ absl::optional<base::TimeDelta> PerformanceTiming::UserTimingMarkFullyLoaded()
 absl::optional<base::TimeDelta> PerformanceTiming::UserTimingMarkFullyVisible()
     const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
+  if (!timing)
+    return absl::nullopt;
 
   return timing->UserTimingMarkFullyVisible();
 }
@@ -680,6 +684,8 @@ absl::optional<base::TimeDelta> PerformanceTiming::UserTimingMarkFullyVisible()
 absl::optional<base::TimeDelta> PerformanceTiming::UserTimingMarkInteractive()
     const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
+  if (!timing)
+    return absl::nullopt;
 
   return timing->UserTimingMarkInteractive();
 }
