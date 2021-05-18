@@ -393,12 +393,15 @@ void ArcImeService::OnCursorRectChangedWithSurroundingText(
   if (!ShouldSendUpdateToInputMethod())
     return;
 
+  if (!UpdateCursorRect(rect, is_screen_coordinates) &&
+      text_range_ == text_range && text_in_range_ == text_in_range &&
+      selection_range_ == selection_range) {
+    return;
+  }
+
   text_range_ = text_range;
   text_in_range_ = text_in_range;
   selection_range_ = selection_range;
-
-  if (!UpdateCursorRect(rect, is_screen_coordinates))
-    return;
 
   ui::InputMethod* const input_method = GetInputMethod();
   if (input_method)
