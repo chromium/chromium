@@ -6,7 +6,11 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   generate_java = false
-  sources = [ "auction_worklet_service.mojom" ]
+  sources = [
+    "auction_worklet_service.mojom",
+    "bidder_worklet.mojom",
+    "seller_worklet.mojom",
+  ]
   deps = [
     "//mojo/public/mojom/base",
     "//services/network/public/mojom",

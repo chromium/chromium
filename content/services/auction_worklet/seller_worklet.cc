@@ -17,10 +17,13 @@
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "v8/include/v8.h"
@@ -132,25 +135,39 @@ void InvokeReportResultCallbackAsync(
 
 SellerWorklet::SellerWorklet(
     AuctionV8Helper* v8_helper,
-    network::mojom::URLLoaderFactory* url_loader_factory,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        pending_url_loader_factory,
     const GURL& script_source_url,
-    LoadWorkletCallback load_worklet_callback)
+    mojom::AuctionWorkletService::LoadSellerWorkletCallback
+        load_worklet_callback)
     : v8_helper_(v8_helper),
       script_source_url_(script_source_url),
       load_worklet_callback_(std::move(load_worklet_callback)) {
   DCHECK(load_worklet_callback_);
+
+  // Bind URLLoaderFactory. Remote is not needed after this method completes,
+  // since requests will continue after the URLLoaderFactory pipe has been
+  // closed, so no need to keep it around after requests have been issued.
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory(
+      std::move(pending_url_loader_factory));
+
   worklet_loader_ = std::make_unique<WorkletLoader>(
-      url_loader_factory, script_source_url, v8_helper,
+      url_loader_factory.get(), script_source_url, v8_helper,
       base::BindOnce(&SellerWorklet::OnDownloadComplete,
                      base::Unretained(this)));
 }
 
-SellerWorklet::~SellerWorklet() = default;
+SellerWorklet::~SellerWorklet() {
+  if (load_worklet_callback_) {
+    std::move(load_worklet_callback_)
+        .Run(false /* success */, std::vector<std::string>() /* errors */);
+  }
+}
 
 void SellerWorklet::ScoreAd(
     const std::string& ad_metadata_json,
     double bid,
-    const blink::mojom::AuctionAdConfig& auction_config,
+    blink::mojom::AuctionAdConfigPtr auction_config,
     const url::Origin& browser_signal_top_window_origin,
     const url::Origin& browser_signal_interest_group_owner,
     const std::string& browser_signal_ad_render_fingerprint,
@@ -174,7 +191,7 @@ void SellerWorklet::ScoreAd(
 
   args.push_back(gin::ConvertToV8(isolate, bid));
 
-  if (!AppendAuctionConfig(v8_helper_, context, auction_config, &args)) {
+  if (!AppendAuctionConfig(v8_helper_, context, *auction_config, &args)) {
     std::move(callback).Run(0 /* score */,
                             std::vector<std::string>() /* errors */);
     return;
@@ -233,7 +250,7 @@ void SellerWorklet::ScoreAd(
 }
 
 void SellerWorklet::ReportResult(
-    const blink::mojom::AuctionAdConfig& auction_config,
+    blink::mojom::AuctionAdConfigPtr auction_config,
     const url::Origin& browser_signal_top_window_origin,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
@@ -257,7 +274,7 @@ void SellerWorklet::ReportResult(
   v8::Context::Scope context_scope(context);
 
   std::vector<v8::Local<v8::Value>> args;
-  if (!AppendAuctionConfig(v8_helper_, context, auction_config, &args)) {
+  if (!AppendAuctionConfig(v8_helper_, context, *auction_config, &args)) {
     std::move(callback).Run(absl::nullopt /* signals_for_winner */,
                             absl::nullopt /* report_url */,
                             std::vector<std::string>() /* errors */);

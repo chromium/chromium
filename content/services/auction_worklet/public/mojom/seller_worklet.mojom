@@ -1,0 +1,113 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module auction_worklet.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/url_loader_factory.mojom";
+import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// Manages the auction workflow for one loaded FLEDGE seller worklet.
+// See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+//
+// The SellerWorklet is functionally stateless, so methods are
+// idempotent and can be called multiple times, in any order, for
+// multiple auctions using the same worklet. There is no need to wait
+// for one callback to be invoked before calling another method.
+interface SellerWorklet {
+  // Calls the Javascript scoreAd() function to evaluate a bid. May only be
+  // called once the worklet has successfully completed loading. No data is
+  // leaked between consecutive invocations of this method, or between
+  // invocations of this method and ReportResult().
+  //
+  // Arguments:
+  // `ad_metadata_json` JSON representation of the `ad` value returned by the
+  //  BidWorklet that offered the bid.
+  //
+  // `bid` The numeric value of the bid offered by the BidWorklet.
+  //
+  // `auction_config` The configuration provided by client JavaScript in the
+  //  renderer in order to initiate the auction.
+  //
+  // `browser_signal_top_window_origin` The top-level origin of the window
+  //  running the auction.
+  //
+  // `browser_signal_interest_group_owner` The owner of the interest group
+  //  that offered the bid.
+  //
+  // `browser_signal_ad_render_fingerprint` The hash of the rendering URL,
+  //  eventually to be replaced with a hash of the ad bundle, per spec.
+  //
+  // `browser_signal_bidding_duration_msecs` is the duration the BiddingWorklet
+  //  took to generate the bid. Taken as milliseconds to reduce granularity of
+  //  timing information passed to an untrusted process.
+  //
+  // Returns:
+  // `score` Non-negative score the SellerWorklet assigns to the bid. A value
+  //  of 0 indicates either an error running the script, or that the script
+  //  indicated the bid should not be used.
+  //
+  // `errors` are various error messages to be used for debugging. These are too
+  //  sensitive for the renderers to see. `errors` should not be assumed to be
+  //  empty if `score` is positive, nor should it be assumed to be non-empty if
+  //  `score` is 0.
+  ScoreAd(string ad_metadata_json,
+          double bid,
+          blink.mojom.AuctionAdConfig auction_config,
+          url.mojom.Origin browser_signal_top_window_origin,
+          url.mojom.Origin browser_signal_interest_group_owner,
+          string browser_signal_ad_render_fingerprint,
+          uint32 browser_signal_bidding_duration_msecs) =>
+              (double score, array<string> errors);
+
+  // Calls the Javascript reportResult() function to get the information needed
+  // to report the result of the auction to the seller. May only be called once
+  // the worklet has successfully completed loading. No data is leaked between
+  // consecutive invocations of this method, or between invocations of this
+  // method and ScoreAd().
+  //
+  // Arguments:
+  // `auction_config` The configuration provided by client JavaScript in the
+  //  renderer in order to initiate the auction.
+  //
+  // `browser_signal_top_window_origin` The top-level origin of the window
+  //  running the auction.
+  //
+  // `browser_signal_interest_group_owner` The owner of the interest group
+  //  that offered the winning bid.
+  //
+  // `browser_signal_render_url` The render URL provided by the winning bid.
+  //
+  // `browser_signal_ad_render_fingerprint` The hash of the rendering URL,
+  //  eventually to be replaced with a hash of the ad bundle, per spec.
+  //
+  // `browser_signal_bid` The numeric value of the winning bid.
+  //
+  // `browser_signal_desirability` The score returned by ScoreAd for the
+  //  the winning bid.
+  //
+  // Returns:
+  // `signals_for_winner` The value to pass to the winning bidder's
+  //  ReportWin function, as a JSON string. Null if no value is provided.
+  //
+  // `report_url` The URL to request to report the result of the auction to the
+  //  seller, if any.
+  //
+  // `errors` are various error messages to be used for debugging. These are too
+  //  sensitive for the renderers to see. `errors` should not be assumed to be
+  //  empty if the other values are populated, nor should it be assumed to be
+  //  non-empty if the other values are null.
+  ReportResult(blink.mojom.AuctionAdConfig auction_config,
+               url.mojom.Origin browser_signal_top_window_origin,
+               url.mojom.Origin browser_signal_interest_group_owner,
+               url.mojom.Url browser_signal_render_url,
+               string browser_signal_ad_render_fingerprint,
+               double browser_signal_bid,
+               double browser_signal_desirability) =>
+                   (string? signals_for_winner,
+                    url.mojom.Url? report_url,
+                    array<string> error_msgs);
+};

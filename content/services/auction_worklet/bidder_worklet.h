@@ -12,8 +12,9 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,57 +40,8 @@ class WorkletLoader;
 // to both be used for two generateBid() calls for different interest groups
 // with the same owner in the same auction, and to be used to bid for the same
 // interest group in different auctions.
-class BidderWorklet {
+class BidderWorklet : public mojom::BidderWorklet {
  public:
-  // Structure containing information about a bid returned by invoking a
-  // worklet's generageBid() method. If no bid is made, no Bid is constructed.
-  struct Bid {
-    Bid(std::string ad,
-        double bid,
-        GURL render_url,
-        base::TimeDelta bid_duration);
-
-    Bid(const Bid& other);
-    Bid(Bid&& other);
-
-    ~Bid();
-
-    Bid& operator=(const Bid&);
-    Bid& operator=(Bid&&);
-
-    // JSON string to be passed to the scoring function.
-    std::string ad;
-
-    // Offered bid value.
-    double bid;
-
-    // Render URL, if any bid was made.
-    GURL render_url;
-
-    // How long it took to run the script that generated the bid.
-    base::TimeDelta bid_duration;
-  };
-
-  // If no bid is generated, `bid` is null.
-  //
-  // `errors` contains error messages for debugging. This isn't guaranteed
-  // to be produced for all failures, so should not be checked to identify
-  // bidding failures errors. It's also possible for there to be an error
-  // message on success, in the case the trusted bidding signals failed to load
-  // - auctions will still be run without it, but `errors` will be populated
-  // with information about the load failure.
-  using LoadScriptAndGenerateBidCallback =
-      base::OnceCallback<void(absl::optional<Bid> bid,
-                              const std::vector<std::string>& errors)>;
-
-  // `report_url` is the URL to request to report displaying the ad. It is
-  // nullopt on error or if report is requested. `errors` is a list of
-  // errors that occurred, if any. `errors` may be non-empty on success, or
-  // empty on failure.
-  using ReportWinCallback =
-      base::OnceCallback<void(const absl::optional<GURL>& report_url,
-                              const std::vector<std::string>& errors)>;
-
   // Starts loading the worklet script on construction, as well as the trusted
   // bidding data, if necessary. Will then call the script's generateBid()
   // function and invoke the callback with the results. Callback will always be
@@ -99,25 +51,27 @@ class BidderWorklet {
   // Data is cached and will be reused ReportWin().
   BidderWorklet(
       AuctionV8Helper* v8_helper,
-      network::mojom::URLLoaderFactory* url_loader_factory,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          pending_url_loader_factory,
       mojom::BiddingInterestGroupPtr bidding_interest_group,
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
       const url::Origin& browser_signal_top_window_origin,
       const url::Origin& browser_signal_seller_origin,
       base::Time auction_start_time,
-      LoadScriptAndGenerateBidCallback load_script_and_generate_bid_callback);
+      mojom::AuctionWorkletService::LoadBidderWorkletAndGenerateBidCallback
+          load_bidder_worklet_and_generate_bid_callback);
   explicit BidderWorklet(const BidderWorklet&) = delete;
   BidderWorklet& operator=(const BidderWorklet&) = delete;
-  ~BidderWorklet();
 
-  // Calls reportWin(), and asynchronously invokes `callback` with reporting
-  // information. May only be called once the worklet has successfully loaded.
+  ~BidderWorklet() override;
+
+  // mojom::BidderWorklet implementation:
   void ReportWin(const std::string& seller_signals_json,
                  const GURL& browser_signal_render_url,
                  const std::string& browser_signal_ad_render_fingerprint,
                  double browser_signal_bid,
-                 ReportWinCallback callback);
+                 ReportWinCallback callback) override;
 
  private:
   void OnScriptDownloaded(
@@ -141,11 +95,11 @@ class BidderWorklet {
 
   AuctionV8Helper* const v8_helper_;
 
-  const GURL script_source_url_;
+  GURL script_source_url_;
+  mojom::AuctionWorkletService::LoadBidderWorkletAndGenerateBidCallback
+      load_bidder_worklet_and_generate_bid_callback_;
+
   const mojom::BiddingInterestGroupPtr bidding_interest_group_;
-
-  LoadScriptAndGenerateBidCallback load_script_and_generate_bid_callback_;
-
   const absl::optional<std::string> auction_signals_json_;
   const absl::optional<std::string> per_buyer_signals_json_;
   const std::string browser_signal_top_window_hostname_;

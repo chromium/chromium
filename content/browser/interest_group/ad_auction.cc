@@ -15,13 +15,14 @@
 #include "base/strings/stringprintf.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/interest_group/ad_auction_service_impl.h"
+#include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
 #include "content/browser/interest_group/interest_group_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -157,13 +158,6 @@ void AdAuction::StartAuction() {
   ReadNextInterestGroup();
 }
 
-void AdAuction::OnServiceCrash() {
-  // This cancels any pending async callbacks.
-  weak_ptr_factory_.InvalidateWeakPtrs();
-
-  OnAuctionFailed();
-}
-
 void AdAuction::ReadNextInterestGroup() {
   DCHECK(!pending_buyers_.empty());
 
@@ -219,21 +213,22 @@ void AdAuction::StartWorklets() {
     bidders_copy.emplace_back(bidder.Clone());
 
   // `config_` is no longer needed after this point, so pass ownership of it
-  // over to the worklet, instead of copying it.
-  ad_auction_service_->GetWorkletService()->RunAuction(
+  // over to the AuctionRunner, instead of copying it.
+  auction_runner_ = AuctionRunner::CreateAndStart(
+      base::BindRepeating(&AdAuctionServiceImpl::GetWorkletService,
+                          base::Unretained(ad_auction_service_)),
       std::move(url_loader_factory), std::move(config_),
       std::move(bidders_copy), std::move(browser_signals),
       base::BindOnce(&AdAuction::WorkletComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AdAuction::WorkletComplete(
-    const GURL& render_url,
-    const url::Origin& owner,
-    const std::string& name,
-    auction_worklet::mojom::WinningBidderReportPtr bidder_report,
-    auction_worklet::mojom::SellerReportPtr seller_report,
-    const std::vector<std::string>& errors) {
+void AdAuction::WorkletComplete(const GURL& render_url,
+                                const url::Origin& owner,
+                                const std::string& name,
+                                const GURL& bidder_report_url,
+                                const GURL& seller_report_url,
+                                const std::vector<std::string>& errors) {
   DCHECK(callback_);
 
   // Forward debug information to devtools.
@@ -252,16 +247,16 @@ void AdAuction::WorkletComplete(
     return;
   }
 
-  absl::optional<GURL> bidder_report_url;
-  if (bidder_report->report_requested && bidder_report->report_url.is_valid() &&
-      bidder_report->report_url.SchemeIs(url::kHttpsScheme)) {
-    bidder_report_url = bidder_report->report_url;
+  absl::optional<GURL> opt_bidder_report_url;
+  if (bidder_report_url.is_valid() &&
+      bidder_report_url.SchemeIs(url::kHttpsScheme)) {
+    opt_bidder_report_url = bidder_report_url;
   }
 
-  absl::optional<GURL> seller_report_url;
-  if (seller_report->success && seller_report->report_url.is_valid() &&
-      seller_report->report_url.SchemeIs(url::kHttpsScheme)) {
-    seller_report_url = seller_report->report_url;
+  absl::optional<GURL> opt_seller_report_url;
+  if (seller_report_url.is_valid() &&
+      seller_report_url.SchemeIs(url::kHttpsScheme)) {
+    opt_seller_report_url = seller_report_url;
   }
 
   ad_auction_service_->GetInterestGroupManager()->RecordInterestGroupWin(
@@ -273,8 +268,8 @@ void AdAuction::WorkletComplete(
         bidder->group->owner, bidder->group->name);
   }
 
-  std::move(callback_).Run(this, render_url, bidder_report_url,
-                           seller_report_url);
+  std::move(callback_).Run(this, render_url, opt_bidder_report_url,
+                           opt_seller_report_url);
 }
 
 void AdAuction::OnAuctionFailed() {

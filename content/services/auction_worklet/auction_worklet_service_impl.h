@@ -5,14 +5,19 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_AUCTION_WORKLET_SERVICE_IMPL_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_AUCTION_WORKLET_SERVICE_IMPL_H_
 
-#include <vector>
-
+#include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 
 namespace auction_worklet {
+
+class BidderWorklet;
+class SellerWorklet;
 
 // mojom::AuctionWorkletService implementation. This is intended to run in a
 // sandboxed utility process.
@@ -26,15 +31,34 @@ class AuctionWorkletServiceImpl : public mojom::AuctionWorkletService {
   ~AuctionWorkletServiceImpl() override;
 
   // mojom::AuctionWorkletService implementation:
-  void RunAuction(
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
-      blink::mojom::AuctionAdConfigPtr auction_config,
-      std::vector<mojom::BiddingInterestGroupPtr> bidders,
-      mojom::BrowserSignalsPtr browser_signals,
-      mojom::AuctionWorkletService::RunAuctionCallback callback) override;
+  void LoadBidderWorkletAndGenerateBid(
+      mojo::PendingReceiver<mojom::BidderWorklet> bidder_worklet_receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          pending_url_loader_factory,
+      mojom::BiddingInterestGroupPtr bidding_interest_group,
+      const absl::optional<std::string>& auction_signals_json,
+      const absl::optional<std::string>& per_buyer_signals_json,
+      const url::Origin& top_window_origin,
+      const url::Origin& seller_origin,
+      base::Time auction_start_time,
+      LoadBidderWorkletAndGenerateBidCallback
+          load_bidder_worklet_and_generate_bid_callback) override;
+  void LoadSellerWorklet(
+      mojo::PendingReceiver<mojom::SellerWorklet> seller_worklet_receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          pending_url_loader_factory,
+      const GURL& script_source_url,
+      LoadSellerWorkletCallback load_seller_worklet_callback) override;
 
  private:
   mojo::Receiver<mojom::AuctionWorkletService> receiver_;
+
+  // `auction_v8_helper_` needs to be before the worklets, since they refer to
+  // it, so need to be torn down before it is.
+  AuctionV8Helper auction_v8_helper_;
+
+  mojo::UniqueReceiverSet<mojom::BidderWorklet> bidder_worklets_;
+  mojo::UniqueReceiverSet<mojom::SellerWorklet> seller_worklets_;
 };
 
 }  // namespace auction_worklet

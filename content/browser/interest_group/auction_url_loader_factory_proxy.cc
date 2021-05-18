@@ -14,11 +14,12 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "content/public/browser/global_request_id.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/escape.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
@@ -39,8 +40,7 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     const url::Origin& frame_origin,
     const blink::mojom::AuctionAdConfig& auction_config,
     const std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>& bidders)
-    : receiver_(this, std::move(pending_receiver)),
-      get_publisher_frame_url_loader_factory_(
+    : get_publisher_frame_url_loader_factory_(
           std::move(get_publisher_frame_url_loader_factory)),
       get_trusted_url_loader_factory_(
           std::move(get_trusted_url_loader_factory)),
@@ -48,6 +48,7 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
       expected_query_prefix_(
           "hostname=" + net::EscapeQueryParamValue(frame_origin.host(), true) +
           "&keys=") {
+  receivers_.Add(this, std::move(pending_receiver));
   decision_logic_url_ = auction_config.decision_logic_url;
   for (const auto& bidder : bidders) {
     if (bidder->group->bidding_url)
@@ -75,7 +76,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   std::string accept_header;
   if (!url_request.headers.GetHeader(net::HttpRequestHeaders::kAccept,
                                      &accept_header)) {
-    receiver_.ReportBadMessage("Missing accept header");
+    receivers_.ReportBadMessage("Missing accept header");
     return;
   }
 
@@ -94,7 +95,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
       // calling `joinAdInterestGroup` from the URL's origin.
       use_publisher_frame_loader = false;
     } else {
-      receiver_.ReportBadMessage("Unexpected Javascript request url");
+      receivers_.ReportBadMessage("Unexpected Javascript request url");
       return;
     }
   } else if (accept_header == "application/json") {
@@ -104,14 +105,14 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     // Only `realtime_data_urls_` may be requested with the JSON Accept header.
     if (realtime_data_urls_.find(url_without_query) ==
         realtime_data_urls_.end()) {
-      receiver_.ReportBadMessage("Unexpected JSON request url");
+      receivers_.ReportBadMessage("Unexpected JSON request url");
       return;
     }
 
     // Make sure the query string starts with the correct prefix.
     if (!base::StartsWith(url_request.url.query_piece(),
                           expected_query_prefix_)) {
-      receiver_.ReportBadMessage("JSON query string missing expected prefix");
+      receivers_.ReportBadMessage("JSON query string missing expected prefix");
       return;
     }
 
@@ -120,7 +121,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
         url_request.url.query_piece().substr(expected_query_prefix_.size());
     // The keys value should be the last value of the query string.
     if (keys.find('&') != base::StringPiece::npos) {
-      receiver_.ReportBadMessage(
+      receivers_.ReportBadMessage(
           "JSON query string has unexpected additional parameter");
       return;
     }
@@ -128,7 +129,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     // calling `joinAdInterestGroup` from the URL's origin.
     use_publisher_frame_loader = false;
   } else {
-    receiver_.ReportBadMessage("Accept header has unexpected value");
+    receivers_.ReportBadMessage("Accept header has unexpected value");
     return;
   }
 
@@ -182,8 +183,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
 
 void AuctionURLLoaderFactoryProxy::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
-  // Not currently needed.
-  NOTREACHED();
+  receivers_.Add(this, std::move(receiver));
 }
 
 }  // namespace content

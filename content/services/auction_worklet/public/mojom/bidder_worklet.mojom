@@ -1,0 +1,98 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module auction_worklet.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/url_loader_factory.mojom";
+import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+struct PreviousWin {
+  // Approximate time a particular group won an auction.
+  //
+  // TODO(mmenke): Provide this as an integer time since an auction was won, in
+  // seconds, to reduce time resolution of cross-site information provided to an
+  // untrusted service.
+  //
+  // TODO(https://crbug.com/1207135): Decide what to do when wins are
+  // "in the future" due to clock changes.
+  mojo_base.mojom.Time time;
+
+  // The ad object returned by that group's bidding function with the winning
+  // bid.
+  string ad_json;
+};
+
+// Browser signals passed to the BidderWorklet's generateBid() method. Some
+// fields are cached to pass to the reportWin() method as well.
+struct BiddingBrowserSignals {
+  // How many times this interest group has been joined in the period history
+  // is maintained.
+  int32 join_count;
+
+  // How many times this interest group has made bids in auctions.
+  int32 bid_count;
+
+  // Previous times the group won auctions.
+  array<PreviousWin> prev_wins;
+};
+
+struct BiddingInterestGroup {
+  blink.mojom.InterestGroup group;  // User JS specified, stored by browser.
+  BiddingBrowserSignals signals;  // Collected by browser.
+};
+
+// The results of running a FLEDGE generateBid() script.
+struct BidderWorkletBid {
+  // JSON string to be passed to the scoring function.
+  string ad;
+
+  // Offered bid value. Always greater than 0.
+  double bid;
+
+  // Render URL of the bid.
+  url.mojom.Url render_url;
+
+  // How long it took to run the generateBid() script.
+  mojo_base.mojom.TimeDelta bid_duration;
+};
+
+// Manages the auction workflow for one loaded FLEDGE bidder worklet.
+// See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+//
+// The BidderWorklet is functionally stateless, so methods are
+// idempotent and can be called multiple times, in any order, for
+// multiple auctions using the same worklet. There is no need to wait
+// for one callback to be invoked before calling another method.
+interface BidderWorklet {
+  // Calls the worklet's reportWin() method. May only be called
+  // LoadBidderWorkletAndGenerateBid() has completed successfully.
+  //
+  // `seller_signals_json` is a JSON representation of the object returned by
+  // the seller worklet's ReportResult method.
+  //
+  // `browser_signal_render_url` is the `render_url` returned by the
+  // BidderWorklet's generateBid() method, invoked as part of BidderWorklet
+  // creation.
+  //
+  // `browser_signal_ad_render_fingerprint` is a hash of the rendering URL,
+  // eventually to be replaced with a hash of the ad bundle, per spec.
+  //
+  // `report_url` is the URL to request to report the result of the auction
+  // to the bidder. It will be null if no reports are requested, or the
+  // report script fails to run.
+  //
+  // `errors` is an array of any errors that occurred while attempting
+  // to run the worklet's reportWin() method. These are too sensitive for
+  // the renderer to see. There may be errors even when a `report_url` is
+  // provided, and there may be no errors when there's no `report_url`.
+  ReportWin(string seller_signals_json,
+            url.mojom.Url browser_signal_render_url,
+            string browser_signal_ad_render_fingerprint,
+            double browser_signal_bid) => (
+                url.mojom.Url? report_url,
+                array<string> errors);
+};

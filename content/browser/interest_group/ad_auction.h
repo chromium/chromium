@@ -11,7 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
@@ -20,6 +20,7 @@
 namespace content {
 
 class AdAuctionServiceImpl;
+class AuctionRunner;
 class AuctionURLLoaderFactoryProxy;
 
 // Class for running a single FLEDGE auction.
@@ -43,10 +44,6 @@ class AdAuction {
   // May invoke `AuctionCompleteCallback` synchronously.
   void StartAuction();
 
-  // Must be called when the worklet service crashes, to ensure the renderer's
-  // callback is invoked. Synchronously invokes AuctionCompleteCallback.
-  void OnServiceCrash();
-
  private:
   // Retrieves the next interest group in `pending_buyers_` from storage,
   // removing it from the vector. OnInterestGroupRead() will be invoked
@@ -66,13 +63,12 @@ class AdAuction {
   //
   // Validates the results, reports them to `callback_`, and updates the
   // InterestGroupStorage as needed.
-  void WorkletComplete(
-      const GURL& render_url,
-      const url::Origin& owner,
-      const std::string& name,
-      auction_worklet::mojom::WinningBidderReportPtr bidder_report,
-      auction_worklet::mojom::SellerReportPtr seller_report,
-      const std::vector<std::string>& errors);
+  void WorkletComplete(const GURL& render_url,
+                       const url::Origin& owner,
+                       const std::string& name,
+                       const GURL& bidder_report_url,
+                       const GURL& seller_report_url,
+                       const std::vector<std::string>& errors);
 
   // Invokes `callback_` with empty parameters, to inform it of the failure.
   void OnAuctionFailed();
@@ -95,6 +91,8 @@ class AdAuction {
 
   // Proxy used for requests from the worklet process.
   std::unique_ptr<AuctionURLLoaderFactoryProxy> url_loader_factory_proxy_;
+
+  std::unique_ptr<AuctionRunner> auction_runner_;
 
   base::WeakPtrFactory<AdAuction> weak_ptr_factory_{this};
 };

@@ -23,6 +23,8 @@
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -48,65 +50,44 @@ bool AppendJsonValueOrNull(AuctionV8Helper* const v8_helper,
   return true;
 }
 
-// Temporary utility to run callback asynchronously, to imitate behavior once
-// this class starts implementing a Mojo API.
-//
-// TODO(mmenke): Remove once this class switches over to using Mojo.
-void InvokeReportWinCallbackAsync(BidderWorklet::ReportWinCallback callback,
-                                  const absl::optional<GURL>& report_url,
-                                  const std::vector<std::string>& errors) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), report_url, errors));
-}
-
 }  // namespace
-
-BidderWorklet::Bid::Bid(std::string ad,
-                        double bid,
-                        GURL render_url,
-                        base::TimeDelta bid_duration)
-    : ad(std::move(ad)),
-      bid(bid),
-      render_url(std::move(render_url)),
-      bid_duration(bid_duration) {
-  DCHECK_GT(this->bid, 0);
-  DCHECK(this->render_url.is_valid());
-}
-
-BidderWorklet::Bid::Bid(const Bid& other) = default;
-BidderWorklet::Bid::Bid(Bid&& other) = default;
-BidderWorklet::Bid::~Bid() = default;
-BidderWorklet::Bid& BidderWorklet::Bid::operator=(const Bid&) = default;
-BidderWorklet::Bid& BidderWorklet::Bid::operator=(Bid&&) = default;
 
 BidderWorklet::BidderWorklet(
     AuctionV8Helper* v8_helper,
-    network::mojom::URLLoaderFactory* url_loader_factory,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        pending_url_loader_factory,
     mojom::BiddingInterestGroupPtr bidding_interest_group,
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
     const url::Origin& browser_signal_top_window_origin,
     const url::Origin& browser_signal_seller_origin,
     base::Time auction_start_time,
-    LoadScriptAndGenerateBidCallback load_script_and_generate_bid_callback)
+    mojom::AuctionWorkletService::LoadBidderWorkletAndGenerateBidCallback
+        load_bidder_worklet_and_generate_bid_callback)
     : v8_helper_(v8_helper),
       script_source_url_(
           bidding_interest_group->group->bidding_url.value_or(GURL())),
+      load_bidder_worklet_and_generate_bid_callback_(
+          std::move(load_bidder_worklet_and_generate_bid_callback)),
       bidding_interest_group_(std::move(bidding_interest_group)),
-      load_script_and_generate_bid_callback_(
-          std::move(load_script_and_generate_bid_callback)),
       auction_signals_json_(auction_signals_json),
       per_buyer_signals_json_(per_buyer_signals_json),
       browser_signal_top_window_hostname_(
           browser_signal_top_window_origin.host()),
       browser_signal_seller_(browser_signal_seller_origin.Serialize()),
       auction_start_time_(auction_start_time) {
-  DCHECK(load_script_and_generate_bid_callback_);
+  DCHECK(load_bidder_worklet_and_generate_bid_callback_);
+
+  // Bind URLLoaderFactory. Remote is not needed after this method completes,
+  // since requests will continue after the URLLoaderFactory pipe has been
+  // closed, so no need to keep it around after requests have been issued.
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory(
+      std::move(pending_url_loader_factory));
 
   // TODO(mmenke): Remove up the value_or() for script_source_url_- auction
   // worklets shouldn't be created when there's no bidding URL.
   worklet_loader_ = std::make_unique<WorkletLoader>(
-      url_loader_factory, script_source_url_, v8_helper,
+      url_loader_factory.get(), script_source_url_, v8_helper_,
       base::BindOnce(&BidderWorklet::OnScriptDownloaded,
                      base::Unretained(this)));
 
@@ -116,16 +97,20 @@ BidderWorklet::BidderWorklet(
       !bidding_interest_group_->group->trusted_bidding_signals_keys->empty()) {
     trusted_bidding_signals_loading_ = true;
     trusted_bidding_signals_ = std::make_unique<TrustedBiddingSignals>(
-        url_loader_factory,
+        url_loader_factory.get(),
         *bidding_interest_group_->group->trusted_bidding_signals_keys,
         browser_signal_top_window_origin.host(),
-        *bidding_interest_group_->group->trusted_bidding_signals_url, v8_helper,
+        *bidding_interest_group_->group->trusted_bidding_signals_url,
+        v8_helper_,
         base::BindOnce(&BidderWorklet::OnTrustedBiddingSignalsDownloaded,
                        base::Unretained(this)));
   }
 }
 
-BidderWorklet::~BidderWorklet() = default;
+BidderWorklet::~BidderWorklet() {
+  if (load_bidder_worklet_and_generate_bid_callback_)
+    InvokeBidCallbackOnError();
+}
 
 void BidderWorklet::ReportWin(
     const std::string& seller_signals_json,
@@ -133,8 +118,6 @@ void BidderWorklet::ReportWin(
     const std::string& browser_signal_ad_render_fingerprint,
     double browser_signal_bid,
     ReportWinCallback callback) {
-  callback = base::BindOnce(&InvokeReportWinCallbackAsync, std::move(callback));
-
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_);
   v8::Isolate* isolate = v8_helper_->isolate();
 
@@ -201,7 +184,7 @@ void BidderWorklet::ReportWin(
 void BidderWorklet::OnScriptDownloaded(
     std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
     absl::optional<std::string> error_msg) {
-  DCHECK(load_script_and_generate_bid_callback_);
+  DCHECK(load_bidder_worklet_and_generate_bid_callback_);
 
   if (worklet_script == nullptr) {
     // Abort loading trusted bidding signals, if it hasn't completed already.
@@ -219,7 +202,7 @@ void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
     bool load_result,
     absl::optional<std::string> error_msg) {
   // Worklet results should still be pending.
-  DCHECK(load_script_and_generate_bid_callback_);
+  DCHECK(load_bidder_worklet_and_generate_bid_callback_);
   DCHECK(trusted_bidding_signals_loading_);
 
   trusted_bidding_signals_error_msg_ = std::move(error_msg);
@@ -231,7 +214,7 @@ void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
 }
 
 void BidderWorklet::GenerateBidIfReady() {
-  DCHECK(load_script_and_generate_bid_callback_);
+  DCHECK(load_bidder_worklet_and_generate_bid_callback_);
   if (trusted_bidding_signals_loading_ || !worklet_script_)
     return;
 
@@ -399,8 +382,9 @@ void BidderWorklet::GenerateBidIfReady() {
         errors.emplace_back(
             std::move(trusted_bidding_signals_error_msg_).value());
       }
-      std::move(load_script_and_generate_bid_callback_)
-          .Run(Bid(std::move(ad_json), bid, std::move(render_url),
+      std::move(load_bidder_worklet_and_generate_bid_callback_)
+          .Run(mojom::BidderWorkletBid::New(
+                   std::move(ad_json), bid, std::move(render_url),
                    base::TimeTicks::Now() - start /* bid_duration */),
                errors);
       return;
@@ -417,11 +401,10 @@ void BidderWorklet::InvokeBidCallbackOnError(
   std::vector<std::string> errors;
   if (error_msg)
     errors.emplace_back(std::move(error_msg).value());
-  if (trusted_bidding_signals_error_msg_) {
+  if (trusted_bidding_signals_error_msg_)
     errors.emplace_back(std::move(trusted_bidding_signals_error_msg_).value());
-  }
-  std::move(load_script_and_generate_bid_callback_)
-      .Run(absl::nullopt /* bid */, errors);
+  std::move(load_bidder_worklet_and_generate_bid_callback_)
+      .Run(mojom::BidderWorkletBidPtr(), errors);
 }
 
 }  // namespace auction_worklet

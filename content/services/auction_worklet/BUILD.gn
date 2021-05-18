@@ -8,8 +8,6 @@ source_set("auction_worklet") {
   sources = [
     "auction_downloader.cc",
     "auction_downloader.h",
-    "auction_runner.cc",
-    "auction_runner.h",
     "auction_v8_helper.cc",
     "auction_v8_helper.h",
     "auction_worklet_service_impl.cc",
@@ -50,7 +48,6 @@ source_set("tests") {
 
   sources = [
     "auction_downloader_unittest.cc",
-    "auction_runner_unittest.cc",
     "auction_v8_helper_unittest.cc",
     "bidder_worklet_unittest.cc",
     "seller_worklet_unittest.cc",

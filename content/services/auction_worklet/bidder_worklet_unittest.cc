@@ -17,6 +17,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/trusted_bidding_signals.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -110,10 +111,10 @@ class BidderWorkletTest : public testing::Test {
   // specified return line Then runs the script, expecting the provided result.
   void RunGenerateBidWithReturnValueExpectingResult(
       const std::string& raw_return_value,
-      const absl::optional<BidderWorklet::Bid> expected_bid,
+      mojom::BidderWorkletBidPtr expected_bid,
       std::vector<std::string> expected_errors = std::vector<std::string>()) {
     RunGenerateBidWithJavascriptExpectingResult(
-        CreateGenerateBidScript(raw_return_value), expected_bid,
+        CreateGenerateBidScript(raw_return_value), std::move(expected_bid),
         expected_errors);
   }
 
@@ -121,22 +122,22 @@ class BidderWorkletTest : public testing::Test {
   // Javascript Then runs the script, expecting the provided result.
   void RunGenerateBidWithJavascriptExpectingResult(
       const std::string& javascript,
-      const absl::optional<BidderWorklet::Bid> expected_bid,
+      mojom::BidderWorkletBidPtr expected_bid,
       std::vector<std::string> expected_errors = std::vector<std::string>()) {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                           javascript);
-    RunGenerateBidExpectingResult(expected_bid, expected_errors);
+    RunGenerateBidExpectingResult(std::move(expected_bid), expected_errors);
   }
 
   // Loads and runs a generateBid() script, expecting the provided result.
   void RunGenerateBidExpectingResult(
-      const absl::optional<BidderWorklet::Bid> expected_bid,
+      mojom::BidderWorkletBidPtr expected_bid,
       std::vector<std::string> expected_errors = std::vector<std::string>()) {
     auto bidder_worklet = CreateWorkletAndGenerateBid();
 
-    EXPECT_EQ(expected_bid.has_value(), bid_.has_value());
-    if (expected_bid.has_value() && bid_.has_value()) {
+    EXPECT_EQ(expected_bid.is_null(), bid_.is_null());
+    if (expected_bid && bid_) {
       EXPECT_EQ(expected_bid->ad, bid_->ad);
       EXPECT_EQ(expected_bid->bid, bid_->bid);
       EXPECT_EQ(expected_bid->render_url, bid_->render_url);
@@ -193,11 +194,8 @@ class BidderWorkletTest : public testing::Test {
     run_loop.Run();
   }
 
-  // Create a BidderWorklet, waiting for the URLLoader to complete. Returns
-  // nullptr on failure.
-  std::unique_ptr<BidderWorklet> CreateWorkletAndGenerateBid() {
-    CHECK(!load_script_run_loop_);
-
+  // Creates a BiddingInterestGroup based on test fixture configuration.
+  mojom::BiddingInterestGroupPtr CreateBiddingInterestGroup() {
     blink::mojom::InterestGroupPtr interest_group =
         blink::mojom::InterestGroup::New();
     interest_group->owner = interest_group_owner_;
@@ -224,29 +222,51 @@ class BidderWorkletTest : public testing::Test {
     mojom::BiddingInterestGroupPtr bidding_interest_group =
         mojom::BiddingInterestGroup::New(std::move(interest_group),
                                          std::move(bidding_browser_signals));
+    return bidding_interest_group;
+  }
 
-    auto bidder_worket = std::make_unique<BidderWorklet>(
-        &v8_helper_, &url_loader_factory_, std::move(bidding_interest_group),
-        null_auction_signals_
-            ? absl::nullopt
-            : absl::make_optional<std::string>(auction_signals_),
-        null_per_buyer_signals_
-            ? absl::nullopt
-            : absl::make_optional<std::string>(per_buyer_signals_),
-        browser_signal_top_window_origin_, browser_signal_seller_origin_,
-        auction_start_time_,
-        base::BindOnce(&BidderWorkletTest::CreateWorkletCallback,
-                       base::Unretained(this)));
+  // Create a BidderWorklet, waiting for the URLLoader to complete. Returns
+  // a null Remote on failure.
+  mojo::Remote<mojom::BidderWorklet> CreateWorkletAndGenerateBid() {
+    CHECK(!load_script_run_loop_);
+
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
+    url_loader_factory_.Clone(
+        url_loader_factory.InitWithNewPipeAndPassReceiver());
+
+    mojo::Remote<mojom::BidderWorklet> bidder_worklet;
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<BidderWorklet>(
+            &v8_helper_, std::move(url_loader_factory),
+            CreateBiddingInterestGroup(),
+            null_auction_signals_
+                ? absl::nullopt
+                : absl::make_optional<std::string>(auction_signals_),
+            null_per_buyer_signals_
+                ? absl::nullopt
+                : absl::make_optional<std::string>(per_buyer_signals_),
+            browser_signal_top_window_origin_, browser_signal_seller_origin_,
+            auction_start_time_,
+            base::BindOnce(&BidderWorkletTest::CreateWorkletCallback,
+                           base::Unretained(this))),
+        bidder_worklet.BindNewPipeAndPassReceiver());
     load_script_run_loop_ = std::make_unique<base::RunLoop>();
     load_script_run_loop_->Run();
     load_script_run_loop_.reset();
     if (!bid_)
-      return nullptr;
-    return bidder_worket;
+      return mojo::Remote<mojom::BidderWorklet>();
+    return bidder_worklet;
   }
 
-  const absl::optional<BidderWorklet::Bid>& bid() const { return bid_; }
+  const mojom::BidderWorkletBidPtr& bid() const { return bid_; }
   const std::vector<std::string> bid_errors() const { return bid_errors_; }
+
+  void CreateWorkletCallback(mojom::BidderWorkletBidPtr bid,
+                             const std::vector<std::string>& errors) {
+    bid_ = std::move(bid);
+    bid_errors_ = std::move(errors);
+    load_script_run_loop_->Quit();
+  }
 
  protected:
   std::vector<mojo::StructPtr<mojom::PreviousWin>> CloneWinList(
@@ -256,13 +276,6 @@ class BidderWorkletTest : public testing::Test {
       out.push_back(prev_win->Clone());
     }
     return out;
-  }
-
-  void CreateWorkletCallback(absl::optional<BidderWorklet::Bid> bid,
-                             const std::vector<std::string>& errors) {
-    bid_ = std::move(bid);
-    bid_errors_ = errors;
-    load_script_run_loop_->Quit();
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -308,19 +321,49 @@ class BidderWorkletTest : public testing::Test {
   std::unique_ptr<base::RunLoop> load_script_run_loop_;
 
   // Values passed to the GenerateBidCallback().
-  absl::optional<BidderWorklet::Bid> bid_;
+  mojom::BidderWorkletBidPtr bid_;
   std::vector<std::string> bid_errors_;
 
   network::TestURLLoaderFactory url_loader_factory_;
   AuctionV8Helper v8_helper_;
 };
 
+// Test the case the BidderWorklet pipe is closed before invoking the
+// LoadBidderWorkletAndGenerateBidCallback.
+// LoadBidderWorkletAndGenerateBidCallback should be invoked, and there should
+// be no Mojo exception due to destroying the creation callback without invoking
+// it.
+TEST_F(BidderWorkletTest, PipeClosed) {
+  mojo::Remote<mojom::BidderWorklet> bidder_worklet;
+  mojo::PendingReceiver<network::mojom::URLLoaderFactory>
+      url_loader_factory_receiver;
+
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<BidderWorklet>(
+          &v8_helper_,
+          url_loader_factory_receiver.InitWithNewPipeAndPassRemote(),
+          CreateBiddingInterestGroup(),
+          absl::nullopt /* auction_signals_json */,
+          absl::nullopt /* per_buyer_signals_json */,
+          browser_signal_top_window_origin_, browser_signal_seller_origin_,
+          auction_start_time_,
+          base::BindOnce(&BidderWorkletTest::CreateWorkletCallback,
+                         base::Unretained(this))),
+      bidder_worklet.BindNewPipeAndPassReceiver());
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  bidder_worklet.reset();
+
+  load_script_run_loop_->Run();
+  load_script_run_loop_.reset();
+  EXPECT_FALSE(bid_);
+}
+
 TEST_F(BidderWorkletTest, NetworkError) {
   url_loader_factory_.AddResponse(interest_group_bidding_url_.spec(),
                                   CreateBasicGenerateBidScript(),
                                   net::HTTP_NOT_FOUND);
   RunGenerateBidExpectingResult(
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"Failed to load https://url.test/ HTTP status = 404 Not Found."});
 }
 
@@ -341,8 +384,8 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
   // CreateBasicGenerateBidScript() does indeed work.
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScript(),
-      BidderWorklet::Bid("[\"ad\"]", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "[\"ad\"]", 1, GURL("https://response.test/"), base::TimeDelta()));
 
   // --------
   // Vary ad
@@ -351,43 +394,44 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
   // Make sure "ad" can be of a variety of JS object types.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid("\"ad\"", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New("\"ad\"", 1, GURL("https://response.test/"),
+                                   base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: {a:1,b:null}, bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid(R"({"a":1,"b":null})", 1,
-                         GURL("https://response.test/"), base::TimeDelta()));
+      mojom::BidderWorkletBid::New(R"({"a":1,"b":null})", 1,
+                                   GURL("https://response.test/"),
+                                   base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: [2.5,[]], bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid("[2.5,[]]", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "[2.5,[]]", 1, GURL("https://response.test/"), base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: -5, bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid("-5", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New("-5", 1, GURL("https://response.test/"),
+                                   base::TimeDelta()));
   // Some values that can't be represented in JSON become null.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: 0/0, bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid("null", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
+                                   base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: [globalThis.not_defined], bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid("[null]", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New("[null]", 1, GURL("https://response.test/"),
+                                   base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: [function() {return 1;}], bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid("[null]", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New("[null]", 1, GURL("https://response.test/"),
+                                   base::TimeDelta()));
 
   // Other values JSON can't represent result in failing instead of null.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: globalThis.not_defined, bid:1, render:"https://response.test/"})",
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: function() {return 1;}, bid:1, render:"https://response.test/"})",
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
 
@@ -400,7 +444,7 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
           return {ad: a, bid:1, render:"https://response.test/"};
         }
       )",
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
 
@@ -411,48 +455,48 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
   // Valid positive bid values.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:1.5, render:"https://response.test/"})",
-      BidderWorklet::Bid("\"ad\"", 1.5, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "\"ad\"", 1.5, GURL("https://response.test/"), base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:2, render:"https://response.test/"})",
-      BidderWorklet::Bid("\"ad\"", 2, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New("\"ad\"", 2, GURL("https://response.test/"),
+                                   base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:0.001, render:"https://response.test/"})",
-      BidderWorklet::Bid("\"ad\"", 0.001, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "\"ad\"", 0.001, GURL("https://response.test/"), base::TimeDelta()));
 
   // Bids <= 0.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:0, render:"https://response.test/"})",
-      absl::nullopt /* expected_bid */);
+      mojom::BidderWorkletBidPtr() /* expected_bid */);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:-10, render:"https://response.test/"})",
-      absl::nullopt /* expected_bid */);
+      mojom::BidderWorkletBidPtr() /* expected_bid */);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:-1.5, render:"https://response.test/"})",
-      absl::nullopt /* expected_bid */);
+      mojom::BidderWorkletBidPtr() /* expected_bid */);
 
   // Infinite and NaN bid.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1/0, render:"https://response.test/"})",
-      absl::nullopt /* expected_bid */);
+      mojom::BidderWorkletBidPtr() /* expected_bid */);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:-1/0, render:"https://response.test/"})",
-      absl::nullopt /* expected_bid */);
+      mojom::BidderWorkletBidPtr() /* expected_bid */);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:0/0, render:"https://response.test/"})",
-      absl::nullopt /* expected_bid */);
+      mojom::BidderWorkletBidPtr() /* expected_bid */);
 
   // Non-numeric bid.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:"1", render:"https://response.test/"})",
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:[1], render:"https://response.test/"})",
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
 
@@ -462,48 +506,50 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
 
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid("[\"ad\"]", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "[\"ad\"]", 1, GURL("https://response.test/"), base::TimeDelta()));
 
   // Disallowed schemes.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"http://response.test/"})",
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() returned "
        "render_url isn't a valid https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"chrome-extension://response.test/"})",
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() returned "
        "render_url isn't a valid https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"about:blank"})",
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() returned "
        "render_url isn't a valid https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"data:,foo"})",
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() returned "
        "render_url isn't a valid https:// URL."});
 
   // Invalid URLs.
   RunGenerateBidWithReturnValueExpectingResult(
-      R"({ad: ["ad"], bid:1, render:"test"})", absl::nullopt /* expected_bid */,
+      R"({ad: ["ad"], bid:1, render:"test"})",
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() returned "
        "render_url isn't a valid https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"http://"})",
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() returned "
        "render_url isn't a valid https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:["http://response.test/"]})",
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
   RunGenerateBidWithReturnValueExpectingResult(
-      R"({ad: ["ad"], bid:1, render:9})", absl::nullopt /* expected_bid */,
+      R"({ad: ["ad"], bid:1, render:9})",
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
 
@@ -513,22 +559,23 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
 
   // No return value.
   RunGenerateBidWithReturnValueExpectingResult(
-      "", absl::nullopt /* expected_bid */,
+      "", mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() return value not an object."});
 
   // Missing value.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({bid:"a", render:"https://response.test/"})",
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], render:"https://response.test/"})",
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
   RunGenerateBidWithReturnValueExpectingResult(
-      R"({ad: ["ad"], bid:"a"})", absl::nullopt /* expected_bid */,
+      R"({ad: ["ad"], bid:"a"})",
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
 
@@ -539,18 +586,18 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
           return {ad: ["ad"], bid:1, render:"https://response.test/"};
         }
       )",
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ `generateBid` is not a function."});
   RunGenerateBidWithJavascriptExpectingResult(
-      "", absl::nullopt /* expected_bid */,
+      "", mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ `generateBid` is not a function."});
   RunGenerateBidWithJavascriptExpectingResult(
-      "5", absl::nullopt /* expected_bid */,
+      "5", mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ `generateBid` is not a function."});
 
   // Throw exception.
   RunGenerateBidWithJavascriptExpectingResult(
-      "shrimp", absl::nullopt /* expected_bid */,
+      "shrimp", mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/:1 Uncaught ReferenceError: "
        "shrimp is not defined."});
 }
@@ -559,7 +606,7 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
 TEST_F(BidderWorkletTest, GenerateBidDateNotAvailable) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: Date().toString(), bid:1, render:"https://response.test/"})",
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/:4 Uncaught ReferenceError: Date is not defined."});
 }
 
@@ -605,10 +652,10 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
         base::StringPrintf(
             R"({ad: %s, bid:1, render:"https://response.test/"})",
             test_case.name),
-        test_case.is_json
-            ? absl::optional<BidderWorklet::Bid>()
-            : BidderWorklet::Bid(R"("foo")", 1, GURL("https://response.test/"),
-                                 base::TimeDelta()));
+        test_case.is_json ? mojom::BidderWorkletBidPtr()
+                          : mojom::BidderWorkletBid::New(
+                                R"("foo")", 1, GURL("https://response.test/"),
+                                base::TimeDelta()));
 
     *test_case.value_ptr = R"("foo")";
     RunGenerateBidWithReturnValueExpectingResult(
@@ -616,11 +663,12 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
             R"({ad: %s, bid:1, render:"https://response.test/"})",
             test_case.name),
         test_case.is_json
-            ? BidderWorklet::Bid(R"("foo")", 1, GURL("https://response.test/"),
-                                 base::TimeDelta())
-            : BidderWorklet::Bid(R"("\"foo\"")", 1,
-                                 GURL("https://response.test/"),
-                                 base::TimeDelta()));
+            ? mojom::BidderWorkletBid::New(R"("foo")", 1,
+                                           GURL("https://response.test/"),
+                                           base::TimeDelta())
+            : mojom::BidderWorkletBid::New(R"("\"foo\"")", 1,
+                                           GURL("https://response.test/"),
+                                           base::TimeDelta()));
 
     *test_case.value_ptr = "[1]";
     RunGenerateBidWithReturnValueExpectingResult(
@@ -628,38 +676,44 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
             R"({ad: %s[0], bid:1, render:"https://response.test/"})",
             test_case.name),
         test_case.is_json
-            ? BidderWorklet::Bid("1", 1, GURL("https://response.test/"),
-                                 base::TimeDelta())
-            : BidderWorklet::Bid(R"("[")", 1, GURL("https://response.test/"),
-                                 base::TimeDelta()));
+            ? mojom::BidderWorkletBid::New(
+                  "1", 1, GURL("https://response.test/"), base::TimeDelta())
+            : mojom::BidderWorkletBid::New(R"("[")", 1,
+                                           GURL("https://response.test/"),
+                                           base::TimeDelta()));
     SetDefaultParameters();
   }
 
   interest_group_owner_ = url::Origin::Create(GURL("https://foo.test/"));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.owner, bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid(R"("https://foo.test")", 1,
-                         GURL("https://response.test/"), base::TimeDelta()));
+      mojom::BidderWorkletBid::New(R"("https://foo.test")", 1,
+                                   GURL("https://response.test/"),
+                                   base::TimeDelta()));
 
   interest_group_owner_ = url::Origin::Create(GURL("https://[::1]:40000/"));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.owner, bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid(R"("https://[::1]:40000")", 1,
-                         GURL("https://response.test/"), base::TimeDelta()));
+      mojom::BidderWorkletBid::New(R"("https://[::1]:40000")", 1,
+                                   GURL("https://response.test/"),
+                                   base::TimeDelta()));
   SetDefaultParameters();
 
   browser_signal_seller_origin_ =
       url::Origin::Create(GURL("https://foo.test/"));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: browserSignals.seller, bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid(R"("https://foo.test")", 1,
-                         GURL("https://response.test/"), base::TimeDelta()));
+      mojom::BidderWorkletBid::New(R"("https://foo.test")", 1,
+                                   GURL("https://response.test/"),
+                                   base::TimeDelta()));
+
   browser_signal_seller_origin_ =
       url::Origin::Create(GURL("https://[::1]:40000/"));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: browserSignals.seller, bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid(R"("https://[::1]:40000")", 1,
-                         GURL("https://response.test/"), base::TimeDelta()));
+      mojom::BidderWorkletBid::New(R"("https://[::1]:40000")", 1,
+                                   GURL("https://response.test/"),
+                                   base::TimeDelta()));
   SetDefaultParameters();
 
   // Test the empty `userBiddingSignals` case, too. It's actually an optional
@@ -669,16 +723,18 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
   interest_group_user_bidding_signals_ = "";
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad:typeof interestGroup.userBiddingSignals, bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid(R"("undefined")", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New(R"("undefined")", 1,
+                                   GURL("https://response.test/"),
+                                   base::TimeDelta()));
   SetDefaultParameters();
 
   browser_signal_top_window_origin_ =
       url::Origin::Create(GURL("https://top.window.test/"));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: browserSignals.topWindowHostname, bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid(R"("top.window.test")", 1,
-                         GURL("https://response.test/"), base::TimeDelta()));
+      mojom::BidderWorkletBid::New(R"("top.window.test")", 1,
+                                   GURL("https://response.test/"),
+                                   base::TimeDelta()));
   SetDefaultParameters();
 
   const struct IntegerTestCase {
@@ -698,16 +754,16 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
         base::StringPrintf(
             R"({ad: %s, bid:1, render:"https://response.test/"})",
             test_case.name),
-        BidderWorklet::Bid("0", 1, GURL("https://response.test/"),
-                           base::TimeDelta()));
+        mojom::BidderWorkletBid::New("0", 1, GURL("https://response.test/"),
+                                     base::TimeDelta()));
 
     *test_case.value_ptr = 10;
     RunGenerateBidWithReturnValueExpectingResult(
         base::StringPrintf(
             R"({ad: %s, bid:1, render:"https://response.test/"})",
             test_case.name),
-        BidderWorklet::Bid("10", 1, GURL("https://response.test/"),
-                           base::TimeDelta()));
+        mojom::BidderWorkletBid::New("10", 1, GURL("https://response.test/"),
+                                     base::TimeDelta()));
     SetDefaultParameters();
   }
 
@@ -716,7 +772,7 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
   // A bid URL that's not in the InterestGroup's ads list should fail.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: 0, bid:1, render:"https://response2.test/"})",
-      absl::nullopt /* expected_bid */,
+      mojom::BidderWorkletBidPtr() /* expected_bid */,
       {"https://url.test/ generateBid() returned render_url isn't one of "
        "the registered creative URLs."});
 
@@ -726,17 +782,18 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
       GURL("https://response2.test/"), R"(["metadata"])" /* metadata */));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.ads, bid:1, render:"https://response2.test/"})",
-      BidderWorklet::Bid("[{\"renderUrl\":\"https://response.test/\"},"
-                         "{\"renderUrl\":\"https://response2.test/"
-                         "\",\"metadata\":[\"metadata\"]}]",
-                         1, GURL("https://response2.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "[{\"renderUrl\":\"https://response.test/\"},"
+          "{\"renderUrl\":\"https://response2.test/"
+          "\",\"metadata\":[\"metadata\"]}]",
+          1, GURL("https://response2.test/"), base::TimeDelta()));
 
   // Make sure `metadata` is treated as an object, instead of a raw string.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.ads[1].metadata[0], bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid("\"metadata\"", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New("\"metadata\"", 1,
+                                   GURL("https://response.test/"),
+                                   base::TimeDelta()));
 }
 
 // Test handling of null auctionSignals and perBuyerSignals to generateBid.
@@ -751,33 +808,33 @@ TEST_F(BidderWorkletTest, GenerateBidParametersOptionalString) {
   null_auction_signals_ = false;
   null_per_buyer_signals_ = false;
   RunGenerateBidWithReturnValueExpectingResult(
-      kRetVal,
-      BidderWorklet::Bid("[false,false]", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      kRetVal, mojom::BidderWorkletBid::New("[false,false]", 1,
+                                            GURL("https://response.test/"),
+                                            base::TimeDelta()));
 
   SetDefaultParameters();
   null_auction_signals_ = false;
   null_per_buyer_signals_ = true;
   RunGenerateBidWithReturnValueExpectingResult(
-      kRetVal,
-      BidderWorklet::Bid("[false,true]", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      kRetVal, mojom::BidderWorkletBid::New("[false,true]", 1,
+                                            GURL("https://response.test/"),
+                                            base::TimeDelta()));
 
   SetDefaultParameters();
   null_auction_signals_ = true;
   null_per_buyer_signals_ = false;
   RunGenerateBidWithReturnValueExpectingResult(
-      kRetVal,
-      BidderWorklet::Bid("[true,false]", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      kRetVal, mojom::BidderWorkletBid::New("[true,false]", 1,
+                                            GURL("https://response.test/"),
+                                            base::TimeDelta()));
 
   SetDefaultParameters();
   null_auction_signals_ = true;
   null_per_buyer_signals_ = true;
   RunGenerateBidWithReturnValueExpectingResult(
       kRetVal,
-      BidderWorklet::Bid("[true,true]", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "[true,true]", 1, GURL("https://response.test/"), base::TimeDelta()));
 }
 
 // Utility methods to create vectors of PreviousWin. Needed because StructPtr's
@@ -867,8 +924,9 @@ TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
         base::StringPrintf(
             R"({ad: %s, bid:1, render:"https://response.test/"})",
             test_case.ad),
-        BidderWorklet::Bid(test_case.expected_ad, 1,
-                           GURL("https://response.test/"), base::TimeDelta()));
+        mojom::BidderWorkletBid::New(test_case.expected_ad, 1,
+                                     GURL("https://response.test/"),
+                                     base::TimeDelta()));
   }
 }
 
@@ -888,8 +946,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   // made.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid("null", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
+                                   base::TimeDelta()));
 
   // Request with TrustedBiddingSignals keys and null URL. No request should be
   // made.
@@ -897,8 +955,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
       std::vector<std::string>({"key1", "key2"});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid("null", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
+                                   base::TimeDelta()));
 
   // Request with TrustedBiddingSignals URL and null keys. No request should be
   // made.
@@ -906,16 +964,16 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   interest_group_trusted_bidding_signals_keys_.reset();
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid("null", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
+                                   base::TimeDelta()));
 
   // Request with TrustedBiddingSignals URL and empty keys. No request should be
   // made.
   interest_group_trusted_bidding_signals_keys_ = std::vector<std::string>();
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid("null", 1, GURL("https://response.test/"),
-                         base::TimeDelta()));
+      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
+                                   base::TimeDelta()));
 
   // Request with valid TrustedBiddingSignals URL and non-empty keys. Request
   // should be made. The request fails.
@@ -925,8 +983,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
                                   net::HTTP_NOT_FOUND);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid("null", 1, GURL("https://response.test/"),
-                         base::TimeDelta()),
+      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
+                                   base::TimeDelta()),
       {"Failed to load "
        "https://signals.test/?hostname=top.window.test&keys=key1,key2 HTTP "
        "status = 404 Not Found."});
@@ -936,8 +994,9 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   AddJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      BidderWorklet::Bid(R"({"key1":1,"key2":[2]})", 1,
-                         GURL("https://response.test/"), base::TimeDelta()));
+      mojom::BidderWorkletBid::New(R"({"key1":1,"key2":[2]})", 1,
+                                   GURL("https://response.test/"),
+                                   base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, ReportWin) {
@@ -1065,7 +1124,8 @@ TEST_F(BidderWorkletTest, ReportWinParameters) {
       // JSON values passed the generateBid() result in failures there, before
       // reportWin is called.
       RunGenerateBidWithJavascriptExpectingResult(
-          CreateBasicGenerateBidScript(), absl::nullopt /* expected_bid */);
+          CreateBasicGenerateBidScript(),
+          mojom::BidderWorkletBidPtr() /* expected_bid */);
     }
 
     *test_case.value_ptr = R"(["https://foo.test/"])";

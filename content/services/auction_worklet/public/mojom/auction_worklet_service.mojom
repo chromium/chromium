@@ -4,124 +4,114 @@
 
 module auction_worklet.mojom;
 
+import "content/services/auction_worklet/public/mojom/bidder_worklet.mojom";
+import "content/services/auction_worklet/public/mojom/seller_worklet.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-struct PreviousWin {
-  // Approximate time a particular group won an auction.
-  mojo_base.mojom.Time time;
-
-  // The ad object returned by that group's bidding function with the winning
-  // bid.
-  string ad_json;
-};
-
-// Information here corresponds to the interest group it's packaged with inside
-// BiddingInterestGroup.
-struct BiddingBrowserSignals {
-  // How many times this interest group has been joined in the period history
-  // is maintained.
-  int32 join_count;
-
-  // How many times this interest group has made bids in auctions.
-  int32 bid_count;
-
-  // Previous times the group won auctions.
-  array<PreviousWin> prev_wins;
-};
-
-struct BiddingInterestGroup {
-  blink.mojom.InterestGroup group;  // User JS specified, stored by browser.
-  BiddingBrowserSignals signals;  // Collected by browser.
-};
-
 struct BrowserSignals {
   url.mojom.Origin top_frame_origin;
   url.mojom.Origin seller;
 };
 
-struct WinningBidderReport {
-  // true if the winning bidder worklet's reporting function ran successfully
-  // and set a reporting URL.
-  bool report_requested;
-
-  // This is checked to be a https:// URL for `report_requested` to be true, but
-  // no restrictions on the destination are performed by AuctionRunner.
-  url.mojom.Url report_url;
-};
-
-struct SellerReport {
-  // true if the seller worklet's reporting function ran successfully. Unlike
-  // WinningBidderReport, this doesn't require the URL to be set and valid.
-  bool success;
-  string signals_for_winner_json;
-
-  // If this is non-empty, it's a valid https:// URL, but no restrictions on
-  // destination beyond the scheme are enforced by AuctionRunner.
-  url.mojom.Url report_url;
-};
-
-// Used to load and run FLEDGE worklets.
+// Used by the browser to load and run FLEDGE worklets in a sandboxed utility
+// process.
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
-//
-// This is used from the browser, by AuctionManager, and runs in a dedicated
-// utility process. The implementation is global (and stateless besides what's
-// needed to handle an individual request).
 interface AuctionWorkletService {
-  // Runs an entire FLEDGE auction.
+  // Loads a FLEDGE bidder worklet, its same-origin realtime bidding signals
+  // URL (if necessary), and invokes its generateBid() method, returning
+  // the generate bid and associated data.
   //
   // Arguments:
-  // `url_loader_factory` is used to load worklet scripts and trusted bidding
-  //  signals. It's recommended that the implementation be restricted to exactly
-  //  those URLs (keeping in mind query parameter usage for trusted bidding
-  //  signals and the allowed coalescing).
+  // `bidder_worklet` The pipe to communicate with the BidderWorklet.
+  //  Closing the pipe will abort any in-progress loads destroy the worklet. The
+  //  callback will be invoked on pipe destruction if it hasn't been already,
+  //  since it's on the AuctionWorkletService pipe instead of the BidderWorklet
+  //  pipe.
   //
-  // `auction_config` is the configuration provided by client JavaScript in
-  //  the renderer in order to initiate the auction.
+  // `url_loader_factory` The URLLoaderFactory used to load the worklet script
+  //  and trusted bidding signals. It's recommended that the implementation be
+  //  restricted to exactly those URLs (keeping in mind query parameter usage
+  //  for trusted bidding signals and the allowed coalescing).
   //
-  // `bidders` includes definitions of the interest groups that are selected to
-  //  participate in this auction (initially added by client JS in the renderer,
-  //  but managed by the browser's interest group store), as well as some
-  //  bidding history collected by the interest group store. The bidding
-  //  worklets of these groups will be fetched and executed.
+  // `bidding_interest_group` Definition of the interest group to fetch and
+  //  execute the bidding script of for an ad auction (initially added by
+  //  client JS in the renderer, but managed by the browser's interest group
+  //  store), as well as some bidding history collected by the interest group
+  //  store.
   //
-  // `browser_signals` signals from the browser about the auction that are the
-  //  same for all worklets.
+  // `auction_signals_json` The JSON representation of the auction signals for
+  //  the auction, specified by the publisher page and provided to bidder
+  //  worklets competing in an auction.
+  //
+  // `per_buyer_signals_json` The JSON representation of the auction signals
+  //  for the specific owner of this interest group, specified by the
+  //  publisher page and provided to all interest groups with the same owner
+  //  as the one specified `interest_group`.
+  //
+  // `browser_signal_top_window_origin` The origin of the top-level frame
+  //  where the auction is running.
+  //
+  // `browser_signal_seller_origin` The origin of the seller script running
+  //  the auction.
+  //
+  // `auction_start_time` The time the auction started, use to ensure the
+  //  last win times provided to all worklets are relative to the same time.
   //
   // Returns:
-  // `render_url` URL of auction winning ad to render.
-  //  An empty URL is used if there is no winner.
+  // `bid` If the worklet is successfully loaded and chooses to bid in the
+  //  auction, contains information about the bid. Null otherwise.
   //
-  // `winning_interest_group_owner` owner of the winning interest group.
-  //  An opaque origin if there is no winner.
+  // `errors` The various error messages to be used for debugging. These are too
+  //  sensitive for the renderer to see. There may be errors even when a bid
+  //  is offered, and there may be no errors when there's no bid.
   //
-  // `winning_interest_group_name` name of winning interest group.
-  //  Empty if there is no winner.
+  // TODO(mmenke): Make BidderWorklets with the same URL reuseable, both
+  // between auctions, and within an auction, if two interest groups with the
+  // same owner share a script URL, and do the same for bidding signals, at
+  // least within an auction.
+  LoadBidderWorkletAndGenerateBid(
+      pending_receiver<BidderWorklet> bidder_worklet,
+      pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
+      BiddingInterestGroup bidding_interest_group,
+      string? auction_signals_json,
+      string? per_buyer_signals_json,
+      url.mojom.Origin browser_signal_top_window_origin,
+      url.mojom.Origin browser_signal_seller_origin,
+      mojo_base.mojom.Time auction_start_time) => (
+          BidderWorkletBid? bid,
+          array<string> errors);
+
+  // Attempts to load Javascript at the specified URL and loads a SellerWorklet.
   //
-  // `bidder_report` indicates if the winning buyer wishes to make a report,
-  //  and the URL to use for that.
-  // `seller_report` indicates if the seller wishes to make a report,
-  //  and the URL that the seller wanted fetched for that.
   //
-  // `errors` are various error messages to be used for debugging. These are too
-  // sensitive for the renderers to see.
+  // Arguments:
+  // `seller_worklet` The pipe to communicate with the SellerWorklet. Closing
+  //  the pipe will abort any in-progress loads destroy the worklet. The
+  //  callback will be invoked on seller worklet destruction if it hasn't
+  //  already, since it's on the AuctionWorkletService pipe instead of the
+  //  SellerWorklet pipe.
   //
-  // TODO(mmenke):  May be good to make some way to share worklets between
-  // multiple auctions on the same page, but not auctions across pages.
-  // Could create separate top level AuctionWorkletService objects (using the
-  // same process), one for each tab, or something, to scope reused workets
-  // and bidding signals.
-  RunAuction(pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
-             blink.mojom.AuctionAdConfig auction_config,
-             array<BiddingInterestGroup> bidders,
-             BrowserSignals browser_signals) => (
-                url.mojom.Url render_url,
-                url.mojom.Origin winning_interest_group_owner,
-                string winning_interest_group_name,
-                WinningBidderReport bidder_report,
-                SellerReport seller_report,
-                array<string> errors);
+  // `url_loader_factory` The UrlLoaderFactory used to load the worklet script.
+  //  It's recommended that the implementation be restricted to only load the
+  //  script URL.
+  //
+  // `script_source_url` is the URL of the seller worklet script.
+  //
+  // Returns:
+  // `success` is true if the worklet was successfully loaded.
+  //
+  // `errors` The various error messages to be used for debugging. These are too
+  //  sensitive for the renderer to see. There may be errors even when the
+  //  worklet is successfully loaded, and there may be no errors when the load
+  //  fails.
+  LoadSellerWorklet(
+      pending_receiver<SellerWorklet> seller_worklet,
+      pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
+      url.mojom.Url script_source_url) => (
+          bool success,
+          array<string> errors);
 };

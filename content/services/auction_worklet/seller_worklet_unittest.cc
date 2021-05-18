@@ -16,6 +16,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -121,12 +122,12 @@ class SellerWorkletTest : public testing::Test {
 
     base::RunLoop run_loop;
     seller_worket->ScoreAd(
-        ad_metadata_, bid_, *auction_config_, browser_signal_top_window_origin_,
-        browser_signal_interest_group_owner_,
+        ad_metadata_, bid_, auction_config_.Clone(),
+        browser_signal_top_window_origin_, browser_signal_interest_group_owner_,
         browser_signal_ad_render_fingerprint_,
         browser_signal_bidding_duration_msecs_,
         base::BindLambdaForTesting(
-            [&run_loop, &expected_score, expected_errors](
+            [&run_loop, &expected_score, &expected_errors](
                 double score, const std::vector<std::string>& errors) {
               EXPECT_EQ(expected_score, score);
               EXPECT_EQ(expected_errors, errors);
@@ -176,7 +177,7 @@ class SellerWorkletTest : public testing::Test {
 
     base::RunLoop run_loop;
     seller_worket->ReportResult(
-        *auction_config_, browser_signal_top_window_origin_,
+        auction_config_.Clone(), browser_signal_top_window_origin_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_render_fingerprint_, bid_,
         browser_signal_desireability_,
@@ -195,24 +196,30 @@ class SellerWorkletTest : public testing::Test {
   }
 
   // Create a SellerWorklet, waiting for the URLLoader to complete. Returns
-  // nullptr on failure.
-  std::unique_ptr<SellerWorklet> CreateWorklet() {
+  // a null Remote on failure.
+  mojo::Remote<mojom::SellerWorklet> CreateWorklet() {
     CHECK(!load_script_run_loop_);
 
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
+    url_loader_factory_.Clone(
+        url_loader_factory.InitWithNewPipeAndPassReceiver());
+
     create_worklet_succeeded_ = false;
-    auto seller_worket = std::make_unique<SellerWorklet>(
-        &v8_helper_, &url_loader_factory_, url_,
-        base::BindOnce(&SellerWorkletTest::CreateWorkletCallback,
-                       base::Unretained(this)));
+    mojo::Remote<mojom::SellerWorklet> seller_worklet;
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<SellerWorklet>(
+            &v8_helper_, std::move(url_loader_factory), url_,
+            base::BindOnce(&SellerWorkletTest::CreateWorkletCallback,
+                           base::Unretained(this))),
+        seller_worklet.BindNewPipeAndPassReceiver());
     load_script_run_loop_ = std::make_unique<base::RunLoop>();
     load_script_run_loop_->Run();
     load_script_run_loop_.reset();
     if (!create_worklet_succeeded_)
-      return nullptr;
-    return seller_worket;
+      return mojo::Remote<mojom::SellerWorklet>();
+    return seller_worklet;
   }
 
- protected:
   void CreateWorkletCallback(bool success,
                              const std::vector<std::string>& errors) {
     create_worklet_succeeded_ = success;
@@ -222,6 +229,7 @@ class SellerWorkletTest : public testing::Test {
     load_script_run_loop_->Quit();
   }
 
+ protected:
   base::test::TaskEnvironment task_environment_;
 
   const GURL url_ = GURL("https://url.test/");
@@ -250,6 +258,30 @@ class SellerWorkletTest : public testing::Test {
   network::TestURLLoaderFactory url_loader_factory_;
   AuctionV8Helper v8_helper_;
 };
+
+// Test the case the SellerWorklet pipe is closed before invoking the
+// LoadSellerWorkletCallback. The LoadSellerWorkletCallback should be invoked,
+// and there should be no Mojo exception due to destroying the creation callback
+// without invoking it.
+TEST_F(SellerWorkletTest, PipeClosed) {
+  mojo::Remote<mojom::SellerWorklet> seller_worklet;
+  mojo::PendingReceiver<network::mojom::URLLoaderFactory>
+      url_loader_factory_receiver;
+
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<SellerWorklet>(
+          &v8_helper_,
+          url_loader_factory_receiver.InitWithNewPipeAndPassRemote(), url_,
+          base::BindOnce(&SellerWorkletTest::CreateWorkletCallback,
+                         base::Unretained(this))),
+      seller_worklet.BindNewPipeAndPassReceiver());
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  seller_worklet.reset();
+
+  load_script_run_loop_->Run();
+  load_script_run_loop_.reset();
+  EXPECT_FALSE(create_worklet_succeeded_);
+}
 
 TEST_F(SellerWorkletTest, NetworkError) {
   url_loader_factory_.AddResponse(url_.spec(), CreateBasicSellAdScript(),
@@ -654,7 +686,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
     for (int j = 0; j < 2; ++j) {
       base::RunLoop run_loop;
       seller_worket->ScoreAd(
-          ad_metadata_, bid_, *auction_config_,
+          ad_metadata_, bid_, auction_config_.Clone(),
           browser_signal_top_window_origin_,
           browser_signal_interest_group_owner_,
           browser_signal_ad_render_fingerprint_,
@@ -672,7 +704,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
     for (int j = 0; j < 2; ++j) {
       base::RunLoop run_loop;
       seller_worket->ReportResult(
-          *auction_config_, browser_signal_top_window_origin_,
+          auction_config_.Clone(), browser_signal_top_window_origin_,
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           browser_signal_ad_render_fingerprint_, bid_,
           browser_signal_desireability_,

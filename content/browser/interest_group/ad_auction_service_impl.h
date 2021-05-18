@@ -77,8 +77,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                          absl::optional<GURL> bidder_report_url,
                          absl::optional<GURL> seller_report_url);
 
-  void OnWorkletServiceCrash();
-
   // This must be above `auction_worklet_service_`, since auctions may own
   // callbacks over the AuctionWorkletService pipe, and mojo pipes must be
   // destroyed before any callbacks that are bound to them.

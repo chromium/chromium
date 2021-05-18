@@ -1,3 +1,11 @@
 include_rules = [
   "+content/services/auction_worklet/public/mojom",
 ]
+
+specific_include_rules = {
+  # The AuctionRunnerTests have integration tests that directly instantiate an
+  # in-process auction_worklet service.
+  "auction_runner_unittest\.cc": [
+    "+content/services/auction_worklet",
+  ],
+}

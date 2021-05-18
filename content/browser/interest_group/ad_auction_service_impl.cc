@@ -180,8 +180,6 @@ AdAuctionServiceImpl::GetWorkletService() {
         ServiceProcessHost::Options()
             .WithDisplayName("Auction Worklet Service")
             .Pass());
-    auction_worklet_service_.set_disconnect_handler(base::BindOnce(
-        &AdAuctionServiceImpl::OnWorkletServiceCrash, base::Unretained(this)));
   }
   return auction_worklet_service_.get();
 }
@@ -212,16 +210,6 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     FetchReport(factory, *bidder_report_url, origin());
   if (seller_report_url)
     FetchReport(factory, *seller_report_url, origin());
-}
-
-void AdAuctionServiceImpl::OnWorkletServiceCrash() {
-  // Each loop iteration calls on OnServiceCrash() on a single element of
-  // `auctions_`, which should result in it being immediately deleted. Since the
-  // loop modifies `auctions_`, need to be careful not to hold onto an iterator
-  // for the removed element, which this loop does by checking if `auctions_` is
-  // empty, rather than using a for loop.
-  while (!auctions_.empty())
-    (*auctions_.begin())->OnServiceCrash();
 }
 
 }  // namespace content

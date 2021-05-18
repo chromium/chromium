@@ -13,10 +13,11 @@
 #include "base/callback_forward.h"
 #include "base/strings/string_piece_forward.h"
 #include "content/common/content_export.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
@@ -83,7 +84,7 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       override;
 
  private:
-  mojo::Receiver<network::mojom::URLLoaderFactory> receiver_;
+  mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
 
   const GetUrlLoaderFactoryCallback get_publisher_frame_url_loader_factory_;
   const GetUrlLoaderFactoryCallback get_trusted_url_loader_factory_;
