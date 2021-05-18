@@ -108,3 +108,11 @@ autofill::ServerFieldType AutofillTypeFromAutofillUIType(AutofillUIType type) {
       return autofill::UNKNOWN_TYPE;
   }
 }
+
+std::vector<autofill::ServerFieldType> GetAutofillTypeForProfileEdit() {
+  std::vector<autofill::ServerFieldType> all_visible_types;
+  for (const AutofillProfileFieldDisplayInfo& row : kProfileFieldsToDisplay)
+    all_visible_types.push_back(row.autofillType);
+
+  return all_visible_types;
+}

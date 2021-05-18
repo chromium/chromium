@@ -5,6 +5,8 @@
 source_set("modals") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "infobar_edit_address_profile_table_view_controller.h",
+    "infobar_edit_address_profile_table_view_controller.mm",
     "infobar_modal_delegate.h",
     "infobar_modal_view_controller.h",
     "infobar_modal_view_controller.mm",
@@ -30,12 +32,15 @@ source_set("modals") {
   deps = [
     ":public",
     "//base",
+    "//components/autofill/core/common:features",
     "//components/translate/core/browser",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/passwords:public",
     "//ios/chrome/browser/ui/autofill:autofill_message",
     "//ios/chrome/browser/ui/autofill:autofill_metrics",
+    "//ios/chrome/browser/ui/autofill:autofill_ui_type",
+    "//ios/chrome/browser/ui/autofill/cells",
     "//ios/chrome/browser/ui/infobars/coordinators:translate_public",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:styler",
@@ -59,7 +64,10 @@ source_set("public") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "infobar_save_address_profile_table_view_controller_unittest.mm" ]
+  sources = [
+    "infobar_edit_address_profile_table_view_controller_unittest.mm",
+    "infobar_save_address_profile_table_view_controller_unittest.mm",
+  ]
   deps = [
     ":modals",
     "//base/test:test_support",

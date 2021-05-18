@@ -53,12 +53,12 @@ AutofillSaveUpdateAddressProfileDelegateIOS::GetEnvelopeStyleAddress() const {
 
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetPhoneNumber()
     const {
-  return profile_.GetRawInfo(PHONE_HOME_WHOLE_NUMBER);
+  return GetProfileInfo(PHONE_HOME_WHOLE_NUMBER);
 }
 
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetEmailAddress()
     const {
-  return profile_.GetRawInfo(EMAIL_ADDRESS);
+  return GetProfileInfo(EMAIL_ADDRESS);
 }
 
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetDescription()
@@ -85,6 +85,11 @@ AutofillSaveUpdateAddressProfileDelegateIOS::GetProfile() const {
 const autofill::AutofillProfile*
 AutofillSaveUpdateAddressProfileDelegateIOS::GetOriginalProfile() const {
   return base::OptionalOrNullptr(original_profile_);
+}
+
+std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetProfileInfo(
+    ServerFieldType type) const {
+  return profile_.GetInfo(type, locale_);
 }
 
 base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>

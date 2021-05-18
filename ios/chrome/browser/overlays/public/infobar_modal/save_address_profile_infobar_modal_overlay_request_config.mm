@@ -65,6 +65,19 @@ void SaveAddressProfileModalRequestConfig::StoreProfileDiff(
   }
 }
 
+NSDictionary* SaveAddressProfileModalRequestConfig::GetProfileInfo() {
+  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
+      static_cast<autofill::AutofillSaveUpdateAddressProfileDelegateIOS*>(
+          infobar_->delegate());
+  NSMutableDictionary* items = [[NSMutableDictionary alloc] init];
+  for (const auto& type : GetAutofillTypeForProfileEdit()) {
+    [items setObject:base::SysUTF16ToNSString(delegate->GetProfileInfo(type))
+              forKey:[NSNumber
+                         numberWithInt:AutofillUITypeFromAutofillType(type)]];
+  }
+  return items;
+}
+
 void SaveAddressProfileModalRequestConfig::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
   InfobarOverlayRequestConfig::CreateForUserData(
