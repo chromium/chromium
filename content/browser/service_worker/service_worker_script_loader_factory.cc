@@ -161,9 +161,8 @@ bool ServiceWorkerScriptLoaderFactory::CheckIfScriptRequestIsValid(
   if (!version)
     return false;
 
-  // Handle only the service worker main script
-  // (network::mojom::RequestDestination::kServiceWorker) or importScripts()
-  // (network::mojom::RequestDestination::kScript).
+  // Handle only RequestDestination::kServiceWorker (the service worker main
+  // script or static-import) or RequestDestination::kScript (importScripts()).
   if (resource_request.destination !=
           network::mojom::RequestDestination::kServiceWorker &&
       resource_request.destination !=
