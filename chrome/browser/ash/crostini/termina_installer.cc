@@ -356,12 +356,6 @@ void TerminaInstaller::RemoveComponentIfPresent(
 
 void TerminaInstaller::RemoveDlcIfPresent(base::OnceCallback<void()> callback,
                                           UninstallResult* result) {
-  if (!base::FeatureList::IsEnabled(chromeos::features::kCrostiniEnableDlc)) {
-    // No DLC service, so be a no-op.
-    *result = true;
-    std::move(callback).Run();
-    return;
-  }
   chromeos::DlcserviceClient::Get()->GetExistingDlcs(base::BindOnce(
       [](base::WeakPtr<TerminaInstaller> weak_this,
          base::OnceCallback<void()> callback, UninstallResult* result,

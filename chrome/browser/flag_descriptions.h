@@ -2325,9 +2325,6 @@ extern const char kCrostiniGpuSupportDescription[];
 extern const char kCrostiniUseDlcName[];
 extern const char kCrostiniUseDlcDescription[];
 
-extern const char kCrostiniEnableDlcName[];
-extern const char kCrostiniEnableDlcDescription[];
-
 extern const char kCrostiniResetLxdDbName[];
 extern const char kCrostiniResetLxdDbDescription[];
 

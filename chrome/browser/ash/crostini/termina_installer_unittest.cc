@@ -39,7 +39,7 @@ class TerminaInstallTest : public testing::Test {
   void SetUp() override {
     this->CommonSetUp();
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kCrostiniEnableDlc},
+        /*enabled_features=*/{},
         /*disabled_features=*/{});
   }
 
@@ -166,8 +166,7 @@ class TerminaDlcInstallTest : public TerminaInstallTest {
   void SetUp() override {
     this->CommonSetUp();
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kCrostiniUseDlc,
-                              chromeos::features::kCrostiniEnableDlc},
+        /*enabled_features=*/{chromeos::features::kCrostiniUseDlc},
         /*disabled_features=*/{});
   }
 };
@@ -180,22 +179,8 @@ class TerminaComponentInstallTest : public TerminaInstallTest {
   void SetUp() override {
     this->CommonSetUp();
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kCrostiniEnableDlc},
+        /*enabled_features=*/{},
         /*disabled_features=*/{chromeos::features::kCrostiniUseDlc});
-  }
-};
-
-// Specialization of TerminaInstallTest that enables installing via DLC but DLC
-// isn't enabled
-class TerminaDlcDisabledInstallTest : public TerminaInstallTest {
- public:
-  TerminaDlcDisabledInstallTest() = default;
-
-  void SetUp() override {
-    this->CommonSetUp();
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kCrostiniUseDlc},
-        /*disabled_features=*/{chromeos::features::kCrostiniEnableDlc});
   }
 };
 
@@ -261,16 +246,6 @@ TEST_F(TerminaInstallTest, UninstallWithDlcInstalledUninstallError) {
 
   termina_installer_.Uninstall(
       base::BindOnce(&TerminaInstallTest::ExpectFalse, base::Unretained(this)));
-  run_loop_.Run();
-}
-
-TEST_F(TerminaDlcDisabledInstallTest,
-       UninstallWithDlcDisabledUninstallErrorDoesntFail) {
-  InjectDlc();
-  fake_dlc_client_->set_uninstall_error("An error");
-
-  termina_installer_.Uninstall(
-      base::BindOnce(&TerminaInstallTest::ExpectTrue, base::Unretained(this)));
   run_loop_.Run();
 }
 

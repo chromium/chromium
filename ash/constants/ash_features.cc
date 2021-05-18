@@ -205,11 +205,6 @@ const base::Feature kCrostiniGpuSupport{"CrostiniGpuSupport",
 const base::Feature kCrostiniUseDlc{"CrostiniUseDlc",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
-// DLC Service is available for use on the board, prerequisite for the UseDlc
-// flag.
-const base::Feature kCrostiniEnableDlc{"CrostiniEnableDlc",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables using Cryptauth's GetDevicesActivityStatus API.
 const base::Feature kCryptAuthV2DeviceActivityStatus{
     "CryptAuthV2DeviceActivityStatus", base::FEATURE_ENABLED_BY_DEFAULT};
