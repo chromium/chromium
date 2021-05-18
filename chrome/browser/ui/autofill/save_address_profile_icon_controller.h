@@ -26,6 +26,8 @@ class SaveAddressProfileIconController {
 
   virtual bool IsBubbleActive() const = 0;
 
+  virtual std::u16string GetPageActionIconTootip() const = 0;
+
   virtual AutofillBubbleBase* GetSaveBubbleView() const = 0;
 };
 

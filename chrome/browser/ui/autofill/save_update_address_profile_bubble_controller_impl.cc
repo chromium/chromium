@@ -72,13 +72,13 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OnUserDecision(
 }
 
 void SaveUpdateAddressProfileBubbleControllerImpl::OnEditButtonClicked() {
-  HideBubble();
   EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
   EditAddressProfileDialogControllerImpl* controller =
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
   controller->OfferEdit(address_profile_,
                         /*is_update=*/original_profile_.has_value(),
                         std::move(address_profile_save_prompt_callback_));
+  HideBubble();
 }
 
 void SaveUpdateAddressProfileBubbleControllerImpl::OnBubbleClosed() {
@@ -96,6 +96,13 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OnPageActionIconClicked() {
 
 bool SaveUpdateAddressProfileBubbleControllerImpl::IsBubbleActive() const {
   return !address_profile_save_prompt_callback_.is_null();
+}
+
+std::u16string
+SaveUpdateAddressProfileBubbleControllerImpl::GetPageActionIconTootip() const {
+  // TODO(crbug.com/1167060): Use internationalized string upon having final
+  // strings.
+  return original_profile_ ? u"Update Address?" : u"Save Address?";
 }
 
 AutofillBubbleBase*

@@ -32,9 +32,6 @@ views::BubbleDialogDelegate* SaveAddressProfileIconView::GetBubble() const {
 }
 
 void SaveAddressProfileIconView::UpdateImpl() {
-  if (!GetWebContents())
-    return;
-
   SaveAddressProfileIconController* controller = GetController();
   bool command_enabled =
       SetCommandEnabled(controller && controller->IsBubbleActive());
@@ -43,8 +40,10 @@ void SaveAddressProfileIconView::UpdateImpl() {
 
 std::u16string SaveAddressProfileIconView::GetTextForTooltipAndAccessibleName()
     const {
-  // TODO(crbug.com/1167060): Update upon having final mocks.
-  return u"Save Address";
+  SaveAddressProfileIconController* controller = GetController();
+  if (!controller)
+    return std::u16string();
+  return controller->GetPageActionIconTootip();
 }
 
 void SaveAddressProfileIconView::OnExecuting(
