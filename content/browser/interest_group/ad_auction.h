@@ -64,6 +64,7 @@ class AdAuction {
   // Validates the results, reports them to `callback_`, and updates the
   // InterestGroupStorage as needed.
   void WorkletComplete(const GURL& render_url,
+                       const std::string& ad_metadata,
                        const url::Origin& owner,
                        const std::string& name,
                        const GURL& bidder_report_url,

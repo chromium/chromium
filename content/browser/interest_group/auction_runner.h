@@ -49,6 +49,8 @@ class CONTENT_EXPORT AuctionRunner {
   // `render_url` URL of auction winning ad to render.
   //  An empty URL is used if there is no winner.
   //
+  // `ad_metadata` The metadata for the winning ad.
+  //
   // `winning_interest_group_owner` owner of the winning interest group.
   //  An opaque origin if there is no winner.
   //
@@ -65,6 +67,7 @@ class CONTENT_EXPORT AuctionRunner {
   //  sensitive for the renderers to see.
   using RunAuctionCallback =
       base::OnceCallback<void(const GURL& render_url,
+                              const std::string& ad_metadata,
                               const url::Origin& winning_interest_group_owner,
                               const std::string& winning_interest_group_name,
                               const GURL& bidder_report_url,
@@ -118,6 +121,10 @@ class CONTENT_EXPORT AuctionRunner {
 
     mojo::Remote<auction_worklet::mojom::BidderWorklet> bidder_worklet;
     auction_worklet::mojom::BidderWorkletBidPtr bid_result;
+    // Points to the InterestGroupAd within `bidder` that won the auction. Only
+    // nullptr when `bid_result` is also nullptr.
+    blink::mojom::InterestGroupAd* bid_ad = nullptr;
+
     double seller_score = 0;
   };
 

@@ -68,46 +68,6 @@ bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config) {
   return true;
 }
 
-struct ValidatedResult {
-  bool is_valid_auction_result = false;
-  std::string ad_json;
-};
-
-ValidatedResult ValidateAuctionResult(
-    const std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>& bidders,
-    const GURL& render_url,
-    const url::Origin& owner,
-    const std::string& name) {
-  ValidatedResult result;
-  if (!render_url.is_valid() || !render_url.SchemeIs(url::kHttpsScheme))
-    return result;
-
-  for (const auto& bidder : bidders) {
-    // Auction winner must be one of the bidders and bidder must have ads.
-    if (bidder->group->owner != owner || bidder->group->name != name ||
-        !bidder->group->ads) {
-      continue;
-    }
-    // `render_url` must be one of the winning bidder's ads.
-    for (const auto& ad : bidder->group->ads.value()) {
-      if (ad->render_url == render_url) {
-        result.is_valid_auction_result = true;
-        if (ad->metadata) {
-          //`metadata` is already in JSON so no quotes are needed.
-          result.ad_json = base::StringPrintf(
-              R"({"render_url":"%s","metadata":%s})", render_url.spec().c_str(),
-              ad->metadata.value().c_str());
-        } else {
-          result.ad_json = base::StringPrintf(R"({"render_url":"%s"})",
-                                              render_url.spec().c_str());
-        }
-        return result;
-      }
-    }
-  }
-  return result;
-}
-
 }  // namespace
 
 AdAuction::AdAuction(AdAuctionServiceImpl* ad_auction_service,
@@ -224,6 +184,7 @@ void AdAuction::StartWorklets() {
 }
 
 void AdAuction::WorkletComplete(const GURL& render_url,
+                                const std::string& ad_metadata,
                                 const url::Origin& owner,
                                 const std::string& name,
                                 const GURL& bidder_report_url,
@@ -239,28 +200,21 @@ void AdAuction::WorkletComplete(const GURL& render_url,
         error);
   }
 
-  // Check if returned winner's information is valid.
-  ValidatedResult result =
-      ValidateAuctionResult(bidders_, render_url, owner, name);
-  if (!result.is_valid_auction_result) {
+  if (!render_url.is_valid()) {
     OnAuctionFailed();
     return;
   }
 
   absl::optional<GURL> opt_bidder_report_url;
-  if (bidder_report_url.is_valid() &&
-      bidder_report_url.SchemeIs(url::kHttpsScheme)) {
+  if (bidder_report_url.is_valid())
     opt_bidder_report_url = bidder_report_url;
-  }
 
   absl::optional<GURL> opt_seller_report_url;
-  if (seller_report_url.is_valid() &&
-      seller_report_url.SchemeIs(url::kHttpsScheme)) {
+  if (seller_report_url.is_valid())
     opt_seller_report_url = seller_report_url;
-  }
 
   ad_auction_service_->GetInterestGroupManager()->RecordInterestGroupWin(
-      owner, name, result.ad_json);
+      owner, name, ad_metadata);
   // TODO(qingxin): Decide if we should record a bid if the auction fails, or
   // the interest group doesn't make a bid.
   for (const auto& bidder : bidders_) {

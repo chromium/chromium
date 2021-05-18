@@ -4,9 +4,13 @@
 
 #include "content/browser/interest_group/auction_runner.h"
 
+#include <string>
+#include <vector>
+
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -17,6 +21,50 @@
 #include "url/gurl.h"
 
 namespace content {
+
+namespace {
+
+// All URLs received from worklets must be valid HTTPS URLs. It's up to callers
+// to call ReportBadMessage() on invalid URLs.
+bool IsUrlValid(const GURL& url) {
+  return url.is_valid() && url.SchemeIs(url::kHttpsScheme);
+}
+
+// Validates that `bid` is valid and, if it is, returns the InterestGroupAd
+// corresponding to the bid. Returns nullptr and calls ReportBadMessage() if
+// not. If non-null, the returned pointer will point at the winning
+// blink::mojom::InterestGroupAd within `bid`.
+blink::mojom::InterestGroupAd* ValidateBidAndGetAd(
+    const auction_worklet::mojom::BidderWorkletBid& bid,
+    const blink::mojom::InterestGroup& interest_group) {
+  if (bid.bid <= 0 || std::isnan(bid.bid) || !std::isfinite(bid.bid)) {
+    mojo::ReportBadMessage("Invalid bid value");
+    return nullptr;
+  }
+
+  if (bid.bid_duration < base::TimeDelta()) {
+    mojo::ReportBadMessage("Invalid bid duration");
+    return nullptr;
+  }
+
+  // This should be a subset of the next case, but best to be careful.
+  if (!IsUrlValid(bid.render_url)) {
+    mojo::ReportBadMessage("Invalid bid render URL");
+    return nullptr;
+  }
+
+  // Reject URLs not listed in the interest group.
+  for (const auto& ad : interest_group.ads.value()) {
+    if (ad->render_url == bid.render_url) {
+      return ad.get();
+    }
+  }
+
+  mojo::ReportBadMessage("Bid render URL must be an ad URL");
+  return nullptr;
+}
+
+}  // namespace
 
 AuctionRunner::BidState::BidState() = default;
 AuctionRunner::BidState::~BidState() = default;
@@ -115,6 +163,13 @@ void AuctionRunner::OnGenerateBidComplete(
   --outstanding_bids_;
 
   errors_.insert(errors_.end(), errors.begin(), errors.end());
+
+  // Ignore invalid bids.
+  if (bid) {
+    state->bid_ad = ValidateBidAndGetAd(*bid, *state->bidder->group);
+    if (!state->bid_ad)
+      bid.reset();
+  }
 
   // On failure, close the worklet pipe. On success, clear the disconnect
   // handler - crashed bidders only matters if it's the winning bidder that
@@ -246,6 +301,13 @@ void AuctionRunner::OnReportSellerResultComplete(
   seller_report_url_ = seller_report_url;
   errors_.insert(errors_.end(), errors.begin(), errors.end());
 
+  absl::optional<GURL> opt_bidder_report_url;
+  if (seller_report_url && !IsUrlValid(*seller_report_url)) {
+    mojo::ReportBadMessage("Invalid seller report URL");
+    FailAuction();
+    return;
+  }
+
   ReportBidWin(best_bid);
 }
 
@@ -284,6 +346,12 @@ void AuctionRunner::OnReportBidWinComplete(
     const BidState* best_bid,
     const absl::optional<GURL>& bidder_report_url,
     const std::vector<std::string>& errors) {
+  if (bidder_report_url && !IsUrlValid(*bidder_report_url)) {
+    mojo::ReportBadMessage("Invalid bidder report URL");
+    FailAuction();
+    return;
+  }
+
   bidder_report_url_ = bidder_report_url;
   errors_.insert(errors_.end(), errors.begin(), errors.end());
   ReportSuccess(best_bid);
@@ -293,8 +361,8 @@ void AuctionRunner::FailAuction() {
   DCHECK(callback_);
   ClosePipes();
 
-  std::move(callback_).Run(GURL(), url::Origin(), std::string(), GURL(), GURL(),
-                           errors_);
+  std::move(callback_).Run(GURL(), std::string(), url::Origin(), std::string(),
+                           GURL(), GURL(), errors_);
 }
 
 void AuctionRunner::ReportSuccess(const BidState* state) {
@@ -302,8 +370,20 @@ void AuctionRunner::ReportSuccess(const BidState* state) {
   DCHECK(state->bid_result);
   ClosePipes();
 
+  std::string ad_metadata;
+  if (state->bid_ad->metadata) {
+    //`metadata` is already in JSON so no quotes are needed.
+    ad_metadata =
+        base::StringPrintf(R"({"render_url":"%s","metadata":%s})",
+                           state->bid_result->render_url.spec().c_str(),
+                           state->bid_ad->metadata.value().c_str());
+  } else {
+    ad_metadata = base::StringPrintf(
+        R"({"render_url":"%s"})", state->bid_result->render_url.spec().c_str());
+  }
+
   std::move(callback_).Run(
-      state->bid_result->render_url, state->bidder->group->owner,
+      state->bid_result->render_url, ad_metadata, state->bidder->group->owner,
       state->bidder->group->name,
       bidder_report_url_.has_value() ? *bidder_report_url_ : GURL(),
       seller_report_url_.has_value() ? *seller_report_url_ : GURL(), errors_);
