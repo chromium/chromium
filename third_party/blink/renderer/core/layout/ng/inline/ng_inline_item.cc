@@ -191,17 +191,6 @@ unsigned NGInlineItem::SetBidiLevel(Vector<NGInlineItem>& items,
   return index + 1;
 }
 
-void NGInlineItemsData::GetOpenTagItems(wtf_size_t size,
-                                        OpenTagItems* open_items) const {
-  DCHECK_LE(size, items.size());
-  for (const NGInlineItem& item : base::make_span(items.data(), size)) {
-    if (item.Type() == NGInlineItem::kOpenTag)
-      open_items->push_back(&item);
-    else if (item.Type() == NGInlineItem::kCloseTag)
-      open_items->pop_back();
-  }
-}
-
 const Font& NGInlineItem::FontWithSVGScaling() const {
   if (const auto* svg_text = DynamicTo<LayoutSVGInlineText>(layout_object_)) {
     DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());

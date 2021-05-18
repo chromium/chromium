@@ -5,19 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_ITEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_ITEM_H_
 
+#include <unicode/ubidi.h>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_segment.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_text_type.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
-#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-
-#include <unicode/ubidi.h>
-#include <unicode/uscript.h>
 
 namespace blink {
 
@@ -279,42 +275,6 @@ inline void NGInlineItem::AssertEndOffset(unsigned offset) const {
   DCHECK_GE(offset, start_offset_);
   DCHECK_LE(offset, end_offset_);
 }
-
-// Represents a text content with a list of NGInlineItem. A node may have an
-// additional NGInlineItemsData for ::first-line pseudo element.
-struct CORE_EXPORT NGInlineItemsData {
-  USING_FAST_MALLOC(NGInlineItemsData);
-
- public:
-  // Text content for all inline items represented by a single NGInlineNode.
-  // Encoded either as UTF-16 or latin-1 depending on the content.
-  String text_content;
-  Vector<NGInlineItem> items;
-
-  // Cache RunSegmenter segments when at least one item has multiple runs.
-  // Set to nullptr when all items has only single run, which is common case for
-  // most writing systems. However, in multi-script writing systems such as
-  // Japanese, almost every item has multiple runs.
-  std::unique_ptr<NGInlineItemSegments> segments;
-
-  // The DOM to text content offset mapping of this inline node.
-  std::unique_ptr<NGOffsetMapping> offset_mapping;
-
-  bool IsValidOffset(unsigned index, unsigned offset) const {
-    return index < items.size() && items[index].IsValidOffset(offset);
-  }
-
-  void AssertOffset(unsigned index, unsigned offset) const {
-    items[index].AssertOffset(offset);
-  }
-  void AssertEndOffset(unsigned index, unsigned offset) const {
-    items[index].AssertEndOffset(offset);
-  }
-
-  // Get a list of |kOpenTag| that are open at |size|.
-  using OpenTagItems = Vector<const NGInlineItem*, 16>;
-  void GetOpenTagItems(wtf_size_t size, OpenTagItems* open_items) const;
-};
 
 }  // namespace blink
 

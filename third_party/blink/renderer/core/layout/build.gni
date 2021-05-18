@@ -366,6 +366,8 @@ blink_core_sources_layout = [
   "ng/inline/ng_inline_item_segment.h",
   "ng/inline/ng_inline_items_builder.cc",
   "ng/inline/ng_inline_items_builder.h",
+  "ng/inline/ng_inline_items_data.cc",
+  "ng/inline/ng_inline_items_data.h",
   "ng/inline/ng_inline_layout_algorithm.cc",
   "ng/inline/ng_inline_layout_algorithm.h",
   "ng/inline/ng_inline_node.cc",
