@@ -77,6 +77,7 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OnEditButtonClicked() {
   EditAddressProfileDialogControllerImpl* controller =
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
   controller->OfferEdit(address_profile_,
+                        /*is_update=*/original_profile_.has_value(),
                         std::move(address_profile_save_prompt_callback_));
 }
 

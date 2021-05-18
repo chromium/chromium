@@ -29,14 +29,17 @@ class EditAddressProfileDialogControllerImpl
   ~EditAddressProfileDialogControllerImpl() override;
 
   // Sets up the controller and offers to edit the |profile| before saving it.
-  // |address_profile_save_prompt_callback| will be invoked once the user makes
-  // a decision with respect to the offer-to-edit prompt.
+  // |is_update| indicates whether this edit dialog was triggered from a save or
+  // update prompt. |address_profile_save_prompt_callback| will be invoked once
+  // the user makes a decision with respect to the offer-to-edit prompt.
   void OfferEdit(const AutofillProfile& profile,
+                 bool is_update,
                  AutofillClient::AddressProfileSavePromptCallback
                      address_profile_save_prompt_callback);
 
   // EditAddressProfileDialogController:
   std::u16string GetWindowTitle() const override;
+  std::u16string GetOkButtonLabel() const override;
   const AutofillProfile& GetProfileToEdit() const override;
   void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
@@ -57,6 +60,10 @@ class EditAddressProfileDialogControllerImpl
   // Contains the details of the address profile that the user requested to edit
   // before saving.
   AutofillProfile address_profile_to_edit_;
+
+  // Whether accepting this Edit dialog will result in saving a new address or
+  // updating an existing one.
+  bool is_update_ = false;
 
   AutofillBubbleBase* edit_dialog_ = nullptr;
 

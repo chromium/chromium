@@ -25,9 +25,11 @@ EditAddressProfileDialogControllerImpl::
 
 void EditAddressProfileDialogControllerImpl::OfferEdit(
     const AutofillProfile& profile,
+    bool is_update,
     AutofillClient::AddressProfileSavePromptCallback
         address_profile_save_prompt_callback) {
   address_profile_to_edit_ = profile;
+  is_update_ = is_update;
   address_profile_save_prompt_callback_ =
       std::move(address_profile_save_prompt_callback);
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
@@ -39,7 +41,14 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
 std::u16string EditAddressProfileDialogControllerImpl::GetWindowTitle() const {
   // TODO(crbug.com/1167060): Use internationalized string upon having final
   // strings.
-  return u"Save Address?";
+  return is_update_ ? u"Update Address?" : u"Save Address?";
+}
+
+std::u16string EditAddressProfileDialogControllerImpl::GetOkButtonLabel()
+    const {
+  // TODO(crbug.com/1167060): Use internationalized string upon having final
+  // strings.
+  return is_update_ ? u"Update" : u"Save";
 }
 
 const AutofillProfile&

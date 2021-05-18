@@ -31,6 +31,7 @@ class MockEditAddressProfileDialogController
     : public EditAddressProfileDialogController {
  public:
   MOCK_METHOD(std::u16string, GetWindowTitle, (), (const, override));
+  MOCK_METHOD(std::u16string, GetOkButtonLabel, (), (const, override));
   MOCK_METHOD(const AutofillProfile&, GetProfileToEdit, (), (const, override));
   MOCK_METHOD(void,
               OnUserDecision,

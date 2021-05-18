@@ -36,6 +36,9 @@ EditAddressProfileView::EditAddressProfileView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   set_margins(ChromeLayoutProvider::Get()->GetInsetsMetric(
       views::InsetsMetric::INSETS_DIALOG));
+
+  SetTitle(controller_->GetWindowTitle());
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());
 }
 
 EditAddressProfileView::~EditAddressProfileView() = default;
@@ -52,12 +55,6 @@ void EditAddressProfileView::ShowForWebContents(
 void EditAddressProfileView::Hide() {
   controller_ = nullptr;
   GetWidget()->Close();
-}
-
-std::u16string EditAddressProfileView::GetWindowTitle() const {
-  // |controller_| can be nullptr when the framework calls this method after a
-  // button click.
-  return controller_ ? controller_->GetWindowTitle() : std::u16string();
 }
 
 void EditAddressProfileView::WindowClosing() {
