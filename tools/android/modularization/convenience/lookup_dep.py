@@ -219,18 +219,19 @@ class ClassLookupIndex:
   def _compute_full_class_names_for_build_config(self,
                                                  deps_info: Dict) -> Set[str]:
     """Returns set of fully qualified class names for build config."""
+
+    full_class_names = set()
+
     # Read the location of the java_sources_file from the build_config
     sources_path = deps_info.get('java_sources_file')
     if sources_path:
       # Read the java_sources_file, indexing the classes found
       with open(self._abs_build_output_dir / sources_path) as sources_contents:
-        out = set()
         for source_line in sources_contents:
           source_path = pathlib.Path(source_line.strip())
           java_class = self._parse_full_java_class(source_path)
           if java_class:
-            out.add(java_class)
-        return out
+            full_class_names.add(java_class)
 
     # |unprocessed_jar_path| is set for prebuilt targets. (ex:
     # android_aar_prebuilt())
@@ -245,10 +246,11 @@ class ClassLookupIndex:
         abs_unprocessed_jar_path = (abs_unprocessed_jar_path.parent.resolve() /
                                     abs_unprocessed_jar_path.name)
 
-        return self._extract_full_class_names_from_jar(
-            self._abs_build_output_dir, abs_unprocessed_jar_path)
+        full_class_names.update(
+            self._extract_full_class_names_from_jar(self._abs_build_output_dir,
+                                                    abs_unprocessed_jar_path))
 
-    return set()
+    return full_class_names
 
   @staticmethod
   def _extract_full_class_names_from_jar(abs_build_output_dir: pathlib.Path,
