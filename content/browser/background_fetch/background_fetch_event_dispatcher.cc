@@ -158,9 +158,9 @@ void BackgroundFetchEventDispatcher::DispatchBackgroundFetchAbortEvent(
   LoadServiceWorkerRegistrationForDispatch(
       registration_id, ServiceWorkerMetrics::EventType::BACKGROUND_FETCH_ABORT,
       std::move(finished_closure),
-      base::AdaptCallbackForRepeating(base::BindOnce(
+      base::BindOnce(
           &BackgroundFetchEventDispatcher::DoDispatchBackgroundFetchAbortEvent,
-          std::move(registration))));
+          std::move(registration)));
 }
 
 void BackgroundFetchEventDispatcher::DoDispatchBackgroundFetchAbortEvent(
@@ -189,9 +189,9 @@ void BackgroundFetchEventDispatcher::DispatchBackgroundFetchClickEvent(
   LoadServiceWorkerRegistrationForDispatch(
       registration_id, ServiceWorkerMetrics::EventType::BACKGROUND_FETCH_CLICK,
       std::move(finished_closure),
-      base::AdaptCallbackForRepeating(base::BindOnce(
+      base::BindOnce(
           &BackgroundFetchEventDispatcher::DoDispatchBackgroundFetchClickEvent,
-          std::move(registration))));
+          std::move(registration)));
 }
 
 void BackgroundFetchEventDispatcher::DoDispatchBackgroundFetchClickEvent(
@@ -218,9 +218,9 @@ void BackgroundFetchEventDispatcher::DispatchBackgroundFetchFailEvent(
   LoadServiceWorkerRegistrationForDispatch(
       registration_id, ServiceWorkerMetrics::EventType::BACKGROUND_FETCH_FAIL,
       std::move(finished_closure),
-      base::AdaptCallbackForRepeating(base::BindOnce(
+      base::BindOnce(
           &BackgroundFetchEventDispatcher::DoDispatchBackgroundFetchFailEvent,
-          std::move(registration))));
+          std::move(registration)));
 }
 
 void BackgroundFetchEventDispatcher::DoDispatchBackgroundFetchFailEvent(
@@ -249,10 +249,9 @@ void BackgroundFetchEventDispatcher::DispatchBackgroundFetchSuccessEvent(
       registration_id,
       ServiceWorkerMetrics::EventType::BACKGROUND_FETCH_SUCCESS,
       std::move(finished_closure),
-      base::AdaptCallbackForRepeating(
-          base::BindOnce(&BackgroundFetchEventDispatcher::
-                             DoDispatchBackgroundFetchSuccessEvent,
-                         std::move(registration))));
+      base::BindOnce(&BackgroundFetchEventDispatcher::
+                         DoDispatchBackgroundFetchSuccessEvent,
+                     std::move(registration)));
 }
 
 void BackgroundFetchEventDispatcher::DoDispatchBackgroundFetchSuccessEvent(
