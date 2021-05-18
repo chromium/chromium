@@ -304,8 +304,7 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
       main_frame_site_instance_ = site_instance;
     } else {
       new_task = std::make_unique<SubframeTask>(
-          render_frame_host, web_contents(),
-          GetTaskForFrame(web_contents()->GetMainFrame()));
+          render_frame_host, GetTaskForFrame(web_contents()->GetMainFrame()));
     }
   }
 

@@ -20,7 +20,6 @@ namespace task_manager {
 class SubframeTask : public RendererTask {
  public:
   SubframeTask(content::RenderFrameHost* render_frame_host,
-               content::WebContents* web_contents,
                RendererTask* main_task);
   SubframeTask(const SubframeTask&) = delete;
   SubframeTask& operator=(const SubframeTask&) = delete;

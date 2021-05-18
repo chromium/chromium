@@ -21,7 +21,6 @@
 namespace task_manager {
 
 SubframeTask::SubframeTask(content::RenderFrameHost* render_frame_host,
-                           content::WebContents* web_contents,
                            RendererTask* main_task)
     : RendererTask(std::u16string(), nullptr, render_frame_host),
       site_instance_(render_frame_host->GetSiteInstance()),
