@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #import "ios/chrome/browser/overlays/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
@@ -48,7 +48,8 @@ class OverlayContainerFullscreenDisabler {
     FullscreenController* fullscreen_controller_ = nullptr;
     // The animated disabler.
     std::unique_ptr<AnimatedScopedFullscreenDisabler> disabler_;
-    ScopedObserver<OverlayPresenter, OverlayPresenterObserver> scoped_observer_;
+    base::ScopedObservation<OverlayPresenter, OverlayPresenterObserver>
+        scoped_observation_{this};
   };
 
   FullscreenDisabler fullscreen_disabler_;

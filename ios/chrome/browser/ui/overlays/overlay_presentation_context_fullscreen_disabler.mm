@@ -29,10 +29,10 @@ OverlayContainerFullscreenDisabler::~OverlayContainerFullscreenDisabler() =
 OverlayContainerFullscreenDisabler::FullscreenDisabler::FullscreenDisabler(
     FullscreenController* fullscreen_controller,
     OverlayPresenter* overlay_presenter)
-    : fullscreen_controller_(fullscreen_controller), scoped_observer_(this) {
+    : fullscreen_controller_(fullscreen_controller) {
   DCHECK(fullscreen_controller_);
   DCHECK(overlay_presenter);
-  scoped_observer_.Add(overlay_presenter);
+  scoped_observation_.Observe(overlay_presenter);
 }
 
 OverlayContainerFullscreenDisabler::FullscreenDisabler::~FullscreenDisabler() =
@@ -55,6 +55,7 @@ void OverlayContainerFullscreenDisabler::FullscreenDisabler::DidHideOverlay(
 
 void OverlayContainerFullscreenDisabler::FullscreenDisabler::
     OverlayPresenterDestroyed(OverlayPresenter* presenter) {
-  scoped_observer_.Remove(presenter);
+  DCHECK(scoped_observation_.IsObservingSource(presenter));
+  scoped_observation_.Reset();
   disabler_ = nullptr;
 }
