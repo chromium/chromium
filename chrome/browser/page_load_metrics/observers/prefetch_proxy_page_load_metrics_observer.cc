@@ -94,10 +94,6 @@ PrefetchProxyPageLoadMetricsObserver::OnCommit(
     return STOP_OBSERVING;
   after_srp_metrics_ = tab_helper->after_srp_metrics();
 
-  data_saver_enabled_at_commit_ = data_reduction_proxy::
-      DataReductionProxySettings::IsDataSaverEnabledByUser(
-          profile->IsOffTheRecord(), profile->GetPrefs());
-
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfileIfExists(
           profile, ServiceAccessType::IMPLICIT_ACCESS);
@@ -228,10 +224,6 @@ void PrefetchProxyPageLoadMetricsObserver::RecordMetrics() {
   LOCAL_HISTOGRAM_COUNTS_100(
       "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached",
       loaded_css_js_from_network_before_fcp_);
-
-  // Only record UKM for Data Saver users.
-  if (!data_saver_enabled_at_commit_)
-    return;
 
   RecordPrefetchProxyEvent();
   RecordAfterSRPEvent();

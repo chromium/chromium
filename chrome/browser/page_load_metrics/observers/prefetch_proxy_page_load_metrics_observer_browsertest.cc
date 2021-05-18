@@ -26,16 +26,11 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class IsolatedPrerenderPageLoadMetricsObserverBrowserTest
+class PrefetchProxyPageLoadMetricsObserverBrowserTest
     : public InProcessBrowserTest {
  public:
-  IsolatedPrerenderPageLoadMetricsObserverBrowserTest() = default;
-  ~IsolatedPrerenderPageLoadMetricsObserverBrowserTest() override = default;
-
-  void EnableDataSaver() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        data_reduction_proxy::switches::kEnableDataReductionProxy);
-  }
+  PrefetchProxyPageLoadMetricsObserverBrowserTest() = default;
+  ~PrefetchProxyPageLoadMetricsObserverBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -100,7 +95,7 @@ class IsolatedPrerenderPageLoadMetricsObserverBrowserTest
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
-IN_PROC_BROWSER_TEST_F(IsolatedPrerenderPageLoadMetricsObserverBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrefetchProxyPageLoadMetricsObserverBrowserTest,
                        BeforeFCPPlumbing) {
   base::HistogramTester histogram_tester;
   NavigateToOriginPath("/index.html");
@@ -117,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderPageLoadMetricsObserverBrowserTest,
 #else
 #define MAYBE_HistoryPlumbing HistoryPlumbing
 #endif
-IN_PROC_BROWSER_TEST_F(IsolatedPrerenderPageLoadMetricsObserverBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrefetchProxyPageLoadMetricsObserverBrowserTest,
                        MAYBE_HistoryPlumbing) {
   base::HistogramTester histogram_tester;
   NavigateToOriginPath("/index.html");
@@ -139,9 +134,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderPageLoadMetricsObserverBrowserTest,
       "PageLoad.Clients.SubresourceLoading.DaysSinceLastVisitToOrigin", 0, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedPrerenderPageLoadMetricsObserverBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrefetchProxyPageLoadMetricsObserverBrowserTest,
                        RecordNothingOnUntrackedPage) {
-  EnableDataSaver();
   base::HistogramTester histogram_tester;
 
   NavigateAway();
