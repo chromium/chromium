@@ -66,67 +66,65 @@ IN_PROC_BROWSER_TEST_F(ExperimentalAppWindowApiTest, SetIcon) {
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_OnMinimizedEvent) {
-  EXPECT_TRUE(RunExtensionTest({.name = "platform_apps/windows_api_properties",
-                                .custom_arg = "minimized"}))
+  EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_properties",
+                               {.custom_arg = "minimized"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_OnMaximizedEvent) {
-  EXPECT_TRUE(RunExtensionTest({.name = "platform_apps/windows_api_properties",
-                                .custom_arg = "maximized"}))
+  EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_properties",
+                               {.custom_arg = "maximized"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_OnRestoredEvent) {
-  EXPECT_TRUE(RunExtensionTest({.name = "platform_apps/windows_api_properties",
-                                .custom_arg = "restored"}))
+  EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_properties",
+                               {.custom_arg = "restored"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, OnBoundsChangedEvent) {
-  EXPECT_TRUE(RunExtensionTest({.name = "platform_apps/windows_api_properties",
-                                .custom_arg = "boundsChanged"}))
+  EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_properties",
+                               {.custom_arg = "boundsChanged"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlwaysOnTopWithPermissions) {
   EXPECT_TRUE(RunExtensionTest(
-      {.name = "platform_apps/windows_api_always_on_top/has_permissions",
-       .launch_as_platform_app = true}))
+      "platform_apps/windows_api_always_on_top/has_permissions",
+      {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlwaysOnTopWithOldPermissions) {
   EXPECT_TRUE(RunExtensionTest(
-      {.name = "platform_apps/windows_api_always_on_top/has_old_permissions",
-       .launch_as_platform_app = true}))
+      "platform_apps/windows_api_always_on_top/has_old_permissions",
+      {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlwaysOnTopNoPermissions) {
-  EXPECT_TRUE(RunExtensionTest(
-      {.name = "platform_apps/windows_api_always_on_top/no_permissions",
-       .launch_as_platform_app = true}))
+  EXPECT_TRUE(
+      RunExtensionTest("platform_apps/windows_api_always_on_top/no_permissions",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, Get) {
-  EXPECT_TRUE(RunExtensionTest({.name = "platform_apps/windows_api_get",
-                                .launch_as_platform_app = true}))
+  EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_get",
+                               {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, SetShapeHasPerm) {
-  EXPECT_TRUE(RunExtensionTest(
-      {.name = "platform_apps/windows_api_shape/has_permission",
-       .launch_as_platform_app = true}))
+  EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_shape/has_permission",
+                               {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, SetShapeNoPerm) {
-  EXPECT_TRUE(
-      RunExtensionTest({.name = "platform_apps/windows_api_shape/no_permission",
-                        .launch_as_platform_app = true}))
+  EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_shape/no_permission",
+                               {.launch_as_platform_app = true}))
       << message_;
 }
 
@@ -156,67 +154,65 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_AlphaEnabledHasPermissions) {
 #endif  // OS_WIN
 #endif  // USE_AURA && !(OS_LINUX || IS_CHROMEOS_LACROS)
 
-  EXPECT_TRUE(
-      RunExtensionTest({.name = test_dir, .launch_as_platform_app = true}))
+  EXPECT_TRUE(RunExtensionTest(test_dir, {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledNoPermissions) {
-  EXPECT_TRUE(RunExtensionTest(
-      {.name = "platform_apps/windows_api_alpha_enabled/no_permissions",
-       .launch_as_platform_app = true}))
+  EXPECT_TRUE(
+      RunExtensionTest("platform_apps/windows_api_alpha_enabled/no_permissions",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledInStable) {
   extensions::ScopedCurrentChannel channel(version_info::Channel::STABLE);
-  EXPECT_TRUE(RunExtensionTest(
-      {.name = "platform_apps/windows_api_alpha_enabled/in_stable",
-       .launch_as_platform_app = true},
-      // Ignore manifest warnings because the extension will not load at all
-      // in stable.
-      {.ignore_manifest_warnings = true}))
+  EXPECT_TRUE(
+      RunExtensionTest("platform_apps/windows_api_alpha_enabled/in_stable",
+                       {.launch_as_platform_app = true},
+                       // Ignore manifest warnings because the extension will
+                       // not load at all in stable.
+                       {.ignore_manifest_warnings = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledWrongFrameType) {
   EXPECT_TRUE(RunExtensionTest(
-      {.name = "platform_apps/windows_api_alpha_enabled/wrong_frame_type",
-       .launch_as_platform_app = true}))
+      "platform_apps/windows_api_alpha_enabled/wrong_frame_type",
+      {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, VisibleOnAllWorkspacesInStable) {
   extensions::ScopedCurrentChannel channel(version_info::Channel::STABLE);
   EXPECT_TRUE(RunExtensionTest(
-      {.name = "platform_apps/windows_api_visible_on_all_workspaces/in_stable",
-       .launch_as_platform_app = true}))
+      "platform_apps/windows_api_visible_on_all_workspaces/in_stable",
+      {.launch_as_platform_app = true}))
       << message_;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowHasPermissions) {
   EXPECT_TRUE(RunExtensionTest(
-      {.name = "platform_apps/windows_api_ime/has_permissions_whitelisted"},
+      "platform_apps/windows_api_ime/has_permissions_whitelisted", {},
       {.load_as_component = true}))
       << message_;
 
   EXPECT_TRUE(RunExtensionTest(
-      {.name = "platform_apps/windows_api_ime/has_permissions_platform_app",
-       .launch_as_platform_app = true},
-      {.ignore_manifest_warnings = true}))
+      "platform_apps/windows_api_ime/has_permissions_platform_app",
+      {.launch_as_platform_app = true}, {.ignore_manifest_warnings = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowNoPermissions) {
   EXPECT_TRUE(RunExtensionTest(
-      {.name = "platform_apps/windows_api_ime/no_permissions_whitelisted"},
+      "platform_apps/windows_api_ime/no_permissions_whitelisted", {},
       {.load_as_component = true}))
       << message_;
 
   EXPECT_TRUE(RunExtensionTest(
-      {.name = "platform_apps/windows_api_ime/no_permissions_platform_app",
-       .launch_as_platform_app = true}))
+      "platform_apps/windows_api_ime/no_permissions_platform_app",
+      {.launch_as_platform_app = true}))
       << message_;
 }
 
@@ -227,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowNotFullscreen) {
                                   "jkghodnilhceideoidjikpgommlajknk");
 
   EXPECT_TRUE(RunExtensionTest(
-      {.name = "platform_apps/windows_api_ime/forced_app_mode_not_fullscreen"},
+      "platform_apps/windows_api_ime/forced_app_mode_not_fullscreen", {},
       {.load_as_component = true}))
       << message_;
 }

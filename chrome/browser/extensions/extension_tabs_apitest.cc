@@ -75,107 +75,92 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiNewTabTest, MAYBE_Tabs) {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kHomePageIsNewTabPage, true);
 
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tabs/basics", .page_url = "crud.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "crud.html"}))
       << message_;
 }
 
 // TODO(crbug.com/1177118) Re-enable test
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabAudible) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tabs/basics", .page_url = "audible.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "audible.html"}))
       << message_;
 }
 
 // http://crbug.com/521410
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabMuted) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tabs/basics", .page_url = "muted.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "muted.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Tabs2) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tabs/basics", .page_url = "crud2.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "crud2.html"}))
       << message_;
 }
 
 // crbug.com/149924
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabDuplicate) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tabs/basics", .page_url = "duplicate.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "duplicate.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabSize) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tabs/basics", .page_url = "tab_size.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "tab_size.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabUpdate) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tabs/basics", .page_url = "update.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "update.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabPinned) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tabs/basics", .page_url = "pinned.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "pinned.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabMove) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tabs/basics", .page_url = "move.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "move.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabEvents) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tabs/basics", .page_url = "events.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "events.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabRelativeURLs) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tabs/basics", .page_url = "relative_urls.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("tabs/basics", {.page_url = "relative_urls.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabQuery) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tabs/basics", .page_url = "query.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "query.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabHighlight) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tabs/basics", .page_url = "highlight.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "highlight.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabCrashBrowser) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tabs/basics", .page_url = "crash.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "crash.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabOpener) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tabs/basics", .page_url = "opener.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "opener.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabRemove) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tabs/basics", .page_url = "remove.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "remove.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabRemoveMultiple) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tabs/basics", .page_url = "remove-multiple.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("tabs/basics", {.page_url = "remove-multiple.html"}))
       << message_;
 }
 
@@ -208,22 +193,22 @@ class ExtensionApiCaptureTest : public ExtensionApiTabTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, CaptureVisibleTabJpeg) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tabs/capture_visible_tab", .page_url = "test_jpeg.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab",
+                               {.page_url = "test_jpeg.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, CaptureVisibleTabPng) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tabs/capture_visible_tab", .page_url = "test_png.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab",
+                               {.page_url = "test_png.html"}))
       << message_;
 }
 
 // TODO(crbug.com/1177118) Re-enable test
 IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest,
                        DISABLED_CaptureVisibleTabRace) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tabs/capture_visible_tab", .page_url = "test_race.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab",
+                               {.page_url = "test_race.html"}))
       << message_;
 }
 
@@ -234,17 +219,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest,
 #define MAYBE_CaptureVisibleFile CaptureVisibleFile
 #endif
 IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tabs/capture_visible_tab", .page_url = "test_file.html"},
-      {.allow_file_access = true}))
+  ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab",
+                               {.page_url = "test_file.html"},
+                               {.allow_file_access = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, CaptureVisibleDisabled) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots,
                                                true);
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tabs/capture_visible_tab", .page_url = "test_disabled.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab",
+                               {.page_url = "test_disabled.html"}))
       << message_;
 }
 
@@ -326,20 +311,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, IncognitoDisabledByPref) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, GetViewsOfCreatedPopup) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tabs/basics", .page_url = "get_views_popup.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("tabs/basics", {.page_url = "get_views_popup.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, GetViewsOfCreatedWindow) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tabs/basics", .page_url = "get_views_window.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("tabs/basics", {.page_url = "get_views_window.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, OnUpdatedDiscardedState) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tabs/basics", .page_url = "discarded.html"}))
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "discarded.html"}))
       << message_;
 }
 
@@ -360,10 +344,9 @@ IN_PROC_BROWSER_TEST_P(IncognitoExtensionApiTabTest, Tabs) {
       is_incognito_enabled ? "true" : "false",
       extensions::ExtensionTabUtil::GetWindowId(incognito_browser));
 
-  EXPECT_TRUE(RunExtensionTest({.name = "tabs/basics",
-                                .page_url = "incognito.html",
-                                .custom_arg = args.c_str()},
-                               {.allow_in_incognito = is_incognito_enabled}))
+  EXPECT_TRUE(RunExtensionTest(
+      "tabs/basics", {.page_url = "incognito.html", .custom_arg = args.c_str()},
+      {.allow_in_incognito = is_incognito_enabled}))
       << message_;
 }
 
