@@ -99,6 +99,13 @@ void VideoFrameCallbackRequesterImpl::OnWebMediaPlayerCleared() {
   // This allows the first frame of the new media player (requested in
   // OnWebMediaPlayerCreated()) to restart the rVFC loop.
   pending_execution_ = false;
+
+  // If we don't reset |last_presented_frames_|, the first frame from video B
+  // will appear stale, if we switched away from video A after exactly 1
+  // presented frame. This would result in rVFC calls not being executed, and
+  // |consecutive_stale_frames_| being incremented instead.
+  last_presented_frames_ = 0;
+  consecutive_stale_frames_ = 0;
 }
 
 void VideoFrameCallbackRequesterImpl::ScheduleWindowRaf() {
