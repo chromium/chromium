@@ -93,7 +93,8 @@ class CORE_EXPORT InspectorTraceEvents
                        const ResourceResponse& redirect_response,
                        const ResourceLoaderOptions&,
                        ResourceType,
-                       RenderBlockingBehavior);
+                       RenderBlockingBehavior,
+                       base::TimeTicks timestamp);
   void WillSendNavigationRequest(uint64_t identifier,
                                  DocumentLoader*,
                                  const KURL&,

@@ -1016,7 +1016,8 @@ void InspectorNetworkAgent::DidBlockRequest(
       InspectorPageAgent::ToResourceType(resource_type);
 
   WillSendRequestInternal(loader, fetch_context_url, request,
-                          ResourceResponse(), options, type);
+                          ResourceResponse(), options, type,
+                          base::TimeTicks::Now());
 
   String request_id =
       IdentifiersFactory::RequestId(loader, request.InspectorId());
@@ -1057,7 +1058,8 @@ void InspectorNetworkAgent::WillSendRequestInternal(
     const ResourceRequest& request,
     const ResourceResponse& redirect_response,
     const ResourceLoaderOptions& options,
-    InspectorPageAgent::ResourceType type) {
+    InspectorPageAgent::ResourceType type,
+    base::TimeTicks timestamp) {
   String loader_id = IdentifiersFactory::LoaderId(loader);
   String request_id =
       IdentifiersFactory::RequestId(loader, request.InspectorId());
@@ -1127,8 +1129,8 @@ void InspectorNetworkAgent::WillSendRequestInternal(
     maybe_frame_id = frame_id;
   GetFrontend()->requestWillBeSent(
       request_id, loader_id, documentURL, std::move(request_info),
-      base::TimeTicks::Now().since_origin().InSecondsF(),
-      base::Time::Now().ToDoubleT(), std::move(initiator_object),
+      timestamp.since_origin().InSecondsF(), base::Time::Now().ToDoubleT(),
+      std::move(initiator_object),
       BuildObjectForResourceResponse(redirect_response), resource_type,
       std::move(maybe_frame_id), request.HasUserGesture());
   if (options.synchronous_policy == SynchronousPolicy::kRequestSynchronously)
@@ -1261,7 +1263,8 @@ void InspectorNetworkAgent::WillSendRequest(
     const ResourceResponse& redirect_response,
     const ResourceLoaderOptions& options,
     ResourceType resource_type,
-    RenderBlockingBehavior render_blocking_behavior) {
+    RenderBlockingBehavior render_blocking_behavior,
+    base::TimeTicks timestamp) {
   // Ignore the request initiated internally.
   if (options.initiator_info.name == fetch_initiator_type_names::kInternal)
     return;
@@ -1270,7 +1273,7 @@ void InspectorNetworkAgent::WillSendRequest(
       InspectorPageAgent::ToResourceType(resource_type);
 
   WillSendRequestInternal(loader, fetch_context_url, request, redirect_response,
-                          options, type);
+                          options, type, timestamp);
 }
 
 void InspectorNetworkAgent::MarkResourceAsCached(DocumentLoader* loader,

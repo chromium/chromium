@@ -108,7 +108,8 @@ class CORE_EXPORT InspectorNetworkAgent final
                        const ResourceResponse& redirect_response,
                        const ResourceLoaderOptions&,
                        ResourceType,
-                       RenderBlockingBehavior);
+                       RenderBlockingBehavior,
+                       base::TimeTicks timestamp);
   void WillSendNavigationRequest(uint64_t identifier,
                                  DocumentLoader*,
                                  const KURL&,
@@ -272,7 +273,8 @@ class CORE_EXPORT InspectorNetworkAgent final
                                const ResourceRequest&,
                                const ResourceResponse& redirect_response,
                                const ResourceLoaderOptions&,
-                               InspectorPageAgent::ResourceType);
+                               InspectorPageAgent::ResourceType,
+                               base::TimeTicks timestamp);
 
   bool CanGetResponseBodyBlob(const String& request_id);
   void GetResponseBodyBlob(const String& request_id,

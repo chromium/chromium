@@ -39,7 +39,7 @@ void ResourceLoadObserverForWorker::WillSendRequest(
       probe_, nullptr,
       fetcher_properties_->GetFetchClientSettingsObject().GlobalObjectUrl(),
       request, redirect_response, options, resource_type,
-      render_blocking_behavior);
+      render_blocking_behavior, base::TimeTicks::Now());
 }
 
 void ResourceLoadObserverForWorker::DidChangePriority(

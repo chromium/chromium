@@ -125,11 +125,16 @@ void InspectorTraceEvents::WillSendRequest(
     const ResourceResponse& redirect_response,
     const ResourceLoaderOptions&,
     ResourceType,
-    RenderBlockingBehavior render_blocking_behavior) {
+    RenderBlockingBehavior render_blocking_behavior,
+    base::TimeTicks timestamp) {
   LocalFrame* frame = loader ? loader->GetFrame() : nullptr;
-  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
-      "ResourceSendRequest", inspector_send_request_event::Data, loader,
-      request.InspectorId(), frame, request, render_blocking_behavior);
+  TRACE_EVENT_INSTANT_WITH_TIMESTAMP1(
+      "devtools.timeline", "ResourceSendRequest", TRACE_EVENT_SCOPE_THREAD,
+      timestamp, "data", [&](perfetto::TracedValue ctx) {
+        inspector_send_request_event::Data(std::move(ctx), loader,
+                                           request.InspectorId(), frame,
+                                           request, render_blocking_behavior);
+      });
 }
 
 void InspectorTraceEvents::WillSendNavigationRequest(
