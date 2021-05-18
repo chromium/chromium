@@ -118,7 +118,7 @@ bool NeedsLayoutStylePropagation(const ComputedStyle& layout_style,
          layout_style.Direction() != propagated_style.Direction();
 }
 
-scoped_refptr<ComputedStyle> CreateLayoutStyle(
+scoped_refptr<const ComputedStyle> CreateLayoutStyle(
     const ComputedStyle& style,
     const ComputedStyle& propagated_style) {
   scoped_refptr<ComputedStyle> layout_style = ComputedStyle::Clone(style);
@@ -160,7 +160,19 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
     propagated_style = style;
   if (NeedsLayoutStylePropagation(layout_object->StyleRef(),
                                   *propagated_style)) {
-    layout_object->SetStyle(CreateLayoutStyle(*style, *propagated_style));
+    scoped_refptr<const ComputedStyle> new_style =
+        CreateLayoutStyle(*style, *propagated_style);
+    layout_object->SetStyle(new_style);
+    // We need to propagate the style to text children because the used
+    // writing-mode and direction affects text children. Child elements,
+    // however, inherit the computed value, which is unaffected by the
+    // propagated used value from body.
+    for (Node* node = firstChild(); node; node = node->nextSibling()) {
+      if (!node->IsTextNode() || node->NeedsReattachLayoutTree())
+        continue;
+      if (LayoutObject* layout_text = node->GetLayoutObject())
+        layout_text->SetStyle(new_style);
+    }
   }
 }
 
