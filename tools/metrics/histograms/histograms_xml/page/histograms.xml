@@ -1428,6 +1428,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="PageLoad.Experimental.PaintTiming.FirstEligibleToPaintToFirstPaint"
+    units="ms" expires_after="2021-11-06">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures the time from when the page is first eligible to paint to when the
+    first paint occurs. Logged for every foreground page load.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.Experimental.PaintTiming.FirstMeaningfulPaintStatus"
     enum="FirstMeaningfulPaintStatus" expires_after="2021-01-31">
   <owner>ksakamoto@chromium.org</owner>
@@ -1476,6 +1487,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The time between the OS-level input event that initiated a navigation, and
     the first paint of the page that was loaded in the navigation, for
     background loads.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Experimental.PaintTiming.NavigationToFirstEligibleToPaint"
+    units="ms" expires_after="2021-11-06">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures the time from navigation start to when the page is eligible to
+    paint. Logged for every foreground page load.
   </summary>
 </histogram>
 
