@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -37,7 +38,7 @@ namespace {
 class ProtocolHandlerChangeWaiter : public ProtocolHandlerRegistry::Observer {
  public:
   explicit ProtocolHandlerChangeWaiter(ProtocolHandlerRegistry* registry) {
-    registry_observer_.Add(registry);
+    registry_observation_.Observe(registry);
   }
   ProtocolHandlerChangeWaiter(const ProtocolHandlerChangeWaiter&) = delete;
   ProtocolHandlerChangeWaiter& operator=(const ProtocolHandlerChangeWaiter&) =
@@ -49,8 +50,9 @@ class ProtocolHandlerChangeWaiter : public ProtocolHandlerRegistry::Observer {
   void OnProtocolHandlerRegistryChanged() override { run_loop_.Quit(); }
 
  private:
-  ScopedObserver<ProtocolHandlerRegistry, ProtocolHandlerRegistry::Observer>
-      registry_observer_{this};
+  base::ScopedObservation<ProtocolHandlerRegistry,
+                          ProtocolHandlerRegistry::Observer>
+      registry_observation_{this};
   base::RunLoop run_loop_;
 };
 

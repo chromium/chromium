@@ -12,7 +12,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -146,7 +146,7 @@ class FakeDelegate : public ProtocolHandlerRegistry::Delegate {
 class ProtocolHandlerChangeListener : public ProtocolHandlerRegistry::Observer {
  public:
   explicit ProtocolHandlerChangeListener(ProtocolHandlerRegistry* registry) {
-    registry_observer_.Add(registry);
+    registry_observation_.Observe(registry);
   }
   ~ProtocolHandlerChangeListener() override = default;
 
@@ -160,8 +160,9 @@ class ProtocolHandlerChangeListener : public ProtocolHandlerRegistry::Observer {
  private:
   int events_ = 0;
 
-  ScopedObserver<ProtocolHandlerRegistry, ProtocolHandlerRegistry::Observer>
-      registry_observer_{this};
+  base::ScopedObservation<ProtocolHandlerRegistry,
+                          ProtocolHandlerRegistry::Observer>
+      registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProtocolHandlerChangeListener);
 };
@@ -170,7 +171,7 @@ class QueryProtocolHandlerOnChange : public ProtocolHandlerRegistry::Observer {
  public:
   explicit QueryProtocolHandlerOnChange(ProtocolHandlerRegistry* registry)
       : local_registry_(registry) {
-    registry_observer_.Add(registry);
+    registry_observation_.Observe(registry);
   }
 
   // ProtocolHandlerRegistry::Observer:
@@ -186,8 +187,9 @@ class QueryProtocolHandlerOnChange : public ProtocolHandlerRegistry::Observer {
   ProtocolHandlerRegistry* local_registry_;
   bool called_ = false;
 
-  ScopedObserver<ProtocolHandlerRegistry, ProtocolHandlerRegistry::Observer>
-      registry_observer_{this};
+  base::ScopedObservation<ProtocolHandlerRegistry,
+                          ProtocolHandlerRegistry::Observer>
+      registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(QueryProtocolHandlerOnChange);
 };
