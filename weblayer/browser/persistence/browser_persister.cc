@@ -61,7 +61,7 @@ BrowserPersister::BrowserPersister(const base::FilePath& path,
               sessions::CommandStorageManager::kOther,
               path,
               this,
-              /* use_marker */ false,
+              /* use_marker */ true,
               browser->profile()->GetBrowserContext()->IsOffTheRecord(),
               decryption_key)),
       rebuild_on_next_save_(false),
@@ -106,8 +106,8 @@ void BrowserPersister::OnGeneratedNewCryptoKey(
 }
 
 void BrowserPersister::OnErrorWritingSessionCommands() {
-  // TODO(https://crbug.com/648266): implement this.
-  NOTIMPLEMENTED();
+  rebuild_on_next_save_ = true;
+  command_storage_manager_->StartSaveTimer();
 }
 
 void BrowserPersister::OnTabAdded(Tab* tab) {

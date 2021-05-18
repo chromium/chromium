@@ -418,4 +418,35 @@ IN_PROC_BROWSER_TEST_F(BrowserPersisterTestWithTwoPersistedIds,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserPersisterTest, OnErrorWritingSessionCommands) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  std::unique_ptr<BrowserImpl> browser = CreateBrowser(GetProfile(), "x");
+  Tab* tab = browser->CreateTab();
+  EXPECT_TRUE(browser->IsRestoringPreviousState());
+  const GURL url = embedded_test_server()->GetURL("/simple_page.html");
+  NavigateAndWaitForCompletion(url, tab);
+  static_cast<sessions::CommandStorageManagerDelegate*>(
+      browser->browser_persister())
+      ->OnErrorWritingSessionCommands();
+  ShutdownBrowserPersisterAndWait(browser.get());
+  tab = nullptr;
+  browser.reset();
+
+  browser = CreateBrowser(GetProfile(), "x");
+  // Should be no tabs while waiting for restore.
+  EXPECT_TRUE(browser->GetTabs().empty());
+  EXPECT_TRUE(browser->IsRestoringPreviousState());
+  // Wait for the restore and navigation to complete.
+  BrowserNavigationObserverImpl::WaitForNewTabToCompleteNavigation(
+      browser.get(), url);
+
+  ASSERT_EQ(1u, browser->GetTabs().size());
+  EXPECT_EQ(browser->GetTabs()[0], browser->GetActiveTab());
+  EXPECT_EQ(1, browser->GetTabs()[0]
+                   ->GetNavigationController()
+                   ->GetNavigationListSize());
+  EXPECT_FALSE(browser->IsRestoringPreviousState());
+}
+
 }  // namespace weblayer
