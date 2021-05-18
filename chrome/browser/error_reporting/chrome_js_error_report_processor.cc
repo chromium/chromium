@@ -39,6 +39,12 @@ constexpr char kRegularTabbedWindow[] = "REGULAR_TABBED";
 constexpr char kWebAppWindow[] = "WEB_APP";
 constexpr char kSystemWebAppWindow[] = "SYSTEM_WEB_APP";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Give up if crash_reporter hasn't finished in this long.
+constexpr base::TimeDelta kMaximumWaitForCrashReporter =
+    base::TimeDelta::FromMinutes(1);
+#endif
+
 // Sometimes, the stack trace will contain an error message as the first line,
 // which confuses the Crash server. This function deletes it if it is present.
 void RemoveErrorMessageFromStackTrace(const std::string& error_message,
@@ -81,7 +87,12 @@ std::string MapWindowTypeToString(WindowType window_type) {
 }  // namespace
 
 ChromeJsErrorReportProcessor::ChromeJsErrorReportProcessor()
-    : clock_(base::DefaultClock::GetInstance()) {}
+    :
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+      maximium_wait_for_crash_reporter_(kMaximumWaitForCrashReporter),
+#endif
+      clock_(base::DefaultClock::GetInstance()) {
+}
 ChromeJsErrorReportProcessor::~ChromeJsErrorReportProcessor() = default;
 
 // Returns the redacted, fixed-up error report if the user consented to have it

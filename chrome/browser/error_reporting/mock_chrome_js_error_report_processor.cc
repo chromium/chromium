@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 #include "components/variations/variations_crash_keys.h"
@@ -24,7 +25,16 @@ const char MockChromeJsErrorReportProcessor::kDefaultExperimentListString[] =
     "6598898b-ac59b6dc%2C";  // The URL escaping turns the comma into %2C in the
                              // query string.
 
-MockChromeJsErrorReportProcessor::MockChromeJsErrorReportProcessor() = default;
+// Tricium gets confused by the #if's and thinks we should change this to
+// "= default".
+// NOLINTNEXTLINE
+MockChromeJsErrorReportProcessor::MockChromeJsErrorReportProcessor() {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Shorten timeout or tests will time out.
+  set_maximium_wait_for_crash_reporter_for_test(
+      base::TimeDelta::FromSeconds(5));
+#endif
+}
 
 MockChromeJsErrorReportProcessor::~MockChromeJsErrorReportProcessor() = default;
 

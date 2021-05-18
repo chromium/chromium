@@ -21,6 +21,9 @@
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class Process;
+}
 namespace content {
 class BrowserContext;
 }
@@ -62,6 +65,12 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
   // on old kernels without memfd_create, so we don't get good unit test
   // coverage unless we force it.
   void set_force_non_memfd_for_test() { force_non_memfd_for_test_ = true; }
+
+  // Set the length of time we want for the crash_reporter (or the
+  // mock_crash_reporter) to finish.
+  void set_maximium_wait_for_crash_reporter_for_test(base::TimeDelta max_wait) {
+    maximium_wait_for_crash_reporter_ = max_wait;
+  }
 #endif
 
  protected:
@@ -156,9 +165,18 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
       const absl::optional<std::string>& stack_trace);
 
   void SendReportViaCrashReporter(ParameterMap params,
-                                  absl::optional<std::string> stack_trace);
+                                  absl::optional<std::string> stack_trace,
+                                  base::ScopedClosureRunner callback_runner);
+  void WaitForCrashReporter(base::Process process,
+                            base::Time process_creation_time,
+                            base::ScopedClosureRunner file_cleanup,
+                            base::ScopedClosureRunner external_callback_runner);
 
   bool force_non_memfd_for_test_ = false;
+
+  // If crash_reporter isn't finished after this long, kill it and clean up
+  // anyways.
+  base::TimeDelta maximium_wait_for_crash_reporter_;
 #else
   // Turn the parameter key/value pairs into a list of parameters suitable for
   // being the query part of a URL. Does URL escaping and such.
