@@ -61,8 +61,6 @@ class PeripheralBatteryNotifierListenerTest : public AshTestBase {
   ~PeripheralBatteryNotifierListenerTest() override = default;
 
   void SetUp() override {
-    ui::DeviceDataManager::CreateInstance();
-    chromeos::PowerManagerClient::InitializeFake();
     AshTestBase::SetUp();
     ASSERT_TRUE(ui::DeviceDataManager::HasInstance());
 
@@ -89,11 +87,9 @@ class PeripheralBatteryNotifierListenerTest : public AshTestBase {
   }
 
   void TearDown() override {
-    AshTestBase::TearDown();
     battery_notifier_.reset();
     battery_listener_.reset();
-    chromeos::PowerManagerClient::Shutdown();
-    ui::DeviceDataManager::DeleteInstance();
+    AshTestBase::TearDown();
   }
 
   void SendBatteryUpdate(const std::string& path,

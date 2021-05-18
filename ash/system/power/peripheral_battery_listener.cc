@@ -172,6 +172,7 @@ PeripheralBatteryListener::~PeripheralBatteryListener() {
   garage_charge_timer_.Stop();
   if (bluetooth_adapter_)
     bluetooth_adapter_->RemoveObserver(this);
+  ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
   if (chromeos::PowerManagerClient::Get())
     chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 }

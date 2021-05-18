@@ -87,10 +87,6 @@ class PeripheralBatteryListenerTest : public AshTestBase {
   ~PeripheralBatteryListenerTest() override = default;
 
   void SetUp() override {
-    // NOTE: We sometimes get crashes in the middle of DDM setup
-    // we don't reconstruct the instance -- presumably something
-    // isn't fully reset between tests.
-    ui::DeviceDataManager::CreateInstance();
     chromeos::PowerManagerClient::InitializeFake();
     AshTestBase::SetUp();
     ASSERT_TRUE(ui::DeviceDataManager::HasInstance());
@@ -112,14 +108,10 @@ class PeripheralBatteryListenerTest : public AshTestBase {
   }
 
   void TearDown() override {
-    // NOTE: We get crash on teardown inside the DDM if we don't let
-    // all events run out in this scope.
-    base::RunLoop().RunUntilIdle();
 
     battery_listener_.reset();
     AshTestBase::TearDown();
     chromeos::PowerManagerClient::Shutdown();
-    ui::DeviceDataManager::DeleteInstance();
   }
 
   base::TimeTicks GetTestingClock() { return base::TimeTicks::Now(); }
