@@ -73,6 +73,9 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   // responses for main frame navigation.
   bool WasPreloadLinkHeaderReceived() const;
 
+  // True when there are at least one inflight preloads.
+  bool HasInflightPreloads() const;
+
   void WaitForPreloadsFinishedForTesting(
       base::OnceCallback<void(PreloadedResources)> callback);
 

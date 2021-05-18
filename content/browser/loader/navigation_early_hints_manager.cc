@@ -284,6 +284,10 @@ bool NavigationEarlyHintsManager::WasPreloadLinkHeaderReceived() const {
   return was_preload_link_header_received_;
 }
 
+bool NavigationEarlyHintsManager::HasInflightPreloads() const {
+  return inflight_preloads_.size() > 0;
+}
+
 void NavigationEarlyHintsManager::WaitForPreloadsFinishedForTesting(
     base::OnceCallback<void(PreloadedResources)> callback) {
   DCHECK(!preloads_completion_callback_for_testing_);
@@ -305,6 +309,10 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
 
   if (!base::FeatureList::IsEnabled(features::kEarlyHintsPreloadForNavigation))
     return;
+
+  if (!link->href.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
 
   if (inflight_preloads_.contains(link->href) ||
       preloaded_resources_.contains(link->href)) {

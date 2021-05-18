@@ -172,4 +172,21 @@ TEST_F(NavigationEarlyHintsManagerTest, ResponseExistsInDiskCache) {
   EXPECT_TRUE(it->second.was_canceled);
 }
 
+TEST_F(NavigationEarlyHintsManagerTest, PreloadSchemeIsUnsupported) {
+  auto link_header = network::mojom::LinkHeader::New(
+      GURL("file:///"), network::mojom::LinkRelAttribute::kPreload,
+      network::mojom::LinkAsAttribute::kUnspecified,
+      network::mojom::CrossOriginAttribute::kUnspecified,
+      /*mime_type=*/absl::nullopt);
+  auto hints = network::mojom::EarlyHints::New();
+  hints->headers = network::mojom::ParsedHeaders::New();
+  hints->headers->link_headers.push_back(std::move(link_header));
+
+  early_hints_manager().HandleEarlyHints(std::move(hints),
+                                         CreateNavigationResourceRequest());
+
+  EXPECT_TRUE(early_hints_manager().WasPreloadLinkHeaderReceived());
+  EXPECT_FALSE(early_hints_manager().HasInflightPreloads());
+}
+
 }  // namespace content
