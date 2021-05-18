@@ -504,7 +504,8 @@ std::unique_ptr<TriggerContext> CreateTriggerContext(
           CreateStringMapFromJava(env, jparameter_names, jparameter_values)),
       SafeConvertJavaStringToNative(env, jexperiment_ids),
       IsCustomTab(web_contents), onboarding_shown, is_direct_action,
-      SafeConvertJavaStringToNative(env, jinitial_url));
+      SafeConvertJavaStringToNative(env, jinitial_url),
+      /* is_in_chrome_triggered = */ false);
 }
 
 bool IsCustomTab(content::WebContents* web_contents) {

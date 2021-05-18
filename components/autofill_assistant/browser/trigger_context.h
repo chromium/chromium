@@ -25,7 +25,8 @@ class TriggerContext {
             bool is_cct,
             bool onboarding_shown,
             bool is_direct_action,
-            const std::string& initial_url);
+            const std::string& initial_url,
+            bool is_in_chrome_triggered);
     Options();
     ~Options();
     std::string experiment_ids;
@@ -33,6 +34,7 @@ class TriggerContext {
     bool onboarding_shown = false;
     bool is_direct_action = false;
     std::string initial_url;
+    bool is_in_chrome_triggered = false;
   };
 
   // Creates an empty trigger context.
@@ -53,7 +55,8 @@ class TriggerContext {
                  bool is_cct,
                  bool onboarding_shown,
                  bool is_direct_action,
-                 const std::string& initial_url);
+                 const std::string& initial_url,
+                 bool is_in_chrome_triggered);
 
   // Creates a trigger context that contains the merged contents of all input
   // instances at the time of calling (does not reference |contexts| after
@@ -92,6 +95,10 @@ class TriggerContext {
   // Returns true if the current action was triggered by a direct action.
   virtual bool GetDirectAction() const;
 
+  // Returns whether this trigger context is coming from an external surface,
+  // i.e., a button or link on a website, or whether this is from within Chrome.
+  virtual bool GetInChromeTriggered() const;
+
  private:
   std::unique_ptr<ScriptParameters> script_parameters_;
 
@@ -102,6 +109,7 @@ class TriggerContext {
   bool cct_ = false;
   bool onboarding_shown_ = false;
   bool direct_action_ = false;
+  bool is_in_chrome_triggered_ = false;
 
   // The initial url at the time of triggering.
   std::string initial_url_;

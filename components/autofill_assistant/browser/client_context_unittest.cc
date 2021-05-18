@@ -102,13 +102,15 @@ TEST_F(ClientContextTest, UpdateWithTriggerContext) {
        /* is_cct = */ true,
        /* onboarding_shown = */ true,
        /* is_direct_action = */ true,
-       /* initial_url = */ "https://www.example.com"});
+       /* initial_url = */ "https://www.example.com",
+       /* is_in_chrome_triggered = */ true});
 
   auto actual_client_context = client_context.AsProto();
   EXPECT_THAT(actual_client_context.experiment_ids(), Eq("1,2,3"));
   EXPECT_THAT(actual_client_context.is_cct(), Eq(true));
   EXPECT_THAT(actual_client_context.is_onboarding_shown(), Eq(true));
   EXPECT_THAT(actual_client_context.is_direct_action(), Eq(true));
+  EXPECT_THAT(actual_client_context.is_in_chrome_triggered(), Eq(true));
   EXPECT_THAT(actual_client_context.accessibility_enabled(), Eq(true));
   EXPECT_THAT(actual_client_context.experiment_ids(), Eq("1,2,3"));
   EXPECT_THAT(actual_client_context.signed_into_chrome_status(),
@@ -138,7 +140,8 @@ TEST_F(ClientContextTest, WindowSizeIsClearedIfNoLongerAvailable) {
                          /* is_cct = */ true,
                          /* onboarding_shown = */ true,
                          /* is_direct_action = */ true,
-                         /* initial_url = */ "https://www.example.com"});
+                         /* initial_url = */ "https://www.example.com",
+                         /* is_in_chrome_triggered = */ false});
 
   actual_client_context = client_context.AsProto();
   EXPECT_FALSE(actual_client_context.has_window_size());
@@ -159,7 +162,8 @@ TEST_F(ClientContextTest, AccountMatching) {
        /* is_cct = */ false,
        /* onboarding_shown = */ false,
        /* is_direct_action = */ false,
-       /* initial_url = */ "https://www.example.com"});
+       /* initial_url = */ "https://www.example.com",
+       /* is_in_chrome_triggered = */ false});
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_MATCHING));
 
@@ -170,7 +174,8 @@ TEST_F(ClientContextTest, AccountMatching) {
        /* is_cct = */ false,
        /* onboarding_shown = */ false,
        /* is_direct_action = */ false,
-       /* initial_url = */ "https://www.example.com"});
+       /* initial_url = */ "https://www.example.com",
+       /* is_in_chrome_triggered = */ false});
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_NOT_MATCHING));
 }

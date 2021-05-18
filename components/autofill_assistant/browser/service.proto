@@ -55,6 +55,10 @@ message ClientContextProto {
   // True if the script was triggered by a direct action.
   optional bool is_direct_action = 9;
 
+  // True if this an in-Chrome triggered flow, rather than an externally
+  // triggered one.
+  optional bool is_in_chrome_triggered = 17;
+
   message DeviceContextProto {
     message VersionProto {
       // The Android SDK version of the device.
@@ -606,7 +610,7 @@ message TriggerScriptProto {
   // An identifier for the type of trigger UI this trigger represents, for UKM.
   optional TriggerUIType trigger_ui_type = 5;
 
-  reserved 2;
+  reserved 2, 6;
 }
 
 // Set of TriggerUIType to group UKM metrics by.
@@ -615,10 +619,19 @@ message TriggerScriptProto {
 // tools/metrics/histograms/enums.xml
 enum TriggerUIType {
   UNSPECIFIED_TRIGGER_UI_TYPE = 0;
+
+  // Explicit trigger requests by some external trigger surface, i.e., a link
+  // or button.
   CART_FIRST_TIME_USER = 1;
   CART_RETURNING_USER = 2;
   CHECKOUT_FIRST_TIME_USER = 3;
   CHECKOUT_RETURNING_USER = 4;
+
+  // Implicit trigger requests started by Chrome itself.
+  IN_CHROME_CART_FIRST_TIME_USER = 5;
+  IN_CHROME_CART_RETURNING_USER = 6;
+  IN_CHROME_CHECKOUT_FIRST_TIME_USER = 7;
+  IN_CHROME_CHECKOUT_RETURNING_USER = 8;
 }
 
 message TriggerScriptConditionProto {

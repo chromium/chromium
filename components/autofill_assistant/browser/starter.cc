@@ -299,7 +299,8 @@ void Starter::OnHeuristicMatch(const GURL& url,
                               /* is_cct = */ is_custom_tab_,
                               /* onboarding_shown = */ false,
                               /* is_direct_action = */ false,
-                              /* initial_url = */ std::string()}));
+                              /* initial_url = */ std::string(),
+                              /* is_in_chrome_triggered = */ true}));
 }
 
 bool Starter::IsStartupPending() const {

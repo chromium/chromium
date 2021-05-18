@@ -638,6 +638,7 @@ TEST_F(StarterTest, RpcTriggerScriptSucceeds) {
             GetTriggerScriptsRequestProto request;
             ASSERT_TRUE(request.ParseFromString(request_body));
             EXPECT_THAT(request.url(), Eq(GURL(kExampleDeeplink)));
+            EXPECT_FALSE(request.client_context().is_in_chrome_triggered());
             std::move(callback).Run(net::HTTP_OK,
                                     CreateTriggerScriptResponseForTest());
           }));
@@ -982,6 +983,7 @@ TEST_F(StarterTest, ImplicitStartupOnSupportedDomain) {
             ASSERT_TRUE(request.ParseFromString(request_body));
             EXPECT_THAT(request.url(),
                         Eq(GURL("https://www.some-website.com/cart")));
+            EXPECT_TRUE(request.client_context().is_in_chrome_triggered());
             std::move(callback).Run(net::HTTP_OK,
                                     CreateTriggerScriptResponseForTest());
           }));

@@ -49,6 +49,9 @@ void ClientContextImpl::Update(const TriggerContext& trigger_context) {
   if (trigger_context.GetDirectAction()) {
     proto_.set_is_direct_action(true);
   }
+  if (trigger_context.GetInChromeTriggered()) {
+    proto_.set_is_in_chrome_triggered(true);
+  }
 
   // TODO(b/156882027): Add an integration test for accounts handling.
   auto caller_email = trigger_context.GetScriptParameters().GetCallerEmail();

@@ -221,6 +221,7 @@ TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
         ClientContextProto expected_client_context;
         expected_client_context.mutable_chrome()->set_chrome_version(
             version_info::GetProductNameAndVersionForUserAgent());
+        expected_client_context.set_is_in_chrome_triggered(true);
         EXPECT_THAT(request.client_context(), Eq(expected_client_context));
       });
 
@@ -232,7 +233,8 @@ TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
                           /* is_cct = */ true,
                           /* onboarding_shown = */ true,
                           /* is_direct_action = */ true,
-                          /* initial_url = */ "https://www.example.com"),
+                          /* initial_url = */ "https://www.example.com",
+                          /* is_in_chrome_triggered = */ true),
                       mock_callback_.Get());
 }
 

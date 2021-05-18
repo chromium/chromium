@@ -5138,6 +5138,10 @@ others/histograms.xml -->
   <int value="2" label="CART_RETURNING_USER"/>
   <int value="3" label="CHECKOUT_FIRST_TIME_USER"/>
   <int value="4" label="CHECKOUT_RETURNING_TIME_USER"/>
+  <int value="5" label="IN_CHROME_CART_FIRST_TIME_USER"/>
+  <int value="6" label="IN_CHROME_CART_RETURNING_USER"/>
+  <int value="7" label="IN_CHROME_CHECKOUT_FIRST_TIME_USER"/>
+  <int value="8" label="IN_CHROME_CHECKOUT_RETURNING_USER"/>
 </enum>
 
 <enum name="AutofillAwGSuggestionAvailability">

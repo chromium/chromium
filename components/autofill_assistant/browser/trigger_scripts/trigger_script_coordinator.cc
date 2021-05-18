@@ -65,11 +65,13 @@ void TriggerScriptCoordinator::Start(
   deeplink_url_ = deeplink_url;
   trigger_context_ = std::move(trigger_context);
 
-  // Note: do not call ClientContext::Update here. We can only send the version
-  // string in the ClientContext.
+  // Note: do not call ClientContext::Update here. We can only send the
+  // following approved fields:
   ClientContextProto client_context;
   client_context.mutable_chrome()->set_chrome_version(
       version_info::GetProductNameAndVersionForUserAgent());
+  client_context.set_is_in_chrome_triggered(
+      trigger_context_->GetInChromeTriggered());
 
   request_sender_->SendRequest(
       get_trigger_scripts_server_,
