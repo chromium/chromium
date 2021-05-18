@@ -392,6 +392,7 @@ class NearbySharingServiceImpl
   void AbortAndCloseConnectionIfNecessary(const TransferMetadata::Status status,
                                           const ShareTarget& share_target);
 
+  PrefService* prefs_ = nullptr;
   Profile* profile_;
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
   chromeos::nearby::NearbyProcessManager* process_manager_;

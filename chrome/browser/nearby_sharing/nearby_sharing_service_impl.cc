@@ -13,6 +13,7 @@
 #include "base/files/file.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -262,7 +263,8 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
     std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
     chromeos::nearby::NearbyProcessManager* process_manager,
     std::unique_ptr<PowerClient> power_client)
-    : profile_(profile),
+    : prefs_(prefs),
+      profile_(profile),
       nearby_connections_manager_(std::move(nearby_connections_manager)),
       process_manager_(process_manager),
       power_client_(std::move(power_client)),
@@ -300,7 +302,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
   DCHECK(nearby_connections_manager_);
   DCHECK(power_client_);
 
-  RecordNearbyShareEnabledMetric(prefs);
+  RecordNearbyShareEnabledMetric(prefs_);
 
   auto* session_controller = ash::SessionController::Get();
   if (session_controller) {
@@ -1140,6 +1142,8 @@ void NearbySharingServiceImpl::FlushMojoForTesting() {
 
 void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RecordNearbyShareEnabledMetric(prefs_);
+  base::UmaHistogramBoolean("Nearby.Share.EnabledStateChanged", enabled);
   if (enabled) {
     NS_LOG(VERBOSE) << __func__ << ": Nearby sharing enabled!";
     local_device_data_manager_->Start();
