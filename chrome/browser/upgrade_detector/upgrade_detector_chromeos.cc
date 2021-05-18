@@ -13,11 +13,11 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/rand_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/common/pref_names.h"
@@ -167,51 +167,6 @@ base::TimeDelta UpgradeDetectorChromeos::GetRelaunchHeadsUpPeriod() {
   return base::TimeDelta::FromMilliseconds(value);
 }
 
-// static
-base::TimeDelta UpgradeDetectorChromeos::GenRandomTimeDelta(
-    base::TimeDelta max) {
-  return max * base::RandDouble();
-}
-
-// static
-base::Time UpgradeDetectorChromeos::AdjustDeadline(base::Time deadline) {
-  // Compute the offset applied to GMT to get local time at |deadline|.
-  const icu::TimeZone& time_zone =
-      chromeos::system::TimezoneSettings::GetInstance()->GetTimezone();
-  UErrorCode status = U_ZERO_ERROR;
-  int32_t raw_offset, dst_offset;
-  time_zone.getOffset(deadline.ToDoubleT() * base::Time::kMillisecondsPerSecond,
-                      true /* local */, raw_offset, dst_offset, status);
-  base::TimeDelta time_zone_offset;
-  if (U_FAILURE(status)) {
-    LOG(ERROR) << "Failed to get time zone offset, error code: " << status;
-    // The fallback case is to get the raw timezone offset ignoring the daylight
-    // saving time.
-    time_zone_offset =
-        base::TimeDelta::FromMilliseconds(time_zone.getRawOffset());
-  } else {
-    time_zone_offset =
-        base::TimeDelta::FromMilliseconds(raw_offset + dst_offset);
-  }
-
-  // To get local midnight add timezone offset to deadline and treat this time
-  // as UTC based to use UTCMidnight(), then subtract timezone offset.
-  auto midnight =
-      (deadline + time_zone_offset).UTCMidnight() - time_zone_offset;
-  const auto day_time = deadline - midnight;
-  // Return the exact deadline if it naturally falls between 2am and 4am.
-  if (day_time >= base::TimeDelta::FromHours(2) &&
-      day_time <= base::TimeDelta::FromHours(4)) {
-    return deadline;
-  }
-  // Advance to the next day if the deadline falls after 4am.
-  if (day_time > base::TimeDelta::FromHours(4))
-    midnight += base::TimeDelta::FromDays(1);
-
-  return midnight + base::TimeDelta::FromHours(2) +
-         GenRandomTimeDelta(base::TimeDelta::FromHours(2));
-}
-
 void UpgradeDetectorChromeos::CalculateDeadlines() {
   base::TimeDelta notification_period = GetRelaunchNotificationPeriod();
   if (notification_period.is_zero())
@@ -357,4 +312,11 @@ base::TimeDelta UpgradeDetector::GetDefaultHighAnnoyanceThreshold() {
 // static
 base::TimeDelta UpgradeDetector::GetDefaultElevatedAnnoyanceThreshold() {
   return kDefaultElevatedThreshold;
+}
+
+// static
+UpgradeDetector::RelaunchWindow UpgradeDetector::GetDefaultRelaunchWindow() {
+  // Two hours starting at 2am.
+  return RelaunchWindow(/*start_hour=*/2, /*start_minute=*/0,
+                        base::TimeDelta::FromHours(2));
 }

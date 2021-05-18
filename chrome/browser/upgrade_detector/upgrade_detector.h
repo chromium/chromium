@@ -49,6 +49,23 @@ class UpgradeDetector {
     UPGRADE_ANNOYANCE_MAX_VALUE = UPGRADE_ANNOYANCE_VERY_LOW
   };
 
+  struct RelaunchWindow {
+    constexpr RelaunchWindow(int start_hour,
+                             int start_minute,
+                             base::TimeDelta duration)
+        : hour(start_hour), minute(start_minute), duration(duration) {}
+
+    bool IsValid() const {
+      return hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59 &&
+             duration >= base::TimeDelta::FromMinutes(1) &&
+             duration != base::TimeDelta::Max();
+    }
+
+    int hour;
+    int minute;
+    base::TimeDelta duration;
+  };
+
   // Returns the singleton implementation instance.
   static UpgradeDetector* GetInstance();
 
@@ -187,6 +204,21 @@ class UpgradeDetector {
   // of range.
   static base::TimeDelta GetRelaunchNotificationPeriod();
   static bool IsRelaunchNotificationPolicyEnabled();
+
+  // Returns the adjusted deadline as per the relaunch window from
+  // `UpgradeDetector::GetRelaunchWindow()`. If the deadline has already passed
+  // the window for the day, it is prolonged for the next day within the window.
+  // If the `deadline` already falls within the window, no change is made.
+  static base::Time AdjustDeadline(base::Time deadline);
+
+  // Returns the relaunch window specified via the RelaunchWindow policy
+  // setting, or the default one via
+  // 'UpgradeDetector::GetDefaultRelaunchWindow()` if unset or set incorrectly.
+  static RelaunchWindow GetRelaunchWindow();
+
+  // Returns the default relaunch window within which the relaunch should take
+  // place. It is 2am to 4am from Chrome OS and the whole day for others.
+  static RelaunchWindow GetDefaultRelaunchWindow();
 
   const base::Clock* clock() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

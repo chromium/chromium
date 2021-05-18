@@ -49,16 +49,8 @@ class UpgradeDetectorChromeos : public UpgradeDetector,
   UpgradeDetectorChromeos(const base::Clock* clock,
                           const base::TickClock* tick_clock);
 
-  // Return adjusted high annoyance deadline which takes place at night between
-  // 2am and 4am. If |deadline| takes place after 4am it is prolonged for the
-  // next day night between 2am and 4am.
-  static base::Time AdjustDeadline(base::Time deadline);
-
  private:
   friend class base::NoDestructor<UpgradeDetectorChromeos>;
-
-  // Return random TimeDelta uniformly selected between zero and |max|.
-  static base::TimeDelta GenRandomTimeDelta(base::TimeDelta max);
 
   // Returns the period between first notification and Recommended / Required
   // deadline specified via the RelaunchHeadsUpPeriod policy setting, or a

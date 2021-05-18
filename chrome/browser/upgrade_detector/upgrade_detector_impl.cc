@@ -547,3 +547,10 @@ base::TimeDelta UpgradeDetector::GetDefaultHighAnnoyanceThreshold() {
 base::TimeDelta UpgradeDetector::GetDefaultElevatedAnnoyanceThreshold() {
   return kDefaultElevatedThreshold;
 }
+
+// static
+UpgradeDetector::RelaunchWindow UpgradeDetector::GetDefaultRelaunchWindow() {
+  // Relaunch window is the whole day and any time is within the window.
+  return RelaunchWindow(/*start_hour=*/0, /*start_minute=*/0,
+                        base::TimeDelta::FromHours(24));
+}

@@ -4296,6 +4296,7 @@ test("unit_tests") {
       "../browser/upgrade_detector/build_state_unittest.cc",
       "../browser/upgrade_detector/mock_build_state_observer.cc",
       "../browser/upgrade_detector/mock_build_state_observer.h",
+      "../browser/upgrade_detector/upgrade_detector_unittest.cc",
       "../browser/webauthn/authenticator_request_scheduler_unittest.cc",
       "../browser/webauthn/chrome_authenticator_request_delegate_unittest.cc",
       "../renderer/cart/commerce_hint_agent_unittest.cc",

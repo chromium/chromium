@@ -18630,7 +18630,7 @@
                 'duration_mins': {
                   'description': '''Time period (minutes) that specifies the length of the relaunch window.''',
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': 1,
                   'maximum': 1440
                 }
               },
