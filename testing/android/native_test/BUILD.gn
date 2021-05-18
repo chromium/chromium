@@ -30,6 +30,7 @@ source_set("native_browser_test_support") {
     "native_browser_test_support.h",
   ]
   deps = [ ":native_browser_test_jni_headers" ]
+  public_deps = [ "//base" ]
 }
 
 source_set("native_test_native_code") {
