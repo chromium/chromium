@@ -77,11 +77,11 @@ InputEngineContext::InputEngineContext(const std::string& ime) : ime_spec(ime) {
   }
 }
 
-InputEngineContext::~InputEngineContext() {}
+InputEngineContext::~InputEngineContext() = default;
 
-InputEngine::InputEngine() {}
+InputEngine::InputEngine() = default;
 
-InputEngine::~InputEngine() {}
+InputEngine::~InputEngine() = default;
 
 bool InputEngine::BindRequest(
     const std::string& ime_spec,

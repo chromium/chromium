@@ -21,13 +21,12 @@ class Engine;
 class InputEngineContext {
  public:
   explicit InputEngineContext(const std::string& ime);
+  InputEngineContext(const InputEngineContext&) = delete;
+  InputEngineContext& operator=(const InputEngineContext&) = delete;
   ~InputEngineContext();
 
   std::string ime_spec;
   std::unique_ptr<rulebased::Engine> engine;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputEngineContext);
 };
 
 // A basic implementation of InputEngine without using any decoder.
@@ -35,6 +34,8 @@ class InputEngineContext {
 class InputEngine : public mojom::InputChannel {
  public:
   InputEngine();
+  InputEngine(const InputEngine&) = delete;
+  InputEngine& operator=(const InputEngine&) = delete;
   ~InputEngine() override;
 
   // Binds the mojom::InputChannel interface to this object and returns true if
@@ -90,8 +91,6 @@ class InputEngine : public mojom::InputChannel {
 
   // Whether the AltRight key is held down or not. Only used for rule-based.
   bool isAltRightDown_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InputEngine);
 };
 
 }  // namespace ime
