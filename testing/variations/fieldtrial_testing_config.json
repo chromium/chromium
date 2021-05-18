@@ -1901,6 +1901,26 @@
             ]
         }
     ],
+    "ChromeTipsInMainMenu": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithNewBadgePromo",
+                    "enable_features": [
+                        "ChromeTipsInMainMenu",
+                        "ChromeTipsInMainMenuNewBadge"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClickAsPointerEvent": [
         {
             "platforms": [
