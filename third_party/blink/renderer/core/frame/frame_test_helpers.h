@@ -309,7 +309,6 @@ class TestWebViewClient : public WebViewClient {
   void DestroyChildViews();
 
   // WebViewClient overrides.
-  bool CanUpdateLayout() override { return true; }
   WebView* CreateView(WebLocalFrame* opener,
                       const WebURLRequest&,
                       const WebWindowFeatures&,

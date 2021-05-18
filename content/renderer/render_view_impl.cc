@@ -471,10 +471,6 @@ void RenderViewImpl::OnPageFrozenChanged(bool frozen) {
   }
 }
 
-bool RenderViewImpl::CanUpdateLayout() {
-  return true;
-}
-
 // RenderView implementation ---------------------------------------------------
 
 RenderFrameImpl* RenderViewImpl::GetMainRenderFrame() {

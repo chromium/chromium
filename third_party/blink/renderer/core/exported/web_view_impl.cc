@@ -3286,7 +3286,7 @@ void WebViewImpl::DidCommitCompositorFrameForLocalMainFrame() {
 void WebViewImpl::ResizeAfterLayout() {
   DCHECK(MainFrameImpl());
 
-  if (!web_view_client_ || !web_view_client_->CanUpdateLayout())
+  if (!web_view_client_)
     return;
 
   if (should_auto_resize_) {

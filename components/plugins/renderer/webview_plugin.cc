@@ -306,10 +306,6 @@ WebViewPlugin::WebViewHelper::~WebViewHelper() {
   web_view_->Close();
 }
 
-bool WebViewPlugin::WebViewHelper::CanUpdateLayout() {
-  return true;
-}
-
 void WebViewPlugin::WebViewHelper::UpdateTooltipUnderCursor(
     const std::u16string& tooltip_text,
     base::i18n::TextDirection hint) {

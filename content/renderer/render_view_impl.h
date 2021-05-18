@@ -139,7 +139,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
       bool& consumed_user_gesture,
       const absl::optional<blink::WebImpression>& impression) override;
   void PrintPage(blink::WebLocalFrame* frame) override;
-  bool CanUpdateLayout() override;
   void OnPageFrozenChanged(bool frozen) override;
   void DidUpdateRendererPreferences() override;
 

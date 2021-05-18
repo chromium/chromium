@@ -96,9 +96,6 @@ class WebViewClient {
 
   // UI ------------------------------------------------------------------
 
-  // Called to check if layout update should be processed.
-  virtual bool CanUpdateLayout() { return false; }
-
   // Called when the View has changed size as a result of an auto-resize.
   virtual void DidAutoResize(const gfx::Size& new_size) {}
 

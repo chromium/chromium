@@ -168,7 +168,6 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
     blink::WebNavigationControl* main_frame() { return frame_; }
 
     // WebViewClient methods:
-    bool CanUpdateLayout() override;
     void InvalidateContainer() override;
 
     // WebNonCompositedWidgetClient overrides.
