@@ -4,15 +4,40 @@
 
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 
+#include "base/command_line.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace safe_browsing {
+
+namespace {
+
+// Command-line flag that can be used to override the current CSD model. Must be
+// provided with an absolute path.
+const char kOverrideCsdModelFlag[] = "csd-model-override-path";
+
+std::string ReadFileIntoString(base::FilePath path) {
+  if (path.empty())
+    return std::string();
+
+  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!file.IsValid())
+    return std::string();
+
+  std::vector<char> model_data(file.GetLength());
+  if (file.ReadAtCurrentPos(model_data.data(), model_data.size()) == -1)
+    return std::string();
+
+  return std::string(model_data.begin(), model_data.end());
+}
+
+}  // namespace
 
 using base::AutoLock;
 
@@ -32,7 +57,9 @@ ClientSidePhishingModel* ClientSidePhishingModel::GetInstance() {
                          ClientSidePhishingModelSingletonTrait>::get();
 }
 
-ClientSidePhishingModel::ClientSidePhishingModel() = default;
+ClientSidePhishingModel::ClientSidePhishingModel() {
+  MaybeOverrideModel();
+}
 
 ClientSidePhishingModel::~ClientSidePhishingModel() {
   AutoLock lock(lock_);  // DCHECK fail if the lock is held.
@@ -62,7 +89,9 @@ void ClientSidePhishingModel::PopulateFromDynamicUpdate(
   AutoLock lock(lock_);
 
   bool proto_valid = false;
-  if (!model_str.empty()) {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kOverrideCsdModelFlag) &&
+      !model_str.empty()) {
     ClientSideModel model_proto;
     proto_valid = model_proto.ParseFromString(model_str);
     base::UmaHistogramBoolean("SBClientPhishing.ModelDynamicUpdateSuccess",
@@ -106,6 +135,44 @@ void ClientSidePhishingModel::SetModelStrForTesting(
 void ClientSidePhishingModel::SetVisualTfLiteModelForTesting(base::File file) {
   AutoLock lock(lock_);
   visual_tflite_model_ = std::move(file);
+}
+
+void ClientSidePhishingModel::MaybeOverrideModel() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kOverrideCsdModelFlag)) {
+    base::FilePath overriden_model_path =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            kOverrideCsdModelFlag);
+
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&ReadFileIntoString, overriden_model_path),
+        // base::Unretained is safe because this is a singleton.
+        base::BindOnce(&ClientSidePhishingModel::OnGetOverridenModelData,
+                       base::Unretained(this)));
+  }
+}
+
+void ClientSidePhishingModel::OnGetOverridenModelData(
+    const std::string& model_data) {
+  if (model_data.empty()) {
+    VLOG(2) << "Overriden model data is empty";
+    return;
+  }
+
+  std::unique_ptr<ClientSideModel> model(new ClientSideModel());
+  if (!model->ParseFromArray(model_data.data(), model_data.size())) {
+    VLOG(2) << "Overriden model data is not a valid ClientSideModel proto";
+    return;
+  }
+
+  VLOG(2) << "Model overriden successfully";
+  model_str_ = model_data;
+
+  // Unretained is safe because this is a singleton.
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(&ClientSidePhishingModel::NotifyCallbacksOnUI,
+                                base::Unretained(this)));
 }
 
 }  // namespace safe_browsing

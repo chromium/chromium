@@ -59,6 +59,12 @@ class ClientSidePhishingModel {
 
   void NotifyCallbacksOnUI();
 
+  // Called to check the command line and maybe override the current model.
+  void MaybeOverrideModel();
+
+  // Callback when the local file overriding the model has been read.
+  void OnGetOverridenModelData(const std::string& model_data);
+
   // The list of callbacks to notify when a new model is ready. Protected by
   // lock_. Will always be notified on the UI thread.
   base::RepeatingCallbackList<void()> callbacks_;
@@ -72,6 +78,7 @@ class ClientSidePhishingModel {
   mutable base::Lock lock_;
 
   friend struct ClientSidePhishingModelSingletonTrait;
+  FRIEND_TEST_ALL_PREFIXES(ClientSidePhishingModelTest, CanOverrideWithFlag);
 };
 
 }  // namespace safe_browsing

@@ -7,6 +7,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_command_line.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -156,6 +157,44 @@ TEST(ClientSidePhishingModelTest, DoesNotNotifyOnBadFollowingUpdate) {
 
   EXPECT_FALSE(called);
   EXPECT_TRUE(ClientSidePhishingModel::GetInstance()->IsEnabled());
+}
+
+TEST(ClientSidePhishingModelTest, CanOverrideWithFlag) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path =
+      temp_dir.GetPath().AppendASCII("overridden_model.proto");
+  base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
+                                 base::File::FLAG_READ |
+                                 base::File::FLAG_WRITE);
+  ClientSideModel model_proto;
+  model_proto.set_version(123);
+  model_proto.set_max_words_per_term(0);  // Required field
+  std::string file_contents = model_proto.SerializeAsString();
+  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchPath(
+      "--csd-model-override-path", file_path);
+
+  content::BrowserTaskEnvironment task_environment;
+  base::RunLoop run_loop;
+  bool called = false;
+  base::CallbackListSubscription subscription =
+      ClientSidePhishingModel::GetInstance()->RegisterCallback(
+          base::BindRepeating(
+              [](base::RepeatingClosure quit_closure, bool* called) {
+                *called = true;
+                std::move(quit_closure).Run();
+              },
+              run_loop.QuitClosure(), &called));
+
+  ClientSidePhishingModel::GetInstance()->MaybeOverrideModel();
+
+  run_loop.Run();
+
+  EXPECT_EQ(ClientSidePhishingModel::GetInstance()->GetModelStr(),
+            file_contents);
 }
 
 }  // namespace safe_browsing
