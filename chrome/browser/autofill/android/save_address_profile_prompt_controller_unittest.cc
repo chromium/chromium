@@ -138,9 +138,10 @@ TEST_F(SaveAddressProfilePromptControllerTest,
   controller_->DisplayPrompt();
 
   AutofillProfile edited_profile = GetFullProfileNoStatus();
-  EXPECT_CALL(decision_callback_,
-              Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEdited,
-                  edited_profile));
+  EXPECT_CALL(
+      decision_callback_,
+      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
+          edited_profile));
   base::android::ScopedJavaLocalRef<jobject> edited_profile_java =
       PersonalDataManagerAndroid::CreateJavaProfileFromNative(env_,
                                                               edited_profile);

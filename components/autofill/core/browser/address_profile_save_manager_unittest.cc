@@ -296,7 +296,7 @@ void AddressProfileSaveManagerTest::TestImportScenario(
                      ->GetStrikes(url.host()));
   } else if (is_new_profile &&
              (last_import->user_decision() == UserDecision::kAccepted ||
-              last_import->user_decision() == UserDecision::kEdited)) {
+              last_import->user_decision() == UserDecision::kEditAccepted)) {
     // If the import of a new profile was accepted, the count should have been
     // reset.
     EXPECT_EQ(0, mock_personal_data_manager_.GetProfileSaveStrikeDatabase()
@@ -313,7 +313,7 @@ void AddressProfileSaveManagerTest::TestImportScenario(
   // updated.
   if (is_confirmable_merge &&
       (test_scenario.user_decision == UserDecision::kAccepted ||
-       test_scenario.user_decision == UserDecision::kEdited)) {
+       test_scenario.user_decision == UserDecision::kEditAccepted)) {
     EXPECT_EQ(0, mock_personal_data_manager_.GetProfileUpdateStrikeDatabase()
                      ->GetStrikes(test_scenario.merge_candidate->guid()));
   } else if (is_confirmable_merge &&
@@ -422,7 +422,7 @@ TEST_F(AddressProfileSaveManagerTest, SaveNewProfile_Edited) {
       .existing_profiles = {},
       .observed_profile = observed_profile,
       .is_prompt_expected = true,
-      .user_decision = UserDecision::kEdited,
+      .user_decision = UserDecision::kEditAccepted,
       .edited_profile = edited_profile,
       .expected_import_type = AutofillProfileImportType::kNewProfile,
       .is_profile_change_expected = true,
@@ -653,7 +653,7 @@ TEST_F(AddressProfileSaveManagerTest, UserConfirmableMerge_Edited) {
       .existing_profiles = {mergeable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = true,
-      .user_decision = UserDecision::kEdited,
+      .user_decision = UserDecision::kEditAccepted,
       .edited_profile = edited_profile,
       .expected_import_type = AutofillProfileImportType::kConfirmableMerge,
       .is_profile_change_expected = true,
@@ -870,7 +870,7 @@ TEST_F(AddressProfileSaveManagerTest,
                             updateable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = true,
-      .user_decision = UserDecision::kEdited,
+      .user_decision = UserDecision::kEditAccepted,
       .edited_profile = edited_profile,
       .expected_import_type =
           AutofillProfileImportType::kConfirmableMergeAndSilentUpdate,

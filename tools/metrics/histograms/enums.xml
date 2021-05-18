@@ -6096,10 +6096,14 @@ others/histograms.xml -->
   <int value="0" label="Undefined"/>
   <int value="1" label="UserNotAsked"/>
   <int value="2" label="Accpeted"/>
-  <int value="3" label="Edited"/>
-  <int value="4" label="Declined"/>
-  <int value="5" label="Never"/>
-  <int value="6" label="Ignored"/>
+  <int value="3" label="Declined"/>
+  <int value="4" label="EditAccepted"/>
+  <int value="5" label="EditDeclined"/>
+  <int value="6" label="Never"/>
+  <int value="7" label="Ignored"/>
+  <int value="8" label="MessageTimeout"/>
+  <int value="9" label="MessageDeclined"/>
+  <int value="10" label="AutoDeclined"/>
 </enum>
 
 <enum name="AutofillProfileImportEditedType">

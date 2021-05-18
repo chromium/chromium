@@ -11,6 +11,8 @@
 
 namespace autofill {
 
+using UserDecision = AutofillClient::SaveAddressProfileOfferUserDecision;
+
 AddressProfileSaveManager::AddressProfileSaveManager(
     AutofillClient* client,
     PersonalDataManager* personal_data_manager)
@@ -99,7 +101,7 @@ void AddressProfileSaveManager::OfferSavePrompt(
 
 void AddressProfileSaveManager::OnUserDecision(
     std::unique_ptr<ProfileImportProcess> import_process,
-    AutofillClient::SaveAddressProfileOfferUserDecision decision,
+    UserDecision decision,
     AutofillProfile edited_profile) {
   DCHECK(import_process->prompt_shown());
 
@@ -122,14 +124,12 @@ void AddressProfileSaveManager::FinalizeProfileImport(
   AutofillProfileImportType import_type = import_process->import_type();
 
   bool accepted_or_edited =
-      import_process->user_decision() ==
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted ||
-      import_process->user_decision() ==
-          AutofillClient::SaveAddressProfileOfferUserDecision::kEdited;
+      import_process->user_decision() == UserDecision::kAccepted ||
+      import_process->user_decision() == UserDecision::kEditAccepted;
 
   bool declined =
-      import_process->user_decision() ==
-      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined;
+      import_process->user_decision() == UserDecision::kDeclined ||
+      import_process->user_decision() == UserDecision::kEditDeclined;
 
   // If the import of a new profile was declined, add a strike for this source
   // url. If it was accepted, reset the potentially existing strikes.

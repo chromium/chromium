@@ -162,7 +162,7 @@ void SaveAddressProfilePromptController::OnUserEdited(
                                                             &edited_profile);
   profile_ = edited_profile;
   RunSaveAddressProfileCallback(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEdited);
+      AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted);
 }
 
 void SaveAddressProfilePromptController::OnPromptDismissed(

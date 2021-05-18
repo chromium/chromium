@@ -208,7 +208,7 @@ void ProfileImportProcess::SetUserDecision(
       confirmed_import_candidate_ = import_candidate_;
       break;
 
-    case UserDecision::kEdited:
+    case UserDecision::kEditAccepted:
       // If the import candidate is supplied, the 'edited_profile' must be
       // supplied.
       DCHECK(edited_profile.has_value());
@@ -222,7 +222,14 @@ void ProfileImportProcess::SetUserDecision(
     // candidate should be maintined. Note that the decline/ignore does not mean
     // that silent updates are not performed.
     case UserDecision::kDeclined:
+    case UserDecision::kEditDeclined:
+    case UserDecision::kMessageDeclined:
+    case UserDecision::kMessageTimeout:
     case UserDecision::kIgnored:
+    case UserDecision::kAutoDeclined:
+      confirmed_import_candidate_ = merge_candidate_;
+      break;
+
     case UserDecision::kNever:
       break;
 
@@ -241,7 +248,8 @@ void ProfileImportProcess::AcceptWithoutEdits() {
 }
 
 void ProfileImportProcess::AcceptWithEdits(AutofillProfile edited_profile) {
-  SetUserDecision(UserDecision::kEdited, absl::make_optional(edited_profile));
+  SetUserDecision(UserDecision::kEditAccepted,
+                  absl::make_optional(edited_profile));
 }
 
 void ProfileImportProcess::Declined() {
@@ -268,7 +276,7 @@ bool ProfileImportProcess::ProfilesChanged() const {
 
   // If the import was accepted, return true.
   if (user_decision_ == UserDecision::kAccepted ||
-      user_decision_ == UserDecision::kEdited ||
+      user_decision_ == UserDecision::kEditAccepted ||
       user_decision_ == UserDecision::kUserNotAsked) {
     return true;
   }
@@ -298,7 +306,7 @@ void ProfileImportProcess::CollectMetrics() const {
   }
 
   // If the profile was edited by the user, record a histogram of edited types.
-  if (user_decision_ == UserDecision::kEdited) {
+  if (user_decision_ == UserDecision::kEditAccepted) {
     for (const auto& difference :
          AutofillProfileComparator::GetSettingsVisibleProfileDifference(
              import_candidate_.value(), confirmed_import_candidate_.value(),
