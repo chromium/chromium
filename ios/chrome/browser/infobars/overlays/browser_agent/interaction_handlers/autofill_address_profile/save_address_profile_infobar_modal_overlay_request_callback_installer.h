@@ -25,9 +25,9 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller
   // Used as a callback for OverlayResponses dispatched through |request|'s
   // callback manager.  The OverlayDispatchCallback is created with an
   // OverlayResponseSupport that guarantees that |response| is created with a
-  // save_address_profile_infobar_modal_responses::PresentAddressProfileSettings.
-  void PresentAddressProfileSettingsCallback(OverlayRequest* request,
-                                             OverlayResponse* response);
+  // save_address_profile_infobar_modal_responses::EditedProfileSaveAction.
+  void SaveEditedProfileDetailsCallback(OverlayRequest* request,
+                                        OverlayResponse* response);
 
   // OverlayRequestCallbackInstaller:
   void InstallCallbacksInternal(OverlayRequest* request) override;

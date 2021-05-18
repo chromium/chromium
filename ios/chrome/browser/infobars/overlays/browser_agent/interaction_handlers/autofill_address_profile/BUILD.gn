@@ -27,6 +27,7 @@ source_set("autofill_address_profile") {
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/overlays/public/infobar_modal",
+    "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ios/chrome/browser/web_state_list",
   ]
 }
@@ -37,6 +38,7 @@ source_set("unit_tests") {
   sources = [
     "save_address_profile_infobar_banner_interaction_handler_unittest.mm",
     "save_address_profile_infobar_modal_interaction_handler_unittest.mm",
+    "save_address_profile_infobar_modal_overlay_request_callback_installer_unittest.mm",
   ]
   deps = [
     ":autofill_address_profile",

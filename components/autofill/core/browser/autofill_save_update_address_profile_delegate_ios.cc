@@ -98,6 +98,18 @@ AutofillSaveUpdateAddressProfileDelegateIOS::GetProfileDiff() const {
       *GetProfile(), *GetOriginalProfile(), locale_);
 }
 
+bool AutofillSaveUpdateAddressProfileDelegateIOS::EditAccepted() {
+  RunSaveAddressProfilePromptCallback(
+      AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted);
+  return true;
+}
+
+void AutofillSaveUpdateAddressProfileDelegateIOS::SetProfileRawInfo(
+    const ServerFieldType& type,
+    const std::u16string& data) {
+  profile_.SetRawInfo(type, data);
+}
+
 bool AutofillSaveUpdateAddressProfileDelegateIOS::Accept() {
   RunSaveAddressProfilePromptCallback(
       AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted);

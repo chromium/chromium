@@ -21,8 +21,7 @@
 
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
-using save_address_profile_infobar_modal_responses::
-    PresentAddressProfileSettings;
+using save_address_profile_infobar_modal_responses::EditedProfileSaveAction;
 
 SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
     SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller(
@@ -37,15 +36,19 @@ SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
 SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
     ~SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller() = default;
 
+#pragma mark - Private
+
 void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
-    PresentAddressProfileSettingsCallback(OverlayRequest* request,
-                                          OverlayResponse* response) {
+    SaveEditedProfileDetailsCallback(OverlayRequest* request,
+                                     OverlayResponse* response) {
   InfoBarIOS* infobar = GetOverlayRequestInfobar(request);
   if (!infobar) {
     return;
   }
 
-  interaction_handler_->PresentAddressProfileSettings(infobar);
+  EditedProfileSaveAction* info = response->GetInfo<EditedProfileSaveAction>();
+  interaction_handler_->SaveEditedProfile(GetOverlayRequestInfobar(request),
+                                          info->profile_data());
 }
 
 #pragma mark - OverlayRequestCallbackInstaller
@@ -59,7 +62,7 @@ void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
   manager->AddDispatchCallback(OverlayDispatchCallback(
       base::BindRepeating(
           &SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
-              PresentAddressProfileSettingsCallback,
+              SaveEditedProfileDetailsCallback,
           weak_factory_.GetWeakPtr(), request),
-      PresentAddressProfileSettings::ResponseSupport()));
+      EditedProfileSaveAction::ResponseSupport()));
 }

@@ -38,6 +38,7 @@ TEST_F(InfobarEditAddressProfileTableViewControllerTest,
   CreateController();
   CheckController();
 
-  EXPECT_EQ(1, NumberOfSections());
-  EXPECT_EQ(11, NumberOfItemsInSection(0));
+  EXPECT_EQ(2, NumberOfSections());
+  EXPECT_EQ(10, NumberOfItemsInSection(0));
+  EXPECT_EQ(1, NumberOfItemsInSection(1));
 }

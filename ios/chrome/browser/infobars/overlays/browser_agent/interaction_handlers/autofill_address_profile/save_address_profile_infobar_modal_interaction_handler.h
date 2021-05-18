@@ -25,10 +25,9 @@ class SaveAddressProfileInfobarModalInteractionHandler
   void PerformMainAction(InfoBarIOS* infobar) override;
   void InfobarVisibilityChanged(InfoBarIOS* infobar, bool visible) override;
 
-  // Instructs the handler that the user has requested the address profile
-  // settings page through |infobar|'s modal UI.  The settings will be presented
-  // after the dismissal of |infobar|'s modal UI.
-  void PresentAddressProfileSettings(InfoBarIOS* infobar);
+  // Instructs the handler that the user has edited and then saved the profile.
+  virtual void SaveEditedProfile(InfoBarIOS* infobar,
+                                 NSDictionary* profileData);
 
  private:
   // InfobarModalInteractionHandler:

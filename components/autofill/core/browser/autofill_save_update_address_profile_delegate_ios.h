@@ -59,6 +59,14 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
   GetProfileDiff() const;
 
+  // Calls |RunSaveAddressProfilePromptCallback| with the kEditAccepted|
+  // decision.
+  virtual bool EditAccepted();
+
+  // Updates |profile_| |type| value to |data|.
+  void SetProfileRawInfo(const ServerFieldType& type,
+                         const std::u16string& data);
+
   const autofill::AutofillProfile* GetProfile() const;
   const autofill::AutofillProfile* GetOriginalProfile() const;
   void set_modal_is_shown_to_true() { modal_is_shown_ = true; }

@@ -50,3 +50,9 @@ TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, MainAction) {
   EXPECT_CALL(mock_delegate(), Accept()).WillOnce(testing::Return(true));
   handler_.PerformMainAction(infobar_.get());
 }
+
+TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest,
+       SaveEditedProfile) {
+  EXPECT_CALL(mock_delegate(), EditAccepted()).WillOnce(testing::Return(true));
+  handler_.SaveEditedProfile(infobar_.get(), @{}.mutableCopy);
+}

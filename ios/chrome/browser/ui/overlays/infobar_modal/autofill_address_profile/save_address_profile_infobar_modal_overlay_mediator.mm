@@ -6,6 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_responses.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_edit_address_profile_modal_consumer.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_address_profile_modal_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
@@ -18,6 +19,7 @@
 
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
+using save_address_profile_infobar_modal_responses::EditedProfileSaveAction;
 
 @interface SaveAddressProfileInfobarModalOverlayMediator ()
 // The save address profile modal config from the request.
@@ -88,6 +90,15 @@ using autofill_address_profile_infobar_overlays::
     return;
   }
   [self.saveAddressProfileMediatorDelegate showEditView];
+}
+
+#pragma mark - InfobarEditAddressProfileModalDelegate
+
+- (void)saveEditedProfileWithData:(NSDictionary*)profileData {
+  [self
+      dispatchResponse:OverlayResponse::CreateWithInfo<EditedProfileSaveAction>(
+                           profileData)];
+  [self dismissOverlay];
 }
 
 @end

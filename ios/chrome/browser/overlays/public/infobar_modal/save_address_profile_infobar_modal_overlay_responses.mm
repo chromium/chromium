@@ -10,8 +10,13 @@
 
 namespace save_address_profile_infobar_modal_responses {
 
-#pragma mark - PresentAddressProfileSettings
+#pragma mark - EditedProfileSaveAction
 
-OVERLAY_USER_DATA_SETUP_IMPL(PresentAddressProfileSettings);
+OVERLAY_USER_DATA_SETUP_IMPL(EditedProfileSaveAction);
+
+EditedProfileSaveAction::EditedProfileSaveAction(NSDictionary* profileData)
+    : profile_data_(profileData) {}
+
+EditedProfileSaveAction::~EditedProfileSaveAction() = default;
 
 }  // save_address_profile_infobar_modal_responses

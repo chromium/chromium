@@ -5,12 +5,15 @@
 #import "ios/chrome/browser/ui/infobars/modals/infobar_edit_address_profile_table_view_controller.h"
 
 #include "base/mac/foundation_util.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/stl_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
-#import "ios/chrome/browser/ui/infobars/modals/infobar_save_address_profile_modal_delegate.h"
+#import "ios/chrome/browser/ui/infobars/modals/infobar_edit_address_profile_modal_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
@@ -30,6 +33,7 @@ using ::AutofillUITypeFromAutofillType;
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierFields = kSectionIdentifierEnumZero,
+  SectionIdentifierButton
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -42,7 +46,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @interface InfobarEditAddressProfileTableViewController () <UITextFieldDelegate>
 
 // The delegate passed to this instance.
-@property(nonatomic, weak) id<InfobarSaveAddressProfileModalDelegate> delegate;
+@property(nonatomic, weak) id<InfobarEditAddressProfileModalDelegate> delegate;
+
+// Used to build and record metrics.
+@property(nonatomic, strong) InfobarMetricsRecorder* metricsRecorder;
 
 // All the data to be displayed in the edit dialog.
 @property(nonatomic, strong) NSMutableDictionary* profileData;
@@ -54,10 +61,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Initialization
 
 - (instancetype)initWithModalDelegate:
-    (id<InfobarSaveAddressProfileModalDelegate>)modalDelegate {
+    (id<InfobarEditAddressProfileModalDelegate>)modalDelegate {
   self = [super initWithStyle:UITableViewStylePlain];
   if (self) {
     _delegate = modalDelegate;
+    _metricsRecorder = [[InfobarMetricsRecorder alloc]
+        initWithType:InfobarType::kInfobarTypeSaveAutofillAddressProfile];
   }
   return self;
 }
@@ -119,13 +128,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [model addItem:item toSectionWithIdentifier:SectionIdentifierFields];
   }
 
+  [model addSectionWithIdentifier:SectionIdentifierButton];
   TableViewTextButtonItem* saveButton =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeSaveButton];
   saveButton.textAlignment = NSTextAlignmentNatural;
   // TODO(crbug.com/1167062): Replace with proper localized string.
   saveButton.buttonText = @"Test Save";
   saveButton.disableButtonIntrinsicWidth = YES;
-  [model addItem:saveButton toSectionWithIdentifier:SectionIdentifierFields];
+  [model addItem:saveButton toSectionWithIdentifier:SectionIdentifierButton];
 }
 
 #pragma mark - UITableViewDataSource
@@ -176,11 +186,35 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Actions
 
 - (void)handleCancelButton {
-  // TODO(crbug.com/1167062):  Implement the functionality.
+  base::RecordAction(
+      base::UserMetricsAction("MobileMessagesModalCancelledTapped"));
+  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Canceled];
+  [self.delegate dismissInfobarModal:self];
 }
 
 - (void)didTapSaveButton {
-  // TODO(crbug.com/1167062):  Implement the functionality.
+  base::RecordAction(
+      base::UserMetricsAction("MobileMessagesModalAcceptedTapped"));
+  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Accepted];
+  [self updateProfileData];
+  [self.delegate saveEditedProfileWithData:self.profileData];
+}
+
+#pragma mark - Private
+
+- (void)updateProfileData {
+  TableViewModel* model = self.tableViewModel;
+  NSInteger section =
+      [model sectionForSectionIdentifier:SectionIdentifierFields];
+  NSInteger itemCount = [model numberOfItemsInSection:section];
+  for (NSInteger itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
+    NSIndexPath* path = [NSIndexPath indexPathForItem:itemIndex
+                                            inSection:section];
+    AutofillEditItem* item = base::mac::ObjCCastStrict<AutofillEditItem>(
+        [model itemAtIndexPath:path]);
+    self.profileData[[NSNumber numberWithInt:item.autofillUIType]] =
+        item.textFieldValue;
+  }
 }
 
 @end

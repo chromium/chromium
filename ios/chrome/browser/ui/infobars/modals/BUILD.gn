@@ -6,6 +6,7 @@ source_set("modals") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_edit_address_profile_modal_consumer.h",
+    "infobar_edit_address_profile_modal_delegate.h",
     "infobar_edit_address_profile_table_view_controller.h",
     "infobar_edit_address_profile_table_view_controller.mm",
     "infobar_modal_delegate.h",
