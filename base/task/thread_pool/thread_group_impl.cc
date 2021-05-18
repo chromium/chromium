@@ -21,7 +21,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
 #include "base/numerics/clamped_math.h"
-#include "base/optional.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_token.h"
 #include "base/strings/string_piece.h"
@@ -36,6 +35,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN)
 #include "base/win/scoped_com_initializer.h"
@@ -303,7 +303,7 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
   // thread, protected by |outer_->lock_| when not on the worker thread.
   struct WriteWorkerReadAny {
     // The priority of the task the worker is currently running if any.
-    base::Optional<TaskPriority> current_task_priority;
+    absl::optional<TaskPriority> current_task_priority;
 
     // Time when MayBlockScopeEntered() was last called. Reset when
     // BlockingScopeExited() is called.
@@ -377,7 +377,7 @@ void ThreadGroupImpl::Start(
     WorkerThreadObserver* worker_thread_observer,
     WorkerEnvironment worker_environment,
     bool synchronous_thread_start_for_testing,
-    Optional<TimeDelta> may_block_threshold) {
+    absl::optional<TimeDelta> may_block_threshold) {
   ThreadGroup::Start();
 
   DCHECK(!replacement_thread_group_);
@@ -645,7 +645,8 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::DidProcessTask(
   // A transaction to the TaskSource to reenqueue, if any. Instantiated here as
   // |TaskSource::lock_| is a UniversalPredecessor and must always be acquired
   // prior to acquiring a second lock
-  Optional<TransactionWithRegisteredTaskSource> transaction_with_task_source;
+  absl::optional<TransactionWithRegisteredTaskSource>
+      transaction_with_task_source;
   if (task_source) {
     transaction_with_task_source.emplace(
         TransactionWithRegisteredTaskSource::FromTaskSource(

@@ -138,7 +138,7 @@ class WaylandEventSource : public PlatformEventSource,
     PointerFrame& operator=(const PointerFrame&);
     PointerFrame& operator=(PointerFrame&&);
 
-    base::Optional<uint32_t> axis_source;
+    absl::optional<uint32_t> axis_source;
     float dx = 0.0f;
     float dy = 0.0f;
     base::TimeDelta dt;

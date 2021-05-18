@@ -16,11 +16,11 @@
 #include "base/location.h"
 #include "base/message_loop/message_pump.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/win/message_window.h"
 #include "base/win/scoped_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -174,7 +174,7 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
   // Non-nullopt if there's currently a native timer installed. If so, it
   // indicates when the timer is set to fire and can be used to avoid setting
   // redundant timers.
-  Optional<TimeTicks> installed_native_timer_;
+  absl::optional<TimeTicks> installed_native_timer_;
 
   // This will become true when a native loop takes our kMsgHaveWork out of the
   // system queue. It will be reset to false whenever DoRunLoop regains control.

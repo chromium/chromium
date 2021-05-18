@@ -737,8 +737,8 @@ class MockCameraStreamPermissionUiSelector
     : public MockNotificationPermissionUiSelector {
  public:
   explicit MockCameraStreamPermissionUiSelector(
-      base::Optional<QuietUiReason> quiet_ui_reason,
-      base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+      absl::optional<QuietUiReason> quiet_ui_reason,
+      absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
           prediction_likelihood,
       bool async)
       : MockNotificationPermissionUiSelector(quiet_ui_reason,
@@ -751,10 +751,10 @@ class MockCameraStreamPermissionUiSelector
 
   static void CreateForManager(
       PermissionRequestManager* manager,
-      base::Optional<QuietUiReason> quiet_ui_reason,
+      absl::optional<QuietUiReason> quiet_ui_reason,
       bool async,
-      base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
-          prediction_likelihood = base::nullopt) {
+      absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+          prediction_likelihood = absl::nullopt) {
     manager->add_permission_ui_selector_for_testing(
         std::make_unique<MockCameraStreamPermissionUiSelector>(
             quiet_ui_reason, prediction_likelihood, async));

@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/json/json_parser.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -22,9 +22,9 @@ JSONReader::ValueWithError& JSONReader::ValueWithError::operator=(
     ValueWithError&& other) = default;
 
 // static
-Optional<Value> JSONReader::Read(StringPiece json,
-                                 int options,
-                                 size_t max_depth) {
+absl::optional<Value> JSONReader::Read(StringPiece json,
+                                       int options,
+                                       size_t max_depth) {
   internal::JSONParser parser(options, max_depth);
   return parser.Parse(json);
 }
@@ -33,7 +33,7 @@ Optional<Value> JSONReader::Read(StringPiece json,
 std::unique_ptr<Value> JSONReader::ReadDeprecated(StringPiece json,
                                                   int options,
                                                   size_t max_depth) {
-  Optional<Value> value = Read(json, options, max_depth);
+  absl::optional<Value> value = Read(json, options, max_depth);
   return value ? Value::ToUniquePtrValue(std::move(*value)) : nullptr;
 }
 

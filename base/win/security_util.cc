@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/win_util.h"
 

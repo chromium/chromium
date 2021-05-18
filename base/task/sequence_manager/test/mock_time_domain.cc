@@ -4,6 +4,8 @@
 
 #include "base/task/sequence_manager/test/mock_time_domain.h"
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace base {
 namespace sequence_manager {
 
@@ -24,8 +26,8 @@ void MockTimeDomain::SetNowTicks(TimeTicks now_ticks) {
   now_ticks_ = now_ticks;
 }
 
-Optional<TimeDelta> MockTimeDomain::DelayTillNextTask(LazyNow* lazy_now) {
-  return nullopt;
+absl::optional<TimeDelta> MockTimeDomain::DelayTillNextTask(LazyNow* lazy_now) {
+  return absl::nullopt;
 }
 
 bool MockTimeDomain::MaybeFastForwardToNextTask(bool quit_when_idle_requested) {

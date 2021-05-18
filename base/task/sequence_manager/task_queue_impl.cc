@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -472,7 +473,7 @@ void TaskQueueImpl::TakeImmediateIncomingQueueTasks(TaskDeque* queue) {
       DCHECK(!task.queue_time.is_null());
       DCHECK(task.delayed_run_time.is_null());
       if (task.queue_time >= main_thread_only().delayed_fence.value()) {
-        main_thread_only().delayed_fence = nullopt;
+        main_thread_only().delayed_fence = absl::nullopt;
         DCHECK(!main_thread_only().current_fence);
         main_thread_only().current_fence = task.enqueue_order();
         // Do not trigger WorkQueueSets notification when taking incoming
@@ -531,10 +532,10 @@ bool TaskQueueImpl::HasTaskToRunImmediately() const {
   return !any_thread_.immediate_incoming_queue.empty();
 }
 
-Optional<DelayedWakeUp> TaskQueueImpl::GetNextScheduledWakeUpImpl() {
+absl::optional<DelayedWakeUp> TaskQueueImpl::GetNextScheduledWakeUpImpl() {
   // Note we don't scheduled a wake-up for disabled queues.
   if (main_thread_only().delayed_incoming_queue.empty() || !IsQueueEnabled())
-    return nullopt;
+    return absl::nullopt;
 
   // High resolution is needed if the queue contains high resolution tasks and
   // has a priority index <= kNormalPriority (precise execution time is
@@ -550,10 +551,10 @@ Optional<DelayedWakeUp> TaskQueueImpl::GetNextScheduledWakeUpImpl() {
                        resolution};
 }
 
-Optional<TimeTicks> TaskQueueImpl::GetNextScheduledWakeUp() {
-  Optional<DelayedWakeUp> wake_up = GetNextScheduledWakeUpImpl();
+absl::optional<TimeTicks> TaskQueueImpl::GetNextScheduledWakeUp() {
+  absl::optional<DelayedWakeUp> wake_up = GetNextScheduledWakeUpImpl();
   if (!wake_up)
-    return nullopt;
+    return absl::nullopt;
   return wake_up->time;
 }
 
@@ -773,7 +774,7 @@ void TaskQueueImpl::SetTimeDomain(TimeDomain* time_domain) {
   // correctly.
   // TODO(altimin): Remove this when we won't have to support changing time
   // domains.
-  main_thread_only().scheduled_wake_up = nullopt;
+  main_thread_only().scheduled_wake_up = absl::nullopt;
   UpdateDelayedWakeUp(&lazy_now);
 }
 
@@ -789,7 +790,7 @@ void TaskQueueImpl::SetBlameContext(trace_event::BlameContext* blame_context) {
 
 void TaskQueueImpl::InsertFence(TaskQueue::InsertFencePosition position) {
   // Only one fence may be present at a time.
-  main_thread_only().delayed_fence = nullopt;
+  main_thread_only().delayed_fence = absl::nullopt;
 
   EnqueueOrder previous_fence = main_thread_only().current_fence;
   EnqueueOrder current_fence = position == TaskQueue::InsertFencePosition::kNow
@@ -839,7 +840,7 @@ void TaskQueueImpl::InsertFenceAt(TimeTicks time) {
 void TaskQueueImpl::RemoveFence() {
   EnqueueOrder previous_fence = main_thread_only().current_fence;
   main_thread_only().current_fence = EnqueueOrder::none();
-  main_thread_only().delayed_fence = nullopt;
+  main_thread_only().delayed_fence = absl::nullopt;
 
   bool front_task_unblocked =
       main_thread_only().immediate_work_queue->RemoveFence();
@@ -944,7 +945,7 @@ void TaskQueueImpl::SetQueueEnabled(bool enabled) {
 
   // Update the |main_thread_only_| struct.
   main_thread_only().is_enabled = enabled;
-  main_thread_only().disabled_time = nullopt;
+  main_thread_only().disabled_time = absl::nullopt;
   if (!enabled) {
     bool tracing_enabled = false;
     TRACE_EVENT_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT("lifecycles"),
@@ -1113,8 +1114,9 @@ void TaskQueueImpl::UpdateDelayedWakeUp(LazyNow* lazy_now) {
   return UpdateDelayedWakeUpImpl(lazy_now, GetNextScheduledWakeUpImpl());
 }
 
-void TaskQueueImpl::UpdateDelayedWakeUpImpl(LazyNow* lazy_now,
-                                            Optional<DelayedWakeUp> wake_up) {
+void TaskQueueImpl::UpdateDelayedWakeUpImpl(
+    LazyNow* lazy_now,
+    absl::optional<DelayedWakeUp> wake_up) {
   if (main_thread_only().scheduled_wake_up == wake_up)
     return;
   main_thread_only().scheduled_wake_up = wake_up;
@@ -1130,7 +1132,7 @@ void TaskQueueImpl::UpdateDelayedWakeUpImpl(LazyNow* lazy_now,
 }
 
 void TaskQueueImpl::SetDelayedWakeUpForTesting(
-    Optional<DelayedWakeUp> wake_up) {
+    absl::optional<DelayedWakeUp> wake_up) {
   LazyNow lazy_now = main_thread_only().time_domain->CreateLazyNow();
   UpdateDelayedWakeUpImpl(&lazy_now, wake_up);
 }
@@ -1206,7 +1208,7 @@ void TaskQueueImpl::ActivateDelayedFenceIfNeeded(TimeTicks now) {
   if (main_thread_only().delayed_fence.value() > now)
     return;
   InsertFence(TaskQueue::InsertFencePosition::kNow);
-  main_thread_only().delayed_fence = nullopt;
+  main_thread_only().delayed_fence = absl::nullopt;
 }
 
 void TaskQueueImpl::MaybeReportIpcTaskQueuedFromMainThread(

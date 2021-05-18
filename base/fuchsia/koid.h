@@ -9,17 +9,17 @@
 #include <zircon/types.h>
 
 #include "base/base_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
 // Returns the Kernel Object IDentifier for the object referred to by |handle|,
 // if it is valid.
-BASE_EXPORT base::Optional<zx_koid_t> GetKoid(const zx::object_base& handle);
+BASE_EXPORT absl::optional<zx_koid_t> GetKoid(const zx::object_base& handle);
 
 // Returns the Kernel Object IDentifier for the peer of the paired object (i.e.
 // a channel, socket, eventpair, etc) referred to by |handle|.
-BASE_EXPORT base::Optional<zx_koid_t> GetRelatedKoid(
+BASE_EXPORT absl::optional<zx_koid_t> GetRelatedKoid(
     const zx::object_base& handle);
 
 }  // namespace base

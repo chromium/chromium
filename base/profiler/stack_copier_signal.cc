@@ -19,6 +19,7 @@
 #include "base/time/time_override.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -95,7 +96,7 @@ struct HandlerParams {
   const uint8_t** stack_copy_bottom;
 
   // The timestamp when the stack was copied.
-  base::Optional<TimeTicks>* maybe_timestamp;
+  absl::optional<TimeTicks>* maybe_timestamp;
 
   // The delegate provided to the StackCopier.
   StackCopier::Delegate* stack_copier_delegate;
@@ -114,7 +115,7 @@ void CopyStackSignalHandler(int n, siginfo_t* siginfo, void* sigcontext) {
 
   // MaybeTimeTicksNowIgnoringOverride() is implemented in terms of
   // clock_gettime on Linux, which is signal safe per the signal-safety(7) man
-  // page, but is not garanteed to succeed, in which case base::nullopt is
+  // page, but is not garanteed to succeed, in which case absl::nullopt is
   // returned. TimeTicks::Now() can't be used because it expects clock_gettime
   // to always succeed and is thus not signal-safe.
   *params->maybe_timestamp = subtle::MaybeTimeTicksNowIgnoringOverride();
@@ -200,7 +201,7 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
   bool copied = false;
   const uint8_t* stack_copy_bottom = nullptr;
   const uintptr_t stack_base_address = thread_delegate_->GetStackBaseAddress();
-  base::Optional<TimeTicks> maybe_timestamp;
+  absl::optional<TimeTicks> maybe_timestamp;
   HandlerParams params = {stack_base_address, &wait_event,  &copied,
                           thread_context,     stack_buffer, &stack_copy_bottom,
                           &maybe_timestamp,   delegate};

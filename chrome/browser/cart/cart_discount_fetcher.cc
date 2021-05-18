@@ -182,7 +182,7 @@ DiscountInfo CovertToDiscountInfo(const base::Value* rule_discount_list) {
                       highest_percent_off);
 }
 
-bool ValidateResponse(const base::Optional<base::Value>& response) {
+bool ValidateResponse(const absl::optional<base::Value>& response) {
   if (!response) {
     NOTREACHED() << "Response is not valid";
     return false;

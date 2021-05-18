@@ -218,7 +218,7 @@ class MediaDevicesDispatcherHostTest
               expected_set_capture_handle_config_->render_frame_id);
     EXPECT_EQ(config, expected_set_capture_handle_config_->config);
 
-    expected_set_capture_handle_config_ = base::nullopt;
+    expected_set_capture_handle_config_ = absl::nullopt;
   }
 
   void ExpectOnCaptureHandleConfigAccepted(
@@ -493,7 +493,7 @@ class MediaDevicesDispatcherHostTest
     int render_frame_id;
     blink::mojom::CaptureHandleConfigPtr config;
   };
-  base::Optional<ExpectedCaptureHandleConfig>
+  absl::optional<ExpectedCaptureHandleConfig>
       expected_set_capture_handle_config_;
 };
 

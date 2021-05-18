@@ -11,13 +11,13 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/profiler/profile_builder.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/unwinder.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -184,7 +184,7 @@ class BASE_EXPORT StackSamplingProfiler {
   friend void ApplyMetadataToPastSamplesImpl(TimeTicks period_start,
                                              TimeTicks period_end,
                                              int64_t name_hash,
-                                             Optional<int64_t> key,
+                                             absl::optional<int64_t> key,
                                              int64_t value);
 
   // Apply metadata to already recorded samples. See the
@@ -192,7 +192,7 @@ class BASE_EXPORT StackSamplingProfiler {
   static void ApplyMetadataToPastSamples(TimeTicks period_start,
                                          TimeTicks period_end,
                                          int64_t name_hash,
-                                         Optional<int64_t> key,
+                                         absl::optional<int64_t> key,
                                          int64_t value);
 
   // The thread whose stack will be sampled.

@@ -72,7 +72,7 @@ class InputStream final : public media::mojom::AudioInputStream,
 
  private:
   void OnStreamError(
-      base::Optional<media::mojom::AudioInputStreamObserver::DisconnectReason>
+      absl::optional<media::mojom::AudioInputStreamObserver::DisconnectReason>
           reason_to_report);
   void OnStreamPlatformError();
   void CallDeleter();

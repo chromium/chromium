@@ -27,6 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check nogncheck
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
@@ -82,9 +83,9 @@ TEST(ValuesTest, TestNothrow) {
 TEST(ValuesTest, EmptyValue) {
   Value value;
   EXPECT_EQ(Value::Type::NONE, value.type());
-  EXPECT_EQ(nullopt, value.GetIfBool());
-  EXPECT_EQ(nullopt, value.GetIfInt());
-  EXPECT_EQ(nullopt, value.GetIfDouble());
+  EXPECT_EQ(absl::nullopt, value.GetIfBool());
+  EXPECT_EQ(absl::nullopt, value.GetIfInt());
+  EXPECT_EQ(absl::nullopt, value.GetIfDouble());
   EXPECT_EQ(nullptr, value.GetIfString());
   EXPECT_EQ(nullptr, value.GetIfBlob());
 }
@@ -853,14 +854,14 @@ TEST(ValuesTest, FindBoolKey) {
   storage.emplace("dict", Value::Type::DICTIONARY);
 
   const Value dict(std::move(storage));
-  EXPECT_EQ(base::nullopt, dict.FindBoolKey("null"));
-  EXPECT_NE(base::nullopt, dict.FindBoolKey("bool"));
-  EXPECT_EQ(base::nullopt, dict.FindBoolKey("int"));
-  EXPECT_EQ(base::nullopt, dict.FindBoolKey("double"));
-  EXPECT_EQ(base::nullopt, dict.FindBoolKey("string"));
-  EXPECT_EQ(base::nullopt, dict.FindBoolKey("blob"));
-  EXPECT_EQ(base::nullopt, dict.FindBoolKey("list"));
-  EXPECT_EQ(base::nullopt, dict.FindBoolKey("dict"));
+  EXPECT_EQ(absl::nullopt, dict.FindBoolKey("null"));
+  EXPECT_NE(absl::nullopt, dict.FindBoolKey("bool"));
+  EXPECT_EQ(absl::nullopt, dict.FindBoolKey("int"));
+  EXPECT_EQ(absl::nullopt, dict.FindBoolKey("double"));
+  EXPECT_EQ(absl::nullopt, dict.FindBoolKey("string"));
+  EXPECT_EQ(absl::nullopt, dict.FindBoolKey("blob"));
+  EXPECT_EQ(absl::nullopt, dict.FindBoolKey("list"));
+  EXPECT_EQ(absl::nullopt, dict.FindBoolKey("dict"));
 }
 
 TEST(ValuesTest, FindIntKey) {
@@ -875,14 +876,14 @@ TEST(ValuesTest, FindIntKey) {
   storage.emplace("dict", Value::Type::DICTIONARY);
 
   const Value dict(std::move(storage));
-  EXPECT_EQ(base::nullopt, dict.FindIntKey("null"));
-  EXPECT_EQ(base::nullopt, dict.FindIntKey("bool"));
-  EXPECT_NE(base::nullopt, dict.FindIntKey("int"));
-  EXPECT_EQ(base::nullopt, dict.FindIntKey("double"));
-  EXPECT_EQ(base::nullopt, dict.FindIntKey("string"));
-  EXPECT_EQ(base::nullopt, dict.FindIntKey("blob"));
-  EXPECT_EQ(base::nullopt, dict.FindIntKey("list"));
-  EXPECT_EQ(base::nullopt, dict.FindIntKey("dict"));
+  EXPECT_EQ(absl::nullopt, dict.FindIntKey("null"));
+  EXPECT_EQ(absl::nullopt, dict.FindIntKey("bool"));
+  EXPECT_NE(absl::nullopt, dict.FindIntKey("int"));
+  EXPECT_EQ(absl::nullopt, dict.FindIntKey("double"));
+  EXPECT_EQ(absl::nullopt, dict.FindIntKey("string"));
+  EXPECT_EQ(absl::nullopt, dict.FindIntKey("blob"));
+  EXPECT_EQ(absl::nullopt, dict.FindIntKey("list"));
+  EXPECT_EQ(absl::nullopt, dict.FindIntKey("dict"));
 }
 
 TEST(ValuesTest, FindDoubleKey) {
@@ -897,14 +898,14 @@ TEST(ValuesTest, FindDoubleKey) {
   storage.emplace("dict", Value::Type::DICTIONARY);
 
   const Value dict(std::move(storage));
-  EXPECT_EQ(base::nullopt, dict.FindDoubleKey("null"));
-  EXPECT_EQ(base::nullopt, dict.FindDoubleKey("bool"));
-  EXPECT_NE(base::nullopt, dict.FindDoubleKey("int"));
-  EXPECT_NE(base::nullopt, dict.FindDoubleKey("double"));
-  EXPECT_EQ(base::nullopt, dict.FindDoubleKey("string"));
-  EXPECT_EQ(base::nullopt, dict.FindDoubleKey("blob"));
-  EXPECT_EQ(base::nullopt, dict.FindDoubleKey("list"));
-  EXPECT_EQ(base::nullopt, dict.FindDoubleKey("dict"));
+  EXPECT_EQ(absl::nullopt, dict.FindDoubleKey("null"));
+  EXPECT_EQ(absl::nullopt, dict.FindDoubleKey("bool"));
+  EXPECT_NE(absl::nullopt, dict.FindDoubleKey("int"));
+  EXPECT_NE(absl::nullopt, dict.FindDoubleKey("double"));
+  EXPECT_EQ(absl::nullopt, dict.FindDoubleKey("string"));
+  EXPECT_EQ(absl::nullopt, dict.FindDoubleKey("blob"));
+  EXPECT_EQ(absl::nullopt, dict.FindDoubleKey("list"));
+  EXPECT_EQ(absl::nullopt, dict.FindDoubleKey("dict"));
 }
 
 TEST(ValuesTest, FindStringKey) {
@@ -1034,7 +1035,7 @@ TEST(ValuesTest, SetKey) {
 }
 
 TEST(ValuesTest, SetBoolKey) {
-  base::Optional<bool> value;
+  absl::optional<bool> value;
 
   DictionaryValue dict;
   dict.SetBoolKey("true_key", true);
@@ -1053,7 +1054,7 @@ TEST(ValuesTest, SetBoolKey) {
 }
 
 TEST(ValuesTest, SetIntKey) {
-  base::Optional<int> value;
+  absl::optional<int> value;
 
   DictionaryValue dict;
   dict.SetIntKey("one_key", 1);
@@ -1276,13 +1277,13 @@ TEST(ValuesTest, ExtractKey) {
   root.SetKey("one", Value(123));
 
   // Extraction of missing key should fail.
-  EXPECT_EQ(nullopt, root.ExtractKey("two"));
+  EXPECT_EQ(absl::nullopt, root.ExtractKey("two"));
 
   // Extraction of existing key should succeed.
   EXPECT_EQ(Value(123), root.ExtractKey("one"));
 
   // Second extraction of previously existing key should fail.
-  EXPECT_EQ(nullopt, root.ExtractKey("one"));
+  EXPECT_EQ(absl::nullopt, root.ExtractKey("one"));
 }
 
 TEST(ValuesTest, RemovePath) {
@@ -1316,13 +1317,13 @@ TEST(ValuesTest, ExtractPath) {
   root.SetPath("one.two.three", Value(123));
 
   // Extraction of missing key should fail.
-  EXPECT_EQ(nullopt, root.ExtractPath("one.two.four"));
+  EXPECT_EQ(absl::nullopt, root.ExtractPath("one.two.four"));
 
   // Extraction of existing key should succeed.
   EXPECT_EQ(Value(123), root.ExtractPath("one.two.three"));
 
   // Second extraction of previously existing key should fail.
-  EXPECT_EQ(nullopt, root.ExtractPath("one.two.three"));
+  EXPECT_EQ(absl::nullopt, root.ExtractPath("one.two.three"));
 
   // Intermediate empty dictionaries should be cleared.
   EXPECT_EQ(nullptr, root.FindKey("one"));

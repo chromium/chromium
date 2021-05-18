@@ -5,13 +5,14 @@
 #include "base/profiler/metadata_recorder.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
 const size_t MetadataRecorder::MAX_METADATA_COUNT;
 
 MetadataRecorder::Item::Item(uint64_t name_hash,
-                             Optional<int64_t> key,
+                             absl::optional<int64_t> key,
                              int64_t value)
     : name_hash(name_hash), key(key), value(value) {}
 
@@ -35,7 +36,7 @@ MetadataRecorder::MetadataRecorder() {
 MetadataRecorder::~MetadataRecorder() = default;
 
 void MetadataRecorder::Set(uint64_t name_hash,
-                           Optional<int64_t> key,
+                           absl::optional<int64_t> key,
                            int64_t value) {
   AutoLock lock(write_lock_);
 
@@ -86,7 +87,7 @@ void MetadataRecorder::Set(uint64_t name_hash,
   item_slots_used_.fetch_add(1, std::memory_order_release);
 }
 
-void MetadataRecorder::Remove(uint64_t name_hash, Optional<int64_t> key) {
+void MetadataRecorder::Remove(uint64_t name_hash, absl::optional<int64_t> key) {
   AutoLock lock(write_lock_);
 
   size_t item_slots_used = item_slots_used_.load(std::memory_order_relaxed);

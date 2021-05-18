@@ -20,11 +20,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/system/sys_info.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -1119,7 +1119,7 @@ void FilePersistentMemoryAllocator::FlushPartial(size_t length, bool sync) {
   if (IsReadonly())
     return;
 
-  base::Optional<base::ScopedBlockingCall> scoped_blocking_call;
+  absl::optional<base::ScopedBlockingCall> scoped_blocking_call;
   if (sync)
     scoped_blocking_call.emplace(FROM_HERE, base::BlockingType::MAY_BLOCK);
 

@@ -7,9 +7,9 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/test/gtest_util.h"
 #include "base/test/launcher/test_result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -131,8 +131,8 @@ bool ValidateTestLocation(const Value* test_locations,
   return result;
 }
 
-Optional<Value> ReadSummary(const FilePath& path) {
-  Optional<Value> result;
+absl::optional<Value> ReadSummary(const FilePath& path) {
+  absl::optional<Value> result;
   File resultFile(path, File::FLAG_OPEN | File::FLAG_READ);
   const int size = 2e7;
   std::string json;

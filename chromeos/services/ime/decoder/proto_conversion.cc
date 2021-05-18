@@ -110,11 +110,11 @@ absl::optional<TextSuggestionType> ProtoToTextSuggestionType(
   }
 }
 
-base::Optional<mojom::InputMethodApiOperation> InputMethodApiOperationToMojo(
+absl::optional<mojom::InputMethodApiOperation> InputMethodApiOperationToMojo(
     NonCompliantApiMetric::InputMethodApiOperation operation) {
   switch (operation) {
     case NonCompliantApiMetric::OPERATION_UNSPECIFIED:
-      return base::nullopt;
+      return absl::nullopt;
     case NonCompliantApiMetric::OPERATION_COMMIT_TEXT:
       return mojom::InputMethodApiOperation::kCommitText;
     case NonCompliantApiMetric::OPERATION_SET_COMPOSITION_TEXT:

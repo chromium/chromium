@@ -100,7 +100,7 @@ InputStream::InputStream(
   // |this| owns these objects, so unretained is safe.
   base::RepeatingClosure error_handler = base::BindRepeating(
       &InputStream::OnStreamError, base::Unretained(this),
-      base::Optional<
+      absl::optional<
           media::mojom::AudioInputStreamObserver::DisconnectReason>());
   receiver_.set_disconnect_handler(error_handler);
   client_.set_disconnect_handler(error_handler);
@@ -258,7 +258,7 @@ void InputStream::OnStreamPlatformError() {
 }
 
 void InputStream::OnStreamError(
-    base::Optional<media::mojom::AudioInputStreamObserver::DisconnectReason>
+    absl::optional<media::mojom::AudioInputStreamObserver::DisconnectReason>
         reason_to_report) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("audio", "OnStreamError", this);

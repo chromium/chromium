@@ -23,6 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
@@ -543,7 +544,7 @@ bool ValidateTestResultObject(const Value* iteration_data,
 
 // Validate |root| dictionary value contains a list with |values|
 // at |key| value.
-bool ValidateStringList(const Optional<Value>& root,
+bool ValidateStringList(const absl::optional<Value>& root,
                         const std::string& key,
                         std::vector<const char*> values) {
   const Value* val = root->FindListKey(key);
@@ -601,7 +602,7 @@ TEST_F(TestLauncherTest, JsonSummary) {
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 
   // Validate the resulting JSON file is the expected output.
-  Optional<Value> root = test_launcher_utils::ReadSummary(path);
+  absl::optional<Value> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
   EXPECT_TRUE(
       ValidateStringList(root, "all_tests",
@@ -654,7 +655,7 @@ TEST_F(TestLauncherTest, JsonSummaryWithDisabledTests) {
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 
   // Validate the resulting JSON file is the expected output.
-  Optional<Value> root = test_launcher_utils::ReadSummary(path);
+  absl::optional<Value> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
   Value* val = root->FindDictKey("test_locations");
   ASSERT_TRUE(val);
@@ -803,7 +804,7 @@ TEST_F(UnitTestLauncherDelegateTester, RunMockTests) {
   GetAppOutputAndError(command_line, &output);
 
   // Validate the resulting JSON file is the expected output.
-  Optional<Value> root = test_launcher_utils::ReadSummary(path);
+  absl::optional<Value> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
 
   Value* val = root->FindDictKey("test_locations");
@@ -875,7 +876,7 @@ TEST_F(UnitTestLauncherDelegateTester, LeakedChildProcess) {
   GetAppOutputWithExitCode(command_line, &output, &exit_code);
 
   // Validate that we actually ran a test.
-  Optional<Value> root = test_launcher_utils::ReadSummary(path);
+  absl::optional<Value> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
 
   Value* val = root->FindDictKey("test_locations");

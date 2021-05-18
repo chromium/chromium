@@ -10,7 +10,6 @@
 #include <sstream>
 
 #include "base/check_op.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "build/config/compiler/compiler_buildflags.h"
 
@@ -20,6 +19,7 @@
 #include <pthread.h>
 #include "base/process/process_handle.h"
 #include "base/threading/platform_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 #if defined(OS_APPLE)
@@ -286,12 +286,12 @@ bool IsWithinRange(uintptr_t address, const AddressRange& range) {
 }
 
 size_t TraceStackFramePointersInternal(
-    base::Optional<uintptr_t> fp,
+    absl::optional<uintptr_t> fp,
     uintptr_t stack_end,
     size_t max_depth,
     size_t skip_initial,
     bool enable_scanning,
-    base::Optional<AddressRange> caller_function_range,
+    absl::optional<AddressRange> caller_function_range,
     const void** out_trace) {
   // If |fp| is not provided then try to unwind the current stack. In this case
   // the caller function cannot pass in it's own frame pointer to unwind
@@ -375,7 +375,7 @@ TraceStackFramePointers_start:
       reinterpret_cast<uintptr_t>(&&TraceStackFramePointers_start),
       reinterpret_cast<uintptr_t>(&&TraceStackFramePointers_end)};
   size_t depth = TraceStackFramePointersInternal(
-      /*fp=*/base::nullopt, GetStackEnd(), max_depth, skip_initial,
+      /*fp=*/absl::nullopt, GetStackEnd(), max_depth, skip_initial,
       enable_scanning, current_fn_range, out_trace);
 TraceStackFramePointers_end:
   return depth;
@@ -388,7 +388,7 @@ size_t TraceStackFramePointersFromBuffer(uintptr_t fp,
                                          size_t skip_initial,
                                          bool enable_scanning) {
   return TraceStackFramePointersInternal(fp, stack_end, max_depth, skip_initial,
-                                         enable_scanning, base::nullopt,
+                                         enable_scanning, absl::nullopt,
                                          out_trace);
 }
 

@@ -10,8 +10,8 @@
 #include "base/bits.h"
 #include "base/memory/page_size.h"
 #include "base/numerics/checked_math.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -30,7 +30,7 @@ constexpr size_t kTotalMappedSizeLimit = 32ULL * 1024 * 1024 * 1024;
 
 static std::atomic_size_t total_mapped_size_;
 
-base::Optional<size_t> AlignWithPageSize(size_t size) {
+absl::optional<size_t> AlignWithPageSize(size_t size) {
 #if defined(OS_WIN)
   // TODO(crbug.com/210609): Matches alignment requirements defined in
   // platform_shared_memory_region_win.cc:PlatformSharedMemoryRegion::Create.
@@ -44,7 +44,7 @@ base::Optional<size_t> AlignWithPageSize(size_t size) {
 
   // Fail on overflow.
   if (rounded_size < size)
-    return base::nullopt;
+    return absl::nullopt;
 
   return rounded_size;
 }
@@ -57,7 +57,7 @@ bool SharedMemorySecurityPolicy::AcquireReservationForMapping(size_t size) {
       total_mapped_size_.load(std::memory_order_relaxed);
   size_t total_mapped_size;
 
-  base::Optional<size_t> page_aligned_size = AlignWithPageSize(size);
+  absl::optional<size_t> page_aligned_size = AlignWithPageSize(size);
 
   if (!page_aligned_size)
     return false;
@@ -85,7 +85,7 @@ void SharedMemorySecurityPolicy::ReleaseReservationForMapping(size_t size) {
   // that's required.
   // Note #2: |size| should never overflow when aligned to page size, since
   // this should only be called if AcquireReservationForMapping() returned true.
-  base::Optional<size_t> page_aligned_size = AlignWithPageSize(size);
+  absl::optional<size_t> page_aligned_size = AlignWithPageSize(size);
   total_mapped_size_.fetch_sub(*page_aligned_size, std::memory_order_relaxed);
 }
 

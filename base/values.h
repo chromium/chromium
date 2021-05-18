@@ -37,10 +37,10 @@
 #include "base/containers/checked_range.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "base/value_iterators.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
@@ -195,10 +195,10 @@ class BASE_EXPORT Value {
   bool is_list() const { return type() == Type::LIST; }
 
   // These will return nullopt / nullptr if the type does not match.
-  Optional<bool> GetIfBool() const;
-  Optional<int> GetIfInt() const;
+  absl::optional<bool> GetIfBool() const;
+  absl::optional<int> GetIfInt() const;
   // Implicitly converts from int if necessary.
-  Optional<double> GetIfDouble() const;
+  absl::optional<double> GetIfDouble() const;
   const std::string* GetIfString() const;
   const BlobStorage* GetIfBlob() const;
 
@@ -295,14 +295,14 @@ class BASE_EXPORT Value {
   Value* FindKeyOfType(StringPiece key, Type type);
   const Value* FindKeyOfType(StringPiece key, Type type) const;
 
-  // These are convenience forms of `FindKey`. They return base::nullopt if
+  // These are convenience forms of `FindKey`. They return absl::nullopt if
   // the value is not found or doesn't have the type specified in the
   // function's name.
-  base::Optional<bool> FindBoolKey(StringPiece key) const;
-  base::Optional<int> FindIntKey(StringPiece key) const;
+  absl::optional<bool> FindBoolKey(StringPiece key) const;
+  absl::optional<int> FindIntKey(StringPiece key) const;
   // Note `FindDoubleKey()` will auto-convert INTEGER keys to their double
   // value, for consistency with `GetDouble()`.
-  base::Optional<double> FindDoubleKey(StringPiece key) const;
+  absl::optional<double> FindDoubleKey(StringPiece key) const;
 
   // `FindStringKey` returns `nullptr` if value is not found or not a string.
   const std::string* FindStringKey(StringPiece key) const;
@@ -364,8 +364,8 @@ class BASE_EXPORT Value {
   // Note: This requires that `type()` is Type::DICTIONARY.
   //
   // Example:
-  //   Optional<Value> maybe_value = dict.ExtractKey("foo");
-  Optional<Value> ExtractKey(StringPiece key);
+  //   absl::optional<Value> maybe_value = dict.ExtractKey("foo");
+  absl::optional<Value> ExtractKey(StringPiece key);
 
   // Searches a hierarchy of dictionary values for a given value. If a path
   // of dictionaries exist, returns the item at that path. If any of the path
@@ -410,9 +410,9 @@ class BASE_EXPORT Value {
 
   // Convenience accessors used when the expected type of a value is known.
   // Similar to Find<Type>Key() but accepts paths instead of keys.
-  base::Optional<bool> FindBoolPath(StringPiece path) const;
-  base::Optional<int> FindIntPath(StringPiece path) const;
-  base::Optional<double> FindDoublePath(StringPiece path) const;
+  absl::optional<bool> FindBoolPath(StringPiece path) const;
+  absl::optional<int> FindIntPath(StringPiece path) const;
+  absl::optional<double> FindDoublePath(StringPiece path) const;
   const std::string* FindStringPath(StringPiece path) const;
   std::string* FindStringPath(StringPiece path);
   const BlobStorage* FindBlobPath(StringPiece path) const;
@@ -483,8 +483,8 @@ class BASE_EXPORT Value {
   // instead.
   //
   // Example:
-  //   Optional<Value> maybe_value = value.ExtractPath("foo.bar");
-  Optional<Value> ExtractPath(StringPiece path);
+  //   absl::optional<Value> maybe_value = value.ExtractPath("foo.bar");
+  absl::optional<Value> ExtractPath(StringPiece path);
 
   using dict_iterator_proxy = detail::dict_iterator_proxy;
   using const_dict_iterator_proxy = detail::const_dict_iterator_proxy;

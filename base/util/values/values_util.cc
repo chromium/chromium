@@ -8,6 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Warning: The Values involved could be stored on persistent storage like files
 // on disks. Therefore, changes in implementation could lead to data corruption
@@ -35,17 +36,17 @@ base::Value Int64ToValue(int64_t integer) {
   return base::Value(base::NumberToString(integer));
 }
 
-base::Optional<int64_t> ValueToInt64(const base::Value* value) {
-  return value ? ValueToInt64(*value) : base::nullopt;
+absl::optional<int64_t> ValueToInt64(const base::Value* value) {
+  return value ? ValueToInt64(*value) : absl::nullopt;
 }
 
-base::Optional<int64_t> ValueToInt64(const base::Value& value) {
+absl::optional<int64_t> ValueToInt64(const base::Value& value) {
   if (!value.is_string())
-    return base::nullopt;
+    return absl::nullopt;
 
   int64_t integer;
   if (!base::StringToInt64(value.GetString(), &integer))
-    return base::nullopt;
+    return absl::nullopt;
 
   return integer;
 }
@@ -54,14 +55,14 @@ base::Value TimeDeltaToValue(base::TimeDelta time_delta) {
   return Int64ToValue(time_delta.InMicroseconds());
 }
 
-base::Optional<base::TimeDelta> ValueToTimeDelta(const base::Value* value) {
-  return value ? ValueToTimeDelta(*value) : base::nullopt;
+absl::optional<base::TimeDelta> ValueToTimeDelta(const base::Value* value) {
+  return value ? ValueToTimeDelta(*value) : absl::nullopt;
 }
 
-base::Optional<base::TimeDelta> ValueToTimeDelta(const base::Value& value) {
-  base::Optional<int64_t> integer = ValueToInt64(value);
+absl::optional<base::TimeDelta> ValueToTimeDelta(const base::Value& value) {
+  absl::optional<int64_t> integer = ValueToInt64(value);
   if (!integer)
-    return base::nullopt;
+    return absl::nullopt;
   return base::TimeDelta::FromMicroseconds(*integer);
 }
 
@@ -69,14 +70,14 @@ base::Value TimeToValue(base::Time time) {
   return TimeDeltaToValue(time.ToDeltaSinceWindowsEpoch());
 }
 
-base::Optional<base::Time> ValueToTime(const base::Value* value) {
-  return value ? ValueToTime(*value) : base::nullopt;
+absl::optional<base::Time> ValueToTime(const base::Value* value) {
+  return value ? ValueToTime(*value) : absl::nullopt;
 }
 
-base::Optional<base::Time> ValueToTime(const base::Value& value) {
-  base::Optional<base::TimeDelta> time_delta = ValueToTimeDelta(value);
+absl::optional<base::Time> ValueToTime(const base::Value& value) {
+  absl::optional<base::TimeDelta> time_delta = ValueToTimeDelta(value);
   if (!time_delta)
-    return base::nullopt;
+    return absl::nullopt;
   return base::Time::FromDeltaSinceWindowsEpoch(*time_delta);
 }
 
@@ -84,13 +85,13 @@ base::Value FilePathToValue(base::FilePath file_path) {
   return base::Value(file_path.AsUTF8Unsafe());
 }
 
-base::Optional<base::FilePath> ValueToFilePath(const base::Value* value) {
-  return value ? ValueToFilePath(*value) : base::nullopt;
+absl::optional<base::FilePath> ValueToFilePath(const base::Value* value) {
+  return value ? ValueToFilePath(*value) : absl::nullopt;
 }
 
-base::Optional<base::FilePath> ValueToFilePath(const base::Value& value) {
+absl::optional<base::FilePath> ValueToFilePath(const base::Value& value) {
   if (!value.is_string())
-    return base::nullopt;
+    return absl::nullopt;
   return base::FilePath::FromUTF8Unsafe(value.GetString());
 }
 
@@ -101,18 +102,18 @@ base::Value UnguessableTokenToValue(base::UnguessableToken token) {
   return base::Value(base::HexEncode(repr.buffer, sizeof(repr.buffer)));
 }
 
-base::Optional<base::UnguessableToken> ValueToUnguessableToken(
+absl::optional<base::UnguessableToken> ValueToUnguessableToken(
     const base::Value* value) {
-  return value ? ValueToUnguessableToken(*value) : base::nullopt;
+  return value ? ValueToUnguessableToken(*value) : absl::nullopt;
 }
 
-base::Optional<base::UnguessableToken> ValueToUnguessableToken(
+absl::optional<base::UnguessableToken> ValueToUnguessableToken(
     const base::Value& value) {
   if (!value.is_string())
-    return base::nullopt;
+    return absl::nullopt;
   UnguessableTokenRepresentation repr;
   if (!base::HexStringToSpan(value.GetString(), repr.buffer))
-    return base::nullopt;
+    return absl::nullopt;
   return base::UnguessableToken::Deserialize(repr.field.high, repr.field.low);
 }
 

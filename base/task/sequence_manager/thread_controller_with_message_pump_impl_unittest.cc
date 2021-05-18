@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
@@ -23,6 +22,7 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::Invoke;
@@ -71,7 +71,7 @@ class ThreadControllerForTest
   }
 
   // Optionally emplaced, strict from then on.
-  Optional<testing::StrictMock<MockTraceObserver>> trace_observer;
+  absl::optional<testing::StrictMock<MockTraceObserver>> trace_observer;
 };
 
 class MockMessagePump : public MessagePump {

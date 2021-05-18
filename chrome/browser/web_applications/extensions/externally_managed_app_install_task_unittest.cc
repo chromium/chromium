@@ -1078,7 +1078,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
         EXPECT_EQ(app_id.value(), id.value());
 
         // Installing with an App Info does call into OS Integration Manager.
-        base::Optional<InstallOsHooksOptions> os_hooks_options =
+        absl::optional<InstallOsHooksOptions> os_hooks_options =
             os_integration_manager()->get_last_install_options();
         ASSERT_TRUE(os_hooks_options);
         EXPECT_FALSE(os_hooks_options->add_to_desktop);

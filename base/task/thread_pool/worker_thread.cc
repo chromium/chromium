@@ -21,6 +21,7 @@
 #include "base/threading/hang_watcher.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/base_tracing.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_APPLE)
 #include "base/mac/scoped_nsautorelease_pool.h"
@@ -343,7 +344,7 @@ void WorkerThread::RunWorker() {
 #if defined(OS_APPLE)
     mac::ScopedNSAutoreleasePool autorelease_pool;
 #endif
-    base::Optional<WatchHangsInScope> hang_watch_scope;
+    absl::optional<WatchHangsInScope> hang_watch_scope;
     if (watch_for_hangs)
       hang_watch_scope.emplace(base::WatchHangsInScope::kDefaultHangWatchTime);
 

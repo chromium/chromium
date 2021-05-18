@@ -42,6 +42,7 @@
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
 #include "base/files/file_descriptor_watcher_posix.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace base {
@@ -178,7 +179,7 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain,
 
   using TimeDomain::NextScheduledRunTime;
 
-  Optional<TimeTicks> NextScheduledRunTime() const {
+  absl::optional<TimeTicks> NextScheduledRunTime() const {
     // The TimeDomain doesn't know about immediate tasks, check if we have any.
     if (!sequence_manager_->IsIdleForTesting())
       return Now();
@@ -224,17 +225,17 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain,
     return now_ticks_;
   }
 
-  Optional<TimeDelta> DelayTillNextTask(
+  absl::optional<TimeDelta> DelayTillNextTask(
       sequence_manager::LazyNow* lazy_now) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     // Make sure TimeDomain::NextScheduledRunTime has taken canceled tasks into
     // account, ReclaimMemory sweeps canceled delayed tasks.
     sequence_manager()->ReclaimMemory();
-    Optional<TimeTicks> run_time = NextScheduledRunTime();
+    absl::optional<TimeTicks> run_time = NextScheduledRunTime();
     // Check if we've run out of tasks.
     if (!run_time)
-      return base::nullopt;
+      return absl::nullopt;
 
     // Check if we have a task that should be running now. Reading |now_ticks_|
     // from the main thread doesn't require the lock.
@@ -246,7 +247,7 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain,
     // have no more work. This will result in appearing idle, TaskEnvironment
     // will decide what to do based on that (return to caller or fast-forward
     // time).
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // This method is called when the underlying message pump has run out of
@@ -283,10 +284,11 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain,
 
     // We don't need to call ReclaimMemory here because
     // DelayTillNextTask will have dealt with cancelled delayed tasks for us.
-    Optional<TimeTicks> next_main_thread_task_time = NextScheduledRunTime();
+    absl::optional<TimeTicks> next_main_thread_task_time =
+        NextScheduledRunTime();
 
     // Consider the next thread pool tasks iff they're running.
-    Optional<TimeTicks> next_thread_pool_task_time;
+    absl::optional<TimeTicks> next_thread_pool_task_time;
     if (thread_pool_ && thread_pool_task_tracker_->TasksAllowedToRun()) {
       next_thread_pool_task_time =
           thread_pool_->NextScheduledRunTimeForTesting();
@@ -295,7 +297,7 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain,
     // Custom comparison logic to consider nullopt the largest rather than
     // smallest value. Could consider using TimeTicks::Max() instead of nullopt
     // to represent out-of-tasks?
-    Optional<TimeTicks> next_task_time;
+    absl::optional<TimeTicks> next_task_time;
     if (!next_main_thread_task_time) {
       next_task_time = next_thread_pool_task_time;
     } else if (!next_thread_pool_task_time) {
@@ -714,7 +716,8 @@ TimeDelta TaskEnvironment::NextMainThreadPendingTaskDelay() const {
   // ReclaimMemory sweeps canceled delayed tasks.
   sequence_manager_->ReclaimMemory();
   DCHECK(mock_time_domain_);
-  Optional<TimeTicks> run_time = mock_time_domain_->NextScheduledRunTime();
+  absl::optional<TimeTicks> run_time =
+      mock_time_domain_->NextScheduledRunTime();
   if (run_time)
     return *run_time - mock_time_domain_->Now();
   return TimeDelta::Max();

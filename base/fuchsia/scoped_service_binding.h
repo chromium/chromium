@@ -13,7 +13,7 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/fuchsia/scoped_service_publisher.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sys {
 class OutgoingDirectory;
@@ -116,7 +116,7 @@ class BASE_EXPORT ScopedSingleClientServiceBinding {
   }
 
   fidl::Binding<Interface> binding_;
-  base::Optional<ScopedServicePublisher<Interface>> publisher_;
+  absl::optional<ScopedServicePublisher<Interface>> publisher_;
   base::OnceClosure on_last_client_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedSingleClientServiceBinding);

@@ -2234,7 +2234,7 @@ TEST_F(NGLayoutResultCachingTest, MissGridIncorrectIntrinsicSize) {
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  base::Optional<NGFragmentGeometry> fragment_geometry;
+  absl::optional<NGFragmentGeometry> fragment_geometry;
 
   NGConstraintSpace space =
       src->GetCachedLayoutResult()->GetConstraintSpaceForCaching();

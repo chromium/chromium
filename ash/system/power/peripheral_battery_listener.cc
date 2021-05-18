@@ -404,7 +404,7 @@ absl::optional<uint8_t> PeripheralBatteryListener::DerateLastChargeLevel() {
 
   // No information available.
   if (!latest_battery.level.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   int level = *latest_battery.level;
 

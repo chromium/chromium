@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libxml/chromium/xml_reader.h"
 
 namespace base {
@@ -18,7 +19,7 @@ namespace {
 // Extracts single enum (with integer values) from histograms.xml.
 // Expects |reader| to point at given enum.
 // Returns map { value => label } on success, and nullopt on failure.
-Optional<HistogramEnumEntryMap> ParseEnumFromHistogramsXml(
+absl::optional<HistogramEnumEntryMap> ParseEnumFromHistogramsXml(
     const std::string& enum_name,
     XmlReader* reader) {
   int entries_index = -1;
@@ -76,17 +77,17 @@ Optional<HistogramEnumEntryMap> ParseEnumFromHistogramsXml(
   }
   if (success)
     return result;
-  return nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
 
-Optional<HistogramEnumEntryMap> ReadEnumFromEnumsXml(
+absl::optional<HistogramEnumEntryMap> ReadEnumFromEnumsXml(
     const std::string& enum_name) {
   FilePath src_root;
   if (!PathService::Get(DIR_SOURCE_ROOT, &src_root)) {
     ADD_FAILURE() << "Failed to get src root.";
-    return nullopt;
+    return absl::nullopt;
   }
 
   base::FilePath enums_xml = src_root.AppendASCII("tools")
@@ -95,16 +96,16 @@ Optional<HistogramEnumEntryMap> ReadEnumFromEnumsXml(
                                  .AppendASCII("enums.xml");
   if (!PathExists(enums_xml)) {
     ADD_FAILURE() << "enums.xml file does not exist.";
-    return nullopt;
+    return absl::nullopt;
   }
 
   XmlReader enums_xml_reader;
   if (!enums_xml_reader.LoadFile(enums_xml.MaybeAsASCII())) {
     ADD_FAILURE() << "Failed to load enums.xml";
-    return nullopt;
+    return absl::nullopt;
   }
 
-  Optional<HistogramEnumEntryMap> result;
+  absl::optional<HistogramEnumEntryMap> result;
 
   // Implement simple depth first search.
   while (true) {
@@ -115,21 +116,21 @@ Optional<HistogramEnumEntryMap> ReadEnumFromEnumsXml(
         if (result.has_value()) {
           ADD_FAILURE() << "Duplicate enum '" << enum_name
                         << "' found in enums.xml";
-          return nullopt;
+          return absl::nullopt;
         }
 
         const bool got_into_enum = enums_xml_reader.Read();
         if (!got_into_enum) {
           ADD_FAILURE() << "Bad enum '" << enum_name
                         << "' (looks empty) found in enums.xml.";
-          return nullopt;
+          return absl::nullopt;
         }
 
         result = ParseEnumFromHistogramsXml(enum_name, &enums_xml_reader);
         if (!result.has_value()) {
           ADD_FAILURE() << "Bad enum '" << enum_name
                         << "' found in histograms.xml (format error).";
-          return nullopt;
+          return absl::nullopt;
         }
       }
     }

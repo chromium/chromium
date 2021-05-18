@@ -8,8 +8,8 @@
 #include <libunwind.h>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/profiler/unwinder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -28,20 +28,21 @@ class NativeUnwinderMac : public Unwinder {
                          std::vector<Frame>* stack) const override;
 
  private:
-  Optional<UnwindResult> CheckPreconditions(const Frame* current_frame,
-                                            unw_cursor_t* unwind_cursor,
-                                            uintptr_t stack_top) const;
+  absl::optional<UnwindResult> CheckPreconditions(const Frame* current_frame,
+                                                  unw_cursor_t* unwind_cursor,
+                                                  uintptr_t stack_top) const;
 
   // Returns the result from unw_step.
   int UnwindStep(unw_context_t* unwind_context,
                  unw_cursor_t* cursor,
                  bool at_first_frame) const;
 
-  Optional<UnwindResult> CheckPostconditions(int step_result,
-                                             unw_word_t prev_rsp,
-                                             unw_word_t rsp,
-                                             uintptr_t stack_top,
-                                             bool* should_record_frame) const;
+  absl::optional<UnwindResult> CheckPostconditions(
+      int step_result,
+      unw_word_t prev_rsp,
+      unw_word_t rsp,
+      uintptr_t stack_top,
+      bool* should_record_frame) const;
 
   // Cached pointer to the libsystem_kernel module.
   const ModuleCache::Module* const libsystem_kernel_module_;

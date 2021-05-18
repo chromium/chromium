@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace util {
 
@@ -27,13 +28,13 @@ TEST(MultiSourceMemoryPressureMonitorTest, RunDispatchCallback) {
         callback_called = true;
       }));
   aggregator->OnVoteForTesting(
-      base::nullopt, base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
+      absl::nullopt, base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
   aggregator->NotifyListenersForTesting();
   EXPECT_TRUE(callback_called);
 
   // Clear vote so aggregator's destructor doesn't think there are loose voters.
   aggregator->OnVoteForTesting(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE, base::nullopt);
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE, absl::nullopt);
 }
 
 }  // namespace util

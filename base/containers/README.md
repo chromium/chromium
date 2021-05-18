@@ -319,7 +319,7 @@ As of 8 August 2018, we have added checks to the following classes:
 
 - `base::StringPiece`
 - `base::span`
-- `base::Optional`
+- `base::optional`
 - `base::RingBuffer`
 - `base::small_map`
 

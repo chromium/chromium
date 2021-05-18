@@ -25,12 +25,12 @@ AutofillProfileUpdateStrikeDatabase::~AutofillProfileUpdateStrikeDatabase() =
 
 absl::optional<size_t> AutofillProfileUpdateStrikeDatabase::GetMaximumEntries()
     const {
-  return base::make_optional(kMaxStrikeEntities);
+  return absl::make_optional(kMaxStrikeEntities);
 }
 
 absl::optional<size_t>
 AutofillProfileUpdateStrikeDatabase::GetMaximumEntriesAfterCleanup() const {
-  return base::make_optional(kMaxStrikeEntitiesAfterCleanup);
+  return absl::make_optional(kMaxStrikeEntitiesAfterCleanup);
 }
 
 std::string AutofillProfileUpdateStrikeDatabase::GetProjectPrefix() const {

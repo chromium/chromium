@@ -6,7 +6,7 @@
 #define BASE_ANDROID_RADIO_UTILS_H_
 
 #include "base/android/jni_android.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace android {
@@ -41,8 +41,8 @@ class BASE_EXPORT RadioUtils {
  public:
   static bool IsSupported();
   static RadioConnectionType GetConnectionType();
-  static Optional<RadioSignalLevel> GetCellSignalLevel();
-  static Optional<RadioDataActivity> GetCellDataActivity();
+  static absl::optional<RadioSignalLevel> GetCellSignalLevel();
+  static absl::optional<RadioDataActivity> GetCellDataActivity();
 };
 
 }  // namespace android

@@ -25,9 +25,9 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "base/ranges/algorithm.h"
 #include "base/template_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -619,21 +619,21 @@ class IsNotIn {
 
 // Helper for returning the optional value's address, or nullptr.
 template <class T>
-T* OptionalOrNullptr(base::Optional<T>& optional) {
+T* OptionalOrNullptr(absl::optional<T>& optional) {
   return optional.has_value() ? &optional.value() : nullptr;
 }
 
 template <class T>
-const T* OptionalOrNullptr(const base::Optional<T>& optional) {
+const T* OptionalOrNullptr(const absl::optional<T>& optional) {
   return optional.has_value() ? &optional.value() : nullptr;
 }
 
-// Helper for creating an Optional<T> from a potentially nullptr T*.
+// Helper for creating an optional<T> from a potentially nullptr T*.
 template <class T>
-base::Optional<T> OptionalFromPtr(const T* value) {
+absl::optional<T> OptionalFromPtr(const T* value) {
   if (value)
-    return base::Optional<T>(*value);
-  return base::nullopt;
+    return absl::optional<T>(*value);
+  return absl::nullopt;
 }
 
 }  // namespace base

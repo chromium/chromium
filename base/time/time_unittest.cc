@@ -14,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/platform_thread.h"
@@ -22,6 +21,7 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"
@@ -78,7 +78,7 @@ class ScopedLibcTZ {
   static constexpr char kTZ[] = "TZ";
 
   bool success_ = true;
-  base::Optional<std::string> old_timezone_;
+  absl::optional<std::string> old_timezone_;
 };
 
 constexpr char ScopedLibcTZ::kTZ[];
@@ -675,26 +675,26 @@ TEST_F(TimeTest, ParseTimeDeltaTest) {
   EXPECT_EQ(TimeDelta::FromString("inf"), TimeDelta::Max());
   EXPECT_EQ(TimeDelta::FromString("+inf"), TimeDelta::Max());
   EXPECT_EQ(TimeDelta::FromString("-inf"), TimeDelta::Min());
-  EXPECT_EQ(TimeDelta::FromString("infBlah"), nullopt);
+  EXPECT_EQ(TimeDelta::FromString("infBlah"), absl::nullopt);
 
   // Illegal input forms.
-  EXPECT_EQ(TimeDelta::FromString(""), nullopt);
-  EXPECT_EQ(TimeDelta::FromString("0.0"), nullopt);
-  EXPECT_EQ(TimeDelta::FromString(".0"), nullopt);
-  EXPECT_EQ(TimeDelta::FromString("."), nullopt);
-  EXPECT_EQ(TimeDelta::FromString("01"), nullopt);
-  EXPECT_EQ(TimeDelta::FromString("1"), nullopt);
-  EXPECT_EQ(TimeDelta::FromString("-1"), nullopt);
-  EXPECT_EQ(TimeDelta::FromString("2"), nullopt);
-  EXPECT_EQ(TimeDelta::FromString("2 s"), nullopt);
-  EXPECT_EQ(TimeDelta::FromString(".s"), nullopt);
-  EXPECT_EQ(TimeDelta::FromString("-.s"), nullopt);
-  EXPECT_EQ(TimeDelta::FromString("s"), nullopt);
-  EXPECT_EQ(TimeDelta::FromString(" 2s"), nullopt);
-  EXPECT_EQ(TimeDelta::FromString("2s "), nullopt);
-  EXPECT_EQ(TimeDelta::FromString(" 2s "), nullopt);
-  EXPECT_EQ(TimeDelta::FromString("2mt"), nullopt);
-  EXPECT_EQ(TimeDelta::FromString("1e3s"), nullopt);
+  EXPECT_EQ(TimeDelta::FromString(""), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString("0.0"), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString(".0"), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString("."), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString("01"), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString("1"), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString("-1"), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString("2"), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString("2 s"), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString(".s"), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString("-.s"), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString("s"), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString(" 2s"), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString("2s "), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString(" 2s "), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString("2mt"), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString("1e3s"), absl::nullopt);
 
   // One unit type.
   EXPECT_EQ(TimeDelta::FromString("1ns"), TimeDelta::FromNanoseconds(1));
@@ -711,7 +711,7 @@ TEST_F(TimeTest, ParseTimeDeltaTest) {
             TimeDelta::FromMicroseconds(-9223372036854775807));
 
   // Overflow count. Note the "93" at the beginning (instead of "92").
-  EXPECT_EQ(TimeDelta::FromString("9323372036854775807us"), base::nullopt);
+  EXPECT_EQ(TimeDelta::FromString("9323372036854775807us"), absl::nullopt);
   // Overflow overall duration.
   EXPECT_EQ(TimeDelta::FromString("9323372036854s"), TimeDelta::Max());
   EXPECT_EQ(TimeDelta::FromString("-9323372036854s"), TimeDelta::Min());
@@ -759,9 +759,9 @@ TEST_F(TimeTest, ParseTimeDeltaTest) {
 
   EXPECT_EQ(TimeDelta::FromString("-1h2s"),
             -(TimeDelta::FromHours(1) + TimeDelta::FromSeconds(2)));
-  EXPECT_EQ(TimeDelta::FromString("1h-2s"), nullopt);
-  EXPECT_EQ(TimeDelta::FromString("-1h-2s"), nullopt);
-  EXPECT_EQ(TimeDelta::FromString("-1h -2s"), nullopt);
+  EXPECT_EQ(TimeDelta::FromString("1h-2s"), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString("-1h-2s"), absl::nullopt);
+  EXPECT_EQ(TimeDelta::FromString("-1h -2s"), absl::nullopt);
 }
 
 TEST_F(TimeTest, ExplodeBeforeUnixEpoch) {

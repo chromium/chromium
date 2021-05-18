@@ -16,7 +16,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/condition_variable.h"
@@ -29,6 +28,7 @@
 #include "base/task/thread_pool/worker_thread.h"
 #include "base/task/thread_pool/worker_thread_stack.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -82,7 +82,8 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
              WorkerThreadObserver* worker_thread_observer,
              WorkerEnvironment worker_environment,
              bool synchronous_thread_start_for_testing = false,
-             Optional<TimeDelta> may_block_threshold = Optional<TimeDelta>());
+             absl::optional<TimeDelta> may_block_threshold =
+                 absl::optional<TimeDelta>());
 
   ThreadGroupImpl(const ThreadGroupImpl&) = delete;
   ThreadGroupImpl& operator=(const ThreadGroupImpl&) = delete;
@@ -336,7 +337,7 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   // Null-opt unless |synchronous_thread_start_for_testing| was true at
   // construction. In that case, it's signaled each time
   // WorkerThreadDelegateImpl::OnMainEntry() completes.
-  Optional<WaitableEvent> worker_started_for_testing_;
+  absl::optional<WaitableEvent> worker_started_for_testing_;
 
   // Cached HistogramBase pointers, can be accessed without
   // holding |lock_|. If |lock_| is held, add new samples using

@@ -1122,7 +1122,7 @@ TEST_F(PeripheralBatteryListenerTest, StylusDiscardsZeros) {
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kTestStylusBatteryPath)),
                   AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaScreen)),
-                  AFIELD(&BI::level, Eq(base::nullopt)),
+                  AFIELD(&BI::level, Eq(absl::nullopt)),
                   AFIELD(&BI::charge_status,
                          Eq(kTestStylusBatteryStatusDischargingOut)))));
 
@@ -1286,7 +1286,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest,
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kStylusChargerDeviceName)),
-                  AFIELD(&BI::level, Eq(base::nullopt)),
+                  AFIELD(&BI::level, Eq(absl::nullopt)),
                   AFIELD(&BI::charge_status, Eq(BI::ChargeStatus::kUnknown)),
                   AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaCharger)),
                   AFIELD(&BI::bluetooth_address, Eq("")))))
@@ -1338,7 +1338,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest, GarageCharging) {
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kStylusChargerDeviceName)),
-                  AFIELD(&BI::level, Eq(base::nullopt)),
+                  AFIELD(&BI::level, Eq(absl::nullopt)),
                   AFIELD(&BI::charge_status, Eq(BI::ChargeStatus::kUnknown)),
                   AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaCharger)),
                   AFIELD(&BI::bluetooth_address, Eq("")))))
@@ -1361,7 +1361,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest, GarageCharging) {
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kStylusChargerDeviceName)),
-                  AFIELD(&BI::level, Eq(base::nullopt)),
+                  AFIELD(&BI::level, Eq(absl::nullopt)),
                   AFIELD(&BI::charge_status, Eq(BI::ChargeStatus::kCharging)),
                   AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaCharger)),
                   AFIELD(&BI::bluetooth_address, Eq("")))))
@@ -1397,7 +1397,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest, GarageChargesFully) {
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kStylusChargerDeviceName)),
-                  AFIELD(&BI::level, Eq(base::nullopt)),
+                  AFIELD(&BI::level, Eq(absl::nullopt)),
                   AFIELD(&BI::charge_status, Eq(BI::ChargeStatus::kUnknown)),
                   AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaCharger)),
                   AFIELD(&BI::bluetooth_address, Eq("")))))
@@ -1475,7 +1475,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest,
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kStylusChargerDeviceName)),
-                  AFIELD(&BI::level, Eq(base::nullopt)),
+                  AFIELD(&BI::level, Eq(absl::nullopt)),
                   AFIELD(&BI::charge_status, Eq(BI::ChargeStatus::kUnknown)),
                   AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaCharger)),
                   AFIELD(&BI::bluetooth_address, Eq("")))))
@@ -1557,7 +1557,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest,
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kStylusChargerDeviceName)),
-                  AFIELD(&BI::level, Eq(base::nullopt)),
+                  AFIELD(&BI::level, Eq(absl::nullopt)),
                   AFIELD(&BI::charge_status, Eq(BI::ChargeStatus::kUnknown)),
                   AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaCharger)),
                   AFIELD(&BI::bluetooth_address, Eq("")))))
@@ -1643,7 +1643,7 @@ TEST_F(PeripheralBatteryListenerIncompleteDevicesTest, GarageChargingResumed) {
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kStylusChargerDeviceName)),
-                  AFIELD(&BI::level, Eq(base::nullopt)),
+                  AFIELD(&BI::level, Eq(absl::nullopt)),
                   AFIELD(&BI::charge_status, Eq(BI::ChargeStatus::kUnknown)),
                   AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaCharger)),
                   AFIELD(&BI::bluetooth_address, Eq("")))))

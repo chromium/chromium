@@ -5,9 +5,9 @@
 #ifndef BASE_PROFILER_SAMPLE_METADATA_H_
 #define BASE_PROFILER_SAMPLE_METADATA_H_
 
-#include "base/optional.h"
 #include "base/profiler/metadata_recorder.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // -----------------------------------------------------------------------------
 // Usage documentation
@@ -117,7 +117,7 @@ class BASE_EXPORT ScopedSampleMetadata {
 
  private:
   const uint64_t name_hash_;
-  Optional<int64_t> key_;
+  absl::optional<int64_t> key_;
 };
 
 // Applies the specified metadata to samples already recorded between
