@@ -34,7 +34,6 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
@@ -55,12 +54,8 @@ const std::u16string ConcatenateFileNames(
   return base::ASCIIToUTF16(all_file_names);
 }
 
-gfx::ImageSkia CreateMimeTypeIcon(const gfx::VectorIcon& icon,
+gfx::ImageSkia CreateMimeTypeIcon(const gfx::ImageSkia& file_type_icon,
                                   const gfx::Size& image_size) {
-  gfx::ImageSkia file_type_icon = gfx::CreateVectorIcon(
-      icon, ash::sharesheet::kImagePreviewPlaceholderIconContentSize,
-      ash::ColorProvider::Get()->GetContentLayerColor(
-          ash::ColorProvider::ContentLayerType::kIconColorProminent));
   return ash::HoldingSpaceImage::SuperimposeOverEmptyImage(file_type_icon,
                                                            image_size);
 }
@@ -94,16 +89,14 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
  public:
   METADATA_HEADER(SharesheetImagePreview);
   explicit SharesheetImagePreview(size_t file_count) {
-    SetPaintToLayer();
-    layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(kImagePreviewCornerRadius));
+    SetBackground(views::CreateRoundedRectBackground(
+        SK_ColorWHITE, kImagePreviewCornerRadius));
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
         /* inside_border_insets */ gfx::Insets(),
         /* between_child_spacing */ kImagePreviewBetweenChildSpacing,
         /* collapse_margins_spacing */ false));
     SetPreferredSize(kImagePreviewFullSize);
-    SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
     SetFocusBehavior(View::FocusBehavior::NEVER);
 
     size_t grid_icon_count =
@@ -132,12 +125,13 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
         auto* label =
             children()[1]->AddChildView(std::make_unique<views::Label>(
                 base::StrCat({u"+", base::NumberToString16(enumeration)}),
-                CONTEXT_DOWNLOAD_SHELF_STATUS, ash::STYLE_SHARESHEET));
+                CONTEXT_DOWNLOAD_SHELF_STATUS, STYLE_SHARESHEET));
         label->SetLineHeight(kImagePreviewFileEnumerationLineHeight);
         label->SetEnabledColor(kButtonTextColor);
         label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-        label->SetBackground(views::CreateSolidBackground(
-            kImagePreviewPlaceholderBackgroundColor));
+        label->SetBackground(views::CreateRoundedRectBackground(
+            kImagePreviewPlaceholderBackgroundColor,
+            kImagePreviewIconCornerRadius));
         label->SetPreferredSize(kImagePreviewQuarterSize);
         return;
       }
@@ -159,6 +153,13 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
 
   const size_t GetImageViewCount() { return image_views_.size(); }
 
+  void SetBackgroundColorForIndex(const int index, const SkColor& color) {
+    auto alpha_color =
+        SkColorSetA(color, kImagePreviewBackgroundAlphaComponent);
+    image_views_[index]->SetBackground(views::CreateRoundedRectBackground(
+        alpha_color, kImagePreviewIconCornerRadius));
+  }
+
  private:
   void AddRowToImageContainerView() {
     auto* row = AddChildView(std::make_unique<views::View>());
@@ -173,11 +174,6 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
     auto* image_view =
         parent_view->AddChildView(std::make_unique<views::ImageView>());
     image_view->SetImageSize(size);
-    image_view->SetBackground(
-        views::CreateSolidBackground(kImagePreviewPlaceholderBackgroundColor));
-    image_view->SetPaintToLayer();
-    image_view->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(kImagePreviewIconCornerRadius));
     image_views_.push_back(image_view);
   }
 
@@ -250,8 +246,14 @@ SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
       ResolveImages();
     } else {
       DCHECK_GT(image_preview_->GetImageViewCount(), 0);
+      const auto icon_color = ColorProvider::Get()->GetContentLayerColor(
+          ColorProvider::ContentLayerType::kIconColorProminent);
+      gfx::ImageSkia file_type_icon = gfx::CreateVectorIcon(
+          GetTextVectorIcon(),
+          sharesheet::kImagePreviewPlaceholderIconContentSize, icon_color);
       image_preview_->GetImageViewAt(0)->SetImage(
-          CreateMimeTypeIcon(GetTextVectorIcon(), kImagePreviewFullSize));
+          CreateMimeTypeIcon(file_type_icon, kImagePreviewFullSize));
+      image_preview_->SetBackgroundColorForIndex(0, icon_color);
     }
   }
 }
@@ -400,10 +402,18 @@ void SharesheetHeaderView::ResolveImage(size_t index) {
       size, file_path,
       base::BindRepeating(&SharesheetHeaderView::LoadImage,
                           weak_ptr_factory_.GetWeakPtr()),
-      absl::optional<gfx::ImageSkia>(
-          CreateMimeTypeIcon(chromeos::kFiletypeImageIcon, size)));
+      // We pass our own icon in here because we want the icon to appear
+      // while an image has not been loaded. If we didn't pass our own icon in,
+      // the container is left blank while we wait for an image to load.
+      absl::optional<gfx::ImageSkia>(CreateMimeTypeIcon(
+          GetIconForPath(file_path, /* dark_background= */ false), size)));
   DCHECK_GT(image_preview_->GetImageViewCount(), index);
   image_preview_->GetImageViewAt(index)->SetImage(image->GetImageSkia(size));
+  // TODO(crbug.com/2896003) Here and above, update this to check whether we're
+  // in dark mode or not.
+  const auto icon_color =
+      GetIconColorForPath(file_path, /* dark_background= */ false);
+  image_preview_->SetBackgroundColorForIndex(index, icon_color);
   image_subscription_.push_back(image->AddImageSkiaChangedCallback(
       base::BindRepeating(&SharesheetHeaderView::OnImageLoaded,
                           weak_ptr_factory_.GetWeakPtr(), size, index)));

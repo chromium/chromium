@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -35,6 +34,11 @@ enum class ColorId {
   kFiletypeGsite,
   kFiletypePpt,
   kFiletypeSites,
+};
+
+struct IconParams {
+  const gfx::VectorIcon& icon;
+  ColorId color_id;
 };
 
 SkColor ResolveColor(ColorId color_id, bool dark_background) {
@@ -59,12 +63,7 @@ SkColor ResolveColor(ColorId color_id, bool dark_background) {
   }
 }
 
-gfx::ImageSkia GetVectorIconFromIconType(IconType icon, bool dark_background) {
-  struct IconParams {
-    const gfx::VectorIcon& icon;
-    ColorId color_id;
-  };
-
+const std::map<IconType, IconParams>& GetIconTypeToIconParamsMap() {
   // Changes to this map should be reflected in
   // ui/file_manager/file_manager/common/js/file_type.js.
   static const base::NoDestructor<std::map<IconType, IconParams>>
@@ -119,9 +118,13 @@ gfx::ImageSkia GetVectorIconFromIconType(IconType icon, bool dark_background) {
             IconParams{chromeos::kFiletypeVideoIcon, ColorId::kRed}},
            {IconType::kWord,
             IconParams{chromeos::kFiletypeWordIcon, ColorId::kBlue}}});
+  return *icon_type_to_icon_params;
+}
 
-  const auto& it = icon_type_to_icon_params->find(icon);
-  DCHECK(it != icon_type_to_icon_params->end());
+gfx::ImageSkia GetVectorIconFromIconType(IconType icon, bool dark_background) {
+  const auto& icon_type_to_icon_params = GetIconTypeToIconParamsMap();
+  const auto& it = icon_type_to_icon_params.find(icon);
+  DCHECK(it != icon_type_to_icon_params.end());
 
   const IconParams& params = it->second;
   const gfx::IconDescription description(
@@ -306,6 +309,16 @@ gfx::ImageSkia GetIconFromType(const std::string& icon_type,
 
 gfx::ImageSkia GetIconFromType(IconType icon_type, bool dark_background) {
   return GetVectorIconFromIconType(icon_type, dark_background);
+}
+
+SkColor GetIconColorForPath(const base::FilePath& filepath,
+                            bool dark_background) {
+  const auto& icon_type = internal::GetIconTypeForPath(filepath);
+  const auto& icon_type_to_icon_params = GetIconTypeToIconParamsMap();
+  const auto& it = icon_type_to_icon_params.find(icon_type);
+  DCHECK(it != icon_type_to_icon_params.end());
+
+  return ResolveColor(it->second.color_id, dark_background);
 }
 
 }  // namespace ash

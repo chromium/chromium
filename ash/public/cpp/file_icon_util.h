@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -69,6 +70,12 @@ ASH_PUBLIC_EXPORT gfx::ImageSkia GetIconFromType(const std::string& icon_type,
 // sufficient contrast.
 ASH_PUBLIC_EXPORT gfx::ImageSkia GetIconFromType(IconType icon_type,
                                                  bool dark_background);
+
+// Returns the resolved color of the file type icon for the specified
+// `filepath`. If `dark_background` is `true`, lighter foreground colors are
+// used to ensure sufficient contrast.
+ASH_PUBLIC_EXPORT SkColor GetIconColorForPath(const base::FilePath& filepath,
+                                              bool dark_background);
 
 }  // namespace ash
 
