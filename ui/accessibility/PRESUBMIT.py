@@ -34,6 +34,9 @@ def GetEnumsFromFile(fullpath):
     # Strip out comments
     line = re.sub('//.*', '', line)
 
+    # Strip out mojo annotations.
+    line = re.sub('\[(.*)\]', '', line)
+
     # Look for lines of the form "enum ENUM_NAME {" and get the enum_name
     m = re.search('enum ([\w]+) {', line)
     if m:

@@ -51,7 +51,7 @@ component("model") {
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/services/libassistant/public/cpp:structs",
-    "//ui/accessibility/mojom",
+    "//ui/accessibility/mojom:ax_assistant_mojom",
     "//ui/gfx/geometry",
   ]
 }

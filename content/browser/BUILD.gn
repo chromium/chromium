@@ -2710,6 +2710,7 @@ source_set("browser") {
       "//third_party/icu",
       "//ui/accessibility:ax_assistant",
       "//ui/accessibility/mojom",
+      "//ui/accessibility/mojom:ax_assistant_mojom",
       "//ui/android",
       "//ui/compositor",
       "//url:gurl_android",

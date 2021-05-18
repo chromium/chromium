@@ -91,6 +91,18 @@ void AutomationAsh::DispatchTreeDestroyedEvent(
       ui::AXTreeID::FromToken(tree_id), nullptr);
 }
 
+void AutomationAsh::DispatchActionResult(
+    const ui::AXActionData& already_handled_action_data,
+    bool result) {
+  // This prototype method is only implemented on developer builds of Chrome. We
+  // check for this by checking that the build of Chrome is unbranded.
+  if (chrome::GetChannel() != version_info::Channel::UNKNOWN)
+    return;
+
+  extensions::AutomationEventRouter::GetInstance()->DispatchActionResult(
+      already_handled_action_data, result);
+}
+
 // Forwards an action to all crosapi clients. This has no effect on production
 // builds of chrome. It exists for prototyping for developers.
 void AutomationAsh::PerformAction(const ui::AXTreeID& tree_id,

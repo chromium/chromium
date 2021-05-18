@@ -25,68 +25,73 @@ module ax.mojom;
 // If unspecified, the attribute is used across web and native on multiple
 // platforms.
 
+// Next version: 1
+// Next value: 59
+[Extensible, Stable, Uuid="686e661e-f8c7-4214-8713-1f66d95d3ffa"]
 enum Event {
-  kNone,
-  kActiveDescendantChanged,
-  kAlert,
-  kAriaAttributeChanged,   // Implicit
-  kAutocorrectionOccured,  // Unknown: http://crbug.com/392498
-  kBlur,                   // Remove: http://crbug.com/392502
-  kCheckedStateChanged,    // Implicit
-  kChildrenChanged,
-  kClicked,
-  kControlsChanged,
-  kDocumentSelectionChanged,
-  kDocumentTitleChanged,
-  kEndOfTest,        // Sentinel value indicating the end of a test
-  kExpandedChanged,  // Web
-  kFocus,
-  kFocusAfterMenuClose,
-  kFocusContext,  // Contextual focus event that must delay the next focus event
-  kHide,          // Remove: http://crbug.com/392502
-  kHitTestResult,
-  kHover,
-  kImageFrameUpdated,     // Web
-  kLayoutComplete,        // Web
-  kLiveRegionCreated,     // Implicit
-  kLiveRegionChanged,     // Web
-  kLoadComplete,          // Web
-  kLoadStart,             // Web / AuraLinux
-  kLocationChanged,       // Web
-  kMediaStartedPlaying,   // Native / Automation
-  kMediaStoppedPlaying,   // Native / Automation
-  kMenuEnd,               // Native / web: menu interaction has ended.
-  kMenuListValueChanged,  // Web
-  kMenuPopupEnd,          // Native / web: a menu/submenu is hidden/closed.
-  kMenuPopupStart,        // Native / web: a menu/submenu is shown/opened.
-  kMenuStart,             // Native / web: menu interaction has begun.
-  kMouseCanceled,
-  kMouseDragged,
-  kMouseMoved,
-  kMousePressed,
-  kMouseReleased,
-  kRowCollapsed,
-  kRowCountChanged,
-  kRowExpanded,
-  kScrollPositionChanged,    // Web
-  kScrolledToAnchor,         // Web
-  kSelectedChildrenChanged,  // Web
-  kSelection,                // Native
-  kSelectionAdd,             // Native
-  kSelectionRemove,          // Native
-  kShow,                     // Native / Automation
-  kStateChanged,             // Native / Automation
-  kTextChanged,
+  [Default]kNone = 0,
+  kActiveDescendantChanged = 1,
+  kAlert = 2,
+  kAriaAttributeChanged = 3,   // Implicit
+  kAutocorrectionOccured = 4,  // Unknown: http://crbug.com/392498
+  kBlur = 5,                   // Remove: http://crbug.com/392502
+  kCheckedStateChanged = 6,    // Implicit
+  kChildrenChanged = 7,
+  kClicked = 8,
+  kControlsChanged = 9,
+  kDocumentSelectionChanged = 10,
+  kDocumentTitleChanged = 11,
+  kEndOfTest = 12,        // Sentinel value indicating the end of a test
+  kExpandedChanged = 13,  // Web
+  kFocus = 14,
+  kFocusAfterMenuClose = 15,
+
+  // Contextual focus event that must delay the next focus event.
+  kFocusContext = 16,
+  kHide = 17,          // Remove: http://crbug.com/392502
+  kHitTestResult = 18,
+  kHover = 19,
+  kImageFrameUpdated = 20,     // Web
+  kLayoutComplete = 21,        // Web
+  kLiveRegionCreated = 22,     // Implicit
+  kLiveRegionChanged = 23,     // Web
+  kLoadComplete = 24,          // Web
+  kLoadStart = 25,             // Web / AuraLinux
+  kLocationChanged = 26,       // Web
+  kMediaStartedPlaying = 27,   // Native / Automation
+  kMediaStoppedPlaying = 28,   // Native / Automation
+  kMenuEnd = 29,               // Native / web: menu interaction has ended.
+  kMenuListValueChanged = 30,  // Web
+  kMenuPopupEnd = 31,          // Native / web: a menu/submenu is hidden/closed.
+  kMenuPopupStart = 32,        // Native / web: a menu/submenu is shown/opened.
+  kMenuStart = 33,             // Native / web: menu interaction has begun.
+  kMouseCanceled = 34,
+  kMouseDragged = 35,
+  kMouseMoved = 36,
+  kMousePressed = 37,
+  kMouseReleased = 38,
+  kRowCollapsed = 39,
+  kRowCountChanged = 40,
+  kRowExpanded = 41,
+  kScrollPositionChanged = 42,    // Web
+  kScrolledToAnchor = 43,         // Web
+  kSelectedChildrenChanged = 44,  // Web
+  kSelection = 45,                // Native
+  kSelectionAdd = 46,             // Native
+  kSelectionRemove = 47,          // Native
+  kShow = 48,                     // Native / Automation
+  kStateChanged = 49,             // Native / Automation
+  kTextChanged = 50,
   // TODO(nektar): Remove kTextSelectionChanged.
-  kTextSelectionChanged,
-  kTooltipClosed,
-  kTooltipOpened,
-  kTreeChanged,  // Don't explicitly fire this event.
+  kTextSelectionChanged = 51,
+  kTooltipClosed = 52,
+  kTooltipOpened = 53,
+  kTreeChanged = 54,  // Don't explicitly fire this event.
   // TODO(nektar): Remove kValueChanged.
-  kValueChanged,
-  kWindowActivated,             // Native
-  kWindowDeactivated,           // Native
-  kWindowVisibilityChanged,     // Native
+  kValueChanged = 55,
+  kWindowActivated = 56,             // Native
+  kWindowDeactivated = 57,           // Native
+  kWindowVisibilityChanged = 58,     // Native
 };
 
 // Accessibility object roles.
@@ -331,102 +336,105 @@ enum State {
 // An action to be taken on an accessibility node.
 // In contrast to |AXDefaultActionVerb|, these describe what happens to the
 // object, e.g. "FOCUS".
+// Next version: 1
+// Next value: 33
+[Extensible, Stable, Uuid="ed8e4466-0522-4f98-ac28-59a523b70232"]
 enum Action {
-  kNone,
+  [Default]kNone = 0,
 
   // Request image annotations for all the eligible images on a page.
-  kAnnotatePageImages,
+  kAnnotatePageImages = 1,
 
-  kBlur,
+  kBlur = 2,
 
   // Notifies a node that it no longer has accessibility focus.
   // Currently used only on Android and only internally, it's not
   // exposed to the open web. See kSetAccessibilityFocus, below.
-  kClearAccessibilityFocus,
+  kClearAccessibilityFocus = 3,
 
   // Collapse the collapsible node.
-  kCollapse,
+  kCollapse = 4,
 
-  kCustomAction,
+  kCustomAction = 5,
 
   // Decrement a slider or range control by one step value.
-  kDecrement,
+  kDecrement = 6,
 
   // Do the default action for an object, typically this means "click".
-  kDoDefault,
+  kDoDefault = 7,
 
   // Expand the expandable node.
-  kExpand,
+  kExpand = 8,
 
-  kFocus,
+  kFocus = 9,
 
   // Return the content of this image object in the image_data attribute.
-  kGetImageData,
+  kGetImageData = 10,
 
   // Gets the bounding rect for a range of text.
-  kGetTextLocation,
+  kGetTextLocation = 11,
 
-  kHideTooltip,
+  kHideTooltip = 12,
 
   // Given a point, find the object it corresponds to and fire a
   // |AXActionData.hit_test_event_to_fire| event on it in response.
-  kHitTest,
+  kHitTest = 13,
 
   // Increment a slider or range control by one step value.
-  kIncrement,
+  kIncrement = 14,
 
   // For internal use only; signals to tree sources to invalidate an entire
   // tree.
-  kInternalInvalidateTree,
+  kInternalInvalidateTree = 15,
 
   // Load inline text boxes for this subtree, providing information
   // about word boundaries, line layout, and individual character
   // bounding boxes.
-  kLoadInlineTextBoxes,
+  kLoadInlineTextBoxes = 16,
 
   // Delete any selected text in the control's text value and
   // insert |AXActionData::value| in its place, like when typing or pasting.
-  kReplaceSelectedText,
+  kReplaceSelectedText = 17,
 
   // Scrolls by approximately one screen in a specific direction. Should be
   // called on a node that has scrollable boolean set to true.
-  kScrollBackward,
-  kScrollDown,
-  kScrollForward,
-  kScrollLeft,
-  kScrollRight,
-  kScrollUp,
+  kScrollBackward = 18,
+  kScrollDown = 19,
+  kScrollForward = 20,
+  kScrollLeft = 21,
+  kScrollRight = 22,
+  kScrollUp = 23,
 
   // Scroll any scrollable containers to make the target object visible
   // on the screen.  Optionally pass a subfocus rect in
   // AXActionData.target_rect, in node-local coordinates.
-  kScrollToMakeVisible,
+  kScrollToMakeVisible = 24,
 
   // Scroll the given object to a specified point on the screen in
   // global screen coordinates. Pass a point in AXActionData.target_point.
-  kScrollToPoint,
+  kScrollToPoint = 25,
 
   // Notifies a node that it has accessibility focus.
   // Currently used only on Android and only internally, it's not
   // exposed to the open web. See kClearAccessibilityFocus, above.
-  kSetAccessibilityFocus,
+  kSetAccessibilityFocus = 26,
 
-  kSetScrollOffset,
-  kSetSelection,
+  kSetScrollOffset = 27,
+  kSetSelection = 28,
 
   // Don't focus this node, but set it as the sequential focus navigation
   // starting point, so that pressing Tab moves to the next element
   // following this one, for example.
-  kSetSequentialFocusNavigationStartingPoint,
+  kSetSequentialFocusNavigationStartingPoint = 29,
 
   // Replace the value of the control with AXActionData::value and
   // reset the selection, if applicable.
-  kSetValue,
-  kShowContextMenu,
+  kSetValue = 30,
+  kShowContextMenu = 31,
 
   // Send an event signaling the end of a test.
-  kSignalEndOfTest,
-  kShowTooltip,
+  kSignalEndOfTest = 32,
+  kShowTooltip = 33,
 };
 
 enum ActionFlags {
@@ -438,23 +446,28 @@ enum ActionFlags {
 // A list of valid values for the horizontal and vertical scroll alignment
 // arguments in |AXActionData|. These values control where a node is scrolled
 // in the viewport.
+// Next version: 1
+// Next value: 6
+[Extensible, Stable, Uuid="a9d4f137-4f2e-4533-a4ac-cabdc433ecee"]
 enum ScrollAlignment {
-  kNone,
-  kScrollAlignmentCenter,
-  kScrollAlignmentTop,
-  kScrollAlignmentBottom,
-  kScrollAlignmentLeft,
-  kScrollAlignmentRight,
-  kScrollAlignmentClosestEdge
+  [Default]kNone = 0,
+  kScrollAlignmentCenter = 1,
+  kScrollAlignmentTop = 2,
+  kScrollAlignmentBottom = 3,
+  kScrollAlignmentLeft = 4,
+  kScrollAlignmentRight = 5,
+  kScrollAlignmentClosestEdge = 6
 };
 
 // A list of valid values for the scroll behavior argument to argument in
 // |AXActionData|. These values control whether a node is scrolled in the
 // viewport if it is already visible.
+// Next version: 1
+[Extensible, Stable, Uuid="8bf2a1cb-2edb-4e41-8d7e-a6c8baa95c85"]
 enum ScrollBehavior {
-  kNone,
-  kDoNotScrollIfVisible,
-  kScrollIfVisible,
+  [Default]kNone = 0,
+  kDoNotScrollIfVisible = 1,
+  kScrollIfVisible = 2,
 };
 
 // A list of valid values for the |AXIntAttribute| |default_action_verb|.

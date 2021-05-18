@@ -46,6 +46,8 @@ class AutomationAsh : public mojom::Automation,
                              const std::string& window_id) override;
   void DispatchTreeDestroyedEvent(
       const base::UnguessableToken& tree_id) override;
+  void DispatchActionResult(const ui::AXActionData& already_handled_action_data,
+                            bool result) override;
 
   // ui::AXActionHandlerObserver:
   void PerformAction(const ui::AXTreeID& tree_id,

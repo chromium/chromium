@@ -10,6 +10,8 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // A compact representation of an accessibility action and the arguments
 // associated with that action. See ui::AXActionData for full documentation.
+// Next version: 1
+[Stable, Uuid="977807b3-17e0-4186-8398-deae1aeba2ec"]
 struct AXActionData {
   Action action;
   ax.mojom.AXTreeID target_tree_id;

@@ -7,6 +7,8 @@ module ax.mojom;
 import "ui/accessibility/ax_enums.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
+// Next version: 1
+[Stable, Uuid="8bc56bf8-a206-42b2-970f-60347a23e7fa"]
 union AXTreeID {
   // Placeholder for an unknown AXTreeID. The value of this field is not used.
   uint8 unknown;

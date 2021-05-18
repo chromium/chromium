@@ -50,6 +50,8 @@ mojom("mojom") {
     "//printing/mojom",
     "//services/device/public/mojom:mojom",
     "//services/media_session/public/mojom:mojom",
+    "//ui/accessibility:ax_enums_mojo",
+    "//ui/accessibility/mojom",
     "//ui/base/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/image/mojom",

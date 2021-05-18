@@ -78,7 +78,10 @@ void AutomationManagerLacros::DispatchActionResult(
     const ui::AXActionData& data,
     bool result,
     content::BrowserContext* browser_context) {
-  // TODO(https://crbug.com/1185764): Implement me.
+  if (!automation_remote_)
+    return;
+
+  automation_remote_->DispatchActionResult(data, result);
 }
 void AutomationManagerLacros::DispatchGetTextLocationDataResult(
     const ui::AXActionData& data,
