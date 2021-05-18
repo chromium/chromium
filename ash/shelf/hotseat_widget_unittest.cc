@@ -2599,7 +2599,9 @@ INSTANTIATE_TEST_SUITE_P(RTL, HotseatWidgetRTLTest, testing::Bool());
 
 // The test to verify the hotseat transition animation from the extended state
 // to the home launcher state.
-TEST_P(HotseatWidgetRTLTest, VerifyTransitionFromExtendedModeToHomeLauncher) {
+// TODO(https://crbug.com/1210530): Disable this test due to flakiness.
+TEST_P(HotseatWidgetRTLTest,
+       DISABLED_VerifyTransitionFromExtendedModeToHomeLauncher) {
   TabletModeControllerTestApi().EnterTabletMode();
   const auto app_id =
       ShelfTestUtil::AddAppShortcut("fake_app", TYPE_PINNED_APP);
