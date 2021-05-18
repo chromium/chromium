@@ -99,8 +99,8 @@ void AccessibilityEventRewriterDelegateImpl::SendSwitchAccessCommand(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
-  auto event_args = std::make_unique<base::ListValue>();
-  event_args->AppendString(ToString(command));
+  std::vector<base::Value> event_args;
+  event_args.push_back(base::Value(ToString(command)));
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_SWITCH_ACCESS_COMMAND,
@@ -116,13 +116,12 @@ void AccessibilityEventRewriterDelegateImpl::SendPointScanPoint(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
-  auto event_args = std::make_unique<base::ListValue>();
-  auto point_dict = std::make_unique<base::DictionaryValue>();
+  base::Value point_dict(base::Value::Type::DICTIONARY);
+  point_dict.SetDoubleKey("x", point.x());
+  point_dict.SetDoubleKey("y", point.y());
 
-  point_dict->SetDouble("x", point.x());
-  point_dict->SetDouble("y", point.y());
-
-  event_args->Append(std::move(point_dict));
+  std::vector<base::Value> event_args;
+  event_args.push_back(std::move(point_dict));
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_POINT_SCAN_SET,
@@ -138,8 +137,8 @@ void AccessibilityEventRewriterDelegateImpl::SendMagnifierCommand(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
-  auto event_args = std::make_unique<base::ListValue>();
-  event_args->AppendString(ToString(command));
+  std::vector<base::Value> event_args;
+  event_args.push_back(base::Value(ToString(command)));
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_SWITCH_ACCESS_COMMAND,

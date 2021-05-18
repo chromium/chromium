@@ -110,7 +110,7 @@ bool ExtensionProvider::RequestMount(Profile* profile) {
       std::make_unique<extensions::Event>(
           extensions::events::FILE_SYSTEM_PROVIDER_ON_MOUNT_REQUESTED,
           extensions::api::file_system_provider::OnMountRequested::kEventName,
-          std::make_unique<base::ListValue>()));
+          std::vector<base::Value>()));
 
   return true;
 }

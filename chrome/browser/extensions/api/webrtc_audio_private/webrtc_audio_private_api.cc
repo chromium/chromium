@@ -92,9 +92,9 @@ void WebrtcAudioPrivateEventService::SignalEvent() {
     const std::string& extension_id = extension->id();
     if (router->ExtensionHasEventListener(extension_id, kEventName) &&
         extension->permissions_data()->HasAPIPermission("webrtcAudioPrivate")) {
-      std::unique_ptr<Event> event = std::make_unique<Event>(
-          events::WEBRTC_AUDIO_PRIVATE_ON_SINKS_CHANGED, kEventName,
-          std::make_unique<base::ListValue>());
+      std::unique_ptr<Event> event =
+          std::make_unique<Event>(events::WEBRTC_AUDIO_PRIVATE_ON_SINKS_CHANGED,
+                                  kEventName, std::vector<base::Value>());
       router->DispatchEventToExtension(extension_id, std::move(event));
     }
   }

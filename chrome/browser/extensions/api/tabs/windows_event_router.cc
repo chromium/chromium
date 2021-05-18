@@ -304,7 +304,7 @@ void WindowsEventRouter::OnActiveWindowChanged(
 
   std::unique_ptr<Event> event = std::make_unique<Event>(
       events::WINDOWS_ON_FOCUS_CHANGED, windows::OnFocusChanged::kEventName,
-      std::make_unique<base::ListValue>());
+      std::vector<base::Value>());
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchWindowFocusedEvent, window_controller);
   EventRouter::Get(profile_)->BroadcastEvent(std::move(event));

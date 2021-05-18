@@ -44,7 +44,7 @@ void ClipboardAPI::OnClipboardDataChanged() {
     std::unique_ptr<Event> event(
         new Event(events::CLIPBOARD_ON_CLIPBOARD_DATA_CHANGED,
                   clipboard::OnClipboardDataChanged::kEventName,
-                  std::make_unique<base::ListValue>()));
+                  std::vector<base::Value>()));
     router->BroadcastEvent(std::move(event));
   }
 }

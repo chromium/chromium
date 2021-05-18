@@ -578,11 +578,10 @@ void WallpaperControllerClientImpl::MaybeClosePreviewWallpaper() {
 
   extensions::EventRouter* event_router = extensions::EventRouter::Get(profile);
 
-  auto event_args = std::make_unique<base::ListValue>();
   auto event = std::make_unique<extensions::Event>(
       extensions::events::WALLPAPER_PRIVATE_ON_CLOSE_PREVIEW_WALLPAPER,
       extensions::api::wallpaper_private::OnClosePreviewWallpaper::kEventName,
-      std::move(event_args));
+      std::vector<base::Value>());
   event_router->DispatchEventToExtension(kWallpaperManagerId, std::move(event));
 }
 

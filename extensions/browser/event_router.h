@@ -511,10 +511,6 @@ struct Event {
   Event(events::HistogramValue histogram_value,
         const std::string& event_name,
         std::vector<base::Value> event_args);
-  // TODO(crbug.com/1139221): Remove this deprecated ctor and use the one above.
-  Event(events::HistogramValue histogram_value,
-        const std::string& event_name,
-        std::unique_ptr<base::ListValue> event_args);
 
   Event(events::HistogramValue histogram_value,
         const std::string& event_name,

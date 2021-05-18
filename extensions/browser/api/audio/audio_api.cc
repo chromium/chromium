@@ -91,7 +91,7 @@ void AudioAPI::OnDeviceChanged() {
 
   auto event = std::make_unique<Event>(events::AUDIO_ON_DEVICE_CHANGED,
                                        audio::OnDeviceChanged::kEventName,
-                                       std::make_unique<base::ListValue>());
+                                       std::vector<base::Value>());
   event->will_dispatch_callback =
       base::BindRepeating(&CanReceiveDeprecatedAudioEvent);
   event_router->BroadcastEvent(std::move(event));

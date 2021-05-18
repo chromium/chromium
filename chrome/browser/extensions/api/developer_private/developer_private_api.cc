@@ -505,8 +505,9 @@ void DeveloperPrivateEventRouter::OnExtensionAllowlistWarningStateChanged(
 }
 
 void DeveloperPrivateEventRouter::OnExtensionManagementSettingsChanged() {
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append(DeveloperPrivateAPI::CreateProfileInfo(profile_)->ToValue());
+  std::vector<base::Value> args;
+  args.push_back(base::Value::FromUniquePtrValue(
+      DeveloperPrivateAPI::CreateProfileInfo(profile_)->ToValue()));
 
   std::unique_ptr<Event> event(
       new Event(events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
@@ -533,8 +534,9 @@ void DeveloperPrivateEventRouter::Observe(
 }
 
 void DeveloperPrivateEventRouter::OnProfilePrefChanged() {
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append(DeveloperPrivateAPI::CreateProfileInfo(profile_)->ToValue());
+  std::vector<base::Value> args;
+  args.push_back(base::Value::FromUniquePtrValue(
+      DeveloperPrivateAPI::CreateProfileInfo(profile_)->ToValue()));
   std::unique_ptr<Event> event(
       new Event(events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
                 developer::OnProfileStateChanged::kEventName, std::move(args)));
@@ -587,8 +589,8 @@ void DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper(
         std::make_unique<developer::ExtensionInfo>(std::move(infos[0]));
   }
 
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append(event_data.ToValue());
+  std::vector<base::Value> args;
+  args.push_back(base::Value::FromUniquePtrValue(event_data.ToValue()));
   std::unique_ptr<Event> event(
       new Event(events::DEVELOPER_PRIVATE_ON_ITEM_STATE_CHANGED,
                 developer::OnItemStateChanged::kEventName, std::move(args)));

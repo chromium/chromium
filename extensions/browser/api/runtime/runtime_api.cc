@@ -137,10 +137,9 @@ void DispatchOnStartupEventImpl(
     }
   }
 
-  std::unique_ptr<base::ListValue> event_args(new base::ListValue());
   std::unique_ptr<Event> event(new Event(events::RUNTIME_ON_STARTUP,
                                          runtime::OnStartup::kEventName,
-                                         std::move(event_args)));
+                                         std::vector<base::Value>()));
   EventRouter::Get(browser_context)
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
@@ -450,17 +449,17 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
     return;
   }
 
-  std::unique_ptr<base::ListValue> event_args(new base::ListValue());
-  std::unique_ptr<base::DictionaryValue> info(new base::DictionaryValue());
+  std::vector<base::Value> event_args;
+  base::Value info(base::Value::Type::DICTIONARY);
   if (old_version.IsValid()) {
-    info->SetString(kInstallReason, kInstallReasonUpdate);
-    info->SetString(kInstallPreviousVersion, old_version.GetString());
+    info.SetStringKey(kInstallReason, kInstallReasonUpdate);
+    info.SetStringKey(kInstallPreviousVersion, old_version.GetString());
   } else if (chrome_updated) {
-    info->SetString(kInstallReason, kInstallReasonChromeUpdate);
+    info.SetStringKey(kInstallReason, kInstallReasonChromeUpdate);
   } else {
-    info->SetString(kInstallReason, kInstallReasonInstall);
+    info.SetStringKey(kInstallReason, kInstallReasonInstall);
   }
-  event_args->Append(std::move(info));
+  event_args.push_back(std::move(info));
   EventRouter* event_router = EventRouter::Get(context);
   DCHECK(event_router);
   std::unique_ptr<Event> event(new Event(events::RUNTIME_ON_INSTALLED,
@@ -478,13 +477,12 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
       for (ExtensionSet::const_iterator i = dependents->begin();
            i != dependents->end();
            i++) {
-        std::unique_ptr<base::ListValue> sm_event_args(new base::ListValue());
-        std::unique_ptr<base::DictionaryValue> sm_info(
-            new base::DictionaryValue());
-        sm_info->SetString(kInstallReason, kInstallReasonSharedModuleUpdate);
-        sm_info->SetString(kInstallPreviousVersion, old_version.GetString());
-        sm_info->SetString(kInstallId, extension_id);
-        sm_event_args->Append(std::move(sm_info));
+        std::vector<base::Value> sm_event_args;
+        base::Value sm_info(base::Value::Type::DICTIONARY);
+        sm_info.SetStringKey(kInstallReason, kInstallReasonSharedModuleUpdate);
+        sm_info.SetStringKey(kInstallPreviousVersion, old_version.GetString());
+        sm_info.SetStringKey(kInstallId, extension_id);
+        sm_event_args.push_back(std::move(sm_info));
         std::unique_ptr<Event> sm_event(new Event(
             events::RUNTIME_ON_INSTALLED, runtime::OnInstalled::kEventName,
             std::move(sm_event_args)));
@@ -504,8 +502,8 @@ void RuntimeEventRouter::DispatchOnUpdateAvailableEvent(
   if (!system)
     return;
 
-  std::unique_ptr<base::ListValue> args(new base::ListValue);
-  args->Append(manifest->CreateDeepCopy());
+  std::vector<base::Value> args;
+  args.push_back(manifest->Clone());
   EventRouter* event_router = EventRouter::Get(context);
   DCHECK(event_router);
   std::unique_ptr<Event> event(new Event(events::RUNTIME_ON_UPDATE_AVAILABLE,
@@ -521,12 +519,12 @@ void RuntimeEventRouter::DispatchOnBrowserUpdateAvailableEvent(
   if (!system)
     return;
 
-  std::unique_ptr<base::ListValue> args(new base::ListValue);
   EventRouter* event_router = EventRouter::Get(context);
   DCHECK(event_router);
-  std::unique_ptr<Event> event(new Event(
-      events::RUNTIME_ON_BROWSER_UPDATE_AVAILABLE,
-      runtime::OnBrowserUpdateAvailable::kEventName, std::move(args)));
+  std::unique_ptr<Event> event(
+      new Event(events::RUNTIME_ON_BROWSER_UPDATE_AVAILABLE,
+                runtime::OnBrowserUpdateAvailable::kEventName,
+                std::vector<base::Value>()));
   event_router->BroadcastEvent(std::move(event));
 }
 

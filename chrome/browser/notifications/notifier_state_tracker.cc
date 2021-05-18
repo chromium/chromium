@@ -180,8 +180,9 @@ void NotifierStateTracker::FirePermissionLevelChangedEvent(
   extensions::api::notifications::PermissionLevel permission =
       enabled ? extensions::api::notifications::PERMISSION_LEVEL_GRANTED
               : extensions::api::notifications::PERMISSION_LEVEL_DENIED;
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->AppendString(extensions::api::notifications::ToString(permission));
+  std::vector<base::Value> args;
+  args.push_back(
+      base::Value(extensions::api::notifications::ToString(permission)));
   std::unique_ptr<extensions::Event> event(new extensions::Event(
       extensions::events::NOTIFICATIONS_ON_PERMISSION_LEVEL_CHANGED,
       extensions::api::notifications::OnPermissionLevelChanged::kEventName,

@@ -237,7 +237,7 @@ void CastExtensionsBrowserClient::BroadcastEventToRenderers(
   // Currently ignoring the dispatch_to_off_the_record_profiles attribute
   // as it is not necessary at the time
   std::unique_ptr<Event> event(
-      new Event(histogram_value, event_name, std::move(args)));
+      new Event(histogram_value, event_name, args->TakeList()));
   EventRouter::Get(browser_context_)->BroadcastEvent(std::move(event));
 }
 

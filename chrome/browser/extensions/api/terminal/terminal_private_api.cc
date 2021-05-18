@@ -140,10 +140,10 @@ void NotifyProcessOutput(content::BrowserContext* browser_context,
     return;
   }
 
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->AppendString(terminal_id);
-  args->AppendString(output_type);
-  args->AppendString(output);
+  std::vector<base::Value> args;
+  args.push_back(base::Value(terminal_id));
+  args.push_back(base::Value(output_type));
+  args.push_back(base::Value(output));
 
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(browser_context);
@@ -159,9 +159,8 @@ void PreferenceChanged(Profile* profile,
                        const std::string& pref_name,
                        extensions::events::HistogramValue histogram,
                        const char* eventName) {
-  auto args = std::make_unique<base::ListValue>();
-  args->Append(base::Value::ToUniquePtrValue(
-      profile->GetPrefs()->Get(pref_name)->Clone()));
+  std::vector<base::Value> args;
+  args.push_back(profile->GetPrefs()->Get(pref_name)->Clone());
   extensions::EventRouter* event_router = extensions::EventRouter::Get(profile);
   if (event_router) {
     auto event = std::make_unique<extensions::Event>(histogram, eventName,

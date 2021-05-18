@@ -4,16 +4,15 @@
 
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 
-#include "base/callback_helpers.h"
-#include "build/build_config.h"
-
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -224,8 +223,8 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
 
   // |event_router_| can be null in tests.
   if (event_router_) {
-    auto event_value = std::make_unique<base::ListValue>();
-    event_value->Append(params.ToValue());
+    std::vector<base::Value> event_value;
+    event_value.push_back(base::Value::FromUniquePtrValue(params.ToValue()));
 
     auto extension_event = std::make_unique<Event>(
         events::
@@ -256,8 +255,8 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordChanged(
     const std::string& user_name) {
   // |event_router_| can be null in tests.
   if (event_router_) {
-    auto event_value = std::make_unique<base::ListValue>();
-    event_value->Append(std::make_unique<base::Value>(user_name));
+    std::vector<base::Value> event_value;
+    event_value.push_back(base::Value(user_name));
     auto extension_event = std::make_unique<Event>(
         events::SAFE_BROWSING_PRIVATE_ON_POLICY_SPECIFIED_PASSWORD_CHANGED,
         api::safe_browsing_private::OnPolicySpecifiedPasswordChanged::
@@ -296,8 +295,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
 
   // |event_router_| can be null in tests.
   if (event_router_) {
-    auto event_value = std::make_unique<base::ListValue>();
-    event_value->Append(params.ToValue());
+    std::vector<base::Value> event_value;
+    event_value.push_back(base::Value::FromUniquePtrValue(params.ToValue()));
 
     auto extension_event = std::make_unique<Event>(
         events::SAFE_BROWSING_PRIVATE_ON_DANGEROUS_DOWNLOAD_OPENED,
@@ -352,8 +351,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
 
   // |event_router_| can be null in tests.
   if (event_router_) {
-    auto event_value = std::make_unique<base::ListValue>();
-    event_value->Append(params.ToValue());
+    std::vector<base::Value> event_value;
+    event_value.push_back(base::Value::FromUniquePtrValue(params.ToValue()));
 
     auto extension_event = std::make_unique<Event>(
         events::SAFE_BROWSING_PRIVATE_ON_SECURITY_INTERSTITIAL_SHOWN,
@@ -401,8 +400,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
 
   // |event_router_| can be null in tests.
   if (event_router_) {
-    auto event_value = std::make_unique<base::ListValue>();
-    event_value->Append(params.ToValue());
+    std::vector<base::Value> event_value;
+    event_value.push_back(base::Value::FromUniquePtrValue(params.ToValue()));
 
     auto extension_event = std::make_unique<Event>(
         events::SAFE_BROWSING_PRIVATE_ON_SECURITY_INTERSTITIAL_PROCEEDED,

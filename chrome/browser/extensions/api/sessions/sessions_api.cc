@@ -624,10 +624,9 @@ SessionsEventRouter::~SessionsEventRouter() {
 
 void SessionsEventRouter::TabRestoreServiceChanged(
     sessions::TabRestoreService* service) {
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
   EventRouter::Get(profile_)->BroadcastEvent(std::make_unique<Event>(
       events::SESSIONS_ON_CHANGED, api::sessions::OnChanged::kEventName,
-      std::move(args)));
+      std::vector<base::Value>()));
 }
 
 void SessionsEventRouter::TabRestoreServiceDestroyed(

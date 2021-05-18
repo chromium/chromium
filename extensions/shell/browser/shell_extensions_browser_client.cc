@@ -245,7 +245,7 @@ void ShellExtensionsBrowserClient::BroadcastEventToRenderers(
   }
 
   std::unique_ptr<Event> event(
-      new Event(histogram_value, event_name, std::move(args)));
+      new Event(histogram_value, event_name, args->TakeList()));
   EventRouter::Get(browser_context_)->BroadcastEvent(std::move(event));
 }
 

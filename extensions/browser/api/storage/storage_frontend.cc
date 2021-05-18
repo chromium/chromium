@@ -89,9 +89,9 @@ class DefaultObserver : public SettingsObserver {
     // Event for each storage(sync, local, managed).
     if (event_router->ExtensionHasEventListener(
             extension_id, api::storage::OnChanged::kEventName)) {
-      std::unique_ptr<base::ListValue> args(new base::ListValue());
-      args->Append(changes.Clone());
-      args->AppendString(namespace_string);
+      std::vector<base::Value> args;
+      args.push_back(changes.Clone());
+      args.push_back(base::Value(namespace_string));
       std::unique_ptr<Event> event(
           new Event(events::STORAGE_ON_CHANGED,
                     api::storage::OnChanged::kEventName, std::move(args)));
@@ -103,8 +103,8 @@ class DefaultObserver : public SettingsObserver {
         base::StringPrintf("storage.%s.onChanged", namespace_string.c_str());
     if (event_router->ExtensionHasEventListener(extension_id,
                                                 area_event_name)) {
-      auto args = std::make_unique<base::ListValue>();
-      args->Append(changes.Clone());
+      std::vector<base::Value> args;
+      args.push_back(changes.Clone());
       auto event =
           std::make_unique<Event>(StorageAreaToEventHistogram(storage_area),
                                   area_event_name, std::move(args));

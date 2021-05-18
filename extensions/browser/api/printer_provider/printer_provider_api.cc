@@ -528,10 +528,10 @@ void PrinterProviderAPIImpl::DispatchGetPrintersRequested(
   // be needed later on.
   int request_id = pending_get_printers_requests_.Add(callback);
 
-  std::unique_ptr<base::ListValue> internal_args(new base::ListValue);
+  std::vector<base::Value> internal_args;
   // Request id is not part of the public API, but it will be massaged out in
   // custom bindings.
-  internal_args->AppendInteger(request_id);
+  internal_args.push_back(base::Value(request_id));
 
   std::unique_ptr<Event> event(
       new Event(events::PRINTER_PROVIDER_ON_GET_PRINTERS_REQUESTED,
@@ -567,11 +567,11 @@ void PrinterProviderAPIImpl::DispatchGetCapabilityRequested(
   int request_id =
       pending_capability_requests_[extension_id].Add(std::move(callback));
 
-  std::unique_ptr<base::ListValue> internal_args(new base::ListValue);
+  std::vector<base::Value> internal_args;
   // Request id is not part of the public API, but it will be massaged out in
   // custom bindings.
-  internal_args->AppendInteger(request_id);
-  internal_args->AppendString(internal_printer_id);
+  internal_args.push_back(base::Value(request_id));
+  internal_args.push_back(base::Value(internal_printer_id));
 
   std::unique_ptr<Event> event(
       new Event(events::PRINTER_PROVIDER_ON_GET_CAPABILITY_REQUESTED,
@@ -612,11 +612,11 @@ void PrinterProviderAPIImpl::DispatchPrintRequested(PrinterProviderPrintJob job,
   int request_id = pending_print_requests_[extension_id].Add(
       std::move(job), std::move(callback));
 
-  std::unique_ptr<base::ListValue> internal_args(new base::ListValue);
+  std::vector<base::Value> internal_args;
   // Request id is not part of the public API and it will be massaged out in
   // custom bindings.
-  internal_args->AppendInteger(request_id);
-  internal_args->Append(print_job.ToValue());
+  internal_args.push_back(base::Value(request_id));
+  internal_args.push_back(base::Value::FromUniquePtrValue(print_job.ToValue()));
   std::unique_ptr<Event> event(
       new Event(events::PRINTER_PROVIDER_ON_PRINT_REQUESTED,
                 api::printer_provider::OnPrintRequested::kEventName,
@@ -650,11 +650,12 @@ void PrinterProviderAPIImpl::DispatchGetUsbPrinterInfoRequested(
   api::usb::Device api_device;
   UsbDeviceManager::Get(browser_context_)->GetApiDevice(device, &api_device);
 
-  std::unique_ptr<base::ListValue> internal_args(new base::ListValue());
+  std::vector<base::Value> internal_args;
   // Request id is not part of the public API and it will be massaged out in
   // custom bindings.
-  internal_args->AppendInteger(request_id);
-  internal_args->Append(api_device.ToValue());
+  internal_args.push_back(base::Value(request_id));
+  internal_args.push_back(
+      base::Value::FromUniquePtrValue(api_device.ToValue()));
   std::unique_ptr<Event> event(
       new Event(events::PRINTER_PROVIDER_ON_GET_USB_PRINTER_INFO_REQUESTED,
                 api::printer_provider::OnGetUsbPrinterInfoRequested::kEventName,

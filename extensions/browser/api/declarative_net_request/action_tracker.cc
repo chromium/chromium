@@ -431,8 +431,9 @@ void ActionTracker::DispatchOnRuleMatchedDebugIfNeeded(
   matched_rule_info_debug.rule = std::move(matched_rule);
   matched_rule_info_debug.request = std::move(request_details);
 
-  auto args = std::make_unique<base::ListValue>();
-  args->Append(matched_rule_info_debug.ToValue());
+  std::vector<base::Value> args;
+  args.push_back(
+      base::Value::FromUniquePtrValue(matched_rule_info_debug.ToValue()));
 
   auto event = std::make_unique<Event>(
       events::DECLARATIVE_NET_REQUEST_ON_RULE_MATCHED_DEBUG,
