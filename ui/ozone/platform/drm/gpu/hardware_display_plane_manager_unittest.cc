@@ -332,6 +332,47 @@ TEST_P(HardwareDisplayPlaneManagerTest, ResettingConnectorCache) {
   }
 }
 
+TEST_P(HardwareDisplayPlaneManagerTest, SequenceIncrementOnModesetOnly) {
+  fake_drm_->InitializeState(crtc_properties_, connector_properties_,
+                             plane_properties_, property_names_,
+                             /*use_atomic=*/true);
+
+  // Modeset Test
+  {
+    int pre_test_sequence_id = fake_drm_->modeset_sequence_id();
+    ASSERT_TRUE(fake_drm_->plane_manager()->Commit(
+        ui::CommitRequest(),
+        DRM_MODE_ATOMIC_TEST_ONLY | DRM_MODE_ATOMIC_ALLOW_MODESET));
+    EXPECT_EQ(pre_test_sequence_id, fake_drm_->modeset_sequence_id());
+  }
+
+  // Successful Modeset
+  {
+    int pre_modeset_sequence_id = fake_drm_->modeset_sequence_id();
+    ASSERT_TRUE(fake_drm_->plane_manager()->Commit(
+        ui::CommitRequest(), DRM_MODE_ATOMIC_ALLOW_MODESET));
+    EXPECT_EQ(pre_modeset_sequence_id + 1, fake_drm_->modeset_sequence_id());
+  }
+
+  // Failed Modeset
+  {
+    int pre_modeset_sequence_id = fake_drm_->modeset_sequence_id();
+    fake_drm_->set_set_crtc_expectation(false);
+    ASSERT_FALSE(fake_drm_->plane_manager()->Commit(
+        ui::CommitRequest(), DRM_MODE_ATOMIC_ALLOW_MODESET));
+    fake_drm_->set_set_crtc_expectation(true);
+    EXPECT_EQ(pre_modeset_sequence_id, fake_drm_->modeset_sequence_id());
+  }
+
+  // Page Flip
+  {
+    int pre_flip_sequence_id = fake_drm_->modeset_sequence_id();
+    ASSERT_TRUE(fake_drm_->plane_manager()->Commit(ui::CommitRequest(),
+                                                   DRM_MODE_ATOMIC_NONBLOCK));
+    EXPECT_EQ(pre_flip_sequence_id, fake_drm_->modeset_sequence_id());
+  }
+}
+
 TEST_P(HardwareDisplayPlaneManagerLegacyTest, Modeset) {
   InitializeDrmState(/*crtc_count=*/1, /*planes_per_crtc=*/1);
   fake_drm_->InitializeState(crtc_properties_, connector_properties_,

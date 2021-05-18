@@ -92,6 +92,10 @@ class DrmFramebuffer : public base::RefCountedThreadSafe<DrmFramebuffer> {
   // Device on which the buffer was created.
   const scoped_refptr<DrmDevice>& drm_device() const { return drm_device_; }
 
+  int modeset_sequence_id_at_allocation() const {
+    return modeset_sequence_id_at_allocation_;
+  }
+
  private:
   ~DrmFramebuffer();
 
@@ -109,6 +113,10 @@ class DrmFramebuffer : public base::RefCountedThreadSafe<DrmFramebuffer> {
   // was created without modifiers, the vector is empty.
   const std::vector<uint64_t> preferred_modifiers_;
   const gfx::Size size_;
+
+  // The latest modeset sequence ID that was retrieved from DrmDevice when the
+  // buffer is initialized.
+  const int modeset_sequence_id_at_allocation_ = 0;
 
   friend class base::RefCountedThreadSafe<DrmFramebuffer>;
 };

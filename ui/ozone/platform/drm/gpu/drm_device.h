@@ -215,11 +215,10 @@ class DrmDevice : public base::RefCountedThreadSafe<DrmDevice> {
 
   // On success, true is returned and |page_flip_request| will receive a
   // callback signalling completion of the flip, if provided.
-  virtual bool CommitProperties(
-      drmModeAtomicReq* properties,
-      uint32_t flags,
-      uint32_t crtc_count,
-      scoped_refptr<PageFlipRequest> page_flip_request);
+  bool CommitProperties(drmModeAtomicReq* properties,
+                        uint32_t flags,
+                        uint32_t crtc_count,
+                        scoped_refptr<PageFlipRequest> page_flip_request);
 
   virtual bool SetCapability(uint64_t capability, uint64_t value);
 
@@ -229,6 +228,8 @@ class DrmDevice : public base::RefCountedThreadSafe<DrmDevice> {
   // Drm master related
   virtual bool SetMaster();
   virtual bool DropMaster();
+
+  int modeset_sequence_id() const { return modeset_sequence_id_; }
 
   int get_fd() const { return file_.GetPlatformFile(); }
 
@@ -244,7 +245,18 @@ class DrmDevice : public base::RefCountedThreadSafe<DrmDevice> {
 
   virtual ~DrmDevice();
 
+  virtual bool CommitPropertiesInternal(
+      drmModeAtomicReq* properties,
+      uint32_t flags,
+      uint32_t crtc_count,
+      scoped_refptr<PageFlipRequest> page_flip_request);
+
   std::unique_ptr<HardwareDisplayPlaneManager> plane_manager_;
+
+  // Sequence ID incremented at each modeset.
+  // Currently used by DRM Framebuffer to indicate when was the fb initialized
+  // wrt the preceding modeset.
+  int modeset_sequence_id_ = 0;
 
  private:
   class IOWatcher;

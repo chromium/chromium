@@ -177,10 +177,6 @@ class MockDrmDevice : public DrmDevice {
   bool MapDumbBuffer(uint32_t handle, size_t size, void** pixels) override;
   bool UnmapDumbBuffer(void* pixels, size_t size) override;
   bool CloseBufferHandle(uint32_t handle) override;
-  bool CommitProperties(drmModeAtomicReq* request,
-                        uint32_t flags,
-                        uint32_t crtc_count,
-                        scoped_refptr<PageFlipRequest> callback) override;
   bool SetGammaRamp(
       uint32_t crtc_id,
       const std::vector<display::GammaRampRGBEntry>& lut) override;
@@ -189,6 +185,12 @@ class MockDrmDevice : public DrmDevice {
 
  private:
   ~MockDrmDevice() override;
+
+  bool CommitPropertiesInternal(
+      drmModeAtomicReq* request,
+      uint32_t flags,
+      uint32_t crtc_count,
+      scoped_refptr<PageFlipRequest> callback) override;
 
   bool UpdateProperty(uint32_t id,
                       uint64_t value,

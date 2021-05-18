@@ -308,9 +308,15 @@ bool DrmDevice::SetCrtc(uint32_t crtc_id,
 
   TRACE_EVENT2("drm", "DrmDevice::SetCrtc", "crtc", crtc_id, "size",
                gfx::Size(mode.hdisplay, mode.vdisplay).ToString());
-  return !drmModeSetCrtc(file_.GetPlatformFile(), crtc_id, framebuffer, 0, 0,
-                         connectors.data(), connectors.size(),
-                         const_cast<drmModeModeInfo*>(&mode));
+
+  if (!drmModeSetCrtc(file_.GetPlatformFile(), crtc_id, framebuffer, 0, 0,
+                      connectors.data(), connectors.size(),
+                      const_cast<drmModeModeInfo*>(&mode))) {
+    ++modeset_sequence_id_;
+    return true;
+  }
+
+  return false;
 }
 
 bool DrmDevice::DisableCrtc(uint32_t crtc_id) {
@@ -540,7 +546,22 @@ bool DrmDevice::CommitProperties(
     uint32_t flags,
     uint32_t crtc_count,
     scoped_refptr<PageFlipRequest> page_flip_request) {
+  bool success = CommitPropertiesInternal(properties, flags, crtc_count,
+                                          page_flip_request);
+
+  if (success && flags == DRM_MODE_ATOMIC_ALLOW_MODESET)
+    ++modeset_sequence_id_;
+
+  return success;
+}
+
+bool DrmDevice::CommitPropertiesInternal(
+    drmModeAtomicReq* properties,
+    uint32_t flags,
+    uint32_t crtc_count,
+    scoped_refptr<PageFlipRequest> page_flip_request) {
   uint64_t id = 0;
+
   if (page_flip_request) {
     flags |= DRM_MODE_PAGE_FLIP_EVENT;
     id = page_flip_manager_->GetNextId();
