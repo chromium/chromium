@@ -122,12 +122,12 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     // user-after-frees (proposal @ https://crbug.com/629139#c14)
     bool joinable = true;
 
-    bool IsValid() const { return !moved_from_; }
+    bool IsValid() const { return !moved_from; }
 
    private:
     // Set to true when the object is moved into another. Use to prevent reuse
     // of a moved-from object.
-    bool moved_from_ = false;
+    bool moved_from = false;
   };
 
   // Constructor.

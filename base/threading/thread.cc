@@ -119,7 +119,7 @@ Thread::Options::Options(Options&& other)
       stack_size(std::move(other.stack_size)),
       priority(std::move(other.priority)),
       joinable(std::move(other.joinable)) {
-  other.moved_from_ = true;
+  other.moved_from = true;
 }
 
 Thread::Options::~Options() = default;
