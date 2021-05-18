@@ -9,4 +9,13 @@
      =1 {When you reset ID, your current ID will become invalid and a new one will be issued in 1 day}
      other {When you reset ID, your current ID will become invalid and a new one will be issued in {NUM_DAYS} days}}
   </message>
+  <message name="IDS_PRIVACY_SANDBOX_FLOC_STATUS_ACTIVE" desc="Description of the user's FLoC status when they have the FLoC setting enabled, and the Origin Trial feature enabled, and so FLoC is fully active.">
+    Trial is active
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_FLOC_STATUS_ELIGIBLE_NOT_ACTIVE" desc="Description of the user's FLoC status when FLoC is not operational because the user was not placed in the origin trial. When the user is placed in the trial, because their FLoC setting is enabled, FLoC will become operational">
+    Eligible for trial but not active
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_FLOC_STATUS_NOT_ACTIVE" desc="Description of the user's FLoC status when FLoC is not operational, either because the user does not have the FLoC setting enabled, or the user was not placed in the origin trial, or both.">
+    Off
+  </message>
 </grit-part>

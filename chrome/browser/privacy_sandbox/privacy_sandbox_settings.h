@@ -86,6 +86,10 @@ class PrivacySandboxSettings : public KeyedService,
   // resets the FLoC cohort identifier.
   std::u16string GetFlocResetExplanationForDisplay() const;
 
+  // Returns a display ready string explaining the current status of FloC. E.g.
+  // the effective state of the Finch experiment, and the user's setting.
+  std::u16string GetFlocStatusForDisplay() const;
+
   // Determines whether Conversion Measurement is allowable in a particular
   // context. Should be called at both impression & conversion. At each of these
   // points |top_frame_origin| is the same as either the impression origin or

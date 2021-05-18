@@ -223,6 +223,21 @@ std::u16string PrivacySandboxSettings::GetFlocResetExplanationForDisplay()
       IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, floc_compute_days);
 }
 
+std::u16string PrivacySandboxSettings::GetFlocStatusForDisplay() const {
+  const bool floc_feature_enabled = base::FeatureList::IsEnabled(
+      blink::features::kInterestCohortAPIOriginTrial);
+  const bool floc_setting_enabled = IsFlocAllowed();
+  if (floc_setting_enabled) {
+    return floc_feature_enabled
+               ? l10n_util::GetStringUTF16(
+                     IDS_PRIVACY_SANDBOX_FLOC_STATUS_ACTIVE)
+               : l10n_util::GetStringUTF16(
+                     IDS_PRIVACY_SANDBOX_FLOC_STATUS_ELIGIBLE_NOT_ACTIVE);
+  }
+
+  return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_STATUS_NOT_ACTIVE);
+}
+
 bool PrivacySandboxSettings::IsConversionMeasurementAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {
