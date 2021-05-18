@@ -11,7 +11,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
@@ -33,6 +35,37 @@
 
 namespace chromeos {
 namespace full_restore {
+
+namespace {
+
+constexpr char kRestoredAppLaunchHistogramPrefix[] = "Apps.RestoredAppLaunch";
+
+// Returns apps::AppTypeName used for metrics.
+apps::AppTypeName GetHistogrameAppType(apps::mojom::AppType app_type) {
+  switch (app_type) {
+    case apps::mojom::AppType::kUnknown:
+      return apps::AppTypeName::kUnknown;
+    case apps::mojom::AppType::kArc:
+      return apps::AppTypeName::kArc;
+    case apps::mojom::AppType::kBuiltIn:
+    case apps::mojom::AppType::kCrostini:
+      return apps::AppTypeName::kUnknown;
+    case apps::mojom::AppType::kExtension:
+      return apps::AppTypeName::kChromeApp;
+    case apps::mojom::AppType::kWeb:
+      return apps::AppTypeName::kWeb;
+    case apps::mojom::AppType::kMacOs:
+    case apps::mojom::AppType::kPluginVm:
+    case apps::mojom::AppType::kStandaloneBrowser:
+    case apps::mojom::AppType::kRemote:
+    case apps::mojom::AppType::kBorealis:
+      return apps::AppTypeName::kUnknown;
+    case apps::mojom::AppType::kSystemWeb:
+      return apps::AppTypeName::kSystemWeb;
+  }
+}
+
+}  // namespace
 
 AppLaunchHandler::AppLaunchHandler(Profile* profile) : profile_(profile) {
   // FullRestoreReadHandler reads the full restore data from the full restore
@@ -165,6 +198,8 @@ void AppLaunchHandler::LaunchBrowser() {
     return;
   }
 
+  RecordRestoredAppsCount(apps::AppTypeName::kChromeBrowser);
+
   restore_data_->RemoveApp(extension_misc::kChromeAppId);
 
   if (profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
@@ -209,7 +244,7 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
       FALLTHROUGH;
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb:
-      LaunchSystemWebAppOrChromeApp(app_id, it->second);
+      LaunchSystemWebAppOrChromeApp(app_type, app_id, it->second);
       break;
     case apps::mojom::AppType::kBuiltIn:
     case apps::mojom::AppType::kCrostini:
@@ -226,6 +261,7 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
 }
 
 void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
+    apps::mojom::AppType app_type,
     const std::string& app_id,
     const ::full_restore::RestoreData::LaunchList& launch_list) {
   auto* launcher = apps::AppServiceProxyFactory::GetForProfile(profile_)
@@ -234,6 +270,8 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
     return;
 
   for (const auto& it : launch_list) {
+    RecordRestoredAppsCount(GetHistogrameAppType(app_type));
+
     DCHECK(it.second->container.has_value());
     DCHECK(it.second->disposition.has_value());
     DCHECK(it.second->display_id.has_value());
@@ -260,6 +298,8 @@ void AppLaunchHandler::LaunchArcApp(
   auto* arc_handler = FullRestoreArcTaskHandler::GetForProfile(profile_);
 
   for (const auto& it : launch_list) {
+    RecordRestoredAppsCount(apps::AppTypeName::kArc);
+
     DCHECK(it.second->event_flag.has_value());
 
     apps::mojom::WindowInfoPtr window_info =
@@ -293,6 +333,12 @@ void AppLaunchHandler::LaunchArcApp(
                     std::move(window_info));
     }
   }
+}
+
+void AppLaunchHandler::RecordRestoredAppsCount(
+    apps::AppTypeName app_type_name) {
+  base::UmaHistogramEnumeration(kRestoredAppLaunchHistogramPrefix,
+                                app_type_name);
 }
 
 }  // namespace full_restore
