@@ -467,6 +467,7 @@ def make_constructors(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
     decls = ListNode()
+    defs = ListNode()
 
     for member in cg_context.union_members:
         if member.is_null:
@@ -479,7 +480,49 @@ def make_constructors(cg_context):
                                               member.content_type()),
                                       ])
             decls.append(func_def)
-        if not member.is_null:
+        elif member.type_info.is_move_effective:
+            func_decl = CxxFuncDeclNode(
+                name=cg_context.class_name,
+                arg_decls=["{} value".format(member.type_info.member_ref_t)],
+                return_type="",
+                explicit=True)
+            func_def = CxxFuncDefNode(
+                name=cg_context.class_name,
+                arg_decls=["{} value".format(member.type_info.member_ref_t)],
+                return_type="",
+                class_name=cg_context.class_name,
+                member_initializer_list=[
+                    "content_type_({})".format(member.content_type()),
+                    "{}(value)".format(member.var_name),
+                ])
+            func_def.set_base_template_vars(cg_context.template_bindings())
+            func_def.body.append(
+                make_check_assignment_value(cg_context, member, "value"))
+            decls.append(func_decl)
+            defs.append(func_def)
+            defs.append(EmptyNode())
+
+            func_decl = CxxFuncDeclNode(
+                name=cg_context.class_name,
+                arg_decls=["{}&& value".format(member.type_info.value_t)],
+                return_type="",
+                explicit=True)
+            func_def = CxxFuncDefNode(
+                name=cg_context.class_name,
+                arg_decls=["{}&& value".format(member.type_info.value_t)],
+                return_type="",
+                class_name=cg_context.class_name,
+                member_initializer_list=[
+                    "content_type_({})".format(member.content_type()),
+                    "{}(std::move(value))".format(member.var_name),
+                ])
+            func_def.set_base_template_vars(cg_context.template_bindings())
+            func_def.body.append(
+                make_check_assignment_value(cg_context, member, "value"))
+            decls.append(func_decl)
+            defs.append(func_def)
+            defs.append(EmptyNode())
+        else:
             func_def = CxxFuncDefNode(
                 name=cg_context.class_name,
                 arg_decls=["{} value".format(member.type_info.member_ref_t)],
@@ -492,21 +535,8 @@ def make_constructors(cg_context):
             func_def.body.append(
                 make_check_assignment_value(cg_context, member, "value"))
             decls.append(func_def)
-        if not member.is_null and member.type_info.is_move_effective:
-            func_def = CxxFuncDefNode(
-                name=cg_context.class_name,
-                arg_decls=["{}&& value".format(member.type_info.value_t)],
-                return_type="",
-                explicit=True,
-                member_initializer_list=[
-                    "content_type_({})".format(member.content_type()),
-                    "{}(std::move(value))".format(member.var_name),
-                ])
-            func_def.body.append(
-                make_check_assignment_value(cg_context, member, "value"))
-            decls.append(func_def)
 
-    return decls, None
+    return decls, defs
 
 
 def make_accessor_functions(cg_context):
@@ -517,6 +547,11 @@ def make_accessor_functions(cg_context):
 
     decls = ListNode()
     defs = ListNode()
+
+    def add(func_decl, func_def):
+        decls.append(func_decl)
+        defs.append(func_def)
+        defs.append(EmptyNode())
 
     func_def = CxxFuncDefNode(name="GetContentType",
                               arg_decls=[],
@@ -538,7 +573,7 @@ def make_accessor_functions(cg_context):
         func_def.set_base_template_vars(cg_context.template_bindings())
         func_def.body.append(
             F("return content_type_ == {};", member.content_type()))
-        return func_def
+        return func_def, None
 
     def make_api_get(member):
         func_def = CxxFuncDefNode(name=member.api_get,
@@ -550,7 +585,7 @@ def make_accessor_functions(cg_context):
             F("DCHECK_EQ(content_type_, {});", member.content_type()),
             F("return {};", member.var_name),
         ])
-        return func_def
+        return func_def, None
 
     def make_api_set(member):
         func_def = CxxFuncDefNode(
@@ -564,24 +599,46 @@ def make_accessor_functions(cg_context):
             F("{} = value;", member.var_name),
             F("content_type_ = {};", member.content_type()),
         ])
+        return func_def, None
 
-        if not member.type_info.is_move_effective:
-            return func_def
+    def make_api_set_copy_and_move(member):
+        copy_func_decl = CxxFuncDeclNode(
+            name=member.api_set,
+            arg_decls=["{} value".format(member.type_info.member_ref_t)],
+            return_type="void")
+        copy_func_def = CxxFuncDefNode(
+            name=member.api_set,
+            arg_decls=["{} value".format(member.type_info.member_ref_t)],
+            return_type="void",
+            class_name=cg_context.class_name)
+        copy_func_def.set_base_template_vars(cg_context.template_bindings())
+        copy_func_def.body.extend([
+            make_check_assignment_value(cg_context, member, "value"),
+            T("Clear();"),
+            F("{} = value;", member.var_name),
+            F("content_type_ = {};", member.content_type()),
+        ])
 
-        decls = ListNode([func_def])
-        func_def = CxxFuncDefNode(
+        move_func_decl = CxxFuncDeclNode(
             name=member.api_set,
             arg_decls=["{}&& value".format(member.type_info.value_t)],
             return_type="void")
-        func_def.set_base_template_vars(cg_context.template_bindings())
-        func_def.body.extend([
+        move_func_def = CxxFuncDefNode(
+            name=member.api_set,
+            arg_decls=["{}&& value".format(member.type_info.value_t)],
+            return_type="void",
+            class_name=cg_context.class_name)
+        move_func_def.set_base_template_vars(cg_context.template_bindings())
+        move_func_def.body.extend([
             make_check_assignment_value(cg_context, member, "value"),
             T("Clear();"),
             F("{} = std::move(value);", member.var_name),
             F("content_type_ = {};", member.content_type()),
         ])
-        decls.append(func_def)
-        return decls
+
+        decls = ListNode([copy_func_decl, move_func_decl])
+        defs = ListNode([copy_func_def, EmptyNode(), move_func_def])
+        return decls, defs
 
     def make_api_set_null(member):
         func_def = CxxFuncDefNode(name=member.api_set,
@@ -592,20 +649,23 @@ def make_accessor_functions(cg_context):
             T("Clear();"),
             F("content_type_ = {};", member.content_type()),
         ])
-        return func_def
+        return func_def, None
 
     for member in cg_context.union_members:
         if member.is_null:
-            decls.append(make_api_pred(member))
-            decls.append(make_api_set_null(member))
+            add(*make_api_pred(member))
+            add(*make_api_set_null(member))
         else:
-            decls.append(make_api_pred(member))
+            add(*make_api_pred(member))
             for alias in member.typedef_aliases:
-                decls.append(make_api_pred(alias))
-            decls.append(make_api_get(member))
+                add(*make_api_pred(alias))
+            add(*make_api_get(member))
             for alias in member.typedef_aliases:
-                decls.append(make_api_get(alias))
-            decls.append(make_api_set(member))
+                add(*make_api_get(alias))
+            if member.type_info.is_move_effective:
+                add(*make_api_set_copy_and_move(member))
+            else:
+                add(*make_api_set(member))
         decls.append(EmptyNode())
 
     def make_api_subunion_pred(subunion, subunion_members):
@@ -667,19 +727,9 @@ def make_accessor_functions(cg_context):
     for subunion in cg_context.union.union_members:
         subunion_members = create_union_members(subunion)
         subunion = _UnionMemberSubunion(cg_context.union, subunion)
-        func_decl, func_def = make_api_subunion_pred(subunion,
-                                                     subunion_members)
-        decls.append(func_decl)
-        defs.append(func_def)
-        defs.append(EmptyNode())
-        func_decl, func_def = make_api_subunion_get(subunion, subunion_members)
-        decls.append(func_decl)
-        defs.append(func_def)
-        defs.append(EmptyNode())
-        func_decl, func_def = make_api_subunion_set(subunion, subunion_members)
-        decls.append(func_decl)
-        defs.append(func_def)
-        defs.append(EmptyNode())
+        add(*make_api_subunion_pred(subunion, subunion_members))
+        add(*make_api_subunion_get(subunion, subunion_members))
+        add(*make_api_subunion_set(subunion, subunion_members))
         decls.append(EmptyNode())
 
     return decls, defs
