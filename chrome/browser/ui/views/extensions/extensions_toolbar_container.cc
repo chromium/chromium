@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 
+#include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/animating_layout_manager.h"
@@ -421,6 +424,8 @@ void ExtensionsToolbarContainer::OnToolbarActionAdded(
   // only due to user interaction.
   if (display_mode_ != DisplayMode::kAutoHide)
     UpdateContainerVisibility();
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void ExtensionsToolbarContainer::OnToolbarActionRemoved(
@@ -445,6 +450,8 @@ void ExtensionsToolbarContainer::OnToolbarActionRemoved(
   icons_.erase(action_id);
 
   UpdateContainerVisibilityAfterAnimation();
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void ExtensionsToolbarContainer::OnToolbarActionUpdated(
@@ -587,6 +594,11 @@ bool ExtensionsToolbarContainer::CanDrop(const OSExchangeData& data) {
   return BrowserActionDragData::CanDrop(data, browser_->profile());
 }
 
+void ExtensionsToolbarContainer::OnDragEntered(
+    const ui::DropTargetEvent& event) {
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 int ExtensionsToolbarContainer::OnDragUpdated(
     const ui::DropTargetEvent& event) {
   BrowserActionDragData data;
@@ -625,22 +637,35 @@ void ExtensionsToolbarContainer::OnDragExited() {
   const ToolbarActionsModel::ActionId dragged_extension_id =
       drop_info_->action_id;
   drop_info_.reset();
-  ReorderViews();
-  GetAnimatingLayoutManager()->PostOrQueueAction(base::BindOnce(
-      &ExtensionsToolbarContainer::SetExtensionIconVisibility,
-      weak_ptr_factory_.GetWeakPtr(), dragged_extension_id, true));
+  DragDropCleanup(dragged_extension_id);
 }
 
 DragOperation ExtensionsToolbarContainer::OnPerformDrop(
     const ui::DropTargetEvent& event) {
-  BrowserActionDragData data;
-  if (!data.Read(event.data()))
+  auto drop_callback = GetDropCallback(event);
+  if (!drop_callback)
     return DragOperation::kNone;
 
-  model_->MovePinnedAction(drop_info_->action_id, drop_info_->index);
+  DragOperation output_drag_op = DragOperation::kNone;
+  std::move(drop_callback).Run(event, output_drag_op);
+  return output_drag_op;
+}
 
-  OnDragExited();  // Perform clean up after dragging.
-  return DragOperation::kMove;
+views::View::DropCallback ExtensionsToolbarContainer::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  BrowserActionDragData data;
+  if (!data.Read(event.data()))
+    return base::NullCallback();
+
+  auto action_id = std::move(drop_info_->action_id);
+  auto index = drop_info_->index;
+  drop_info_.reset();
+  base::ScopedClosureRunner cleanup(
+      base::BindOnce(&ExtensionsToolbarContainer::DragDropCleanup,
+                     weak_ptr_factory_.GetWeakPtr(), action_id));
+  return base::BindOnce(&ExtensionsToolbarContainer::MovePinnedAction,
+                        drop_weak_ptr_factory_.GetWeakPtr(), action_id, index,
+                        std::move(cleanup));
 }
 
 void ExtensionsToolbarContainer::OnWidgetClosing(views::Widget* widget) {
@@ -742,6 +767,27 @@ void ExtensionsToolbarContainer::OnMenuOpening() {
 
 void ExtensionsToolbarContainer::OnMenuClosed() {
   UpdateContainerVisibility();
+}
+
+void ExtensionsToolbarContainer::MovePinnedAction(
+    const ToolbarActionsModel::ActionId& action_id,
+    size_t index,
+    base::ScopedClosureRunner cleanup,
+    const ui::DropTargetEvent& event,
+    ui::mojom::DragOperation& output_drag_op) {
+  model_->MovePinnedAction(action_id, index);
+
+  output_drag_op = DragOperation::kMove;
+  // `cleanup` will run automatically when it goes out of scope to finish
+  // up the drag.
+}
+
+void ExtensionsToolbarContainer::DragDropCleanup(
+    const ToolbarActionsModel::ActionId& dragged_extension_id) {
+  ReorderViews();
+  GetAnimatingLayoutManager()->PostOrQueueAction(base::BindOnce(
+      &ExtensionsToolbarContainer::SetExtensionIconVisibility,
+      weak_ptr_factory_.GetWeakPtr(), dragged_extension_id, true));
 }
 
 BEGIN_METADATA(ExtensionsToolbarContainer, ToolbarIconContainerView)

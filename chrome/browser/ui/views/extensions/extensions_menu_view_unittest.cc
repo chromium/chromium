@@ -425,6 +425,131 @@ TEST_F(ExtensionsMenuViewUnitTest, ReorderPinnedExtensions) {
               testing::ElementsAre(kName3, kName1, kName2));
 }
 
+TEST_F(ExtensionsMenuViewUnitTest, RunDropCallback) {
+  constexpr char kName1[] = "Test 1";
+  auto ext1 = AddSimpleExtension(kName1);
+  constexpr char kName2[] = "Test 2";
+  auto ext2 = AddSimpleExtension(kName2);
+  constexpr char kName3[] = "Test 3";
+  auto ext3 = AddSimpleExtension(kName3);
+
+  auto* toolbar_model = ToolbarActionsModel::Get(profile());
+  ASSERT_TRUE(toolbar_model);
+
+  toolbar_model->SetActionVisibility(ext1->id(), true);
+  toolbar_model->SetActionVisibility(ext2->id(), true);
+  toolbar_model->SetActionVisibility(ext3->id(), true);
+  WaitForAnimation();
+
+  EXPECT_THAT(GetPinnedExtensionNames(),
+              testing::ElementsAre(kName1, kName2, kName3));
+
+  // Simulate dragging "Test 3" to the first slot.
+  ToolbarActionView* drag_view = GetPinnedExtensionView(kName3);
+  ui::OSExchangeData drag_data;
+  extensions_container()->WriteDragDataForView(drag_view, gfx::Point(),
+                                               &drag_data);
+  gfx::PointF drop_point(GetPinnedExtensionView(kName1)->origin());
+  ui::DropTargetEvent drop_event(drag_data, drop_point, drop_point,
+                                 ui::DragDropTypes::DRAG_MOVE);
+  extensions_container()->OnDragUpdated(drop_event);
+  auto cb = extensions_container()->GetDropCallback(drop_event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(cb).Run(drop_event, output_drag_op);
+  WaitForAnimation();
+
+  EXPECT_THAT(GetPinnedExtensionNames(),
+              testing::ElementsAre(kName3, kName1, kName2));
+  EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kMove);
+}
+
+TEST_F(ExtensionsMenuViewUnitTest, ResetDropCallback) {
+  constexpr char kName1[] = "Test 1";
+  auto ext1 = AddSimpleExtension(kName1);
+  constexpr char kName2[] = "Test 2";
+  auto ext2 = AddSimpleExtension(kName2);
+  constexpr char kName3[] = "Test 3";
+  auto ext3 = AddSimpleExtension(kName3);
+
+  auto* toolbar_model = ToolbarActionsModel::Get(profile());
+  ASSERT_TRUE(toolbar_model);
+
+  toolbar_model->SetActionVisibility(ext1->id(), true);
+  toolbar_model->SetActionVisibility(ext2->id(), true);
+  toolbar_model->SetActionVisibility(ext3->id(), true);
+  WaitForAnimation();
+
+  EXPECT_THAT(GetPinnedExtensionNames(),
+              testing::ElementsAre(kName1, kName2, kName3));
+
+  // Simulate dragging "Test 3" to the first slot.
+  ToolbarActionView* drag_view = GetPinnedExtensionView(kName3);
+  ui::OSExchangeData drag_data;
+  extensions_container()->WriteDragDataForView(drag_view, gfx::Point(),
+                                               &drag_data);
+  gfx::PointF drop_point(GetPinnedExtensionView(kName1)->origin());
+  ui::DropTargetEvent drop_event(drag_data, drop_point, drop_point,
+                                 ui::DragDropTypes::DRAG_MOVE);
+  extensions_container()->OnDragUpdated(drop_event);
+  auto cb = extensions_container()->GetDropCallback(drop_event);
+  WaitForAnimation();
+
+  EXPECT_THAT(GetPinnedExtensionNames(),
+              testing::ElementsAre(kName3, kName1, kName2));
+
+  // If the drop callback is reset (and never invoked), the drag should be
+  // aborted, and items should be back in their original order.
+  cb.Reset();
+  WaitForAnimation();
+
+  EXPECT_THAT(GetPinnedExtensionNames(),
+              testing::ElementsAre(kName1, kName2, kName3));
+}
+
+TEST_F(ExtensionsMenuViewUnitTest, InvalidateDropCallback) {
+  constexpr char kName1[] = "Test 1";
+  auto ext1 = AddSimpleExtension(kName1);
+  constexpr char kName2[] = "Test 2";
+  auto ext2 = AddSimpleExtension(kName2);
+
+  auto* toolbar_model = ToolbarActionsModel::Get(profile());
+  ASSERT_TRUE(toolbar_model);
+
+  toolbar_model->SetActionVisibility(ext1->id(), true);
+  toolbar_model->SetActionVisibility(ext2->id(), true);
+  WaitForAnimation();
+
+  EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre(kName1, kName2));
+
+  // Simulate dragging "Test 2" to the first slot.
+  ToolbarActionView* drag_view = GetPinnedExtensionView(kName2);
+  ui::OSExchangeData drag_data;
+  extensions_container()->WriteDragDataForView(drag_view, gfx::Point(),
+                                               &drag_data);
+  gfx::PointF drop_point(GetPinnedExtensionView(kName1)->origin());
+  ui::DropTargetEvent drop_event(drag_data, drop_point, drop_point,
+                                 ui::DragDropTypes::DRAG_MOVE);
+  extensions_container()->OnDragUpdated(drop_event);
+  auto cb = extensions_container()->GetDropCallback(drop_event);
+  WaitForAnimation();
+
+  EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre(kName2, kName1));
+
+  constexpr char kName3[] = "Test 3";
+  auto ext3 = AddSimpleExtension(kName3);
+  toolbar_model->SetActionVisibility(ext3->id(), true);
+  WaitForAnimation();
+
+  // The drop callback should be invalidated, and items should be back in their
+  // original order.
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(cb).Run(drop_event, output_drag_op);
+  WaitForAnimation();
+
+  EXPECT_THAT(GetPinnedExtensionNames(),
+              testing::ElementsAre(kName1, kName2, kName3));
+}
+
 TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionsReorderOnPrefChange) {
   constexpr char kName1[] = "Test 1";
   const extensions::ExtensionId id1 = AddSimpleExtension(kName1)->id();

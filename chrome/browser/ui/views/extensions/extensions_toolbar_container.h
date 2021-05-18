@@ -111,9 +111,12 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
                       std::set<ui::ClipboardFormatType>* format_types) override;
   bool AreDropTypesRequired() override;
   bool CanDrop(const ui::OSExchangeData& data) override;
+  void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
   ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event) override;
+  views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
 
   // ExtensionsContainer:
@@ -233,6 +236,17 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  // Moves the dragged extension `action_id`.
+  void MovePinnedAction(const ToolbarActionsModel::ActionId& action_id,
+                        size_t index,
+                        base::ScopedClosureRunner cleanup,
+                        const ui::DropTargetEvent& event,
+                        ui::mojom::DragOperation& output_drag_op);
+
+  // Performs clean up after dragging.
+  void DragDropCleanup(
+      const ToolbarActionsModel::ActionId& dragged_extension_id);
+
   Browser* const browser_;
   ToolbarActionsModel* const model_;
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
@@ -263,6 +277,8 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   std::unique_ptr<DropInfo> drop_info_;
 
   base::WeakPtrFactory<ExtensionsToolbarContainer> weak_ptr_factory_{this};
+
+  base::WeakPtrFactory<ExtensionsToolbarContainer> drop_weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_CONTAINER_H_
