@@ -190,8 +190,9 @@ struct DisplayUnitInfo {
   bool is_internal;
   // True if this display is enabled.
   bool is_enabled;
-  // True when the device is in tablet physical state.
-  bool is_in_tablet_physical_state;
+  // True if auto-rotation is allowed. It happens when the device is in a
+  // physical tablet state or kSupportsClamshellAutoRotation is set.
+  bool is_auto_rotation_allowed;
   // True if this display has a touch input device associated with it.
   bool has_touch_support;
   // True if this display has an accelerometer associated with it.
@@ -229,8 +230,8 @@ struct DisplayConfigProperties {
   // Note: overscan values may not be negative or larger than a half of the
   // screen's size. Overscan cannot be changed on the internal monitor.
   gfx.mojom.Insets? overscan;
-  // If provided updates the display's rotation, or if the device is in a
-  // physical tablet state, it can be used to set or clear the user rotation
+  // If provided updates the display's rotation, or if the auto-rotation is
+  // allowed in the device, it can be used to set or clear the user rotation
   // lock, enabling or disabling auto-rotation.
   DisplayRotation? rotation;
   // If provided, updates the display's logical bounds origin. Note: when

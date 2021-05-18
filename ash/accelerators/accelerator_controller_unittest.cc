@@ -839,6 +839,33 @@ TEST_F(AcceleratorControllerTest, RotateScreenInPhysicalTabletState) {
   EXPECT_FALSE(screen_orientation_controller->rotation_locked());
 }
 
+// Tests that using the keyboard shortcut to rotate the display while
+// kSupportsClamshellAutoRotation is set in the device behaves like a request to
+// lock the user orientation to the next rotation of the internal display, and
+// disables auto-rotation.
+TEST_F(AcceleratorControllerTest,
+       RotateScreenWithClamshellAutoRotationSupported) {
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kSupportsClamshellAutoRotation);
+
+  auto* screen_orientation_controller =
+      Shell::Get()->screen_orientation_controller();
+  EXPECT_TRUE(screen_orientation_controller->IsAutoRotationAllowed());
+  EXPECT_FALSE(screen_orientation_controller->user_rotation_locked());
+  EXPECT_FALSE(screen_orientation_controller->rotation_locked());
+  EXPECT_EQ(OrientationLockType::kLandscapePrimary,
+            screen_orientation_controller->GetCurrentOrientation());
+
+  TriggerRotateScreenShortcut();
+
+  EXPECT_TRUE(screen_orientation_controller->user_rotation_locked());
+  EXPECT_TRUE(screen_orientation_controller->rotation_locked());
+  EXPECT_EQ(OrientationLockType::kPortraitSecondary,
+            screen_orientation_controller->GetCurrentOrientation());
+}
+
 // Tests the behavior of the shortcut when the active window requests to lock
 // the rotation to a particular orientation.
 TEST_F(AcceleratorControllerTest, RotateScreenWithWindowLockingOrientation) {

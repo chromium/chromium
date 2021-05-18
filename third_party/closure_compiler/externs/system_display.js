@@ -132,7 +132,7 @@ chrome.system.display.Edid;
  *   isInternal: boolean,
  *   isEnabled: boolean,
  *   isUnified: boolean,
- *   isInTabletPhysicalState: (boolean|undefined),
+ *   isAutoRotationAllowed: (boolean|undefined),
  *   dpiX: number,
  *   dpiY: number,
  *   rotation: number,

@@ -192,8 +192,8 @@ system_display::DisplayUnitInfo GetDisplayUnitInfoFromMojo(
   info.is_primary = mojo_info.is_primary;
   info.is_internal = mojo_info.is_internal;
   info.is_enabled = mojo_info.is_enabled;
-  info.is_in_tablet_physical_state =
-      std::make_unique<bool>(mojo_info.is_in_tablet_physical_state);
+  info.is_auto_rotation_allowed =
+      std::make_unique<bool>(mojo_info.is_auto_rotation_allowed);
   info.dpi_x = mojo_info.dpi_x;
   info.dpi_y = mojo_info.dpi_y;
   info.rotation =

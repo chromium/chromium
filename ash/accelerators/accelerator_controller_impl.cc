@@ -645,7 +645,7 @@ display::Display::Rotation GetNextRotationInTabletMode(
 bool ShouldLockRotation(int64_t display_id) {
   return display::Display::HasInternalDisplay() &&
          display_id == display::Display::InternalDisplayId() &&
-         Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
+         Shell::Get()->screen_orientation_controller()->IsAutoRotationAllowed();
 }
 
 int64_t GetDisplayIdForRotation() {
@@ -667,8 +667,8 @@ void RotateScreen() {
   if (active_rotation == next_rotation)
     return;
 
-  // When the device is in a physical tablet state, display rotation requests of
-  // the internal display are treated as requests to lock the user rotation.
+  // When the auto-rotation is allowed in the device, display rotation requests
+  // of the internal display are treated as requests to lock the user rotation.
   if (ShouldLockRotation(display_id)) {
     shell->screen_orientation_controller()->SetLockToRotation(next_rotation);
     return;

@@ -262,11 +262,13 @@ display::Display::Rotation DisplayRotationFromRotationOptions(
 
 mojom::DisplayRotationOptions RotationOptionsFromDisplayRotation(
     display::Display::Rotation rotation) {
-  const bool is_in_tablet_physical_state =
-      Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
+  auto* screen_orientation_controller =
+      Shell::Get()->screen_orientation_controller();
+  const bool is_auto_rotation_allowed =
+      screen_orientation_controller->IsAutoRotationAllowed();
   const bool is_auto_rotate_enabled =
-      !Shell::Get()->screen_orientation_controller()->user_rotation_locked();
-  if (is_in_tablet_physical_state && is_auto_rotate_enabled)
+      !screen_orientation_controller->user_rotation_locked();
+  if (is_auto_rotation_allowed && is_auto_rotate_enabled)
     return mojom::DisplayRotationOptions::kAutoRotate;
 
   switch (rotation) {
@@ -307,8 +309,8 @@ mojom::DisplayUnitInfoPtr GetDisplayUnitInfo(const display::Display& display,
   info->is_primary = display.id() == primary_id;
   info->is_internal = display.IsInternal();
   info->is_enabled = true;
-  info->is_in_tablet_physical_state =
-      Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
+  info->is_auto_rotation_allowed =
+      Shell::Get()->screen_orientation_controller()->IsAutoRotationAllowed();
   const bool has_accelerometer_support =
       display.accelerometer_support() ==
       display::Display::AccelerometerSupport::AVAILABLE;
@@ -753,21 +755,22 @@ void CrosDisplayConfig::SetDisplayProperties(
   if (properties->rotation) {
     const mojom::DisplayRotationOptions rotation_options =
         properties->rotation->rotation;
-    const bool is_in_tablet_physical_state =
-        Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
     auto* screen_orientation_controller =
         Shell::Get()->screen_orientation_controller();
+    const bool is_auto_rotation_allowed =
+        screen_orientation_controller->IsAutoRotationAllowed();
     const bool auto_rotate_requested =
         rotation_options == mojom::DisplayRotationOptions::kAutoRotate;
-    if (auto_rotate_requested && !is_in_tablet_physical_state) {
-      LOG(ERROR) << "Auto-rotate is supported only when the device is in "
-                 << "physical tablet state. This will be treated as a request "
-                 << " to set the display rotation to 0 degrees.";
+    if (auto_rotate_requested && !is_auto_rotation_allowed) {
+      LOG(ERROR) << "Auto-rotate is supported when the device is in physical "
+                 << "tablet state or kSupportsClamshellAutoRotation is set. "
+                 << "This will be treated as a request to set the display "
+                 << "rotation to 0 degrees.";
     }
 
     display::Display::Rotation rotation =
         DisplayRotationFromRotationOptions(properties->rotation->rotation);
-    if (is_in_tablet_physical_state) {
+    if (is_auto_rotation_allowed) {
       if (auto_rotate_requested) {
         if (screen_orientation_controller->user_rotation_locked())
           screen_orientation_controller->ToggleUserRotationLock();

@@ -7,6 +7,7 @@
 #include "ash/display/display_alignment_controller.h"
 #include "ash/display/display_highlight_controller.h"
 #include "ash/display/screen_orientation_controller.h"
+#include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/touch_calibrator_controller.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/mojom/cros_display_config.mojom.h"
@@ -356,7 +357,7 @@ TEST_F(CrosDisplayConfigTest, GetDisplayUnitInfoListBasic) {
   EXPECT_TRUE(info_0.is_primary);
   EXPECT_TRUE(info_0.is_internal);
   EXPECT_TRUE(info_0.is_enabled);
-  EXPECT_FALSE(info_0.is_in_tablet_physical_state);
+  EXPECT_FALSE(info_0.is_auto_rotation_allowed);
   EXPECT_FALSE(info_0.has_touch_support);
   EXPECT_FALSE(info_0.has_accelerometer_support);
   EXPECT_EQ(96, info_0.dpi_x);
@@ -773,8 +774,11 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   EXPECT_EQ(display::Display::ROTATE_0, display.rotation());
 
   TabletModeControllerTestApi tablet_mode_controller_test_api;
+  ScreenOrientationControllerTestApi screen_orientation_controller_test_api(
+      screen_orientation_controller);
   tablet_mode_controller_test_api.EnterTabletMode();
   EXPECT_TRUE(tablet_mode_controller_test_api.IsInPhysicalTabletState());
+  EXPECT_TRUE(screen_orientation_controller_test_api.IsAutoRotationAllowed());
   EXPECT_TRUE(tablet_mode_controller_test_api.IsTabletModeStarted());
 
   // Clear out any pending observer calls.
@@ -800,6 +804,7 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   // for use.
   tablet_mode_controller_test_api.AttachExternalMouse();
   EXPECT_TRUE(tablet_mode_controller_test_api.IsInPhysicalTabletState());
+  EXPECT_TRUE(screen_orientation_controller_test_api.IsAutoRotationAllowed());
   EXPECT_FALSE(tablet_mode_controller_test_api.IsTabletModeStarted());
 
   // Clear out any pending observer calls.
@@ -825,6 +830,7 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   // restored.
   tablet_mode_controller_test_api.LeaveTabletMode();
   EXPECT_FALSE(tablet_mode_controller_test_api.IsInPhysicalTabletState());
+  EXPECT_FALSE(screen_orientation_controller_test_api.IsAutoRotationAllowed());
   EXPECT_FALSE(tablet_mode_controller_test_api.IsTabletModeStarted());
   EXPECT_EQ(display::Display::ROTATE_0, display.rotation());
 }
