@@ -36,6 +36,7 @@ component("dbus") {
     ":vm_applications_apps_proto",
     ":vm_permission_service_proto",
     ":vm_plugin_dispatcher_proto",
+    ":vm_sk_forwarding_proto",
     "//base",
     "//components/account_id",
     "//components/device_event_log",
@@ -312,6 +313,14 @@ proto_library("vm_applications_apps_proto") {
   sources = [ "//third_party/cros_system_api/dbus/vm_applications/apps.proto" ]
 
   proto_out_dir = "chromeos/dbus/vm_applications"
+}
+
+proto_library("vm_sk_forwarding_proto") {
+  sources = [
+    "//third_party/cros_system_api/dbus/vm_sk_forwarding/sk_forwarding.proto",
+  ]
+
+  proto_out_dir = "chromeos/dbus/vm_sk_forwarding"
 }
 
 proto_library("vm_permission_service_proto") {

@@ -103,6 +103,7 @@
 #include "chrome/browser/chromeos/dbus/smb_fs_service_provider.h"
 #include "chrome/browser/chromeos/dbus/virtual_file_request_service_provider.h"
 #include "chrome/browser/chromeos/dbus/vm/vm_permission_service_provider.h"
+#include "chrome/browser/chromeos/dbus/vm/vm_sk_forwarding_service_provider.h"
 #include "chrome/browser/chromeos/dbus/vm_applications_service_provider.h"
 #include "chrome/browser/chromeos/device_name_store.h"
 #include "chrome/browser/chromeos/events/event_rewriter_delegate_impl.h"
@@ -352,6 +353,12 @@ class DBusServices {
         CrosDBusService::CreateServiceProviderList(
             std::make_unique<VmApplicationsServiceProvider>()));
 
+    vm_sk_forwarding_service_ = CrosDBusService::Create(
+        system_bus, vm_tools::sk_forwarding::kVmSKForwardingServiceName,
+        dbus::ObjectPath(vm_tools::sk_forwarding::kVmSKForwardingServicePath),
+        CrosDBusService::CreateServiceProviderList(
+            std::make_unique<VmSKForwardingServiceProvider>()));
+
     vm_permission_service_ = CrosDBusService::Create(
         system_bus, kVmPermissionServiceName,
         dbus::ObjectPath(kVmPermissionServicePath),
@@ -451,6 +458,7 @@ class DBusServices {
     component_updater_service_.reset();
     chrome_features_service_.reset();
     vm_applications_service_.reset();
+    vm_sk_forwarding_service_.reset();
     vm_permission_service_.reset();
     drive_file_stream_service_.reset();
     cryptohome_key_delegate_service_.reset();
@@ -479,6 +487,7 @@ class DBusServices {
   std::unique_ptr<CrosDBusService> component_updater_service_;
   std::unique_ptr<CrosDBusService> chrome_features_service_;
   std::unique_ptr<CrosDBusService> vm_applications_service_;
+  std::unique_ptr<CrosDBusService> vm_sk_forwarding_service_;
   std::unique_ptr<CrosDBusService> vm_permission_service_;
   std::unique_ptr<CrosDBusService> drive_file_stream_service_;
   std::unique_ptr<CrosDBusService> cryptohome_key_delegate_service_;

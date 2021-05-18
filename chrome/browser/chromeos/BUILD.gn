@@ -41,6 +41,7 @@ source_set("chromeos") {
     "//chromeos/dbus:seneschal_proto",
     "//chromeos/dbus:vm_applications_apps_proto",
     "//chromeos/dbus:vm_permission_service_proto",
+    "//chromeos/dbus:vm_sk_forwarding_proto",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/strings",
@@ -2158,6 +2159,8 @@ source_set("chromeos") {
     "dbus/virtual_file_request_service_provider.h",
     "dbus/vm/vm_permission_service_provider.cc",
     "dbus/vm/vm_permission_service_provider.h",
+    "dbus/vm/vm_sk_forwarding_service_provider.cc",
+    "dbus/vm/vm_sk_forwarding_service_provider.h",
     "dbus/vm_applications_service_provider.cc",
     "dbus/vm_applications_service_provider.h",
     "device_name_store.cc",
@@ -3384,6 +3387,7 @@ python2_action("dbus_service_files") {
     "dbus/org.chromium.VirtualFileRequestService.conf",
     "dbus/org.chromium.VmApplicationsService.conf",
     "dbus/vm/org.chromium.VmPermissionService.conf",
+    "dbus/vm/org.chromium.VmSKForwardingService.conf",
   ]
   output_conf_file = "$root_out_dir/dbus/chrome_dbus_services.conf"
   outputs = [ output_conf_file ]
