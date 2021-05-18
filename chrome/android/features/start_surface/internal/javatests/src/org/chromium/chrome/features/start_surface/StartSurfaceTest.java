@@ -1482,21 +1482,21 @@ public class StartSurfaceTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/false"
             + "/new_home_surface_from_home_button/hide_mv_tiles_and_tab_switcher"})
-    @DisabledTest(message = "http://crbug/1206081 - the Instant_Return version is flaky.")
     public void testNewSurfaceFromHomeButton(){
         // clang-format on
-        assumeTrue(mImmediateReturn);
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        if (mImmediateReturn) {
+            StartSurfaceTestUtils.waitForOverviewVisible(
+                    mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
 
-        onViewWaiting(
-                allOf(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container), isDisplayed()));
-        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container));
-        onViewWaiting(withId(R.id.start_tab_switcher_button));
+            onViewWaiting(
+                    allOf(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout), isDisplayed()));
+            onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container));
+            onViewWaiting(withId(R.id.start_tab_switcher_button));
 
-        // Launch a tab. The home button should show on the normal tab.
-        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
+            // Launch a tab. The home button should show on the normal tab.
+            StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
+        }
 
         // Go back to the home surface, MV tiles and carousel tab switcher should not show anymore.
         StartSurfaceTestUtils.pressHomePageButton(cta);
@@ -1519,18 +1519,19 @@ public class StartSurfaceTest {
             + "/new_home_surface_from_home_button/hide_tab_switcher_only"})
     public void testNewSurfaceHideTabOnlyFromHomeButton() {
         // clang-format on
-        assumeTrue(mImmediateReturn);
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        if (mImmediateReturn) {
+            StartSurfaceTestUtils.waitForOverviewVisible(
+                    mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
 
-        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container));
-        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container));
-        onViewWaiting(withId(R.id.start_tab_switcher_button));
+            onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout));
+            onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container));
+            onViewWaiting(withId(R.id.start_tab_switcher_button));
 
-        // Launch a tab. The home button should show on the normal tab.
-        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
-        onViewWaiting(withId(R.id.home_button)).check(matches(isDisplayed()));
+            // Launch a tab. The home button should show on the normal tab.
+            StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
+            onViewWaiting(withId(R.id.home_button)).check(matches(isDisplayed()));
+        }
 
         // Go back to the home surface, MV tiles and carousel tab switcher should not show anymore.
         StartSurfaceTestUtils.pressHomePageButton(cta);
@@ -1539,7 +1540,7 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.waitForOverviewVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
         onViewWaiting(withId(R.id.start_tab_switcher_button));
-        onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container))
+        onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout))
                 .check(matches(withEffectiveVisibility(VISIBLE)));
         onView(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container))
                 .check(matches(withEffectiveVisibility(GONE)));
@@ -1728,6 +1729,7 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testOpenTileInIncognitoTabWithContextMenu() throws ExecutionException {
+        Assume.assumeFalse("https://crbug.com/1210554", mUseInstantStart && mImmediateReturn);
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
