@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_AUCTION_RUNNER_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_AUCTION_RUNNER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -24,6 +25,8 @@
 
 namespace content {
 
+class AuctionURLLoaderFactoryProxy;
+
 // An AuctionRunner loads and runs the bidder and seller worklets, along with
 // their reporting phases and produces the result via a callback.
 //
@@ -41,9 +44,6 @@ namespace content {
 // 0).
 class CONTENT_EXPORT AuctionRunner {
  public:
-  explicit AuctionRunner(const AuctionRunner&) = delete;
-  AuctionRunner& operator=(const AuctionRunner&) = delete;
-
   // Invoked when a FLEDGE auction is complete.
   //
   // `render_url` URL of auction winning ad to render.
@@ -74,20 +74,33 @@ class CONTENT_EXPORT AuctionRunner {
                               const GURL& seller_report_url,
                               const std::vector<std::string>& errors)>;
 
-  using GetAuctionServiceCallback =
-      base::RepeatingCallback<auction_worklet::mojom::AuctionWorkletService*()>;
+  // Delegate class to allow dependency injection in tests. Note that all
+  // objects this returns can crash and be restarted, so passing in raw pointers
+  // would be problematic.
+  class Delegate {
+   public:
+    // Returns the URLLoaderFactory of the frame running the auction. Used to
+    // load the seller worklet in the context of the parent frame, since unlike
+    // other worklet types, it has no first party opt-in, and it's not a
+    // cross-origin leak if the parent from knows its URL, since the parent
+    // frame provided the URL in the first place.
+    virtual network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory() = 0;
+
+    // Trusted URLLoaderFactory used to load bidder worklets.
+    virtual network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() = 0;
+
+    // Returns the AuctionWorkletService.
+    virtual auction_worklet::mojom::AuctionWorkletService*
+    GetWorkletService() = 0;
+  };
+
+  explicit AuctionRunner(const AuctionRunner&) = delete;
+  AuctionRunner& operator=(const AuctionRunner&) = delete;
 
   // Runs an entire FLEDGE auction.
   //
   // Arguments:
-  // `get_auction_service` is a callback to provide access to the
-  //  AuctionWorkletService. Must be safe to invoke at any time until the
-  //  AuctionRunner is destroyed.
-  //
-  // `url_loader_factory` is used to load worklet scripts and trusted bidding
-  //  signals. It's recommended that the implementation be restricted to exactly
-  //  those URLs (keeping in mind query parameter usage for trusted bidding
-  //  signals and the allowed coalescing).
+  // `delegate` must remain valid until the AuctionRunner is destroyed.
   //
   // `auction_config` is the configuration provided by client JavaScript in
   //  the renderer in order to initiate the auction.
@@ -101,12 +114,15 @@ class CONTENT_EXPORT AuctionRunner {
   //
   // `browser_signals` signals from the browser about the auction that are the
   //  same for all worklets.
+  //
+  // `frame_origin` is the origin running the auction (not the top frame
+  // origin), used as the initiator in network requests.
   static std::unique_ptr<AuctionRunner> CreateAndStart(
-      GetAuctionServiceCallback get_auction_service,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
+      Delegate* delegate,
       blink::mojom::AuctionAdConfigPtr auction_config,
       std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders,
       auction_worklet::mojom::BrowserSignalsPtr browser_signals,
+      const url::Origin& frame_origin,
       RunAuctionCallback callback);
 
   ~AuctionRunner();
@@ -119,6 +135,10 @@ class CONTENT_EXPORT AuctionRunner {
 
     auction_worklet::mojom::BiddingInterestGroup* bidder = nullptr;
 
+    // URLLoaderFactory proxy class configured only to load the URLs the bidder
+    // needs.
+    std::unique_ptr<AuctionURLLoaderFactoryProxy> url_loader_factory_;
+
     mojo::Remote<auction_worklet::mojom::BidderWorklet> bidder_worklet;
     auction_worklet::mojom::BidderWorkletBidPtr bid_result;
     // Points to the InterestGroupAd within `bidder` that won the auction. Only
@@ -129,11 +149,11 @@ class CONTENT_EXPORT AuctionRunner {
   };
 
   AuctionRunner(
-      GetAuctionServiceCallback get_auction_service,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
+      Delegate* delegate,
       blink::mojom::AuctionAdConfigPtr auction_config,
       std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders,
       auction_worklet::mojom::BrowserSignalsPtr browser_signals,
+      const url::Origin& frame_origin,
       RunAuctionCallback callback);
 
   void StartBidding();
@@ -188,13 +208,13 @@ class CONTENT_EXPORT AuctionRunner {
   // completion.
   void ClosePipes();
 
-  const GetAuctionServiceCallback get_auction_service_;
+  Delegate* const delegate_;
 
   // Configuration.
-  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
   blink::mojom::AuctionAdConfigPtr auction_config_;
   std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders_;
   auction_worklet::mojom::BrowserSignalsPtr browser_signals_;
+  const url::Origin frame_origin_;
   RunAuctionCallback callback_;
 
   // State for the bidding phase.
@@ -203,6 +223,10 @@ class CONTENT_EXPORT AuctionRunner {
   // The time the auction started. Use a single base time for all Worklets, to
   // present a more consistent view of the universe.
   const base::Time auction_start_time_ = base::Time::Now();
+
+  // URLLoaderFactory proxy class configured only to load the URL the seller
+  // needs.
+  std::unique_ptr<AuctionURLLoaderFactoryProxy> seller_url_loader_factory_;
 
   // State for the scoring phase.
   mojo::Remote<auction_worklet::mojom::SellerWorklet> seller_worklet_;

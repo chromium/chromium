@@ -7,20 +7,14 @@
 
 #include <stdint.h>
 
-#include <set>
-#include <vector>
-
 #include "base/callback_forward.h"
 #include "base/strings/string_piece_forward.h"
 #include "content/common/content_export.h"
-#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -36,36 +30,25 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
   // Passed in callbacks must be safe to call at any time during the lifetime of
   // the AuctionURLLoaderFactoryProxy.
   //
-  // `get_publisher_frame_url_loader_factory` returns a URLLoaderFactory
-  // configured to behave like the URLLoaderFactory in use by the frame running
-  // the auction. It uses the same network partition, request initiator lock
-  // etc. This is used to request resources specified by the publisher page
-  // (currently, just the the `decision_logic_url`). This is needed to protect
-  // against a V8 compromise being used to access arbitrary resources by setting
-  // the `decision_logic_url` to a target site. URLs associated with interest
-  // groups already have first-party opt in, so don't need this, but the seller
-  // URLs do not. If `decision_logic_url` matches any bidding script URL, the
-  // frame factory is used for all requests for that URL. Bidder JSON requests
-  // are distinguishable via their accept header, so always use the trusted
-  // factory.
+  // `get_url_loader_factory` returns the URLLoaderFactory to use. Must be safe
+  // to call at any point until `this` has been destroyed.
   //
-  // `get_trusted_url_loader_factory` returns a trusted URLLoaderFactory that
-  // can request arbitrary URLs. This is used to request interest groups with
-  // the appropriate network partition. Each interest group URL request needs to
-  // use the partition of the associated interest group to avoid leaking the
-  // fetched URLs to the publisher, since interest groups are roughly analogous
-  // to more restricted third party cookies.
+  // `frame_origin` is the origin of the frame running the auction. Used as the
+  // initiator.
   //
-  // URLs that may be requested are extracted from `auction_config` and
-  // `bidders`. Any other requested URL will result in failure.
+  // `use_cors` indicates if requests should use CORS or not. Should be true for
+  // seller worklets.
+  //
+  // `script_url` is the Javascript URL for the worklet, and
+  // `trusted_signals_url` is the optional JSON url for additional input to the
+  // script. No other URLs may be requested.
   AuctionURLLoaderFactoryProxy(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
-      GetUrlLoaderFactoryCallback get_publisher_frame_url_loader_factory,
-      GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
+      GetUrlLoaderFactoryCallback get_url_loader_factory,
       const url::Origin& frame_origin,
-      const blink::mojom::AuctionAdConfig& auction_config,
-      const std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>&
-          bidders);
+      bool use_cors,
+      const GURL& script_url,
+      const absl::optional<GURL>& trusted_signals_url = absl::nullopt);
   AuctionURLLoaderFactoryProxy(const AuctionURLLoaderFactoryProxy&) = delete;
   AuctionURLLoaderFactoryProxy& operator=(const AuctionURLLoaderFactoryProxy&) =
       delete;
@@ -84,28 +67,15 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       override;
 
  private:
-  mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
+  mojo::Receiver<network::mojom::URLLoaderFactory> receiver_;
 
-  const GetUrlLoaderFactoryCallback get_publisher_frame_url_loader_factory_;
-  const GetUrlLoaderFactoryCallback get_trusted_url_loader_factory_;
+  const GetUrlLoaderFactoryCallback get_url_loader_factory_;
 
   const url::Origin frame_origin_;
+  const bool use_cors_;
 
-  // URL of the seller script. Requested URLs may match these URLs exactly.
-  // Unlike `bidding_urls_`, requests for this URL must use the publisher
-  // frame's more restricted URLLoaderFactory. See constructor for more details.
-  GURL decision_logic_url_;
-
-  // URLs of worklet bidder scripts. Requested URLs may match these URLs
-  // exactly.
-  std::set<GURL> bidding_urls_;
-
-  // URLs for real-time bidding data. Requests may match these with the query
-  // parameter removed.
-  std::set<GURL> realtime_data_urls_;
-
-  // Expected prefix for all realtime data URL query strings.
-  const std::string expected_query_prefix_;
+  const GURL script_url_;
+  const absl::optional<GURL> trusted_signals_url_;
 };
 
 }  // namespace content

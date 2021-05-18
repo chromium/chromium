@@ -12,9 +12,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "net/base/escape.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -71,32 +73,31 @@ AuctionRunner::BidState::~BidState() = default;
 AuctionRunner::BidState::BidState(BidState&&) = default;
 
 std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
-    GetAuctionServiceCallback get_auction_service,
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
+    Delegate* delegate,
     blink::mojom::AuctionAdConfigPtr auction_config,
     std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders,
     auction_worklet::mojom::BrowserSignalsPtr browser_signals,
+    const url::Origin& frame_origin,
     RunAuctionCallback callback) {
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
-      std::move(get_auction_service), std::move(url_loader_factory),
-      std::move(auction_config), std::move(bidders), std::move(browser_signals),
-      std::move(callback)));
+      delegate, std::move(auction_config), std::move(bidders),
+      std::move(browser_signals), frame_origin, std::move(callback)));
   instance->StartBidding();
   return instance;
 }
 
 AuctionRunner::AuctionRunner(
-    GetAuctionServiceCallback get_auction_service,
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
+    Delegate* delegate,
     blink::mojom::AuctionAdConfigPtr auction_config,
     std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders,
     auction_worklet::mojom::BrowserSignalsPtr browser_signals,
+    const url::Origin& frame_origin,
     RunAuctionCallback callback)
-    : get_auction_service_(get_auction_service),
-      url_loader_factory_(std::move(url_loader_factory)),
+    : delegate_(delegate),
       auction_config_(std::move(auction_config)),
       bidders_(std::move(bidders)),
       browser_signals_(std::move(browser_signals)),
+      frame_origin_(frame_origin),
       callback_(std::move(callback)) {}
 
 AuctionRunner::~AuctionRunner() = default;
@@ -115,11 +116,47 @@ void AuctionRunner::StartBidding() {
         bidders_[bid_index];
     BidState* bid_state = &bid_states_[bid_index];
     bid_state->bidder = bidder.get();
-    // TODO(morlovich): Straight skip if URL is missing.
+
+    // Assemble list of URLs the bidder can request.
+
+    // TODO(mmenke): This largely duplicates logic in the auction worklet
+    // service. Avoid duplicating code.
+    absl::optional<GURL> trusted_bidding_signals_full_url;
+    if (bid_state->bidder->group->trusted_bidding_signals_url &&
+        bid_state->bidder->group->trusted_bidding_signals_keys) {
+      std::string query_params =
+          "hostname=" + net::EscapeQueryParamValue(
+                            browser_signals_->top_frame_origin.host(), true);
+      query_params += "&keys=";
+      bool first_key = true;
+      for (const auto& key :
+           *bid_state->bidder->group->trusted_bidding_signals_keys) {
+        if (first_key) {
+          first_key = false;
+        } else {
+          query_params.append(",");
+        }
+        query_params.append(net::EscapeQueryParamValue(key, true));
+      }
+
+      GURL::Replacements replacements;
+      replacements.SetQueryStr(query_params);
+      trusted_bidding_signals_full_url =
+          bid_state->bidder->group->trusted_bidding_signals_url
+              ->ReplaceComponents(replacements);
+    }
+
     mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
-    url_loader_factory_->Clone(
-        url_loader_factory.InitWithNewPipeAndPassReceiver());
-    get_auction_service_.Run()->LoadBidderWorkletAndGenerateBid(
+    bid_state->url_loader_factory_ =
+        std::make_unique<AuctionURLLoaderFactoryProxy>(
+            url_loader_factory.InitWithNewPipeAndPassReceiver(),
+            base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
+                                base::Unretained(delegate_)),
+            frame_origin_, false /* use_cors */,
+            bid_state->bidder->group->bidding_url.value_or(GURL()),
+            trusted_bidding_signals_full_url);
+
+    delegate_->GetWorkletService()->LoadBidderWorkletAndGenerateBid(
         bid_state->bidder_worklet.BindNewPipeAndPassReceiver(),
         std::move(url_loader_factory), bidder->Clone(),
         auction_config_->auction_signals, PerBuyerSignals(bid_state),
@@ -134,9 +171,12 @@ void AuctionRunner::StartBidding() {
 
   // Also initiate the script fetch for the seller script.
   mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
-  url_loader_factory_->Clone(
-      url_loader_factory.InitWithNewPipeAndPassReceiver());
-  get_auction_service_.Run()->LoadSellerWorklet(
+  seller_url_loader_factory_ = std::make_unique<AuctionURLLoaderFactoryProxy>(
+      url_loader_factory.InitWithNewPipeAndPassReceiver(),
+      base::BindRepeating(&Delegate::GetFrameURLLoaderFactory,
+                          base::Unretained(delegate_)),
+      frame_origin_, true /* use_cors */, auction_config_->decision_logic_url);
+  delegate_->GetWorkletService()->LoadSellerWorklet(
       seller_worklet_.BindNewPipeAndPassReceiver(),
       std::move(url_loader_factory), auction_config_->decision_logic_url,
       base::BindOnce(&AuctionRunner::OnSellerWorkletLoaded,

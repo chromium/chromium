@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/interest_group_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_service_base.h"
@@ -29,7 +30,8 @@ class RenderFrameHost;
 
 // Implements the AdAuctionService service called by Blink code.
 class CONTENT_EXPORT AdAuctionServiceImpl final
-    : public FrameServiceBase<blink::mojom::AdAuctionService> {
+    : public FrameServiceBase<blink::mojom::AdAuctionService>,
+      public AuctionRunner::Delegate {
  public:
   // Factory method for creating an instance of this interface that is
   // bound to the lifetime of the frame or receiver (whichever is shorter).
@@ -43,19 +45,10 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
   InterestGroupManager* GetInterestGroupManager();
 
-  // Returns an untrusted URLLoaderFactory created by the RenderFrameHost,
-  // suitable for loading URLs like subresources. Caches the factory in
-  // `frame_url_loader_factory_` for reuse.
-  network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory();
-
-  // Returns a trusted URLLoaderFactory. Consumers should set
-  // ResourceRequest::TrustedParams to specify a NetworkIsolationKey when using
-  // the returned factory. Caches the factory in `trusted_url_loader_factory_`
-  // for reuse.
-  network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory();
-
-  // Launches the worklet service, if needed.
-  auction_worklet::mojom::AuctionWorkletService* GetWorkletService();
+  // AuctionRunner::Delegate implementation:
+  network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory() override;
+  network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() override;
+  auction_worklet::mojom::AuctionWorkletService* GetWorkletService() override;
 
   using FrameServiceBase::origin;
   using FrameServiceBase::render_frame_host;

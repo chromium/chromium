@@ -20,6 +20,7 @@
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/http/http_status_code.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -216,11 +217,14 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
   explicit MockBidderWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
           pending_receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          pending_url_loader_factory,
       auction_worklet::mojom::AuctionWorkletService::
           LoadBidderWorkletAndGenerateBidCallback
               load_bidder_worklet_and_generate_bid_callback)
       : load_bidder_worklet_and_generate_bid_callback_(
             std::move(load_bidder_worklet_and_generate_bid_callback)),
+        url_loader_factory_(std::move(pending_url_loader_factory)),
         receiver_(this, std::move(pending_receiver)) {}
 
   MockBidderWorklet(const MockBidderWorklet&) = delete;
@@ -286,6 +290,10 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
         .Run(report_url, std::vector<std::string>() /* errors */);
   }
 
+  mojo::Remote<network::mojom::URLLoaderFactory>& url_loader_factory() {
+    return url_loader_factory_;
+  }
+
  private:
   auction_worklet::mojom::AuctionWorkletService::
       LoadBidderWorkletAndGenerateBidCallback
@@ -293,6 +301,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
 
   std::unique_ptr<base::RunLoop> report_win_run_loop_;
   ReportWinCallback report_win_callback_;
+
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
 
   // Receiver is last so that destroying `this` while there's a pending callback
   // over the pipe will not DCHECK.
@@ -312,9 +322,12 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
   explicit MockSellerWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
           pending_receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          pending_url_loader_factory,
       auction_worklet::mojom::AuctionWorkletService::LoadSellerWorkletCallback
           load_worklet_callback)
       : load_worklet_callback_(std::move(load_worklet_callback)),
+        url_loader_factory_(std::move(pending_url_loader_factory)),
         receiver_(this, std::move(pending_receiver)) {}
 
   MockSellerWorklet(const MockSellerWorklet&) = delete;
@@ -404,6 +417,10 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
              std::vector<std::string>() /* errors */);
   }
 
+  mojo::Remote<network::mojom::URLLoaderFactory>& url_loader_factory() {
+    return url_loader_factory_;
+  }
+
  private:
   auction_worklet::mojom::AuctionWorkletService::LoadSellerWorkletCallback
       load_worklet_callback_;
@@ -414,6 +431,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
 
   std::unique_ptr<base::RunLoop> report_result_run_loop_;
   ReportResultCallback report_result_callback_;
+
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
 
   // Receiver is last so that destroying `this` while there's a pending callback
   // over the pipe will not DCHECK.
@@ -454,6 +473,7 @@ class MockAuctionWorkletService
         interest_group_id,
         std::make_unique<MockBidderWorklet>(
             std::move(bidder_worklet_receiver),
+            std::move(pending_url_loader_factory),
             std::move(load_bidder_worklet_and_generate_bid_callback))));
 
     ASSERT_GT(waiting_for_num_bidders_, 0);
@@ -472,6 +492,7 @@ class MockAuctionWorkletService
 
     seller_worklet_ = std::make_unique<MockSellerWorklet>(
         std::move(seller_worklet_receiver),
+        std::move(pending_url_loader_factory),
         std::move(load_seller_worklet_callback));
 
     ASSERT_TRUE(waiting_on_seller_);
@@ -533,7 +554,7 @@ class MockAuctionWorkletService
   mojo::Receiver<auction_worklet::mojom::AuctionWorkletService> receiver_;
 };
 
-class AuctionRunnerTest : public testing::Test {
+class AuctionRunnerTest : public testing::Test, public AuctionRunner::Delegate {
  protected:
   // Output of the RunAuctionCallback passed to AuctionRunner::CreateAndStart().
   struct Result {
@@ -582,8 +603,6 @@ class AuctionRunnerTest : public testing::Test {
       const std::string& auction_signals_json,
       auction_worklet::mojom::BrowserSignalsPtr browser_signals) {
     auction_complete_ = false;
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
-    url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
 
     blink::mojom::AuctionAdConfigPtr auction_config =
         blink::mojom::AuctionAdConfig::New();
@@ -603,10 +622,8 @@ class AuctionRunnerTest : public testing::Test {
     auction_run_loop_ = std::make_unique<base::RunLoop>();
     Result result;
     auction_runner_ = AuctionRunner::CreateAndStart(
-        base::BindRepeating(&AuctionRunnerTest::GetWorkletService,
-                            base::Unretained(this)),
-        std::move(factory_remote), std::move(auction_config),
-        std::move(bidders), std::move(browser_signals),
+        this, std::move(auction_config), std::move(bidders),
+        std::move(browser_signals), frame_origin_,
         base::BindOnce(&AuctionRunnerTest::OnAuctionComplete,
                        base::Unretained(this)));
   }
@@ -704,7 +721,14 @@ class AuctionRunnerTest : public testing::Test {
     mock_worklet_service_->WaitForWorklets(2 /* num_bidders */);
   }
 
-  virtual auction_worklet::mojom::AuctionWorkletService* GetWorkletService() {
+  // AuctionRunner::Delegate implementation:
+  network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory() override {
+    return &url_loader_factory_;
+  }
+  network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() override {
+    return &url_loader_factory_;
+  }
+  auction_worklet::mojom::AuctionWorkletService* GetWorkletService() override {
     if (use_mock_service_) {
       if (!mock_worklet_service_) {
         mock_worklet_service_remote_.reset();
@@ -716,6 +740,8 @@ class AuctionRunnerTest : public testing::Test {
     return auction_worklet_service_remote_.get();
   }
 
+  const url::Origin frame_origin_ =
+      url::Origin::Create(GURL("https://frame.origin.test"));
   const GURL kSellerUrl{"https://adstuff.publisher1.com/auction.js"};
   const GURL kBidder1Url{"https://adplatform.com/offers.js"};
   const url::Origin kBidder1 =
@@ -1742,6 +1768,95 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
   EXPECT_TRUE(result_.seller_report_url.is_empty());
   EXPECT_TRUE(result_.bidder_report_url.is_empty());
   EXPECT_THAT(result_.errors, testing::ElementsAre());
+}
+
+// Make sure that requesting unexpected URLs is blocked.
+TEST_F(AuctionRunnerTest, UrlRequestProtection) {
+  StartStandardAuctionWithMockService();
+
+  auto seller_worklet = mock_worklet_service_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_worklet_service_->TakeBidderWorklet(kBidder1, kBidder1Name);
+  ASSERT_TRUE(bidder1_worklet);
+  auto bidder2_worklet =
+      mock_worklet_service_->TakeBidderWorklet(kBidder2, kBidder2Name);
+  ASSERT_TRUE(bidder2_worklet);
+
+  // It should be possible to request the seller URL from the seller's
+  // URLLoaderFactory.
+  network::ResourceRequest request;
+  request.url = kSellerUrl;
+  request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                            "application/javascript");
+  mojo::PendingRemote<network::mojom::URLLoader> receiver;
+  mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
+  seller_worklet->url_loader_factory()->CreateLoaderAndStart(
+      receiver.InitWithNewPipeAndPassReceiver(), 0 /* request_id_ */,
+      0 /* options */, request, client.InitWithNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  seller_worklet->url_loader_factory().FlushForTesting();
+  EXPECT_TRUE(seller_worklet->url_loader_factory().is_connected());
+  ASSERT_EQ(1u, url_loader_factory_.pending_requests()->size());
+  EXPECT_EQ(kSellerUrl,
+            (*url_loader_factory_.pending_requests())[0].request.url);
+  receiver.reset();
+  client.reset();
+
+  // A bidder's URLLoaderFactory should reject the seller URL, closing the Mojo
+  // pipe.
+  bidder1_worklet->url_loader_factory()->CreateLoaderAndStart(
+      receiver.InitWithNewPipeAndPassReceiver(), 0 /* request_id_ */,
+      0 /* options */, request, client.InitWithNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  bidder1_worklet->url_loader_factory().FlushForTesting();
+  EXPECT_FALSE(bidder1_worklet->url_loader_factory().is_connected());
+  EXPECT_EQ(1u, url_loader_factory_.pending_requests()->size());
+  EXPECT_EQ("Unexpected request", TakeBadMessage());
+  receiver.reset();
+  client.reset();
+
+  // A bidder's URLLoaderFactory should allow the bidder's URL to be requested.
+  request.url = kBidder2Url;
+  bidder2_worklet->url_loader_factory()->CreateLoaderAndStart(
+      receiver.InitWithNewPipeAndPassReceiver(), 0 /* request_id_ */,
+      0 /* options */, request, client.InitWithNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  bidder2_worklet->url_loader_factory().FlushForTesting();
+  EXPECT_TRUE(bidder2_worklet->url_loader_factory().is_connected());
+  ASSERT_EQ(2u, url_loader_factory_.pending_requests()->size());
+  EXPECT_EQ(kBidder2Url,
+            (*url_loader_factory_.pending_requests())[1].request.url);
+  receiver.reset();
+  client.reset();
+
+  // The seller's URLLoaderFactory should reject a bidder worklet's URL, closing
+  // the Mojo pipe.
+  seller_worklet->url_loader_factory()->CreateLoaderAndStart(
+      receiver.InitWithNewPipeAndPassReceiver(), 0 /* request_id_ */,
+      0 /* options */, request, client.InitWithNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  seller_worklet->url_loader_factory().FlushForTesting();
+  EXPECT_FALSE(seller_worklet->url_loader_factory().is_connected());
+  EXPECT_EQ(2u, url_loader_factory_.pending_requests()->size());
+  EXPECT_EQ("Unexpected request", TakeBadMessage());
+  receiver.reset();
+  client.reset();
+
+  // A bidder's URLLoaderFactory should also reject the URL from another bidder.
+  request.url = kBidder1Url;
+  bidder2_worklet->url_loader_factory()->CreateLoaderAndStart(
+      receiver.InitWithNewPipeAndPassReceiver(), 0 /* request_id_ */,
+      0 /* options */, request, client.InitWithNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  bidder2_worklet->url_loader_factory().FlushForTesting();
+  EXPECT_FALSE(bidder2_worklet->url_loader_factory().is_connected());
+  ASSERT_EQ(2u, url_loader_factory_.pending_requests()->size());
+  EXPECT_EQ("Unexpected request", TakeBadMessage());
+
+  // Reset the service, so the uninvoke worklet loading callbacks can be
+  // destroyed without DCHECKing.
+  mock_worklet_service_.reset();
 }
 
 }  // namespace

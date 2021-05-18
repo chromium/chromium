@@ -155,17 +155,9 @@ void AdAuction::StartWorklets() {
   DCHECK(pending_buyers_.empty());
   DCHECK(!bidders_.empty());
 
+  // TODO(mmenke): This should be top frame origin, not frame origin.
   auto browser_signals = auction_worklet::mojom::BrowserSignals::New(
       ad_auction_service_->origin(), config_->seller);
-
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
-  url_loader_factory_proxy_ = std::make_unique<AuctionURLLoaderFactoryProxy>(
-      url_loader_factory.InitWithNewPipeAndPassReceiver(),
-      base::BindRepeating(&AdAuctionServiceImpl::GetFrameURLLoaderFactory,
-                          base::Unretained(ad_auction_service_)),
-      base::BindRepeating(&AdAuctionServiceImpl::GetTrustedURLLoaderFactory,
-                          base::Unretained(ad_auction_service_)),
-      browser_signals->top_frame_origin, *config_, bidders_);
 
   std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders_copy;
   bidders_copy.reserve(bidders_.size());
@@ -175,10 +167,8 @@ void AdAuction::StartWorklets() {
   // `config_` is no longer needed after this point, so pass ownership of it
   // over to the AuctionRunner, instead of copying it.
   auction_runner_ = AuctionRunner::CreateAndStart(
-      base::BindRepeating(&AdAuctionServiceImpl::GetWorkletService,
-                          base::Unretained(ad_auction_service_)),
-      std::move(url_loader_factory), std::move(config_),
-      std::move(bidders_copy), std::move(browser_signals),
+      ad_auction_service_, std::move(config_), std::move(bidders_copy),
+      std::move(browser_signals), ad_auction_service_->origin(),
       base::BindOnce(&AdAuction::WorkletComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
