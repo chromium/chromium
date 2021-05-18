@@ -383,6 +383,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kOffsetParentNewSpecBehavior},
           {"OriginPolicy", features::kOriginPolicy},
           {"OriginIsolationHeader", features::kOriginIsolationHeader},
+          {"PrefersColorSchemeClientHintHeader",
+           features::kPrefersColorSchemeClientHintHeader},
           {"RawClipboard", blink::features::kRawClipboard},
           {"SanitizerAPI", blink::features::kSanitizerAPI},
           {"StorageAccessAPI", blink::features::kStorageAccessAPI},

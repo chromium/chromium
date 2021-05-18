@@ -138,6 +138,9 @@ enum PermissionsPolicyFeature {
   // Controls access to Direct Sockets.
   kDirectSockets = 84,
 
+  // Client Hint for the preferred color scheme.
+  kClientHintPrefersColorScheme = 85,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

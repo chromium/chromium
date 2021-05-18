@@ -75,6 +75,11 @@
       depends_on: ["FeaturePolicyForClientHints"],
     },
     {
+      name: "ClientHintPrefersColorScheme",
+      permissions_policy_name: "ch-prefers-color-scheme",
+      depends_on: ["FeaturePolicyForClientHints"],
+    },
+    {
       name: "ClientHintRTT",
       permissions_policy_name: "ch-rtt",
       depends_on: ["FeaturePolicyForClientHints"],

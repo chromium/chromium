@@ -452,6 +452,11 @@ TEST_F(CorsTest, SafelistedAcceptLanguage) {
       IsCorsSafelistedHeader("aCcEPT-lAngUAge", std::string(129, 'a')));
 }
 
+TEST_F(CorsTest, SafelistedSecCHPrefersColorScheme) {
+  EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-Prefers-Color-Scheme",
+                                     "\"Prefers-Color-Scheme!\""));
+}
+
 TEST_F(CorsTest, SafelistedSecCHLang) {
   EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-Lang", "\"en\", \"de\""));
 

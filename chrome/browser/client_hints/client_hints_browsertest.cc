@@ -60,7 +60,7 @@
 
 namespace {
 
-const unsigned expected_client_hints_number = 12u;
+const unsigned expected_client_hints_number = 13u;
 const int32_t uma_histogram_max_value = 1471228928;
 
 // An interceptor that records count of fetches and client hint headers for
@@ -265,7 +265,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
         "UserAgentClientHint,LangClientHintHeader,CriticalClientHint,"
-        "AcceptCHFrame",
+        "AcceptCHFrame,PrefersColorSchemeClientHintHeader",
         "");
     return feature_list;
   }
@@ -813,7 +813,8 @@ class ClientHintsAllowThirdPartyBrowserTest : public ClientHintsBrowserTest {
   std::unique_ptr<base::FeatureList> EnabledFeatures() override {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
-        "AllowClientHintsToThirdParty,UserAgentClientHint,LangClientHintHeader",
+        "AllowClientHintsToThirdParty,UserAgentClientHint,"
+        "LangClientHintHeader,PrefersColorSchemeClientHintHeader",
         "");
     return feature_list;
   }
@@ -2099,7 +2100,9 @@ class ClientHintsWebHoldbackBrowserTest : public ClientHintsBrowserTest {
 
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
-        "UserAgentClientHint,LangClientHintHeader", "");
+        "UserAgentClientHint,LangClientHintHeader,"
+        "PrefersColorSchemeClientHintHeader",
+        "");
     feature_list->RegisterFieldTrialOverride(
         features::kNetworkQualityEstimatorWebHoldback.name,
         base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());

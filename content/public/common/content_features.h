@@ -129,6 +129,7 @@ CONTENT_EXPORT extern const base::Feature kPeriodicBackgroundSync;
 CONTENT_EXPORT extern const base::Feature kFeaturePolicyHeader;
 CONTENT_EXPORT extern const base::Feature kPepper3DImageChromium;
 CONTENT_EXPORT extern const base::Feature kPepperCrossOriginRedirectRestriction;
+CONTENT_EXPORT extern const base::Feature kPrefersColorSchemeClientHintHeader;
 CONTENT_EXPORT extern const base::Feature kProcessHostOnUI;
 CONTENT_EXPORT extern const base::Feature kPlzServiceWorker;
 CONTENT_EXPORT extern const base::Feature kHighPriorityBeforeUnload;

@@ -3227,6 +3227,7 @@ enum WebFeature {
   kSVGText = 3912,
   kGetBBoxForText = 3913,
   kSVGTextHangingFromPath = 3914,
+  kClientHintsPrefersColorScheme = 3915,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

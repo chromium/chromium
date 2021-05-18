@@ -1666,6 +1666,10 @@
       settable_from_internals: true,
     },
     {
+      name: "PrefersColorSchemeClientHintHeader",
+      status: "experimental",
+    },
+    {
       name: "PrefersContrast",
       depends_on: ["ForcedColors"],
     },

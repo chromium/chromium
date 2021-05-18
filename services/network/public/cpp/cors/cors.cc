@@ -457,6 +457,15 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       "sec-ch-ua-mobile",
       "sec-ch-ua-full-version",
       "sec-ch-ua-platform-version",
+
+      // The `Sec-CH-Prefers-Color-Scheme` header field is modeled after the
+      // prefers-color-scheme user preference media feature. It reflects the
+      // user’s desire that the page use a light or dark color theme. This is
+      // currently pull from operating system preferences, although there may be
+      // internal UI in the future.
+      //
+      // https://tomayac.github.io/user-preference-media-features-headers/#sec-ch-prefers-color-scheme
+      "sec-ch-prefers-color-scheme",
   };
   if (std::find(std::begin(safe_names), std::end(safe_names), lower_name) ==
       std::end(safe_names))

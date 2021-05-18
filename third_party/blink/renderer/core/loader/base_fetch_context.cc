@@ -121,6 +121,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     const PermissionsPolicy* policy,
     const absl::optional<ClientHintImageInfo>& image_info,
     const absl::optional<WTF::AtomicString>& lang,
+    const absl::optional<WTF::AtomicString>& prefers_color_scheme,
     ResourceRequest& request) {
   // If the feature is enabled, then client hints are allowed only on secure
   // URLs.
@@ -333,6 +334,17 @@ void BaseFetchContext::AddClientHintsIfNecessary(
               network::mojom::blink::WebClientHintsType::kUAFullVersion)],
           SerializeHeaderString(ua->full_version));
     }
+  }
+
+  if (ShouldSendClientHint(
+          ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+          network::mojom::blink::WebClientHintsType::kPrefersColorScheme,
+          hints_preferences) &&
+      prefers_color_scheme) {
+    request.SetHttpHeaderField(
+        blink::kClientHintsHeaderMapping[static_cast<size_t>(
+            network::mojom::blink::WebClientHintsType::kPrefersColorScheme)],
+        prefers_color_scheme.value());
   }
 }
 

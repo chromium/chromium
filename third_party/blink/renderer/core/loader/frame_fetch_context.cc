@@ -458,6 +458,7 @@ void FrameFetchContext::AddClientHintsIfNecessary(
 
   absl::optional<ClientHintImageInfo> image_info;
   absl::optional<WTF::AtomicString> lang;
+  absl::optional<WTF::AtomicString> prefers_color_scheme;
 
   if (document_) {  // Only get frame info if the frame is not detached
     image_info = ClientHintImageInfo();
@@ -470,6 +471,8 @@ void FrameFetchContext::AddClientHintsIfNecessary(
                ->DomWindow()
                ->navigator()
                ->SerializeLanguagesForClientHintHeader();
+
+    prefers_color_scheme = document_->InDarkMode() ? "dark" : "light";
 
     // TODO(crbug.com/1151050): |SerializeLanguagesForClientHintHeader| getter
     // affects later calls if there is a DevTools override. The following blink
@@ -487,9 +490,9 @@ void FrameFetchContext::AddClientHintsIfNecessary(
   prefs.CombineWith(hints_preferences);
   prefs.CombineWith(GetClientHintsPreferences());
 
-  BaseFetchContext::AddClientHintsIfNecessary(prefs, resource_origin,
-                                              is_1p_origin, ua, policy,
-                                              image_info, lang, request);
+  BaseFetchContext::AddClientHintsIfNecessary(
+      prefs, resource_origin, is_1p_origin, ua, policy, image_info, lang,
+      prefers_color_scheme, request);
 }
 
 void FrameFetchContext::PopulateResourceRequest(

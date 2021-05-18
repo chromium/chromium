@@ -22,6 +22,7 @@ def main(request, response):
         b"sec-ch-ua-platform",
         b"sec-ch-ua-platform-version",
         b"sec-ch-ua-model",
+        b"sec-ch-prefers-color-scheme",
     ]
 
     client_hints_curr = {i:request.headers.get(i) for i in client_hint_headers}

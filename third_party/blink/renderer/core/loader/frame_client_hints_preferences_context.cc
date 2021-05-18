@@ -32,6 +32,7 @@ static constexpr WebFeature kWebFeatureMapping[] = {
     WebFeature::kClientHintsUAMobile,
     WebFeature::kClientHintsUAFullVersion,
     WebFeature::kClientHintsUAPlatformVersion,
+    WebFeature::kClientHintsPrefersColorScheme,
 };
 
 static_assert(static_cast<int>(network::mojom::WebClientHintsType::kMaxValue) +

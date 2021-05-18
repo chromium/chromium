@@ -32517,6 +32517,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3912" label="SVGText"/>
   <int value="3913" label="GetBBoxForText"/>
   <int value="3914" label="SVGTextHangingFromPath"/>
+  <int value="3915" label="ClientHintsPrefersColorScheme"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -32621,6 +32622,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="82" label="InterestCohort"/>
   <int value="83" label="SharedAutofill"/>
   <int value="84" label="DirectSockets"/>
+  <int value="85" label="ClientHintPrefersColorScheme"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

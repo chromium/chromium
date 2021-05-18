@@ -6441,7 +6441,7 @@ domain Page
       PerformanceProfile
 
   # All Permissions Policy features. This enum should match the one defined
-  # in renderer/core/feature_policy/feature_policy_features.json5.
+  # in third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5.
   experimental type PermissionsPolicyFeature extends string
     enum
       accelerometer
@@ -6454,6 +6454,7 @@ domain Page
       ch-downlink
       ch-ect
       ch-lang
+      ch-prefers-color-scheme
       ch-rtt
       ch-ua
       ch-ua-arch

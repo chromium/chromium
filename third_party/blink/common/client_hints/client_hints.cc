@@ -35,6 +35,7 @@ const char* const kClientHintsHeaderMapping[] = {
     "sec-ch-ua-mobile",
     "sec-ch-ua-full-version",
     "sec-ch-ua-platform-version",
+    "sec-ch-prefers-color-scheme",
 };
 
 const unsigned kClientHintsNumberOfLegacyHints = 4;
@@ -58,6 +59,7 @@ const mojom::PermissionsPolicyFeature kClientHintsPermissionsPolicyMapping[] = {
     mojom::PermissionsPolicyFeature::kClientHintUAMobile,
     mojom::PermissionsPolicyFeature::kClientHintUAFullVersion,
     mojom::PermissionsPolicyFeature::kClientHintUAPlatformVersion,
+    mojom::PermissionsPolicyFeature::kClientHintPrefersColorScheme,
 };
 
 const size_t kClientHintsMappingsCount = base::size(kClientHintsHeaderMapping);
@@ -95,7 +97,8 @@ std::string SerializeLangClientHint(const std::string& raw_language_list) {
 absl::optional<std::vector<network::mojom::WebClientHintsType>> FilterAcceptCH(
     absl::optional<std::vector<network::mojom::WebClientHintsType>> in,
     bool permit_lang_hints,
-    bool permit_ua_hints) {
+    bool permit_ua_hints,
+    bool permit_prefers_color_scheme_hints) {
   if (!in.has_value())
     return absl::nullopt;
 
@@ -115,6 +118,10 @@ absl::optional<std::vector<network::mojom::WebClientHintsType>> FilterAcceptCH(
       case network::mojom::WebClientHintsType::kUAMobile:
       case network::mojom::WebClientHintsType::kUAFullVersion:
         if (permit_ua_hints)
+          result.push_back(hint);
+        break;
+      case network::mojom::WebClientHintsType::kPrefersColorScheme:
+        if (permit_prefers_color_scheme_hints)
           result.push_back(hint);
         break;
       default:

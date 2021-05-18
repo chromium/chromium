@@ -354,6 +354,19 @@ void AddLangHeader(net::HttpRequestHeaders* headers, BrowserContext* context) {
           GetContentClient()->browser()->GetAcceptLangs(context)));
 }
 
+void AddPrefersColorSchemeHeader(net::HttpRequestHeaders* headers,
+                                 FrameTreeNode* frame_tree_node) {
+  blink::mojom::PreferredColorScheme preferred_color_scheme =
+      WebContents::FromRenderFrameHost(frame_tree_node->current_frame_host())
+          ->GetOrCreateWebPreferences()
+          .preferred_color_scheme;
+  bool is_dark_mode =
+      preferred_color_scheme == blink::mojom::PreferredColorScheme::kDark;
+  SetHeaderToString(headers,
+                    network::mojom::WebClientHintsType::kPrefersColorScheme,
+                    is_dark_mode ? "dark" : "light");
+}
+
 bool IsValidURLForClientHints(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() ||
       (url.SchemeIs(url::kHttpScheme) && !net::IsLocalhost(url)))
@@ -366,6 +379,11 @@ bool IsValidURLForClientHints(const GURL& url) {
 
 bool LangClientHintEnabled() {
   return base::FeatureList::IsEnabled(features::kLangClientHintHeader);
+}
+
+bool PrefersColorSchemeClientHintEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kPrefersColorSchemeClientHintHeader);
 }
 
 void AddUAHeader(net::HttpRequestHeaders* headers,
@@ -650,12 +668,17 @@ void AddRequestClientHintsHeaders(
         ClientUaHeaderCallType::kDuringCreation, headers);
   }
 
+  if (ShouldAddClientHint(
+          data, network::mojom::WebClientHintsType::kPrefersColorScheme)) {
+    AddPrefersColorSchemeHeader(headers, frame_tree_node);
+  }
+
   // Static assert that triggers if a new client hint header is added. If a
   // new client hint header is added, the following assertion should be updated.
   // If possible, logic should be added above so that the request headers for
   // the newly added client hint can be added to the request.
   static_assert(
-      network::mojom::WebClientHintsType::kUAPlatformVersion ==
+      network::mojom::WebClientHintsType::kPrefersColorScheme ==
           network::mojom::WebClientHintsType::kMaxValue,
       "Consider adding client hint request headers from the browser process");
 
@@ -750,7 +773,8 @@ ParseAndPersistAcceptCHForNagivation(
 
   absl::optional<std::vector<network::mojom::WebClientHintsType>> parsed =
       blink::FilterAcceptCH(headers->accept_ch.value(), LangClientHintEnabled(),
-                            delegate->UserAgentClientHintEnabled());
+                            delegate->UserAgentClientHintEnabled(),
+                            PrefersColorSchemeClientHintEnabled());
   if (!parsed.has_value())
     return absl::nullopt;
 

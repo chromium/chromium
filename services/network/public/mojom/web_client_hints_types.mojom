@@ -31,6 +31,7 @@ enum WebClientHintsType {
   kUAMobile = 12,
   kUAFullVersion = 13,
   kUAPlatformVersion = 14,
+  kPrefersColorScheme = 15,
 
   // Warning: Before adding a new client hint, read the warning at the top.
 };

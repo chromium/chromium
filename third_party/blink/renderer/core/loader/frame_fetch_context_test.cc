@@ -836,6 +836,30 @@ TEST_F(FrameFetchContextHintsTest, MonitorUAHints) {
   }
 }
 
+TEST_F(FrameFetchContextHintsTest, MonitorPrefersColorSchemeHint) {
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Color-Scheme",
+               false, "");
+  ExpectHeader("http://www.example.com/1.gif", "Sec-CH-Prefers-Color-Scheme",
+               false, "");
+
+  ClientHintsPreferences preferences;
+  preferences.SetShouldSend(
+      network::mojom::WebClientHintsType::kPrefersColorScheme);
+  document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
+
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Color-Scheme",
+               true, "light");
+  ExpectHeader("http://www.example.com/1.gif", "Sec-CH-Prefers-Color-Scheme",
+               false, "");
+
+  document->GetSettings()->SetPreferredColorScheme(
+      mojom::PreferredColorScheme::kDark);
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Color-Scheme",
+               true, "dark");
+  ExpectHeader("http://www.example.com/1.gif", "Sec-CH-Prefers-Color-Scheme",
+               false, "");
+}
+
 TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
   ExpectHeader("https://www.example.com/1.gif", "Device-Memory", false, "");
   ExpectHeader("https://www.example.com/1.gif", "DPR", false, "");
@@ -851,6 +875,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
                false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Model", false, "");
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Color-Scheme",
+               false, "");
 
   // `Sec-CH-UA` is special.
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA", true, "");
@@ -870,6 +896,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
   preferences.SetShouldSend(
       network::mojom::WebClientHintsType::kUAPlatformVersion);
   preferences.SetShouldSend(network::mojom::WebClientHintsType::kUAModel);
+  preferences.SetShouldSend(
+      network::mojom::WebClientHintsType::kPrefersColorScheme);
   ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(4096);
   document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
   ExpectHeader("https://www.example.com/1.gif", "Device-Memory", true, "4");
@@ -889,6 +917,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
                true, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Model", true, "");
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Color-Scheme",
+               true, "light");
 
   // Value of network quality client hints may vary, so only check if the
   // header is present and the values are non-negative/non-empty.
@@ -918,7 +948,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
       "ch-dpr *; ch-device-memory *; ch-downlink *; ch-ect *; ch-lang *;"
       "ch-rtt *; ch-ua *; ch-ua-arch *; ch-ua-platform *; "
       "ch-ua-platform-version *; ch-ua-model *;"
-      "ch-viewport-width *; ch-width *");
+      "ch-viewport-width *; ch-width *; ch-prefers-color-scheme *");
   document->GetSettings()->SetScriptEnabled(true);
   ClientHintsPreferences preferences;
   preferences.SetShouldSend(network::mojom::WebClientHintsType::kDeviceMemory);
@@ -935,6 +965,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
   preferences.SetShouldSend(
       network::mojom::WebClientHintsType::kUAPlatformVersion);
   preferences.SetShouldSend(network::mojom::WebClientHintsType::kUAModel);
+  preferences.SetShouldSend(
+      network::mojom::WebClientHintsType::kPrefersColorScheme);
   ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(4096);
   document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
 
@@ -956,6 +988,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Model", true, "");
   ExpectHeader("https://www.example.net/1.gif", "Width", true, "400", 400);
   ExpectHeader("https://www.example.net/1.gif", "Viewport-Width", true, "500");
+  ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Prefers-Color-Scheme",
+               true, "light");
 
   // Value of network quality client hints may vary, so only check if the
   // header is present and the values are non-negative/non-empty.
@@ -1021,6 +1055,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsPermissionsPolicy) {
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Model", false, "");
   ExpectHeader("https://www.example.net/1.gif", "Width", false, "");
   ExpectHeader("https://www.example.net/1.gif", "Viewport-Width", false, "");
+  ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Prefers-Color-Scheme",
+               false, "");
 }
 
 // Verify that the client hints are not attached for third-party subresources

@@ -83,7 +83,7 @@ The canonical enum for client hint tokens is [network::mojom::WebClientHintsType
 
 **NOTE:** It’s very important that the order of these arrays remain in sync.
 
-There should also be a new feature policy created, which should go in [/third_party/blink/renderer/core/feature_policy/feature_policy_features.json5](/third_party/blink/renderer/core/feature_policy/feature_policy_features.json5), and the header should be added to the cors `safe_names` list in [/services/network/public/cpp/cors/cors.cc](/services/network/public/cpp/cors/cors.cc)
+There should also be a new feature policy created, which should go in [/third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5](/third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5), and the header should be added to the cors `safe_names` list in [/services/network/public/cpp/cors/cors.cc](/services/network/public/cpp/cors/cors.cc)
 
 TODO(crbug.com/1176808): There should be UseCounters measuring usage, but there are not currently.
 
