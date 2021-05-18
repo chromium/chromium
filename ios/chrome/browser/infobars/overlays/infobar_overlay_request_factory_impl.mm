@@ -34,28 +34,22 @@ using autofill_address_profile_infobar_overlays::
 InfobarOverlayRequestFactoryImpl::InfobarOverlayRequestFactoryImpl() {
   SetUpFactories(InfobarType::kInfobarTypePasswordSave,
                  CreateFactory<SavePasswordInfobarBannerOverlayRequestConfig>(),
-                 /*detail_sheet_factory=*/nullptr,
                  CreateFactory<PasswordInfobarModalOverlayRequestConfig>());
   SetUpFactories(
       InfobarType::kInfobarTypePasswordUpdate,
       CreateFactory<UpdatePasswordInfobarBannerOverlayRequestConfig>(),
-      /*detail_sheet_factory=*/nullptr,
       CreateFactory<PasswordInfobarModalOverlayRequestConfig>());
   SetUpFactories(InfobarType::kInfobarTypeTranslate,
                  CreateFactory<TranslateBannerRequestConfig>(),
-                 /*detail_sheet_factory=*/nullptr,
                  CreateFactory<TranslateModalRequestConfig>());
   SetUpFactories(InfobarType::kInfobarTypeConfirm,
                  CreateFactory<ConfirmBannerRequestConfig>(),
-                 /*detail_sheet_factory=*/nullptr,
                  /*modal_factory=*/nullptr);
   SetUpFactories(InfobarType::kInfobarTypeSaveCard,
                  CreateFactory<SaveCardBannerRequestConfig>(),
-                 /*detail_sheet_factory=*/nullptr,
                  CreateFactory<SaveCardModalRequestConfig>());
   SetUpFactories(InfobarType::kInfobarTypeSaveAutofillAddressProfile,
                  CreateFactory<SaveAddressProfileBannerRequestConfig>(),
-                 /*detail_sheet_factory=*/nullptr,
                  CreateFactory<SaveAddressProfileModalRequestConfig>());
 }
 
@@ -74,11 +68,9 @@ InfobarOverlayRequestFactoryImpl::CreateInfobarRequest(
 void InfobarOverlayRequestFactoryImpl::SetUpFactories(
     InfobarType type,
     std::unique_ptr<FactoryHelper> banner_factory,
-    std::unique_ptr<FactoryHelper> detail_sheet_factory,
     std::unique_ptr<FactoryHelper> modal_factory) {
   factory_storages_.emplace(
       type, FactoryHelperStorage(std::move(banner_factory),
-                                 std::move(detail_sheet_factory),
                                  std::move(modal_factory)));
 }
 
@@ -89,11 +81,8 @@ InfobarOverlayRequestFactoryImpl::FactoryHelperStorage::FactoryHelperStorage() =
 
 InfobarOverlayRequestFactoryImpl::FactoryHelperStorage::FactoryHelperStorage(
     std::unique_ptr<FactoryHelper> banner_factory,
-    std::unique_ptr<FactoryHelper> detail_sheet_factory,
     std::unique_ptr<FactoryHelper> modal_factory) {
   factories_[InfobarOverlayType::kBanner] = std::move(banner_factory);
-  factories_[InfobarOverlayType::kDetailSheet] =
-      std::move(detail_sheet_factory);
   factories_[InfobarOverlayType::kModal] = std::move(modal_factory);
 }
 
@@ -101,8 +90,6 @@ InfobarOverlayRequestFactoryImpl::FactoryHelperStorage::FactoryHelperStorage(
     InfobarOverlayRequestFactoryImpl::FactoryHelperStorage&& storage) {
   factories_[InfobarOverlayType::kBanner] =
       std::move(storage.factories_[InfobarOverlayType::kBanner]);
-  factories_[InfobarOverlayType::kDetailSheet] =
-      std::move(storage.factories_[InfobarOverlayType::kDetailSheet]);
   factories_[InfobarOverlayType::kModal] =
       std::move(storage.factories_[InfobarOverlayType::kModal]);
 }

@@ -16,7 +16,6 @@ SaveCardInfobarInteractionHandler::SaveCardInfobarInteractionHandler()
     : InfobarInteractionHandler(
           InfobarType::kInfobarTypeSaveCard,
           std::make_unique<SaveCardInfobarBannerInteractionHandler>(),
-          /*sheet_handler=*/nullptr,
           std::make_unique<SaveCardInfobarModalInteractionHandler>()) {}
 
 SaveCardInfobarInteractionHandler::~SaveCardInfobarInteractionHandler() =

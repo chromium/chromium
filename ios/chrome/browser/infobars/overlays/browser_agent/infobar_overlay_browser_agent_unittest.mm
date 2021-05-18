@@ -83,9 +83,6 @@ class InfobarOverlayBrowserAgentTest
         InfobarOverlayType::kBanner,
         FakeInfobarOverlayRequestSupport(InfobarOverlayType::kBanner));
     request_supports_.emplace(
-        InfobarOverlayType::kDetailSheet,
-        FakeInfobarOverlayRequestSupport(InfobarOverlayType::kDetailSheet));
-    request_supports_.emplace(
         InfobarOverlayType::kModal,
         FakeInfobarOverlayRequestSupport(InfobarOverlayType::kModal));
     // Create the interaction handler and set up the mock handlers to return
@@ -94,10 +91,6 @@ class InfobarOverlayBrowserAgentTest
         interaction_handler_builder_.Build();
     EXPECT_CALL(*mock_handler(InfobarOverlayType::kBanner), CreateInstaller())
         .WillOnce(Return(ByMove(CreateInstaller(InfobarOverlayType::kBanner))));
-    EXPECT_CALL(*mock_handler(InfobarOverlayType::kDetailSheet),
-                CreateInstaller())
-        .WillOnce(
-            Return(ByMove(CreateInstaller(InfobarOverlayType::kDetailSheet))));
     EXPECT_CALL(*mock_handler(InfobarOverlayType::kModal), CreateInstaller())
         .WillOnce(Return(ByMove(CreateInstaller(InfobarOverlayType::kModal))));
     // Set up the browser agent and mock interaction handler.
@@ -200,5 +193,4 @@ TEST_P(InfobarOverlayBrowserAgentTest, OverlayPresentation) {
 INSTANTIATE_TEST_SUITE_P(/* No InstantiationName */,
                          InfobarOverlayBrowserAgentTest,
                          testing::Values(InfobarOverlayType::kBanner,
-                                         InfobarOverlayType::kDetailSheet,
                                          InfobarOverlayType::kModal));

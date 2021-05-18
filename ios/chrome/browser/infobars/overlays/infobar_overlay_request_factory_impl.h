@@ -60,7 +60,6 @@ class InfobarOverlayRequestFactoryImpl : public InfobarOverlayRequestFactory {
    public:
     FactoryHelperStorage();
     FactoryHelperStorage(std::unique_ptr<FactoryHelper> banner_factory,
-                         std::unique_ptr<FactoryHelper> detail_sheet_factory,
                          std::unique_ptr<FactoryHelper> modal_factory);
     FactoryHelperStorage(FactoryHelperStorage&& storage);
     ~FactoryHelperStorage();
@@ -83,7 +82,6 @@ class InfobarOverlayRequestFactoryImpl : public InfobarOverlayRequestFactory {
   // it to |factory_storages_|.
   void SetUpFactories(InfobarType type,
                       std::unique_ptr<FactoryHelper> banner_factory,
-                      std::unique_ptr<FactoryHelper> detail_sheet_factory,
                       std::unique_ptr<FactoryHelper> modal_factory);
 
   // Map containing the factory storages for each of InfobarType.

@@ -29,14 +29,10 @@ MockInfobarInteractionHandler::Builder::Build() {
 
   std::unique_ptr<MockInfobarInteractionHandler::Handler> banner_handler =
       std::make_unique<MockInfobarInteractionHandler::Handler>();
-  std::unique_ptr<MockInfobarInteractionHandler::Handler> sheet_handler =
-      std::make_unique<MockInfobarInteractionHandler::Handler>();
   std::unique_ptr<MockInfobarInteractionHandler::Handler> modal_handler =
       std::make_unique<MockInfobarInteractionHandler::Handler>();
   mock_handlers_[InfobarOverlayType::kBanner] = banner_handler.get();
-  mock_handlers_[InfobarOverlayType::kDetailSheet] = sheet_handler.get();
   mock_handlers_[InfobarOverlayType::kModal] = modal_handler.get();
   return std::make_unique<InfobarInteractionHandler>(
-      infobar_type_, std::move(banner_handler), std::move(sheet_handler),
-      std::move(modal_handler));
+      infobar_type_, std::move(banner_handler), std::move(modal_handler));
 }

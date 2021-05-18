@@ -37,11 +37,10 @@ class InfobarInteractionHandler {
 
   // Constructor for an InfobarInteractionHandler that uses the provided
   // handlers for each InfobarOverlayType.  |banner_handler| must be non-null.
-  // |detail_sheet_handler| and |modal_handler| may be null if their
-  // corresponding InfobarOverlayTypes are not supported for |infobar_type|.
+  // |modal_handler| may be null if its corresponding InfobarOverlayType is not
+  // supported for |infobar_type|.
   InfobarInteractionHandler(InfobarType infobar_type,
                             std::unique_ptr<Handler> banner_handler,
-                            std::unique_ptr<Handler> detail_sheet_handler,
                             std::unique_ptr<Handler> modal_handler);
   virtual ~InfobarInteractionHandler();
 
@@ -52,12 +51,6 @@ class InfobarInteractionHandler {
   // the the infobar's banner UI.  Guaranteed to be non-null.
   std::unique_ptr<OverlayRequestCallbackInstaller>
   CreateBannerCallbackInstaller();
-
-  // Creates an OverlayRequestCallbackInstaller that handles model-layer updates
-  // the the infobar's detail sheet UI.  Returns null  if detail sheets are not
-  // supported for this InfobarType.
-  std::unique_ptr<OverlayRequestCallbackInstaller>
-  CreateDetailSheetCallbackInstaller();
 
   // Creates an OverlayRequestCallbackInstaller that handles model-layer updates
   // the the infobar's modal UI.  Returns null  if modals are not
@@ -76,7 +69,6 @@ class InfobarInteractionHandler {
   InfobarType infobar_type_;
   // The handlers for each InfobarOverlayType.
   std::unique_ptr<Handler> banner_handler_;
-  std::unique_ptr<Handler> detail_sheet_handler_;
   std::unique_ptr<Handler> modal_handler_;
 };
 

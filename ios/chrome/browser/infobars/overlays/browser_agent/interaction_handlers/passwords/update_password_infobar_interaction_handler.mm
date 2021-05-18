@@ -22,7 +22,6 @@ UpdatePasswordInfobarInteractionHandler::
           std::make_unique<PasswordInfobarBannerInteractionHandler>(
               UpdatePasswordInfobarBannerOverlayRequestConfig::
                   RequestSupport()),
-          /*sheet_handler=*/nullptr,
           std::make_unique<PasswordInfobarModalInteractionHandler>(
               browser,
               password_modal::PasswordAction::kUpdate)) {}

@@ -21,7 +21,6 @@ TranslateInfobarInteractionHandler::TranslateInfobarInteractionHandler()
     : InfobarInteractionHandler(
           InfobarType::kInfobarTypeTranslate,
           std::make_unique<TranslateInfobarBannerInteractionHandler>(),
-          /*sheet_handler=*/nullptr,
           std::make_unique<TranslateInfobarModalInteractionHandler>()) {}
 
 TranslateInfobarInteractionHandler::~TranslateInfobarInteractionHandler() =

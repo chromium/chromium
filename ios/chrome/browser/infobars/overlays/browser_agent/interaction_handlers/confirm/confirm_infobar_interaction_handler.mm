@@ -15,7 +15,6 @@ ConfirmInfobarInteractionHandler::ConfirmInfobarInteractionHandler()
     : InfobarInteractionHandler(
           InfobarType::kInfobarTypeConfirm,
           std::make_unique<ConfirmInfobarBannerInteractionHandler>(),
-          /*sheet_handler=*/nullptr,
           /*modal_handler=*/nullptr) {}
 
 ConfirmInfobarInteractionHandler::~ConfirmInfobarInteractionHandler() = default;

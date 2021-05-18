@@ -17,7 +17,6 @@ SaveAddressProfileInfobarInteractionHandler::
     : InfobarInteractionHandler(
           InfobarType::kInfobarTypeSaveAutofillAddressProfile,
           std::make_unique<SaveAddressProfileInfobarBannerInteractionHandler>(),
-          /*sheet_handler=*/nullptr,
           std::make_unique<
               SaveAddressProfileInfobarModalInteractionHandler>()) {}
 

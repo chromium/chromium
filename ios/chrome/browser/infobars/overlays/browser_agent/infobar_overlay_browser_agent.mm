@@ -33,14 +33,8 @@ void InfobarOverlayBrowserAgent::AddInfobarInteractionHandler(
   // installer is gauranteed to be non-null.
   AddInstaller(interaction_handler->CreateBannerCallbackInstaller(),
                OverlayModality::kInfobarBanner);
-  // Add the detail sheet and modal installers.  Not all InfobarTypes support
-  // sheet and modal UI, so the installers must be checked before being added.
-  std::unique_ptr<OverlayRequestCallbackInstaller> detail_sheet_installer =
-      interaction_handler->CreateDetailSheetCallbackInstaller();
-  if (detail_sheet_installer) {
-    AddInstaller(std::move(detail_sheet_installer),
-                 OverlayModality::kInfobarModal);
-  }
+  // Add the modal installers.  Not all InfobarTypes support modal UI, so the
+  // installer must be checked before being added.
   std::unique_ptr<OverlayRequestCallbackInstaller> modal_installer =
       interaction_handler->CreateModalCallbackInstaller();
   if (modal_installer) {

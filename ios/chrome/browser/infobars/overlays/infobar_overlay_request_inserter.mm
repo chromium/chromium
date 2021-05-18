@@ -50,8 +50,6 @@ InfobarOverlayRequestInserter::InfobarOverlayRequestInserter(
   // Populate |queues_| with the request queues at the appropriate modalities.
   queues_[InfobarOverlayType::kBanner] = OverlayRequestQueue::FromWebState(
       web_state_, OverlayModality::kInfobarBanner);
-  queues_[InfobarOverlayType::kDetailSheet] = OverlayRequestQueue::FromWebState(
-      web_state_, OverlayModality::kInfobarModal);
   queues_[InfobarOverlayType::kModal] = OverlayRequestQueue::FromWebState(
       web_state_, OverlayModality::kInfobarModal);
 }
@@ -88,7 +86,6 @@ void InfobarOverlayRequestInserter::InsertOverlayRequest(
               request.get(), queue, infobar_ios, this,
               modal_completion_notifier_.get());
       break;
-    case InfobarOverlayType::kDetailSheet:
     case InfobarOverlayType::kModal:
       // Add placeholder request in front of banner queue so no banner get
       // presented behind the modal.

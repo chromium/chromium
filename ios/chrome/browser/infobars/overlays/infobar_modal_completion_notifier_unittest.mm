@@ -57,18 +57,6 @@ class InfobarModalCompletionNotifierTest : public PlatformTest {
 // Tests that the observer is notified when all modal requests for |infobar_|
 // have been removed.
 TEST_F(InfobarModalCompletionNotifierTest, ModalCompletion) {
-  // Add a detail sheet request for |infobar_|.
-  std::unique_ptr<OverlayRequest> detail_sheet_request =
-      OverlayRequest::CreateWithConfig<InfobarOverlayRequestConfig>(
-          &infobar_, InfobarOverlayType::kDetailSheet, false);
-  std::unique_ptr<FakeOverlayRequestCancelHandler>
-      passed_detail_sheet_cancel_handler =
-          std::make_unique<FakeOverlayRequestCancelHandler>(
-              detail_sheet_request.get(), queue());
-  FakeOverlayRequestCancelHandler* detail_sheet_cancel_handler =
-      passed_detail_sheet_cancel_handler.get();
-  queue()->AddRequest(std::move(detail_sheet_request),
-                      std::move(passed_detail_sheet_cancel_handler));
   // Add a modal request for |infobar_|.
   std::unique_ptr<OverlayRequest> modal_request =
       OverlayRequest::CreateWithConfig<InfobarOverlayRequestConfig>(
@@ -80,10 +68,6 @@ TEST_F(InfobarModalCompletionNotifierTest, ModalCompletion) {
       passed_modal_cancel_handler.get();
   queue()->AddRequest(std::move(modal_request),
                       std::move(passed_modal_cancel_handler));
-
-  // Cancel the detail sheet request, resulting in only a single active request
-  // for |infobar_| in the queue.
-  detail_sheet_cancel_handler->TriggerCancellation();
 
   // Cancel the modal request, expecting that InfobarModalsCompleted() is
   // called.
