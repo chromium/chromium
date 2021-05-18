@@ -26,6 +26,10 @@ class Ranker {
   // Called each time a search provider sets new results. Passed the |provider|
   // type that triggered this call, and all |results| received so far for this
   // search session.
+  //
+  // The results for a provider can be updated more than once in a search
+  // session, which will invalidate pointers to previous results. It is
+  // recommended that rankers don't explicitly store any result pointers.
   virtual void Rank(ResultsMap& results, ProviderType provider) {}
 
   // Called each time a user launches a result.

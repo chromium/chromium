@@ -107,6 +107,7 @@ void SearchControllerImplNew::Start(const std::u16string& query) {
 
   last_query_ = query;
   results_.clear();
+  ranker_->Start();
   for (const auto& provider : providers_)
     provider->Start(query);
 }
