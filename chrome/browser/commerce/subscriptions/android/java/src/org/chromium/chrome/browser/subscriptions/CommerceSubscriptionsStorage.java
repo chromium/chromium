@@ -116,6 +116,11 @@ public class CommerceSubscriptionsStorage {
         mNativeCommerceSubscriptionDB = nativePtr;
     }
 
+    @VisibleForTesting
+    public void setNativeCommerceSubscriptionDBForTesting(long nativeCommerceSubscriptionDB) {
+        mNativeCommerceSubscriptionDB = nativeCommerceSubscriptionDB;
+    }
+
     /**
      * Generate the key for a {@link CommerceSubscription} used to store it in database.
      * @param subscription The {@link CommerceSubscription} whose key we want to generate.

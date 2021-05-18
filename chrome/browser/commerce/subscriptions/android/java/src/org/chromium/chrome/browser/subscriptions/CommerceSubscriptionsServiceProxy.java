@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
 /**
  * Wrapper around CommerceSubscriptions Web APIs.
  */
@@ -41,6 +40,15 @@ public final class CommerceSubscriptionsServiceProxy {
     private static final String GET_SUBSCRIPTIONS_QUERY_PARAMS_TEMPLATE =
             "?requestParams.subscriptionType=%s";
     private static final int BACKEND_CANONICAL_CODE_SUCCESS = 0;
+    private final Profile mProfile;
+
+    /**
+     * Creates a new instance.
+     * @param profile the {@link Profile} to use when making the calls.
+     */
+    public CommerceSubscriptionsServiceProxy(Profile profile) {
+        mProfile = profile;
+    }
 
     /**
      * Makes an HTTPS call to the backend in order to create the provided subscriptions.
@@ -67,13 +75,12 @@ public final class CommerceSubscriptionsServiceProxy {
      */
     public void get(@CommerceSubscription.CommerceSubscriptionType String type,
             Callback<List<CommerceSubscription>> callback) {
-        // TODO(crbug.com/1195469) Accept Profile instance from SubscriptionsManager.
         EndpointFetcher.fetchUsingOAuth(
                 (response)
                         -> {
                     callback.onResult(createCommerceSubscriptions(response.getResponseString()));
                 },
-                Profile.getLastUsedRegularProfile(), OAUTH_NAME,
+                mProfile, OAUTH_NAME,
                 CommerceSubscriptionsServiceConfig.SUBSCRIPTIONS_SERVICE_BASE_URL.getValue()
                         + String.format(GET_SUBSCRIPTIONS_QUERY_PARAMS_TEMPLATE, type),
                 GET_HTTPS_METHOD, CONTENT_TYPE, OAUTH_SCOPE, EMPTY_POST_DATA,
@@ -81,14 +88,13 @@ public final class CommerceSubscriptionsServiceProxy {
     }
 
     private void manageSubscriptions(JSONObject requestPayload, Callback<Boolean> callback) {
-        // TODO(crbug.com/1195469) Accept Profile instance from SubscriptionsManager.
         EndpointFetcher.fetchUsingOAuth(
                 (response)
                         -> {
                     callback.onResult(
                             didManageSubscriptionCallSucceed(response.getResponseString()));
                 },
-                Profile.getLastUsedRegularProfile(), OAUTH_NAME,
+                mProfile, OAUTH_NAME,
                 CommerceSubscriptionsServiceConfig.SUBSCRIPTIONS_SERVICE_BASE_URL.getValue(),
                 POST_HTTPS_METHOD, CONTENT_TYPE, OAUTH_SCOPE, requestPayload.toString(),
                 HTTPS_REQUEST_TIMEOUT_MS);

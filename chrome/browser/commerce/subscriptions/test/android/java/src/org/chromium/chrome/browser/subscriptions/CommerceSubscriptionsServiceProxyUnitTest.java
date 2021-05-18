@@ -92,7 +92,7 @@ public class CommerceSubscriptionsServiceProxyUnitTest {
         mMocker.mock(EndpointFetcherJni.TEST_HOOKS, mEndpointFetcherJniMock);
         doReturn(false).when(mProfile).isOffTheRecord();
         Profile.setLastUsedProfileForTesting(mProfile);
-        mServiceProxy = new CommerceSubscriptionsServiceProxy();
+        mServiceProxy = new CommerceSubscriptionsServiceProxy(mProfile);
     }
 
     @After

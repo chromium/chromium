@@ -63,6 +63,8 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.ui.SigninPromoUtil;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsService;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -119,6 +121,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private HeightObserver mContinuousSearchObserver;
     private TabObscuringHandler.Observer mContinuousSearchTabObscuringHandlerObserver;
     private MerchantTrustSignalsCoordinator mMerchantTrustSignalsCoordinator;
+    private CommerceSubscriptionsService mCommerceSubscriptionsService;
 
     private int mStatusIndicatorHeight;
     private int mContinuousSearchHeight;
@@ -230,6 +233,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mMerchantTrustSignalsCoordinator != null) {
             mMerchantTrustSignalsCoordinator.destroy();
             mMerchantTrustSignalsCoordinator = null;
+        }
+
+        if (mCommerceSubscriptionsService != null) {
+            mCommerceSubscriptionsService.destroy();
+            mCommerceSubscriptionsService = null;
         }
 
         super.onDestroy();
@@ -348,6 +356,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         initContinuousSearchCoordinator();
 
         initMerchantTrustSignals();
+        initCommerceSubscriptionsService();
     }
 
     private void initMerchantTrustSignals() {
@@ -482,6 +491,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         browserControlsSizer.setAnimateBrowserControlsHeightChanges(animate);
         browserControlsSizer.setTopControlsHeight(topControlsNewHeight, mStatusIndicatorHeight);
         if (animate) browserControlsSizer.setAnimateBrowserControlsHeightChanges(false);
+    }
+
+    private void initCommerceSubscriptionsService() {
+        if (!TabUiFeatureUtilities.ENABLE_PRICE_NOTIFICATION.getValue()) {
+            return;
+        }
+
+        CommerceSubscriptionsServiceFactory factory = new CommerceSubscriptionsServiceFactory();
+        mCommerceSubscriptionsService = factory.getForLastUsedProfile();
+        mCommerceSubscriptionsService.initDeferredStartupForActivity(
+                mActivity.getTabModelSelector(), mActivity.getLifecycleDispatcher());
     }
 
     private void initStatusIndicatorCoordinator(LayoutManagerImpl layoutManager) {

@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.profiles.Profile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,67 +19,76 @@ import java.util.List;
  */
 public class SubscriptionsManagerImpl implements SubscriptionsManager {
     private final CommerceSubscriptionsStorage mStorage;
+    private final CommerceSubscriptionsServiceProxy mServiceProxy;
     private static List<CommerceSubscription> sRemoteSubscriptionsForTesting;
 
-    public SubscriptionsManagerImpl() {
-        mStorage = new CommerceSubscriptionsStorage(Profile.getLastUsedRegularProfile());
+    public SubscriptionsManagerImpl(Profile profile) {
+        mStorage = new CommerceSubscriptionsStorage(profile);
+        mServiceProxy = new CommerceSubscriptionsServiceProxy(profile);
     }
 
     /**
      * Creates a new subscription on the server-side and refreshes the local storage of
      * subscriptions.
      * @param subscription The {@link CommerceSubscription} to add.
+     * @param callback indicates whether or not the operation was successful.
      */
     @Override
-    public void subscribe(CommerceSubscription subscription) {
-        String type = subscription.getType();
-        if (type.equals(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK)) {
-            // TODO(crbug.com/1186450): Replace getSubscriptions with callback from subscription
-            // request.
-            getSubscriptions(type, true,
-                    remoteSubscriptions
-                    -> updateStorageWithSubscriptions(type, remoteSubscriptions));
+    public void subscribe(CommerceSubscription subscription, Callback<Boolean> callback) {
+        if (subscription == null || !isSubscriptionTypeSupported(subscription.getType())) {
+            callback.onResult(false);
+            return;
         }
+
+        mServiceProxy.create(new ArrayList<CommerceSubscription>() {
+            { add(subscription); };
+        }, (didSucceed) -> handleUpdateSubscriptionsResponse(didSucceed, subscription.getType()));
     }
 
     /**
      * Creates new subscriptions in batch if needed.
      * @param subscriptions The list of {@link CommerceSubscription} to add.
+     * @param callback indicates whether or not the operation was successful.
      */
     @Override
-    public void subscribe(List<CommerceSubscription> subscriptions) {
-        if (subscriptions.size() == 0) return;
+    public void subscribe(List<CommerceSubscription> subscriptions, Callback<Boolean> callback) {
+        if (subscriptions.size() == 0) {
+            callback.onResult(false);
+            return;
+        }
 
         String type = subscriptions.get(0).getType();
-        if (type.equals(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK)) {
-            // TODO(crbug.com/1186450): Replace getSubscriptions with callback from subscription
-            // request.
-            getSubscriptions(type, true,
-                    remoteSubscriptions
-                    -> updateStorageWithSubscriptions(type, remoteSubscriptions));
+        if (isSubscriptionTypeSupported(type)) {
+            mServiceProxy.create(subscriptions,
+                    (didSucceed) -> handleUpdateSubscriptionsResponse(didSucceed, type));
+        } else {
+            callback.onResult(false);
         }
     }
 
     /**
      * Destroys a subscription on the server-side and refreshes the local storage of subscriptions.
      * @param subscription The {@link CommerceSubscription} to destroy.
+     * @param callback indicates whether or not the operation was successful.
      */
     @Override
-    public void unsubscribe(CommerceSubscription subscription) {
+    public void unsubscribe(CommerceSubscription subscription, Callback<Boolean> callback) {
         String type = subscription.getType();
-        if (type.equals(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK)) {
-            // TODO(crbug.com/1186450): Replace getSubscriptions with callback from unsubscription
-            // request.
-            getSubscriptions(type, true,
-                    remoteSubscriptions
-                    -> updateStorageWithSubscriptions(type, remoteSubscriptions));
+        if (subscription == null || !isSubscriptionTypeSupported(type)) {
+            callback.onResult(false);
+            return;
         }
+
+        mServiceProxy.delete(new ArrayList<CommerceSubscription>() {
+            { add(subscription); };
+        }, (didSucceed) -> handleUpdateSubscriptionsResponse(didSucceed, type));
     }
 
     /**
      * Returns all subscriptions that match the provided type.
      * @param type The {@link CommerceSubscription.CommerceSubscriptionType} to query.
      * @param forceFetch Whether to fetch from server. If no, fetch from local storage.
+     * @param callback returns the list of subscriptions.
      */
     @Override
     public void getSubscriptions(@CommerceSubscription.CommerceSubscriptionType String type,
@@ -87,10 +97,17 @@ public class SubscriptionsManagerImpl implements SubscriptionsManager {
             callback.onResult(sRemoteSubscriptionsForTesting);
             return;
         }
-        if (!forceFetch) {
+        if (forceFetch) {
+            mServiceProxy.get(type, callback);
+        } else {
             mStorage.loadWithPrefix(String.valueOf(type),
                     localSubscriptions -> callback.onResult(localSubscriptions));
         }
+    }
+
+    private boolean isSubscriptionTypeSupported(
+            @CommerceSubscription.CommerceSubscriptionType String type) {
+        return CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK.equals(type);
     }
 
     private void updateStorageWithSubscriptions(
@@ -108,6 +125,16 @@ public class SubscriptionsManagerImpl implements SubscriptionsManager {
                 }
             }
         });
+    }
+
+    private void handleUpdateSubscriptionsResponse(
+            Boolean didSucceed, @CommerceSubscription.CommerceSubscriptionType String type) {
+        assert didSucceed : "Failed to handle update subscriptions response";
+        if (didSucceed) {
+            getSubscriptions(type, true,
+                    remoteSubscriptions
+                    -> updateStorageWithSubscriptions(type, remoteSubscriptions));
+        }
     }
 
     @VisibleForTesting

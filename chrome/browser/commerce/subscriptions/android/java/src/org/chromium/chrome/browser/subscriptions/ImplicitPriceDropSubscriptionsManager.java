@@ -4,13 +4,15 @@
 
 package org.chromium.chrome.browser.subscriptions;
 
+import android.text.TextUtils;
+
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingIdType;
@@ -44,6 +46,7 @@ public class ImplicitPriceDropSubscriptionsManager {
     private final PauseResumeWithNativeObserver mPauseResumeWithNativeObserver;
     private final SubscriptionsManagerImpl mSubscriptionManager;
     private final SharedPreferencesManager mSharedPreferencesManager;
+    private final PriceDropNotificationManager mPriceDropNotificationManager;
 
     public ImplicitPriceDropSubscriptionsManager(TabModelSelector tabModelSelector,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
@@ -62,7 +65,6 @@ public class ImplicitPriceDropSubscriptionsManager {
             }
         };
         mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
-        DeferredStartupHandler.getInstance().addDeferredTask(this::initializeSubscriptions);
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mPauseResumeWithNativeObserver = new PauseResumeWithNativeObserver() {
             @Override
@@ -75,6 +77,7 @@ public class ImplicitPriceDropSubscriptionsManager {
         };
         mActivityLifecycleDispatcher.register(mPauseResumeWithNativeObserver);
         mSharedPreferencesManager = SharedPreferencesManager.getInstance();
+        mPriceDropNotificationManager = new PriceDropNotificationManager();
     }
 
     private boolean isUniqueTab(Tab tab) {
@@ -108,17 +111,21 @@ public class ImplicitPriceDropSubscriptionsManager {
         }
         List<CommerceSubscription> subscriptions = new ArrayList<>();
         for (Tab tab : urlTabMapping.values()) {
+            if (!hasOfferId(tab)) {
+                continue;
+            }
             CommerceSubscription subscription =
                     new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
                             ShoppingPersistedTabData.from(tab).getMainOfferId(),
                             SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
             subscriptions.add(subscription);
         }
-        mSubscriptionManager.subscribe(subscriptions);
+        mSubscriptionManager.subscribe(subscriptions,
+                (didSucceed) -> { assert didSucceed : "Failed to create subscriptions."; });
     }
 
     private void unsubscribe(Tab tab) {
-        if (!isUniqueTab(tab)) {
+        if (!isUniqueTab(tab) || !hasOfferId(tab)) {
             return;
         }
 
@@ -126,11 +133,13 @@ public class ImplicitPriceDropSubscriptionsManager {
                 new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
                         ShoppingPersistedTabData.from(tab).getMainOfferId(),
                         SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
-        mSubscriptionManager.unsubscribe(subscription);
+        mSubscriptionManager.unsubscribe(subscription,
+                (didSucceed) -> { assert didSucceed : "Failed to remove subscriptions."; });
     }
 
     private boolean hasOfferId(Tab tab) {
-        return !ShoppingPersistedTabData.from(tab).getMainOfferId().isEmpty();
+        return ShoppingPersistedTabData.from(tab) != null
+                && !TextUtils.isEmpty(ShoppingPersistedTabData.from(tab).getMainOfferId());
     }
 
     // TODO(crbug.com/1186450): Extract this method to a utility class. Also, make the one-day time
@@ -146,10 +155,11 @@ public class ImplicitPriceDropSubscriptionsManager {
     }
 
     private boolean shouldInitializeSubscriptions() {
-        if (System.currentTimeMillis()
-                        - mSharedPreferencesManager.readLong(
-                                CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, -1)
-                < CHROME_MANAGED_SUBSCRIPTIONS_TIME_THRESHOLD_MS) {
+        if ((!mPriceDropNotificationManager.canPostNotification())
+                || (System.currentTimeMillis()
+                                - mSharedPreferencesManager.readLong(
+                                        CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, -1)
+                        < CHROME_MANAGED_SUBSCRIPTIONS_TIME_THRESHOLD_MS)) {
             return false;
         }
         mSharedPreferencesManager.writeLong(

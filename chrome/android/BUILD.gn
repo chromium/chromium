@@ -20,6 +20,9 @@ import("//chrome/android/modules/chrome_bundle_tmpl.gni")
 import("//chrome/android/modules/chrome_feature_module_tmpl.gni")
 import("//chrome/android/monochrome_android_manifest_jinja_variables.gni")
 import("//chrome/browser/commerce/price_tracking/android/java_sources.gni")
+import("//chrome/browser/commerce/subscriptions/android/java_sources.gni")
+import(
+    "//chrome/browser/commerce/subscriptions/test/android/test_java_sources.gni")
 import("//chrome/browser/feed/android/web_feed_java_sources.gni")
 import("//chrome/browser/share/android/java_sources.gni")
 import("//chrome/chrome_paks.gni")
@@ -313,7 +316,6 @@ android_library("chrome_java") {
     "//chrome/browser/banners/android:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/commerce/merchant_viewer/android:java",
-    "//chrome/browser/commerce/subscriptions/android:java",
     "//chrome/browser/consent_auditor/android:java",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/continuous_search:data_structures_java",
@@ -657,6 +659,11 @@ android_library("chrome_java") {
   # dependency when circular deps is resolved.
   sources += price_tracking_java_sources
 
+  # TODO(crbug/1210158): Instead of adding source files, add it as a separate
+  # dependency when circular deps is resolved.
+  sources += commerce_subscriptions_java_sources
+  deps += commerce_subscriptions_java_deps
+
   if (enable_basic_printing) {
     deps += [ "//printing:printing_java" ]
   }
@@ -693,7 +700,6 @@ java_group("chrome_all_java") {
     "//chrome/android/features/keyboard_accessory:internal_java",
     "//chrome/browser/attribution_reporting/android/internal:java",
     "//chrome/browser/commerce/merchant_viewer/android:java",
-    "//chrome/browser/commerce/subscriptions/android:java",
     "//chrome/browser/content_creation/notes/internal/android:java",
     "//chrome/browser/download/internal/android:java",
     "//chrome/browser/page_annotations/android:java",
@@ -878,7 +884,6 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/browser_controls/android:junit",
     "//chrome/browser/commerce/merchant_viewer/android:junit",
-    "//chrome/browser/commerce/subscriptions/test/android:junit",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/continuous_search:junit",
     "//chrome/browser/continuous_search/internal:junit",
@@ -1174,7 +1179,6 @@ android_library("chrome_test_java") {
     "//chrome/browser/banners/android:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/commerce/merchant_viewer/android:javatests",
-    "//chrome/browser/commerce/subscriptions/test/android:javatests",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/continuous_search:data_structures_java",
     "//chrome/browser/continuous_search:javatests",
@@ -1439,6 +1443,8 @@ android_library("chrome_test_java") {
   ]
 
   deps += feed_test_deps
+
+  deps += commerce_subscriptions_java_test_deps
 
   if (enable_basic_printing) {
     deps += [ "//printing:printing_java" ]

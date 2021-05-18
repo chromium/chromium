@@ -16,12 +16,14 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -50,6 +52,15 @@ public class SubscriptionsManagerImplTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
+    @Mock
+    private Profile mProfile;
+
+    @Rule
+    public JniMocker mMocker = new JniMocker();
+
+    @Mock
+    private CommerceSubscriptionsStorage.Natives mCommerceSubscriptionsStorageJni;
+
     private static final String OFFER_ID_1 = "offer_id_1";
     private static final String OFFER_ID_2 = "offer_id_2";
     private static final String OFFER_ID_3 = "offer_id_3";
@@ -64,9 +75,10 @@ public class SubscriptionsManagerImplTest {
 
     @Before
     public void setUp() throws Exception {
+        mMocker.mock(CommerceSubscriptionsStorageJni.TEST_HOOKS, mCommerceSubscriptionsStorageJni);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mStorage = new CommerceSubscriptionsStorage(Profile.getLastUsedRegularProfile());
-            mSubscriptionsManager = new SubscriptionsManagerImpl();
+            mStorage = new CommerceSubscriptionsStorage(mProfile);
+            mSubscriptionsManager = new SubscriptionsManagerImpl(mProfile);
         });
 
         mSubscription1 =
@@ -115,8 +127,11 @@ public class SubscriptionsManagerImplTest {
                     CommerceSubscriptionsStorage.getKey(subscription), subscription);
         }
         mSubscriptionsManager.setRemoteSubscriptionsForTesting(remoteSubscriptions);
+
         // Test local cache is updated after single subscription.
-        ThreadUtils.runOnUiThreadBlocking(() -> mSubscriptionsManager.subscribe(newSubscription));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mSubscriptionsManager.subscribe(newSubscription, (didSucceed) -> {}));
+
         loadSingleAndCheckResult(CommerceSubscriptionsStorage.getKey(mSubscription3), null);
         loadPrefixAndCheckResult(
                 CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK, expectedSubscriptions);
@@ -143,7 +158,8 @@ public class SubscriptionsManagerImplTest {
         }
         mSubscriptionsManager.setRemoteSubscriptionsForTesting(remoteSubscriptions);
         // Test local cache is updated after subscribing a list of subscriptions.
-        ThreadUtils.runOnUiThreadBlocking(() -> mSubscriptionsManager.subscribe(newSubscriptions));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mSubscriptionsManager.subscribe(newSubscriptions, (didSucceed) -> {}));
         loadSingleAndCheckResult(CommerceSubscriptionsStorage.getKey(mSubscription3), null);
         loadPrefixAndCheckResult(
                 CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK, expectedSubscriptions);
@@ -170,7 +186,7 @@ public class SubscriptionsManagerImplTest {
         mSubscriptionsManager.setRemoteSubscriptionsForTesting(remoteSubscriptions);
         // Test local cache is updated after unsubscription.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mSubscriptionsManager.unsubscribe(removedSubscription));
+                () -> mSubscriptionsManager.unsubscribe(removedSubscription, (didSucceed) -> {}));
         loadSingleAndCheckResult(CommerceSubscriptionsStorage.getKey(removedSubscription), null);
         loadPrefixAndCheckResult(
                 CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK, expectedSubscriptions);
