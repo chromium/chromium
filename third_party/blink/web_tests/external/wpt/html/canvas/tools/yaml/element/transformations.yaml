@@ -463,10 +463,10 @@
     @assert canvasTransform.m22 = 2 * sy;
     @assert canvasTransform.m33 = 2 * sz;
 
-- name: 2d.transformation.rotate3d.X
+- name: 2d.transformation.rotate3d.x
   desc: rotate3d() around the x axis results in the correct transformation matrix
   testing:
-  - 2d.transformation.rotate3d.X
+  - 2d.transformation.rotate3d.x
   code: |
     // angles are in radians, test something that is not a multiple of pi
     const angle = 2;
@@ -478,10 +478,10 @@
     domMatrix.rotateAxisAngleSelf(1, 0, 0, rad2deg(angle));
     _assertMatricesApproxEqual(domMatrix, ctx.getTransform())
 
-- name: 2d.transformation.rotate3d.Y
+- name: 2d.transformation.rotate3d.y
   desc: rotate3d() around the y axis results in the correct transformation matrix
   testing:
-  - 2d.transformation.rotate3d.Y
+  - 2d.transformation.rotate3d.y
   code: |
     // angles are in radians, test something that is not a multiple of pi
     const angle = 2;
@@ -493,10 +493,10 @@
     domMatrix.rotateAxisAngleSelf(0, 1, 0, rad2deg(angle));
     _assertMatricesApproxEqual(domMatrix, ctx.getTransform())
 
-- name: 2d.transformation.rotate3d.Z
+- name: 2d.transformation.rotate3d.z
   desc: rotate3d() around the z axis results in the correct transformation matrix
   testing:
-  - 2d.transformation.rotate3d.Z
+  - 2d.transformation.rotate3d.z
   code: |
     // angles are in radians, test something that is not a multiple of pi
     const angle = 2;
