@@ -36,8 +36,13 @@ const base::Feature kRemoteOptimizationGuideFetching{
     "OptimizationHintsFetching", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kRemoteOptimizationGuideFetchingAnonymousDataConsent{
-    "OptimizationHintsFetchingAnonymousDataConsent",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+  "OptimizationHintsFetchingAnonymousDataConsent",
+#if defined(OS_ANDROID)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else   // !defined(OS_ANDROID)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // defined(OS_ANDROID)
+};
 
 // Enables performance info in the context menu and fetching from a remote
 // Optimization Guide Service.
