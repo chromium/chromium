@@ -668,7 +668,7 @@ inline bool PaintFastBottomLayer(const Document* document,
       // border-snapped destination rect.
       image_tile = ComputePhaseForBackground(
           FloatPoint(geometry.SnappedDestRect().offset),
-          FloatSize(geometry.TileSize()), geometry.Phase(),
+          FloatSize(geometry.TileSize()), FloatPoint(geometry.Phase()),
           FloatSize(geometry.SpaceSize()));
 
       // Force the image tile to LayoutUnit precision, which is the precision
@@ -899,7 +899,7 @@ void PaintFillLayerBackground(const Document* document,
         FloatRect(image->Rect()), FloatRect(scrolled_paint_rect));
     DrawTiledBackground(
         context, image, FloatSize(geometry.UnsnappedDestRect().size),
-        FloatRect(geometry.SnappedDestRect()), geometry.Phase(),
+        FloatRect(geometry.SnappedDestRect()), FloatPoint(geometry.Phase()),
         FloatSize(geometry.TileSize()), composite_op,
         FloatSize(geometry.SpaceSize()),
         node && node->ComputedStyleRef().HasFilterInducingProperty(),

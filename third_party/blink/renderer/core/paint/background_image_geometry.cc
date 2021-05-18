@@ -38,10 +38,11 @@ inline LayoutUnit GetSpaceBetweenImageTiles(LayoutUnit area_size,
   return space;
 }
 
-float ComputeTilePhase(LayoutUnit position, LayoutUnit tile_extent) {
+LayoutUnit ComputeTilePhase(LayoutUnit position, LayoutUnit tile_extent) {
   // Assuming a non-integral number of tiles, find out how much of the
   // partial tile is visible. That is the phase.
-  return tile_extent ? tile_extent - IntMod(position, tile_extent) : 0.0f;
+  return tile_extent ? tile_extent - IntMod(position, tile_extent)
+                     : LayoutUnit();
 }
 
 bool FixedBackgroundPaintsInLocalCoordinates(
@@ -90,7 +91,7 @@ void BackgroundImageGeometry::SetNoRepeatX(const FillLayer& fill_layer,
                                            LayoutUnit x_offset,
                                            LayoutUnit snapped_x_offset) {
   if (NeedsFullSizeDestination(fill_layer)) {
-    SetPhaseX(-x_offset.ToFloat());
+    SetPhaseX(-x_offset);
     SetSpaceSize(
         PhysicalSize(unsnapped_dest_rect_.Width(), SpaceSize().height));
     return;
@@ -109,11 +110,11 @@ void BackgroundImageGeometry::SetNoRepeatX(const FillLayer& fill_layer,
     unsnapped_dest_rect_.SetWidth(tile_size_.width);
     snapped_dest_rect_.SetWidth(tile_size_.width);
 
-    SetPhaseX(0);
+    SetPhaseX(LayoutUnit());
   } else {
     // Otherwise, if the offset is negative use it to move the image under
     // the dest rect (since we can't paint outside the paint_rect).
-    SetPhaseX(-x_offset.ToFloat());
+    SetPhaseX(-x_offset);
 
     // Reduce the width of the dest rect to draw only the portion of the
     // tile that remains visible after offsetting the image.
@@ -131,7 +132,7 @@ void BackgroundImageGeometry::SetNoRepeatY(const FillLayer& fill_layer,
                                            LayoutUnit y_offset,
                                            LayoutUnit snapped_y_offset) {
   if (NeedsFullSizeDestination(fill_layer)) {
-    SetPhaseY(-y_offset.ToFloat());
+    SetPhaseY(-y_offset);
     SetSpaceSize(
         PhysicalSize(SpaceSize().width, unsnapped_dest_rect_.Height()));
     return;
@@ -150,11 +151,11 @@ void BackgroundImageGeometry::SetNoRepeatY(const FillLayer& fill_layer,
     unsnapped_dest_rect_.SetHeight(tile_size_.height);
     snapped_dest_rect_.SetHeight(tile_size_.height);
 
-    SetPhaseY(0);
+    SetPhaseY(LayoutUnit());
   } else {
     // Otherwise, if the offset is negative, use it to move the image under
     // the dest rect (since we can't paint outside the paint_rect).
-    SetPhaseY(-y_offset.ToFloat());
+    SetPhaseY(-y_offset);
 
     // Reduce the height of the dest rect to draw only the portion of the
     // tile that remains visible after offsetting the image.
@@ -187,7 +188,7 @@ void BackgroundImageGeometry::SetRepeatX(const FillLayer& fill_layer,
     SetPhaseX(
         ComputeTilePhase(computed_position + extra_offset, tile_size_.width));
   } else {
-    SetPhaseX(0);
+    SetPhaseX(LayoutUnit());
   }
   SetSpaceSize(PhysicalSize(LayoutUnit(), SpaceSize().height));
 }
@@ -211,7 +212,7 @@ void BackgroundImageGeometry::SetRepeatY(const FillLayer& fill_layer,
     SetPhaseY(
         ComputeTilePhase(computed_position + extra_offset, tile_size_.height));
   } else {
-    SetPhaseY(0);
+    SetPhaseY(LayoutUnit());
   }
   SetSpaceSize(PhysicalSize(SpaceSize().width, LayoutUnit()));
 }
@@ -232,10 +233,10 @@ void BackgroundImageGeometry::SetSpaceY(LayoutUnit space,
 
 void BackgroundImageGeometry::UseFixedAttachment(
     const PhysicalOffset& attachment_point) {
-  PhysicalOffset aligned_point = attachment_point;
-  phase_.Move(
-      std::max((aligned_point.left - unsnapped_dest_rect_.X()).ToFloat(), 0.f),
-      std::max((aligned_point.top - unsnapped_dest_rect_.Y()).ToFloat(), 0.f));
+  PhysicalOffset fixed_adjustment =
+      attachment_point - unsnapped_dest_rect_.offset;
+  fixed_adjustment.ClampNegativeToZero();
+  phase_ += fixed_adjustment;
 }
 
 enum ColumnGroupDirection { kColumnGroupStart, kColumnGroupEnd };
