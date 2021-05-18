@@ -114,7 +114,7 @@ std::string SyncFileStatusToString(SyncFileStatus sync_file_status) {
 void DidGetFileSyncStatusForDump(
     base::ListValue* files,
     size_t* num_results,
-    base::RepeatingCallback<void(const base::ListValue&)> callback,
+    base::OnceCallback<void(const base::ListValue&)>* callback,
     base::DictionaryValue* file,
     SyncStatusCode sync_status_code,
     SyncFileStatus sync_file_status) {
@@ -130,9 +130,9 @@ void DidGetFileSyncStatusForDump(
     return;
 
   // |callback| is backed by a DumpFilesCallback, which should only be called
-  // once. Move |callback| here to force repeated calls to crash instead of
-  // silently failing.
-  std::move(callback).Run(*files);
+  // once. The callback will only be called a single time, even though
+  // `DidGetFileSyncStatusForDump()` is called more than once.
+  std::move(*callback).Run(*files);
 }
 
 // We need this indirection because WeakPtr can only be bound to methods
@@ -573,8 +573,8 @@ void SyncFileSystemService::DidDumpFiles(
   // |accumulate_callback| should only call |callback| once.
   AccumulateFileSyncStatusCallback accumulate_callback = base::BindRepeating(
       &DidGetFileSyncStatusForDump, base::Owned(dump_files.release()),
-      base::Owned(new size_t(0)),
-      base::AdaptCallbackForRepeating(std::move(callback)));
+      base::Owned(std::make_unique<size_t>(0)),
+      base::Owned(std::make_unique<DumpFilesCallback>(std::move(callback))));
 
   // After all metadata loaded, sync status can be added to each entry.
   for (size_t i = 0; i < files->GetSize(); ++i) {

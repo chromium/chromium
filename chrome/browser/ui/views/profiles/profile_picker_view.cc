@@ -603,10 +603,11 @@ void ProfilePickerView::SwitchToSignIn(
           ->GetProfileAttributesStorage()
           .ChooseNameForNewProfile(icon_index),
       icon_index, /*is_hidden=*/true,
-      base::BindRepeating(&ProfilePickerView::OnProfileForSigninCreated,
-                          weak_ptr_factory_.GetWeakPtr(), profile_color,
-                          base::AdaptCallbackForRepeating(
-                              std::move(switch_finished_callback))));
+      base::BindRepeating(
+          &ProfilePickerView::OnProfileForSigninCreated,
+          weak_ptr_factory_.GetWeakPtr(), profile_color,
+          base::Owned(std::make_unique<base::OnceCallback<void(bool)>>(
+              std::move(switch_finished_callback)))));
 }
 
 void ProfilePickerView::CancelSignIn() {
@@ -644,18 +645,18 @@ void ProfilePickerView::CancelSignIn() {
 
 void ProfilePickerView::OnProfileForSigninCreated(
     SkColor profile_color,
-    base::RepeatingCallback<void(bool)> switch_finished_callback,
+    base::OnceCallback<void(bool)>* switch_finished_callback,
     Profile* profile,
     Profile::CreateStatus status) {
   if (status == Profile::CREATE_STATUS_LOCAL_FAIL) {
-    std::move(switch_finished_callback).Run(false);
+    std::move(*switch_finished_callback).Run(false);
     return;
   } else if (status != Profile::CREATE_STATUS_INITIALIZED) {
     return;
   }
 
   DCHECK(profile);
-  std::move(switch_finished_callback).Run(true);
+  std::move(*switch_finished_callback).Run(true);
 
   if (signin_util::IsForceSigninEnabled()) {
     // Show the embedded sign-in flow if the force signin is enabled.

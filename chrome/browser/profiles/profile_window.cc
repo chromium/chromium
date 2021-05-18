@@ -138,7 +138,7 @@ void FindOrCreateNewWindowForProfile(
                                 /*launch_mode_recorder=*/nullptr);
 }
 
-void OpenBrowserWindowForProfile(ProfileManager::CreateCallback callback,
+void OpenBrowserWindowForProfile(CreateOnceCallback callback,
                                  bool always_create,
                                  bool is_new_profile,
                                  bool unblock_extensions,
@@ -193,8 +193,8 @@ void OpenBrowserWindowForProfile(ProfileManager::CreateCallback callback,
     Browser* browser = chrome::FindTabbedBrowser(profile, false);
     if (browser) {
       browser->window()->Activate();
-      if (!callback.is_null())
-        callback.Run(profile, Profile::CREATE_STATUS_INITIALIZED);
+      if (callback)
+        std::move(callback).Run(profile, Profile::CREATE_STATUS_INITIALIZED);
       return;
     }
   }
@@ -206,8 +206,8 @@ void OpenBrowserWindowForProfile(ProfileManager::CreateCallback callback,
   // up calling LaunchBrowser and opens a new window. If for whatever reason
   // that fails, either something has crashed, or the observer will be cleaned
   // up when a different browser for this profile is opened.
-  if (!callback.is_null())
-    new BrowserAddedForProfileObserver(profile, callback);
+  if (callback)
+    new BrowserAddedForProfileObserver(profile, std::move(callback));
 
   // We already dealt with the case when |always_create| was false and a browser
   // existed, which means that here a browser definitely needs to be created.
@@ -281,9 +281,9 @@ void BubbleViewModeFromAvatarBubbleMode(BrowserWindow::AvatarBubbleMode mode,
 
 BrowserAddedForProfileObserver::BrowserAddedForProfileObserver(
     Profile* profile,
-    ProfileManager::CreateCallback callback)
-    : profile_(profile), callback_(callback) {
-  DCHECK(!callback_.is_null());
+    CreateOnceCallback callback)
+    : profile_(profile), callback_(std::move(callback)) {
+  DCHECK(callback_);
   BrowserList::AddObserver(this);
 }
 
@@ -296,7 +296,7 @@ void BrowserAddedForProfileObserver::OnBrowserAdded(Browser* browser) {
     // added. Post the callback to the message loop so it gets executed after
     // the tabs are created.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback_, profile_,
+        FROM_HERE, base::BindOnce(std::move(callback_), profile_,
                                   Profile::CREATE_STATUS_INITIALIZED));
     base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
   }

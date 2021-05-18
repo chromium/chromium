@@ -451,7 +451,7 @@ class ProfileManager : public Profile::Delegate {
   void OnNewActiveProfileLoaded(
       const base::FilePath& profile_to_delete_path,
       const base::FilePath& last_non_supervised_profile_path,
-      ProfileLoadedCallback callback,
+      ProfileLoadedCallback* callback,
       Profile* loaded_profile,
       Profile::CreateStatus status);
 

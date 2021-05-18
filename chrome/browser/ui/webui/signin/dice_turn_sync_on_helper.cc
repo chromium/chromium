@@ -211,9 +211,8 @@ DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
       shutdown_subscription_(
           DiceTurnSyncOnHelperShutdownNotifierFactory::GetInstance()
               ->Get(profile)
-              ->Subscribe(base::AdaptCallbackForRepeating(
-                  base::BindOnce(&DiceTurnSyncOnHelper::AbortAndDelete,
-                                 base::Unretained(this))))) {
+              ->Subscribe(base::BindOnce(&DiceTurnSyncOnHelper::AbortAndDelete,
+                                         base::Unretained(this)))) {
   DCHECK(delegate_);
   DCHECK(profile_);
   // Should not start syncing if the profile is already authenticated
@@ -620,8 +619,8 @@ void DiceTurnSyncOnHelper::SwitchToProfile(Profile* new_profile) {
   shutdown_subscription_ =
       DiceTurnSyncOnHelperShutdownNotifierFactory::GetInstance()
           ->Get(profile_)
-          ->Subscribe(base::AdaptCallbackForRepeating(base::BindOnce(
-              &DiceTurnSyncOnHelper::AbortAndDelete, base::Unretained(this))));
+          ->Subscribe(base::BindOnce(&DiceTurnSyncOnHelper::AbortAndDelete,
+                                     base::Unretained(this)));
   delegate_->SwitchToProfile(new_profile);
 }
 

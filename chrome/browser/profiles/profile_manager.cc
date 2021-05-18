@@ -325,7 +325,7 @@ size_t GetEnabledAppCount(Profile* profile) {
 // It might get called more than once with different values of
 // |status| but only once the profile is fully initialized will
 // |client_callback| be run.
-void OnProfileLoaded(ProfileManager::ProfileLoadedCallback client_callback,
+void OnProfileLoaded(ProfileManager::ProfileLoadedCallback* client_callback,
                      bool incognito,
                      Profile* profile,
                      Profile::CreateStatus status) {
@@ -336,11 +336,11 @@ void OnProfileLoaded(ProfileManager::ProfileLoadedCallback client_callback,
   }
   if (status != Profile::CREATE_STATUS_INITIALIZED) {
     LOG(WARNING) << "Profile not loaded correctly";
-    std::move(client_callback).Run(nullptr);
+    std::move(*client_callback).Run(nullptr);
     return;
   }
   DCHECK(profile);
-  std::move(client_callback)
+  std::move(*client_callback)
       .Run(incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
                      : profile);
 }
@@ -712,7 +712,8 @@ bool ProfileManager::LoadProfileByPath(const base::FilePath& profile_path,
       base::BindRepeating(&OnProfileLoaded,
                           // OnProfileLoaded may be called multiple times, but
                           // |callback| will be called only once.
-                          base::AdaptCallbackForRepeating(std::move(callback)),
+                          base::Owned(std::make_unique<ProfileLoadedCallback>(
+                              std::move(callback))),
                           incognito));
   return true;
 }
@@ -1736,8 +1737,8 @@ void ProfileManager::EnsureActiveProfileExistsBeforeDeletion(
     base::FilePath cur_path = profile->GetPath();
     if (cur_path != profile_dir && cur_path != guest_profile_path &&
         !IsProfileDirectoryMarkedForDeletion(cur_path)) {
-      OnNewActiveProfileLoaded(profile_dir, cur_path, std::move(callback),
-                               profile, Profile::CREATE_STATUS_INITIALIZED);
+      OnNewActiveProfileLoaded(profile_dir, cur_path, &callback, profile,
+                               Profile::CREATE_STATUS_INITIALIZED);
       return;
     }
   }
@@ -1775,7 +1776,8 @@ void ProfileManager::EnsureActiveProfileExistsBeforeDeletion(
           profile_dir, fallback_profile_path,
           // OnNewActiveProfileLoaded may be called several times, but
           // only once with CREATE_STATUS_INITIALIZED.
-          base::AdaptCallbackForRepeating(std::move(callback))));
+          base::Owned(
+              std::make_unique<ProfileLoadedCallback>(std::move(callback)))));
 }
 
 void ProfileManager::OnLoadProfileForProfileDeletion(
@@ -2235,7 +2237,7 @@ void ProfileManager::BrowserListObserver::OnBrowserSetLastActive(
 void ProfileManager::OnNewActiveProfileLoaded(
     const base::FilePath& profile_to_delete_path,
     const base::FilePath& new_active_profile_path,
-    ProfileLoadedCallback callback,
+    ProfileLoadedCallback* callback,
     Profile* loaded_profile,
     Profile::CreateStatus status) {
   DCHECK(status != Profile::CREATE_STATUS_LOCAL_FAIL &&
@@ -2249,13 +2251,13 @@ void ProfileManager::OnNewActiveProfileLoaded(
     // If the profile we tried to load as the next active profile has been
     // deleted, then retry deleting this profile to redo the logic to load
     // the next available profile.
-    EnsureActiveProfileExistsBeforeDeletion(std::move(callback),
+    EnsureActiveProfileExistsBeforeDeletion(std::move(*callback),
                                             profile_to_delete_path);
     return;
   }
 
   FinishDeletingProfile(profile_to_delete_path, new_active_profile_path);
-  std::move(callback).Run(loaded_profile);
+  std::move(*callback).Run(loaded_profile);
 }
 
 void ProfileManager::ScheduleForcedEphemeralProfileForDeletion(

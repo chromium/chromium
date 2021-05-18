@@ -471,9 +471,8 @@ void ProfilePickerSignInFlowController::FinishAndOpenBrowserImpl(
   // profiles::OpenBrowserWindowForProfile() to be a OnceCallback as it is only
   // called once.
   profiles::OpenBrowserWindowForProfile(
-      base::AdaptCallbackForRepeating(
-          base::BindOnce(&ProfilePickerSignInFlowController::OnBrowserOpened,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback))),
+      base::BindOnce(&ProfilePickerSignInFlowController::OnBrowserOpened,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       /*always_create=*/false,   // Don't create a window if one already exists.
       /*is_new_profile=*/false,  // Don't create a first run window.
       /*unblock_extensions=*/false,  // There is no need to unblock all

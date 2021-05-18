@@ -41,12 +41,16 @@ void FindOrCreateNewWindowForProfile(
     chrome::startup::IsFirstRun is_first_run,
     bool always_create);
 
+// Similar to `ProfileManager::CreateCallback` but only called once.
+using CreateOnceCallback =
+    base::OnceCallback<void(Profile*, Profile::CreateStatus)>;
+
 // Opens a Browser for |profile|.
 // If |always_create| is true a window is created even if one already exists.
 // If |is_new_profile| is true a first run window is created.
 // If |unblock_extensions| is true, all extensions are unblocked.
 // When the browser is opened, |callback| will be run if it isn't null.
-void OpenBrowserWindowForProfile(ProfileManager::CreateCallback callback,
+void OpenBrowserWindowForProfile(CreateOnceCallback callback,
                                  bool always_create,
                                  bool is_new_profile,
                                  bool unblock_extensions,
@@ -89,13 +93,13 @@ void BubbleViewModeFromAvatarBubbleMode(BrowserWindow::AvatarBubbleMode mode,
 // is created and the callback is executed.
 class BrowserAddedForProfileObserver : public BrowserListObserver {
  public:
-  BrowserAddedForProfileObserver(Profile* profile,
-                                 ProfileManager::CreateCallback callback);
+  BrowserAddedForProfileObserver(Profile* profile, CreateOnceCallback callback);
+  ~BrowserAddedForProfileObserver() override;
+
   BrowserAddedForProfileObserver(const BrowserAddedForProfileObserver&) =
       delete;
   BrowserAddedForProfileObserver& operator=(
       const BrowserAddedForProfileObserver&) = delete;
-  ~BrowserAddedForProfileObserver() override;
 
  private:
   // Overridden from BrowserListObserver:
@@ -103,7 +107,7 @@ class BrowserAddedForProfileObserver : public BrowserListObserver {
 
   // Profile for which the browser should be opened.
   Profile* profile_;
-  ProfileManager::CreateCallback callback_;
+  CreateOnceCallback callback_;
 };
 
 }  // namespace profiles

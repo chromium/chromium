@@ -47,11 +47,11 @@ SyncTaskManager::PendingTask::PendingTask() = default;
 SyncTaskManager::PendingTask::PendingTask(base::OnceClosure task,
                                           Priority pri,
                                           int seq)
-    : wrapped_once_closure(base::AdaptCallbackForRepeating(std::move(task))),
-      priority(pri),
-      seq(seq) {}
+    : closure(std::move(task)), priority(pri), seq(seq) {}
 
-SyncTaskManager::PendingTask::PendingTask(const PendingTask& other) = default;
+SyncTaskManager::PendingTask::PendingTask(PendingTask&& other) = default;
+SyncTaskManager::PendingTask& SyncTaskManager::PendingTask::operator=(
+    PendingTask&& other) = default;
 
 SyncTaskManager::PendingTask::~PendingTask() {}
 
@@ -384,7 +384,10 @@ void SyncTaskManager::MaybeStartNextForegroundTask(
     return;
 
   if (!pending_tasks_.empty()) {
-    base::RepeatingClosure closure = pending_tasks_.top().wrapped_once_closure;
+    // const_cast is safe here as the `closure` is not used in determining
+    // priority in `SyncTaskManager::PendingTaskComparator()`.
+    base::OnceClosure closure =
+        std::move(const_cast<PendingTask&>(pending_tasks_.top()).closure);
     pending_tasks_.pop();
     std::move(closure).Run();
     return;
