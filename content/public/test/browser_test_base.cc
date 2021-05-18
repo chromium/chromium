@@ -682,13 +682,13 @@ void BrowserTestBase::SetUp() {
     discardable_shared_memory_manager.reset();
   }
 
+  // Like in BrowserMainLoop::ShutdownThreadsAndCleanUp(), allow IO during main
+  // thread tear down.
+  base::ThreadRestrictions::SetIOAllowed(true);
+
   base::PostTaskAndroid::SignalNativeSchedulerShutdownForTesting();
   BrowserTaskExecutor::Shutdown();
 
-  // Normally the BrowserMainLoop does this during shutdown but on Android we
-  // don't go through shutdown, so this doesn't happen there. We do need it
-  // for the test harness to be able to delete temp dirs.
-  base::ThreadRestrictions::SetIOAllowed(true);
 #else   // defined(OS_ANDROID)
   auto ui_task = std::make_unique<base::OnceClosure>(base::BindOnce(
       &BrowserTestBase::ProxyRunTestOnMainThreadLoop, base::Unretained(this)));
@@ -697,6 +697,7 @@ void BrowserTestBase::SetUp() {
       created_main_parts_closure.release();
   EXPECT_EQ(expected_exit_code_, ContentMain(*GetContentMainParams()));
 #endif  // defined(OS_ANDROID)
+
   TearDownInProcessBrowserTestFixture();
 }
 
