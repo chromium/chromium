@@ -496,7 +496,8 @@ NGConstraintSpace NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
   builder.SetTableCellBorders(cell_borders);
   builder.SetTableCellAlignmentBaseline(alignment_baseline);
   builder.SetTableCellColumnIndex(column_index);
-  builder.SetIsRestrictedBlockSizeTableCell(is_table_block_size_specified);
+  builder.SetIsRestrictedBlockSizeTableCell(
+      is_table_block_size_specified || !cell_style.LogicalHeight().IsAuto());
   builder.SetIsTableCellHiddenForPaint(is_hidden_for_paint);
   builder.SetIsTableCellWithCollapsedBorders(has_collapsed_borders);
   builder.SetHideTableCellIfEmpty(
