@@ -85,7 +85,8 @@ std::unique_ptr<data_decoder::DataDecoder> CreateSharedDataDecoder() {
 
   int idle_timeout = base::GetFieldTrialParamByFeatureAsInt(
       omnibox::kEntitySuggestionsReduceLatency,
-      OmniboxFieldTrial::kEntitySuggestionsReduceLatencyDecoderTimeoutParam, 0);
+      OmniboxFieldTrial::kEntitySuggestionsReduceLatencyDecoderTimeoutParam,
+      405);
 
   return idle_timeout > 0 ? std::make_unique<data_decoder::DataDecoder>(
                                 base::TimeDelta::FromSeconds(idle_timeout))
