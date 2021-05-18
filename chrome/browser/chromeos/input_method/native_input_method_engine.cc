@@ -15,6 +15,7 @@
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
+#include "chrome/browser/chromeos/input_method/grammar_service_client.h"
 #include "chrome/browser/chromeos/input_method/suggestions_service_client.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -188,7 +189,9 @@ void NativeInputMethodEngine::Initialize(
       std::make_unique<chromeos::NativeInputMethodEngine::ImeObserver>(
           profile->GetPrefs(), std::move(observer),
           std::move(assistive_suggester), std::move(autocorrect_manager),
-          std::move(suggestions_collector), std::make_unique<GrammarManager>());
+          std::move(suggestions_collector),
+          std::make_unique<GrammarManager>(
+              profile, std::make_unique<GrammarServiceClient>()));
   InputMethodEngine::Initialize(std::move(native_observer), extension_id,
                                 profile);
 }

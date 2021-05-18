@@ -10,8 +10,8 @@
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "components/prefs/pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
-#include "components/spellcheck/common/spellcheck_result.h"
 #include "components/user_prefs/user_prefs.h"
+#include "ui/gfx/range/range.h"
 
 namespace chromeos {
 namespace {
@@ -121,7 +121,7 @@ void GrammarServiceClient::ParseGrammarCheckerResult(
       !result->candidates.empty()) {
     const auto& top_candidate = result->candidates.front();
     if (!top_candidate->text.empty() && !top_candidate->fragments.empty()) {
-      std::vector<SpellCheckResult> grammar_results;
+      std::vector<ui::GrammarFragment> grammar_results;
       for (const auto& fragment : top_candidate->fragments) {
         uint32_t start;
         uint32_t end;
@@ -138,9 +138,8 @@ void GrammarServiceClient::ParseGrammarCheckerResult(
           // Compute the offsets in string16.
           std::vector<size_t> offsets = {start, end};
           base::UTF8ToUTF16AndAdjustOffsets(query_text, &offsets);
-          grammar_results.emplace_back(
-              SpellCheckResult::GRAMMAR, offsets[0], offsets[1] - offsets[0],
-              base::UTF8ToUTF16(fragment->replacement));
+          grammar_results.emplace_back(gfx::Range(offsets[0], offsets[1]),
+                                       fragment->replacement);
         }
       }
       std::move(callback).Run(true, grammar_results);

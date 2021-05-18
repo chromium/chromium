@@ -14,9 +14,10 @@
 #include "chromeos/services/machine_learning/public/mojom/grammar_checker.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
-#include "components/spellcheck/common/spellcheck_result.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ime/grammar_fragment.h"
+#include "ui/gfx/range/range.h"
 
 namespace chromeos {
 namespace {
@@ -46,7 +47,7 @@ TEST_F(GrammarServiceClientTest, ReturnsEmptyResultWhenSpellCheckIsDiabled) {
   client.RequestTextCheck(
       profile.get(), u"cat",
       base::BindOnce(
-          [](bool success, const std::vector<SpellCheckResult>& results) {
+          [](bool success, const std::vector<ui::GrammarFragment>& results) {
             EXPECT_FALSE(success);
             EXPECT_TRUE(results.empty());
           }));
@@ -88,14 +89,11 @@ TEST_F(GrammarServiceClientTest, ParsesResults) {
   client.RequestTextCheck(
       profile.get(), u"fake input",
       base::BindOnce(
-          [](bool success, const std::vector<SpellCheckResult>& results) {
+          [](bool success, const std::vector<ui::GrammarFragment>& results) {
             EXPECT_TRUE(success);
             ASSERT_EQ(results.size(), 1U);
-            EXPECT_EQ(results[0].decoration, SpellCheckResult::GRAMMAR);
-            EXPECT_EQ(results[0].location, 3);
-            EXPECT_EQ(results[0].length, 5);
-            ASSERT_EQ(results[0].replacements.size(), 1U);
-            EXPECT_EQ(results[0].replacements[0], u"fake replacement");
+            EXPECT_EQ(results[0].range, gfx::Range(3, 8));
+            EXPECT_EQ(results[0].suggestion, "fake replacement");
           }));
 
   base::RunLoop().RunUntilIdle();
@@ -141,16 +139,13 @@ TEST_F(GrammarServiceClientTest, ParsesResultsForLongQuery) {
   client.RequestTextCheck(
       profile.get(), long_text,
       base::BindOnce(
-          [](bool success, const std::vector<SpellCheckResult>& results) {
+          [](bool success, const std::vector<ui::GrammarFragment>& results) {
             EXPECT_TRUE(success);
             ASSERT_EQ(results.size(), 1U);
-            EXPECT_EQ(results[0].decoration, SpellCheckResult::GRAMMAR);
             // The fake grammar check result is set to return offset=3, so here
             // getting the location as 203 verifies the trimming.
-            EXPECT_EQ(results[0].location, 203);
-            EXPECT_EQ(results[0].length, 5);
-            ASSERT_EQ(results[0].replacements.size(), 1U);
-            EXPECT_EQ(results[0].replacements[0], u"fake replacement");
+            EXPECT_EQ(results[0].range, gfx::Range(203, 208));
+            EXPECT_EQ(results[0].suggestion, "fake replacement");
           }));
 
   base::RunLoop().RunUntilIdle();

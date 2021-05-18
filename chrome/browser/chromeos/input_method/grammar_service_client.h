@@ -12,8 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/services/machine_learning/public/mojom/grammar_checker.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-struct SpellCheckResult;
+#include "ui/base/ime/grammar_fragment.h"
 
 namespace chromeos {
 
@@ -47,17 +46,17 @@ namespace chromeos {
 class GrammarServiceClient {
  public:
   GrammarServiceClient();
-  ~GrammarServiceClient();
+  virtual ~GrammarServiceClient();
 
   using TextCheckCompleteCallback = base::OnceCallback<void(
       bool /* success */,
-      const std::vector<SpellCheckResult>& /* results */)>;
+      const std::vector<ui::GrammarFragment>& /* results */)>;
 
   // Sends grammar check request to ML service, parses the reponse
   // and calls a provided callback method.
-  bool RequestTextCheck(Profile* profile,
-                        const std::u16string& text,
-                        TextCheckCompleteCallback callback) const;
+  virtual bool RequestTextCheck(Profile* profile,
+                                const std::u16string& text,
+                                TextCheckCompleteCallback callback) const;
 
  private:
   // Parse the result returned from grammar check service.
