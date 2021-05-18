@@ -63,6 +63,7 @@
 -WidgetInputMethodInteractiveTest.TwoWindows
 
 # Extremely flaky.
+-MenuControllerUITest.TestMouseOverShownMenu
 -MenuItemViewTestInsert20.InsertItem20
 -MenuItemViewTestInsert00.InsertItem00
 -BookmarkBarViewTest18.BookmarkBarViewTest18_SiblingMenu
