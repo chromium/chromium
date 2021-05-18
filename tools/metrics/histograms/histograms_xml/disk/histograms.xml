@@ -292,6 +292,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DiskCache.0.LoadTime" units="ms" expires_after="M85">
+  <obsolete>
+    Removed 05/2021. Not used.
+  </obsolete>
   <owner>rvargas@chromium.org</owner>
   <summary>
     The time to load the main entry data from disk, with a &quot;loaded&quot;
@@ -780,6 +783,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DiskCache.2.LoadTime" units="ms" expires_after="M85">
+  <obsolete>
+    Removed 05/2021. Not used.
+  </obsolete>
   <owner>rvargas@chromium.org</owner>
   <summary>
     The time to load the main entry data from disk, with a &quot;loaded&quot;
@@ -1203,6 +1209,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DiskCache.3.LoadTime" units="ms" expires_after="M79">
+  <obsolete>
+    Removed 05/2021. Not used.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <summary>
     The time to load the main entry data from disk, with a &quot;loaded&quot;
@@ -1594,6 +1603,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DiskCache.4.LoadTime" units="ms" expires_after="M79">
+  <obsolete>
+    Removed 05/2021. Not used.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <summary>
     The time to load the main entry data from disk, with a &quot;loaded&quot;
