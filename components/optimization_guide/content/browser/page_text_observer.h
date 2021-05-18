@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 #include <set>
-#include <string>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"

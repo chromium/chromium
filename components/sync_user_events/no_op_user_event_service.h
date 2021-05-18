@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_USER_EVENTS_NO_OP_USER_EVENT_SERVICE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "components/sync_user_events/user_event_service.h"

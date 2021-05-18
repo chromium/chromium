@@ -6,7 +6,6 @@
 #define COMPONENTS_PAYMENTS_CORE_PAYMENT_DETAILS_MODIFIER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "components/payments/core/payment_item.h"

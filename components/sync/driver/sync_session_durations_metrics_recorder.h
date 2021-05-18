@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_DRIVER_SYNC_SESSION_DURATIONS_METRICS_RECORDER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/scoped_observation.h"

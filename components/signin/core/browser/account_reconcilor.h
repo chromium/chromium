@@ -5,7 +5,6 @@
 #define COMPONENTS_SIGNIN_CORE_BROWSER_ACCOUNT_RECONCILOR_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"

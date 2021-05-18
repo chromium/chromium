@@ -8,7 +8,6 @@
 #define COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_PROVIDER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"

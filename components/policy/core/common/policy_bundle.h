@@ -6,7 +6,6 @@
 #define COMPONENTS_POLICY_CORE_COMMON_POLICY_BUNDLE_H_
 
 #include <map>
-#include <string>
 
 #include "base/macros.h"
 #include "components/policy/core/common/policy_map.h"

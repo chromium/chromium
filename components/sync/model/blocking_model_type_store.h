@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_MODEL_BLOCKING_MODEL_TYPE_STORE_H_
 
 #include <memory>
-#include <string>
 
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_error.h"

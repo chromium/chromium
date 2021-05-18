@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include <map>
-#include <string>
 
 #include "base/callback.h"
 #include "base/callback_forward.h"

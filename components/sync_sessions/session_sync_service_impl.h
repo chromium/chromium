@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_SESSIONS_SESSION_SYNC_SERVICE_IMPL_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"

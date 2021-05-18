@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include <memory>
-#include <string>
 
 #include "base/android/scoped_java_ref.h"
 #include "components/sync/test/fake_server/entity_builder_factory.h"

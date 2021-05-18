@@ -6,7 +6,6 @@
 #define COMPONENTS_CRONET_NATIVE_UPLOAD_DATA_SINK_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/synchronization/lock.h"

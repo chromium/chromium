@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_IMPL_H_
 
 #include <memory>
-#include <string>
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"

@@ -6,13 +6,11 @@
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_MOCK_TRANSLATE_RANKER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "components/translate/core/browser/translate_ranker.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
 
 namespace metrics {
 class TranslateEventProto;

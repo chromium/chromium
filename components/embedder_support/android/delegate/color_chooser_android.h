@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_COLOR_CHOOSER_ANDROID_H_
 #define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_COLOR_CHOOSER_ANDROID_H_
 
-#include <string>
 #include <vector>
 
 #include "base/android/jni_android.h"

@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_WALLET_MODEL_TYPE_CONTROLLER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"

@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <queue>
-#include <string>
 
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"

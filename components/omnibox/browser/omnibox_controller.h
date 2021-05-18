@@ -6,7 +6,6 @@
 #define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_CONTROLLER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/compiler_specific.h"
 #include "components/omnibox/browser/autocomplete_controller.h"

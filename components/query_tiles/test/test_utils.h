@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_QUERY_TILES_TEST_TEST_UTILS_H_
 #define COMPONENTS_QUERY_TILES_TEST_TEST_UTILS_H_
 
-#include <string>
 #include <vector>
 
 #include "components/query_tiles/internal/tile_group.h"

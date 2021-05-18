@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_ENGINE_NIGORI_KEYSTORE_KEYS_HANDLER_H_
 #define COMPONENTS_SYNC_ENGINE_NIGORI_KEYSTORE_KEYS_HANDLER_H_
 
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

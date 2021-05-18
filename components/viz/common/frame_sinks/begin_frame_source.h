@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"

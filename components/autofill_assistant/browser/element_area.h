@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ELEMENT_AREA_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ELEMENT_AREA_H_
 
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

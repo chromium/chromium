@@ -6,7 +6,6 @@
 #define COMPONENTS_ON_LOAD_SCRIPT_INJECTOR_BROWSER_ON_LOAD_SCRIPT_INJECTOR_HOST_H_
 
 #include <map>
-#include <string>
 #include <vector>
 
 #include "base/memory/read_only_shared_memory_region.h"

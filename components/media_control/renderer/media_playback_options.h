@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_MEDIA_CONTROL_RENDERER_MEDIA_PLAYBACK_OPTIONS_H_
 #define COMPONENTS_MEDIA_CONTROL_RENDERER_MEDIA_PLAYBACK_OPTIONS_H_
 
-#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"

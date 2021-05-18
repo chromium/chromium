@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_REMOTE_UPDATES_HANDLER_H_
 
 #include <map>
-#include <string>
 #include <vector>
 
 #include "components/sync/base/unique_position.h"

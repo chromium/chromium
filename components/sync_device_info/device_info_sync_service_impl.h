@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_SYNC_SERVICE_IMPL_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback_helpers.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"

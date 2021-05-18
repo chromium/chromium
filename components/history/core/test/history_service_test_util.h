@@ -6,7 +6,6 @@
 #define COMPONENTS_HISTORY_CORE_TEST_HISTORY_SERVICE_TEST_UTIL_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 

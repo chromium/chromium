@@ -6,7 +6,6 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PERFORMANCE_MANAGER_REGISTRY_IMPL_H_
 
 #include <memory>
-#include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"

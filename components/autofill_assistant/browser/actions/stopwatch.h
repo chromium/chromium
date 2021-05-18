@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_STOPWATCH_H_
 
 #include <ostream>
-#include <string>
 
 #include "base/time/time.h"
 

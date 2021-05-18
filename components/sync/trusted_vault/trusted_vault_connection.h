@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_TRUSTED_VAULT_TRUSTED_VAULT_CONNECTION_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

@@ -6,7 +6,6 @@
 #define COMPONENTS_VIZ_SERVICE_MAIN_VIZ_MAIN_IMPL_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/single_thread_task_runner.h"

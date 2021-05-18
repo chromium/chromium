@@ -6,7 +6,6 @@
 #define COMPONENTS_USER_MANAGER_USER_IMAGE_USER_IMAGE_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"

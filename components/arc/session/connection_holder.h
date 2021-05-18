@@ -6,7 +6,6 @@
 #define COMPONENTS_ARC_SESSION_CONNECTION_HOLDER_H_
 
 #include <memory>
-#include <string>
 #include <type_traits>
 #include <utility>
 

@@ -6,7 +6,6 @@
 #define COMPONENTS_HEAVY_AD_INTERVENTION_HEAVY_AD_SERVICE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"

@@ -6,7 +6,6 @@
 #define COMPONENTS_CRONET_ANDROID_TEST_URL_REQUEST_INTERCEPTING_JOB_FACTORY_H_
 
 #include <memory>
-#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"

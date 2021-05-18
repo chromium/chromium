@@ -6,7 +6,6 @@
 #define COMPONENTS_HISTORY_CORE_BROWSER_TOP_SITES_DATABASE_H_
 
 #include <map>
-#include <string>
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"

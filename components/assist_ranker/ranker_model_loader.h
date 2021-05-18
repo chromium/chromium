@@ -6,7 +6,6 @@
 #define COMPONENTS_ASSIST_RANKER_RANKER_MODEL_LOADER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback.h"
 #include "components/assist_ranker/ranker_model.h"

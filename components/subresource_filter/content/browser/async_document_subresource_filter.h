@@ -6,7 +6,6 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ASYNC_DOCUMENT_SUBRESOURCE_FILTER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

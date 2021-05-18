@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_USER_EVENTS_USER_EVENT_SERVICE_IMPL_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

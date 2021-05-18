@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include <memory>
-#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"

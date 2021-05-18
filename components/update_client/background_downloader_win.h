@@ -10,7 +10,6 @@
 #include <wrl/client.h>
 
 #include <memory>
-#include <string>
 
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"

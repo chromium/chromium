@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_BASE_MULTILOGIN_PARAMETERS_H_
 #define COMPONENTS_SIGNIN_PUBLIC_BASE_MULTILOGIN_PARAMETERS_H_
 
-#include <string>
 #include <vector>
 
 #include "google_apis/gaia/core_account_id.h"

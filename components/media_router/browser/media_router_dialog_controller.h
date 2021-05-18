@@ -6,7 +6,6 @@
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_MEDIA_ROUTER_DIALOG_CONTROLLER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"

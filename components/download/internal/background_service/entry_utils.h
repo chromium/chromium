@@ -7,7 +7,6 @@
 
 #include <map>
 #include <set>
-#include <string>
 #include <vector>
 
 #include "components/download/internal/background_service/model.h"

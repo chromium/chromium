@@ -6,7 +6,6 @@
 #define COMPONENTS_FEED_CORE_V2_TASKS_LOAD_STREAM_FROM_STORE_TASK_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

@@ -6,7 +6,6 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_SURFACE_AGGREGATOR_H_
 
 #include <memory>
-#include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>

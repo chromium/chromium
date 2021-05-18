@@ -6,7 +6,6 @@
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_RANKER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

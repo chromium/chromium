@@ -6,7 +6,6 @@
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_CHILD_ACCOUNT_INFO_FETCHER_ANDROID_H_
 
 #include <jni.h>
-#include <string>
 
 #include "base/android/scoped_java_ref.h"
 #include "components/signin/public/identity_manager/account_info.h"

@@ -6,7 +6,6 @@
 #define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_SCOPES_LOCK_MANAGER_H_
 
 #include <iosfwd>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

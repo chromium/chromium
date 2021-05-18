@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_DRIVER_MODEL_TYPE_CONTROLLER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

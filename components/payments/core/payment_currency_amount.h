@@ -6,7 +6,6 @@
 #define COMPONENTS_PAYMENTS_CORE_PAYMENT_CURRENCY_AMOUNT_H_
 
 #include <memory>
-#include <string>
 
 #include "components/payments/mojom/payment_request_data.mojom.h"
 

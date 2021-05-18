@@ -6,7 +6,6 @@
 #define COMPONENTS_PERMISSIONS_PERMISSION_PROMPT_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

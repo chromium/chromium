@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_USER_EVENTS_FAKE_USER_EVENT_SERVICE_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

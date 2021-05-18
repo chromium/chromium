@@ -9,7 +9,6 @@
 
 #include <map>
 #include <set>
-#include <string>
 
 #include "base/feature_list.h"
 #include "base/macros.h"

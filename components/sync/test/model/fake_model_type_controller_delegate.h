@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_TEST_MODEL_FAKE_MODEL_TYPE_CONTROLLER_DELEGATE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"

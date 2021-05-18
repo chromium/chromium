@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_PERSISTENT_PROTO_H_
 #define COMPONENTS_METRICS_STRUCTURED_PERSISTENT_PROTO_H_
 
-#include <string>
-
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"

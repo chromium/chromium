@@ -6,7 +6,6 @@
 #define COMPONENTS_CLIENT_HINTS_BROWSER_CLIENT_HINTS_H_
 
 #include <memory>
-#include <string>
 
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service.h"

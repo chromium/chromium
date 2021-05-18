@@ -7,7 +7,6 @@
 
 // This class gets redirect chain for urls from the history service.
 
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

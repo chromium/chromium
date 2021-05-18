@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_INFOBARS_ANDROID_INFOBAR_ANDROID_H_
 #define COMPONENTS_INFOBARS_ANDROID_INFOBAR_ANDROID_H_
 
-#include <string>
-
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/macros.h"
