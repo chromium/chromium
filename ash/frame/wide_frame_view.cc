@@ -200,12 +200,14 @@ void WideFrameView::OnImmersiveRevealEnded() {
 
 void WideFrameView::OnImmersiveFullscreenEntered() {
   header_view_->OnImmersiveFullscreenEntered();
+  widget_->GetNativeWindow()->SetTransparent(true);
   if (target_)
     GetTargetHeaderView()->OnImmersiveFullscreenEntered();
 }
 
 void WideFrameView::OnImmersiveFullscreenExited() {
   header_view_->OnImmersiveFullscreenExited();
+  widget_->GetNativeWindow()->SetTransparent(false);
   if (target_)
     GetTargetHeaderView()->OnImmersiveFullscreenExited();
   Layout();
