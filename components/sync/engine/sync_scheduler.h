@@ -90,7 +90,7 @@ class SyncScheduler : public SyncCycle::Delegate {
 
   // The LocalNudge indicates that we've made a local change, and that the
   // syncer should plan to commit this to the server some time soon.
-  virtual void ScheduleLocalNudge(ModelTypeSet types,
+  virtual void ScheduleLocalNudge(ModelType type,
                                   const base::Location& nudge_location) = 0;
 
   // The LocalRefreshRequest occurs when we decide for some reason to manually

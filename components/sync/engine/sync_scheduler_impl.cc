@@ -334,14 +334,13 @@ bool SyncSchedulerImpl::CanRunNudgeJobNow(JobPriority priority) {
 }
 
 void SyncSchedulerImpl::ScheduleLocalNudge(
-    ModelTypeSet types,
+    ModelType type,
     const base::Location& nudge_location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!types.Empty());
 
   SDVLOG_LOC(nudge_location, 2) << "Scheduling sync because of local change to "
-                                << ModelTypeSetToString(types);
-  TimeDelta nudge_delay = nudge_tracker_.RecordLocalChange(types);
+                                << ModelTypeToString(type);
+  TimeDelta nudge_delay = nudge_tracker_.RecordLocalChange(ModelTypeSet(type));
   ScheduleNudgeImpl(nudge_delay, nudge_location);
 }
 

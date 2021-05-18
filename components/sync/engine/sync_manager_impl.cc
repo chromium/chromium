@@ -369,14 +369,6 @@ void SyncManagerImpl::OnServerConnectionEvent(
   }
 }
 
-void SyncManagerImpl::RequestNudgeForDataTypes(
-    const base::Location& nudge_location,
-    ModelTypeSet types) {
-  debug_info_event_listener_.OnNudgeFromDatatype(*(types.begin()));
-
-  scheduler_->ScheduleLocalNudge(types, nudge_location);
-}
-
 void SyncManagerImpl::NudgeForInitialDownload(ModelType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   scheduler_->ScheduleInitialSyncNudge(type);
@@ -384,7 +376,8 @@ void SyncManagerImpl::NudgeForInitialDownload(ModelType type) {
 
 void SyncManagerImpl::NudgeForCommit(ModelType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RequestNudgeForDataTypes(FROM_HERE, ModelTypeSet(type));
+  debug_info_event_listener_.OnNudgeFromDatatype(type);
+  scheduler_->ScheduleLocalNudge(type, FROM_HERE);
 }
 
 void SyncManagerImpl::OnSyncCycleEvent(const SyncCycleEvent& event) {

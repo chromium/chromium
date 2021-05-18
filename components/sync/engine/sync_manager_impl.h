@@ -135,9 +135,6 @@ class SyncManagerImpl
  private:
   void NotifyInitializationSuccess();
 
-  void RequestNudgeForDataTypes(const base::Location& nudge_location,
-                                ModelTypeSet type);
-
   const std::string name_;
 
   network::NetworkConnectionTracker* network_connection_tracker_;
