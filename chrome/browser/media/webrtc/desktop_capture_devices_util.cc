@@ -19,6 +19,7 @@
 #include "media/audio/audio_device_description.h"
 #include "media/mojo/mojom/capture_handle.mojom.h"
 #include "media/mojo/mojom/display_media_information.mojom.h"
+#include "third_party/blink/public/mojom/media/capture_handle_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
