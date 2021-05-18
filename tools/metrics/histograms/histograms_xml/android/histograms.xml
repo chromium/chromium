@@ -3260,9 +3260,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Android.WebView.ShouldInterceptRequest.NullInputStream.ResponseStatusCode"
     enum="HttpResponseCode" expires_after="2020-06-14">
+  <obsolete>
+    Removed 2021-05
+  </obsolete>
   <owner>timvolodine@chromium.org</owner>
   <owner>tobiasjs@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the custom response status code for the intercepted requests where
     input stream is null. In case status code is invalid (or has not been

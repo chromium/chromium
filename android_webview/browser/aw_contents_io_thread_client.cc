@@ -375,39 +375,6 @@ void RecordInterceptedScheme(bool response_is_null, const std::string& url) {
       "Android.WebView.ShouldInterceptRequest.InterceptionType", type);
 }
 
-// Record UMA for the custom response status code for the intercepted requests
-// where input stream is null. UMA is recorded only when the status codes and
-// reason phrases are actually valid.
-void RecordResponseStatusCode(
-    JNIEnv* env,
-    const std::unique_ptr<embedder_support::WebResourceResponse>& response) {
-  DCHECK(response);
-  DCHECK(!response->HasInputStream(env));
-
-  int status_code;
-  std::string reason_phrase;
-  bool status_info_valid =
-      response->GetStatusInfo(env, &status_code, &reason_phrase);
-
-  if (!status_info_valid) {
-    // Status code is not necessary set properly in the response,
-    // e.g. Webview's WebResourceResponse(String, String, InputStream) [*]
-    // does not actually set the status code or the reason phrase. In this case
-    // we just record a zero status code.
-    // The other constructor (long version) or the #setStatusCodeAndReasonPhrase
-    // method does actually perform validity checks on status code and reason
-    // phrase arguments.
-    // [*]
-    // https://developer.android.com/reference/android/webkit/WebResourceResponse.html
-    status_code = 0;
-  }
-
-  base::UmaHistogramSparse(
-      "Android.WebView.ShouldInterceptRequest.NullInputStream."
-      "ResponseStatusCode",
-      status_code);
-}
-
 std::unique_ptr<AwWebResourceInterceptResponse> NoInterceptRequest() {
   return nullptr;
 }
@@ -441,15 +408,7 @@ std::unique_ptr<AwWebResourceInterceptResponse> RunShouldInterceptRequest(
   if (!ret)
     return NoInterceptRequest();
 
-  auto response = std::make_unique<AwWebResourceInterceptResponse>(ret);
-  if (!response->RaisedException(env) && response->HasResponse(env) &&
-      !response->GetResponse(env)->HasInputStream(env)) {
-    // Only record UMA for cases where the input stream is null (see
-    // crbug.com/974273).
-    RecordResponseStatusCode(env, response->GetResponse(env));
-  }
-
-  return response;
+  return std::make_unique<AwWebResourceInterceptResponse>(ret);
 }
 
 }  // namespace
