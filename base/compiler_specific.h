@@ -382,4 +382,15 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #define REINITIALIZES_AFTER_MOVE
 #endif
 
+// Requires constant initialization. See constinit in C++20. Allows to rely on a
+// variable being initialized before execution, and not requiring a global
+// constructor.
+#if defined(__has_attribute)
+#if __has_attribute(require_constant_initialization)
+#define CONSTINIT __attribute__((require_constant_initialization))
+#else
+#define CONSTINIT
+#endif
+#endif
+
 #endif  // BASE_COMPILER_SPECIFIC_H_

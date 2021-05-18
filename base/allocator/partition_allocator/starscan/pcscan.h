@@ -15,14 +15,6 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 
-#if defined(__has_attribute)
-#if __has_attribute(require_constant_initialization)
-#define PA_CONSTINIT __attribute__((require_constant_initialization))
-#else
-#define PA_CONSTINIT
-#endif
-#endif
-
 #define PCSCAN_DISABLE_SAFEPOINTS 0
 
 namespace base {
@@ -144,8 +136,8 @@ class BASE_EXPORT PCScan final {
 
   size_t epoch() const { return scheduler_.epoch(); }
 
-  // PA_CONSTINIT for fast access (avoiding static thread-safe initialization).
-  static PCScan instance_ PA_CONSTINIT;
+  // CONSTINIT for fast access (avoiding static thread-safe initialization).
+  static PCScan instance_ CONSTINIT;
 
   PCScanScheduler scheduler_{};
   std::atomic<State> state_{State::kNotRunning};

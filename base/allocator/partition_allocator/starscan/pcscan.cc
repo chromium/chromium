@@ -76,7 +76,7 @@ void PCScan::FinishScanForTesting() {
   PCScanInternal::Instance().FinishScanForTesting();  // IN-TEST
 }
 
-PCScan PCScan::instance_ PA_CONSTINIT;
+PCScan PCScan::instance_ CONSTINIT;
 
 }  // namespace internal
 }  // namespace base
