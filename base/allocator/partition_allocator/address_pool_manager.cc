@@ -312,30 +312,28 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
   } else {
     PA_DCHECK(handle == kBRPPoolHandle);
     PA_DCHECK(!(length & kSuperPageOffsetMask));
-    // If BUILDFLAG(MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE) is defined,
-    // make IsManagedByBRPPoolPool return false when an address
-    // inside the first or the last PartitionPageSize()-bytes
-    // block is given:
+
+    // Make IsManagedByBRPPoolPool() return false when an address inside the
+    // first or the last PartitionPageSize()-bytes block is given:
     //
     //          ------+---+---------------+---+----
     // memory   ..... | B | managed by PA | B | ...
     // regions  ------+---+---------------+---+----
     //
-    // B: PartitionPageSize()-bytes block. This is used by
-    // PartitionAllocator and is not available for callers.
+    // B: PartitionPageSize()-bytes block. This is used internally by the
+    // allocator and is not available for callers.
     //
     // This is required to avoid crash caused by the following code:
+    //   {
+    //     // Assume this allocation happens outside of PartitionAlloc.
+    //     CheckedPtr<T> ptr = new T[20];
+    //     for (size_t i = 0; i < 20; i ++) { ptr++; }
+    //     // |ptr| may point to an address inside 'B'.
+    //   }
     //
-    // {
-    //   CheckedPtr<T> ptr = allocateFromNotPartitionAllocator(X * sizeof(T));
-    //   for (size_t i = 0; i < X; i ++) { ...; ptr++; }
-    //   // |ptr| may point an address inside 'B'.
-    // }
-    //
-    // Suppose that |ptr| points to an address inside B after the loop. So when
-    // exiting the scope, IsManagedByBRPPoolPool(ptr) returns true without
-    // the barrier blocks. Since the memory is not allocated by Partition
-    // Allocator, ~CheckedPtr will cause crash.
+    // Suppose that |ptr| points to an address inside B after the loop. If
+    // IsManagedByBRPPoolPool(ptr) were to return true, ~CheckedPtr would crash,
+    // since the memory is not allocated by Partition.
     SetBitmap(
         AddressPoolManagerBitmap::brp_pool_bits_,
         (ptr_as_uintptr >> AddressPoolManagerBitmap::kBitShiftOfBRPPoolBitmap) +
@@ -359,9 +357,8 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
   } else {
     PA_DCHECK(handle == kBRPPoolHandle);
     PA_DCHECK(!(length & kSuperPageOffsetMask));
-    // If BUILDFLAG(MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE) is defined,
-    // make IsManagedByBRPPoolPool return false when an address
-    // inside the first or the last PartitionPageSize()-bytes block is given.
+    // Make IsManagedByBRPPoolPool() return false when an address inside the
+    // first or the last PartitionPageSize()-bytes block is given.
     // (See MarkUsed comment)
     ResetBitmap(
         AddressPoolManagerBitmap::brp_pool_bits_,

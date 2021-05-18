@@ -80,10 +80,6 @@ declare_args() {
   # have on by default.
   enable_backup_ref_ptr_slow_checks = false
 
-  # Set to true to lower normal bucket bitmap to PartitionPageSize() on 32bit
-  # systems.
-  make_gigacage_granularity_partition_page_size = true
-
   # Ensure that a non-BRP memory region can't be reused for the BRP pool while
   # there are associated CheckedPtr instances left.
   use_brp_pool_blocklist = false
@@ -2528,7 +2524,6 @@ buildflag_header("partition_alloc_buildflags") {
     "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$should_put_ref_count_in_previous_slot",
     "USE_BRP_POOL_BLOCKLIST=$should_use_brp_pool_blocklist",
     "NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST=$should_never_remove_from_brp_pool_from_blocklist",
-    "MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE=$make_gigacage_granularity_partition_page_size",
     "USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC=$use_dedicated_partition_for_aligned_alloc",
   ]
 }

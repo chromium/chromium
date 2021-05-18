@@ -30,30 +30,21 @@ class BASE_EXPORT AddressPoolManagerBitmap {
   static constexpr uint64_t kGiB = 1024 * 1024 * 1024ull;
   static constexpr uint64_t kAddressSpaceSize = 4ull * kGiB;
 
-  // BRP pool includes only normal buckets. 2MB granularity is used, unless
-  // MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE is on, in which case we need
-  // to lower granularity down to partition page level to eliminate the guard
-  // pages at the end. This is needed so that pointers immediately past an
-  // allocation that immediately precede a super page in BRP pool don't
-  // accidentally fall into that pool.
-#if BUILDFLAG(MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE)
+  // BRP pool includes only normal buckets. Despite normal buckets operate at
+  // the 2MB super page granularity, we need to lower granularity down to
+  // partition page level to eliminate the guard pages at the ends. This is
+  // needed so that pointers immediately past an allocation that immediately
+  // precede a super page in BRP pool don't accidentally fall into that pool.
   static constexpr size_t kBitShiftOfBRPPoolBitmap = PartitionPageShift();
   static constexpr size_t kBytesPer1BitOfBRPPoolBitmap = PartitionPageSize();
   static constexpr size_t kGuardOffsetOfBRPPoolBitmap = 1;
   static constexpr size_t kGuardBitsOfBRPPoolBitmap = 2;
-#else
-  static constexpr size_t kBitShiftOfBRPPoolBitmap = kSuperPageShift;
-  static constexpr size_t kBytesPer1BitOfBRPPoolBitmap = kSuperPageSize;
-  static constexpr size_t kGuardOffsetOfBRPPoolBitmap = 0;
-  static constexpr size_t kGuardBitsOfBRPPoolBitmap = 0;
-#endif
   static constexpr size_t kBRPPoolBits =
       kAddressSpaceSize / kBytesPer1BitOfBRPPoolBitmap;
 
   // Non-BRP pool includes both normal bucket and direct map allocations, so
   // PageAllocationGranularity() has to be used. No need to eliminate guard
-  // pages at the ends in the MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE
-  // case, as this is a BackupRefPtr-specific concern.
+  // pages at the ends, as this is a BackupRefPtr-specific concern.
   static constexpr size_t kNonBRPPoolBits =
       kAddressSpaceSize / PageAllocationGranularity();
 
