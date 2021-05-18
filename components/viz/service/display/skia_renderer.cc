@@ -827,9 +827,29 @@ void SkiaRenderer::SwapBuffersComplete(gfx::GpuFenceHandle release_fence) {
   }
 #endif  // defined(OS_APPLE)
 
+  // Find all locks that have a read-lock fence associated with them.
+  // If we have a release fence, it's not safe to release them here.
+  // Release them later in BuffersPresented.
+  auto& read_lock_release_fence_overlay_locks =
+      read_lock_release_fence_overlay_locks_.emplace_back();
+  if (!release_fence.is_null()) {
+    auto read_lock_iter = std::partition(
+        committed_overlay_locks_.begin(), committed_overlay_locks_.end(),
+        [](auto& lock) { return !lock.HasReadLockFence(); });
+    read_lock_release_fence_overlay_locks.insert(
+        read_lock_release_fence_overlay_locks.end(),
+        std::make_move_iterator(read_lock_iter),
+        std::make_move_iterator(committed_overlay_locks_.end()));
+  }
+
   committed_overlay_locks_.clear();
   std::swap(committed_overlay_locks_, pending_overlay_locks_.front());
   pending_overlay_locks_.pop_front();
+}
+
+void SkiaRenderer::BuffersPresented() {
+  DCHECK(!read_lock_release_fence_overlay_locks_.empty());
+  read_lock_release_fence_overlay_locks_.pop_front();
 }
 
 void SkiaRenderer::DidReceiveReleasedOverlays(

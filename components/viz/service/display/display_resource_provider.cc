@@ -462,6 +462,12 @@ void DisplayResourceProvider::ScopedReadLockSharedImage::SetReleaseFence(
   resource_->release_fence = std::move(release_fence);
 }
 
+bool DisplayResourceProvider::ScopedReadLockSharedImage::HasReadLockFence()
+    const {
+  DCHECK(resource_);
+  return resource_->transferable.read_lock_fences_enabled;
+}
+
 void DisplayResourceProvider::ScopedReadLockSharedImage::Reset() {
   if (!resource_provider_)
     return;

@@ -99,6 +99,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   virtual void SwapBuffers(SwapFrameData swap_frame_data) = 0;
   virtual void SwapBuffersSkipped() {}
   virtual void SwapBuffersComplete(gfx::GpuFenceHandle release_fence) {}
+  virtual void BuffersPresented() {}
   virtual void DidReceiveTextureInUseResponses(
       const gpu::TextureInUseResponses& responses) {}
   virtual void DidReceiveReleasedOverlays(

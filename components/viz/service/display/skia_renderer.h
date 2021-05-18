@@ -52,6 +52,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   void SwapBuffers(SwapFrameData swap_frame_data) override;
   void SwapBuffersSkipped() override;
   void SwapBuffersComplete(gfx::GpuFenceHandle release_fence) override;
+  void BuffersPresented() override;
   void DidReceiveReleasedOverlays(
       const std::vector<gpu::Mailbox>& released_overlays) override;
 
@@ -323,6 +324,11 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // be moved to |committed_overlay_locks_| after SwapBuffers() completed.
   std::vector<DisplayResourceProviderSkia::ScopedReadLockSharedImage>
       committed_overlay_locks_;
+
+  // Locks for overlays that have release fences and read lock fences.
+  base::circular_deque<
+      std::vector<DisplayResourceProviderSkia::ScopedReadLockSharedImage>>
+      read_lock_release_fence_overlay_locks_;
 
 #if defined(OS_APPLE)
   class ScopedReadLockComparator {
