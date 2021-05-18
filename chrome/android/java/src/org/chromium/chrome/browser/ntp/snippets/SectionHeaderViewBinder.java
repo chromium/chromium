@@ -62,6 +62,11 @@ public class SectionHeaderViewBinder
     @Override
     public void onItemsRemoved(PropertyListModel<PropertyModel, PropertyKey> model,
             SectionHeaderView view, int index, int count) {
+        if (model.size() == 0) {
+            // All headers were removed.
+            view.removeAllTabs();
+            return;
+        }
         for (int i = index + count - 1; i >= index; i--) {
             view.removeTabAt(i);
         }
