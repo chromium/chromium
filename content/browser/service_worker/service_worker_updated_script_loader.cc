@@ -81,7 +81,7 @@ ServiceWorkerUpdatedScriptLoader::ServiceWorkerUpdatedScriptLoader(
       request_start_(base::TimeTicks::Now()) {
 #if DCHECK_IS_ON()
   service_worker_loader_helpers::CheckVersionStatusBeforeWorkerScriptLoad(
-      version_->status(), is_main_script_);
+      version_->status(), is_main_script_, version_->script_type());
 #endif  // DCHECK_IS_ON()
 
   DCHECK(client_);

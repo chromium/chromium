@@ -92,7 +92,7 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
   network::ResourceRequest resource_request(original_request);
 #if DCHECK_IS_ON()
   service_worker_loader_helpers::CheckVersionStatusBeforeWorkerScriptLoad(
-      version_->status(), is_main_script_);
+      version_->status(), is_main_script_, version_->script_type());
 #endif  // DCHECK_IS_ON()
 
   scoped_refptr<ServiceWorkerRegistration> registration =

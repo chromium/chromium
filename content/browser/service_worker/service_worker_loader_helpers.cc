@@ -99,14 +99,27 @@ bool ShouldValidateBrowserCacheForScript(
 #if DCHECK_IS_ON()
 void CheckVersionStatusBeforeWorkerScriptLoad(
     ServiceWorkerVersion::Status status,
-    bool is_main_script) {
+    bool is_main_script,
+    blink::mojom::ScriptType script_type) {
   if (is_main_script) {
     // The service worker main script should be fetched during worker startup.
-      DCHECK_EQ(status, ServiceWorkerVersion::NEW);
-  } else {
-    // importScripts() should be called until completion of the install event.
+    DCHECK_EQ(status, ServiceWorkerVersion::NEW);
+    return;
+  }
+
+  // Non-main scripts are fetched by importScripts() for classic scripts or
+  // static-import for module scripts.
+  switch (script_type) {
+    case blink::mojom::ScriptType::kClassic:
+      // importScripts() should be called until completion of the install event.
       DCHECK(status == ServiceWorkerVersion::NEW ||
              status == ServiceWorkerVersion::INSTALLING);
+      break;
+    case blink::mojom::ScriptType::kModule:
+      // Static-import should be handled during worker startup along with the
+      // main script.
+      DCHECK_EQ(status, ServiceWorkerVersion::NEW);
+      break;
   }
 }
 #endif  // DCHECK_IS_ON()
