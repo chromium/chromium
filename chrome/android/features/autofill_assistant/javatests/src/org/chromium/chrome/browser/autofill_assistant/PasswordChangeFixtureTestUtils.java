@@ -29,6 +29,13 @@ import java.util.concurrent.TimeoutException;
 public final class PasswordChangeFixtureTestUtils {
     /** The default maximum time to wait for a criteria to become valid. */
     public static final long MAX_WAIT_TIME_IN_MS = 60000;
+    /**
+     * The default maximum time to wait in-between consecutive tests.
+     *
+     * The small delay in-between tests allows for easier visualization during consecutive test
+     * runs.
+     * */
+    public static final long MAX_WAIT_BETWEEN_TESTS_IN_MS = 1000;
     /** Default tag to log password change integration tests information. */
     public static final String TAG = "PasswordChangeTest";
 

@@ -20,9 +20,8 @@ import subprocess
 import sys
 
 tests_list = [
-    'testSingleRun',
-    'testMultipleRuns',
-    'testSingleRunNoCookies',
+    'testDefaultRuns',
+    'testNoCookies',
     'testInvalidCredentials',
     'testUserDeclinesGeneratedPassword',
     'testMultipleCredentials'
