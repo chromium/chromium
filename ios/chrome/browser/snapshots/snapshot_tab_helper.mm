@@ -112,13 +112,12 @@ void SnapshotTabHelper::SaveGreyInBackground() {
 SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state, NSString* tab_id)
     : web_state_(web_state),
       tab_id_([tab_id copy]),
-      web_state_observer_(this),
       weak_ptr_factory_(this) {
   DCHECK(web_state_);
   DCHECK(tab_id_.length > 0);
   snapshot_generator_ = [[SnapshotGenerator alloc] initWithWebState:web_state_
                                                               tabID:tab_id_];
-  web_state_observer_.Add(web_state_);
+  web_state_observation_.Observe(web_state_);
 }
 
 void SnapshotTabHelper::PageLoaded(
@@ -174,7 +173,8 @@ void SnapshotTabHelper::PageLoaded(
 
 void SnapshotTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
-  web_state_observer_.Remove(web_state);
+  DCHECK(web_state_observation_.IsObservingSource(web_state));
+  web_state_observation_.Reset();
   web_state_ = nullptr;
   tab_id_ = nil;
 }

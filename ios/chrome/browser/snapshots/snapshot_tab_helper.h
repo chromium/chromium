@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -95,7 +95,8 @@ class SnapshotTabHelper : public web::WebStateObserver,
   SnapshotGenerator* snapshot_generator_ = nil;
 
   // Manages this object as an observer of |web_state_|.
-  ScopedObserver<web::WebState, web::WebStateObserver> web_state_observer_;
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
 
   bool ignore_next_load_ = false;
 
