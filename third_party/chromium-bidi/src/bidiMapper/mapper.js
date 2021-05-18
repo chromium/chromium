@@ -37,6 +37,8 @@ const runBidiMapper = async function () {
 
     await runBidiCommandsProcessor(cdpClient, bidiClient, () => currentTargetId);
 
+    await cdpClient.sendCdpCommand({ "method": "Target.setDiscoverTargets", "params": { "discover": true } });
+
     console.log("launched");
     log("launched");
     bidiClient.sendBidiMessage("launched");
