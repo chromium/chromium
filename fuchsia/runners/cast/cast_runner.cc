@@ -23,6 +23,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/cast/common/constants.h"
 #include "fuchsia/base/agent_manager.h"
 #include "fuchsia/base/config_reader.h"
 #include "fuchsia/runners/cast/cast_streaming.h"
@@ -562,9 +563,8 @@ fuchsia::web::CreateContextParams CastRunner::GetMainContextParams() {
   EnsureSoftwareVideoDecodersAreDisabled(params.mutable_features());
   params.set_remote_debugging_port(CastRunner::kRemoteDebuggingPort);
 
-  // TODO(crbug.com/1166790): Fetch UserAgent version strings from Agent.
   params.set_user_agent_product("CrKey");
-  params.set_user_agent_version("1.52.999999");
+  params.set_user_agent_version(chromecast::kFrozenCrKeyValue);
 
   zx_status_t status = main_services_->ConnectClient(
       params.mutable_service_directory()->NewRequest());

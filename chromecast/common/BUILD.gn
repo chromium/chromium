@@ -84,6 +84,7 @@ cast_source_set("common") {
     "//chromecast/base:cast_version",
     "//chromecast/common/media",
     "//chromecast/common/mojom",
+    "//components/cast/common:constants",
     "//components/cdm/common:common",
     "//content/public/common",
     "//media:media_buildflags",

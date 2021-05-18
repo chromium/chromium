@@ -19,6 +19,7 @@
 #include "chromecast/base/cast_paths.h"
 #include "chromecast/base/version.h"
 #include "chromecast/chromecast_buildflags.h"
+#include "components/cast/common/constants.h"
 #include "content/public/common/cdm_info.h"
 #include "content/public/common/user_agent.h"
 #include "media/base/media_switches.h"
@@ -173,8 +174,8 @@ std::string GetUserAgent() {
           .c_str()
 #endif
       );
-  return content::BuildUserAgentFromOSAndProduct(os_info, product) +
-      " CrKey/" CAST_BUILD_REVISION;
+  return content::BuildUserAgentFromOSAndProduct(os_info, product) + " CrKey/" +
+         kFrozenCrKeyValue;
 }
 
 CastContentClient::~CastContentClient() {

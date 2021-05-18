@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/cast/message_port",
-  "+components/cast/named_message_port_connector",
+  "+components/cast",
   "+content/public/test",
 ]
