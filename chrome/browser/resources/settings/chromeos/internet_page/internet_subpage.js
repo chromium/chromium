@@ -65,6 +65,10 @@ Polymer({
       type: Boolean,
     },
 
+    isCellularSetupActive: {
+      type: Boolean,
+    },
+
     /**
      * List of all network state data for the network type.
      * @private {!Array<!OncMojo.NetworkStateProperties>}

@@ -427,13 +427,16 @@ suite('CellularNetworksList', function() {
       inhibitReason: mojom.InhibitReason.kNotInhibited
     };
     addESimSlot();
-
+    cellularNetworkList.canShowSpinner = true;
     await flushAsync();
 
     const inhibitedSubtext = cellularNetworkList.$$('#inhibitedSubtext');
-    const inhibitedSpinner = cellularNetworkList.$$('#inhibitedSpinner');
+    const getInhibitedSpinner = () => {
+      return cellularNetworkList.$$('#inhibitedSpinner');
+    };
     assertTrue(inhibitedSubtext.hidden);
-    assertFalse(inhibitedSpinner.active);
+    assertTrue(!!getInhibitedSpinner());
+    assertFalse(getInhibitedSpinner().active);
 
     cellularNetworkList.cellularDeviceState = {
       type: mojom.NetworkType.kCellular,
@@ -443,6 +446,11 @@ suite('CellularNetworksList', function() {
     addESimSlot();
     await flushAsync();
     assertFalse(inhibitedSubtext.hidden);
-    assertTrue(inhibitedSpinner.active);
+    assertTrue(getInhibitedSpinner().active);
+
+    // Do not show inihibited spinner if cellular setup dialog is open.
+    cellularNetworkList.canShowSpinner = false;
+    await flushAsync();
+    assertFalse(!!getInhibitedSpinner());
   });
 });

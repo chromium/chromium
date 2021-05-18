@@ -111,9 +111,11 @@
             </div>
           </div>
           <div id="alignEnd">
-            <paper-spinner-lite id="inhibitedSpinner"
-                active="[[isDeviceInhibited_]]">
-            </paper-spinner-lite>
+            <template is="dom-if" if="[[canShowSpinner]]" restamp>
+              <paper-spinner-lite id="inhibitedSpinner"
+                  active="[[isDeviceInhibited_]]">
+              </paper-spinner-lite>
+            </template>
             <template is="dom-if" if="[[showAddESimButton_(cellularDeviceState,
                 globalPolicy)]]" restamp>
               <cr-icon-button class="icon-add-cellular add-button"

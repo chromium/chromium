@@ -45,6 +45,15 @@ Polymer({
     },
 
     /**
+     * If true, inhibited spinner can be shown, it will be shown
+     * if true and cellular is inhibited.
+     * @type {boolean}
+     */
+    canShowSpinner: {
+      type: Boolean,
+    },
+
+    /**
      * Device state for the tether network type. This device state should be
      * used for instant tether networks.
      * @type {!OncMojo.DeviceStateProperties|undefined}
