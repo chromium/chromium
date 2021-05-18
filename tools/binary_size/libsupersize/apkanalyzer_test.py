@@ -93,34 +93,85 @@ class ApkAnalyzerTest(unittest.TestCase):
       ('C', 'name', 2),
     ], nodes)
 
-  def testLambdaNormalizer_wholeString(self):
+  def assertNormalizedTo(self, class_path, expected_outer_class, expected_name):
     lambda_normalizer = apkanalyzer.LambdaNormalizer()
-    name = 'org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk.dex'
-    package = name
-    expected_outer_class = 'org.StackAnimation'
-    expected_name = 'org.StackAnimation$Nested1$$Lambda$0'
-    self.assertEqual((expected_outer_class, expected_name),
-                     lambda_normalizer.Normalize(package, name))
+    actual_outer_class, actual_name = lambda_normalizer.Normalize(
+        class_path, class_path)
+    self.assertEqual(expected_outer_class, actual_outer_class)
+    self.assertEqual(expected_name, actual_name)
 
-  def testLambdaNormalizer_wholeString_noDexSuffix(self):
-    lambda_normalizer = apkanalyzer.LambdaNormalizer()
-    name = 'org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk'
-    package = name
-    expected_outer_class = 'org.StackAnimation'
-    expected_name = 'org.StackAnimation$Nested1$$Lambda$0'
-    self.assertEqual((expected_outer_class, expected_name),
-                     lambda_normalizer.Normalize(package, name))
+  def testLambdaNormalizer_normalLambda(self):
+    self.assertNormalizedTo(
+        class_path='package.FirebaseInstallationsRegistrar$$Lambda$1',
+        expected_outer_class='package.FirebaseInstallationsRegistrar',
+        # Always re-number lambdas.
+        expected_name='package.FirebaseInstallationsRegistrar$$Lambda$0',
+    )
+
+  def testLambdaNormalizer_externalSyntheticLambda(self):
+    self.assertNormalizedTo(
+        class_path='AnimatedProgressBar$$ExternalSyntheticLambda0',
+        expected_outer_class='AnimatedProgressBar',
+        expected_name=('$$Outlined$AnimatedProgressBar$$Lambda$0'),
+    )
+
+  def testLambdaNormalizer_externalSyntheticOutlineLambda(self):
+    self.assertNormalizedTo(
+        class_path='AutofillAssistant$$Lambda$2$$ExternalSyntheticOutline0',
+        expected_outer_class='AutofillAssistant',
+        expected_name=('$$Outlined$AutofillAssistant$$Lambda$0'),
+    )
+
+  def testLambdaNormalizer_externalSyntheticLambdaWithExtraText(self):
+    self.assertNormalizedTo(
+        # pylint: disable=line-too-long
+        class_path='ContextMenuCoordinator$$Lambda$1$$ExternalSyntheticThrowCCEIfNotNull0',
+        expected_outer_class='ContextMenuCoordinator',
+        expected_name=('$$Outlined$ContextMenuCoordinator$$Lambda$0'),
+    )
+
+  def testLambdaNormalizer_internalSyntheticLambda(self):
+    self.assertNormalizedTo(
+        class_path=
+        # pylint: disable=line-too-long
+        'package.AnimatedProgressBar$$InternalSyntheticLambda$3$81073ff626580374a45b03cb5c962b81fe2a950064649dc98bf006e85619e92f$0',
+        expected_outer_class='package.AnimatedProgressBar',
+        expected_name='package.AnimatedProgressBar$$Lambda$0',
+    )
+
+  def testLambdaNormalizer_internalSyntheticOutlineLambda(self):
+    self.assertNormalizedTo(
+        class_path=
+        # pylint: disable=line-too-long
+        'package.ChromeActivity$$Lambda$28$$InternalSyntheticOutline$807$cbe941dd7bdbd82d4d93f21de2ea4e38c4468513f97dc90dcb54501b2fc335a6$0',
+        expected_outer_class='package.ChromeActivity',
+        expected_name='package.ChromeActivity$$Lambda$0',
+    )
+
+  def testLambdaNormalizer_oldLambdaFormat(self):
+    self.assertNormalizedTo(
+        class_path=
+        'org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk',
+        expected_outer_class='org.StackAnimation',
+        expected_name='org.StackAnimation$Nested1$$Lambda$0',
+    )
+
+  def testLambdaNormalizer_oldLambdaFormatWithDexSuffix(self):
+    self.assertNormalizedTo(
+        class_path=
+        'org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk.dex',
+        expected_outer_class='org.StackAnimation',
+        expected_name='org.StackAnimation$Nested1$$Lambda$0',
+    )
+
+  def testLambdaNormalizer_classNameIncludesLambda(self):
+    self.assertNormalizedTo(
+        class_path='package.DisposableLambdaObserver',
+        expected_outer_class='package.DisposableLambdaObserver',
+        expected_name='package.DisposableLambdaObserver',
+    )
 
   def testLambdaNormalizer_prefix(self):
-    lambda_normalizer = apkanalyzer.LambdaNormalizer()
-    name = 'org.-$$Lambda$StackAnimation$Nested1$kjevdeLqWLHzk.dex foo bar'
-    package = name.split(' ')[0]
-    expected_outer_class = 'org.StackAnimation'
-    expected_name = 'org.StackAnimation$Nested1$$Lambda$0 foo bar'
-    self.assertEqual((expected_outer_class, expected_name),
-                     lambda_normalizer.Normalize(package, name))
-
-  def testLambdaNormalizer_prefix_noDexSuffix(self):
     lambda_normalizer = apkanalyzer.LambdaNormalizer()
     name = 'org.-$$Lambda$StackAnimation$Nested1$kjevdeLqWLHzk foo bar'
     package = name.split(' ')[0]
@@ -130,21 +181,6 @@ class ApkAnalyzerTest(unittest.TestCase):
                      lambda_normalizer.Normalize(package, name))
 
   def testLambdaNormalizer_lambdaCounting(self):
-    lambda_normalizer = apkanalyzer.LambdaNormalizer()
-    name = 'org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk.dex'
-    expected_outer_class = 'org.StackAnimation'
-    expected_name = 'org.StackAnimation$Nested1$$Lambda$0'
-    # Ensure multiple calls to the same class maps to same number.
-    self.assertEqual((expected_outer_class, expected_name),
-                     lambda_normalizer.Normalize(name, name))
-    self.assertEqual((expected_outer_class, expected_name),
-                     lambda_normalizer.Normalize(name, name))
-    name = 'org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk2.dex'
-    expected_name = 'org.StackAnimation$Nested1$$Lambda$1'
-    self.assertEqual((expected_outer_class, expected_name),
-                     lambda_normalizer.Normalize(name, name))
-
-  def testLambdaNormalizer_lambdaCounting_noDexSuffix(self):
     lambda_normalizer = apkanalyzer.LambdaNormalizer()
     name = 'org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk'
     expected_outer_class = 'org.StackAnimation'
@@ -161,25 +197,6 @@ class ApkAnalyzerTest(unittest.TestCase):
 
   def testLambdaNormalizer_multiSameLine(self):
     lambda_normalizer = apkanalyzer.LambdaNormalizer()
-    name = ('org.-$$Lambda$StackAnimation$Nested1$kevdDQ8V2zqCrdieLqWLHzk.dex '
-            'org.-$$Lambda$Other$kjevdDQ8V2zqCrdieLqWLHzk.dex.foo bar')
-    package = name.split(' ')[0]
-    expected_outer_class = 'org.StackAnimation'
-    expected_name = ('org.StackAnimation$Nested1$$Lambda$0 '
-                     'org.-$$Lambda$Other$kjevdDQ8V2zqCrdieLqWLHzk.dex.foo bar')
-    self.assertEqual((expected_outer_class, expected_name),
-                     lambda_normalizer.Normalize(package, name))
-
-    name = expected_name
-    package = name.split(' ')[1]
-    expected_outer_class = 'org.Other'
-    expected_name = ('org.StackAnimation$Nested1$$Lambda$0 '
-                     'org.Other$$Lambda$0.foo bar')
-    self.assertEqual((expected_outer_class, expected_name),
-                     lambda_normalizer.Normalize(package, name))
-
-  def testLambdaNormalizer_multiSameLine_noDexSuffix(self):
-    lambda_normalizer = apkanalyzer.LambdaNormalizer()
     name = ('org.-$$Lambda$StackAnimation$Nested1$kevdDQ8V2zqCrdieLqWLHzk '
             'org.-$$Lambda$Other$kjevdDQ8V2zqCrdieLqWLHzk bar')
     package = name.split(' ')[0]
@@ -188,7 +205,6 @@ class ApkAnalyzerTest(unittest.TestCase):
                      'org.-$$Lambda$Other$kjevdDQ8V2zqCrdieLqWLHzk bar')
     self.assertEqual((expected_outer_class, expected_name),
                      lambda_normalizer.Normalize(package, name))
-
     name = expected_name
     package = name.split(' ')[1]
     expected_outer_class = 'org.Other'
