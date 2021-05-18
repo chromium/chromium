@@ -10,7 +10,6 @@ import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
 import * as dom from '../../dom.js';
 import {sendBarcodeEnabledEvent} from '../../metrics.js';
 import * as localStorage from '../../models/local_storage.js';
-import {DeviceOperator} from '../../mojo/device_operator.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
 import {Facing, Mode, PerfEvent, ViewName} from '../../type.js';
@@ -159,41 +158,17 @@ export class Options {
   }
 
   /**
-   * Maps MediaTrackSettings.facingMode to CCA facing type.
-   * @param {string|undefined} facing The target facingMode to map.
-   * @return {!Facing} The mapped CCA facing.
-   * @private
-   */
-  mapFacing_(facing) {
-    switch (facing) {
-      case undefined:
-        return Facing.EXTERNAL;
-      case 'user':
-        return Facing.USER;
-      case 'environment':
-        return Facing.ENVIRONMENT;
-      default:
-        throw new Error('Unknown facing: ' + facing);
-    }
-  }
-
-  /**
    * Updates the options' values for the current constraints and stream.
    * @param {!MediaStream} stream Current Stream in use.
-   * @return {!Promise<!Facing>} Facing-mode in use.
+   * @param {!Facing} facing
    */
-  async updateValues(stream) {
+  updateValues(stream, facing) {
     const track = stream.getVideoTracks()[0];
     const trackSettings = track.getSettings && track.getSettings();
-    const facingMode = trackSettings && trackSettings.facingMode;
-    const facing = (await DeviceOperator.isSupported()) ?
-        this.mapFacing_(facingMode) :
-        Facing.NOT_SET;
     this.videoDeviceId_ = trackSettings && trackSettings.deviceId || null;
     this.updateMirroring_(facing);
     this.audioTrack_ = stream.getAudioTracks()[0];
     this.updateAudioByMic_();
-    return facing;
   }
 
   /**

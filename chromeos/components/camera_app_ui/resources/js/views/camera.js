@@ -29,12 +29,13 @@ import {PerfLogger} from '../perf.js';
 import * as sound from '../sound.js';
 import * as state from '../state.js';
 import * as toast from '../toast.js';
-import {ErrorLevel, ErrorType} from '../type.js';
 import {
   CanceledError,
+  ErrorLevel,
+  ErrorType,
   Facing,
   Mode,
-  Resolution,  // eslint-disable-line no-unused-vars
+  Resolution,
   ViewName,
 } from '../type.js';
 import * as util from '../util.js';
@@ -383,7 +384,7 @@ export class Camera extends View {
     };
 
     this.addConfigureCompleteListener_(async () => {
-      if (!this.preview_.isSupportPTZ()) {
+      if (!state.get(state.State.HAS_PTZ_SUPPORT)) {
         highlight(false);
         return;
       }
@@ -705,8 +706,8 @@ export class Camera extends View {
             }
           }
           const stream = await this.preview_.open(constraints);
-
-          this.facingMode_ = await this.options_.updateValues(stream);
+          this.facingMode_ = this.preview_.getFacing();
+          this.options_.updateValues(stream, this.facingMode_);
           factory.setPreviewStream(stream);
           factory.setFacing(this.facingMode_);
           await factory.setupExtraStreams(constraints, captureR);
