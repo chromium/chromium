@@ -33,7 +33,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/check.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 namespace ui {
@@ -69,13 +69,13 @@ bool IsImeEnabled() {
   // Lacros-chrome side, which helps us on releasing.
   // TODO(crbug.com/1159237): In the future, we may want to unify the behavior
   // of ozone/wayland across platforms.
-  const auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
+  const auto* lacros_service = chromeos::LacrosService::Get();
 
   // Note: |init_params| may be null, if ash-chrome is too old.
   // TODO(crbug.com/1156033): Clean up the condition, after ash-chrome in the
   // world becomes new enough.
   const crosapi::mojom::BrowserInitParams* init_params =
-      lacros_chrome_service->init_params();
+      lacros_service ? lacros_service->init_params() : nullptr;
   if (init_params && init_params->exo_ime_support !=
                          crosapi::mojom::ExoImeSupport::kUnsupported) {
     return true;
