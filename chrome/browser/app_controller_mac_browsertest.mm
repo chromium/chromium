@@ -363,69 +363,34 @@ IN_PROC_BROWSER_TEST_F(AppControllerWebAppBrowserTest,
   EXPECT_EQ(GetAppURL(), current_url.spec());
 }
 
-class AppControllerNewProfileManagementBrowserTest
-    : public InProcessBrowserTest {
- protected:
-  AppControllerNewProfileManagementBrowserTest()
+class AppControllerProfilePickerBrowserTest : public InProcessBrowserTest {
+ public:
+  AppControllerProfilePickerBrowserTest()
       : active_browser_list_(BrowserList::GetInstance()) {}
+  ~AppControllerProfilePickerBrowserTest() override = default;
 
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    // Flag the profile picker as already shown in the past, to avoid additional
+    // feature onboarding logic.
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kBrowserProfilePickerShown, true);
+  }
+
+  const BrowserList* active_browser_list() const {
+    return active_browser_list_;
+  }
+
+ private:
   const BrowserList* active_browser_list_;
 };
-
-// Test that for a regular last profile, a reopen event opens a browser.
-IN_PROC_BROWSER_TEST_F(AppControllerNewProfileManagementBrowserTest,
-                       RegularProfileReopenWithNoWindows) {
-  AppController* ac = base::mac::ObjCCast<AppController>(
-      [[NSApplication sharedApplication] delegate]);
-  ASSERT_TRUE(ac);
-
-  EXPECT_EQ(1u, active_browser_list_->size());
-  BOOL result = [ac applicationShouldHandleReopen:NSApp hasVisibleWindows:NO];
-
-  EXPECT_FALSE(result);
-  EXPECT_EQ(2u, active_browser_list_->size());
-  EXPECT_FALSE(ProfilePicker::IsOpen());
-}
-
-// Test that for a locked last profile, a reopen event opens the User Manager.
-//
-// Flaky: crbug.com/1163620
-IN_PROC_BROWSER_TEST_F(AppControllerNewProfileManagementBrowserTest,
-                       DISABLED_LockedProfileReopenWithNoWindows) {
-  // The User Manager uses the system profile as its underlying profile. To
-  // minimize flakiness due to the scheduling/descheduling of tasks on the
-  // different threads, pre-initialize the guest profile before it is needed.
-  CreateAndWaitForSystemProfile();
-  AppController* ac = base::mac::ObjCCast<AppController>(
-      [[NSApplication sharedApplication] delegate]);
-  ASSERT_TRUE(ac);
-
-  // Lock the active profile.
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  Profile* profile = [ac lastProfile];
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile->GetPath());
-  ASSERT_NE(entry, nullptr);
-  entry->SetIsSigninRequired(true);
-  EXPECT_TRUE(entry->IsSigninRequired());
-
-  EXPECT_EQ(1u, active_browser_list_->size());
-  BOOL result = [ac applicationShouldHandleReopen:NSApp hasVisibleWindows:NO];
-  EXPECT_FALSE(result);
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, active_browser_list_->size());
-  EXPECT_TRUE(ProfilePicker::IsOpen());
-  ProfilePicker::Hide();
-}
 
 // Test that for a guest last profile, commandDispatch should open UserManager
 // if guest mode is disabled. Note that this test might be flaky under ASAN
 // due to https://crbug.com/674475. Please disable this test under ASAN
 // as the tests below if that happened.
-IN_PROC_BROWSER_TEST_F(AppControllerNewProfileManagementBrowserTest,
+IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
                        OpenGuestProfileOnlyIfGuestModeIsEnabled) {
   CreateAndWaitForSystemProfile();
   PrefService* local_state = g_browser_process->local_state();
@@ -436,7 +401,6 @@ IN_PROC_BROWSER_TEST_F(AppControllerNewProfileManagementBrowserTest,
       [[NSApplication sharedApplication] delegate]);
   ASSERT_TRUE(ac);
 
-  base::ScopedAllowBlockingForTesting allow_blocking;
   Profile* profile = [ac lastProfile];
   EXPECT_TRUE(profile->IsGuestSession());
 
@@ -444,53 +408,24 @@ IN_PROC_BROWSER_TEST_F(AppControllerNewProfileManagementBrowserTest,
   ASSERT_TRUE(menu);
   NSMenuItem* item = [menu itemWithTag:IDC_NEW_WINDOW];
   ASSERT_TRUE(item);
-  EXPECT_EQ(1u, active_browser_list_->size());
+  EXPECT_EQ(1u, active_browser_list()->size());
 
   [ac commandDispatch:item];
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1u, active_browser_list_->size());
+  EXPECT_EQ(1u, active_browser_list()->size());
   EXPECT_TRUE(ProfilePicker::IsOpen());
   ProfilePicker::Hide();
 
   local_state->SetBoolean(prefs::kBrowserGuestModeEnabled, true);
   [ac commandDispatch:item];
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2u, active_browser_list_->size());
+  EXPECT_EQ(2u, active_browser_list()->size());
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
-// Test that for a guest last profile, a reopen event opens the User Manager.
-IN_PROC_BROWSER_TEST_F(AppControllerNewProfileManagementBrowserTest,
-                       GuestProfileReopenWithNoWindows) {
-  // Create the system profile. Set the guest as the last used profile so the
-  // app controller can use it on init.
-  CreateAndWaitForSystemProfile();
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kProfileLastUsed, chrome::kGuestProfileDir);
-
-  AppController* ac = base::mac::ObjCCast<AppController>(
-      [[NSApplication sharedApplication] delegate]);
-  ASSERT_TRUE(ac);
-
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  Profile* profile = [ac lastProfile];
-  EXPECT_EQ(ProfileManager::GetGuestProfilePath(), profile->GetPath());
-  EXPECT_TRUE(profile->IsGuestSession());
-
-  EXPECT_EQ(1u, active_browser_list_->size());
-  BOOL result = [ac applicationShouldHandleReopen:NSApp hasVisibleWindows:NO];
-  EXPECT_FALSE(result);
-
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(1u, active_browser_list_->size());
-  EXPECT_TRUE(ProfilePicker::IsOpen());
-  ProfilePicker::Hide();
-}
-
-IN_PROC_BROWSER_TEST_F(AppControllerNewProfileManagementBrowserTest,
+IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
                        AboutChromeForcesUserManager) {
   AppController* ac = base::mac::ObjCCast<AppController>(
       [[NSApplication sharedApplication] delegate]);
@@ -505,44 +440,22 @@ IN_PROC_BROWSER_TEST_F(AppControllerNewProfileManagementBrowserTest,
   // Prohibiting guest mode forces the user manager flow for About Chrome.
   local_state->SetBoolean(prefs::kBrowserGuestModeEnabled, false);
 
-  base::ScopedAllowBlockingForTesting allow_blocking;
   Profile* guest_profile = [ac lastProfile];
   EXPECT_EQ(ProfileManager::GetGuestProfilePath(), guest_profile->GetPath());
   EXPECT_TRUE(guest_profile->IsGuestSession());
 
   // Tell the browser to open About Chrome.
-  EXPECT_EQ(1u, active_browser_list_->size());
+  EXPECT_EQ(1u, active_browser_list()->size());
   [ac orderFrontStandardAboutPanel:NSApp];
 
   base::RunLoop().RunUntilIdle();
 
   // No new browser is opened; the User Manager opens instead.
-  EXPECT_EQ(1u, active_browser_list_->size());
+  EXPECT_EQ(1u, active_browser_list()->size());
   EXPECT_TRUE(ProfilePicker::IsActive());
 
   ProfilePicker::Hide();
 }
-
-class AppControllerProfilePickerBrowserTest
-    : public AppControllerNewProfileManagementBrowserTest {
- public:
-  AppControllerProfilePickerBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kNewProfilePicker);
-  }
-  ~AppControllerProfilePickerBrowserTest() override = default;
-
-  void SetUpOnMainThread() override {
-    AppControllerNewProfileManagementBrowserTest::SetUpOnMainThread();
-
-    // Flag the profile picker as already shown in the past, to avoid additional
-    // feature onboarding logic.
-    g_browser_process->local_state()->SetBoolean(
-        prefs::kBrowserProfilePickerShown, true);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
 
 // Test that for a regular last profile, a reopen event opens a browser.
 IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
@@ -550,11 +463,11 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   AppController* ac = base::mac::ObjCCastStrict<AppController>(
       [[NSApplication sharedApplication] delegate]);
 
-  EXPECT_EQ(1u, active_browser_list_->size());
+  EXPECT_EQ(1u, active_browser_list()->size());
   BOOL result = [ac applicationShouldHandleReopen:NSApp hasVisibleWindows:NO];
 
   EXPECT_FALSE(result);
-  EXPECT_EQ(2u, active_browser_list_->size());
+  EXPECT_EQ(2u, active_browser_list()->size());
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
@@ -570,7 +483,6 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
       [[NSApplication sharedApplication] delegate]);
 
   // Lock the active profile.
-  base::ScopedAllowBlockingForTesting allow_blocking;
   Profile* profile = [ac lastProfile];
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
@@ -580,12 +492,12 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   entry->SetIsSigninRequired(true);
   EXPECT_TRUE(entry->IsSigninRequired());
 
-  EXPECT_EQ(1u, active_browser_list_->size());
+  EXPECT_EQ(1u, active_browser_list()->size());
   BOOL result = [ac applicationShouldHandleReopen:NSApp hasVisibleWindows:NO];
   EXPECT_FALSE(result);
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, active_browser_list_->size());
+  EXPECT_EQ(1u, active_browser_list()->size());
   EXPECT_TRUE(ProfilePicker::IsOpen());
   ProfilePicker::Hide();
 }
@@ -602,18 +514,17 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   AppController* ac = base::mac::ObjCCastStrict<AppController>(
       [[NSApplication sharedApplication] delegate]);
 
-  base::ScopedAllowBlockingForTesting allow_blocking;
   Profile* profile = [ac lastProfile];
   EXPECT_EQ(ProfileManager::GetGuestProfilePath(), profile->GetPath());
   EXPECT_TRUE(profile->IsGuestSession());
 
-  EXPECT_EQ(1u, active_browser_list_->size());
+  EXPECT_EQ(1u, active_browser_list()->size());
   BOOL result = [ac applicationShouldHandleReopen:NSApp hasVisibleWindows:NO];
   EXPECT_FALSE(result);
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1u, active_browser_list_->size());
+  EXPECT_EQ(1u, active_browser_list()->size());
   EXPECT_TRUE(ProfilePicker::IsOpen());
   ProfilePicker::Hide();
 }
@@ -626,7 +537,6 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
       [[NSApplication sharedApplication] delegate]);
 
   // Add a profile in the cache (simulate another profile on disk).
-  base::ScopedAllowBlockingForTesting allow_blocking;
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage* profile_storage =
       &profile_manager->GetProfileAttributesStorage();
@@ -637,12 +547,12 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   params.profile_name = u"name_1";
   profile_storage->AddProfile(std::move(params));
 
-  EXPECT_EQ(1u, active_browser_list_->size());
+  EXPECT_EQ(1u, active_browser_list()->size());
   BOOL result = [ac applicationShouldHandleReopen:NSApp hasVisibleWindows:NO];
   EXPECT_FALSE(result);
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, active_browser_list_->size());
+  EXPECT_EQ(1u, active_browser_list()->size());
   EXPECT_TRUE(ProfilePicker::IsOpen());
   ProfilePicker::Hide();
 }
