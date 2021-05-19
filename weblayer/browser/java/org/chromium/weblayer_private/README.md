@@ -21,7 +21,7 @@ context go to the WebView or WebLayer support APK and not the embedder's APK. Th
 is what's returned by [`BrowserImpl.getContext()`][link2]. Use this when referencing WebLayer specific
 resources. This is expected to be the most common use case.
 
-[link2]: https://source.chromium.org/chromium/chromium/src/+/master:weblayer/browser/java/org/chromium/weblayer_private/BrowserImpl.java?q=f:browserimpl%20getContext&ss=chromium%2Fchromium%2Fsrc
+[link2]: https://source.chromium.org/chromium/chromium/src/+/main:weblayer/browser/java/org/chromium/weblayer_private/BrowserImpl.java?q=f:browserimpl%20getContext&ss=chromium%2Fchromium%2Fsrc
 
 ## Embedder's Application Context
 
@@ -33,4 +33,4 @@ reference WebLayer-specific resources. This is what's returned by
 It shouldn't be downcast to Application (or any subclass thereof) since it's wrapped in a
 ContextWrapper.
 
-[link3]: https://source.chromium.org/chromium/chromium/src/+/master:base/android/java/src/org/chromium/base/ContextUtils.java?q=f:base%2FContextUtils%20getApplicationContext()&ss=chromium%2Fchromium%2Fsrc
+[link3]: https://source.chromium.org/chromium/chromium/src/+/main:base/android/java/src/org/chromium/base/ContextUtils.java?q=f:base%2FContextUtils%20getApplicationContext()&ss=chromium%2Fchromium%2Fsrc

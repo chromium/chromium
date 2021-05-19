@@ -50,7 +50,7 @@ Bug tracker: [Internals>WebLayer](https://bugs.chromium.org/p/chromium/issues/li
 If you haven't done this already, you first need to set up an Android build. If
 you are a Google employee, reach out to weblayer-team@google.com for internal
 instructions. Otherwise follow the
-[Android build instructions](https://source.chromium.org/chromium/chromium/src/+/master:docs/android_build_instructions.md).
+[Android build instructions](https://source.chromium.org/chromium/chromium/src/+/main:docs/android_build_instructions.md).
 
 ## Building and Testing
 
@@ -145,7 +145,7 @@ To run against linux with run_web_tests (same runner we use on CI, which runs co
 Passing in `-vvvv` may be useful if you want to see loads of information about
 test execution.
 
-A list of known test failures is in [`WeblayerWPTExpectations`](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/web_tests/android/WeblayerWPTExpectations).
+A list of known test failures is in [`WeblayerWPTExpectations`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/android/WeblayerWPTExpectations).
 The values between the brackets at the end of each line list the expected
 result types that test can have. For example, a test marked as "[ Failure ]" is
 expected to fail, while a test marked as "[ Failure Pass ]" is expected to be
@@ -160,9 +160,9 @@ While many WPT tests fail due to features not being implemented in WebLayer,
 some may fail due to Features that aren't getting enabled or switches that
 aren't getting passed to the test as they would be for Clank. If a test is
 failing due to a missing Feature, check the test FieldTrial configuration
-in [`fieldtrial_testing_config.json`](https://source.chromium.org/chromium/chromium/src/+/master:testing/variations/fieldtrial_testing_config.json).
+in [`fieldtrial_testing_config.json`](https://source.chromium.org/chromium/chromium/src/+/main:testing/variations/fieldtrial_testing_config.json).
 A missing switch could have several causes, but the flags that get passed
-to the test originate from [`third_party/wpt_tools/wpt/tools/wpt/run.py`](https://source.chromium.org/chromium/chromium/src/+/master:third_party/wpt_tools/wpt/tools/wpt/run.py).
+to the test originate from [`third_party/wpt_tools/wpt/tools/wpt/run.py`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/wpt_tools/wpt/tools/wpt/run.py).
 
 
 ## Telemetry
