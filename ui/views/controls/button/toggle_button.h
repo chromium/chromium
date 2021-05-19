@@ -43,8 +43,16 @@ class VIEWS_EXPORT ToggleButton : public Button {
   void RemoveLayerBeneathView(ui::Layer* layer) override;
   gfx::Size CalculatePreferredSize() const override;
 
+ protected:
+  // views::View:
+  void OnThemeChanged() override;
+
+  // Returns the path to draw the focus ring around for this ToggleButton.
+  SkPath GetFocusRingPath() const;
+
  private:
   friend class TestToggleButton;
+  class FocusRingHighlightPathGenerator;
   class ThumbView;
 
   // Calculates and returns the bounding box for the track.
@@ -61,7 +69,6 @@ class VIEWS_EXPORT ToggleButton : public Button {
   // views::View:
   bool CanAcceptEvent(const ui::Event& event) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  void OnThemeChanged() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnFocus() override;
   void OnBlur() override;

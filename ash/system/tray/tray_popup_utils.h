@@ -24,7 +24,6 @@ class Label;
 class LabelButton;
 class Painter;
 class Separator;
-class ToggleButton;
 }  // namespace views
 
 namespace ash {
@@ -118,11 +117,6 @@ class TrayPopupUtils {
   // TODO(bruthig): Update all system menu rows to use this.
   static views::ImageView* CreateMainImageView();
 
-  // Returns a ToggleButton that has been configured for system menu layout.
-  static views::ToggleButton* CreateToggleButton(
-      views::Button::PressedCallback callback,
-      int accessible_name_id);
-
   // Creates a default focus painter used for most things in tray popups.
   static std::unique_ptr<views::Painter> CreateFocusPainter();
 
@@ -206,9 +200,6 @@ class TrayPopupUtils {
   // Updates the visibility and a11y state of the checkable row |container|.
   static void UpdateCheckMarkVisibility(HoverHighlightView* container,
                                         bool visible);
-
-  // Updates the toggle button colors based on the current color mode.
-  static void UpdateToggleButtonColors(views::ToggleButton* toggle);
 
   // Sets the font list for |label| based on |style|.
   static void SetLabelFontList(views::Label* label, FontStyle style);

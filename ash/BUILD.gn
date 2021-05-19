@@ -1388,6 +1388,8 @@ component("ash") {
     "system/tray/tray_popup_ink_drop_style.h",
     "system/tray/tray_popup_utils.cc",
     "system/tray/tray_popup_utils.h",
+    "system/tray/tray_toggle_button.cc",
+    "system/tray/tray_toggle_button.h",
     "system/tray/tray_utils.cc",
     "system/tray/tray_utils.h",
     "system/tray/tri_view.cc",

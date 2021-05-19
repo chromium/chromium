@@ -29,6 +29,7 @@ constexpr int kFocusRingRadius = 16;
 RadioButton::RadioButton(const std::u16string& label, int group_id)
     : Checkbox(label) {
   SetGroup(group_id);
+  focus_ring()->SetShouldPaintFocusAura(true);
 }
 
 RadioButton::~RadioButton() = default;
@@ -81,19 +82,6 @@ void RadioButton::NotifyClick(const ui::Event& event) {
   if (!GetChecked())
     SetChecked(true);
   LabelButton::NotifyClick(event);
-}
-
-void RadioButton::PaintButtonContents(gfx::Canvas* canvas) {
-  if (HasFocus()) {
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-    flags.setColor(GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_FocusAuraColor));
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    canvas->DrawPath(GetFocusRingPath(), flags);
-  }
-
-  Checkbox::PaintButtonContents(canvas);
 }
 
 ui::NativeTheme::Part RadioButton::GetThemePart() const {

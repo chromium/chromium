@@ -40,6 +40,14 @@ constexpr int kThumbInset = 2;
 
 }  // namespace
 
+class ToggleButton::FocusRingHighlightPathGenerator
+    : public views::HighlightPathGenerator {
+ public:
+  SkPath GetHighlightPath(const views::View* view) override {
+    return static_cast<const ToggleButton*>(view)->GetFocusRingPath();
+  }
+};
+
 // Class representing the thumb (the circle that slides horizontally).
 class ToggleButton::ThumbView : public View {
  public:
@@ -127,9 +135,6 @@ ToggleButton::ToggleButton(PressedCallback callback)
   // Do not set a clip, allow the ink drop to burst out.
   // TODO(pbos): Consider an explicit InkDrop API to not use a clip rect / mask.
   views::InstallEmptyHighlightPathGenerator(this);
-  // TODO(pbos): Update the focus-ring path shape so that one can be used on top
-  // of this control (circling the ThumbView) to increase contrast.
-  SetInstallFocusRingOnFocus(false);
   SetHasInkDropActionOnClick(true);
   views::InkDrop::UseInkDropForSquareRipple(ink_drop(),
                                             /*highlight_on_hover=*/false);
@@ -145,6 +150,11 @@ ToggleButton::ToggleButton(PressedCallback callback)
         return host->GetTrackColor(host->GetIsOn() || host->HasFocus());
       },
       this));
+
+  SetInstallFocusRingOnFocus(true);
+  focus_ring()->SetPathGenerator(
+      std::make_unique<FocusRingHighlightPathGenerator>());
+  focus_ring()->SetShouldPaintFocusAura(true);
 }
 
 ToggleButton::~ToggleButton() {
@@ -281,6 +291,14 @@ void ToggleButton::OnThemeChanged() {
   SchedulePaint();
 }
 
+SkPath ToggleButton::GetFocusRingPath() const {
+  SkPath path;
+  const gfx::Point center = GetThumbBounds().CenterPoint();
+  const int kFocusRingRadius = 16;
+  path.addCircle(center.x(), center.y(), kFocusRingRadius);
+  return path;
+}
+
 void ToggleButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Button::GetAccessibleNodeData(node_data);
 
@@ -292,6 +310,7 @@ void ToggleButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void ToggleButton::OnFocus() {
   Button::OnFocus();
   ink_drop()->AnimateToState(views::InkDropState::ACTION_PENDING, nullptr);
+  SchedulePaint();
 }
 
 void ToggleButton::OnBlur() {
@@ -302,6 +321,7 @@ void ToggleButton::OnBlur() {
       views::InkDropState::ACTION_PENDING) {
     ink_drop()->AnimateToState(views::InkDropState::ACTION_TRIGGERED, nullptr);
   }
+  SchedulePaint();
 }
 
 void ToggleButton::NotifyClick(const ui::Event& event) {

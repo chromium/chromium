@@ -96,6 +96,11 @@ void FocusRing::SetColor(absl::optional<SkColor> color) {
   SchedulePaint();
 }
 
+void FocusRing::SetShouldPaintFocusAura(bool should_paint_focus_aura) {
+  should_paint_focus_aura_ = should_paint_focus_aura;
+  SchedulePaint();
+}
+
 void FocusRing::Layout() {
   // The focus ring handles its own sizing, which is simply to fill the parent
   // and extend a little beyond its borders.
@@ -154,6 +159,16 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
   DCHECK(IsPathUsable(path));
   DCHECK_EQ(GetFlipCanvasOnPaintForRTLUI(),
             parent()->GetFlipCanvasOnPaintForRTLUI());
+
+  if (should_paint_focus_aura_) {
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setColor(GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_FocusAuraColor));
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    canvas->DrawPath(path, flags);
+  }
+
   SkRect bounds;
   SkRRect rbounds;
   if (path.isRect(&bounds)) {

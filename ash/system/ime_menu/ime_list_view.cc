@@ -18,6 +18,7 @@
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/tray/tray_toggle_button.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -184,7 +185,7 @@ class KeyboardStatusRow : public views::View {
     tri_view->AddView(TriView::Container::CENTER, label);
 
     // The on-screen keyboard toggle button.
-    toggle_ = TrayPopupUtils::CreateToggleButton(
+    toggle_ = new TrayToggleButton(
         std::move(callback),
         IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD);
     toggle_->SetIsOn(keyboard::IsKeyboardEnabled());

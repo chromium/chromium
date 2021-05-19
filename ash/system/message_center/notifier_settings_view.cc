@@ -22,6 +22,7 @@
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/tray/tray_toggle_button.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -461,8 +462,8 @@ NotifierSettingsView::NotifierSettingsView() {
     auto app_badging_label =
         std::make_unique<views::Label>(l10n_util::GetStringUTF16(
             IDS_ASH_MESSAGE_CENTER_APP_BADGING_BUTTON_TOOLTIP));
-    auto app_badging_toggle = base::WrapUnique<views::ToggleButton>(
-        TrayPopupUtils::CreateToggleButton(
+    auto app_badging_toggle =
+        base::WrapUnique<views::ToggleButton>(new TrayToggleButton(
             base::BindRepeating(&NotifierSettingsView::AppBadgingTogglePressed,
                                 base::Unretained(this)),
             IDS_ASH_MESSAGE_CENTER_APP_BADGING_BUTTON_TOOLTIP));
@@ -496,7 +497,7 @@ NotifierSettingsView::NotifierSettingsView() {
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_ASH_MESSAGE_CENTER_QUIET_MODE_BUTTON_TOOLTIP));
   auto quiet_mode_toggle =
-      base::WrapUnique<views::ToggleButton>(TrayPopupUtils::CreateToggleButton(
+      base::WrapUnique<views::ToggleButton>(new TrayToggleButton(
           base::BindRepeating(&NotifierSettingsView::QuietModeTogglePressed,
                               base::Unretained(this)),
           IDS_ASH_MESSAGE_CENTER_QUIET_MODE_BUTTON_TOOLTIP));

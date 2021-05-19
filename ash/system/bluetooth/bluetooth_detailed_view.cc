@@ -19,6 +19,7 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_info_label.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/tray/tray_toggle_button.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -414,7 +415,7 @@ void BluetoothDetailedView::CreateExtraTitleRowButtons() {
 
   tri_view()->SetContainerVisible(TriView::Container::END, true);
 
-  toggle_ = TrayPopupUtils::CreateToggleButton(
+  toggle_ = new TrayToggleButton(
       base::BindRepeating(&BluetoothDetailedView::ToggleButtonPressed,
                           base::Unretained(this)),
       IDS_ASH_STATUS_TRAY_BLUETOOTH);
