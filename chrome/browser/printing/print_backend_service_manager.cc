@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
@@ -57,7 +58,7 @@ PrintBackendServiceManager::GetService(const std::string& locale,
   }
 
   RemotesMap& remote =
-      sandbox_service_ ? sandbox_remotes_ : unsandboxed_remotes_;
+      sandbox_service_ ? sandboxed_remotes_ : unsandboxed_remotes_;
   std::string remote_id;
 #if defined(OS_WIN)
   // Windows drivers are not thread safe.  Use a process per driver to prevent
@@ -85,11 +86,13 @@ PrintBackendServiceManager::GetService(const std::string& locale,
             .Pass());
 
     // Ensure that if the interface is ever disconnected (e.g. the service
-    // process crashes) or goes idle for a short period of time -- meaning
-    // there are no in-flight messages and no other interfaces bound through
-    // this one -- then we will reset `remote`, causing the service process to
-    // be terminated if it isn't already.
-    service.reset_on_disconnect();
+    // process crashes) then we will drop our handle to the remote.
+    // Safe to use base::Unretained(this) since `this` is a global singleton
+    // which never goes away.
+    service.set_disconnect_handler(
+        base::BindOnce(&PrintBackendServiceManager::OnRemoteDisconnected,
+                       base::Unretained(this), sandbox_service_, remote_id));
+
     // TODO(crbug.com/809738) Interactions with the service should be expected
     // as long as any Print Preview dialogs are open (and there could be more
     // than one preview open at a time).  Keeping the service present as long
@@ -98,13 +101,44 @@ PrintBackendServiceManager::GetService(const std::string& locale,
     // forever we make it go away after a short delay of idleness, but that
     // should be adjusted to happen only after all UI references have been
     // removed.
-    service.reset_on_idle_timeout(kResetOnIdleTimeout);
+    // Safe to use base::Unretained(this) since `this` is a global singleton
+    // which never goes away.
+    service.set_idle_handler(
+        kResetOnIdleTimeout,
+        base::BindRepeating(&PrintBackendServiceManager::OnIdleTimeout,
+                            base::Unretained(this), sandbox_service_,
+                            remote_id));
 
     // Initialize the new service for the desired locale.
     service->Init(locale);
   }
 
   return service;
+}
+
+void PrintBackendServiceManager::OnIdleTimeout(bool sandboxed,
+                                               const std::string& remote_id) {
+  DVLOG(1) << "Print Backend service idle timeout for "
+           << (sandboxed ? "sandboxed" : "unsandboxed") << " remote id "
+           << remote_id;
+  if (sandboxed) {
+    sandboxed_remotes_.erase(remote_id);
+  } else {
+    unsandboxed_remotes_.erase(remote_id);
+  }
+}
+
+void PrintBackendServiceManager::OnRemoteDisconnected(
+    bool sandboxed,
+    const std::string& remote_id) {
+  DVLOG(1) << "Print Backend service disconnected for "
+           << (sandboxed ? "sandboxed" : "unsandboxed") << " remote id "
+           << remote_id;
+  if (sandboxed) {
+    sandboxed_remotes_.erase(remote_id);
+  } else {
+    unsandboxed_remotes_.erase(remote_id);
+  }
 }
 
 bool PrintBackendServiceManager::PrinterDriverRequiresElevatedPrivilege(

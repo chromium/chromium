@@ -64,12 +64,22 @@ class PrintBackendServiceManager {
   PrintBackendServiceManager();
   ~PrintBackendServiceManager();
 
+  // Callback when predetermined idle timeout occurs indicating no in-flight
+  // messages for a short period of time.  `sandboxed` is used to distinguish
+  // which mapping of remotes the timeout applies to.
+  void OnIdleTimeout(bool sandboxed, const std::string& remote_id);
+
+  // Callback when service has disconnected (e.g., process crashes).
+  // `sandboxed` is used to distinguish which mapping of remotes the
+  // disconnection applies to.
+  void OnRemoteDisconnected(bool sandboxed, const std::string& remote_id);
+
   using RemotesMap =
       base::flat_map<std::string,
                      mojo::Remote<printing::mojom::PrintBackendService>>;
 
   // Keep separate mapping of remotes for sandboxed vs. unsandboxed services.
-  RemotesMap sandbox_remotes_;
+  RemotesMap sandboxed_remotes_;
   RemotesMap unsandboxed_remotes_;
 
   // Track if next service started should be sandboxed.
