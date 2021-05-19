@@ -3,24 +3,10 @@
     text-align: center;
   }
 
-  .logo {
-    content: url(../images/module_icons/set_default_light.svg);
-    display: inline-block;
-    height: 38px;
-    margin-bottom: 16px;
-    width: 42px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .logo {
-      content: url(../images/module_icons/set_default_dark.svg);
-    }
-  }
-
   .illustration {
     content: url(../images/set_default_light.svg);
     margin: auto;
-    width: 454px;
+    width: 320px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -44,7 +30,6 @@
     font-weight: unset;
     line-height: 1.875rem;
     margin: auto;
-    margin-bottom: 48px;
     margin-top: 16px;
     max-width: 400px;
   }
@@ -52,7 +37,6 @@
   .button-bar {
     display: flex;
     justify-content: space-between;
-    margin-top: 64px;
   }
 
 <if expr="is_win">
@@ -65,7 +49,6 @@
 </if>
 </style>
 <div class="container">
-  <div class="logo" aria-hidden="true"></div>
   <h1 tabindex="-1">[[subtitle]]</h1>
   <h2>$i18n{setDefaultSubHeader}</h2>
   <div class="illustration slide-in" aria-hidden="true"></div>
