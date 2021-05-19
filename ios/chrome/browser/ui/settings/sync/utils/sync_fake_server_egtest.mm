@@ -483,12 +483,6 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 }
 
 - (void)testSyncInvalidationsEnabled {
-#if TARGET_IPHONE_SIMULATOR
-  if (!base::ios::IsRunningOnIOS13OrLater() && ![ChromeEarlGrey isIPadIdiom]) {
-    // Very flaky on iPhone Simulator 13 and 14. See: https://crbug.com/1187481.
-    EARL_GREY_TEST_DISABLED(@"Failing on iPhone 13 and 14 simulator.");
-  }
-#endif
   // Sign in to sync.
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
