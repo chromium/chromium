@@ -585,7 +585,7 @@ def ReadMessagesFromFile(file_name):
 
   values = {}
   for key in messages.keys():
-    values[key] = unicode(messages[key]['message']);
+    values[key] = messages[key]['message'];
   return values
 
 
