@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
+#include "ui/base/theme_provider.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/views/border.h"
 

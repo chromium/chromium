@@ -19,6 +19,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/omnibox/browser/location_bar_model.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"

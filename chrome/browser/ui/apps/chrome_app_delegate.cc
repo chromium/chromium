@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"

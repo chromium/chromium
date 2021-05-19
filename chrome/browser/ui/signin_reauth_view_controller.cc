@@ -19,6 +19,7 @@
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/webui/signin/signin_reauth_ui.h"
 #include "components/consent_auditor/consent_auditor.h"
