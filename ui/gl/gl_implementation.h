@@ -140,6 +140,11 @@ GL_EXPORT GLImplementationParts GetSoftwareGLForTestsImplementation();
 GL_EXPORT void SetSoftwareGLCommandLineSwitches(base::CommandLine* command_line,
                                                 bool legacy_software_gl);
 
+// Set the software WebGL implementation on the provided command line
+GL_EXPORT void SetSoftwareWebGLCommandLineSwitches(
+    base::CommandLine* command_line,
+    bool legacy_software_gl);
+
 // Whether the implementation is one of the software GL implementations
 GL_EXPORT bool IsSoftwareGLImplementation(GLImplementationParts implementation);
 

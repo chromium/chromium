@@ -205,6 +205,19 @@ void SetSoftwareGLCommandLineSwitches(base::CommandLine* command_line,
   }
 }
 
+void SetSoftwareWebGLCommandLineSwitches(base::CommandLine* command_line,
+                                         bool legacy_software_gl) {
+  if (legacy_software_gl) {
+    command_line->AppendSwitchASCII(switches::kUseGL,
+                                    kGLImplementationSwiftShaderForWebGLName);
+  } else {
+    command_line->AppendSwitchASCII(switches::kUseGL,
+                                    kGLImplementationANGLEName);
+    command_line->AppendSwitchASCII(
+        switches::kUseANGLE, kANGLEImplementationSwiftShaderForWebGLName);
+  }
+}
+
 const char* GetGLImplementationGLName(GLImplementationParts implementation) {
   for (auto name_pair : kGLImplementationNamePairs) {
     if (implementation.gl == name_pair.implementation.gl &&

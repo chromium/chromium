@@ -44,6 +44,7 @@
 #include "gpu/vulkan/buildflags.h"
 #include "ui/gfx/extension_set.h"
 #include "ui/gl/buildflags.h"
+#include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 
 #if defined(OS_ANDROID)
@@ -738,8 +739,10 @@ bool EnableSwiftShaderIfNeeded(base::CommandLine* command_line,
           kGpuFeatureStatusEnabled ||
       gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_GL] !=
           kGpuFeatureStatusEnabled) {
-    command_line->AppendSwitchASCII(
-        switches::kUseGL, gl::kGLImplementationSwiftShaderForWebGLName);
+    // This setting makes WebGL run on legacy SwiftShader GL when true and
+    // SwANGLE when false.
+    bool legacy_software_gl = true;
+    gl::SetSoftwareWebGLCommandLineSwitches(command_line, legacy_software_gl);
     return true;
   }
   return false;
