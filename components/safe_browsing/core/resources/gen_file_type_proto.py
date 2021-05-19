@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -10,6 +10,8 @@
  each which contains only the values that platform needs.
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import re
 import sys
@@ -154,7 +156,7 @@ class DownloadFileTypeProtoGenerator(BinaryProtoGenerator):
       FilterForPlatformAndWrite(pb, platform_enum, outfile)
     else:
       # Make a separate file for each platform
-      for platform_type, platform_enum in PlatformTypes().iteritems():
+      for platform_type, platform_enum in PlatformTypes().items():
         # e.g. .../all/77/chromeos/download_file_types.pb
         outfile = os.path.join(opts.outdir,
                                str(pb.version_id),
@@ -179,12 +181,12 @@ class DownloadFileTypeProtoGenerator(BinaryProtoGenerator):
 
   def VerifyArgs(self, opts):
     if (not opts.all and opts.type not in PlatformTypes()):
-      print "ERROR: Unknown platform type '%s'" % opts.type
+      print("ERROR: Unknown platform type '%s'" % opts.type)
       self.opt_parser.print_help()
       return False
 
     if (bool(opts.all) == bool(opts.type)):
-      print "ERROR: Need exactly one of --type or --all"
+      print("ERROR: Need exactly one of --type or --all")
       self.opt_parser.print_help()
       return False
     return True
