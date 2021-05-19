@@ -71,7 +71,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/core/inspector/inspector_attribution_issue.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/appcache/application_cache_host.h"
 #include "third_party/blink/renderer/core/loader/back_forward_cache_loader_helper_for_frame.h"
@@ -817,9 +817,9 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
 
   if (!document_->domWindow()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kAttributionReporting)) {
-    ReportAttributionIssue(
-        GetFrame(),
-        mojom::blink::AttributionReportingIssueType::kPermissionPolicyDisabled,
+    AuditsIssue::ReportAttributionIssue(
+        document_->domWindow(),
+        AttributionReportingIssueType::kPermissionPolicyDisabled,
         GetFrame()->GetDevToolsFrameToken(), nullptr, devtools_request_id);
 
     // TODO(crbug.com/1178400): Remove console message once the issue reported
@@ -839,10 +839,9 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
   if (!main_frame.GetSecurityContext()
            ->GetSecurityOrigin()
            ->IsPotentiallyTrustworthy()) {
-    ReportAttributionIssue(
-        GetFrame(),
-        mojom::blink::AttributionReportingIssueType::
-            kAttributionUntrustworthyOrigin,
+    AuditsIssue::ReportAttributionIssue(
+        document_->domWindow(),
+        AttributionReportingIssueType::kAttributionUntrustworthyOrigin,
         main_frame.GetDevToolsFrameToken(), nullptr, devtools_request_id,
         main_frame.GetSecurityContext()->GetSecurityOrigin()->ToString());
     return false;
@@ -852,10 +851,9 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
                                          ->GetSecurityContext()
                                          ->GetSecurityOrigin()
                                          ->IsPotentiallyTrustworthy()) {
-    ReportAttributionIssue(
-        GetFrame(),
-        mojom::blink::AttributionReportingIssueType::
-            kAttributionUntrustworthyOrigin,
+    AuditsIssue::ReportAttributionIssue(
+        document_->domWindow(),
+        AttributionReportingIssueType::kAttributionUntrustworthyOrigin,
         GetFrame()->GetDevToolsFrameToken(), nullptr, devtools_request_id,
         GetFrame()->GetSecurityContext()->GetSecurityOrigin()->ToString());
     return false;
@@ -864,11 +862,11 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
   scoped_refptr<const SecurityOrigin> redirect_origin =
       SecurityOrigin::Create(url);
   if (!redirect_origin->IsPotentiallyTrustworthy()) {
-    ReportAttributionIssue(GetFrame(),
-                           mojom::blink::AttributionReportingIssueType::
-                               kAttributionUntrustworthyOrigin,
-                           absl::nullopt, nullptr, devtools_request_id,
-                           redirect_origin->ToString());
+    AuditsIssue::ReportAttributionIssue(
+        document_->domWindow(),
+        AttributionReportingIssueType::kAttributionUntrustworthyOrigin,
+        absl::nullopt, nullptr, devtools_request_id,
+        redirect_origin->ToString());
     return false;
   }
 
@@ -893,17 +891,16 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
     conversion->conversion_data = is_valid_integer ? data : 0UL;
 
     if (!is_valid_integer) {
-      ReportAttributionIssue(
-          GetFrame(),
-          mojom::blink::AttributionReportingIssueType::kInvalidAttributionData,
-          absl::nullopt, nullptr, devtools_request_id,
-          search_params->get(kTriggerDataParam));
+      AuditsIssue::ReportAttributionIssue(
+          document_->domWindow(),
+          AttributionReportingIssueType::kInvalidAttributionData, absl::nullopt,
+          nullptr, devtools_request_id, search_params->get(kTriggerDataParam));
     }
   } else {
-    ReportAttributionIssue(
-        GetFrame(),
-        mojom::blink::AttributionReportingIssueType::kInvalidAttributionData,
-        absl::nullopt, nullptr, devtools_request_id);
+    AuditsIssue::ReportAttributionIssue(
+        document_->domWindow(),
+        AttributionReportingIssueType::kInvalidAttributionData, absl::nullopt,
+        nullptr, devtools_request_id);
   }
   // Defaulting to 0 means that it is not possible to selectively convert only
   // event sources or navigation sources.

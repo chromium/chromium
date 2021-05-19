@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/core/inspector/inspector_attribution_issue.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -58,9 +58,9 @@ absl::optional<WebImpression> GetImpression(
 
   if (!execution_context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kAttributionReporting)) {
-    ReportAttributionIssue(
-        frame,
-        mojom::blink::AttributionReportingIssueType::kPermissionPolicyDisabled,
+    AuditsIssue::ReportAttributionIssue(
+        frame->DomWindow(),
+        AttributionReportingIssueType::kPermissionPolicyDisabled,
         frame->GetDevToolsFrameToken(), element);
 
     // TODO(crbug.com/1178400): Remove console message once the issue reported
@@ -80,10 +80,9 @@ absl::optional<WebImpression> GetImpression(
   if (!main_frame.GetSecurityContext()
            ->GetSecurityOrigin()
            ->IsPotentiallyTrustworthy()) {
-    ReportAttributionIssue(
-        frame,
-        mojom::blink::AttributionReportingIssueType::
-            kAttributionSourceUntrustworthyOrigin,
+    AuditsIssue::ReportAttributionIssue(
+        frame->DomWindow(),
+        AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin,
         main_frame.GetDevToolsFrameToken(), element, absl::nullopt,
         main_frame.GetSecurityContext()->GetSecurityOrigin()->ToString());
     return absl::nullopt;
@@ -92,10 +91,9 @@ absl::optional<WebImpression> GetImpression(
   if (!frame->IsMainFrame() && !frame->GetSecurityContext()
                                     ->GetSecurityOrigin()
                                     ->IsPotentiallyTrustworthy()) {
-    ReportAttributionIssue(
-        frame,
-        mojom::blink::AttributionReportingIssueType::
-            kAttributionSourceUntrustworthyOrigin,
+    AuditsIssue::ReportAttributionIssue(
+        frame->DomWindow(),
+        AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin,
         frame->GetDevToolsFrameToken(), element, absl::nullopt,
         frame->GetSecurityContext()->GetSecurityOrigin()->ToString());
     return absl::nullopt;
@@ -104,11 +102,10 @@ absl::optional<WebImpression> GetImpression(
   scoped_refptr<const SecurityOrigin> conversion_destination =
       SecurityOrigin::CreateFromString(conversion_destination_string);
   if (!conversion_destination->IsPotentiallyTrustworthy()) {
-    ReportAttributionIssue(frame,
-                           mojom::blink::AttributionReportingIssueType::
-                               kAttributionSourceUntrustworthyOrigin,
-                           absl::nullopt, element, absl::nullopt,
-                           conversion_destination_string);
+    AuditsIssue::ReportAttributionIssue(
+        frame->DomWindow(),
+        AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin,
+        absl::nullopt, element, absl::nullopt, conversion_destination_string);
     return absl::nullopt;
   }
 
@@ -117,11 +114,11 @@ absl::optional<WebImpression> GetImpression(
       impression_data_string.ToUInt64Strict(&impression_data_is_valid);
 
   if (!impression_data_is_valid) {
-    ReportAttributionIssue(frame,
-                           mojom::blink::AttributionReportingIssueType::
-                               kInvalidAttributionSourceEventId,
-                           frame->GetDevToolsFrameToken(), element,
-                           absl::nullopt, impression_data_string);
+    AuditsIssue::ReportAttributionIssue(
+        frame->DomWindow(),
+        AttributionReportingIssueType::kInvalidAttributionSourceEventId,
+        frame->GetDevToolsFrameToken(), element, absl::nullopt,
+        impression_data_string);
   }
 
   // Provide a default of 0 if the impression data was not valid.
@@ -135,11 +132,10 @@ absl::optional<WebImpression> GetImpression(
         SecurityOrigin::CreateFromString(*reporting_origin_string);
 
     if (!reporting_origin->IsPotentiallyTrustworthy()) {
-      ReportAttributionIssue(frame,
-                             mojom::blink::AttributionReportingIssueType::
-                                 kAttributionSourceUntrustworthyOrigin,
-                             absl::nullopt, element, absl::nullopt,
-                             *reporting_origin_string);
+      AuditsIssue::ReportAttributionIssue(
+          frame->DomWindow(),
+          AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin,
+          absl::nullopt, element, absl::nullopt, *reporting_origin_string);
       return absl::nullopt;
     }
   }

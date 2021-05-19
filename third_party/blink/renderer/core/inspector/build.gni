@@ -31,7 +31,6 @@ blink_core_sources_inspector = [
   "inspector_animation_agent.h",
   "inspector_application_cache_agent.cc",
   "inspector_application_cache_agent.h",
-  "inspector_attribution_issue.h",
   "inspector_audits_agent.cc",
   "inspector_audits_agent.h",
   "inspector_audits_issue.cc",

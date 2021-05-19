@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/protocol/Audits.h"
@@ -113,6 +114,72 @@ void AuditsIssue::ReportCorsIssue(ExecutionContext* execution_context,
                    .setDetails(std::move(details))
                    .build();
   execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
+}
+
+namespace {
+
+protocol::Audits::AttributionReportingIssueType
+BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
+  switch (type) {
+    case AttributionReportingIssueType::kPermissionPolicyDisabled:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          PermissionPolicyDisabled;
+    case AttributionReportingIssueType::kInvalidAttributionSourceEventId:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidAttributionSourceEventId;
+    case AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          AttributionSourceUntrustworthyOrigin;
+    case AttributionReportingIssueType::kInvalidAttributionData:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidAttributionData;
+    case AttributionReportingIssueType::kAttributionUntrustworthyOrigin:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          AttributionUntrustworthyOrigin;
+  }
+}
+
+}  // namespace
+
+void AuditsIssue::ReportAttributionIssue(
+    ExecutionContext* reporting_execution_context,
+    AttributionReportingIssueType type,
+    const absl::optional<base::UnguessableToken>& offending_frame_token,
+    Element* element,
+    const absl::optional<String>& request_id,
+    const absl::optional<String>& invalid_parameter) {
+  auto details = protocol::Audits::AttributionReportingIssueDetails::create()
+                     .setViolationType(BuildAttributionReportingIssueType(type))
+                     .build();
+
+  if (offending_frame_token) {
+    details->setFrame(
+        protocol::Audits::AffectedFrame::create()
+            .setFrameId(IdentifiersFactory::IdFromToken(*offending_frame_token))
+            .build());
+  }
+  if (element) {
+    details->setViolatingNodeId(DOMNodeIds::IdForNode(element));
+  }
+  if (request_id) {
+    details->setRequest(protocol::Audits::AffectedRequest::create()
+                            .setRequestId(*request_id)
+                            .build());
+  }
+  if (invalid_parameter) {
+    details->setInvalidParameter(*invalid_parameter);
+  }
+
+  auto issue_details =
+      protocol::Audits::InspectorIssueDetails::create()
+          .setAttributionReportingIssueDetails(std::move(details))
+          .build();
+  auto issue = protocol::Audits::InspectorIssue::create()
+                   .setCode(protocol::Audits::InspectorIssueCodeEnum::
+                                AttributionReportingIssue)
+                   .setDetails(std::move(issue_details))
+                   .build();
+  reporting_execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
 
 }  // namespace blink
