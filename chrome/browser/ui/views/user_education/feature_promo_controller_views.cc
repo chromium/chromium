@@ -275,7 +275,7 @@ bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
         l10n_util::GetStringUTF16(*params.screenreader_string_specifier);
   }
 
-  create_params.focusable = params.allow_focus;
+  create_params.focus_on_create = params.focus_on_create;
   create_params.persist_on_blur = params.persist_on_blur;
 
   create_params.arrow = params.arrow;

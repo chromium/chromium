@@ -10,6 +10,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/macros.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -27,6 +28,7 @@
 #include "components/arc/session/connection_holder.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_app_instance.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -56,6 +58,17 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
     // due to app pin syncing code. Sync isn't relevant to this test, so skip
     // pinned app sync. https://crbug.com/1085597
     SkipPinnedAppsFromSyncForTest();
+
+    // Switching to tablet mode can cause in-product help (IPH) to show. The IPH
+    // bubble can affect window activation when a browser window closes: if
+    // browser A has the IPH bubble, and browser B is active, closing browser B
+    // will lead to the IPH bubble being activated instead of browser A. This
+    // affects some tests that expect browser A to be active.
+    //
+    // Disable the IPH to avoid this issue. TODO(crbug.com/1209011): fix the
+    // issue more generally and remove this feature override.
+    scoped_feature_list_.InitAndDisableFeature(
+        feature_engagement::kIPHWebUITabStripFeature);
   }
   ~AutotestPrivateApiTest() override = default;
 
@@ -81,6 +94,8 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   DISALLOW_COPY_AND_ASSIGN(AutotestPrivateApiTest);
 };
 

@@ -66,8 +66,8 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
 
     absl::optional<int> preferred_width;
 
-    bool focusable = false;
-    bool persist_on_blur = false;
+    bool focus_on_create = false;
+    bool persist_on_blur = true;
 
     // Determines how progress indicators for tutorials will be rendered. If not
     // provided, no progress indicator will be visible.
@@ -104,16 +104,6 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
     // Do nothing: the anchor for promo bubbles should not highlight.
   }
   gfx::Size CalculatePreferredSize() const override;
-
-  // Determines if this bubble can be focused. If true, it will get
-  // focus on creation.
-  bool focusable_ = false;
-
-  // Determines if this bubble will be dismissed when it loses focus.
-  // Only meaningful when |focusable_| is true. When |allow_focus|
-  // is false, the bubble will always persist because it will never
-  // get blurred.
-  bool persist_on_blur_ = false;
 
   // If the bubble has buttons, it must be focusable.
   std::vector<views::MdTextButton*> buttons_;

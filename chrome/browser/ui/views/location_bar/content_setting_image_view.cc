@@ -241,7 +241,7 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
         IDS_NOTIFICATIONS_QUIET_PERMISSION_NEW_REQUEST_PROMO;
     bubble_params.anchor_view = this;
     bubble_params.arrow = views::BubbleBorder::TOP_RIGHT;
-    bubble_params.allow_focus = true;
+    bubble_params.focus_on_create = true;
     bubble_params.persist_on_blur = false;
     bubble_params.preferred_width = promo_width;
 

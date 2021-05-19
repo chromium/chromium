@@ -66,15 +66,13 @@ struct FeaturePromoBubbleParams {
   // possible.
   absl::optional<int> preferred_width;
 
-  // Determines if this bubble can be focused. If true, it will get
-  // focused on creation.
-  bool allow_focus = false;
+  // Determines if the bubble will get focused on creation.
+  bool focus_on_create = false;
 
   // Determines if this bubble will be dismissed when it loses focus.
-  // Only meaningful when |allow_focus| is true. When |allow_focus|
-  // is false, the bubble will always persist because it will never
-  // get blurred.
-  bool persist_on_blur = false;
+  // Only meaningful when |focus_on_create| is true. If it's false then it
+  // starts out blurred.
+  bool persist_on_blur = true;
 
   // Determines if this IPH can be snoozed and reactivated later.
   // If true, |allow_focus| must be true for keyboard accessibility.

@@ -182,15 +182,10 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
     : BubbleDialogDelegateView(params.anchor_view,
                                params.arrow,
                                views::BubbleBorder::STANDARD_SHADOW),
-      focusable_(params.focusable),
-      persist_on_blur_(params.persist_on_blur),
       preferred_width_(params.preferred_width) {
   DCHECK(params.anchor_view);
-  DCHECK(params.buttons.empty() || params.focusable)
-      << "A snoozable bubble must be focusable to allow keyboard "
-         "accessibility.";
-  DCHECK(!params.persist_on_blur || params.focusable)
-      << "A bubble that persists on blur must be focusable.";
+  DCHECK(params.persist_on_blur || params.focus_on_create)
+      << "A bubble that closes on blur must be initially focused.";
   UseCompactMargins();
 
   // Bubble will not auto-dismiss if there's buttons.
@@ -321,10 +316,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
     }
   }
 
-  if (!focusable_)
-    SetCanActivate(false);
-
-  set_close_on_deactivate(!persist_on_blur_);
+  set_close_on_deactivate(!params.persist_on_blur);
 
   set_margins(gfx::Insets());
   set_title_margins(gfx::Insets());
@@ -338,7 +330,11 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kHigh));
 
-  widget->Show();
+  if (params.focus_on_create)
+    widget->Show();
+  else
+    widget->ShowInactive();
+
   if (feature_promo_bubble_timeout_)
     feature_promo_bubble_timeout_->OnBubbleShown(this);
 }

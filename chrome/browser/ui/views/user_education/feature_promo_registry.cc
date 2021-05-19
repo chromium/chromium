@@ -198,8 +198,7 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
     // Turn on IPH Snooze for Tab Group.
     if (base::FeatureList::IsEnabled(
             feature_engagement::kIPHDesktopSnoozeFeature)) {
-      params.allow_focus = true;
-      params.persist_on_blur = true;
+      params.focus_on_create = true;
       params.allow_snooze = true;
     }
 
@@ -227,9 +226,6 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
         IDS_PROFILE_SWITCH_PROMO_SCREENREADER;
     params.feature_command_id = IDC_SHOW_AVATAR_MENU;
     params.arrow = views::BubbleBorder::Arrow::TOP_RIGHT;
-    // Focusable for accessibility (https://crbug.com/1198049).
-    params.allow_focus = true;
-    params.persist_on_blur = true;
 
     RegisterFeature(feature_engagement::kIPHProfileSwitchFeature, params,
                     base::BindRepeating(GetAvatarToolbarButton));
@@ -255,8 +251,7 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
     // Turn on IPH Snooze for Read Later entry point.
     if (base::FeatureList::IsEnabled(
             feature_engagement::kIPHDesktopSnoozeFeature)) {
-      params.allow_focus = true;
-      params.persist_on_blur = true;
+      params.focus_on_create = true;
       params.allow_snooze = true;
     }
 
