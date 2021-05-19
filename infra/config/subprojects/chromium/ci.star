@@ -4178,6 +4178,7 @@ ci.fyi_ios_builder(
         category = "iOS|iOS14",
         short_name = "ios14",
     ),
+    os = os.MAC_11,
 )
 
 ci.fyi_ios_builder(
@@ -4186,7 +4187,8 @@ ci.fyi_ios_builder(
         category = "iOS|iOS14",
         short_name = "sdk14",
     ),
-    xcode = xcode.x12d4e,
+    os = os.MAC_11,
+    xcode = xcode.x12e262,
 )
 
 ci.fyi_mac_builder(
