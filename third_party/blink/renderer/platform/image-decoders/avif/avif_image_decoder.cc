@@ -346,32 +346,38 @@ bool ValidateClapProperty(const avifImage* image,
   }
   const int width = static_cast<int>(image->width);
   const int height = static_cast<int>(image->height);
+  // Picture center of the image is at pcX and pcY, defined as follows:
+  //   pcX = horizOff + (width - 1)/2
+  //   pcY = vertOff + (height - 1)/2
+  //
   // pcX * 2
   const int64_t center_x_2 = horiz_off_2 + (width - 1);
   // pcY * 2
   const int64_t center_y_2 = vert_off_2 + (height - 1);
-  if (center_x_2 < 0 || center_x_2 > 2 * (width - 1)) {
-    DVLOG(1) << "Clean aperture horizontal offset is too big";
-    return false;
-  }
-  if (center_y_2 < 0 || center_y_2 > 2 * (height - 1)) {
-    DVLOG(1) << "Clean aperture vertical offset is too big";
-    return false;
-  }
+  // The leftmost and rightmost pixels of the clean aperture fall at:
+  //   pcX - (cleanApertureWidth - 1)/2
+  //   pcX + (cleanApertureWidth - 1)/2
+  //
   // Leftmost pixel * 2
   const int64_t leftmost_2 = center_x_2 - (clap_width - 1);
   // Rightmost pixel * 2
   const int64_t rightmost_2 = center_x_2 + (clap_width - 1);
   if (leftmost_2 < 0 || rightmost_2 > 2 * (width - 1)) {
-    DVLOG(1) << "Clean aperture width is too big";
+    DVLOG(1) << "Leftmost or rightmost pixel of clean aperture is out of the "
+                "image's bounds";
     return false;
   }
+  // The topmost and bottommost lines of the clean aperture fall at:
+  //   pcY - (cleanApertureHeight - 1)/2
+  //   pcY + (cleanApertureHeight - 1)/2
+  //
   // Topmost line * 2
   const int64_t topmost_2 = center_y_2 - (clap_height - 1);
   // Bottommost line * 2
   const int64_t bottommost_2 = center_y_2 + (clap_height - 1);
   if (topmost_2 < 0 || bottommost_2 > 2 * (height - 1)) {
-    DVLOG(1) << "Clean aperture height is too big";
+    DVLOG(1) << "Topmost or bottommost line of clean aperture is out of the "
+                "image's bounds";
     return false;
   }
   if (leftmost_2 % 2 != 0) {
