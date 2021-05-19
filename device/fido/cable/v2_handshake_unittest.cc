@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "device/fido/cable/v2_handshake.h"
+#include "components/cbor/reader.h"
 #include "components/cbor/values.h"
+#include "components/cbor/writer.h"
 #include "crypto/random.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
@@ -95,6 +97,69 @@ TEST(CableV2Encoding, PaddedCBOR) {
   decoded = DecodePaddedCBORMap(*encoded);
   ASSERT_TRUE(decoded);
   EXPECT_EQ(1u, decoded->GetMap().size());
+}
+
+// FutureEncodePaddedCBORMapFunction is the future replacement for
+// |EncodePaddedCBORMap|. See comment on |DecodePaddedCBORMap16|.
+absl::optional<std::vector<uint8_t>> FutureEncodePaddedCBORMapFunction(
+    cbor::Value::MapValue map) {
+  // TODO: when promoting this function, update comment on
+  // |kPostHandshakeMsgPaddingGranularity|.
+
+  // The number of padding bytes is a uint16_t, so the granularity cannot be
+  // larger than that.
+  static_assert(kFuturePostHandshakeMsgPaddingGranularity > 0, "");
+  static_assert(kFuturePostHandshakeMsgPaddingGranularity - 1 <=
+                    std::numeric_limits<uint16_t>::max(),
+                "");
+
+  absl::optional<std::vector<uint8_t>> cbor_bytes =
+      cbor::Writer::Write(cbor::Value(std::move(map)));
+  if (!cbor_bytes) {
+    return absl::nullopt;
+  }
+
+  base::CheckedNumeric<size_t> padded_size_checked = cbor_bytes->size();
+  padded_size_checked += sizeof(uint16_t);  // padding-length bytes
+  padded_size_checked =
+      (padded_size_checked + kFuturePostHandshakeMsgPaddingGranularity - 1) &
+      ~(kFuturePostHandshakeMsgPaddingGranularity - 1);
+  if (!padded_size_checked.IsValid()) {
+    return absl::nullopt;
+  }
+
+  const size_t padded_size = padded_size_checked.ValueOrDie();
+  DCHECK_GE(padded_size, cbor_bytes->size() + sizeof(uint16_t));
+  const size_t extra_bytes = padded_size - cbor_bytes->size();
+  const size_t num_padding_bytes =
+      extra_bytes - sizeof(uint16_t) /* length of padding length */;
+
+  cbor_bytes->resize(padded_size);
+  const uint16_t num_padding_bytes16 =
+      base::checked_cast<uint16_t>(num_padding_bytes);
+  memcpy(&cbor_bytes.value()[padded_size - sizeof(num_padding_bytes16)],
+         &num_padding_bytes16, sizeof(num_padding_bytes16));
+
+  return *cbor_bytes;
+}
+
+TEST(CableV2Encoding, FuturePaddedCBOR) {
+  // Test that we can decode messages padded by the encoding function that
+  // will be used in the future.
+  for (size_t i = 0; i < 512; i++) {
+    SCOPED_TRACE(i);
+
+    // Check that new->old direction works.
+    const std::vector<uint8_t> dummy_array(i);
+    cbor::Value::MapValue map;
+    map.emplace(1, dummy_array);
+    absl::optional<std::vector<uint8_t>> encoded =
+        FutureEncodePaddedCBORMapFunction(std::move(map));
+    ASSERT_TRUE(encoded);
+
+    absl::optional<cbor::Value> decoded = DecodePaddedCBORMap(*encoded);
+    ASSERT_TRUE(decoded);
+  }
 }
 
 std::array<uint8_t, kP256X962Length> PublicKeyOf(const EC_KEY* private_key) {
