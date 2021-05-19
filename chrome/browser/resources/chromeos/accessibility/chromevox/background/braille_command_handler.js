@@ -38,6 +38,9 @@ BrailleCommandHandler.onBrailleKeyEvent = function(evt, content) {
 
   EventSourceState.set(EventSourceType.BRAILLE_KEYBOARD);
 
+  // Try to restore to the last valid range.
+  ChromeVoxState.instance.restoreLastValidRangeIfNeeded();
+
   // Note: panning within content occurs earlier in event dispatch.
   Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
   switch (evt.command) {

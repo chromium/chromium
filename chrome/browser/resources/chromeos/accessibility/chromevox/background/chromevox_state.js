@@ -110,9 +110,9 @@ ChromeVoxState.prototype = {
   navigateToRange: goog.abstractMethod,
 
   /**
-   * Save the current ChromeVox range.
+   * Restores the last valid ChromeVox range.
    */
-  markCurrentRange: goog.abstractMethod,
+  restoreLastValidRangeIfNeeded: goog.abstractMethod,
 
   /**
    * Handles a braille command.

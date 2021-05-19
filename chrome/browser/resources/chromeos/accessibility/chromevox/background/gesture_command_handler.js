@@ -77,6 +77,11 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
     return;
   }
 
+  // Always try to recover the range to the previous valid target which may
+  // have been invalidated by touch explore; this recovery omits touch explore
+  // explicitly.
+  ChromeVoxState.instance.restoreLastValidRangeIfNeeded();
+
   // Handle gestures mapped to keys. Global keys are handled in place of
   // commands, and menu key overrides are handled only in menus.
   let key;
@@ -104,17 +109,6 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
   if (key) {
     EventGenerator.sendKeyPress(key.keyCode, key.modifiers);
     return;
-  }
-
-  // Always try to recover the range to the previous hover target, if there's no
-  // range.
-  if (!ChromeVoxState.instance.currentRange) {
-    const recoverTo = GestureCommandHandler.pointerHandler_
-                          .lastValidNodeBeforePointerInvalidation;
-    if (recoverTo) {
-      ChromeVoxState.instance.setCurrentRange(
-          cursors.Range.fromNode(recoverTo));
-    }
   }
 
   const command = commandData.command;

@@ -27,8 +27,6 @@ PointerHandler = class extends BaseAutomationHandler {
     this.mouseY_;
     /** @private {!Date} */
     this.lastNoPointerAnchorEarconPlayedTime_ = new Date();
-    /** @private {!AutomationNode|undefined} */
-    this.lastValidNodeBeforePointerInvalidation_;
     /** @private {number} */
     this.expectingHoverCount_ = 0;
     /** @private {boolean} */
@@ -188,11 +186,6 @@ PointerHandler = class extends BaseAutomationHandler {
 
     target = targetLeaf || targetObject;
     if (!target) {
-      if (ChromeVoxState.instance.currentRange) {
-        this.lastValidNodeBeforePointerInvalidation_ =
-            ChromeVoxState.instance.currentRange.start.node;
-      }
-
       // This clears the anchor point in the TouchExplorationController (so when
       // a user touch explores back to the previous range, it will be announced
       // again).
@@ -217,16 +210,6 @@ PointerHandler = class extends BaseAutomationHandler {
     DesktopAutomationHandler.instance.onEventDefault(new CustomAutomationEvent(
         EventType.HOVER, target,
         {eventFromAction: chrome.automation.ActionType.HIT_TEST}));
-  }
-
-  /**
-   * @return {!AutomationNode|undefined} The last valid ChromeVox range start
-   *     node prior to an explicit invalidation/clearing of the range triggered
-   *     by a touch or mouse event on a "unpointable" target. That is, a target
-   *     ChromeVox never wants to place its range upon.
-   */
-  get lastValidNodeBeforePointerInvalidation() {
-    return this.lastValidNodeBeforePointerInvalidation_;
   }
 };
 

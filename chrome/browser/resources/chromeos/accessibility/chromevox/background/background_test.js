@@ -2624,6 +2624,8 @@ TEST_F('ChromeVoxBackgroundTest', 'PointerSkipsContainers', function() {
             .call(simulateHitTestResult(group))
             .expectSpeech('range cleared!')
             .expectEarcon(Earcon.NO_POINTER_ANCHOR)
+            .call(simulateHitTestResult(button))
+            .expectSpeech('Button')
             .call(simulateHitTestResult(group))
             .expectSpeech('range cleared!')
             .expectEarcon(Earcon.NO_POINTER_ANCHOR)
@@ -2732,12 +2734,6 @@ TEST_F('ChromeVoxBackgroundTest', 'PointerOnOffOnRepeatsNode', function() {
                 button.location.top + 60))
             .expectSpeech('range cleared!')
             .expectEarcon(Earcon.NO_POINTER_ANCHOR)
-            .call(() => {
-              assertEquals(
-                  button,
-                  GestureCommandHandler.pointerHandler_
-                      .lastValidNodeBeforePointerInvalidation);
-            })
             .clearPendingOutput()
             .call(simulateHitTestResult(button))
             .expectSpeech('hi', 'Button')
@@ -3423,4 +3419,71 @@ SYNC_TEST_F('ChromeVoxBackgroundTest', 'EarconPlayback', function() {
   // Finish up the button earcon, too.
   engine.lastEarconSources_[Earcon.BUTTON].onended();
   assertEquals(0, Object.keys(engine.lastEarconSources_).length);
+});
+
+TEST_F('ChromeVoxBackgroundTest', 'MixedNavWithRangeInvalidation', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <p>Start</p>
+    <button>apple</button>
+    <a href="google.com">grape</a>
+    <button>banana</button>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    // Different ways to navigate to the next object.
+    const keyboardHandler = ChromeVoxState.instance.keyboardHandler_;
+    const nextObjectKeyboard = keyboardHandler.onKeyDown.bind(keyboardHandler, {
+      keyCode: KeyCode.RIGHT,
+      metaKey: true,
+      preventDefault: () => {},
+      stopPropagation: () => {}
+    });
+    const nextObjectBraille = BrailleCommandHandler.onBrailleKeyEvent.bind(
+        BrailleCommandHandler, {command: BrailleKeyCommand.PAN_RIGHT});
+    const nextObjectGesture =
+        GestureCommandHandler.onAccessibilityGesture_.bind(
+            GestureCommandHandler, Gesture.SWIPE_RIGHT1);
+    const clearCurrentRange = ChromeVoxState.instance.setCurrentRange.bind(
+        ChromeVoxState.instance, null);
+    const toggleTalkBack = () => {
+      ChromeVoxState.instance.talkBackEnabled =
+          !ChromeVoxState.instance.talkBackEnabled;
+    };
+
+    mockFeedback
+        .expectSpeech('Start')
+
+        .call(clearCurrentRange)
+        .call(nextObjectKeyboard)
+        .expectSpeech('apple', 'Button')
+
+        .call(clearCurrentRange)
+        .call(nextObjectBraille)
+        .expectSpeech('grape', 'Link')
+
+        .call(clearCurrentRange)
+        .call(nextObjectGesture)
+        .expectSpeech('banana', 'Button')
+
+        .call(clearCurrentRange)
+        .call(nextObjectKeyboard)
+        .expectSpeech('Web Content')
+
+        .call(clearCurrentRange)
+        .call(toggleTalkBack)
+        .call(nextObjectKeyboard)
+        .call(() => assertFalse(!!ChromeVoxState.instance.currentRange))
+
+        .call(nextObjectBraille)
+        .call(() => assertFalse(!!ChromeVoxState.instance.currentRange))
+
+        .call(nextObjectGesture)
+        .call(() => assertFalse(!!ChromeVoxState.instance.currentRange))
+
+        .call(toggleTalkBack)
+        .call(nextObjectKeyboard)
+        .call(() => assertTrue(!!ChromeVoxState.instance.currentRange))
+
+        .replay();
+  });
 });

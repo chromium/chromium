@@ -29,8 +29,10 @@ TEST_F(
         keyboardHandler.onKeyDown(searchDown);
         assertEquals(1, keyboardHandler.eatenKeyDowns_.size);
 
-        // A Search keydown does not get eaten when there's no range.
+        // A Search keydown does not get eaten when there's no range and there
+        // was no previous range. TalkBack is handled elsewhere.
         ChromeVoxState.instance.setCurrentRange(null);
+        ChromeVoxState.instance.previousRange_ = null;
         const searchDown2 = {};
         searchDown2.metaKey = true;
         keyboardHandler.onKeyDown(searchDown2);

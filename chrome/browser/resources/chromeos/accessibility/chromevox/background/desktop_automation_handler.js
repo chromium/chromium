@@ -84,7 +84,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
 
     this.addListener_(EventType.LOAD_COMPLETE, this.onLoadComplete);
     this.addListener_(EventType.MENU_END, this.onMenuEnd);
-    this.addListener_(EventType.MENU_START, this.onMenuStart);
+    this.addListener_(EventType.MENU_START, this.onEventDefault);
     this.addListener_(EventType.RANGE_VALUE_CHANGED, this.onValueChanged);
     this.addListener_(
         EventType.SCROLL_POSITION_CHANGED, this.onScrollPositionChanged);
@@ -626,15 +626,6 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
         this.onEventDefault(evt);
       }
     });
-  }
-
-  /**
-   * Provides all feedback once a menu start event fires.
-   * @param {!ChromeVoxEvent} evt
-   */
-  onMenuStart(evt) {
-    ChromeVoxState.instance.markCurrentRange();
-    this.onEventDefault(evt);
   }
 
   /**
