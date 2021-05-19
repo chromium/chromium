@@ -430,4 +430,15 @@ std::u16string FormatOriginForSecurityDisplay(
   return result;
 }
 
+std::u16string FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+    const GURL& url) {
+  return url_formatter::FormatUrl(
+      url,
+      url_formatter::kFormatUrlOmitDefaults |
+          url_formatter::kFormatUrlTrimAfterHost |
+          url_formatter::kFormatUrlOmitHTTPS |
+          url_formatter::kFormatUrlOmitTrivialSubdomains,
+      net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+}
+
 }  // namespace url_formatter

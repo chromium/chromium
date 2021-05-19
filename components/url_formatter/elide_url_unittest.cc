@@ -684,4 +684,27 @@ TEST(TextEliderTest, FormatOriginForSecurityDisplay) {
       << "Explicitly test the url::Origin which takes an empty, invalid URL";
 }
 
+TEST(TextEliderTest, FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains) {
+  EXPECT_EQ(
+      u"google.com",
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          GURL("http://user:pass@google.com/path")));
+  EXPECT_EQ(
+      u"chrome://version",
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          GURL("chrome://version")));
+  EXPECT_EQ(
+      u"äää.de",
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          GURL("https://äää.de")));
+  EXPECT_EQ(
+      u"xn--4caaa.com",
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          GURL("https://äää.com")));
+  EXPECT_EQ(
+      u"مثال.إختبار",
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          GURL("https://xn--mgbh0fb.xn--kgbechtv/")));
+}
+
 }  // namespace

@@ -649,8 +649,8 @@ permissions::ObjectPermissionContextBase* PageInfo::GetChooserContextFromUIInfo(
 }
 
 std::u16string PageInfo::GetSimpleSiteName() const {
-  return url_formatter::FormatUrlForSecurityDisplay(
-      site_url_, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+  return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+      site_url_);
 }
 
 void PageInfo::ComputeUIInputs(const GURL& url) {
