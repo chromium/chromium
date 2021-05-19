@@ -19,6 +19,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowProcess;
 
@@ -169,6 +170,8 @@ public class PolicyLoadListenerUnitTest {
     }
 
     @Test
+    // TODO(crbug.com/1210371): Change to use paused loop. See crbug for details.
+    @LooperMode(LooperMode.Mode.LEGACY)
     public void testDestroyAfterStart_PolicyInitializedInterleaved() {
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.onAvailable(mListener));
 
