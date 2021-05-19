@@ -93,7 +93,7 @@ class ClipboardNudgeControllerTest : public AshTestBase {
         nudge_controller_->MarkNewFeatureBadgeShown();
         return;
       case ClipboardNudgeType::kScreenshotNotificationNudge:
-        nudge_controller_->MarkScreenshotNotificationNudgeShown();
+        nudge_controller_->MarkScreenshotNotificationShown();
         return;
     }
   }

@@ -89,7 +89,6 @@ std::unique_ptr<views::View> CreateClipboardShortcutView() {
           IDS_ASH_MULTIPASTE_SCREENSHOT_NOTIFICATION_NUDGE)));
   shortcut_label->SetBackgroundColor(background_color);
   shortcut_label->SetEnabledColor(text_icon_color);
-  ClipboardHistoryController::Get()->MarkScreenshotNotificationNudgeShown();
   return clipboard_shortcut_view;
 }
 
@@ -132,6 +131,9 @@ std::unique_ptr<views::View> CreateBannerView() {
     banner_view->AddChildView(CreateClipboardShortcutView());
     layout->SetFlexForView(label, 1);
   }
+
+  // Notify the clipboard history of the created notification.
+  ClipboardHistoryController::Get()->OnScreenshotNotificationCreated();
 
   return banner_view;
 }

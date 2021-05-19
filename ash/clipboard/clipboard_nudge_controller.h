@@ -90,8 +90,8 @@ class ASH_EXPORT ClipboardNudgeController
   // Increment the 'new' feature badge shown count.
   void MarkNewFeatureBadgeShown();
 
-  // Increment the screenshot notification nudge shown count.
-  void MarkScreenshotNotificationNudgeShown();
+  // Increment the screenshot notification shown count.
+  void MarkScreenshotNotificationShown();
 
   // ClipboardHistoryControllerImpl:
   void OnClipboardHistoryMenuShown(

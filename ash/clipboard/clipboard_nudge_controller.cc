@@ -173,7 +173,7 @@ void ClipboardNudgeController::MarkNewFeatureBadgeShown() {
   new_feature_last_shown_time_.ResetTime();
 }
 
-void ClipboardNudgeController::MarkScreenshotNotificationNudgeShown() {
+void ClipboardNudgeController::MarkScreenshotNotificationShown() {
   base::UmaHistogramBoolean(kScreenshotNotification_ShowCount, true);
   if (screenshot_notification_last_shown_time_.ShouldLogFeatureOpenTime()) {
     base::UmaHistogramExactLinear(kScreenshotNotification_OpenTime, kMaxSeconds,

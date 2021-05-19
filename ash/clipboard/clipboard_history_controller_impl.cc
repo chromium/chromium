@@ -287,8 +287,8 @@ void ClipboardHistoryControllerImpl::MarkNewFeatureBadgeShown() {
   nudge_controller_->MarkNewFeatureBadgeShown();
 }
 
-void ClipboardHistoryControllerImpl::MarkScreenshotNotificationNudgeShown() {
-  nudge_controller_->MarkScreenshotNotificationNudgeShown();
+void ClipboardHistoryControllerImpl::OnScreenshotNotificationCreated() {
+  nudge_controller_->MarkScreenshotNotificationShown();
 }
 
 bool ClipboardHistoryControllerImpl::CanShowMenu() const {

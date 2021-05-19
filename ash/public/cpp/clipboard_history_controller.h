@@ -69,8 +69,8 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
   // Increment the 'new' feature badge shown count.
   virtual void MarkNewFeatureBadgeShown() = 0;
 
-  // Increment the screenshot notification nudge shown count.
-  virtual void MarkScreenshotNotificationNudgeShown() = 0;
+  // Notify the clipboard history that a screenshot notification was created.
+  virtual void OnScreenshotNotificationCreated() = 0;
 
   // Creates a ScopedClipboardHistoryPause, which pauses ClipboardHistory for
   // its lifetime.
