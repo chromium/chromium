@@ -735,7 +735,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
     default:
       // The OBU Parser can only produce bit depths of 8, 10, and 12; we should
       // not hit any other cases. See
-      // https://source.chromium.org/chromium/chromium/src/+/master:third_party/libgav1/src/src/obu_parser.cc;l=144-150;drc=7880d0cc1d1976012dbec8a1bb982191ac49b7f4
+      // https://source.chromium.org/chromium/chromium/src/+/main:third_party/libgav1/src/src/obu_parser.cc;l=144-150;drc=7880d0cc1d1976012dbec8a1bb982191ac49b7f4
       NOTREACHED() << "Invalid color bit depth: "
                    << current_sequence_header_->color_config.bitdepth;
   }
