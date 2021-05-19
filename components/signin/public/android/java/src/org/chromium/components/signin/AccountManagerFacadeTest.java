@@ -74,13 +74,18 @@ public class AccountManagerFacadeTest {
 
     @Test
     @SmallTest
-    public void testIsCachePopulated() {
+    public void testIsCachePopulated() throws InterruptedException {
         // Cache shouldn't be populated until getAccountsSync is unblocked.
         assertFalse(AccountManagerFacadeProvider.getInstance().isCachePopulated());
 
         mDelegate.unblockGetAccounts();
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(
+                    accounts -> countDownLatch.countDown());
+        });
         // Wait for cache population to finish.
-        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
+        countDownLatch.await();
         assertTrue(AccountManagerFacadeProvider.getInstance().isCachePopulated());
     }
 

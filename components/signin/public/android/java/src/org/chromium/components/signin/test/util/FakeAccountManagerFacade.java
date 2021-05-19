@@ -75,14 +75,19 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
-    public List<Account> tryGetGoogleAccounts() {
+    public Optional<List<Account>> getGoogleAccounts() {
         List<Account> accounts = new ArrayList<>();
         synchronized (mLock) {
             for (AccountHolder accountHolder : mAccountHolders) {
                 accounts.add(accountHolder.getAccount());
             }
         }
-        return accounts;
+        return Optional.of(accounts);
+    }
+
+    @Override
+    public List<Account> tryGetGoogleAccounts() {
+        return getGoogleAccounts().get();
     }
 
     @Override

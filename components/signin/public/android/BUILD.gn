@@ -141,6 +141,7 @@ java_library("junit") {
     "//components/externalauth/android:google_delegate_public_impl_java",
     "//components/externalauth/android:java",
     "//testing/android/junit:junit_test_support",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_rules_java",

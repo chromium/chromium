@@ -119,6 +119,11 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     @Override
+    public Optional<List<Account>> getGoogleAccounts() {
+        return Optional.fromNullable(mFilteredAccounts.get());
+    }
+
+    @Override
     public List<Account> tryGetGoogleAccounts() {
         List<Account> maybeAccounts = mFilteredAccounts.get();
         if (maybeAccounts == null) {
@@ -353,7 +358,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         protected void onPostExecute(Void v) {
             while (!mCallbacksWaitingForAccountsFetch.isEmpty()) {
                 final Callback<List<Account>> callback = mCallbacksWaitingForAccountsFetch.remove();
-                callback.onResult(tryGetGoogleAccounts());
+                callback.onResult(mFilteredAccounts.get());
             }
             fireOnAccountsChangedNotification();
             decrementUpdateCounter();

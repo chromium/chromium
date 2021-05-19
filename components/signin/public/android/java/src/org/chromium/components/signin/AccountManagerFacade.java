@@ -57,14 +57,24 @@ public interface AccountManagerFacade {
     boolean isCachePopulated();
 
     /**
-     * Retrieves all Google accounts on the device.
+     * Retrieves all Google accounts on the device from the cache.
      * Returns an empty array if an error occurs while getting account list.
+     * If the cache is not yet populated, the optional will be empty.
      */
     @AnyThread
+    Optional<List<Account>> getGoogleAccounts();
+
+    /**
+     * Retrieves all Google accounts on the device.
+     * Returns an empty array if an error occurs while getting account list.
+     * This method is blocking, use {@link #getGoogleAccounts()} instead.
+     */
+    @AnyThread
+    @Deprecated
     List<Account> tryGetGoogleAccounts();
 
     /**
-     * Asynchronous version of {@link #tryGetGoogleAccounts()}.
+     * Asynchronous version of {@link #getGoogleAccounts()}.
      */
     @MainThread
     void tryGetGoogleAccounts(final Callback<List<Account>> callback);
