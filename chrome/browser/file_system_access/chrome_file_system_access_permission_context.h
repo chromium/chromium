@@ -56,6 +56,9 @@ class ChromeFileSystemAccessPermissionContext
   ~ChromeFileSystemAccessPermissionContext() override;
 
   // permissions::ObjectPermissionContextBase
+  std::vector<std::unique_ptr<Object>> GetGrantedObjects(
+      const url::Origin& origin) override;
+  std::vector<std::unique_ptr<Object>> GetAllGrantedObjects() override;
   std::string GetKeyForObject(const base::Value& object) override;
   bool IsValidObject(const base::Value& object) override;
   std::u16string GetObjectDisplayName(const base::Value& object) override;
@@ -138,6 +141,9 @@ class ChromeFileSystemAccessPermissionContext
 
   void TriggerTimersForTesting();
 
+  // Return all persisted objects, including those which have expired.
+  std::vector<std::unique_ptr<ObjectPermissionContextBase::Object>>
+  GetAllGrantedOrExpiredObjects();
   void UpdatePersistedPermissionsForTesting();
   bool HasPersistedPermissionForTesting(const url::Origin& origin,
                                         const base::FilePath& path,

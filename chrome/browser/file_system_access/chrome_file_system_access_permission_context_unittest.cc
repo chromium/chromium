@@ -1305,7 +1305,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto advance_once = Now();
   // The active grant exists, so its timestamp should have been updated.
   permission_context()->UpdatePersistedPermissionsForTesting();
-  auto objects = permission_context()->GetAllGrantedObjects();
+  auto objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
   EXPECT_EQ(util::ValueToTime(objects[0]->value.FindKey("time")), advance_once);
@@ -1318,7 +1318,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
               kPersistentPermissionExpirationTimeoutNonPWA -
           base::TimeDelta::FromSeconds(1));
   permission_context()->UpdatePersistedPermissionsForTesting();
-  objects = permission_context()->GetAllGrantedObjects();
+  objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
   EXPECT_EQ(util::ValueToTime(objects[0]->value.FindKey("time")), advance_once);
@@ -1328,14 +1328,21 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
               kPersistentPermissionExpirationTimeoutNonPWA +
           base::TimeDelta::FromSeconds(1));
   permission_context()->UpdatePersistedPermissionsForTesting();
-  objects = permission_context()->GetAllGrantedObjects();
+  objects = permission_context()->GetAllGrantedOrExpiredObjects();
   EXPECT_EQ(objects.size(), 1u);
+
+  // Get(All)GrantedObjects should not list permissions which are expired,
+  // including those in the grace period.
+  objects = permission_context()->GetAllGrantedObjects();
+  EXPECT_EQ(objects.size(), 0u);
+  objects = permission_context()->GetGrantedObjects(kTestOrigin);
+  EXPECT_EQ(objects.size(), 0u);
 
   Advance(ChromeFileSystemAccessPermissionContext::
               kPersistentPermissionGracePeriod +
           base::TimeDelta::FromSeconds(1));
   permission_context()->UpdatePersistedPermissionsForTesting();
-  objects = permission_context()->GetAllGrantedObjects();
+  objects = permission_context()->GetAllGrantedOrExpiredObjects();
   EXPECT_EQ(objects.size(), 0u);
 }
 
@@ -1353,7 +1360,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto advance_once = Now();
   // The active grant exists, so its timestamp should have been updated.
   permission_context()->UpdatePersistedPermissionsForTesting();
-  auto objects = permission_context()->GetAllGrantedObjects();
+  auto objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
   EXPECT_EQ(util::ValueToTime(objects[0]->value.FindKey("time")), advance_once);
@@ -1366,7 +1373,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
               kPersistentPermissionExpirationTimeoutNonPWA -
           base::TimeDelta::FromSeconds(1));
   permission_context()->UpdatePersistedPermissionsForTesting();
-  objects = permission_context()->GetAllGrantedObjects();
+  objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
   EXPECT_EQ(util::ValueToTime(objects[0]->value.FindKey("time")), advance_once);
@@ -1376,14 +1383,21 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
               kPersistentPermissionExpirationTimeoutNonPWA +
           base::TimeDelta::FromSeconds(1));
   permission_context()->UpdatePersistedPermissionsForTesting();
-  objects = permission_context()->GetAllGrantedObjects();
+  objects = permission_context()->GetAllGrantedOrExpiredObjects();
   EXPECT_EQ(objects.size(), 1u);
+
+  // Get(All)GrantedObjects should not list permissions which are expired,
+  // including those in the grace period.
+  objects = permission_context()->GetAllGrantedObjects();
+  EXPECT_EQ(objects.size(), 0u);
+  objects = permission_context()->GetGrantedObjects(kTestOrigin);
+  EXPECT_EQ(objects.size(), 0u);
 
   Advance(ChromeFileSystemAccessPermissionContext::
               kPersistentPermissionGracePeriod +
           base::TimeDelta::FromSeconds(1));
   permission_context()->UpdatePersistedPermissionsForTesting();
-  objects = permission_context()->GetAllGrantedObjects();
+  objects = permission_context()->GetAllGrantedOrExpiredObjects();
   EXPECT_EQ(objects.size(), 0u);
 }
 
@@ -1431,10 +1445,20 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   ExpectUmaEntryPersistedPermissionAge(Now() - initial_time, 1);
   EXPECT_EQ(PermissionStatus::GRANTED, grant2->GetStatus());
 
-  // |grant1| should now be expired.
+  // |grant1| should now be expired, but not revoked.
   Advance(base::TimeDelta::FromSeconds(2));
   EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
+  objects = permission_context()->GetAllGrantedOrExpiredObjects();
+  EXPECT_EQ(objects.size(), 2u);
+
+  // Get(All)GrantedObjects only list permissions which are not expired.
+  objects = permission_context()->GetAllGrantedObjects();
+  EXPECT_EQ(objects.size(), 1u);
+  objects = permission_context()->GetGrantedObjects(kTestOrigin);
+  EXPECT_EQ(objects.size(), 0u);
+  objects = permission_context()->GetGrantedObjects(kTestOrigin2);
+  EXPECT_EQ(objects.size(), 1u);
 
   // |grant1| should not be revoked until after the grace period.
   Advance(ChromeFileSystemAccessPermissionContext::
@@ -1444,13 +1468,19 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   permission_context()->UpdatePersistedPermissionsForTesting();
 
   // Only |grant2| should be persisted.
-  objects = permission_context()->GetAllGrantedObjects();
+  objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin2.GetURL());
   EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
   EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin2, kTestPath, HandleType::kFile, GrantType::kWrite));
+  objects = permission_context()->GetAllGrantedObjects();
+  EXPECT_EQ(objects.size(), 1u);
+  objects = permission_context()->GetGrantedObjects(kTestOrigin);
+  EXPECT_EQ(objects.size(), 0u);
+  objects = permission_context()->GetGrantedObjects(kTestOrigin2);
+  EXPECT_EQ(objects.size(), 1u);
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
@@ -1485,7 +1515,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   loop.Run();
 
   // Only |grant2|'s timestamp should have been updated.
-  auto objects = permission_context()->GetAllGrantedObjects();
+  auto objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 2u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
   EXPECT_EQ(objects[1]->origin, kTestOrigin2.GetURL());
@@ -1516,7 +1546,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   task_environment_.RunUntilIdle();
 
   // The timestamp should not have been updated.
-  auto objects = permission_context()->GetAllGrantedObjects();
+  auto objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
   EXPECT_EQ(util::ValueToTime(objects[0]->value.FindKey("time")), initial_time);
@@ -1534,7 +1564,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   task_environment_.RunUntilIdle();
 
   // The timestamp should not have been updated.
-  objects = permission_context()->GetAllGrantedObjects();
+  objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 0u);
 
   // The two sweeps should have been recorded in UMA.

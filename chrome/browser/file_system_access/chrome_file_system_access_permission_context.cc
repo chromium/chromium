@@ -964,6 +964,70 @@ ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
   return existing_grant;
 }
 
+// Returns non-expired persisted permissions. Active grants are ignored here,
+// since persisted permissions are almost always a superset of active grants.
+// The exception is when CONTENT_SETTING_ALLOW for an origin, which is only
+// possible for System Web Apps.
+std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
+ChromeFileSystemAccessPermissionContext::GetGrantedObjects(
+    const url::Origin& origin) {
+  std::vector<std::unique_ptr<Object>> objects =
+      ObjectPermissionContextBase::GetGrantedObjects(origin);
+
+  bool is_installed_pwa = OriginIsInstalledPWA(origin);
+  // Filter out expired permissions.
+  objects.erase(
+      base::ranges::remove_if(
+          objects,
+          [this, &is_installed_pwa](const std::unique_ptr<Object>& object) {
+            auto last_activity_time =
+                util::ValueToTime(
+                    object->value.FindKey(kPermissionLastUsedTimeKey))
+                    .value_or(base::Time::Min());
+            return this->PersistentPermissionIsExpired(last_activity_time,
+                                                       is_installed_pwa);
+          }),
+      objects.end());
+  return objects;
+}
+
+// Returns non-expired persisted permissions. Active grants are ignored here,
+// since persisted permissions are almost always a superset of active grants.
+// The exception is when CONTENT_SETTING_ALLOW for an origin, which is only
+// possible for System Web Apps.
+std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
+ChromeFileSystemAccessPermissionContext::GetAllGrantedObjects() {
+  std::vector<std::unique_ptr<Object>> objects =
+      GetAllGrantedOrExpiredObjects();
+
+  url::Origin origin;
+  GURL origin_as_url;
+  bool is_installed_pwa = false;
+  // Filter out expired permissions.
+  // Checking whether an origin has an installed PWA may be expensive.
+  // GetAllGrantedObjects() returns objects grouped by origin, so this should
+  // only check once per origin.
+  objects.erase(base::ranges::remove_if(
+                    objects,
+                    [this, &is_installed_pwa, &origin,
+                     &origin_as_url](const std::unique_ptr<Object>& object) {
+                      if (object->origin != origin_as_url) {
+                        origin_as_url = object->origin;
+                        origin = url::Origin::Create(object->origin);
+                        is_installed_pwa = OriginIsInstalledPWA(origin);
+                      }
+                      auto last_activity_time =
+                          util::ValueToTime(
+                              object->value.FindKey(kPermissionLastUsedTimeKey))
+                              .value_or(base::Time::Min());
+                      return this->PersistentPermissionIsExpired(
+                          last_activity_time, is_installed_pwa);
+                    }),
+                objects.end());
+
+  return objects;
+}
+
 std::string ChromeFileSystemAccessPermissionContext::GetKeyForObject(
     const base::Value& object) {
   const auto optional_path =
@@ -1419,7 +1483,7 @@ void ChromeFileSystemAccessPermissionContext::UpdatePersistedPermissions() {
   url::Origin origin;
   GURL origin_as_url;
   bool is_installed_pwa = false;
-  auto objects = GetAllGrantedObjects();
+  auto objects = GetAllGrantedOrExpiredObjects();
   for (const auto& object : objects) {
     // Checking whether an origin has an installed PWA may be expensive.
     // GetAllGrantedObjects() returns objects grouped by origin, so this should
@@ -1442,7 +1506,10 @@ void ChromeFileSystemAccessPermissionContext::
   SCOPED_UMA_HISTOGRAM_TIMER(
       "Storage.FileSystemAccess.PersistedPermissions.SweepTime.Origin");
   bool is_installed_pwa = OriginIsInstalledPWA(origin);
-  for (const auto& object : GetGrantedObjects(origin)) {
+  // Call the base class's version of this method, since this class overrides
+  // this method to filter out expired grants.
+  for (const auto& object :
+       ObjectPermissionContextBase::GetGrantedObjects(origin)) {
     MaybeRenewOrRevokePersistedPermission(origin, std::move(object->value),
                                           is_installed_pwa);
   }
@@ -1524,6 +1591,11 @@ ChromeFileSystemAccessPermissionContext::GetPersistedPermission(
     return absl::nullopt;
 
   return std::move(object->value);
+}
+
+std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
+ChromeFileSystemAccessPermissionContext::GetAllGrantedOrExpiredObjects() {
+  return ObjectPermissionContextBase::GetAllGrantedObjects();
 }
 
 bool ChromeFileSystemAccessPermissionContext::HasPersistedPermissionForTesting(
