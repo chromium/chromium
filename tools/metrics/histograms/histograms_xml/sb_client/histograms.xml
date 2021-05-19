@@ -140,6 +140,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SBClientDownload.DownloadRequestPayloadSize" units="bytes"
     expires_after="M90">
+  <obsolete>
+    Remove 05-2021 due to lack of use.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
