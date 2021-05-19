@@ -241,15 +241,35 @@ void SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(
   // persistence, but don't remove them from prefs otherwise.
   if (content::SiteIsolationPolicy::ShouldPersistIsolatedCOOPSites()) {
     std::vector<url::Origin> origins;
+    std::vector<std::string> expired_entries;
 
-    // TODO(alexmos): Implement support for skipping and expiring entries that
-    // are older than a predefined threshold.
-
-    auto* dict = user_prefs::UserPrefs::Get(browser_context)
-                     ->GetDictionary(prefs::kWebTriggeredIsolatedOrigins);
+    auto* pref_service = user_prefs::UserPrefs::Get(browser_context);
+    auto* dict =
+        pref_service->GetDictionary(prefs::kWebTriggeredIsolatedOrigins);
     if (dict) {
-      for (const auto& site_time_pair : dict->DictItems())
-        origins.push_back(url::Origin::Create(GURL(site_time_pair.first)));
+      for (const auto& site_time_pair : dict->DictItems()) {
+        // Only isolate origins that haven't expired.
+        absl::optional<base::Time> timestamp =
+            util::ValueToTime(site_time_pair.second);
+        base::TimeDelta expiration_timeout =
+            ::features::
+                kSiteIsolationForCrossOriginOpenerPolicyExpirationTimeoutParam
+                    .Get();
+        if (timestamp.has_value() &&
+            base::Time::Now() - timestamp.value() <= expiration_timeout) {
+          origins.push_back(url::Origin::Create(GURL(site_time_pair.first)));
+        } else {
+          expired_entries.push_back(site_time_pair.first);
+        }
+      }
+      // Remove expired entries (as well as those with an invalid timestamp).
+      if (!expired_entries.empty()) {
+        DictionaryPrefUpdate update(pref_service,
+                                    prefs::kWebTriggeredIsolatedOrigins);
+        base::DictionaryValue* updated_dict = update.Get();
+        for (const auto& entry : expired_entries)
+          updated_dict->RemoveKey(entry);
+      }
     }
 
     if (!origins.empty()) {

@@ -154,7 +154,7 @@ bool SiteIsolationPolicy::IsOriginAgentClusterEnabled() {
 
 // static
 bool SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled() {
-  // If the user has explicitly enabled site isolation for OAuth sites from the
+  // If the user has explicitly enabled site isolation for COOP sites from the
   // command line, honor this regardless of policies that may disable site
   // isolation.
   if (base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(

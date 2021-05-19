@@ -735,6 +735,12 @@ const base::FeatureParam<int>
     kSiteIsolationForCrossOriginOpenerPolicyMaxSitesParam{
         &kSiteIsolationForCrossOriginOpenerPolicy, "stored_sites_max_size",
         100};
+// This feature param controls the period of time for which the stored sites
+// should remain valid. Only used when persistence is also enabled.
+const base::FeatureParam<base::TimeDelta>
+    kSiteIsolationForCrossOriginOpenerPolicyExpirationTimeoutParam{
+        &kSiteIsolationForCrossOriginOpenerPolicy, "expiration_timeout",
+        base::TimeDelta::FromDays(7)};
 
 // Controls whether SpareRenderProcessHostManager tries to always have a warm
 // spare renderer process around for the most recently requested BrowserContext.

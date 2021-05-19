@@ -169,6 +169,8 @@ CONTENT_EXPORT extern const base::FeatureParam<bool>
     kSiteIsolationForCrossOriginOpenerPolicyShouldPersistParam;
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kSiteIsolationForCrossOriginOpenerPolicyMaxSitesParam;
+CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kSiteIsolationForCrossOriginOpenerPolicyExpirationTimeoutParam;
 CONTENT_EXPORT extern const base::Feature
     kSkipEarlyCommitPendingForCrashedFrame;
 CONTENT_EXPORT extern const base::Feature kWebOTP;

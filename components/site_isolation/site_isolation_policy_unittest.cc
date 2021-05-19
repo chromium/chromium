@@ -103,7 +103,10 @@ class BaseSiteIsolationTest : public testing::Test {
 
 class SiteIsolationPolicyTest : public BaseSiteIsolationTest {
  public:
-  SiteIsolationPolicyTest() {
+  explicit SiteIsolationPolicyTest(
+      content::BrowserTaskEnvironment::TimeSource time_source =
+          content::BrowserTaskEnvironment::TimeSource::DEFAULT)
+      : task_environment_(time_source) {
     prefs_.registry()->RegisterListPref(prefs::kUserTriggeredIsolatedOrigins);
     prefs_.registry()->RegisterDictionaryPref(
         prefs::kWebTriggeredIsolatedOrigins);
@@ -115,6 +118,10 @@ class SiteIsolationPolicyTest : public BaseSiteIsolationTest {
 
   PrefService* prefs() { return &prefs_; }
 
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
@@ -125,7 +132,10 @@ class SiteIsolationPolicyTest : public BaseSiteIsolationTest {
 
 class WebTriggeredIsolatedOriginsPolicyTest : public SiteIsolationPolicyTest {
  public:
-  WebTriggeredIsolatedOriginsPolicyTest() = default;
+  explicit WebTriggeredIsolatedOriginsPolicyTest(
+      content::BrowserTaskEnvironment::TimeSource time_source =
+          content::BrowserTaskEnvironment::TimeSource::DEFAULT)
+      : SiteIsolationPolicyTest(time_source) {}
 
   void PersistOrigin(const std::string& origin) {
     SiteIsolationPolicy::PersistIsolatedOrigin(
@@ -144,11 +154,31 @@ class WebTriggeredIsolatedOriginsPolicyTest : public SiteIsolationPolicyTest {
 
  protected:
   void SetUp() override {
-    // Limit the max number of stored sites to 3.
-    feature_list_.InitAndEnableFeatureWithParameters(
+    // Set up the COOP isolation feature with persistence enabled and a maximum
+    // of 3 stored sites.
+    base::test::ScopedFeatureList::FeatureAndParams coop_feature = {
         ::features::kSiteIsolationForCrossOriginOpenerPolicy,
-        {{"stored_sites_max_size", base::NumberToString(3)},
-         {"should_persist_across_restarts", "true"}});
+        {{::features::kSiteIsolationForCrossOriginOpenerPolicyMaxSitesParam
+              .name,
+          base::NumberToString(3)},
+         {::features::kSiteIsolationForCrossOriginOpenerPolicyShouldPersistParam
+              .name,
+          "true"}}};
+
+    // Some machines running this test may be below the default memory
+    // threshold.  To ensure that COOP isolation is also enabled on those
+    // machines, set a very low 128MB threshold.
+    base::test::ScopedFeatureList::FeatureAndParams memory_threshold_feature = {
+        site_isolation::features::kSitePerProcessOnlyForHighMemoryClients,
+        {{site_isolation::features::
+              kSitePerProcessOnlyForHighMemoryClientsParamName,
+          "128"}}};
+
+    feature_list_.InitWithFeaturesAndParameters(
+        /* enabled_features = */ {coop_feature, memory_threshold_feature},
+        /* disabled_features = */ {});
+
+    // Disable strict site isolation to observe effects of COOP isolation.
     SetEnableStrictSiteIsolation(false);
     SiteIsolationPolicyTest::SetUp();
   }
@@ -225,6 +255,68 @@ TEST_F(WebTriggeredIsolatedOriginsPolicyTest, UpdatedMaxSize) {
   EXPECT_THAT(GetStoredOrigins(),
               testing::UnorderedElementsAre(
                   "https://foo4.com", "https://foo5.com", "https://foo6.com"));
+}
+
+// WebTriggeredIsolatedOriginsPolicyTest subclass for tests that want to use
+// mock time.
+class WebTriggeredIsolatedOriginsPolicyTestWithMockTime
+    : public WebTriggeredIsolatedOriginsPolicyTest {
+ public:
+  WebTriggeredIsolatedOriginsPolicyTestWithMockTime()
+      : WebTriggeredIsolatedOriginsPolicyTest(
+            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {}
+};
+
+// Verify that when origins stored in prefs expire, we don't apply them when
+// loading persisted isolated origins, and we remove them from prefs.
+TEST_F(WebTriggeredIsolatedOriginsPolicyTestWithMockTime, Expiration) {
+  // Running this test with a command-line --site-per-process flag (which might
+  // be the case on some bots) conflicts with the feature configuration in this
+  // test.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSitePerProcess)) {
+    return;
+  }
+
+  EXPECT_TRUE(content::SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled());
+  EXPECT_TRUE(content::SiteIsolationPolicy::ShouldPersistIsolatedCOOPSites());
+
+  // Persist two origins which will eventually expire.
+  PersistOrigin("https://foo1.com");
+  PersistOrigin("https://foo2.com");
+  EXPECT_THAT(GetStoredOrigins(), testing::UnorderedElementsAre(
+                                      "https://foo1.com", "https://foo2.com"));
+
+  // Fast-forward time so we exceed the default expiration timeout.
+  base::TimeDelta default_timeout =
+      ::features::kSiteIsolationForCrossOriginOpenerPolicyExpirationTimeoutParam
+          .default_value;
+  task_environment()->FastForwardBy(default_timeout +
+                                    base::TimeDelta::FromDays(1));
+
+  // foo1.com and foo2.com should still be in prefs. (Expired entries are only
+  // removed when we try to load them from prefs.)
+  EXPECT_THAT(GetStoredOrigins(), testing::UnorderedElementsAre(
+                                      "https://foo1.com", "https://foo2.com"));
+
+  // Persist another origin which should remain below expiration threshold.
+  PersistOrigin("https://foo3.com");
+  EXPECT_THAT(GetStoredOrigins(),
+              testing::UnorderedElementsAre(
+                  "https://foo1.com", "https://foo2.com", "https://foo3.com"));
+
+  // Loading persisted isolated origins should only load foo3.com.  Also,
+  // it should remove foo1.com and foo2.com from prefs.
+  SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(browser_context());
+
+  auto* cpsp = content::ChildProcessSecurityPolicy::GetInstance();
+  std::vector<url::Origin> isolated_origins = cpsp->GetIsolatedOrigins(
+      IsolatedOriginSource::WEB_TRIGGERED, browser_context());
+  EXPECT_THAT(isolated_origins,
+              testing::UnorderedElementsAre(
+                  url::Origin::Create(GURL("https://foo3.com"))));
+  EXPECT_THAT(GetStoredOrigins(),
+              testing::UnorderedElementsAre("https://foo3.com"));
 }
 
 // Helper class that enables site isolation for password sites.
