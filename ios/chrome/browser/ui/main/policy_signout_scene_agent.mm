@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/main/policy_signout_scene_agent.h"
 
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/ui/authentication/signin/user_signin/policy_signout_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/policy_signout_commands.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

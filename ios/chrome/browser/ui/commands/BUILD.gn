@@ -29,6 +29,7 @@ source_set("commands") {
     "page_info_commands.h",
     "password_breach_commands.h",
     "password_protection_commands.h",
+    "policy_signout_commands.h",
     "popup_menu_commands.h",
     "qr_generation_commands.h",
     "qr_scanner_commands.h",
