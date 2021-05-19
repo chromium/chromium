@@ -40,7 +40,8 @@ void PaymentHandlerNavigationThrottle::MarkPaymentHandlerWebContents(
 std::unique_ptr<PaymentHandlerNavigationThrottle>
 PaymentHandlerNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* handle) {
-  if (!handle->GetWebContents()->GetUserData(
+  if (!handle || !handle->GetWebContents() ||
+      !handle->GetWebContents()->GetUserData(
           kPaymentHandlerWebContentsUserDataKey)) {
     return nullptr;
   }
@@ -49,6 +50,8 @@ PaymentHandlerNavigationThrottle::MaybeCreateThrottleFor(
 
 content::NavigationThrottle::ThrottleCheckResult
 PaymentHandlerNavigationThrottle::WillProcessResponse() {
+  if (!navigation_handle())
+    return PROCEED;
   const net::HttpResponseHeaders* response_headers =
       navigation_handle()->GetResponseHeaders();
   if (!response_headers)
