@@ -99,7 +99,7 @@ void CastBrowserMetrics::Initialize() {
 
 void CastBrowserMetrics::Finalize() {
 #if !defined(OS_ANDROID)
-  // Set clean_shutdown bit.
+  // Signal that the session has exited cleanly.
   metrics_service_client_->GetMetricsService()->RecordCompletedSessionEnd();
 #endif  // !defined(OS_ANDROID)
 

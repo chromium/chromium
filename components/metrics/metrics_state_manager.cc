@@ -221,6 +221,11 @@ int MetricsStateManager::GetLowEntropySource() {
   return entropy_state_.GetLowEntropySource();
 }
 
+void MetricsStateManager::LogHasSessionShutdownCleanly(
+    bool has_session_shutdown_cleanly) {
+  clean_exit_beacon_.WriteBeaconValue(has_session_shutdown_cleanly);
+}
+
 void MetricsStateManager::ForceClientIdCreation() {
   // TODO(asvitkine): Ideally, all tests would actually set up consent properly,
   // so the command-line check wouldn't be needed here.

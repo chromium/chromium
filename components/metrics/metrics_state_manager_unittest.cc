@@ -30,7 +30,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
-
 namespace {
 
 // Verifies that the client id follows the expected pattern.
@@ -220,6 +219,22 @@ TEST_F(MetricsStateManagerTest, ResetMetricsIDs) {
   }
 
   EXPECT_NE(kInitialClientId, prefs_.GetString(prefs::kMetricsClientID));
+}
+
+TEST_F(MetricsStateManagerTest, LogHasSessionShutdownCleanly) {
+  std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
+  prefs_.SetBoolean(prefs::kStabilityExitedCleanly, false);
+  state_manager->LogHasSessionShutdownCleanly(
+      /*has_session_shutdown_cleanly=*/true);
+  EXPECT_TRUE(prefs_.GetBoolean(prefs::kStabilityExitedCleanly));
+}
+
+TEST_F(MetricsStateManagerTest, LogSessionHasNotYetShutdownCleanly) {
+  std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
+  ASSERT_TRUE(prefs_.GetBoolean(prefs::kStabilityExitedCleanly));
+  state_manager->LogHasSessionShutdownCleanly(
+      /*has_session_shutdown_cleanly=*/false);
+  EXPECT_FALSE(prefs_.GetBoolean(prefs::kStabilityExitedCleanly));
 }
 
 TEST_F(MetricsStateManagerTest, ForceClientIdCreation) {

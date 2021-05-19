@@ -1567,6 +1567,11 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 // http://crbug.com/179143
 #if !defined(OS_ANDROID)
   // Start watching for a hang.
+  //
+  // TODO(b/184937096): Remove the below call and remove the function
+  // MetricsService::LogNeedForCleanShutdown() once this is moved earlier. It
+  // is being kept here for the time being for the control group of the
+  // extended Variations Safe Mode experiment.
   browser_process_->metrics_service()->LogNeedForCleanShutdown();
 #endif  // !defined(OS_ANDROID)
 

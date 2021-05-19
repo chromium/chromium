@@ -325,8 +325,10 @@ void CastMetricsServiceClient::StartMetricsService() {
 
   metrics_service_->InitializeMetricsRecordingState();
 #if !defined(OS_ANDROID)
-  // Reset clean_shutdown bit after InitializeMetricsRecordingState().
-  metrics_service_->LogNeedForCleanShutdown();
+  // Signal that the session has not yet exited cleanly. We later signal that
+  // the session exited cleanly via MetricsService::RecordCompletedSessionEnd().
+  // TODO(crbug.com/1208587): See whether this can be called even earlier.
+  metrics_state_manager_->LogHasSessionShutdownCleanly(false);
 #endif  // !defined(OS_ANDROID)
 
   if (IsReportingEnabled())

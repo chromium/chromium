@@ -25,7 +25,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_log_manager.h"
@@ -136,7 +135,8 @@ class MetricsService : public base::HistogramFlattener {
   // Called when the application is coming out of background mode.
   void OnAppEnterForeground(bool force_open_new_log = false);
 #else
-  // Set the dirty flag, which will require a later call to LogCleanShutdown().
+  // Signals that the session has not yet exited cleanly. Calling this later
+  // requires a call to LogCleanShutdown().
   void LogNeedForCleanShutdown();
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
 

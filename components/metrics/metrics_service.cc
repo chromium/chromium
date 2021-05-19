@@ -140,6 +140,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/environment_recorder.h"
 #include "components/metrics/field_trials_provider.h"
 #include "components/metrics/metrics_log.h"
@@ -174,15 +175,6 @@ const int kInitializationDelaySeconds = 30;
 
 // The browser last live timestamp is updated every 15 minutes.
 const int kUpdateAliveTimestampSeconds = 15 * 60;
-
-#if defined(OS_ANDROID) || defined(OS_IOS)
-void MarkAppCleanShutdownAndCommit(CleanExitBeacon* clean_exit_beacon,
-                                   PrefService* local_state) {
-  clean_exit_beacon->WriteBeaconValue(true);
-  // Start writing right away (write happens on a different thread).
-  local_state->CommitPendingWrite();
-}
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
 }  // namespace
 
@@ -397,8 +389,9 @@ void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
     reporting_service_.Stop();
   }
 
-  MarkAppCleanShutdownAndCommit(state_manager_->clean_exit_beacon(),
-                                local_state_);
+  state_manager_->LogHasSessionShutdownCleanly(true);
+  // Schedule a write, which happens on a different thread.
+  local_state_->CommitPendingWrite();
 
   // Give providers a chance to persist histograms as part of being
   // backgrounded.
@@ -419,7 +412,7 @@ void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
 
 void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
   is_in_foreground_ = true;
-  state_manager_->clean_exit_beacon()->WriteBeaconValue(false);
+  state_manager_->LogHasSessionShutdownCleanly(false);
   StartSchedulerIfNecessary();
 
   if (force_open_new_log && recording_active() && state_ >= SENDING_LOGS) {
@@ -432,10 +425,9 @@ void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
 
 #else
 void MetricsService::LogNeedForCleanShutdown() {
-  state_manager_->clean_exit_beacon()->WriteBeaconValue(false);
+  state_manager_->LogHasSessionShutdownCleanly(false);
 }
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
-
 
 void MetricsService::ClearSavedStabilityMetrics() {
   delegating_provider_.ClearSavedStabilityMetrics();
@@ -899,7 +891,7 @@ void MetricsService::PrepareProviderMetricsTask() {
 
 void MetricsService::LogCleanShutdown(bool end_completed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  state_manager_->clean_exit_beacon()->WriteBeaconValue(true);
+  state_manager_->LogHasSessionShutdownCleanly(true);
   StabilityMetricsProvider(local_state_).MarkSessionEndCompleted(end_completed);
 }
 
