@@ -30,14 +30,13 @@ constexpr char kValidUserAgentProductAndVersion[] = "TestProduct/dev.12345";
 constexpr char kInvalidUserAgentProduct[] = "Test/Product";
 constexpr char kInvalidUserAgentVersion[] = "dev/12345";
 
-// TODO(crbug.com/1207695): Rename play_vp8.html to play_video.html.
 constexpr char kAutoplayVp9OpusUrl[] =
-    "fuchsia-dir://testdata/play_vp8.html?codecs=vp9,opus&autoplay=1";
+    "fuchsia-dir://testdata/play_video.html?codecs=vp9,opus&autoplay=1";
 constexpr char kAutoplayVp9OpusToEndUrl[] =
     "fuchsia-dir://testdata/"
-    "play_vp8.html?codecs=vp9,opus&autoplay=1&reportended=1";
+    "play_video.html?codecs=vp9,opus&autoplay=1&reportended=1";
 constexpr char kLoadVp9OpusUrl[] =
-    "fuchsia-dir://testdata/play_vp8.html?codecs=vp9,opus";
+    "fuchsia-dir://testdata/play_video.html?codecs=vp9,opus";
 
 }  // namespace
 

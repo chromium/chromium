@@ -21,9 +21,9 @@ namespace {
 
 // Currently, VP8 can only be decoded in software, and VP9 can be decoded in
 // hardware and software. The tests rely on this.
-// TODO(crbug.com/1207695): Rename play_vp8.html to play_video.html.
-constexpr char kLoadSoftwareOnlyCodecUrl[] = "/play_vp8.html?codecs=vp8";
-constexpr char kLoadHardwareAndSoftwareCodecUrl[] = "/play_vp8.html?codecs=vp9";
+constexpr char kLoadSoftwareOnlyCodecUrl[] = "/play_video.html?codecs=vp8";
+constexpr char kLoadHardwareAndSoftwareCodecUrl[] =
+    "/play_video.html?codecs=vp9";
 constexpr char kCanPlaySoftwareOnlyCodecUrl[] = "/can_play_vp8.html";
 
 }  // namespace

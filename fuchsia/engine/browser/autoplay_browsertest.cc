@@ -16,7 +16,7 @@
 
 namespace {
 
-constexpr char kAutoplayVp8Url[] = "/play_vp8.html?autoplay=1&codecs=vp8";
+constexpr char kAutoplayVp8Url[] = "/play_video.html?autoplay=1&codecs=vp8";
 
 }  // namespace
 
