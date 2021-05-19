@@ -728,14 +728,15 @@ class Generator(generator.Generator):
   def _IsFullHeaderRequiredForImport(self, imported_module):
     """Determines whether a given import module requires a full header include,
     or if the forward header is sufficient. The full header is required if any
-    imported structs, unions, interfaces, or typemapped types are referenced by
+    imported structs, unions, or typemapped types are referenced by
     the module we're generating bindings for; or if an imported enum is used as
     a map key."""
 
     def requires_full_header(kind):
       if (mojom.IsUnionKind(kind) or mojom.IsStructKind(kind)
-          or mojom.IsInterfaceKind(kind) or self._IsTypemappedKind(kind)):
+          or self._IsTypemappedKind(kind)):
         return True
+
       if mojom.IsEnumKind(kind):
         # Blink bindings need the full header for an enum used as a map key.
         # This is uncommon enough that we set the requirement generically for
@@ -746,6 +747,10 @@ class Generator(generator.Generator):
       return False
 
     for spec, kind in imported_module.kinds.items():
+      if kind.module != imported_module:
+        # If it wasn't defined directly in the imported module, it doesn't
+        # affect whether we need the module or not.
+        continue
       if spec in self.module.imported_kinds and requires_full_header(kind):
         return True
     return False
