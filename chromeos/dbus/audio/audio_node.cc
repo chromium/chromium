@@ -6,9 +6,11 @@
 
 #include <stdint.h>
 
+#include "base/check.h"
 #include "base/format_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
 
@@ -24,7 +26,8 @@ AudioNode::AudioNode(bool is_input,
                      std::string name,
                      bool active,
                      uint64_t plugged_time,
-                     uint32_t max_supported_channels)
+                     uint32_t max_supported_channels,
+                     uint32_t audio_effect)
     : is_input(is_input),
       id(id),
       has_v2_stable_device_id(has_v2_stable_device_id),
@@ -35,7 +38,10 @@ AudioNode::AudioNode(bool is_input,
       name(name),
       active(active),
       plugged_time(plugged_time),
-      max_supported_channels(max_supported_channels) {}
+      max_supported_channels(max_supported_channels),
+      audio_effect(audio_effect) {
+  DCHECK(!(audio_effect & ~cras::EFFECT_TYPE_NOISE_CANCELLATION));
+}
 
 AudioNode::AudioNode(const AudioNode& other) = default;
 
@@ -59,6 +65,7 @@ std::string AudioNode::ToString() const {
                       base::NumberToString(plugged_time).c_str());
   base::StringAppendF(&result, "max_supported_channels= %s ",
                       base::NumberToString(max_supported_channels).c_str());
+  base::StringAppendF(&result, "audio_effect = 0x%" PRIx32 " ", audio_effect);
 
   return result;
 }

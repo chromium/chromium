@@ -19,6 +19,9 @@ FakeCrasAudioClient* g_instance = nullptr;
 const uint32_t kInputMaxSupportedChannels = 1;
 const uint32_t kOutputMaxSupportedChannels = 2;
 
+const uint32_t kInputAudioEffect = 1;
+const uint32_t kOutputAudioEffect = 0;
+
 FakeCrasAudioClient::FakeCrasAudioClient() {
   CHECK(!g_instance);
   g_instance = this;
@@ -31,6 +34,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
   output_1.id = 0x100000001;
   output_1.stable_device_id_v1 = 10001;
   output_1.max_supported_channels = kOutputMaxSupportedChannels;
+  output_1.audio_effect = kOutputAudioEffect;
   output_1.device_name = "Fake Speaker";
   output_1.type = "INTERNAL_SPEAKER";
   output_1.name = "Speaker";
@@ -41,6 +45,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
   output_2.id = 0x200000001;
   output_2.stable_device_id_v1 = 10002;
   output_2.max_supported_channels = kOutputMaxSupportedChannels;
+  output_2.audio_effect = kOutputAudioEffect;
   output_2.device_name = "Fake Headphone";
   output_2.type = "HEADPHONE";
   output_2.name = "Headphone";
@@ -51,6 +56,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
   output_3.id = 0x300000001;
   output_3.stable_device_id_v1 = 10003;
   output_3.max_supported_channels = kOutputMaxSupportedChannels;
+  output_3.audio_effect = kOutputAudioEffect;
   output_3.device_name = "Fake Bluetooth Headphone";
   output_3.type = "BLUETOOTH";
   output_3.name = "Headphone";
@@ -61,6 +67,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
   output_4.id = 0x400000001;
   output_4.stable_device_id_v1 = 10004;
   output_4.max_supported_channels = kOutputMaxSupportedChannels;
+  output_4.audio_effect = kOutputAudioEffect;
   output_4.device_name = "Fake HDMI Speaker";
   output_4.type = "HDMI";
   output_4.name = "HDMI Speaker";
@@ -72,6 +79,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
   input_1.id = 0x100000002;
   input_1.stable_device_id_v1 = 20001;
   input_1.max_supported_channels = kInputMaxSupportedChannels;
+  input_1.audio_effect = kInputAudioEffect;
   input_1.device_name = "Fake Internal Mic";
   input_1.type = "INTERNAL_MIC";
   input_1.name = "Internal Mic";
@@ -82,6 +90,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
   input_2.id = 0x200000002;
   input_2.stable_device_id_v1 = 20002;
   input_2.max_supported_channels = kInputMaxSupportedChannels;
+  input_2.audio_effect = kInputAudioEffect;
   input_2.device_name = "Fake USB Mic";
   input_2.type = "USB";
   input_2.name = "Mic";
@@ -92,6 +101,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
   input_3.id = 0x300000002;
   input_3.stable_device_id_v1 = 20003;
   input_3.max_supported_channels = kInputMaxSupportedChannels;
+  input_3.audio_effect = kInputAudioEffect;
   input_3.device_name = "Fake Mic Jack";
   input_3.type = "MIC";
   input_3.name = "Some type of Mic";

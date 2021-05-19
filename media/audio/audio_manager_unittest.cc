@@ -137,7 +137,8 @@ const AudioNode kInternalSpeaker(false,
                                  "Speaker",
                                  false,
                                  0,
-                                 2);
+                                 2,
+                                 0);
 
 const AudioNode kInternalMic(true,
                              kInternalMicId,
@@ -149,7 +150,8 @@ const AudioNode kInternalMic(true,
                              "Internal Mic",
                              false,
                              0,
-                             1);
+                             1,
+                             1);  // EFFECT_TYPE_NOISE_CANCELLATION
 
 const AudioNode kJabraSpeaker1(false,
                                kJabraSpeaker1Id,
@@ -161,7 +163,8 @@ const AudioNode kJabraSpeaker1(false,
                                "Jabra Speaker 1",
                                false,
                                0,
-                               2);  // expects CHANNEL_LAYOUT_STEREO
+                               2,  // expects CHANNEL_LAYOUT_STEREO
+                               0);
 
 const AudioNode kJabraSpeaker2(false,
                                kJabraSpeaker2Id,
@@ -173,7 +176,8 @@ const AudioNode kJabraSpeaker2(false,
                                "Jabra Speaker 2",
                                false,
                                0,
-                               6);  // expects CHANNEL_LAYOUT_5_1
+                               6,  // expects CHANNEL_LAYOUT_5_1
+                               0);
 
 const AudioNode kHDMIOutput(false,
                             kHDMIOutputId,
@@ -185,7 +189,8 @@ const AudioNode kHDMIOutput(false,
                             "HDA Intel MID",
                             false,
                             0,
-                            8);  // expects CHANNEL_LAYOUT_7_1
+                            8,  // expects CHANNEL_LAYOUT_7_1
+                            0);
 
 const AudioNode kJabraMic1(true,
                            kJabraMic1Id,
@@ -197,7 +202,8 @@ const AudioNode kJabraMic1(true,
                            "Jabra Mic 1",
                            false,
                            0,
-                           1);
+                           1,
+                           0);
 
 const AudioNode kJabraMic2(true,
                            kJabraMic2Id,
@@ -209,7 +215,8 @@ const AudioNode kJabraMic2(true,
                            "Jabra Mic 2",
                            false,
                            0,
-                           1);
+                           1,
+                           0);
 
 const AudioNode kUSBCameraMic(true,
                               kWebcamMicId,
@@ -221,7 +228,8 @@ const AudioNode kUSBCameraMic(true,
                               "Logitech Webcam",
                               false,
                               0,
-                              1);
+                              1,
+                              0);
 #endif  // defined(USE_CRAS)
 
 const char kRealDefaultInputDeviceID[] = "input2";

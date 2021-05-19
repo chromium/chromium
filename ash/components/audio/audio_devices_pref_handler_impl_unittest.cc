@@ -78,13 +78,16 @@ const AudioNodeInfo kOutputDeviceWithSpecialCharacters = {
 const uint32_t kInputMaxSupportedChannels = 1;
 const uint32_t kOutputMaxSupportedChannels = 2;
 
+const uint32_t kInputAudioEffect = 1;
+const uint32_t kOutputAudioEffect = 0;
+
 AudioDevice CreateAudioDevice(const AudioNodeInfo& info, int version) {
   return AudioDevice(chromeos::AudioNode(
       info.is_input, info.id, version == 2, info.id /* stable_device_id_v1 */,
       version == 1 ? 0 : info.id ^ 0xFF /* stable_device_id_v2 */,
       info.device_name, info.type, info.name, false, 0,
-      info.is_input ? kInputMaxSupportedChannels
-                    : kOutputMaxSupportedChannels));
+      info.is_input ? kInputMaxSupportedChannels : kOutputMaxSupportedChannels,
+      info.is_input ? kInputAudioEffect : kOutputAudioEffect));
 }
 
 // Test param determines whether the test should test input or output devices

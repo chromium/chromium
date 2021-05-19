@@ -975,6 +975,9 @@ class CrasAudioClientImpl : public CrasAudioClient {
       } else if (key == cras::kMaxSupportedChannelsProperty) {
         if (!value_reader.PopUint32(&node->max_supported_channels))
           return false;
+      } else if (key == cras::kAudioEffectProperty) {
+        if (!value_reader.PopUint32(&node->audio_effect))
+          return false;
       }
     }
 
