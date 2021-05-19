@@ -13,12 +13,17 @@ source_set("share") {
     "link_to_text_bridge.cc",
     "qr_code_generation_request.cc",
     "qr_code_generation_request.h",
+    "share_history.cc",
+    "share_history.h",
   ]
   deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/share/android:jni_headers",
+    "//chrome/browser/share/proto:proto",
     "//chrome/services/qrcode_generator/public/cpp",
     "//chrome/services/qrcode_generator/public/mojom",
+    "//components/leveldb_proto:leveldb_proto",
     "//components/shared_highlighting/core/common",
     "//content/public/browser",
     "//skia",

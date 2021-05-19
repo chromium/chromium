@@ -184,6 +184,7 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/metrics/thread_watcher_android.h"
+#include "chrome/browser/share/share_history.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_client.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #else
@@ -1770,6 +1771,9 @@ void ChromeBrowserMainParts::WillRunMainMessageLoop(
 
 void ChromeBrowserMainParts::OnFirstIdle() {
   startup_metric_utils::RecordBrowserMainLoopFirstIdle(base::TimeTicks::Now());
+#if defined(OS_ANDROID)
+  sharing::ShareHistory::CreateForProfile(profile_);
+#endif
 }
 
 void ChromeBrowserMainParts::PostMainMessageLoopRun() {
