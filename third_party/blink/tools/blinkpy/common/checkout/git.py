@@ -102,12 +102,11 @@ class Git(object):
         """Invokes git with the given args."""
         full_command_args = [self._executable_name] + command_args
         cwd = cwd or self.checkout_root
-        return self._executive.run_command(
-            full_command_args,
-            cwd=cwd,
-            input=stdin,
-            return_exit_code=return_exit_code,
-            decode_output=decode_output)
+        return self._executive.run_command(full_command_args,
+                                           cwd=cwd,
+                                           input=stdin,
+                                           return_exit_code=return_exit_code,
+                                           decode_output=decode_output)
 
     def absolute_path(self, repository_relative_path):
         """Converts repository-relative paths to absolute paths."""
@@ -195,10 +194,9 @@ class Git(object):
     def _upstream_branch(self):
         current_branch = self.current_branch()
         return self._branch_from_ref(
-            self.read_git_config(
-                'branch.%s.merge' % current_branch,
-                cwd=self.checkout_root,
-                executive=self._executive).strip())
+            self.read_git_config('branch.%s.merge' % current_branch,
+                                 cwd=self.checkout_root,
+                                 executive=self._executive).strip())
 
     def _merge_base(self, git_commit=None):
         if git_commit:
@@ -238,8 +236,8 @@ class Git(object):
     def _run_status_and_extract_filenames(self, status_command, status_regexp):
         filenames = []
         # We run with cwd=self.checkout_root so that returned-paths are root-relative.
-        for line in self.run(
-                status_command, cwd=self.checkout_root).splitlines():
+        for line in self.run(status_command,
+                             cwd=self.checkout_root).splitlines():
             match = re.search(status_regexp, line)
             if not match:
                 continue
@@ -315,12 +313,11 @@ class Git(object):
 
     def _remote_branch_ref(self):
         # Use references so that we can avoid collisions, e.g. we don't want to operate on refs/heads/trunk if it exists.
-        remote_master_ref = 'refs/remotes/origin/master'
-        if not self._branch_ref_exists(remote_master_ref):
-            raise ScriptError(
-                message="Can't find a branch to diff against. %s does not exist"
-                % remote_master_ref)
-        return remote_master_ref
+        remote_main_ref = 'refs/remotes/origin/main'
+        if self._branch_ref_exists(remote_main_ref):
+            return remote_main_ref
+        error_msg = "Can't find a branch to diff against. %s does not exist" % remote_main_ref
+        raise ScriptError(message=error_msg)
 
     def commit_locally_with_message(self, message):
         command = ['commit', '--all', '-F', '-']

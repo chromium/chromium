@@ -30,15 +30,14 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         # Explicitly create the default branch instead of relying on
         # init.defaultBranch. We don't use the new --initial-branch flag with
         # `git init` to keep the tests compatible with older versions of git.
-        self._run(['git', 'checkout', '-b', 'master'])
+        self._run(['git', 'checkout', '-b', 'main'])
         self._set_user_config()
         self._write_text_file('foo_file', 'foo')
         self._run(['git', 'add', 'foo_file'])
         self._run(['git', 'commit', '-am', 'dummy commit'])
-        self.untracking_git = Git(
-            cwd=self.untracking_checkout_path,
-            filesystem=self.filesystem,
-            executive=self.executive)
+        self.untracking_git = Git(cwd=self.untracking_checkout_path,
+                                  filesystem=self.filesystem,
+                                  executive=self.executive)
 
         # Then set up a second git repo that tracks the first one.
         self.tracking_git_checkout_path = self._mkdtemp(
@@ -49,10 +48,9 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         ])
         self._chdir(self.tracking_git_checkout_path)
         self._set_user_config()
-        self.tracking_git = Git(
-            cwd=self.tracking_git_checkout_path,
-            filesystem=self.filesystem,
-            executive=self.executive)
+        self.tracking_git = Git(cwd=self.tracking_git_checkout_path,
+                                filesystem=self.filesystem,
+                                executive=self.executive)
 
     def tearDown(self):
         self._chdir(self.original_cwd)
@@ -149,7 +147,7 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
     def test_remote_branch_ref(self):
         # This tests a protected method. pylint: disable=protected-access
         self.assertEqual(self.tracking_git._remote_branch_ref(),
-                         'refs/remotes/origin/master')
+                         'refs/remotes/origin/main')
         self._chdir(self.untracking_checkout_path)
         self.assertRaises(ScriptError, self.untracking_git._remote_branch_ref)
 
@@ -197,7 +195,7 @@ Date:   Mon Sep 28 19:10:30 2015 -0700
 
     Review URL: https://codereview.chromium.org/999999999
 
-    Cr-Commit-Position: refs/heads/master@{#1234567}
+    Cr-Commit-Position: refs/heads/main@{#1234567}
 """
         self._chdir(self.tracking_git_checkout_path)
         git = self.tracking_git
@@ -206,8 +204,9 @@ Date:   Mon Sep 28 19:10:30 2015 -0700
 
 class GitTestWithMock(unittest.TestCase):
     def make_git(self):
-        git = Git(
-            cwd='.', executive=MockExecutive(), filesystem=MockFileSystem())
+        git = Git(cwd='.',
+                  executive=MockExecutive(),
+                  filesystem=MockFileSystem())
         return git
 
     def test_unstaged_files(self):
