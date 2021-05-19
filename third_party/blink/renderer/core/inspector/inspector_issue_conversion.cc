@@ -59,9 +59,6 @@ blink::protocol::String InspectorIssueCodeValue(
       return "";
     case mojom::blink::InspectorIssueCode::kLowTextContrastIssue:
       return protocol::Audits::InspectorIssueCodeEnum::LowTextContrastIssue;
-    case mojom::blink::InspectorIssueCode::kAttributionReportingIssue:
-      return protocol::Audits::InspectorIssueCodeEnum::
-          AttributionReportingIssue;
   }
 }
 
@@ -319,32 +316,6 @@ std::unique_ptr<protocol::Audits::SourceCodeLocation> BuildAffectedLocation(
   return protocol_affected_location;
 }
 
-protocol::String BuildAttributionReportingIssueType(
-    blink::mojom::blink::AttributionReportingIssueType type) {
-  switch (type) {
-    case blink::mojom::blink::AttributionReportingIssueType::
-        kPermissionPolicyDisabled:
-      return protocol::Audits::AttributionReportingIssueTypeEnum::
-          PermissionPolicyDisabled;
-    case blink::mojom::blink::AttributionReportingIssueType::
-        kInvalidAttributionSourceEventId:
-      return protocol::Audits::AttributionReportingIssueTypeEnum::
-          InvalidAttributionSourceEventId;
-    case blink::mojom::blink::AttributionReportingIssueType::
-        kInvalidAttributionData:
-      return protocol::Audits::AttributionReportingIssueTypeEnum::
-          InvalidAttributionData;
-    case blink::mojom::blink::AttributionReportingIssueType::
-        kAttributionSourceUntrustworthyOrigin:
-      return protocol::Audits::AttributionReportingIssueTypeEnum::
-          AttributionSourceUntrustworthyOrigin;
-    case blink::mojom::blink::AttributionReportingIssueType::
-        kAttributionUntrustworthyOrigin:
-      return protocol::Audits::AttributionReportingIssueTypeEnum::
-          AttributionUntrustworthyOrigin;
-  }
-}
-
 }  // namespace
 
 std::unique_ptr<protocol::Audits::InspectorIssue>
@@ -458,23 +429,6 @@ ConvertInspectorIssueToProtocolFormat(InspectorIssue* issue) {
             .setViolatingNodeId(d->violating_node_id)
             .build();
     issueDetails.setLowTextContrastIssueDetails(std::move(lowContrastDetails));
-  }
-
-  if (issue->Details()->attribution_reporting_issue_details) {
-    const auto* d = issue->Details()->attribution_reporting_issue_details.get();
-    auto details = protocol::Audits::AttributionReportingIssueDetails::create()
-                       .setViolationType(BuildAttributionReportingIssueType(
-                           d->violation_type))
-                       .build();
-    if (d->frame)
-      details->setFrame(BuildAffectedFrame(d->frame));
-    if (d->request)
-      details->setRequest(BuildAffectedRequest(d->request));
-    if (d->violating_node_id)
-      details->setViolatingNodeId(d->violating_node_id);
-    if (d->invalid_parameter)
-      details->setInvalidParameter(d->invalid_parameter);
-    issueDetails.setAttributionReportingIssueDetails(std::move(details));
   }
 
   return protocol::Audits::InspectorIssue::create()
