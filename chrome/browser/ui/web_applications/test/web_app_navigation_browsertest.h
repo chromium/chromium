@@ -115,7 +115,7 @@ class WebAppNavigationBrowserTest : public InProcessBrowserTest {
   bool TestTabActionDoesNotOpenAppWindow(const GURL& target_url,
                                          base::OnceClosure action);
 
-  const net::EmbeddedTestServer& https_server() { return https_server_; }
+  net::EmbeddedTestServer& https_server() { return https_server_; }
 
   const AppId& test_web_app_id() const { return test_web_app_; }
 
