@@ -289,6 +289,9 @@ void SharesheetHeaderView::ShowTextPreview() {
     text_fields.push_back(file_text);
   }
 
+  if (text_fields.size() == 0)
+    return;
+
   int index = 0;
   int max_lines = std::min(text_fields.size(), kTextPreviewMaximumLines);
   for (; index < max_lines - 1; ++index) {
@@ -335,14 +338,6 @@ std::vector<std::u16string> SharesheetHeaderView::ExtractShareText() {
     text_fields.push_back(base::ASCIIToUTF16(title_text));
   }
 
-  if (intent_->drive_share_url.has_value()) {
-    GURL drive_share_url = intent_->drive_share_url.value();
-    if (drive_share_url.is_valid()) {
-      text_fields.push_back(base::ASCIIToUTF16(drive_share_url.spec()));
-      text_icon_ = TextPlaceholderIcon::kLink;
-    }
-  }
-
   if (intent_->share_text.has_value() &&
       !(intent_->share_text.value().empty())) {
     std::string extracted_text = intent_->share_text.value();
@@ -368,8 +363,6 @@ std::vector<std::u16string> SharesheetHeaderView::ExtractShareText() {
     }
   }
 
-  // There will always be at least 1 text field.
-  DCHECK_NE(text_fields.size(), 0);
   return text_fields;
 }
 
