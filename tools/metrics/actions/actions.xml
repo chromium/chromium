@@ -15819,6 +15819,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridSelectTabs">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <description>
+    User tapped the 'Select' button in the iOS tab grid.
+  </description>
+</action>
+
 <action name="MobileTabGridUndoCloseAllRegularTabs">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>

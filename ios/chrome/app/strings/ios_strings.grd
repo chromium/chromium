@@ -2450,6 +2450,14 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TAB_GRID_UNDO_CLOSE_ALL_BUTTON" desc="Title of the button in the tab grid UI that revert the close all action recently taken by the user. [iOS only]">
         Undo
       </message>
+      <message name="IDS_IOS_TAB_GRID_CLOSE_TABS_BUTTON" desc="Title of the button in the tab grid UI that the closes selected tabs. count refers to the number of tabs selected. According to its value, the string goes from signular to plural. [iOS only]">
+        {count, plural,
+          =1 {Close Tab}
+          other {Close Tabs}}
+      </message>
+      <message name="IDS_IOS_TAB_GRID_ADD_TO_BUTTON" desc="Title of the button in the tab grid UI that when tapped, will provide the user with a menu to add selected tabs to bookmarks or to the reading list. [iOS only]">
+        Add To...
+      </message>
       <message name="IDS_IOS_TAB_GRID_INCOGNITO_TABS_TITLE" desc="The accessibility label of the Incognito Tabs page in the tab grid UI. [iOS only]">
         Incognito Tabs
       </message>

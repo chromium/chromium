@@ -176,6 +176,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @implementation TabGridViewController
 // TabGridPaging property.
 @synthesize activePage = _activePage;
+@synthesize tabGridMode = _tabGridMode;
 
 - (instancetype)initWithPageConfiguration:
     (TabGridPageConfiguration)tabGridPageConfiguration {
@@ -1181,6 +1182,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   topToolbar.trailingButton.target = self;
   topToolbar.trailingButton.action = @selector(doneButtonTapped:);
   [topToolbar setNewTabButtonTarget:self action:@selector(newTabButtonTapped:)];
+  [topToolbar setSelectTabButtonTarget:self
+                                action:@selector(selectButtonTapped:)];
 
   // Configure and initialize the page control.
   [topToolbar.pageControl addTarget:self
@@ -1284,6 +1287,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)configureButtonsForActiveAndCurrentPage {
   self.bottomToolbar.page = self.currentPage;
+  self.bottomToolbar.mode = self.tabGridMode;
   // When current page is a remote tabs page.
   if (self.currentPage == TabGridPageRemoteTabs) {
     if (self.pageConfiguration ==
@@ -1794,6 +1798,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // tab.
     base::RecordAction(base::UserMetricsAction("MobileTabGridDone"));
   }
+}
+
+- (void)selectButtonTapped:(id)sender {
+  self.tabGridMode = TabGridModeSelection;
+  self.bottomToolbar.mode = self.tabGridMode;
+  base::RecordAction(base::UserMetricsAction("MobileTabGridSelectTabs"));
 }
 
 // Shows an action sheet that asks for confirmation when 'Close All' button is

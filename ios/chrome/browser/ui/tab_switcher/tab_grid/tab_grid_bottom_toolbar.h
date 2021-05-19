@@ -24,10 +24,17 @@
 //   Incognito & Regular page: [                               newTabButton]
 //   Remote page:              [                                           ]
 @interface TabGridBottomToolbar : UIView
-// This property together with self.traitCollection control the items shown
-// in toolbar and its background color. Setting this property will also set it
-// on |newTabButton|.
+// This property together with |mode| and self.traitCollection control the items
+// shown in toolbar and its background color. Setting this property will also
+// set it on |newTabButton|.
 @property(nonatomic, assign) TabGridPage page;
+// This property together with |page| and self.traitCollection control the
+// items shown in toolbar and its background color.
+@property(nonatomic, assign) TabGridMode mode;
+// This property indicates the count of selected tabs when the tab grid is in
+// selection mode. It will be used to update the buttons to use the correct
+// title (singular or plural).
+@property(nonatomic, assign) int selectedTabsCount;
 // These components are publicly available to allow the user to set their
 // contents, visibility and actions.
 @property(nonatomic, strong, readonly) UIBarButtonItem* leadingButton;
@@ -37,6 +44,8 @@
 - (void)setNewTabButtonTarget:(id)target action:(SEL)action;
 // Set |enabled| on the new tab button.
 - (void)setNewTabButtonEnabled:(BOOL)enabled;
+// Set |enabled| on the selection mode buttons.
+- (void)setSelectionModeButtonsEnabled:(BOOL)enabled;
 
 // Hides components and uses a black background color for tab grid transition
 // animation.
