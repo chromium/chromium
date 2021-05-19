@@ -1,4 +1,9 @@
+import Context from "./domains/browsingContext";
+
 export async function runBidiCommandsProcessor(cdpClient, bidiClient, getCurrentTargetId) {
+    Context.getCurrentContextId = getCurrentTargetId;
+    Context.cdpClient = cdpClient;
+
     const targets = {};
 
     const _isValidTarget = (target) => {
@@ -29,7 +34,6 @@ export async function runBidiCommandsProcessor(cdpClient, bidiClient, getCurrent
         const errorResponse = _getErrorResponse(commandData, errorCode, errorMessage);
         bidiClient.sendBidiMessage(errorResponse);
     };
-
 
     const targetToContext = t => ({
         context: t.targetId,
@@ -66,38 +70,28 @@ export async function runBidiCommandsProcessor(cdpClient, bidiClient, getCurrent
         return { "ready": true, message: "ready" };
     };
 
-    const handle_target_attachedToTarget = (message) => {
-        const target = message.params.targetInfo;
-        if (!_isValidTarget(target))
-            return;
-
-        targets[target.targetId] = target;
+    Context.onContextCreated = (context) => {
         bidiClient.sendBidiMessage(
             {
                 method: 'browsingContext.contextCreated',
-                params: targetToContext(target)
+                params: context.toBidi()
             });
     }
-
-    const handle_target_detachedFromTarget = (message) => {
-        const targetId = message.params.targetId;
-        if (!targets.hasOwnProperty(targetId))
-            return;
+    Context.onContextDestroyed = (context) => {
         bidiClient.sendBidiMessage(
             {
                 method: 'browsingContext.contextDestroyed',
-                params: targetToContext(targets[targetId])
+                params: context.toBidi()
             });
-        delete targets[targetId];
     }
 
     const onCdpMessage = function (message) {
         switch (message.method) {
             case "Target.attachedToTarget":
-                handle_target_attachedToTarget(message);
+                Context.handleAttachedToTargetEvent(message);
                 return;
             case "Target.detachedFromTarget":
-                handle_target_detachedFromTarget(message);
+                Context.handleDetachedFromTargetEvent(message);
                 return;
         }
     };
@@ -113,7 +107,7 @@ export async function runBidiCommandsProcessor(cdpClient, bidiClient, getCurrent
                 return await process_browsingContext_getTree(commandData.params);
 
             case 'PROTO.browsingContext.createContext':
-                return await process_PROTO_browsingContext_createContext(commandData.params);
+                return await Context.process_createContext(commandData.params);
 
             case 'DEBUG.Page.close':
                 return await process_DEBUG_Page_close(commandData.params);
