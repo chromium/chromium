@@ -256,7 +256,7 @@ bool InMemoryURLIndex::OnMemoryDump(
 
 void InMemoryURLIndex::PostRestoreFromCacheFileTask() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  TRACE_EVENT0("browser", "InMemoryURLIndex::PostRestoreFromCacheFileTask");
+  TRACE_EVENT0("omnibox", "InMemoryURLIndex::PostRestoreFromCacheFileTask");
 
   if (base::FeatureList::IsEnabled(
           omnibox::kHistoryQuickProviderAblateInMemoryURLIndexCacheFile)) {
@@ -342,6 +342,9 @@ void InMemoryURLIndex::Shutdown() {
 // Restoring from the History DB -----------------------------------------------
 
 void InMemoryURLIndex::ScheduleRebuildFromHistory() {
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "omnibox", "InMemoryURLIndex::ScheduleRebuildFromHistory",
+      TRACE_ID_LOCAL(this));
   DCHECK(history_service_);
   history_service_->ScheduleDBTask(
       FROM_HERE,
@@ -354,6 +357,9 @@ void InMemoryURLIndex::ScheduleRebuildFromHistory() {
 void InMemoryURLIndex::DoneRebuidingPrivateDataFromHistoryDB(
     bool succeeded,
     scoped_refptr<URLIndexPrivateData> private_data) {
+  TRACE_EVENT_NESTABLE_ASYNC_END0(
+      "omnibox", "InMemoryURLIndex::ScheduleRebuildFromHistory",
+      TRACE_ID_LOCAL(this));
   DCHECK(thread_checker_.CalledOnValidThread());
   if (succeeded) {
     private_data_tracker_.TryCancelAll();
