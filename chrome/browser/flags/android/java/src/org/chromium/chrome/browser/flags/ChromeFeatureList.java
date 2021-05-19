@@ -420,6 +420,8 @@ public abstract class ChromeFeatureList {
     public static final String PRIVACY_SANDBOX_SETTINGS_2 = "PrivacySandboxSettings2";
     public static final String PROBABILISTIC_CRYPTID_RENDERER = "ProbabilisticCryptidRenderer";
     public static final String PWA_INSTALL_USE_BOTTOMSHEET = "PwaInstallUseBottomSheet";
+    public static final String PWA_UPDATE_DIALOG_FOR_NAME_AND_ICON =
+            "PwaUpdateDialogForNameAndIcon";
     public static final String QUERY_TILES_GEO_FILTER = "QueryTilesGeoFilter";
     public static final String QUERY_TILES = "QueryTiles";
     public static final String QUERY_TILES_IN_NTP = "QueryTilesInNTP";

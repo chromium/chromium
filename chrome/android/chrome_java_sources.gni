@@ -1365,6 +1365,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/webapps/WebApkActivityCoordinator.java",
   "java/src/org/chromium/chrome/browser/webapps/WebApkActivityLifecycleUmaTracker.java",
   "java/src/org/chromium/chrome/browser/webapps/WebApkHandlerDelegate.java",
+  "java/src/org/chromium/chrome/browser/webapps/WebApkIconNameUpdateCustomView.java",
+  "java/src/org/chromium/chrome/browser/webapps/WebApkIconNameUpdateDialog.java",
   "java/src/org/chromium/chrome/browser/webapps/WebApkInstallService.java",
   "java/src/org/chromium/chrome/browser/webapps/WebApkInstaller.java",
   "java/src/org/chromium/chrome/browser/webapps/WebApkIntentDataProviderFactory.java",

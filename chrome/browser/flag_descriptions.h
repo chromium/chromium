@@ -1195,6 +1195,9 @@ extern const char kPullToRefreshName[];
 extern const char kPullToRefreshDescription[];
 extern const char kPullToRefreshEnabledTouchscreen[];
 
+extern const char kPwaUpdateDialogForNameAndIconName[];
+extern const char kPwaUpdateDialogForNameAndIconDescription[];
+
 extern const char kQuicName[];
 extern const char kQuicDescription[];
 

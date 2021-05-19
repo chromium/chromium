@@ -204,6 +204,11 @@ public class WebApkUpdateManagerUnitTest {
         }
 
         @Override
+        protected boolean iconOrNameUpdateDialogEnabled() {
+            return false;
+        }
+
+        @Override
         protected WebApkUpdateDataFetcher buildFetcher() {
             mFetcher = new TestWebApkUpdateDataFetcher();
             return mFetcher;

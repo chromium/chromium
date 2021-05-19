@@ -4318,6 +4318,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "pwa-update-dialog-for-name-and-icon",
+    "owners": [ "finnur", "beverloo" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "query-tiles",
     "owners": [ "shaktisahu", "qinmin" ],
     "expiry_milestone": 93

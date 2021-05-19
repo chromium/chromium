@@ -47221,6 +47221,7 @@ from previous Chrome versions.
   <int value="176773784" label="EnableHardwareMirrorMode:disabled"/>
   <int value="178337215" label="enable-md-history"/>
   <int value="178693406" label="LockScreenMediaControls:disabled"/>
+  <int value="179687667" label="PwaUpdateDialogForNameAndIcon:enabled"/>
   <int value="179871410" label="ui-debug-tools:disabled"/>
   <int value="180074362" label="memory-pressure-thresholds"/>
   <int value="181150000" label="CrosVmCupsProxy:enabled"/>
@@ -47702,6 +47703,7 @@ from previous Chrome versions.
   <int value="603988014" label="NetworkService:enabled"/>
   <int value="604334859" label="Prerender2:enabled"/>
   <int value="605150752" label="WebUSB:disabled"/>
+  <int value="605672144" label="PwaUpdateDialogForNameAndIcon:disabled"/>
   <int value="606288133" label="enable-print-preview-register-promos"/>
   <int value="606512202" label="AutofillCreditCardPopupLayout:enabled"/>
   <int value="606611135" label="ContextMenuTranslateWithGoogleLens:disabled"/>

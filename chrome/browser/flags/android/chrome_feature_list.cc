@@ -215,6 +215,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kOmniboxSpareRenderer,
     &kPageAnnotationsService,
     &kProbabilisticCryptidRenderer,
+    &kPwaUpdateDialogForNameAndIcon,
     &kReachedCodeProfiler,
     &kReaderModeInCCT,
     &kReengagementNotification,
@@ -598,6 +599,9 @@ const base::Feature kPageAnnotationsService{"PageAnnotationsService",
 
 const base::Feature kProbabilisticCryptidRenderer{
     "ProbabilisticCryptidRenderer", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kPwaUpdateDialogForNameAndIcon{
+    "PwaUpdateDialogForNameAndIcon", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kReachedCodeProfiler{"ReachedCodeProfiler",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
