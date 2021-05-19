@@ -3,6 +3,15 @@
   <message name="IDS_PRIVACY_SANDBOX_FLOC_INVALID" desc="A message shown in place of the user's FLoC ID if the ID is invalid and will not be recomputed">
     None
   </message>
+  <message name="IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION" desc="Description of how FLoC works displayed to the user.">
+    {NUM_DAYS, plural,
+     =0 {When this control is on and the status is active, Chrome identifies which large group of people, or "cohort," your recent browsing activity is most similar to. Advertisers can select ads for the group and your browsing activity is kept private on your device. Your group is updated every day.}
+     =1 {When this control is on and the status is active, Chrome identifies which large group of people, or "cohort," your recent browsing activity is most similar to. Advertisers can select ads for the group and your browsing activity is kept private on your device. Your group is updated every day.}
+     other {When this control is on and the status is active, Chrome identifies which large group of people, or "cohort," your recent browsing activity is most similar to. Advertisers can select ads for the group and your browsing activity is kept private on your device. Your group is updated every {NUM_DAYS} days.}}
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_FLOC_TRIAL_ACTIVE" desc="Sentence indicating that FLoC is only available in some regions, including a link to a page that describes exactly what regions it is available. This will only every appear directly after another sentence.">
+    This trial is active only in <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>some regions<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
   <message name="IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE" desc="Description of how long until the user's FLoC ID is recomputed, in days.">
     {NUM_DAYS, plural,
      =0 {In less than a day}
@@ -14,8 +23,8 @@
   </message>
   <message name="IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION" desc="Description of what happens when a user chooses to reset their Federated Learning of Cohorts (FLoC) identifier">
     {NUM_DAYS, plural,
-     =0 {You can reset your group at any time. It takes less than a day to join a new group.}
-     =1 {You can reset your group at any time. It takes a day to join a new group.}
+     =0 {You can reset your group at any time. It takes about a day to join a new group.}
+     =1 {You can reset your group at any time. It takes about a day to join a new group.}
      other {You can reset your group at any time. It takes {NUM_DAYS} days to join a new group.}}
   </message>
   <message name="IDS_PRIVACY_SANDBOX_FLOC_STATUS_ACTIVE" desc="Description of the user's FLoC status when they have the FLoC setting enabled, and the Origin Trial feature enabled, and so FLoC is fully active.">
