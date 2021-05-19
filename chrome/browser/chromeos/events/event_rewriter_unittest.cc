@@ -1600,8 +1600,11 @@ TEST_F(EventRewriterTest, TestRewriteCapsLockMod3InUse) {
   input_method_manager_mock_->set_mod3_used(false);
 }
 
-TEST_F(EventRewriterTest, TestRewriteExtendedKeys_AltVariants) {
+// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
+TEST_F(EventRewriterTest, TestRewriteExtendedKeysAltVariantsOld) {
   chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
+  scoped_feature_list_.InitAndDisableFeature(
+      ::features::kImprovedKeyboardShortcuts);
   TestNonAppleKeyboardVariants({
       // Alt+Backspace -> Delete
       {ui::ET_KEY_PRESSED,
@@ -1669,11 +1672,8 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeys_AltVariants) {
   });
 }
 
-TEST_F(EventRewriterTest, TestRewriteExtendedKeys_AltVariants_Deprecated) {
+TEST_F(EventRewriterTest, TestRewriteExtendedKeysAltVariants) {
   chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
-  scoped_feature_list_.InitAndEnableFeature(
-      ::features::kImprovedKeyboardShortcuts);
-
   // All the previously supported Alt based rewrites no longer have any
   // effect. The Search workarounds no longer take effect and the Search+Key
   // portion is rewritten as expected.
@@ -1759,7 +1759,8 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeys_AltVariants_Deprecated) {
   });
 }
 
-TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsert_Old) {
+// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
+TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsertOld) {
   chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
   scoped_feature_list_.InitAndDisableFeature(
       ::features::kImprovedKeyboardShortcuts);
@@ -1785,7 +1786,7 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsert_Old) {
   });
 }
 
-TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsert_DeprecatedNotification) {
+TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsertDeprecatedNotification) {
   chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
   scoped_feature_list_.InitAndEnableFeature(
       ::features::kImprovedKeyboardShortcuts);
@@ -1817,7 +1818,8 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsert_DeprecatedNotification) {
   });
 }
 
-TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsert_New) {
+// TODO(crbug.com/1179893): Rename once the feature is enabled permanently.
+TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsertNew) {
   chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
   scoped_feature_list_.InitAndEnableFeature(
       ::features::kImprovedKeyboardShortcuts);
@@ -1837,7 +1839,7 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsert_New) {
   });
 }
 
-TEST_F(EventRewriterTest, TestRewriteExtendedKeys_SearchVariants) {
+TEST_F(EventRewriterTest, TestRewriteExtendedKeysSearchVariants) {
   chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
   TestNonAppleKeyboardVariants({
       // Search+Backspace -> Delete
@@ -1949,9 +1951,11 @@ TEST_F(EventRewriterTest, TestNumberRowIsNotRewritten) {
   });
 }
 
-TEST_F(EventRewriterTest, TestRewriteSearchNumberToFunctionKey) {
+// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
+TEST_F(EventRewriterTest, TestRewriteSearchNumberToFunctionKeyOld) {
   chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
-
+  scoped_feature_list_.InitAndDisableFeature(
+      ::features::kImprovedKeyboardShortcuts);
   TestNonAppleNonCustomLayoutKeyboardVariants({
       // The number row should be rewritten as the F<number> row with Search
       // key.
@@ -2006,10 +2010,8 @@ TEST_F(EventRewriterTest, TestRewriteSearchNumberToFunctionKey) {
   });
 }
 
-TEST_F(EventRewriterTest, TestRewriteSearchNumberToFunctionKey_Deprecated) {
+TEST_F(EventRewriterTest, TestRewriteSearchNumberToFunctionKeyNoAction) {
   chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
-  scoped_feature_list_.InitAndEnableFeature(
-      ::features::kImprovedKeyboardShortcuts);
   TestNonAppleNonCustomLayoutKeyboardVariants({
       // Search+Number should now have no effect but a notification will
       // be shown the first time F1 to F10 is pressed.
@@ -2790,6 +2792,65 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysLayout2) {
       });
 }
 
+// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
+TEST_F(EventRewriterTest, TestRewriteFunctionKeysWilcoLayoutsDeprecated) {
+  chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
+  scoped_feature_list_.InitAndDisableFeature(
+      ::features::kImprovedKeyboardShortcuts);
+  std::vector<KeyTestCase> wilco_standard_tests({
+      // The number row should be rewritten as the F<number> row with Search
+      // key.
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_1, ui::DomCode::DIGIT1, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'1'>::Character},
+       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_2, ui::DomCode::DIGIT2, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'2'>::Character},
+       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_3, ui::DomCode::DIGIT3, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'3'>::Character},
+       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_4, ui::DomCode::DIGIT4, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'4'>::Character},
+       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_5, ui::DomCode::DIGIT5, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'5'>::Character},
+       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_NONE, ui::DomKey::F5}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_6, ui::DomCode::DIGIT6, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'6'>::Character},
+       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_NONE, ui::DomKey::F6}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_7, ui::DomCode::DIGIT7, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'7'>::Character},
+       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_NONE, ui::DomKey::F7}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_8, ui::DomCode::DIGIT8, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'8'>::Character},
+       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_NONE, ui::DomKey::F8}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_9, ui::DomCode::DIGIT9, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'9'>::Character},
+       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_NONE, ui::DomKey::F9}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_0, ui::DomCode::DIGIT0, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'0'>::Character},
+       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_OEM_MINUS, ui::DomCode::MINUS, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'-'>::Character},
+       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_OEM_PLUS, ui::DomCode::EQUAL, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'='>::Character},
+       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
+  });
+}
+
 TEST_F(EventRewriterTest, TestRewriteFunctionKeysWilcoLayouts) {
   chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
 
@@ -3018,57 +3079,6 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysWilcoLayouts) {
         ui::DomKey::Constant<'='>::Character},
        {ui::VKEY_OEM_PLUS, ui::DomCode::EQUAL, ui::EF_NONE,
         ui::DomKey::Constant<'='>::Character}},
-
-      // The number row should be rewritten as the F<number> row with Search
-      // key.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_1, ui::DomCode::DIGIT1, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'1'>::Character},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_2, ui::DomCode::DIGIT2, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'2'>::Character},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_3, ui::DomCode::DIGIT3, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'3'>::Character},
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_4, ui::DomCode::DIGIT4, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'4'>::Character},
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_5, ui::DomCode::DIGIT5, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'5'>::Character},
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_NONE, ui::DomKey::F5}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_6, ui::DomCode::DIGIT6, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'6'>::Character},
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_NONE, ui::DomKey::F6}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_7, ui::DomCode::DIGIT7, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'7'>::Character},
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_NONE, ui::DomKey::F7}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_8, ui::DomCode::DIGIT8, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'8'>::Character},
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_NONE, ui::DomKey::F8}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_9, ui::DomCode::DIGIT9, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'9'>::Character},
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_NONE, ui::DomKey::F9}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_0, ui::DomCode::DIGIT0, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'0'>::Character},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_OEM_MINUS, ui::DomCode::MINUS, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'-'>::Character},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_OEM_PLUS, ui::DomCode::EQUAL, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'='>::Character},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
   });
 
   KeyTestCase wilco_1_test =
@@ -3561,25 +3571,25 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysInvalidLayout) {
                layout2_tests);
 }
 
-TEST_F(EventRewriterTest, TestRewriteExtendedKeysWithSearchRemapped) {
-  // Remap Search to Control.
+// Tests that event rewrites still work even if modifiers are remapped.
+TEST_F(EventRewriterTest, TestRewriteExtendedKeysWithControlRemapped) {
+  // Remap Control to Search.
   chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember search;
-  InitModifierKeyPref(&search, prefs::kLanguageRemapSearchKeyTo,
-                      ui::chromeos::ModifierKey::kControlKey);
+  InitModifierKeyPref(&search, prefs::kLanguageRemapControlKeyTo,
+                      ui::chromeos::ModifierKey::kSearchKey);
 
   TestChromeKeyboardVariants({
-      // Alt+Search+Down -> End
+      // Ctrl+Right -> End
       {ui::ET_KEY_PRESSED,
-       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
-        ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN, ui::DomKey::ARROW_DOWN},
+       {ui::VKEY_RIGHT, ui::DomCode::ARROW_RIGHT, ui::EF_CONTROL_DOWN,
+        ui::DomKey::ARROW_RIGHT},
        {ui::VKEY_END, ui::DomCode::END, ui::EF_NONE, ui::DomKey::END}},
 
-      // Shift+Alt+Search+Down -> Shift+End
+      // Shift+Ctrl+Right -> Shift+End
       {ui::ET_KEY_PRESSED,
-       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
-        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN,
-        ui::DomKey::ARROW_DOWN},
+       {ui::VKEY_RIGHT, ui::DomCode::ARROW_RIGHT,
+        ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::ARROW_RIGHT},
        {ui::VKEY_END, ui::DomCode::END, ui::EF_SHIFT_DOWN, ui::DomKey::END}},
   });
 }

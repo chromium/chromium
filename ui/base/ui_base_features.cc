@@ -175,7 +175,7 @@ const base::Feature kPrecisionTouchpadLogging{
 #if defined(OS_CHROMEOS)
 // This feature supercedes kNewShortcutMapping.
 const base::Feature kImprovedKeyboardShortcuts = {
-    "ImprovedKeyboardShortcuts", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ImprovedKeyboardShortcuts", base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsImprovedKeyboardShortcutsEnabled() {
   return base::FeatureList::IsEnabled(kImprovedKeyboardShortcuts);

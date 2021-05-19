@@ -168,9 +168,12 @@ TEST_F(AcceleratorManagerTest, Process) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(AcceleratorManagerTest, NewMapping) {
+// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
+TEST_F(AcceleratorManagerTest, NewMappingWithImprovedShortcutsDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kNewShortcutMapping);
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kNewShortcutMapping},
+      /*disabled_features=*/{::features::kImprovedKeyboardShortcuts});
 
   // Test new mapping with a ASCII punctuation shortcut that doesn't involve
   // shift.
@@ -201,6 +204,18 @@ TEST_F(AcceleratorManagerTest, NewMapping) {
     EXPECT_TRUE(manager_.IsRegistered(trigger));
     EXPECT_TRUE(manager_.Process(trigger));
   }
+}
+
+// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
+TEST_F(AcceleratorManagerTest, NewMappingSuperseded) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kNewShortcutMapping);
+
+  // When kImprovedKeyboardShortcuts is enabled, it takes precedence
+  // over kNewShortcutMapping. Remove this test when kImprovedShortcutMapping
+  // is made permanent.
+  EXPECT_TRUE(::features::IsImprovedKeyboardShortcutsEnabled());
+  EXPECT_FALSE(::features::IsNewShortcutMappingEnabled());
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

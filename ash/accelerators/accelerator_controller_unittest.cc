@@ -2116,23 +2116,6 @@ TEST_F(AcceleratorControllerTest, TestToggleHighContrast) {
   RemoveAllNotifications();
 }
 
-// TODO(crbug.com/1179893): Replace with the implementation below in
-// AcceleratorControllerImprovedTest::DeskShortcuts_New once the feature is
-// enabled permantently.
-TEST_F(AcceleratorControllerTest, DeskShortcuts_Old) {
-  // The shortcuts are Search+Shift+[MINUS|PLUS], but due to event
-  // rewriting they became Shift+[F11|F12]. So only the rewritten shortcut
-  // works but the "real" shortcut doesn't.
-  EXPECT_TRUE(controller_->IsRegistered(
-      ui::Accelerator(ui::VKEY_F12, ui::EF_SHIFT_DOWN)));
-  EXPECT_TRUE(controller_->IsRegistered(
-      ui::Accelerator(ui::VKEY_F11, ui::EF_SHIFT_DOWN)));
-  EXPECT_FALSE(controller_->IsRegistered(ui::Accelerator(
-      ui::VKEY_OEM_PLUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
-  EXPECT_FALSE(controller_->IsRegistered(ui::Accelerator(
-      ui::VKEY_OEM_MINUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
-}
-
 TEST_F(AcceleratorControllerTest, CalculatorKey) {
   // Verify that the launch calculator key (VKEY_MEDIA_LAUNCH_APP2) is
   // registered.
@@ -2203,36 +2186,17 @@ TEST_F(AcceleratorControllerInputMethodTest, AcceleratorClearsComposition) {
 
 namespace {
 
-// TODO(crbug.com/1179893): Remove once the feature is enabled permantently.
-class AcceleratorControllerImprovedTest : public AcceleratorControllerTest {
+// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
+class AcceleratorControllerDeprecatedTest : public AcceleratorControllerTest {
  public:
-  AcceleratorControllerImprovedTest() = default;
-  ~AcceleratorControllerImprovedTest() override = default;
+  AcceleratorControllerDeprecatedTest() = default;
+  ~AcceleratorControllerDeprecatedTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
+    scoped_feature_list_.InitAndDisableFeature(
         ::features::kImprovedKeyboardShortcuts);
-
-    // Pass ownership of InputMethodManager to Initialize where it is stored
-    // in a global. During TearDown() it needs to be cleaned up by calling
-    // InputMethodManager::Shutdown().
-    input_method_manager_ = new MockInputMethodManager();
-    InputMethodManager::Initialize(input_method_manager_);
     AcceleratorControllerTest::SetUp();
   }
-
-  void TearDown() override {
-    // The base TearDown() has to run before calling
-    // InputMethodManager::Shutdown()
-    AcceleratorControllerTest::TearDown();
-
-    // Shutdown deletes the global pointer to InputMethodManager.
-    InputMethodManager::Shutdown();
-    input_method_manager_ = nullptr;
-  }
-
- protected:
-  MockInputMethodManager* input_method_manager_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -2240,17 +2204,18 @@ class AcceleratorControllerImprovedTest : public AcceleratorControllerTest {
 
 }  // namespace
 
-TEST_F(AcceleratorControllerImprovedTest, DeskShortcuts_New) {
-  // The shortcuts are Search+Shift+[MINUS|PLUS]. The old shortcuts that were
-  // rewritten to F11/F12 should not longer have any effect and the "real"
-  // shortcut should now work.
-  EXPECT_FALSE(controller_->IsRegistered(
+// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
+TEST_F(AcceleratorControllerDeprecatedTest, DeskShortcuts_Old) {
+  // The shortcuts are Search+Shift+[MINUS|PLUS], but due to event
+  // rewriting they became Shift+[F11|F12]. So only the rewritten shortcut
+  // works but the "real" shortcut doesn't.
+  EXPECT_TRUE(controller_->IsRegistered(
       ui::Accelerator(ui::VKEY_F12, ui::EF_SHIFT_DOWN)));
-  EXPECT_FALSE(controller_->IsRegistered(
+  EXPECT_TRUE(controller_->IsRegistered(
       ui::Accelerator(ui::VKEY_F11, ui::EF_SHIFT_DOWN)));
-  EXPECT_TRUE(controller_->IsRegistered(ui::Accelerator(
+  EXPECT_FALSE(controller_->IsRegistered(ui::Accelerator(
       ui::VKEY_OEM_PLUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
-  EXPECT_TRUE(controller_->IsRegistered(ui::Accelerator(
+  EXPECT_FALSE(controller_->IsRegistered(ui::Accelerator(
       ui::VKEY_OEM_MINUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
 }
 
