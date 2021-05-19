@@ -55,6 +55,7 @@ LACROS_LAUNCHER_SCRIPT_PATH = os.path.abspath(
 LAB_DUT_HOSTNAME = 'variable_chromeos_device_hostname'
 
 SYSTEM_LOG_LOCATIONS = [
+    '/home/chronos/crash/',
     '/var/log/chrome/',
     '/var/log/messages',
     '/var/log/ui/',
