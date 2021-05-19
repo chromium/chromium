@@ -21,6 +21,10 @@ namespace {
 
 // Overrides WaylandCursorFactory::GetCursorFromTheme() to pretend that cursors
 // are really loaded.
+//
+// Note: the parent class does real Wayland calls that try to load the theme.
+// That may succeed or fail on the bot, but as GetCursorTheme() is overridden,
+// we ignore the result.
 class DryRunningWaylandCursorFactory : public WaylandCursorFactory {
  public:
   explicit DryRunningWaylandCursorFactory(WaylandConnection* connection)
@@ -49,37 +53,53 @@ class DryRunningWaylandCursorFactory : public WaylandCursorFactory {
 
 }  // namespace
 
-class WaylandCursorFactoryTest : public WaylandTest {
+class WaylandCursorFactoryTest : public WaylandTest,
+                                 public CursorFactoryObserver {
  public:
   WaylandCursorFactoryTest() = default;
 
-  void SetUp() override {
-    WaylandTest::SetUp();
-
-    cursor_factory_ =
-        std::make_unique<DryRunningWaylandCursorFactory>(connection_.get());
+  // CursorFactoryObserver:
+  void OnThemeLoaded() override {
+    ASSERT_TRUE(loop_quit_closure_);
+    std::move(loop_quit_closure_).Run();
   }
 
  protected:
-  std::unique_ptr<WaylandCursorFactory> cursor_factory_;
+  void WaitForThemeLoaded() {
+    base::RunLoop loop;
+    ASSERT_FALSE(loop_quit_closure_);
+    loop_quit_closure_ = loop.QuitClosure();
+    loop.Run();
+  }
+
+ private:
+  base::OnceClosure loop_quit_closure_;
 };
 
 // Tests that the factory holds the cursor theme until a buffer taken from it
 // released.
 TEST_P(WaylandCursorFactoryTest, RetainOldThemeUntilNewBufferIsAttached) {
+  std::unique_ptr<WaylandCursorFactory> cursor_factory =
+      std::make_unique<DryRunningWaylandCursorFactory>(connection_.get());
+  cursor_factory->AddObserver(this);
+
   // The default theme should be loaded right away.  The unloaded theme should
   // not be set.
-  EXPECT_NE(cursor_factory_->current_theme_, nullptr);
-  EXPECT_EQ(cursor_factory_->unloaded_theme_, nullptr);
+  EXPECT_NE(cursor_factory->current_theme_, nullptr);
+  EXPECT_EQ(cursor_factory->unloaded_theme_, nullptr);
+
+  WaitForThemeLoaded();
 
   // Trigger theme reload and ensure that the theme instance has changed.
   // As we didn't request any buffers, the unloaded theme should not be held.
   {
-    auto* const current_theme = cursor_factory_->current_theme_.get();
-    cursor_factory_->OnCursorThemeNameChanged("Theme1");
-    EXPECT_NE(cursor_factory_->current_theme_, nullptr);
-    EXPECT_NE(cursor_factory_->current_theme_.get(), current_theme);
-    EXPECT_EQ(cursor_factory_->unloaded_theme_, nullptr);
+    auto* const current_theme = cursor_factory->current_theme_.get();
+    cursor_factory->OnCursorThemeNameChanged("Theme1");
+    EXPECT_NE(cursor_factory->current_theme_, nullptr);
+    EXPECT_NE(cursor_factory->current_theme_.get(), current_theme);
+    EXPECT_EQ(cursor_factory->unloaded_theme_, nullptr);
+
+    WaitForThemeLoaded();
   }
 
   // Now request some buffer, and while "holding" it (i.e., not notifying the
@@ -89,42 +109,46 @@ TEST_P(WaylandCursorFactoryTest, RetainOldThemeUntilNewBufferIsAttached) {
   // the cursor from the "unloaded" theme.  This must not trigger unloading of
   // that theme.
   {
-    auto* const current_theme = cursor_factory_->current_theme_.get();
+    auto* const current_theme = cursor_factory->current_theme_.get();
     auto const cursor =
-        cursor_factory_->GetDefaultCursor(mojom::CursorType::kPointer);
+        cursor_factory->GetDefaultCursor(mojom::CursorType::kPointer);
     EXPECT_NE(cursor, nullptr);
-    EXPECT_GT(cursor_factory_->current_theme_->cache.size(), 0U);
+    EXPECT_GT(cursor_factory->current_theme_->cache.size(), 0U);
 
-    cursor_factory_->OnCursorThemeNameChanged("Theme2");
+    cursor_factory->OnCursorThemeNameChanged("Theme2");
 
-    EXPECT_EQ(cursor_factory_->current_theme_->cache.size(), 0U);
-    EXPECT_NE(cursor_factory_->current_theme_, nullptr);
-    EXPECT_NE(cursor_factory_->current_theme_.get(), current_theme);
-    EXPECT_EQ(cursor_factory_->unloaded_theme_.get(), current_theme);
+    EXPECT_EQ(cursor_factory->current_theme_->cache.size(), 0U);
+    EXPECT_NE(cursor_factory->current_theme_, nullptr);
+    EXPECT_NE(cursor_factory->current_theme_.get(), current_theme);
+    EXPECT_EQ(cursor_factory->unloaded_theme_.get(), current_theme);
 
-    cursor_factory_->OnCursorThemeNameChanged("Theme3");
+    WaitForThemeLoaded();
 
-    EXPECT_EQ(cursor_factory_->current_theme_->cache.size(), 0U);
-    EXPECT_NE(cursor_factory_->current_theme_, nullptr);
-    EXPECT_NE(cursor_factory_->current_theme_.get(), current_theme);
-    EXPECT_EQ(cursor_factory_->unloaded_theme_.get(), current_theme);
+    cursor_factory->OnCursorThemeNameChanged("Theme3");
 
-    cursor_factory_->OnCursorBufferAttached(static_cast<wl_cursor*>(
+    EXPECT_EQ(cursor_factory->current_theme_->cache.size(), 0U);
+    EXPECT_NE(cursor_factory->current_theme_, nullptr);
+    EXPECT_NE(cursor_factory->current_theme_.get(), current_theme);
+    EXPECT_EQ(cursor_factory->unloaded_theme_.get(), current_theme);
+
+    WaitForThemeLoaded();
+
+    cursor_factory->OnCursorBufferAttached(static_cast<wl_cursor*>(
         BitmapCursorOzone::FromPlatformCursor(cursor)->platform_data()));
-    EXPECT_EQ(cursor_factory_->unloaded_theme_.get(), current_theme);
+    EXPECT_EQ(cursor_factory->unloaded_theme_.get(), current_theme);
   }
 
   // Finally, tell the factory that we have attached a buffer from the current
   // theme.  This time the old theme held since a while ago should be freed.
   {
     auto const cursor =
-        cursor_factory_->GetDefaultCursor(mojom::CursorType::kPointer);
+        cursor_factory->GetDefaultCursor(mojom::CursorType::kPointer);
     EXPECT_NE(cursor, nullptr);
 
-    cursor_factory_->OnCursorBufferAttached(static_cast<wl_cursor*>(
+    cursor_factory->OnCursorBufferAttached(static_cast<wl_cursor*>(
         BitmapCursorOzone::FromPlatformCursor(cursor)->platform_data()));
 
-    EXPECT_EQ(cursor_factory_->unloaded_theme_.get(), nullptr);
+    EXPECT_EQ(cursor_factory->unloaded_theme_.get(), nullptr);
   }
 }
 
