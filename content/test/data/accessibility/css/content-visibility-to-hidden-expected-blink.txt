@@ -2,6 +2,6 @@ rootWebArea name='done'
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++genericContainer
-++++++++genericContainer className='hidden' name='Label'
+++++++++group className='hidden' name='Label'
 ++++++++++genericContainer ignored invisible
 ++++++++++genericContainer ignored invisible

@@ -2,23 +2,25 @@
 @MAC-ALLOW:AXRoleDescription
 @WIN-ALLOW:*SELECTABLE
 @WIN-ALLOW:xml-roles*
+@BLINK-DENY:descriptionFrom*
 @BLINK-ALLOW:tableColumnCount*
 @BLINK-ALLOW:tableRowCount*
 @BLINK-ALLOW:id*
 @BLINK-ALLOW:table*Index*
+@AURALINUX-DENY:description-from*
 -->
 <!DOCTYPE html>
 <html>
 <body>
   <div role="grid" aria-label="1: Individual rows get their own wrappers">
-    <div id="r1" aria-label="r1-wrap">
+    <div id="r1" aria-description="r1-wrap">
       <div role="row" aria-label="r1-real">
         <div role="gridcell">A1</div>
         <div role="gridcell">A2</div>
       </div>
     </div>
-    <div id="r2" aria-label="r2-wrap">
-      <div aria-label="r2-vanilla">
+    <div id="r2" aria-description="r2-wrap">
+      <div aria-description="r2-vanilla">
         <div role="row" aria-label="r2-real">
           <div role="gridcell">B1</div>
           <div role="gridcell">B2</div>

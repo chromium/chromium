@@ -2317,7 +2317,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       R"HTML(<!DOCTYPE html>
       <html>
       <body>
-        <p aria-label="space">&nbsp;</p>
+        <p tabindex="0" aria-label="space">&nbsp;</p>
         <p>3.14</p>
       </body>
       </html>)HTML");

@@ -5,13 +5,13 @@ rootWebArea
 ++++++textField autoComplete='x-illegal' name='Autocomplete illegal'
 ++++++log containerLiveRelevant='additions text' containerLiveStatus='polite' name='Busy illegal' liveRelevant='additions text' liveStatus='polite' busy=true containerLiveAtomic=false containerLiveBusy=true liveAtomic=false
 ++++++treeItem name='Checked illegal' checkedState=true
-++++++genericContainer name='Current illegal' ariaCurrentState=true
-++++++genericContainer name='Disabled illegal' restriction=disabled
-++++++genericContainer name='Dropeffect illegal' dropeffect=none
+++++++group name='Current illegal' ariaCurrentState=true
+++++++group name='Disabled illegal' restriction=disabled
+++++++group name='Dropeffect illegal' dropeffect=none
 ++++++treeItem expanded name='Expanded illegal'
-++++++genericContainer name='Grabbed illegal'
+++++++group name='Grabbed illegal'
 ++++++button name='Haspopup illegal'
-++++++genericContainer ariaInvalidValue='X-ILLEGAL' name='Invalid illegal' invalidState=other
+++++++group ariaInvalidValue='X-ILLEGAL' name='Invalid illegal' invalidState=other
 ++++++log containerLiveRelevant='additions text' containerLiveStatus='X-ILLEGAL' name='Live illegal' liveRelevant='additions text' liveStatus='X-ILLEGAL' containerLiveAtomic=false containerLiveBusy=false liveAtomic=false
 ++++++dialog name='Modal illegal' modal=true
 ++++++textField multiline name='Multiline illegal'

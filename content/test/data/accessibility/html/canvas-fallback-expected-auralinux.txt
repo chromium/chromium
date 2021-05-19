@@ -4,18 +4,18 @@
 ++++++[static] name='Static fallback'
 ++++[canvas]
 ++++++[static] name='<newline>    '
-++++++[paragraph] name='Aria hidden paragraph in fallback content' labelled-by
+++++++[paragraph] description='Aria hidden paragraph in fallback content' described-by
 ++++++++[static] name='Line breaking content in a fallback'
 ++++++[static] name='<newline>    '
-++++++[paragraph] name='Visibility hidden paragraph in fallback content' labelled-by
+++++++[paragraph] description='Visibility hidden paragraph in fallback content' described-by
 ++++++++[static] name='This is another paragraph in fallback'
 ++++++[static] name='<newline>    '
-++++++[heading] name='Aria hidden paragraph in fallback content' label-for
+++++++[heading] name='Aria hidden paragraph in fallback content' description-for
 ++++++++[static] name='Aria hidden paragraph in fallback content'
 ++++++[static] name='<newline>    '
 ++++++[heading]
 ++++++++[static] name='Display none text in fallback content '
 ++++++[static] name='<newline>    '
-++++++[heading] label-for
+++++++[heading] description-for
 ++++++++[static] name='Visibility hidden paragraph in fallback content'
 ++++++[static] name='<newline>  '

@@ -3,9 +3,9 @@ android.webkit.WebView focusable focused scrollable
 ++++android.widget.Image name='Static fallback'
 ++++android.widget.Image
 ++++++android.widget.TextView name='<newline>    '
-++++++android.view.View name='Aria hidden paragraph in fallback content'
+++++++android.view.View name='Line breaking content in a fallback' hint='Aria hidden paragraph in fallback content'
 ++++++android.widget.TextView name='<newline>    '
-++++++android.view.View name='Visibility hidden paragraph in fallback content'
+++++++android.view.View name='This is another paragraph in fallback' hint='Visibility hidden paragraph in fallback content'
 ++++++android.widget.TextView name='<newline>    '
 ++++++android.view.View role_description='heading 1' heading invisible name='Aria hidden paragraph in fallback content'
 ++++++android.widget.TextView name='<newline>    '

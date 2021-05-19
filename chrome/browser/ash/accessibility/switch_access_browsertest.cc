@@ -153,11 +153,11 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateGroupings) {
 
   // Load a webpage with two groups of controls.
   ui_test_utils::NavigateToURL(browser(), GURL(R"HTML(data:text/html,
-      <div aria-label=Top>
+      <div role="group" aria-label="Top">
         <button autofocus>Northwest</button>
         <button>Northeast</button>
       </div>
-      <div aria-label=Bottom>
+      <div role="group" aria-label="Bottom">
         <button>Southwest</button>
         <button>Southeast</button>
       </div>
@@ -177,14 +177,14 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateGroupings) {
   // Press the select key to press the back button, which should focus
   // on the Top container, with Northwest as the preview.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_1);
-  WaitForFocusRing("primary", "genericContainer", "Top");
+  WaitForFocusRing("primary", "group", "Top");
   WaitForFocusRing("preview", "button", "Northwest");
 
   // Navigate to the next group by pressing the next switch.
   // Now we should be focused on the Bottom container, with
   // Southwest as the preview.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_2);
-  WaitForFocusRing("primary", "genericContainer", "Bottom");
+  WaitForFocusRing("primary", "group", "Bottom");
   WaitForFocusRing("preview", "button", "Southwest");
 
   // Press the select key to enter the container, which should focus

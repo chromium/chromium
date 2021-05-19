@@ -5,5 +5,5 @@ rootWebArea
 ++++++++rootWebArea
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
-++++++++++++++genericContainer name='iframe_onscreen'
-++++++++++++++genericContainer offscreen name='iframe_offscreen'
+++++++++++++++group name='iframe_onscreen'
+++++++++++++++group offscreen name='iframe_offscreen'

@@ -1,28 +1,28 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer name='Atomic undefined'
+++++++group name='Atomic undefined'
 ++++++textField name='Autocomplete undefined'
-++++++genericContainer name='Busy undefined'
+++++++group name='Busy undefined'
 ++++++treeItem name='Checked undefined'
-++++++genericContainer name='Current undefined'
-++++++genericContainer name='Disabled undefined'
-++++++genericContainer name='Dropeffect undefined' dropeffect=none
+++++++group name='Current undefined'
+++++++group name='Disabled undefined'
+++++++group name='Dropeffect undefined' dropeffect=none
 ++++++treeItem name='Expanded undefined'
-++++++genericContainer name='Grabbed undefined'
+++++++group name='Grabbed undefined'
 ++++++button name='Haspopup undefined'
-++++++genericContainer name='Invalid undefined'
-++++++genericContainer name='Live undefined'
+++++++group name='Invalid undefined'
+++++++group name='Live undefined'
 ++++++dialog name='Modal undefined' modal=false
 ++++++textField name='Multiline undefined'
 ++++++grid name='Multiselectable undefined'
 ++++++scrollBar vertical name='Orientation undefined'
 ++++++button name='Pressed undefined'
 ++++++textField name='Readonly undefined'
-++++++genericContainer name='Relevant undefined'
+++++++group name='Relevant undefined'
 ++++++textField name='Required undefined'
 ++++++tree multiselectable vertical
 ++++++++treeItem name='Selected undefined'
 ++++++grid
 ++++++++columnHeader name='Sort undefined'
-++++++genericContainer name='Hidden undefined, display block'
+++++++group name='Hidden undefined, display block'

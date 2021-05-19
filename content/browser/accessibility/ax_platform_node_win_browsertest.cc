@@ -558,7 +558,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
       <!DOCTYPE html>
       <html>
         <body>
-          <div aria-virtualcontent="block-end" aria-label="vc">Hello World</div>
+          <div role="group" aria-virtualcontent="block-end"
+               aria-label="vc">Hello World</div>
         </body>
       </html>
   )HTML"));
@@ -567,8 +568,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
   BrowserAccessibility* body_node = root_node->PlatformGetFirstChild();
   ASSERT_NE(nullptr, body_node);
 
-  BrowserAccessibility* node =
-      FindNode(ax::mojom::Role::kGenericContainer, "vc");
+  BrowserAccessibility* node = FindNode(ax::mojom::Role::kGroup, "vc");
   ASSERT_NE(nullptr, node);
   BrowserAccessibilityComWin* node_com_win =
       ToBrowserAccessibilityWin(node)->GetCOM();

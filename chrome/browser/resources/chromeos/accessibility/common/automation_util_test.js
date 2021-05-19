@@ -80,8 +80,8 @@ TEST_F(
     function() {
       this.runWithLoadedTree(
           `
-    <div aria-label="x">
-      <div aria-label="y">
+    <div tabindex="0" aria-label="x">
+      <div tabindex="0" aria-label="y">
         <p>
           <button>Hello world</div>
         </p>
@@ -209,7 +209,8 @@ TEST_F(
     'AccessibilityExtensionAutomationUtilE2ETest', 'FindLastNodeSimple',
     function() {
       this.runWithLoadedTree(
-          `<p aria-label=" "><div aria-label="x"></div></p>`, function(r) {
+          `<p aria-label=" "><div tabindex="0" aria-label="x"></div></p>`,
+          function(r) {
             assertEquals(
                 'x',
                 AutomationUtil
@@ -251,7 +252,7 @@ TEST_F(
       this.runWithLoadedTree(
           `
     <p>start</p>
-    <div aria-label="outer"><div aria-label="inner"></div></div>
+    <div aria-label="outer"><div tabindex="0" aria-label="inner"></div></div>
     <p>end</p>
     `,
           function(r) {

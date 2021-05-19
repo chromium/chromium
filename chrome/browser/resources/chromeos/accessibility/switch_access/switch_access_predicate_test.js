@@ -25,21 +25,21 @@ function fakeLoc(x) {
 
 // This page has a 1:1 correlation between DOM nodes and accessibility nodes.
 function testWebsite() {
-  return `<div aria-label="upper1">
-            <div aria-label="lower1">
+  return `<div aria-description="upper1">
+            <div aria-description="lower1">
               <button>leaf1</button>
-              <p aria-label="leaf2">leaf2</p>
+              <p aria-description="leaf2">leaf2</p>
               <button>leaf3</button>
             </div>
-            <div aria-label="lower2">
-              <p aria-label="leaf4">leaf4</p>
+            <div aria-description="lower2">
+              <p aria-description="leaf4">leaf4</p>
               <button>leaf5</button>
             </div>
           </div>
-          <div aria-label="upper2" role="button">
-            <div aria-label="lower3" >
-              <p aria-label="leaf6">leaf6</p>
-              <p aria-label="leaf7">leaf7</p>`;
+          <div aria-description="upper2" role="button">
+            <div aria-description="lower3" >
+              <p aria-description="leaf6">leaf6</p>
+              <p aria-description="leaf7">leaf7</p>`;
 }
 
 function getTree(loadedPage) {
@@ -48,33 +48,33 @@ function getTree(loadedPage) {
       root.role === chrome.automation.RoleType.ROOT_WEB_AREA,
       'We should receive the root web area');
   assertTrue(
-      root.firstChild && root.firstChild.name === 'upper1',
+      root.firstChild && root.firstChild.description === 'upper1',
       'First child should be upper1');
 
   const upper1 = root.firstChild;
-  assertTrue(upper1 && upper1.name === 'upper1', 'Upper1 not found');
+  assertTrue(upper1 && upper1.description === 'upper1', 'Upper1 not found');
   const upper2 = upper1.nextSibling;
-  assertTrue(upper2 && upper2.name === 'upper2', 'Upper2 not found');
+  assertTrue(upper2 && upper2.description === 'upper2', 'Upper2 not found');
   const lower1 = upper1.firstChild;
-  assertTrue(lower1 && lower1.name === 'lower1', 'Lower1 not found');
+  assertTrue(lower1 && lower1.description === 'lower1', 'Lower1 not found');
   const lower2 = lower1.nextSibling;
-  assertTrue(lower2 && lower2.name === 'lower2', 'Lower2 not found');
+  assertTrue(lower2 && lower2.description === 'lower2', 'Lower2 not found');
   const lower3 = upper2.firstChild;
-  assertTrue(lower3 && lower3.name === 'lower3', 'Lower3 not found');
+  assertTrue(lower3 && lower3.description === 'lower3', 'Lower3 not found');
   const leaf1 = lower1.firstChild;
   assertTrue(leaf1 && leaf1.name === 'leaf1', 'Leaf1 not found');
   const leaf2 = leaf1.nextSibling;
-  assertTrue(leaf2 && leaf2.name === 'leaf2', 'Leaf2 not found');
+  assertTrue(leaf2 && leaf2.description === 'leaf2', 'Leaf2 not found');
   const leaf3 = leaf2.nextSibling;
   assertTrue(leaf3 && leaf3.name === 'leaf3', 'Leaf3 not found');
   const leaf4 = lower2.firstChild;
-  assertTrue(leaf4 && leaf4.name === 'leaf4', 'Leaf4 not found');
+  assertTrue(leaf4 && leaf4.description === 'leaf4', 'Leaf4 not found');
   const leaf5 = leaf4.nextSibling;
   assertTrue(leaf5 && leaf5.name === 'leaf5', 'Leaf5 not found');
   const leaf6 = lower3.firstChild;
-  assertTrue(leaf6 && leaf6.name === 'leaf6', 'Leaf6 not found');
+  assertTrue(leaf6 && leaf6.description === 'leaf6', 'Leaf6 not found');
   const leaf7 = leaf6.nextSibling;
-  assertTrue(leaf7 && leaf7.name === 'leaf7', 'Leaf7 not found');
+  assertTrue(leaf7 && leaf7.description === 'leaf7', 'Leaf7 not found');
 
   return {
     root,
@@ -249,7 +249,7 @@ TEST_F('SwitchAccessPredicateTest', 'IsActionable', function() {
        <button>button3</button>
        <input type="range" aria-label="slider" value=5 min=0 max=10>
        <div id="clickable" role="listitem" onclick="2+2"></div>
-       <div aria-label="div1"><p>p1</p></div>`;
+       <div id="div1"><p>p1</p></div>`;
   this.runWithLoadedTree(treeString, (loadedPage) => {
     const cache = new SACache();
 
@@ -292,7 +292,7 @@ TEST_F('SwitchAccessPredicateTest', 'IsActionable', function() {
         SwitchAccessPredicate.isActionable(clickable, cache),
         'Clickable list items should be actionable');
 
-    const div1 = this.findNodeByNameAndRole('div1', 'genericContainer');
+    const div1 = this.findNodeById('div1');
     assertFalse(
         SwitchAccessPredicate.isActionable(div1, cache),
         'Divs should not generally be actionable');

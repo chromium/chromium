@@ -4585,13 +4585,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestIScrollProvider) {
       <!DOCTYPE html>
       <html>
         <body>
-          <div aria-label='not'>
+          <div aria-label='not' role='group'>
             not scrollable
           </div>
-          <div style='width:100px; overflow:auto' aria-label='x'>
+          <div style='width:100px; overflow:auto' aria-label='x' role='group'>
               <div style='width:200px; height:100px'></div>
           </div>
-          <div style='height:100px; overflow:auto' aria-label='y'>
+          <div style='height:100px; overflow:auto' aria-label='y' role='group'>
               <div style='width:100px; height:200px'></div>
           </div>
         </body>
@@ -4611,7 +4611,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestIScrollProvider) {
                                               {"y", false, true, 0.0, 50.0}};
   for (auto& expected : all_expected) {
     BrowserAccessibility* browser_accessibility =
-        FindNode(ax::mojom::Role::kGenericContainer, expected.node_name);
+        FindNode(ax::mojom::Role::kGroup, expected.node_name);
     EXPECT_NE(browser_accessibility, nullptr);
 
     BrowserAccessibilityComWin* browser_accessibility_com_win =
