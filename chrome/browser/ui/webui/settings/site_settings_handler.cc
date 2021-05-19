@@ -1187,6 +1187,15 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
           ? ContentSettingsPattern::Wildcard()
           : ContentSettingsPattern::FromString(secondary_pattern_string);
 
+  // Clear any existing embargo status if the new setting isn't block.
+  if (setting != CONTENT_SETTING_BLOCK) {
+    GURL url(primary_pattern.ToString());
+    if (url.is_valid()) {
+      PermissionDecisionAutoBlockerFactory::GetForProfile(profile_)
+          ->RemoveEmbargoAndResetCounts(url, content_type);
+    }
+  }
+
   permissions::PermissionUmaUtil::ScopedRevocationReporter
       scoped_revocation_reporter(
           profile, primary_pattern, secondary_pattern, content_type,
