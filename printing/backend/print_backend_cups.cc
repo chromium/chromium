@@ -81,7 +81,7 @@ mojom::ResultCode PrintBackendCUPS::PrinterBasicInfoFromCUPS(
   const char* drv_info = cupsGetOption(kCUPSOptPrinterMakeAndModel,
                                        printer.num_options, printer.options);
   if (drv_info)
-    printer_info->options[kDriverInfoTagName] = *drv_info;
+    printer_info->options[kDriverInfoTagName] = drv_info;
 
   // Store printer options.
   for (int opt_index = 0; opt_index < printer.num_options; ++opt_index) {

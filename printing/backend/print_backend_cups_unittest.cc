@@ -81,6 +81,17 @@ TEST(PrintBackendCupsTest, PrinterBasicInfoFromCUPS) {
   EXPECT_EQ(kName, printer_info.display_name);
 #endif
   EXPECT_EQ(kDescription, printer_info.printer_description);
+
+  // The option value of `kCUPSOptPrinterMakeAndModel` is used to set the value
+  // for `kDriverInfoTagName`.
+  auto driver = printer_info.options.find(kDriverInfoTagName);
+#if defined(OS_MAC)
+  ASSERT_NE(driver, printer_info.options.end());
+  EXPECT_EQ(kDescription, driver->second);
+#else
+  // Didn't set option for `kCUPSOptPrinterMakeAndModel`.
+  EXPECT_EQ(driver, printer_info.options.end());
+#endif
 }
 
 TEST(PrintBackendCupsTest, PrinterDriverInfoFromCUPS) {
