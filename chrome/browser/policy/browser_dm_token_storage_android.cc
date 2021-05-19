@@ -8,6 +8,7 @@
 
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/policy/android/cloud_management_shared_preferences.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -15,9 +16,9 @@ namespace policy {
 
 namespace {
 
-bool StoreDMTokenInSharedPreferences(const std::string& token,
-                                     const std::string& client_id) {
-  return false;
+bool StoreDmTokenInSharedPreferences(const std::string& dm_token) {
+  android::SaveDmTokenInSharedPreferences(dm_token);
+  return true;
 }
 
 }  // namespace
@@ -36,7 +37,7 @@ std::string BrowserDMTokenStorageAndroid::InitEnrollmentToken() {
 }
 
 std::string BrowserDMTokenStorageAndroid::InitDMToken() {
-  return std::string();
+  return android::ReadDmTokenFromSharedPreferences();
 }
 
 bool BrowserDMTokenStorageAndroid::InitEnrollmentErrorOption() {
@@ -46,7 +47,7 @@ bool BrowserDMTokenStorageAndroid::InitEnrollmentErrorOption() {
 BrowserDMTokenStorage::StoreTask BrowserDMTokenStorageAndroid::SaveDMTokenTask(
     const std::string& token,
     const std::string& client_id) {
-  return base::BindOnce(&StoreDMTokenInSharedPreferences, token, client_id);
+  return base::BindOnce(&StoreDmTokenInSharedPreferences, token);
 }
 
 scoped_refptr<base::TaskRunner>

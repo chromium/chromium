@@ -918,6 +918,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/payments/android:junit",
     "//chrome/browser/performance_hints/android:java",
     "//chrome/browser/policy/android:java",
+    "//chrome/browser/policy/android:junit",
     "//chrome/browser/preferences:java",
     "//chrome/browser/preferences:preferences_junit_tests",
     "//chrome/browser/profiles/android:java",

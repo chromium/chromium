@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
 
@@ -57,19 +58,20 @@ TEST_F(BrowserDMTokenStorageAndroidTest, SaveDMToken) {
   TestStoreDMTokenDelegate callback_delegate;
 
   base::RunLoop run_loop;
-  EXPECT_CALL(callback_delegate, OnDMTokenStored(false))
+  EXPECT_CALL(callback_delegate, OnDMTokenStored(true))
       .WillOnce(Invoke(&run_loop, &base::RunLoop::Quit));
 
-  BrowserDMTokenStorageAndroid storage_delegate;
-  auto task = storage_delegate.SaveDMTokenTask(kDMToken,
-                                               storage_delegate.InitClientId());
+  BrowserDMTokenStorageAndroid storage;
+  auto task = storage.SaveDMTokenTask(kDMToken, storage.InitClientId());
   auto reply = base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenStored,
                               base::Unretained(&callback_delegate));
-  base::PostTaskAndReplyWithResult(
-      storage_delegate.SaveDMTokenTaskRunner().get(), FROM_HERE,
-      std::move(task), std::move(reply));
+  base::PostTaskAndReplyWithResult(storage.SaveDMTokenTaskRunner().get(),
+                                   FROM_HERE, std::move(task),
+                                   std::move(reply));
 
   run_loop.Run();
+
+  EXPECT_THAT(storage.InitDMToken(), Eq(kDMToken));
 }
 
 }  // namespace policy
