@@ -99,9 +99,28 @@ class MetaBuildWrapper(object):
         'win') else 'isolate'
     self.use_luci_auth = False
     self.rts_out_dir = self.PathJoin('gen', 'rts')
+    self.banned_from_rts = set()
+
+  def PostArgsInit(self):
+    self.use_luci_auth = getattr(self.args, 'luci_auth', False)
+
+    if 'config_file' in self.args and self.args.config_file is None:
+      self.args.config_file = self.default_config
+
+    if 'expectations_dir' in self.args and self.args.expectations_dir is None:
+      self.args.expectations_dir = os.path.join(
+          os.path.dirname(self.args.config_file), 'mb_config_expectations')
+
+    if getattr(self.args, 'builder', None):
+      banned_from_rts_map = json.loads(
+          self.ReadFile(
+              self.PathJoin(self.chromium_src_dir, 'tools', 'mb',
+                            'rts_banned_suites.json')))
+      self.banned_from_rts = banned_from_rts_map.get(self.args.builder, set())
 
   def Main(self, args):
     self.ParseArgs(args)
+    self.PostArgsInit()
     try:
       ret = self.args.func()
       if ret != 0:
@@ -399,15 +418,6 @@ class MetaBuildWrapper(object):
     subp.set_defaults(func=self.CmdHelp)
 
     self.args = parser.parse_args(argv)
-
-    self.use_luci_auth = getattr(self.args, 'luci_auth', False)
-
-    if 'config_file' in self.args and self.args.config_file is None:
-      self.args.config_file = self.default_config
-
-    if 'expectations_dir' in self.args and self.args.expectations_dir is None:
-      self.args.expectations_dir = os.path.join(
-          os.path.dirname(self.args.config_file), 'mb_config_expectations')
 
   def DumpInputFiles(self):
 
@@ -1216,11 +1226,14 @@ class MetaBuildWrapper(object):
       # For more info about RTS, please see
       # //docs/testing/regression-test-selection.md
       if self.args.use_rts:
-        filter_file = target + '.filter'
-        filter_file_path = self.PathJoin(self.rts_out_dir, filter_file)
-        if self.Exists(self.ToAbsPath(build_dir, filter_file_path)):
-          command.append('--test-launcher-filter-file=%s' % filter_file_path)
-          self.Print('added rts filter file to isolate: %s' % filter_file)
+        if target in self.banned_from_rts:
+          self.Print('%s is banned for RTS on this builder' % target)
+        else:
+          filter_file = target + '.filter'
+          filter_file_path = self.PathJoin(self.rts_out_dir, filter_file)
+          if self.Exists(self.ToAbsPath(build_dir, filter_file_path)):
+            command.append('--test-launcher-filter-file=%s' % filter_file_path)
+            self.Print('added RTS filter file to isolate: %s' % filter_file)
 
       canonical_target = target.replace(':','_').replace('/','_')
       ret = self.WriteIsolateFiles(build_dir, command, canonical_target,

@@ -303,6 +303,8 @@ class UnitTest(unittest.TestCase):
     mbw.files.setdefault(
         mbw.ToAbsPath('//build/args/bots/fake_builder_group/fake_args_bot.gn'),
         'is_debug = false\n')
+    mbw.files.setdefault(mbw.ToAbsPath('//tools/mb/rts_banned_suites.json'),
+                         '{}')
     if files:
       for path, contents in files.items():
         mbw.files[path] = contents
