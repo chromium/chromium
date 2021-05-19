@@ -74,6 +74,8 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
     return false;
   }
 
+  void AddSodaInstallerObserver() { handler_->MaybeAddSodaInstallerObserver(); }
+
   void OnSodaInstalled() { handler_->OnSodaInstalled(); }
 
   void OnSodaProgress(int progress) { handler_->OnSodaProgress(progress); }
@@ -123,6 +125,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, OnSodaErrorTestApi) {
 // the correct listener when SODA is installed.
 IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, OnSodaInstalledNotification) {
   AssertWebUICalls(0);
+  AddSodaInstallerObserver();
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   AssertWebUICalls(1);
   ASSERT_TRUE(WasWebUIListenerCalledWithStringArgument(

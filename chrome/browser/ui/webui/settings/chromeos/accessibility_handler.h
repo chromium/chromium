@@ -47,6 +47,8 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
 
   void OpenExtensionOptionsPage(const char extension_id[]);
 
+  void MaybeAddSodaInstallerObserver();
+
   // SodaInstaller::Observer:
   void OnSodaInstalled() override;
   void OnSodaLanguagePackInstalled(

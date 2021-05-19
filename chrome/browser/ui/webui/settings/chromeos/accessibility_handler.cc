@@ -36,14 +36,7 @@ void RecordShowShelfNavigationButtonsValueChange(bool enabled) {
 }  // namespace
 
 AccessibilityHandler::AccessibilityHandler(Profile* profile)
-    : profile_(profile) {
-  if (::switches::IsExperimentalAccessibilityDictationOfflineEnabled()) {
-    if (speech::SodaInstaller::GetInstance()->IsSodaInstalled())
-      OnSodaInstalled();
-    else
-      speech::SodaInstaller::GetInstance()->AddObserver(this);
-  }
-}
+    : profile_(profile) {}
 
 AccessibilityHandler::~AccessibilityHandler() {
   if (a11y_nav_buttons_toggle_metrics_reporter_timer_.IsRunning())
@@ -120,6 +113,8 @@ void AccessibilityHandler::HandleManageA11yPageReady(
   FireWebUIListener(
       "initial-data-ready",
       base::Value(AccessibilityManager::Get()->GetStartupSoundEnabled()));
+
+  MaybeAddSodaInstallerObserver();
 }
 
 void AccessibilityHandler::HandleShowChromeVoxTutorial(
@@ -136,6 +131,15 @@ void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
   extensions::ExtensionTabUtil::OpenOptionsPage(
       extension,
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()));
+}
+
+void AccessibilityHandler::MaybeAddSodaInstallerObserver() {
+  if (::switches::IsExperimentalAccessibilityDictationOfflineEnabled()) {
+    if (speech::SodaInstaller::GetInstance()->IsSodaInstalled())
+      OnSodaInstalled();
+    else
+      speech::SodaInstaller::GetInstance()->AddObserver(this);
+  }
 }
 
 // SodaInstaller::Observer:
