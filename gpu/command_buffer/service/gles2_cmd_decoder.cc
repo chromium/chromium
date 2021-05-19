@@ -15627,34 +15627,11 @@ void GLES2DecoderImpl::DoCopyTexImage2D(
     DCHECK(type == GL_UNSIGNED_BYTE);
     switch (internal_format) {
       case GL_RGB:
-        // Changing the internal format here is probably not completely
-        // correct. This is the "effective" internal format, and the spec
-        // says "effective internal format is used by the GL for purposes
-        // such as texture completeness or type checks for CopyTex*
-        // commands". But we don't have a separate concept of "effective"
-        // vs. "actual" internal format, so this will have to do for now. See
-        // Table 3.12 and associated explanatory text in the OpenGL ES 3.0.6
-        // spec for more information.
-        //
-        // Unfortunately, changing the internal format here conflicts with a
-        // macos workaround flag, so don't do it if the workaround applies.
-        if (!workarounds().use_intermediary_for_copy_texture_image ||
-            target == GL_TEXTURE_2D) {
-          internal_format = GL_RGB8;
-        }
-        break;
       case GL_RGBA:
-        if (!workarounds().use_intermediary_for_copy_texture_image ||
-            target == GL_TEXTURE_2D) {
-          internal_format = GL_RGBA8;
-        }
-        break;
       case GL_LUMINANCE_ALPHA:
       case GL_LUMINANCE:
       case GL_ALPHA:
       case GL_BGRA_EXT:
-        // There are no GL constants for sized versions of these internal
-        // formats. We'll just go ahead with the unsized ones.
         break;
       default:
         // Other unsized internal_formats are invalid in ES3.

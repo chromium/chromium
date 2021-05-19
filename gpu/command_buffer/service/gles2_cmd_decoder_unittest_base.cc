@@ -1556,14 +1556,6 @@ void GLES2DecoderTestBase::DoCopyTexImage2D(
     GLsizei width,
     GLsizei height,
     GLint border) {
-  GLenum translated_internal_format = internal_format;
-  if (group_->feature_info()->IsWebGL2OrES3Context()) {
-    if (internal_format == GL_RGB) {
-      translated_internal_format = GL_RGB8;
-    } else if (internal_format == GL_RGBA) {
-      translated_internal_format = GL_RGBA8;
-    }
-  }
   // For GL_BGRA_EXT, we have to fall back to TexImage2D and
   // CopyTexSubImage2D, since GL_BGRA_EXT is not accepted by CopyTexImage2D.
   // In some cases this fallback further triggers set and restore of
@@ -1596,15 +1588,14 @@ void GLES2DecoderTestBase::DoCopyTexImage2D(
       EXPECT_CALL(*gl_, TexParameteri(target, GL_TEXTURE_SWIZZLE_A, _))
           .Times(testing::AtLeast(1));
     } else {
-      EXPECT_CALL(
-          *gl_, CopyTexImage2D(target, level, translated_internal_format, 0, 0,
-                               width, height, border))
+      EXPECT_CALL(*gl_, CopyTexImage2D(target, level, internal_format, 0, 0,
+                                       width, height, border))
           .Times(1)
           .RetiresOnSaturation();
     }
   } else {
-    EXPECT_CALL(*gl_, CopyTexImage2D(target, level, translated_internal_format,
-                                     0, 0, width, height, border))
+    EXPECT_CALL(*gl_, CopyTexImage2D(target, level, internal_format, 0, 0,
+                                     width, height, border))
         .Times(1)
         .RetiresOnSaturation();
   }
