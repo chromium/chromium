@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
 
+#include "base/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -71,16 +72,49 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
 }
 
-// This is testing that when the SaveAddressProfilePromptOptions has the
-// show_prompt set to true, the bubble should be visible.
+// This is testing that closing all tabs (which effectively destroys the web
+// contents) will trigger the save callback with kIgnored decions if the users
+// hasn't interacted with the prompt already.
 TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
-       BubbleShouldBeVisibleWithShowPrompt) {
+       WebContentsDestroyedInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   controller()->OfferSave(
       profile, /*original_profile=*/nullptr,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       callback.Get());
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  // There is only now tab open, so the active web contents, are the
+  // controller's web contents.
+  content::WebContents* controller_web_contents =
+      tab_strip_model->GetActiveWebContents();
+
+  // Now add another tab, and close the controller tab to make sure the window
+  // remains open. This should destroy the web contents of the controller and
+  // invoke the callback with a decision kIgnored.
+  AddTab(browser(), GURL("http://foo.com/"));
+  EXPECT_EQ(2, tab_strip_model->count());
+  EXPECT_CALL(callback,
+              Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
+                  testing::_));
+  // Close controller tab.
+  EXPECT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
+      tab_strip_model->GetIndexOfWebContents(controller_web_contents),
+      TabStripModel::CloseTypes::CLOSE_USER_GESTURE));
+  EXPECT_EQ(1, tab_strip_model->count());
+}
+
+// This is testing that when the SaveAddressProfilePromptOptions has the
+// show_prompt set to true, the bubble should be visible.
+TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
+       BubbleShouldBeVisibleWithShowPrompt) {
+  AutofillProfile profile = test::GetFullProfile();
+  controller()->OfferSave(
+      profile, /*original_profile=*/nullptr,
+      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
+      /*address_profile_save_prompt_callback=*/base::DoNothing());
+
   // Bubble is visible and active
   EXPECT_TRUE(controller()->GetSaveBubbleView());
   EXPECT_TRUE(controller()->IsBubbleActive());
@@ -91,11 +125,10 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
 TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
        BubbleShouldBeInvisibleWithoutShowPrompt) {
   AutofillProfile profile = test::GetFullProfile();
-  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   controller()->OfferSave(
       profile, /*original_profile=*/nullptr,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = false},
-      callback.Get());
+      /*address_profile_save_prompt_callback=*/base::DoNothing());
   // Bubble is invisible but active
   EXPECT_FALSE(controller()->GetSaveBubbleView());
   EXPECT_TRUE(controller()->IsBubbleActive());

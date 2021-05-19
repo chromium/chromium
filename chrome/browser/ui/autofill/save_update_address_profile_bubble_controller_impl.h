@@ -60,6 +60,7 @@ class SaveUpdateAddressProfileBubbleControllerImpl
 
  protected:
   // AutofillBubbleControllerBase:
+  void WebContentsDestroyed() override;
   PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
 
