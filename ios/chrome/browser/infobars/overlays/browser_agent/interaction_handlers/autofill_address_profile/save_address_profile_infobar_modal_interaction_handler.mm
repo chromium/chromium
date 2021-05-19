@@ -31,16 +31,6 @@ void SaveAddressProfileInfobarModalInteractionHandler::PerformMainAction(
   infobar->RemoveSelf();
 }
 
-void SaveAddressProfileInfobarModalInteractionHandler::InfobarVisibilityChanged(
-    InfoBarIOS* infobar,
-    bool visible) {
-  if (!visible && !infobar->accepted()) {
-    // Inform the delegate that the modal has been dismissed.
-    GetInfoBarDelegate(infobar)->set_modal_is_dismissed_to_true();
-    GetInfoBarDelegate(infobar)->InfoBarDismissed();
-  }
-}
-
 void SaveAddressProfileInfobarModalInteractionHandler::SaveEditedProfile(
     InfoBarIOS* infobar,
     NSDictionary* profileData) {

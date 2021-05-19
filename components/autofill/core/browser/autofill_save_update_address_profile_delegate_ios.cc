@@ -31,7 +31,14 @@ AutofillSaveUpdateAddressProfileDelegateIOS::
       address_profile_save_prompt_callback_(std::move(callback)) {}
 
 AutofillSaveUpdateAddressProfileDelegateIOS::
-    ~AutofillSaveUpdateAddressProfileDelegateIOS() = default;
+    ~AutofillSaveUpdateAddressProfileDelegateIOS() {
+  // If the user has navigated away without saving the modal, then the
+  // |address_profile_save_prompt_callback_| is run here.
+  if (!address_profile_save_prompt_callback_.is_null()) {
+    modal_was_shown_ = false;
+    InfoBarDismissed();
+  }
+}
 
 // static
 AutofillSaveUpdateAddressProfileDelegateIOS*
@@ -117,10 +124,9 @@ bool AutofillSaveUpdateAddressProfileDelegateIOS::Accept() {
 }
 
 void AutofillSaveUpdateAddressProfileDelegateIOS::InfoBarDismissed() {
-  // If the address profile modal dialog is presented, the user will be asked to
-  // save or cancel the address profile. In case the user cancels, then
-  // InfoBarDismissed() will be called.
-  if (modal_is_shown_ && !modal_is_dismissed_)
+  // If the address profile modal dialog is presented, InfoBarDismissed is
+  // called due to BannerVisibilityChanged.
+  if (modal_was_shown_)
     return;
 
   RunSaveAddressProfilePromptCallback(
@@ -183,8 +189,7 @@ void AutofillSaveUpdateAddressProfileDelegateIOS::
   std::move(address_profile_save_prompt_callback_).Run(decision, profile_);
 
   // Reset the modal dialog flags.
-  modal_is_shown_ = false;
-  modal_is_dismissed_ = false;
+  modal_was_shown_ = false;
 }
 
 }  // namespace autofill

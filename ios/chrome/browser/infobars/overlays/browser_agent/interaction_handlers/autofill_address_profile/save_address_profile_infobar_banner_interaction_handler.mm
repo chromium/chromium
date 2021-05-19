@@ -32,15 +32,21 @@ SaveAddressProfileInfobarBannerInteractionHandler::
 void SaveAddressProfileInfobarBannerInteractionHandler::BannerVisibilityChanged(
     InfoBarIOS* infobar,
     bool visible) {
-  if (!visible && !infobar->accepted())
+  if (!visible && !infobar->accepted()) {
     GetInfobarDelegate(infobar)->InfoBarDismissed();
+    if (!GetInfobarDelegate(infobar)->modal_was_shown()) {
+      // Remove the infobar to prevent showing the modal when the user has
+      // cancelled the banner.
+      infobar->RemoveSelf();
+    }
+  }
 }
 
 void SaveAddressProfileInfobarBannerInteractionHandler::ShowModalButtonTapped(
     InfoBarIOS* infobar,
     web::WebState* web_state) {
   // Inform delegate that the modal is shown.
-  GetInfobarDelegate(infobar)->set_modal_is_shown_to_true();
+  GetInfobarDelegate(infobar)->set_modal_was_shown_to_true();
 
   InfobarBannerInteractionHandler::ShowModalButtonTapped(infobar, web_state);
 }

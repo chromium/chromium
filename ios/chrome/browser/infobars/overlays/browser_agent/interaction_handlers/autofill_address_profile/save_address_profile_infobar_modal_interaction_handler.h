@@ -23,7 +23,8 @@ class SaveAddressProfileInfobarModalInteractionHandler
 
   // InfobarModalInteractionHandler:
   void PerformMainAction(InfoBarIOS* infobar) override;
-  void InfobarVisibilityChanged(InfoBarIOS* infobar, bool visible) override;
+  // Prevent the call to InfobarDismissed.
+  void InfobarVisibilityChanged(InfoBarIOS* infobar, bool visible) override {}
 
   // Instructs the handler that the user has edited and then saved the profile.
   virtual void SaveEditedProfile(InfoBarIOS* infobar,
