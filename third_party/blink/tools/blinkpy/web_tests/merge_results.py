@@ -413,9 +413,7 @@ class MergeFilesJSONP(MergeFiles):
         other non-JSON data.
         """
         fd.write(before)
-        fd.write(
-            re.subn('\\s+\n', '\n',
-                    json.dumps(json_data, indent=2, sort_keys=True))[0])
+        fd.write(json.dumps(json_data, separators=(",", ":"), sort_keys=True))
         fd.write(after)
 
 
