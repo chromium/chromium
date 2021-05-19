@@ -2083,6 +2083,10 @@ std::vector<url::Origin> ChildProcessSecurityPolicyImpl::GetIsolatedOrigins(
       if (!matches_profile)
         continue;
 
+      // Do not include origins that only apply to specific BrowsingInstances.
+      if (!isolated_origin_entry.applies_to_future_browsing_instances())
+        continue;
+
       origins.push_back(isolated_origin_entry.origin());
     }
   }

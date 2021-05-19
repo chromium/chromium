@@ -5282,6 +5282,9 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SiteAlreadyRequiresDedicatedProcess) {
   GURL coop_url = https_server()->GetURL(
       "coop.com", "/set-header?Cross-Origin-Opener-Policy: same-origin");
   EXPECT_TRUE(NavigateToURL(shell(), coop_url));
+  // Simulate user activation, which normally triggers COOP isolation for
+  // future BrowsingInstances.
+  EXPECT_TRUE(ExecJs(shell(), "// no-op"));
   EXPECT_EQ(web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
             network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin);
   SiteInstanceImpl* coop_instance =

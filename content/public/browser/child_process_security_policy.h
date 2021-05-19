@@ -325,6 +325,13 @@ class ChildProcessSecurityPolicy {
   // within that particular BrowserContext will be returned (note that this
   // includes both matching per-profile isolated origins as well as globally
   // applicable origins which apply to |browser_context| by definition).
+  //
+  // Origins returned by this function only include origins that would apply to
+  // any future BrowsingInstance (browsing context group).  Origins that were
+  // isolated only in specific BrowsingInstances are not included.  (In
+  // particular, this excludes BrowsingInstance-specific isolated origins for
+  // Origin-Agent-Cluster as well as COOP documents loaded without user
+  // activation.)
   virtual std::vector<url::Origin> GetIsolatedOrigins(
       absl::optional<IsolatedOriginSource> source = absl::nullopt,
       BrowserContext* browser_context = nullptr) = 0;
