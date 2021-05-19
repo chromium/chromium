@@ -30,6 +30,8 @@ class KEYED_SERVICE_EXPORT KeyedService {
   virtual ~KeyedService();
 
   // The first pass is to call Shutdown on a KeyedService.
+  // Shutdown will be called automatically for you. Don't directly invoke this
+  // unless you have a specific reason and understand the implications.
   virtual void Shutdown();
 
  private:
