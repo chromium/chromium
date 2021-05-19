@@ -735,28 +735,6 @@ def make_accessor_functions(cg_context):
     return decls, defs
 
 
-def make_clear_function(cg_context):
-    assert isinstance(cg_context, CodeGenContext)
-
-    func_decl = CxxFuncDeclNode(name="Clear", arg_decls=[], return_type="void")
-
-    func_def = CxxFuncDefNode(name="Clear",
-                              arg_decls=[],
-                              return_type="void",
-                              class_name=cg_context.class_name)
-    func_def.set_base_template_vars(cg_context.template_bindings())
-    body = func_def.body
-
-    for member in cg_context.union_members:
-        if member.is_null:
-            continue
-        clear_expr = member.type_info.clear_member_var_expr(member.var_name)
-        if clear_expr:
-            body.append(TextNode("{};".format(clear_expr)))
-
-    return func_decl, func_def
-
-
 def make_tov8value_function(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
@@ -820,6 +798,28 @@ def make_trace_function(cg_context):
             TextNode("TraceIfNeeded<{}>::Trace(visitor, {});".format(
                 member.type_info.member_t, member.var_name)))
     body.append(TextNode("${base_class_name}::Trace(visitor);"))
+
+    return func_decl, func_def
+
+
+def make_clear_function(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    func_decl = CxxFuncDeclNode(name="Clear", arg_decls=[], return_type="void")
+
+    func_def = CxxFuncDefNode(name="Clear",
+                              arg_decls=[],
+                              return_type="void",
+                              class_name=cg_context.class_name)
+    func_def.set_base_template_vars(cg_context.template_bindings())
+    body = func_def.body
+
+    for member in cg_context.union_members:
+        if member.is_null:
+            continue
+        clear_expr = member.type_info.clear_member_var_expr(member.var_name)
+        if clear_expr:
+            body.append(TextNode("{};".format(clear_expr)))
 
     return func_decl, func_def
 
@@ -912,10 +912,10 @@ def generate_union(union_identifier):
     factory_decls, factory_defs = make_factory_methods(cg_context)
     ctor_decls, ctor_defs = make_constructors(cg_context)
     accessor_decls, accessor_defs = make_accessor_functions(cg_context)
-    clear_func_decls, clear_func_defs = make_clear_function(cg_context)
     tov8value_func_decls, tov8value_func_defs = make_tov8value_function(
         cg_context)
     trace_func_decls, trace_func_defs = make_trace_function(cg_context)
+    clear_func_decls, clear_func_defs = make_clear_function(cg_context)
     name_func_decls, name_func_defs = make_name_function(cg_context)
     member_vars_def = make_member_vars_def(cg_context)
 
@@ -1000,11 +1000,6 @@ def generate_union(union_identifier):
     source_blink_ns.body.append(accessor_defs)
     source_blink_ns.body.append(EmptyNode())
 
-    class_def.public_section.append(clear_func_decls)
-    class_def.public_section.append(EmptyNode())
-    source_blink_ns.body.append(clear_func_defs)
-    source_blink_ns.body.append(EmptyNode())
-
     class_def.public_section.append(tov8value_func_decls)
     class_def.public_section.append(EmptyNode())
     source_blink_ns.body.append(tov8value_func_defs)
@@ -1013,6 +1008,11 @@ def generate_union(union_identifier):
     class_def.public_section.append(trace_func_decls)
     class_def.public_section.append(EmptyNode())
     source_blink_ns.body.append(trace_func_defs)
+    source_blink_ns.body.append(EmptyNode())
+
+    class_def.private_section.append(clear_func_decls)
+    class_def.private_section.append(EmptyNode())
+    source_blink_ns.body.append(clear_func_defs)
     source_blink_ns.body.append(EmptyNode())
 
     class_def.private_section.append(name_func_decls)
