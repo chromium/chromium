@@ -164,6 +164,39 @@ id<GREYMatcher> NoBookmarksLabel() {
   }
 }
 
+// Tests that users data is cleared out when the signed in account disappear and
+// it is a managed account.
+// See crbug.com/1208381
+- (void)testsManagedAccountRemovedFromAnotherGoogleApp {
+  // Sign In |fakeManagedIdentity|.
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeManagedIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  // Add a bookmark after sync is initialized.
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey setupStandardBookmarks];
+
+  // Simulate that the user remove their primary account from another Google
+  // app.
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Open the Bookmarks screen on the Tools menu.
+  [BookmarkEarlGreyUI openBookmarks];
+
+  // Assert that there are no bookmarks.
+  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
+    // The empty background appears in the root directory if the leaf folders
+    // are empty.
+    [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
+  } else {
+    [BookmarkEarlGreyUI openMobileBookmarks];
+    [[EarlGrey selectElementWithMatcher:NoBookmarksLabel()]
+        assertWithMatcher:grey_notNil()];
+  }
+}
+
 // Tests that given two accounts A and B that are available on the device -
 // signing in and out from account A, then signing in to account B, properly
 // identifies the user with account B.

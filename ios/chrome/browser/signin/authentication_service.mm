@@ -387,7 +387,10 @@ void AuthenticationService::SignOut(
     return;
   }
 
-  bool is_managed = IsAuthenticatedIdentityManaged();
+  const bool is_managed = IsAuthenticatedIdentityManaged();
+  // Get first setup complete value before to stop the sync service.
+  const bool is_first_setup_complete =
+      sync_setup_service_->IsFirstSetupComplete();
 
   sync_service_->StopAndClear();
 
@@ -404,8 +407,7 @@ void AuthenticationService::SignOut(
     // With kSimplifySignOutIOS feature, browsing data for managed account needs
     // to be cleared only if sync has started at least once.
     clear_browsing_data =
-        force_clear_browsing_data ||
-        (is_managed && sync_setup_service_->IsFirstSetupComplete());
+        force_clear_browsing_data || (is_managed && is_first_setup_complete);
   } else {
     clear_browsing_data = force_clear_browsing_data || is_managed;
   }
