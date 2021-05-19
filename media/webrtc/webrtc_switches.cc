@@ -20,6 +20,11 @@ const char kAgcStartupMinVolume[] = "agc-startup-min-volume";
 
 namespace features {
 
+// When enabled we will tell WebRTC that we want to use the
+// Windows.Graphics.Capture API based DesktopCapturer, if it is available.
+const base::Feature kWebRtcAllowWgcDesktopCapturer{
+    "AllowWgcDesktopCapturer", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables multichannel capture audio to be processed without downmixing in the
 // WebRTC audio processing module.
 const base::Feature kWebRtcEnableCaptureMultiChannelApm{

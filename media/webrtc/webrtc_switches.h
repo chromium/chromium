@@ -19,6 +19,9 @@ COMPONENT_EXPORT(MEDIA_WEBRTC) extern const char kAgcStartupMinVolume[];
 namespace features {
 
 COMPONENT_EXPORT(MEDIA_WEBRTC)
+extern const base::Feature kWebRtcAllowWgcDesktopCapturer;
+
+COMPONENT_EXPORT(MEDIA_WEBRTC)
 extern const base::Feature kWebRtcEnableCaptureMultiChannelApm;
 
 COMPONENT_EXPORT(MEDIA_WEBRTC)

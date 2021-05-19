@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
@@ -37,6 +38,7 @@
 #include "content/public/common/content_switches.h"
 #include "media/base/video_util.h"
 #include "media/capture/content/capture_resolution_chooser.h"
+#include "media/webrtc/webrtc_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
@@ -517,6 +519,12 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
   std::unique_ptr<webrtc::DesktopCapturer> capturer;
   std::unique_ptr<media::VideoCaptureDevice> result;
 
+#if defined(OS_WIN)
+  options.set_allow_cropping_window_capturer(true);
+  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcDesktopCapturer))
+    options.set_allow_wgc_capturer(true);
+#endif
+
   // For browser tests, to create a fake desktop capturer.
   if (source.id == DesktopMediaID::kFakeId) {
     capturer = std::make_unique<webrtc::FakeDesktopCapturer>();
@@ -554,7 +562,7 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
                                     webrtc::DesktopCaptureOptions()));
 #else
       std::unique_ptr<webrtc::DesktopCapturer> window_capturer =
-          webrtc::CroppingWindowCapturer::CreateCapturer(options);
+          webrtc::DesktopCapturer::CreateWindowCapturer(options);
 #endif
       if (window_capturer && window_capturer->SelectSource(source.id)) {
         window_capturer->FocusOnSelectedSource();
