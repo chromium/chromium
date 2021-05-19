@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -35,7 +36,7 @@ class CallbackReceiverBase {
 
  private:
   bool called_ = false;
-  base::RunLoop* run_loop_;
+  CheckedPtr<base::RunLoop> run_loop_;
 };
 
 }  // namespace internal

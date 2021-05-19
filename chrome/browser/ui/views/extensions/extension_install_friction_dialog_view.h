@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_INSTALL_FRICTION_DIALOG_VIEW_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -41,7 +42,7 @@ class ExtensionInstallFrictionDialogView
   std::unique_ptr<views::StyledLabel> CreateWarningLabel();
   void OnLearnMoreLinkClicked();
 
-  content::PageNavigator* navigator_;
+  CheckedPtr<content::PageNavigator> navigator_;
   base::OnceCallback<void(bool)> callback_;
   bool accepted_ = false;
   bool learn_more_clicked_ = false;

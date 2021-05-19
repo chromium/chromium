@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/public/browser/frame_service_base.h"
 #include "content/public/browser/visibility.h"
@@ -92,7 +93,7 @@ class NavigationPredictor
   ukm::SourceId ukm_source_id_;
 
   // UKM recorder
-  ukm::UkmRecorder* ukm_recorder_ = nullptr;
+  CheckedPtr<ukm::UkmRecorder> ukm_recorder_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

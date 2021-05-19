@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 
@@ -37,7 +38,7 @@ class BASE_EXPORT JSONStringValueSerializer : public base::ValueSerializer {
   bool SerializeInternal(const base::Value& root, bool omit_binary_values);
 
   // Owned by the caller of the constructor.
-  std::string* json_string_;
+  CheckedPtr<std::string> json_string_;
   bool pretty_print_;  // If true, serialization will span multiple lines.
 
   DISALLOW_COPY_AND_ASSIGN(JSONStringValueSerializer);

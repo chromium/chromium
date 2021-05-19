@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -74,7 +75,7 @@ class ProvisionFetcherWrapper : public ProvisionFetcher {
   }
 
  private:
-  ProvisionFetcher* provision_fetcher_;
+  CheckedPtr<ProvisionFetcher> provision_fetcher_;
 };
 
 }  // namespace

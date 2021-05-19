@@ -6,6 +6,7 @@
 #define COMPONENTS_SCHEDULING_METRICS_TOTAL_DURATION_METRIC_REPORTER_H_
 
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,8 +33,8 @@ class COMPONENT_EXPORT(SCHEDULING_METRICS) TotalDurationMetricReporter {
  private:
   absl::optional<base::TimeDelta> reported_value_;
 
-  base::HistogramBase* positive_histogram_;
-  base::HistogramBase* negative_histogram_;
+  CheckedPtr<base::HistogramBase> positive_histogram_;
+  CheckedPtr<base::HistogramBase> negative_histogram_;
 };
 
 }  // namespace scheduling_metrics

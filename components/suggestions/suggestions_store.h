@@ -6,6 +6,7 @@
 #define COMPONENTS_SUGGESTIONS_SUGGESTIONS_STORE_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/clock.h"
 #include "components/suggestions/proto/suggestions.pb.h"
 
@@ -48,9 +49,9 @@ class SuggestionsStore {
 
  private:
   // The pref service used to persist the suggestions data.
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
   // Can be overridden for testing.
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
   DISALLOW_COPY_AND_ASSIGN(SuggestionsStore);
 

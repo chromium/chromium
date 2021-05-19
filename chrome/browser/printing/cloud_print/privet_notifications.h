@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/printing/cloud_print/privet_device_lister.h"
 #include "chrome/browser/printing/cloud_print/privet_http.h"
@@ -89,7 +90,7 @@ class PrivetNotificationsListener  {
 
   void NotifyDeviceRemoved();
 
-  Delegate* const delegate_;
+  const CheckedPtr<Delegate> delegate_;
   std::unique_ptr<PrivetDeviceLister> device_lister_;
   std::unique_ptr<PrivetHTTPAsynchronousFactory> privet_http_factory_;
   DeviceContextMap devices_seen_;
@@ -171,7 +172,7 @@ class PrivetNotificationDelegate : public message_center::NotificationDelegate {
 
   void CloseNotification();
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 };
 
 }  // namespace cloud_print

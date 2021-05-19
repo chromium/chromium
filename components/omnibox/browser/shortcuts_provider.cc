@@ -14,6 +14,7 @@
 
 #include "base/check_op.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
@@ -73,7 +74,7 @@ struct ShortcutMatch {
   // To satisfy |CompareWithDemoteByType<>::operator()|.
   size_t subrelevance = 0;
   GURL stripped_destination_url;
-  const ShortcutsDatabase::Shortcut* shortcut;
+  CheckedPtr<const ShortcutsDatabase::Shortcut> shortcut;
   std::u16string contents;
   AutocompleteMatch::Type type;
 

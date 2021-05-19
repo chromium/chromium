@@ -67,7 +67,7 @@ void ExtensionDevToolsInfoBarDelegate::NotifyExtensionDetached(
   if (iter != delegates.cend()) {
     // Infobar_ was set in Create() which makes the following access safe.
     iter->second->timer_.Start(FROM_HERE, kAutoCloseDelay,
-                               iter->second->infobar_,
+                               iter->second->infobar_.get(),
                                &GlobalConfirmInfoBar::Close);
   }
 }

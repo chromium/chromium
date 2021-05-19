@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/page_info/page_info_ui_delegate.h"
 #include "url/gurl.h"
@@ -41,7 +42,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
       ContentSettingsType type) override;
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   GURL site_url_;
 };
 

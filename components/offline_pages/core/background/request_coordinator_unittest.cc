@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
@@ -399,7 +400,7 @@ class RequestCoordinatorTest : public testing::Test {
   }
 
  protected:
-  ActiveTabInfoStub* active_tab_info_ = nullptr;
+  CheckedPtr<ActiveTabInfoStub> active_tab_info_ = nullptr;
 
  private:
   GetRequestsResult last_get_requests_result_;
@@ -407,9 +408,9 @@ class RequestCoordinatorTest : public testing::Test {
   std::vector<std::unique_ptr<SavePageRequest>> last_requests_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle task_runner_handle_;
-  network::NetworkQualityTracker* network_quality_tracker_;
+  CheckedPtr<network::NetworkQualityTracker> network_quality_tracker_;
   std::unique_ptr<RequestCoordinatorStubTaco> coordinator_taco_;
-  OfflinerStub* offliner_;
+  CheckedPtr<OfflinerStub> offliner_;
   base::WaitableEvent waiter_;
   ObserverStub observer_;
   AddRequestResult expected_add_request_result_;

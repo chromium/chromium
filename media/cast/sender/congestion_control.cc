@@ -20,6 +20,7 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -80,7 +81,7 @@ class AdaptiveCongestionControl final : public CongestionControl {
   base::TimeTicks EstimatedSendingTime(FrameId frame_id,
                                        double estimated_bitrate);
 
-  const base::TickClock* const clock_;  // Not owned by this class.
+  const CheckedPtr<const base::TickClock> clock_;  // Not owned by this class.
   const int max_bitrate_configured_;
   const int min_bitrate_configured_;
   const double max_frame_rate_;

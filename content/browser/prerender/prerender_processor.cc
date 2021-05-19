@@ -19,7 +19,7 @@ PrerenderProcessor::PrerenderProcessor(
       registry_(
           initiator_render_frame_host.delegate()->GetPrerenderHostRegistry()) {
   DCHECK(blink::features::IsPrerender2Enabled());
-  observation_.Observe(registry_);
+  observation_.Observe(registry_.get());
 }
 
 PrerenderProcessor::~PrerenderProcessor() {
