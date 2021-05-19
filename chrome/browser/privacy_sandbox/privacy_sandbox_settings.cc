@@ -228,10 +228,17 @@ base::Time PrivacySandboxSettings::FlocDataAccessibleSince() const {
 }
 
 std::u16string PrivacySandboxSettings::GetFlocIdForDisplay() const {
-  auto floc_id = federated_learning::FlocId::ReadFromPrefs(pref_service_);
+  DCHECK(PrivacySandboxSettingsFunctional());
 
-  if (!floc_id.IsValid())
+  const bool floc_feature_enabled = base::FeatureList::IsEnabled(
+      blink::features::kInterestCohortAPIOriginTrial);
+  if (!IsFlocAllowed() || !floc_feature_enabled)
     return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID);
+
+  // If FLoC is allowed, but the ID is invalid, a new ID must be being computed.
+  auto floc_id = federated_learning::FlocId::ReadFromPrefs(pref_service_);
+  if (!floc_id.IsValid())
+    return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_IN_PROGRESS);
 
   return base::NumberToString16(floc_id.ToUint64());
 }
@@ -286,8 +293,11 @@ std::u16string PrivacySandboxSettings::GetFlocStatusForDisplay() const {
   return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_STATUS_NOT_ACTIVE);
 }
 
-bool PrivacySandboxSettings::IsFlocIdValid() const {
-  return federated_learning::FlocId::ReadFromPrefs(pref_service_).IsValid();
+bool PrivacySandboxSettings::IsFlocIdResettable() const {
+  auto floc_id = federated_learning::FlocId::ReadFromPrefs(pref_service_);
+  const bool floc_feature_enabled = base::FeatureList::IsEnabled(
+      blink::features::kInterestCohortAPIOriginTrial);
+  return floc_feature_enabled && floc_id.IsValid() && IsFlocAllowed();
 }
 
 bool PrivacySandboxSettings::IsConversionMeasurementAllowed(

@@ -104,8 +104,10 @@ class PrivacySandboxSettings : public KeyedService,
   // the effective state of the Finch experiment, and the user's setting.
   std::u16string GetFlocStatusForDisplay() const;
 
-  // Returns whether the user's current FLoC ID is valid.
-  bool IsFlocIdValid() const;
+  // Returns whether the user's current FLoC ID can be reset. This requires that
+  // the FLoC feature be enabled, FLoC be enabled in preferences, and the ID be
+  // valid.
+  bool IsFlocIdResettable() const;
 
   // Determines whether Conversion Measurement is allowable in a particular
   // context. Should be called at both impression & conversion. At each of these

@@ -896,6 +896,12 @@ TEST_F(PrivacySandboxSettingsTest, FlocDataAccessibleSince) {
 TEST_F(PrivacySandboxSettingsTest, GetFlocIdForDisplay) {
   // Check that the cohort identifier is correctly converted to a string when
   // available.
+  feature_list()->InitWithFeatures(
+      {blink::features::kInterestCohortAPIOriginTrial}, {});
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, true);
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxApisEnabled, true);
   federated_learning::FlocId floc_id(123456, base::Time(), base::Time::Now(),
                                      /*sorting_lsh_version=*/0);
   floc_id.SaveToPrefs(profile()->GetTestingPrefService());
@@ -903,8 +909,32 @@ TEST_F(PrivacySandboxSettingsTest, GetFlocIdForDisplay) {
   EXPECT_EQ(std::u16string(u"123456"),
             privacy_sandbox_settings()->GetFlocIdForDisplay());
 
+  // An invalid FLoC id while FLoc is enabled should be interpreted as being
+  // calculated.
   floc_id.InvalidateIdAndSaveToPrefs(profile()->GetTestingPrefService());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_IN_PROGRESS),
+            privacy_sandbox_settings()->GetFlocIdForDisplay());
 
+  // If the FLoC preference, the Sandbox Preference, or the feature is disabled,
+  // the invalid string should be returned.
+  feature_list()->Reset();
+  feature_list()->InitWithFeatures(
+      {}, {blink::features::kInterestCohortAPIOriginTrial});
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID),
+            privacy_sandbox_settings()->GetFlocIdForDisplay());
+
+  feature_list()->Reset();
+  feature_list()->InitWithFeatures(
+      {blink::features::kInterestCohortAPIOriginTrial}, {});
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxApisEnabled, false);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID),
+            privacy_sandbox_settings()->GetFlocIdForDisplay());
+
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxApisEnabled, true);
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, false);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID),
             privacy_sandbox_settings()->GetFlocIdForDisplay());
 }
@@ -1032,6 +1062,44 @@ TEST_F(PrivacySandboxSettingsTest, GetFlocStatusForDisplay) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_PRIVACY_SANDBOX_FLOC_STATUS_ELIGIBLE_NOT_ACTIVE),
             privacy_sandbox_settings()->GetFlocStatusForDisplay());
+}
+
+TEST_F(PrivacySandboxSettingsTest, IsFlocIdResettable) {
+  // Check that if the FLoC id is valid and FLoC is functional, then it is also
+  // resettable.
+  feature_list()->InitWithFeatures(
+      {blink::features::kInterestCohortAPIOriginTrial}, {});
+  federated_learning::FlocId floc_id(123456, base::Time(), base::Time::Now(),
+                                     /*sorting_lsh_version=*/0);
+  floc_id.SaveToPrefs(profile()->GetTestingPrefService());
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, true);
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxApisEnabled, true);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocIdResettable());
+
+  feature_list()->Reset();
+  feature_list()->InitWithFeatures(
+      {}, {blink::features::kInterestCohortAPIOriginTrial});
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocIdResettable());
+
+  feature_list()->Reset();
+  feature_list()->InitWithFeatures(
+      {blink::features::kInterestCohortAPIOriginTrial}, {});
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, false);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocIdResettable());
+
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, true);
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, false);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocIdResettable());
+
+  floc_id.InvalidateIdAndSaveToPrefs(profile()->GetTestingPrefService());
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, true);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocIdResettable());
 }
 
 TEST_F(PrivacySandboxSettingsTest, ReconciliationOutcome) {

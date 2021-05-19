@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-  <message name="IDS_PRIVACY_SANDBOX_FLOC_INVALID" desc="A message shown in place of the user's FLoC ID if the ID is invalid for any reason, such as not enough data to compute it">
-    ID currently invalid
+  <message name="IDS_PRIVACY_SANDBOX_FLOC_INVALID" desc="A message shown in place of the user's FLoC ID if the ID is invalid and will not be recomputed">
+    None
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_FLOC_IN_PROGRESS" desc="A message shown in place of the user's FLoC ID if the ID is currently being calculated">
+    Calculating...
   </message>
   <message name="IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE" desc="Description of how long until the user's FLoC ID is recomputed, in days.">
     {NUM_DAYS, plural,
