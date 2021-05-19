@@ -16,6 +16,7 @@
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/translate/translate_app_interface.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
@@ -405,9 +406,8 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(feedTitle),
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_accessibilityID(
-                               kContentSuggestionsCollectionIdentifier)]
-      assertWithMatcher:grey_notNil()];
+      onElementWithMatcher:grey_accessibilityID(kNTPCollectionViewIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   SetPolicy(false, policy::key::kNTPContentSuggestionsEnabled);
 

@@ -232,6 +232,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser:utils",
     "//ios/chrome/browser/translate:eg_test_support+eg2",
     "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/ntp:constants",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings/autofill:constants",
