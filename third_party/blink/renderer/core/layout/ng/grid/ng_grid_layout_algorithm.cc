@@ -2973,6 +2973,12 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
     // precedence. Returns 'true' if |a| < |b| and 'false' otherwise.
     auto IsBeforeInGridOrder = [&](const GridArea& a,
                                    const GridArea& b) -> bool {
+      // Do not consider items that span tracks for container baselines.
+      if (a.rows.IntegerSpan() > 1 || a.columns.IntegerSpan() > 1 ||
+          b.rows.IntegerSpan() > 1 || b.columns.IntegerSpan() > 1) {
+        return false;
+      }
+
       return (a.rows < b.rows) || (a.rows == b.rows && (a.columns < b.columns));
     };
 
@@ -2994,9 +3000,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
   // Propagate the baseline from the appropriate child.
   // TODO(kschmi): Synthesize baseline from alignment context if no grid items.
   if (!grid_items.IsEmpty()) {
-    if (alignment_baseline &&
-        (!fallback_baseline || alignment_baseline->resolved_position.rows <=
-                                   fallback_baseline->resolved_position.rows)) {
+    if (alignment_baseline) {
       container_builder_.SetBaseline(alignment_baseline->baseline);
     } else {
       DCHECK(fallback_baseline);

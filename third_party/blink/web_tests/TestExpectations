@@ -4008,6 +4008,7 @@ crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-alignment-implies-siz
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-alignment-implies-size-change-031.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-alignment-implies-size-change-035.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-alignment-implies-size-change-036.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-baseline-004.html [ Failure ]
 crbug.com/941987 external/wpt/css/css-grid/alignment/grid-baseline-align-cycles-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-self-alignment-positioned-items-with-margin-border-padding-016.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-001.html [ Failure ]
@@ -4115,6 +4116,7 @@ virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-alignment-implie
 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-alignment-implies-size-change-031.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-alignment-implies-size-change-035.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-alignment-implies-size-change-036.html [ Pass ]
+virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-baseline-004.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-baseline-align-cycles-001.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-001.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-002.html [ Pass ]
@@ -4148,7 +4150,6 @@ virtual/layout-ng-grid/fast/css-grid-layout/maximize-tracks-definite-indefinite-
 
 ### Tests failing with LayoutNGGrid enabled:
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-abspos-staticpos-align-self-safe-001.html [ Failure ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-baseline-004.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-baseline-align-001.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-baseline-justify-001.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-column-axis-self-baseline-synthesized-001.html [ Failure ]
