@@ -22,6 +22,7 @@ js_type_check("closure_compile_module") {
     ":diagnostics_utils",
     ":ethernet_info",
     ":fake_data",
+    ":fake_input_data_provider",
     ":fake_network_health_provider",
     ":fake_system_data_provider",
     ":fake_system_routine_controller",
@@ -137,6 +138,13 @@ js_library("fake_data") {
   deps = [ ":diagnostics_types" ]
 }
 
+js_library("fake_input_data_provider") {
+  deps = [
+    "//ash/content/common/resources:fake_method_resolver",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
 js_library("fake_network_health_provider") {
   deps = [
     "//ash/content/common/resources:fake_observables",
@@ -180,6 +188,7 @@ js_library("mojo_interface_provider") {
   deps = [
     ":diagnostics_types",
     ":fake_data",
+    ":fake_input_data_provider",
     ":fake_network_health_provider",
     ":fake_system_data_provider",
     ":fake_system_routine_controller",

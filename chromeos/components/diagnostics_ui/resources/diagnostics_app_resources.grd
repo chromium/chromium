@@ -25,11 +25,13 @@
       <include name="IDR_DIAGNOSTICS_DATA_POINT_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/data_point.js" resource_path="data_point.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_ETHERNET_INFO_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/ethernet_info.js" resource_path="ethernet_info.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_FAKE_DATA_JS" file="fake_data.js" type="BINDATA"/>
+      <include name="IDR_DIAGNOSTICS_FAKE_INPUT_DATA_PROVIDER_JS" file="fake_input_data_provider.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_FAKE_NETWORK_HEALTH_PROVIDER_JS" file="fake_network_health_provider.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_FAKE_SYSTEM_DATA_PROVIDER_JS" file="fake_system_data_provider.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_FAKE_SYSTEM_ROUTINE_CONTROLLER_JS" file="fake_system_routine_controller.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_FONTS_CSS_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/diagnostics_fonts_css.js" resource_path="diagnostics_fonts_css.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_ICONS_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/icons.js" resource_path="icons.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_DIAGNOSTICS_INPUT_DATA_PROVIDER_MOJO_LITE_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/mojom/input_data_provider.mojom-lite.js" resource_path="input_data_provider.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_DIAGNOSTICS_MEMORY_CARD_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/memory_card.js" resource_path="memory_card.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_MOJO_INTERFACE_PROVIDER_JS" file="mojo_interface_provider.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_MOJO_UTILS_JS" file="mojo_utils.js" type="BINDATA"/>

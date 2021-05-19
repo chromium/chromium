@@ -380,3 +380,40 @@ export let NetworkType = {
   kEthernet: 1,
   kWiFi: 2,
 };
+
+/**
+ * Type alias for ConnectionType.
+ * @typedef {chromeos.diagnostics.mojom.ConnectionType}
+ */
+export let ConnectionType;
+
+/**
+ * Type alias for KeyboardInfo.
+ * @typedef {chromeos.diagnostics.mojom.KeyboardInfo}
+ */
+export let KeyboardInfo;
+
+/**
+ * Type alias for TouchDeviceType.
+ * @typedef {chromeos.diagnostics.mojom.TouchDeviceType}
+ */
+export let TouchDeviceType;
+
+/**
+ * Type alias for TouchDeviceInfo.
+ * @typedef {chromeos.diagnostics.mojom.TouchDeviceInfo}
+ */
+export let TouchDeviceInfo;
+
+/**
+ * Type alias for the the response from InputDataProvider.GetConnectedDevices.
+ * @typedef {{keyboards: !Array<!KeyboardInfo>,
+ *            touchDevices: !Array<!TouchDeviceInfo>}}
+ */
+export let GetConnectedDevicesResponse;
+
+/**
+ * Type alias for InputDataProviderInterface.
+ * @typedef {chromeos.diagnostics.mojom.InputDataProviderInterface}
+ */
+export let InputDataProviderInterface;
