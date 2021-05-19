@@ -6,15 +6,17 @@
 <link rel="import" href="../../../cr_elements/hidden_style_css.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 
 <dom-module id="setup-loading-page">
   <template>
     <style include="iron-flex cr-hidden-style">
-      paper-spinner-lite {
-        height: 32px;
-        margin-bottom: 8px;
-        width: 32px;
+      #animationContainer {
+        display: flex;
+        height: 216px;
+        justify-content: center;
+        margin-bottom: 30px;
+        margin-top: 24px;
       }
 
       #simDetectError {
@@ -26,20 +28,20 @@
         width: 100%;
       }
 
-      #networkConnectionMessage {
-        text-align: center;
+      #pageBody {
+        height: 222px;
       }
     </style>
-    <base-page title="[[getTitle_(state)]]"
-        message="[[getMessage_(state)]]"
-        message-icon="[[getMessageIcon_(state)]]">
-      <div slot="page-body" class="layout vertical center-center">
-        <paper-spinner-lite active hidden$="[[shouldShowSimDetectError_(state)]]">
-        </paper-spinner-lite>
-        <div id="networkConnectionMessage" hidden$="[[shouldShowSimDetectError_(state)]]" aria-live="polite">
-          [[loadingMessage]]
+    <base-page title="[[loadingTitle]]" message="[[loadingMessage]]">
+      <div slot="page-body" id="pageBody" class="layout vertical center-center">
+        <template is="dom-if" if="[[!isSimDetectError]]" restamp>
+          <div id="animationContainer">
+            <cr-lottie id="spinner" animation-url="spinner.json" autoplay>
+            </cr-lottie>
+          </div>
+        </template>
+        <div id="simDetectError" hidden$="[[!isSimDetectError]]">
         </div>
-        <div id="simDetectError" hidden$="[[!shouldShowSimDetectError_(state)]]"></div>
       </div>
     </base-page>
   </template>

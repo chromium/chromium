@@ -141,6 +141,7 @@ js_library("setup_loading_page.m") {
   deps = [
     ":base_page.m",
     ":cellular_setup_delegate.m",
+    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
     "//ui/webui/resources/js:assert.m",
   ]
   extra_deps = [ ":setup_loading_page_module" ]

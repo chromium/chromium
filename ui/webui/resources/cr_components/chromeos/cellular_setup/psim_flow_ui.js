@@ -576,17 +576,28 @@ cr.define('cellularSetup', function() {
                               PSimUIState.ACTIVATION_FAILURE;
     },
 
-    /**
-     * @return {LoadingPageState}
-     * @private
-     */
-    getLoadingPageState_() {
+    /** @return {string} */
+    getLoadingMessage_() {
       if (this.state_ === PSimUIState.TIMEOUT_START_ACTIVATION) {
-        return LoadingPageState.SIM_DETECT_ERROR;
+        return this.i18n('simDetectPageErrorMessage');
       } else if (this.state_ === PSimUIState.FINAL_TIMEOUT_START_ACTIVATION) {
-        return LoadingPageState.FINAL_SIM_DETECT_ERROR;
+        return this.i18n('simDetectPageFinalErrorMessage');
       }
-      return LoadingPageState.LOADING;
+      return this.i18n('establishNetworkConnectionMessage');
+    },
+
+    /** @return {boolean} */
+    isSimDetectError_() {
+      return this.state_ === PSimUIState.TIMEOUT_START_ACTIVATION ||
+          this.state_ === PSimUIState.FINAL_TIMEOUT_START_ACTIVATION;
+    },
+
+    /** @return {string} */
+    getLoadingTitle_() {
+      if (this.delegate.shouldShowPageTitle() && this.isSimDetectError_()) {
+        return this.i18n('simDetectPageErrorTitle');
+      }
+      return '';
     },
   });
 

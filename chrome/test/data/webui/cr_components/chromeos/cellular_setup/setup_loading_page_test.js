@@ -8,50 +8,30 @@
 
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertFalse, assertTrue} from '../../../chai_assert.js';
-// #import {LoadingPageState} from 'chrome://resources/cr_components/chromeos/cellular_setup/setup_loading_page.m.js';
-// #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
 // clang-format on
 
 suite('CrComponentsSetupLoadingPageTest', function() {
-  let simDetectPage;
+  let setupLoadingPage;
   let basePage;
-  let messageIcon;
 
   setup(function() {
-    simDetectPage = document.createElement('setup-loading-page');
-    simDetectPage.delegate = new cellular_setup.FakeCellularSetupDelegate();
-    document.body.appendChild(simDetectPage);
+    setupLoadingPage = document.createElement('setup-loading-page');
+    document.body.appendChild(setupLoadingPage);
     Polymer.dom.flush();
 
-    basePage = simDetectPage.$$('base-page');
+    basePage = setupLoadingPage.$$('base-page');
     assertTrue(!!basePage);
-    messageIcon = basePage.$$('iron-icon');
-    assertTrue(!!messageIcon);
   });
 
-  test('No message is shown', function() {
-    simDetectPage.state = LoadingPageState.LOADING;
-    assertFalse(!!basePage.message);
-    assertTrue(messageIcon.hidden);
-  });
+  test('Loading animation and error graphic shown correctly', function() {
+    setupLoadingPage.isSimDetectError = false;
+    Polymer.dom.flush();
+    assertTrue(!!setupLoadingPage.$$('#animationContainer'));
+    assertTrue(setupLoadingPage.$$('#simDetectError').hidden);
 
-  test('Warning message is shown', function() {
-    simDetectPage.state = LoadingPageState.CELLULAR_DISCONNECT_WARNING;
-    assertEquals(basePage.message, simDetectPage.i18n('eSimConnectionWarning'));
-    assertFalse(messageIcon.hidden);
-  });
-
-  test('Retry error message is shown', function() {
-    simDetectPage.state = LoadingPageState.SIM_DETECT_ERROR;
-    assertEquals(
-        basePage.message, simDetectPage.i18n('simDetectPageErrorMessage'));
-    assertTrue(messageIcon.hidden);
-  });
-
-  test('Final error message is shown', function() {
-    simDetectPage.state = LoadingPageState.FINAL_SIM_DETECT_ERROR;
-    assertEquals(
-        basePage.message, simDetectPage.i18n('simDetectPageFinalErrorMessage'));
-    assertTrue(messageIcon.hidden);
+    setupLoadingPage.isSimDetectError = true;
+    Polymer.dom.flush();
+    assertFalse(!!setupLoadingPage.$$('#animationContainer'));
+    assertFalse(setupLoadingPage.$$('#simDetectError').hidden);
   });
 });

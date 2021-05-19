@@ -2,19 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @enum {number} */
-/* #export */ const LoadingPageState = {
-  LOADING: 1,
-  SIM_DETECT_ERROR: 2,
-  FINAL_SIM_DETECT_ERROR: 3,
-  CELLULAR_DISCONNECT_WARNING: 4,
-};
-
 /**
- * Loading subpage in Cellular Setup flow. This element contains image
- * asset and description to indicate that a SIM detection or eSIM profiles
- * loading is in progress. It can show a 'detecting sim' error or a 'cellular
- * disconnection' warning depending on its state.
+ * Loading subpage in Cellular Setup flow that shows an in progress operation or
+ * an error. This element contains error image asset and loading animation.
  */
 Polymer({
   is: 'setup-loading-page',
@@ -22,15 +12,6 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
-    /** @type {!cellular_setup.CellularSetupDelegate} */
-    delegate: Object,
-
-    /** @type {!LoadingPageState} */
-    state: {
-      type: Object,
-      value: LoadingPageState.LOADING,
-    },
-
     /**
      * Message displayed with spinner when in LOADING state.
      */
@@ -38,61 +19,22 @@ Polymer({
       type: String,
       value: '',
     },
-  },
 
-  /**
-   * @param {LoadingPageState} state
-   * @return {?string}
-   * @private
-   */
-  getTitle_(state) {
-    if (this.delegate.shouldShowPageTitle() &&
-        state === LoadingPageState.SIM_DETECT_ERROR) {
-      return this.i18n('simDetectPageErrorTitle');
-    }
-    return null;
-  },
+    /**
+     * Title for page if needed.
+     * @type {?string}
+     */
+    loadingTitle: {
+      type: Object,
+      value: '',
+    },
 
-  /**
-   * @param {LoadingPageState} state
-   * @return {string}
-   * @private
-   */
-  getMessage_(state) {
-    switch (state) {
-      case LoadingPageState.SIM_DETECT_ERROR:
-        return this.i18n('simDetectPageErrorMessage');
-      case LoadingPageState.FINAL_SIM_DETECT_ERROR:
-        return this.i18n('simDetectPageFinalErrorMessage');
-      case LoadingPageState.CELLULAR_DISCONNECT_WARNING:
-        return this.i18n('eSimConnectionWarning');
-      case LoadingPageState.LOADING:
-        return '';
-      default:
-        assertNotReached();
-    }
-  },
-
-  /**
-   * @param {LoadingPageState} state
-   * @return {string}
-   * @private
-   */
-  getMessageIcon_(state) {
-    if (state === LoadingPageState.CELLULAR_DISCONNECT_WARNING) {
-      return 'info';
-    }
-
-    return '';
-  },
-
-  /**
-   * @param {LoadingPageState} state
-   * @return {boolean}
-   * @private
-   */
-  shouldShowSimDetectError_(state) {
-    return state === LoadingPageState.SIM_DETECT_ERROR ||
-        state === LoadingPageState.FINAL_SIM_DETECT_ERROR;
+    /**
+     * Displays a sim detect error graphic if true.
+     */
+    isSimDetectError: {
+      type: Boolean,
+      value: false,
+    },
   },
 });

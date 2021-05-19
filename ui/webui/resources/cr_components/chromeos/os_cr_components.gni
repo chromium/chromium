@@ -49,7 +49,6 @@ cr_components_chromeos_auto_imports = [
   "ui/webui/resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.html|setCellularSetupRemoteForTesting,getCellularSetupRemote,setESimManagerRemoteForTesting,getESimManagerRemote,observeESimManager",
   "ui/webui/resources/cr_components/chromeos/cellular_setup/esim_manager_utils.html|getPendingESimProfiles,getNonPendingESimProfiles,getNumESimProfiles,getEuicc,getESimProfile,getESimProfileProperties",
   "ui/webui/resources/cr_components/chromeos/cellular_setup/esim_manager_listener_behavior.html|ESimManagerListenerBehavior",
-  "ui/webui/resources/cr_components/chromeos/cellular_setup/setup_loading_page.html|LoadingPageState",
   "ui/webui/resources/cr_components/chromeos/multidevice_setup/multidevice_setup_browser_proxy.html|BrowserProxy,BrowserProxyImpl",
   "ui/webui/resources/cr_components/chromeos/multidevice_setup/mojo_api.html|MojoInterfaceProvider,MojoInterfaceProviderImpl",
   "ui/webui/resources/cr_components/chromeos/multidevice_setup/multidevice_setup_delegate.html|MultiDeviceSetupDelegate",

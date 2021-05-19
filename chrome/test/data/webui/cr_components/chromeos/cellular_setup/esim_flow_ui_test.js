@@ -17,7 +17,6 @@
 // #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-// #import {LoadingPageState} from 'chrome://resources/cr_components/chromeos/cellular_setup/setup_loading_page.m.js';
 // #import {MockMetricsPrivate} from './mock_metrics_private.m.js';
 // clang-format on
 
@@ -752,6 +751,10 @@ suite('CrComponentsEsimFlowUiTest', function() {
   test(
       'Show cellular disconnect warning if connected to pSIM network',
       async function() {
+        assertEquals(
+            profileLoadingPage.loadingMessage,
+            eSimPage.i18n('eSimProfileDetectMessage'));
+
         const pSimNetwork = OncMojo.getDefaultNetworkState(
             chromeos.networkConfig.mojom.NetworkType.kCellular, 'cellular');
         pSimNetwork.connectionState =
@@ -762,8 +765,9 @@ suite('CrComponentsEsimFlowUiTest', function() {
         await flushAsync();
 
         assertEquals(
-            profileLoadingPage.state,
-            LoadingPageState.CELLULAR_DISCONNECT_WARNING);
+            profileLoadingPage.loadingMessage,
+            eSimPage.i18n(
+                'eSimProfileDetectDuringActiveCellularConnectionMessage'));
 
         // Disconnect from the network.
         networkConfigRemote.removeNetworkForTest(pSimNetwork);
@@ -771,8 +775,9 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
         // The warning should still be showing.
         assertEquals(
-            profileLoadingPage.state,
-            LoadingPageState.CELLULAR_DISCONNECT_WARNING);
+            profileLoadingPage.loadingMessage,
+            eSimPage.i18n(
+                'eSimProfileDetectDuringActiveCellularConnectionMessage'));
       });
 
   test('Show final page with error if no EUICC', async function() {

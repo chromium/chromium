@@ -30,9 +30,7 @@
     <iron-pages attr-for-selected="id"
         selected="[[selectedESimPageName_]]">
       <setup-loading-page id="profileLoadingPage"
-          delegate="[[delegate]]"
-          loading-message="[[i18n('eSimProfileDetectMessage')]]"
-          state="[[getLoadingPageState_(hasHadActiveCellularNetwork_)]]">
+          loading-message="[[getLoadingMessage_(hasHadActiveCellularNetwork_)]]">
       </setup-loading-page>
       <profile-discovery-list-page id="profileDiscoveryPage"
           pending-profiles="[[pendingProfiles_]]"

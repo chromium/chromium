@@ -671,14 +671,11 @@ cr.define('cellular_setup', function() {
           this.state_ === ESimUiState.PROFILE_SELECTION_INSTALLING;
     },
 
-    /**
-     * @param {boolean} hasActiveCellularNetwork
-     * @private
-     */
-    getLoadingPageState_(hasActiveCellularNetwork) {
-      return hasActiveCellularNetwork ?
-          LoadingPageState.CELLULAR_DISCONNECT_WARNING :
-          LoadingPageState.LOADING;
+    /** @private */
+    getLoadingMessage_() {
+      return this.hasHadActiveCellularNetwork_ ?
+          this.i18n('eSimProfileDetectDuringActiveCellularConnectionMessage') :
+          this.i18n('eSimProfileDetectMessage');
     },
 
     /**
