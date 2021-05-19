@@ -110,6 +110,13 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   int32_t encoder_set_bitrate_;
   VideoCodecProfile h264_profile_;
 
+  // If True, the encoder fails initialization if setting of session's property
+  // kVTCompressionPropertyKey_MaxFrameDelayCount returns an error.
+  // Encoder can work even after if MaxFrameDelayCount fails, but it'll
+  // have larger latency on low resolutions, and it's bad for RTC.
+  // Context: https://crbug.com/1195177 https://crbug.com/webrtc/7304
+  bool require_low_delay_ = true;
+
   // Bitrate adjuster used to fix VideoToolbox's inconsistent bitrate issues.
   webrtc::BitrateAdjuster bitrate_adjuster_;
 

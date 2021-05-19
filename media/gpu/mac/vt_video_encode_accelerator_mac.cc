@@ -166,6 +166,7 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
   frame_rate_ = kMaxFrameRateNumerator / kMaxFrameRateDenominator;
   initial_bitrate_ = config.initial_bitrate;
   bitstream_buffer_size_ = config.input_visible_size.GetArea();
+  require_low_delay_ = config.require_low_delay;
 
   if (!encoder_thread_.Start()) {
     DLOG(ERROR) << "Failed spawning encoder thread.";
@@ -560,10 +561,19 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession() {
       kVTCompressionPropertyKey_MaxKeyFrameInterval, 7200);
   rv &= session_property_setter.Set(
       kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration, 240);
-  rv &=
+  DLOG_IF(ERROR, !rv) << " Setting session property failed.";
+
+  // Setting MaxFrameDelayCount fails on low resolutions and arm64 macs,
+  // but we can use accelerated encoder anyway. See: crbug.com/1195177
+  bool delay_count_rv =
       session_property_setter.Set(kVTCompressionPropertyKey_MaxFrameDelayCount,
                                   static_cast<int>(kNumInputBuffers));
-  DLOG_IF(ERROR, !rv) << " Setting session property failed.";
+  if (!delay_count_rv) {
+    DLOG(ERROR) << " Setting frame delay count failed.";
+    if (require_low_delay_)
+      return false;
+  }
+
   return rv;
 }
 

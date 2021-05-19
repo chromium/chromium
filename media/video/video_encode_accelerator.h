@@ -227,6 +227,12 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // empty, VideoEncodeAccelerator should refer the width, height, bitrate and
     // etc. of |spatial_layers|.
     std::vector<SpatialLayer> spatial_layers;
+
+    // Currently it's Mac only! This flag forces Mac encoder to enforce low
+    // latency mode. Initialize() will fail if the system can't do it for some
+    // reason. See VTVideoEncodeAccelerator::require_low_delay_ for more
+    // details.
+    bool require_low_delay = true;
   };
 
   // Interface for clients that use VideoEncodeAccelerator. These callbacks will

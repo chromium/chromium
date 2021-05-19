@@ -101,6 +101,7 @@ struct VideoEncodeAcceleratorConfig {
   bool has_storage_type;  // Whether or not config has storage type config
   ContentType content_type;
   array<SpatialLayer> spatial_layers;
+  bool require_low_delay;
 };
 
 interface VideoEncodeAccelerator {

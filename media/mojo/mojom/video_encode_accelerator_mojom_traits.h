@@ -304,6 +304,11 @@ struct StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
     return input.spatial_layers;
   }
 
+  static bool require_low_delay(
+      const media::VideoEncodeAccelerator::Config& input) {
+    return input.require_low_delay;
+  }
+
   static bool Read(media::mojom::VideoEncodeAcceleratorConfigDataView input,
                    media::VideoEncodeAccelerator::Config* output);
 };

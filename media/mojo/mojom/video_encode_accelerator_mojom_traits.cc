@@ -292,6 +292,8 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
       input_format, input_visible_size, output_profile, input.initial_bitrate(),
       initial_framerate, gop_length, h264_output_level, is_constrained_h264,
       storage_type, content_type, spatial_layers);
+
+  output->require_low_delay = input.require_low_delay();
   return true;
 }
 
