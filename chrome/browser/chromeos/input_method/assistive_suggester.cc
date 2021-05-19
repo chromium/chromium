@@ -25,8 +25,9 @@ namespace chromeos {
 
 namespace {
 
-using TextSuggestion = ::chromeos::ime::TextSuggestion;
-using TextSuggestionType = ::chromeos::ime::TextSuggestionType;
+using ::chromeos::ime::TextSuggestion;
+using ::chromeos::ime::TextSuggestionMode;
+using ::chromeos::ime::TextSuggestionType;
 
 const char kMaxTextBeforeCursorLength = 50;
 
@@ -222,12 +223,29 @@ bool IsAllowedUrlOrAppForEmojiSuggestion() {
          IsAllowedApp(kAllowedAppsForEmojiSuggester);
 }
 
-bool ContainsMultiWordSuggestions(
-    const std::vector<TextSuggestion>& suggestions) {
+bool IsTopResultMultiWord(const std::vector<TextSuggestion>& suggestions) {
   if (suggestions.empty())
     return false;
   // There should only ever be one multi word suggestion given if any.
   return suggestions[0].type == TextSuggestionType::kMultiWord;
+}
+
+void RecordSuggestionsMatch(const std::vector<TextSuggestion>& suggestions) {
+  if (suggestions.empty())
+    return;
+
+  auto top_result = suggestions[0];
+  if (top_result.type != TextSuggestionType::kMultiWord)
+    return;
+
+  switch (top_result.mode) {
+    case TextSuggestionMode::kCompletion:
+      RecordAssistiveMatch(AssistiveType::kMultiWordCompletion);
+      return;
+    case TextSuggestionMode::kPrediction:
+      RecordAssistiveMatch(AssistiveType::kMultiWordPrediction);
+      return;
+  }
 }
 
 }  // namespace
@@ -313,6 +331,9 @@ bool AssistiveSuggester::IsActionEnabled(AssistiveType action) {
       break;
     case AssistiveType::kEmoji:
       return IsEmojiSuggestAdditionEnabled();
+    case AssistiveType::kMultiWordCompletion:
+    case AssistiveType::kMultiWordPrediction:
+      return IsMultiWordSuggestEnabled();
     default:
       break;
   }
@@ -372,15 +393,20 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
 
 void AssistiveSuggester::OnExternalSuggestionsUpdated(
     const std::vector<TextSuggestion>& suggestions) {
+  if (!IsMultiWordSuggestEnabled())
+    return;
+
+  RecordSuggestionsMatch(suggestions);
+
   if (current_suggester_) {
     current_suggester_->OnExternalSuggestionsUpdated(suggestions);
     return;
   }
 
-  if (IsMultiWordSuggestEnabled() &&
-      ContainsMultiWordSuggestions(suggestions)) {
+  if (IsTopResultMultiWord(suggestions)) {
     current_suggester_ = &multi_word_suggester_;
     current_suggester_->OnExternalSuggestionsUpdated(suggestions);
+    RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
   }
 }
 

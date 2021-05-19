@@ -16,25 +16,29 @@
 
 namespace chromeos {
 
+using ::chromeos::ime::TextSuggestion;
+using ::chromeos::ime::TextSuggestionMode;
+using ::chromeos::ime::TextSuggestionType;
+
 class AssistiveSuggesterTest : public testing::Test {
  protected:
   AssistiveSuggesterTest() { profile_ = std::make_unique<TestingProfile>(); }
 
   void SetUp() override {
-    base::HistogramTester histogram_tester;
     engine_ = std::make_unique<InputMethodEngine>();
     assistive_suggester_ =
         std::make_unique<AssistiveSuggester>(engine_.get(), profile_.get());
-    histogram_tester.ExpectUniqueSample(
+    histogram_tester_.ExpectUniqueSample(
         "InputMethod.Assistive.UserPref.PersonalInfo", true, 1);
-    histogram_tester.ExpectUniqueSample("InputMethod.Assistive.UserPref.Emoji",
-                                        true, 1);
+    histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.UserPref.Emoji",
+                                         true, 1);
   }
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<AssistiveSuggester> assistive_suggester_;
   std::unique_ptr<InputMethodEngine> engine_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(AssistiveSuggesterTest,
@@ -140,6 +144,28 @@ TEST_F(AssistiveSuggesterTest,
                              chromeos::features::kAssistMultiWord});
 
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
+}
+
+TEST_F(AssistiveSuggesterTest, RecordsCoverageForMultiWordCompletion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistMultiWord},
+      /*disabled_features=*/{chromeos::features::kEmojiSuggestAddition,
+                             chromeos::features::kAssistPersonalInfo});
+
+  // TODO(crbug/1146266): Add prediction case once prediction is supported
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "some text"},
+  };
+
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Match",
+                                       AssistiveType::kMultiWordCompletion, 1);
+  histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Coverage",
+                                       AssistiveType::kMultiWordCompletion, 1);
 }
 
 }  // namespace chromeos
