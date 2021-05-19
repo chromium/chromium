@@ -61,10 +61,6 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   // Saves the screencast including metadata.
   void SaveScreencast(const base::FilePath& saved_video_path);
 
-  // Invoked when record button is pressed.
-  void OnRecordButtonPressed();
-  void OnStopRecordButtonPressed();
-
   // Invoked when laser pointer button is pressed.
   void OnLaserPointerPressed();
   // Invoked when marker button is pressed.

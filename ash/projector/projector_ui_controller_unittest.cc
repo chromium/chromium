@@ -180,16 +180,13 @@ TEST_F(ProjectorUiControllerTest, ClearAllMarkers) {
 TEST_F(ProjectorUiControllerTest, RecordingState) {
   controller_->ShowToolbar();
   ProjectorBarView* bar_view_ = controller_->projector_bar_view();
-  EXPECT_TRUE(bar_view_->IsRecordButtonVisible());
   EXPECT_FALSE(bar_view_->IsKeyIdeaButtonEnabled());
 
   controller_->OnRecordingStateChanged(/* started = */ true);
-  EXPECT_FALSE(bar_view_->IsRecordButtonVisible());
   EXPECT_TRUE(bar_view_->IsKeyIdeaButtonEnabled());
   EXPECT_TRUE(bar_view_->IsClosedCaptionEnabled());
 
   controller_->OnRecordingStateChanged(/* started = */ false);
-  EXPECT_TRUE(bar_view_->IsRecordButtonVisible());
   EXPECT_FALSE(bar_view_->IsKeyIdeaButtonEnabled());
   EXPECT_FALSE(bar_view_->IsClosedCaptionEnabled());
 }

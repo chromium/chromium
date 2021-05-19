@@ -37,11 +37,6 @@ constexpr float kInnerBarRadius = 50.f;
 // |ProjectorBarView|.
 constexpr int kBetweenChildSpacing = 16;
 
-// Recording buttons.
-constexpr int kRecordingButtonColorViewSize = 12;
-constexpr int kStartRecordingButtonColorViewRadius = 6;
-constexpr int kStopRecordingButtonColorViewRadius = 2;
-
 // Color selection buttons.
 constexpr int kColorButtonColorViewSize = 24;
 constexpr int kColorButtonViewRadius = 12;
@@ -87,9 +82,6 @@ views::UniqueWidgetPtr ProjectorBarView::Create(
 }
 
 void ProjectorBarView::OnRecordingStateChanged(bool started) {
-  record_button_->SetVisible(!started);
-  stop_button_->SetVisible(started);
-
   // Closed caption and key idea buttons states are dependent on the recording
   // state.
   auto recording_related_buttons_state =
@@ -143,10 +135,6 @@ void ProjectorBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
 }
 
-bool ProjectorBarView::IsRecordButtonVisible() const {
-  return record_button_->GetVisible();
-}
-
 bool ProjectorBarView::IsKeyIdeaButtonEnabled() const {
   return key_idea_button_->GetState() ==
          views::Button::ButtonState::STATE_NORMAL;
@@ -174,19 +162,6 @@ void ProjectorBarView::InitLayout() {
   SetBackground(views::CreateBackgroundFromPainter(
       views::Painter::CreateSolidRoundRectPainter(
           SkColorSetA(gfx::kGoogleGrey900, kBarAlpha_), kBarRadius)));
-
-  // Add recording buttons.
-  record_button_ = AddChildView(std::make_unique<ProjectorColorButton>(
-      base::BindRepeating(&ProjectorBarView::OnRecordButtonPressed,
-                          base::Unretained(this)),
-      SK_ColorWHITE, kRecordingButtonColorViewSize,
-      kStartRecordingButtonColorViewRadius));
-  stop_button_ = AddChildView(std::make_unique<ProjectorColorButton>(
-      base::BindRepeating(&ProjectorBarView::OnStopButtonPressed,
-                          base::Unretained(this)),
-      SK_ColorRED, kRecordingButtonColorViewSize,
-      kStopRecordingButtonColorViewRadius)),
-  stop_button_->SetVisible(false);
 
   // Add key idea button.
   key_idea_button_ = AddChildView(std::make_unique<ProjectorImageButton>(
@@ -352,14 +327,6 @@ void ProjectorBarView::CreateTrailingButtonsBar() {
   tools_bar_ = AddChildView(std::move(box_layout));
 }
 
-void ProjectorBarView::OnRecordButtonPressed() {
-  projector_controller_->OnRecordButtonPressed();
-}
-
-void ProjectorBarView::OnStopButtonPressed() {
-  projector_controller_->OnStopRecordButtonPressed();
-}
-
 void ProjectorBarView::OnKeyIdeaButtonPressed() {
   DCHECK(projector_controller_);
   projector_controller_->MarkKeyIdea();
@@ -403,7 +370,7 @@ void ProjectorBarView::OnChangeBarLocationButtonPressed() {
       bar_location_ = BarLocation::kUpperLeft;
       bar_location_button_->SetVectorIcon(kAutoclickPositionTopLeftIcon);
       break;
-  };
+  }
   GetWidget()->SetBounds(CalculateBoundsInScreen());
 }
 

@@ -53,7 +53,6 @@ class ASH_EXPORT ProjectorBarView : public views::View {
   // views::View:
   void OnThemeChanged() override;
 
-  bool IsRecordButtonVisible() const;
   bool IsKeyIdeaButtonEnabled() const;
   bool IsClosedCaptionEnabled() const;
 
@@ -72,8 +71,6 @@ class ASH_EXPORT ProjectorBarView : public views::View {
   void CreateMarkerOptionsBar();
   void CreateTrailingButtonsBar();
 
-  void OnRecordButtonPressed();
-  void OnStopButtonPressed();
   void OnKeyIdeaButtonPressed();
   void OnLaserPointerPressed();
   void OnMarkerPressed();
@@ -91,8 +88,6 @@ class ASH_EXPORT ProjectorBarView : public views::View {
   void UpdateToolbarButtonsVisibility();
   gfx::Rect CalculateBoundsInScreen() const;
 
-  ProjectorColorButton* record_button_ = nullptr;
-  ProjectorColorButton* stop_button_ = nullptr;
   ProjectorButton* key_idea_button_ = nullptr;
   ProjectorButton* laser_pointer_button_ = nullptr;
   ProjectorButton* marker_button_ = nullptr;

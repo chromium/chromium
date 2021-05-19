@@ -58,9 +58,11 @@ void ProjectorControllerImpl::SetProjectorToolsVisible(bool is_visible) {
   // available.
   if (is_visible) {
     ui_controller_->ShowToolbar();
+    OnRecordingStarted();
     return;
   }
 
+  OnRecordingEnded();
   if (client_->IsSelfieCamVisible())
     client_->CloseSelfieCam();
   ui_controller_->CloseToolbar();
@@ -93,9 +95,6 @@ void ProjectorControllerImpl::OnRecordingEnded() {
   StopSpeechRecognition();
   ui_controller_->OnRecordingStateChanged(false /* started */);
 
-  if (client_->IsSelfieCamVisible())
-    OnSelfieCamPressed(/*enabled=*/false);
-
   // TODO(crbug.com/1165439): Call on to SaveScreencast when the metadata file
   // saving format is finalized.
 }
@@ -103,20 +102,6 @@ void ProjectorControllerImpl::OnRecordingEnded() {
 void ProjectorControllerImpl::SaveScreencast(
     const base::FilePath& saved_video_path) {
   metadata_controller_->SaveMetadata(saved_video_path);
-}
-
-void ProjectorControllerImpl::OnRecordButtonPressed() {
-  // TODO(crbug.com/1165435): Start the recording session and update the button
-  // visibility based on recording state after integrating with capture mode and
-  // recording service.
-  OnRecordingStarted();
-}
-
-void ProjectorControllerImpl::OnStopRecordButtonPressed() {
-  // TODO(crbug.com/1165435): Stop the recording session and update the button
-  // visibility based on recording state after integrating with capture mode and
-  // recording service.
-  OnRecordingEnded();
 }
 
 void ProjectorControllerImpl::OnLaserPointerPressed() {

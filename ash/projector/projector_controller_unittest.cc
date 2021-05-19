@@ -87,6 +87,7 @@ class ProjectorControllerTest : public AshTestBase {
         std::move(mock_metadata_controller));
 
     controller_->SetClient(&mock_client_);
+    controller_->OnSpeechRecognitionAvailable(/*available=*/true);
   }
 
  protected:
@@ -106,6 +107,7 @@ TEST_F(ProjectorControllerTest, ShowToolbar) {
 }
 
 TEST_F(ProjectorControllerTest, CloseToolbar) {
+  controller_->SetProjectorToolsVisible(/*is_visible=*/true);
   mock_client_.SetSelfieCamVisible(/*visible=*/true);
   // Verify that |CloseToolbar| in |ProjectorUiController| is called.
   EXPECT_CALL(*mock_ui_controller_, CloseToolbar()).Times(1);
@@ -239,7 +241,6 @@ TEST_F(ProjectorControllerTest, OnChangeMarkerColorPressed) {
 }
 
 TEST_F(ProjectorControllerTest, RecordingStarted) {
-  controller_->OnSpeechRecognitionAvailable(/*available=*/true);
   EXPECT_CALL(mock_client_, StartSpeechRecognition());
   EXPECT_CALL(*mock_ui_controller_, OnRecordingStateChanged(/*started=*/true));
   EXPECT_CALL(*mock_metadata_controller_, OnRecordingStarted());
@@ -247,14 +248,12 @@ TEST_F(ProjectorControllerTest, RecordingStarted) {
 }
 
 TEST_F(ProjectorControllerTest, RecordingEnded) {
-  controller_->OnSpeechRecognitionAvailable(/*available=*/true);
   controller_->OnRecordingStarted();
   mock_client_.SetSelfieCamVisible(/*visible=*/true);
   EXPECT_CALL(mock_client_, StopSpeechRecognition());
   EXPECT_CALL(*mock_ui_controller_, OnRecordingStateChanged(/*started=*/false));
-  EXPECT_CALL(*mock_ui_controller_, OnSelfieCamPressed(/*enabled=*/false));
   EXPECT_CALL(mock_client_, CloseSelfieCam());
-  controller_->OnRecordingEnded();
+  controller_->SetProjectorToolsVisible(/*is_visible=*/false);
 }
 
 }  // namespace ash
