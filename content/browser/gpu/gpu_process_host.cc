@@ -1120,8 +1120,7 @@ void GpuProcessHost::BindDiscardableMemoryReceiver(
     mojo::PendingReceiver<
         discardable_memory::mojom::DiscardableSharedMemoryManager> receiver) {
   if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
-        std::move(receiver));
+    BindDiscardableMemoryReceiverOnUI(std::move(receiver));
     return;
   }
 

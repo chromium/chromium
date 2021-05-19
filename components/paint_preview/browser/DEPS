@@ -7,7 +7,6 @@ include_rules = [
   "+components/ukm/content",
   "+components/ukm/test_ukm_recorder.h",
   "+content/public/browser",
-  "+content/public/common",
   "+content/public/test",
   "+services/metrics/public/cpp",
   "+sandbox/policy/sandbox_type.h",

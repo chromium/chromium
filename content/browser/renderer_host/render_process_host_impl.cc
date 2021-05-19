@@ -1373,15 +1373,11 @@ class RenderProcessHostImpl::IOThreadHostImpl : public mojom::ChildProcessHost {
     }
 #endif
 
-    // If other child processes live on the UI thread then
-    // DiscardableSharedMemoryManager will have to be used only on UI thread.
-    if (!base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      if (auto r = receiver.As<discardable_memory::mojom::
-                                   DiscardableSharedMemoryManager>()) {
-        discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
-            std::move(r));
-        return;
-      }
+    if (auto r = receiver.As<
+                 discardable_memory::mojom::DiscardableSharedMemoryManager>()) {
+      discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
+          std::move(r));
+      return;
     }
 
     if (auto r = receiver.As<ukm::mojom::UkmRecorderInterface>()) {
@@ -5066,15 +5062,6 @@ void RenderProcessHostImpl::OnBindHostReceiver(
     return;
   }
 #endif
-
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    if (auto r = receiver.As<
-                 discardable_memory::mojom::DiscardableSharedMemoryManager>()) {
-      discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
-          std::move(r));
-      return;
-    }
-  }
 
   GetContentClient()->browser()->BindHostReceiverForRenderer(
       this, std::move(receiver));

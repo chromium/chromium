@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
+#include "content/public/common/content_features.h"
 #include "services/device/public/mojom/power_monitor.mojom.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
@@ -95,12 +96,26 @@ void BrowserChildProcessHostImpl::BindHostReceiver(
 
   if (auto r = receiver.As<
                discardable_memory::mojom::DiscardableSharedMemoryManager>()) {
-    discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
-        std::move(r));
+    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](mojo::PendingReceiver<
+                  discardable_memory::mojom::DiscardableSharedMemoryManager>
+                     r) {
+                discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
+                    std::move(r));
+              },
+              std::move(r)));
+    } else {
+      discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
+          std::move(r));
+    }
     return;
   }
 
   if (auto r = receiver.As<device::mojom::PowerMonitor>()) {
+    // TODO(jam): When ProcessHostOnUI is the default just remove this PostTask.
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
