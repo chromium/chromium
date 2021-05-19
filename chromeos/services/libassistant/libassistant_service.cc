@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/services/libassistant/libassistant_factory.h"
+#include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/public/assistant_manager.h"
 
