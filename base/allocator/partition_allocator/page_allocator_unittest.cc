@@ -245,9 +245,14 @@ TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadWriteTaggedSynchronous) {
       memory::GetMemoryTaggingModeForCurrentThread();
   EXPECT_EXIT(
       {
-        // Switch to synchronous mode.
+  // Switch to synchronous mode.
+#if defined(OS_ANDROID)
+        memory::ChangeMemoryTaggingModeForAllThreadsPerProcess(
+            memory::TagViolationReportingMode::kSynchronous);
+#else
         memory::ChangeMemoryTaggingModeForCurrentThread(
             memory::TagViolationReportingMode::kSynchronous);
+#endif  // defined(OS_ANDROID)
         EXPECT_EQ(memory::GetMemoryTaggingModeForCurrentThread(),
                   memory::TagViolationReportingMode::kSynchronous);
         // Write to the buffer using its previous tag. A segmentation fault
@@ -288,9 +293,14 @@ TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadWriteTaggedAsynchronous) {
       memory::GetMemoryTaggingModeForCurrentThread();
   EXPECT_EXIT(
       {
-        // Switch to asynchronous mode.
+  // Switch to asynchronous mode.
+#if defined(OS_ANDROID)
+        memory::ChangeMemoryTaggingModeForAllThreadsPerProcess(
+            memory::TagViolationReportingMode::kAsynchronous);
+#else
         memory::ChangeMemoryTaggingModeForCurrentThread(
             memory::TagViolationReportingMode::kAsynchronous);
+#endif  // defined(OS_ANDROID)
         EXPECT_EQ(memory::GetMemoryTaggingModeForCurrentThread(),
                   memory::TagViolationReportingMode::kAsynchronous);
         // Write to the buffer using its previous tag. A fault should be

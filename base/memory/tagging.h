@@ -8,6 +8,7 @@
 // This file contains method definitions to support Armv8.5-A's memory tagging
 // extension.
 #include "base/base_export.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace memory {
@@ -22,9 +23,15 @@ enum class TagViolationReportingMode {
   kAsynchronous,
 };
 
+//#if defined(OS_ANDROID)
+// Changes the memory tagging mode for all threads in the current process.
+BASE_EXPORT void ChangeMemoryTaggingModeForAllThreadsPerProcess(
+    TagViolationReportingMode);
+//#else
 // Changes the memory tagging mode for the calling thread.
 BASE_EXPORT void ChangeMemoryTaggingModeForCurrentThread(
     TagViolationReportingMode);
+//#endif  // defined(OS_ANDROID)
 
 // Gets the memory tagging mode for the calling thread.
 BASE_EXPORT TagViolationReportingMode GetMemoryTaggingModeForCurrentThread();
