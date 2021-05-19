@@ -36,6 +36,10 @@ public class PrivacySandboxBridge {
         return PrivacySandboxBridgeJni.get().getFlocGroupString();
     }
 
+    public static String getFlocUpdateString() {
+        return PrivacySandboxBridgeJni.get().getFlocUpdateString();
+    }
+
     @NativeMethods
     interface Natives {
         boolean isPrivacySandboxSettingsFunctional();
@@ -45,5 +49,6 @@ public class PrivacySandboxBridge {
         boolean isFlocEnabled();
         String getFlocStatusString();
         String getFlocGroupString();
+        String getFlocUpdateString();
     }
 }

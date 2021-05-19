@@ -54,6 +54,8 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat {
         findPreference(FLOC_GROUP)
                 .setSummary(getContext().getString(R.string.privacy_sandbox_floc_group_title) + "\n"
                         + PrivacySandboxBridge.getFlocGroupString());
-        findPreference(FLOC_UPDATE).setSummary(R.string.privacy_sandbox_floc_update_title);
+        findPreference(FLOC_UPDATE)
+                .setSummary(getContext().getString(R.string.privacy_sandbox_floc_update_title)
+                        + "\n" + PrivacySandboxBridge.getFlocUpdateString());
     }
 }
