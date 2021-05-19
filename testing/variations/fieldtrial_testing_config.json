@@ -5424,6 +5424,25 @@
             ]
         }
     ],
+    "OmniboxPedalsBatch2": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "chromeos",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Batch2Colored",
+                    "enable_features": [
+                        "OmniboxPedalsBatch2",
+                        "OmniboxPedalsDefaultIconColored"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxUpdatedConnectionSecurityIndicatorsIPH": [
         {
             "platforms": [
