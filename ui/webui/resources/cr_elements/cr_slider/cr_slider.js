@@ -187,7 +187,7 @@ cr.define('cr_slider', function() {
     /** @private {Map<string, number>} */
     deltaKeyMap_: null,
 
-    /** @private {EventTracker} */
+    /** @private {cr.EventTracker} */
     draggingEventTracker_: null,
 
     /** @override */
@@ -201,7 +201,7 @@ cr.define('cr_slider', function() {
         ['ArrowLeft', this.isRtl_ ? 1 : -1],
         ['ArrowRight', this.isRtl_ ? -1 : 1],
       ]);
-      this.draggingEventTracker_ = new EventTracker();
+      this.draggingEventTracker_ = new cr.EventTracker();
     },
 
     /**

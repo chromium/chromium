@@ -173,6 +173,7 @@ js_library("cr") {
 }
 
 js_library("event_tracker") {
+  deps = [ ":cr" ]
 }
 
 js_library("icon") {

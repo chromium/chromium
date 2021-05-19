@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 common_namespace_rewrites = [
-  "cr_slider.SliderTick|SliderTick",
   "cr.addSingletonGetter|addSingletonGetter",
   "cr.addWebUIListener|addWebUIListener",
   "cr.dispatchSimpleEvent|dispatchSimpleEvent",
+  "cr.EventTracker|EventTracker",
   "cr.icon.getFavicon|getFavicon",
   "cr.icon.getImage|getImage",
   "cr.isAndroid|isAndroid",
@@ -19,6 +19,7 @@ common_namespace_rewrites = [
   "cr.png.convertImageSequenceToPng|convertImageSequenceToPng",
   "cr.removeWebUIListener|removeWebUIListener",
   "cr.sendWithPromise|sendWithPromise",
+  "cr_slider.SliderTick|SliderTick",
   "cr.toastManager.getToastManager|getToastManager",
   "cr.ui.FocusOutlineManager|FocusOutlineManager",
   "cr.ui.FocusRowBehavior|FocusRowBehavior",

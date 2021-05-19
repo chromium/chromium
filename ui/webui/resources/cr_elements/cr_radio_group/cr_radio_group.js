@@ -58,7 +58,7 @@
     /** @private {Array<!CrRadioButtonElement>} */
     buttons_: null,
 
-    /** @private {EventTracker} */
+    /** @private {cr.EventTracker} */
     buttonEventTracker_: null,
 
     /** @private {Map<string, number>} */
@@ -84,7 +84,7 @@
         ['PageDown', 1],
         ['PageUp', -1],
       ]);
-      this.buttonEventTracker_ = new EventTracker();
+      this.buttonEventTracker_ = new cr.EventTracker();
 
       this.populateBound_ = () => this.populate_();
       // Needed for when the radio buttons change when using dom-repeat or

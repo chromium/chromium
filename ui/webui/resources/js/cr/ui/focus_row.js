@@ -40,8 +40,8 @@ cr.define('cr.ui', function() {
       /** @type {cr.ui.FocusRowDelegate|undefined} */
       this.delegate = delegate;
 
-      /** @protected {!EventTracker} */
-      this.eventTracker = new EventTracker;
+      /** @protected {!cr.EventTracker} */
+      this.eventTracker = new cr.EventTracker;
     }
 
     /**

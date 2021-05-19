@@ -63,7 +63,7 @@ cr.define('cr.ui', function() {
 
       // An event tracker for events we only connect to while the menu is
       // displayed.
-      this.showingEvents_ = new EventTracker();
+      this.showingEvents_ = new cr.EventTracker();
 
       this.anchorType = cr.ui.AnchorType.BELOW;
       this.invertLeftRight = false;

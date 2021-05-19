@@ -38,7 +38,7 @@ cr.define('cr.ui', () => {
        */
       this.menuEndGap_ = 0;  // padding on cr.menu + 2px
 
-      /** @private {?EventTracker} */
+      /** @private {?cr.EventTracker} */
       this.showingEvents_ = null;
 
       /** @private {?cr.ui.Menu} */
@@ -115,7 +115,7 @@ cr.define('cr.ui', () => {
 
       // An event tracker for events we only connect to while the menu is
       // displayed.
-      this.showingEvents_ = new EventTracker();
+      this.showingEvents_ = new cr.EventTracker();
     }
 
     /**

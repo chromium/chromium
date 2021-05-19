@@ -26,8 +26,8 @@ cr.define('cr.ui', function() {
   class ContextMenuHandler extends cr.EventTarget {
     constructor() {
       super();
-      /** @private {!EventTracker} */
-      this.showingEvents_ = new EventTracker();
+      /** @private {!cr.EventTracker} */
+      this.showingEvents_ = new cr.EventTracker();
 
       /**
        * The menu that we are currently showing.
