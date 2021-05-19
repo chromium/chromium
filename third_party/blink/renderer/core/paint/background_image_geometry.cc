@@ -38,6 +38,11 @@ inline LayoutUnit GetSpaceBetweenImageTiles(LayoutUnit area_size,
   return space;
 }
 
+LayoutUnit ComputeRoundedTileSize(LayoutUnit area_size, LayoutUnit tile_size) {
+  int nr_tiles = std::max(1, RoundToInt(area_size / tile_size));
+  return area_size / nr_tiles;
+}
+
 LayoutUnit ComputeTilePhase(LayoutUnit position, LayoutUnit tile_extent) {
   // Assuming a non-integral number of tiles, find out how much of the
   // partial tile is visible. That is the phase.
@@ -862,10 +867,8 @@ void BackgroundImageGeometry::Calculate(const LayoutBoxModelObject* container,
   if (background_repeat_x == EFillRepeat::kRoundFill &&
       snapped_positioning_area_size.width > LayoutUnit() &&
       tile_size_.width > LayoutUnit()) {
-    int nr_tiles = std::max(
-        1, RoundToInt(snapped_positioning_area_size.width / tile_size_.width));
-    LayoutUnit rounded_width = snapped_positioning_area_size.width / nr_tiles;
-
+    LayoutUnit rounded_width = ComputeRoundedTileSize(
+        snapped_positioning_area_size.width, tile_size_.width);
     // Maintain aspect ratio if background-size: auto is set
     if (fill_layer.SizeLength().Height().IsAuto() &&
         background_repeat_y != EFillRepeat::kRoundFill) {
@@ -883,9 +886,8 @@ void BackgroundImageGeometry::Calculate(const LayoutBoxModelObject* container,
   if (background_repeat_y == EFillRepeat::kRoundFill &&
       snapped_positioning_area_size.height > LayoutUnit() &&
       tile_size_.height > LayoutUnit()) {
-    int nr_tiles = std::max(1, RoundToInt(snapped_positioning_area_size.height /
-                                          tile_size_.height));
-    LayoutUnit rounded_height = snapped_positioning_area_size.height / nr_tiles;
+    LayoutUnit rounded_height = ComputeRoundedTileSize(
+        snapped_positioning_area_size.height, tile_size_.height);
     // Maintain aspect ratio if background-size: auto is set
     if (fill_layer.SizeLength().Width().IsAuto() &&
         background_repeat_x != EFillRepeat::kRoundFill) {
