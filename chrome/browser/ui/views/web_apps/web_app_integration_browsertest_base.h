@@ -150,7 +150,8 @@ class WebAppIntegrationBrowserTestBase {
 
   // Automated Testing Actions
   void AddPolicyAppInternal(const std::string& action_param,
-                            base::Value default_launch_container);
+                            base::Value default_launch_container,
+                            const bool create_shortcut);
   void ClosePWA();
   void InstallCreateShortcut(bool open_in_window);
   void InstallLocally();
