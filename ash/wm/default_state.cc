@@ -248,7 +248,6 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
     case WM_EVENT_TOGGLE_VERTICAL_MAXIMIZE: {
       gfx::Rect work_area =
           screen_util::GetDisplayWorkAreaBoundsInParent(window);
-
       // Maximize vertically if:
       // - The window does not have a max height defined.
       // - The window has the normal state type. Snapped windows are excluded
@@ -258,18 +257,14 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
           !window_state->IsNormalStateType()) {
         return;
       }
-      if (window_state->HasRestoreBounds() &&
-          (window->bounds().height() == work_area.height() &&
-           window->bounds().y() == work_area.y())) {
-        window_state->SetBoundsDirectCrossFade(
-            window_state->GetRestoreBoundsInParent());
-        window_state->ClearRestoreBounds();
-      } else {
-        window_state->SaveCurrentBoundsForRestore();
+      if (!window_state->VerticallyShrinkWindow(work_area)) {
+        gfx::Rect restore_bounds = window->GetTargetBounds();
         const gfx::Rect new_bounds =
             gfx::Rect(window->bounds().x(), work_area.y(),
                       window->bounds().width(), work_area.height());
         window_state->SetBoundsDirectCrossFade(new_bounds);
+        if (!window_state->HasRestoreBounds())
+          window_state->SetRestoreBoundsInParent(restore_bounds);
       }
       return;
     }
@@ -283,28 +278,20 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
         return;
       gfx::Rect work_area =
           screen_util::GetDisplayWorkAreaBoundsInParent(window);
-      if (window_state->IsNormalStateType() &&
-          window_state->HasRestoreBounds() &&
-          (window->bounds().width() == work_area.width() &&
-           window->bounds().x() == work_area.x())) {
-        window_state->SetBoundsDirectCrossFade(
-            window_state->GetRestoreBoundsInParent());
-        window_state->ClearRestoreBounds();
-      } else {
+      if (!window_state->HorizontallyShrinkWindow(work_area)) {
         gfx::Rect new_bounds(work_area.x(), window->bounds().y(),
                              work_area.width(), window->bounds().height());
-
         gfx::Rect restore_bounds = window->GetTargetBounds();
         if (window_state->IsSnapped()) {
-          window_state->SetRestoreBoundsInParent(new_bounds);
+          window_state->SetRestoreBoundsInParent(window->bounds());
           window_state->Restore();
 
           // The restore logic prevents a window from being restored to bounds
           // which match the workspace bounds exactly so it is necessary to set
           // the bounds again below.
         }
-
-        window_state->SetRestoreBoundsInParent(restore_bounds);
+        if (!window_state->HasRestoreBounds())
+          window_state->SetRestoreBoundsInParent(restore_bounds);
         window_state->SetBoundsDirectCrossFade(new_bounds);
       }
       return;

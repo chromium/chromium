@@ -376,6 +376,91 @@ TEST_F(WorkspaceEventHandlerTest, DoubleClickCaptionTogglesMaximize) {
   EXPECT_EQ(restore_bounds.ToString(), window->bounds().ToString());
 }
 
+// Test that double clicking on window side edge horizontally and vertically
+// will maximize the window, double click vertically and horizontally will
+// return to previous state.
+TEST_F(WorkspaceEventHandlerTest, DoubleClickEdgesTogglesMaximizeAndRestore) {
+  aura::test::TestWindowDelegate delegate;
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindow(&delegate, gfx::Rect(1, 0, 30, 40)));
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      aura::client::kResizeBehaviorCanMaximize |
+                          aura::client::kResizeBehaviorCanResize);
+
+  WindowState* window_state = WindowState::Get(window.get());
+  gfx::Rect restore_bounds_original = window->bounds();
+  gfx::Rect work_area_in_parent =
+      screen_util::GetDisplayWorkAreaBoundsInParent(window.get());
+
+  ASSERT_FALSE(window_state->IsMaximized());
+
+  // 1) Double clicking a normal window's left edge should toggle horizontal
+  // maximize.
+  delegate.set_window_component(HTLEFT);
+  aura::Window* root = Shell::GetPrimaryRootWindow();
+  ui::test::EventGenerator generator(root, window.get());
+  generator.DoubleClickLeftButton();
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_EQ(work_area_in_parent.x(), window->bounds().x());
+  EXPECT_EQ(restore_bounds_original.y(), window->bounds().y());
+  EXPECT_EQ(work_area_in_parent.width(), window->bounds().width());
+  EXPECT_EQ(restore_bounds_original.height(), window->bounds().height());
+  // Second restore bounds is set to the horizontal maximized bound.
+  gfx::Rect restore_bounds_second = window->bounds();
+
+  // 2) Double clicking a horizontal maximized window's top edge should vertical
+  // maximize.
+  delegate.set_window_component(HTTOP);
+  generator.DoubleClickLeftButton();
+  EXPECT_EQ(work_area_in_parent.width(), window->bounds().width());
+
+  // 3) Double clicking a maximized window's top edge should restore it to
+  // second restore bounds.
+  delegate.set_window_component(HTTOP);
+  generator.DoubleClickLeftButton();
+  EXPECT_EQ(restore_bounds_second, window->bounds());
+
+  // 4) Double clicking again will restore the window to original bounds.
+  delegate.set_window_component(HTLEFT);
+  generator.DoubleClickLeftButton();
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_EQ(restore_bounds_original, window->bounds());
+
+  // Test restore bounds when reverse the order of double click on edges.
+  // 1) Double clicking a normal window's left edge should toggle horizontal
+  // maximize.
+  delegate.set_window_component(HTLEFT);
+  // Third restore bounds is set to the vertical maximized bound with width from
+  // original window.
+  gfx::Rect restore_bounds_third = window->bounds();
+  restore_bounds_third.set_height(work_area_in_parent.height());
+
+  generator.DoubleClickLeftButton();
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_EQ(work_area_in_parent.x(), window->bounds().x());
+  EXPECT_EQ(restore_bounds_original.y(), window->bounds().y());
+  EXPECT_EQ(work_area_in_parent.width(), window->bounds().width());
+  EXPECT_EQ(restore_bounds_original.height(), window->bounds().height());
+
+  // 2) Double clicking a horizontal maximized window's top edge should vertical
+  // maximize.
+  delegate.set_window_component(HTTOP);
+  generator.DoubleClickLeftButton();
+  EXPECT_EQ(work_area_in_parent.width(), window->bounds().width());
+
+  // 3) Double clicking a maximized window's left edge should restore it to
+  // third restore bounds.
+  delegate.set_window_component(HTLEFT);
+  generator.DoubleClickLeftButton();
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_EQ(restore_bounds_third, window->bounds());
+
+  // 4) Double clicking again will restore the window to original bounds.
+  delegate.set_window_component(HTTOP);
+  generator.DoubleClickLeftButton();
+  EXPECT_EQ(restore_bounds_original, window->bounds());
+}
+
 // Test that double clicking the middle button on the window header does not
 // toggle the maximized state.
 TEST_F(WorkspaceEventHandlerTest,

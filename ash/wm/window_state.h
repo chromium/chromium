@@ -199,6 +199,14 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // Deletes and clears the restore bounds property on the window.
   void ClearRestoreBounds();
 
+  // Shrink window from work_area/vertical maximized state.
+  // If window is not vertically shrinkable, return false.
+  bool VerticallyShrinkWindow(const gfx::Rect& work_area);
+
+  // Shrink window from work_area/horizontal maximized state.
+  // If window is not horizontally shrinkable, return false.
+  bool HorizontallyShrinkWindow(const gfx::Rect& work_area);
+
   // Replace the State object of a window with a state handler which can
   // implement a new window manager type. The passed object will be owned
   // by this object and the returned object will be owned by the caller.

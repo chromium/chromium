@@ -431,6 +431,52 @@ void WindowState::ClearRestoreBounds() {
   window_->ClearProperty(::wm::kVirtualKeyboardRestoreBoundsKey);
 }
 
+bool WindowState::VerticallyShrinkWindow(const gfx::Rect& work_area) {
+  if (!HasRestoreBounds())
+    return false;
+  // Check if window is not work area vertical maximized.
+  gfx::Rect bounds = window_->bounds();
+  if (bounds.height() != work_area.height() || bounds.y() != work_area.y())
+    return false;
+
+  gfx::Rect restore_bounds = GetRestoreBoundsInParent();
+  gfx::Rect new_bounds = restore_bounds;
+
+  // Shrink from work area maximized window.
+  if (bounds == work_area) {
+    new_bounds = gfx::Rect(work_area.x(), restore_bounds.y(), work_area.width(),
+                           restore_bounds.height());
+    // Restore bounds is not cleared here in case a 2nd shrink is called next.
+  } else {
+    ClearRestoreBounds();
+  }
+
+  SetBoundsDirectCrossFade(new_bounds);
+  return true;
+}
+
+bool WindowState::HorizontallyShrinkWindow(const gfx::Rect& work_area) {
+  if (!HasRestoreBounds())
+    return false;
+  // Check if window is not work area horizontal maximized.
+  gfx::Rect bounds = window_->bounds();
+  if (bounds.width() != work_area.width() || bounds.x() != work_area.x())
+    return false;
+
+  gfx::Rect restore_bounds = GetRestoreBoundsInParent();
+  gfx::Rect new_bounds = restore_bounds;
+
+  // Shrink from work area maximized window.
+  if (bounds == work_area) {
+    new_bounds = gfx::Rect(restore_bounds.x(), work_area.y(),
+                           restore_bounds.width(), work_area.height());
+  } else {
+    ClearRestoreBounds();
+  }
+  SetBoundsDirectCrossFade(new_bounds);
+  return true;
+}
+
 std::unique_ptr<WindowState::State> WindowState::SetStateObject(
     std::unique_ptr<WindowState::State> new_state) {
   current_state_->DetachState(this);
