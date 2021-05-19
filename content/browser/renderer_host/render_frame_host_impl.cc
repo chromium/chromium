@@ -2604,6 +2604,14 @@ void RenderFrameHostImpl::RenderProcessGone(
     return;
   }
 
+  if (frame_tree()->is_prerendering()) {
+    CancelPrerendering(
+        info.status == base::TERMINATION_STATUS_PROCESS_CRASHED
+            ? PrerenderHost::FinalStatus::kRendererProcessCrashed
+            : PrerenderHost::FinalStatus::kRendererProcessKilled);
+    return;
+  }
+
   if (owned_render_widget_host_)
     owned_render_widget_host_->RendererExited();
 

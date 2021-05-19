@@ -6,7 +6,9 @@
 #define CONTENT_BROWSER_PRERENDER_PRERENDER_HOST_REGISTRY_H_
 
 #include <map>
+#include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
 #include "content/browser/prerender/prerender_host.h"
@@ -127,6 +129,7 @@ class CONTENT_EXPORT PrerenderHostRegistry {
 
  private:
   std::unique_ptr<PrerenderHost> AbandonHostInternal(int frame_tree_node_id);
+  void DeleteAbandonedHosts();
 
   void NotifyTrigger(const GURL& url);
 
@@ -141,7 +144,17 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   std::map<int, std::unique_ptr<PrerenderHost>>
       reserved_prerender_host_by_frame_tree_node_id_;
 
+  // Hosts that are scheduled to be deleted asynchronously.
+  // Design note: PrerenderHostRegistry should explicitly manage the hosts to be
+  // deleted instead of depending on the deletion helpers like DeleteSoon() to
+  // asynchronously destruct them before this instance is deleted. The helpers
+  // could let the hosts and their FrameTrees outlive WebContentsImpl (the owner
+  // of the registry) and results in UAF.
+  std::vector<std::unique_ptr<PrerenderHost>> to_be_deleted_hosts_;
+
   base::ObserverList<Observer> observers_;
+
+  base::WeakPtrFactory<PrerenderHostRegistry> weak_factory_{this};
 };
 
 }  // namespace content

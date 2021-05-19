@@ -14,6 +14,7 @@
 #include "base/trace_event/trace_conversion_helper.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -101,7 +102,10 @@ void PrerenderHostRegistry::AbandonHostAsync(
     prerender_host->RecordFinalStatus(PassKey(), final_status);
 
     // Asynchronously delete the prerender host.
-    GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, std::move(prerender_host));
+    to_be_deleted_hosts_.push_back(std::move(prerender_host));
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&PrerenderHostRegistry::DeleteAbandonedHosts,
+                                  weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -226,6 +230,10 @@ std::unique_ptr<PrerenderHost> PrerenderHostRegistry::AbandonHostInternal(
   frame_tree_node_id_by_url_.erase(prerender_host->GetInitialUrl());
   prerender_host_by_frame_tree_node_id_.erase(found);
   return prerender_host;
+}
+
+void PrerenderHostRegistry::DeleteAbandonedHosts() {
+  to_be_deleted_hosts_.clear();
 }
 
 void PrerenderHostRegistry::NotifyTrigger(const GURL& url) {

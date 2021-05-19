@@ -1879,6 +1879,70 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
 }
 
+// Test if the host is abandoned when the renderer page crashes.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AbandonIfRendererProcessCrashes) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  AddPrerender(kPrerenderingUrl);
+  int host_id = GetHostForUrl(kPrerenderingUrl);
+  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Crash the relevant renderer.
+  {
+    test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+    RenderProcessHost* process =
+        GetPrerenderedMainFrameHost(host_id)->GetProcess();
+    ScopedAllowRendererCrashes allow_renderer_crashes(process);
+    // On Android, ForceCrash results in TERMINATION_STATUS_NORMAL_TERMINATION.
+    // On other platforms, it does in TERMINATION_STATUS_PROCESS_CRASHED.
+    process->ForceCrash();
+    host_observer.WaitForDestroyed();
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+#if defined(OS_ANDROID)
+      PrerenderHost::FinalStatus::kRendererProcessKilled, 1);
+#else
+      PrerenderHost::FinalStatus::kRendererProcessCrashed, 1);
+#endif  // defined(OS_ANDROID)
+}
+
+// Test if the host is abandoned when the renderer page is killed.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AbandonIfRendererProcessIsKilled) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  AddPrerender(kPrerenderingUrl);
+  int host_id = GetHostForUrl(kPrerenderingUrl);
+  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Shut down the relevant renderer.
+  {
+    test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+    RenderProcessHost* process =
+        GetPrerenderedMainFrameHost(host_id)->GetProcess();
+    ScopedAllowRendererCrashes allow_renderer_crashes(process);
+    EXPECT_TRUE(process->Shutdown(0));
+    host_observer.WaitForDestroyed();
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kRendererProcessKilled, 1);
+}
+
 class PrerenderSingleProcessBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderSingleProcessBrowserTest() = default;

@@ -63638,6 +63638,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="10" label="kMainFrameNavigation"/>
   <int value="11" label="kMojoBinderPolicy"/>
   <int value="12" label="kPlugin"/>
+  <int value="13" label="kRendererProcessCrashed"/>
+  <int value="14" label="kRendererProcessKilled"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">
