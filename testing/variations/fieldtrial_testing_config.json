@@ -2428,10 +2428,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "D3D11VideoDecoder",
-                        "D3D11VideoDecoderCopyPictures"
+                    "name": "Disabled",
+                    "disable_features": [
+                        "D3D11VideoDecoder"
                     ]
                 }
             ]
