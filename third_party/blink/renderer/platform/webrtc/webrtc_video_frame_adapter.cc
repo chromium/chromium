@@ -137,6 +137,10 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromGpu(
   DCHECK_EQ(source_frame->storage_type(),
             media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
 
+  // This is necessary because mapping may require waiting on IO thread,
+  // but webrtc API is synchronous.
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+
   return media::ConvertToMemoryMappedFrame(std::move(source_frame));
 }
 
