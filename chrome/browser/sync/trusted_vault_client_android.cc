@@ -17,7 +17,20 @@ TrustedVaultClientAndroid::OngoingFetchKeys::OngoingFetchKeys(
     base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> callback)
     : account_info(account_info), callback(std::move(callback)) {}
 
+TrustedVaultClientAndroid::OngoingFetchKeys::OngoingFetchKeys(
+    OngoingFetchKeys&&) = default;
+
 TrustedVaultClientAndroid::OngoingFetchKeys::~OngoingFetchKeys() = default;
+
+TrustedVaultClientAndroid::OngoingMarkKeysAsStale::OngoingMarkKeysAsStale(
+    base::OnceCallback<void(bool)> callback)
+    : callback(std::move(callback)) {}
+
+TrustedVaultClientAndroid::OngoingMarkKeysAsStale::OngoingMarkKeysAsStale(
+    OngoingMarkKeysAsStale&&) = default;
+
+TrustedVaultClientAndroid::OngoingMarkKeysAsStale::~OngoingMarkKeysAsStale() =
+    default;
 
 TrustedVaultClientAndroid::TrustedVaultClientAndroid() {
   JNIEnv* const env = base::android::AttachCurrentThread();
@@ -32,35 +45,33 @@ TrustedVaultClientAndroid::~TrustedVaultClientAndroid() {
 
 void TrustedVaultClientAndroid::FetchKeysCompleted(
     JNIEnv* env,
+    jint request_id,
     const base::android::JavaParamRef<jstring>& gaia_id,
     const base::android::JavaParamRef<jobjectArray>& keys) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(ongoing_fetch_keys_) << "No ongoing FetchKeys() request";
-  DCHECK_EQ(ongoing_fetch_keys_->account_info.gaia,
+
+  OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
+  OngoingFetchKeys& ongoing_fetch_keys =
+      absl::get<OngoingFetchKeys>(ongoing_request);
+
+  DCHECK_EQ(ongoing_fetch_keys.account_info.gaia,
             base::android::ConvertJavaStringToUTF8(env, gaia_id))
       << "User mismatch in FetchKeys() response";
 
-  // Make a copy of the callback and reset |ongoing_fetch_keys_| before invoking
-  // the callback, in case it has side effects.
-  base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb =
-      std::move(ongoing_fetch_keys_->callback);
-  ongoing_fetch_keys_.reset();
-
   std::vector<std::vector<uint8_t>> converted_keys;
   JavaArrayOfByteArrayToBytesVector(env, keys, &converted_keys);
-  std::move(cb).Run(converted_keys);
+  std::move(ongoing_fetch_keys.callback).Run(converted_keys);
 }
 
 void TrustedVaultClientAndroid::MarkKeysAsStaleCompleted(JNIEnv* env,
+                                                         jint request_id,
                                                          jboolean result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(ongoing_mark_keys_as_stale_) << "No ongoing MarkKeysAsStale() request";
 
-  // Make a copy of the callback and reset |ongoing_mark_keys_as_stale_| before
-  // invoking the callback, in case it has side effects.
-  base::OnceCallback<void(bool)> cb = std::move(ongoing_mark_keys_as_stale_);
+  OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
 
-  std::move(cb).Run(!!result);
+  std::move(absl::get<OngoingMarkKeysAsStale>(ongoing_request).callback)
+      .Run(!!result);
 }
 
 void TrustedVaultClientAndroid::NotifyKeysChanged(JNIEnv* env) {
@@ -81,14 +92,10 @@ void TrustedVaultClientAndroid::FetchKeys(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!ongoing_fetch_keys_)
-      << "Only one FetchKeys() request is allowed at any time";
-  DCHECK(!ongoing_mark_keys_as_stale_)
-      << "FetchKeys() not allowed while ongoing MarkKeysAsStale()";
 
   // Store for later completion when Java invokes FetchKeysCompleted().
-  ongoing_fetch_keys_ =
-      std::make_unique<OngoingFetchKeys>(account_info, std::move(cb));
+  const RequestId request_id =
+      RegisterNewOngoingRequest(OngoingFetchKeys(account_info, std::move(cb)));
 
   JNIEnv* const env = base::android::AttachCurrentThread();
   const base::android::ScopedJavaLocalRef<jobject> java_account_info =
@@ -97,7 +104,7 @@ void TrustedVaultClientAndroid::FetchKeys(
   // Trigger the fetching keys from the implementation in Java, which will
   // eventually call FetchKeysCompleted().
   Java_TrustedVaultClient_fetchKeys(env, reinterpret_cast<intptr_t>(this),
-                                    java_account_info);
+                                    request_id, java_account_info);
 }
 
 void TrustedVaultClientAndroid::StoreKeys(
@@ -117,13 +124,10 @@ void TrustedVaultClientAndroid::MarkKeysAsStale(
     base::OnceCallback<void(bool)> cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(cb);
-  DCHECK(!ongoing_mark_keys_as_stale_)
-      << "Only one MarkKeysAsStale() request is allowed at any time";
-  DCHECK(!ongoing_fetch_keys_)
-      << "MarkKeysAsStale() not allowed while ongoing FetchKeys()";
 
   // Store for later completion when Java invokes MarkKeysAsStaleCompleted().
-  ongoing_mark_keys_as_stale_ = std::move(cb);
+  const RequestId request_id =
+      RegisterNewOngoingRequest(OngoingMarkKeysAsStale(std::move(cb)));
 
   JNIEnv* const env = base::android::AttachCurrentThread();
   const base::android::ScopedJavaLocalRef<jobject> java_account_info =
@@ -131,7 +135,7 @@ void TrustedVaultClientAndroid::MarkKeysAsStale(
 
   // The Java implementation will eventually call MarkKeysAsStaleCompleted().
   Java_TrustedVaultClient_markKeysAsStale(env, reinterpret_cast<intptr_t>(this),
-                                          java_account_info);
+                                          request_id, java_account_info);
 }
 
 void TrustedVaultClientAndroid::GetIsRecoverabilityDegraded(
@@ -150,4 +154,22 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
   // TODO(crbug.com/1100279): Needs implementation.
   NOTIMPLEMENTED();
   std::move(cb).Run();
+}
+
+TrustedVaultClientAndroid::RequestId
+TrustedVaultClientAndroid::RegisterNewOngoingRequest(OngoingRequest request) {
+  ongoing_requests_.emplace(++last_request_id_, std::move(request));
+  return last_request_id_;
+}
+
+TrustedVaultClientAndroid::OngoingRequest
+TrustedVaultClientAndroid::GetAndUnregisterOngoingRequest(RequestId id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto it = ongoing_requests_.find(id);
+  DCHECK(it != ongoing_requests_.end());
+
+  OngoingRequest request = std::move(it->second);
+  ongoing_requests_.erase(it);
+  return request;
 }

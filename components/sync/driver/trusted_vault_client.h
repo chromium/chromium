@@ -46,8 +46,6 @@ class TrustedVaultClient {
   // Attempts to fetch decryption keys, required by sync to resume.
   // Implementations are expected to NOT prompt the user for actions. |cb| is
   // called on completion with known keys or an empty list if none known.
-  // Concurrent calls to FetchKeys() must not be issued since implementations
-  // may not support them.
   virtual void FetchKeys(
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
@@ -58,8 +56,10 @@ class TrustedVaultClient {
   // the provided keys are not up-to-date. |cb| is run upon completion and
   // returns false if the call did not make any difference (e.g. the operation
   // is unsupported) or true if some change may have occurred (which indicates a
-  // second FetchKeys() attempt is worth). Concurrent calls to MarkKeysAsStale()
-  // must not be issued since implementations may not support them.
+  // second FetchKeys() attempt is worth). During the execution, before |cb| is
+  // invoked, the behavior is unspecified if FetchKeys() is invoked, that is,
+  // FetchKeys() may or may not treat existing keys as stale (only guaranteed
+  // upon completion of MarkKeysAsStale()).
   virtual void MarkKeysAsStale(const CoreAccountInfo& account_info,
                                base::OnceCallback<void(bool)> cb) = 0;
 

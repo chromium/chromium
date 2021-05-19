@@ -159,7 +159,7 @@ public class TrustedVaultClient {
      */
     @CalledByNative
     private static void fetchKeys(
-            long nativeTrustedVaultClientAndroid, CoreAccountInfo accountInfo) {
+            long nativeTrustedVaultClientAndroid, int requestId, CoreAccountInfo accountInfo) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
 
         get().mBackend.fetchKeys(accountInfo)
@@ -168,15 +168,15 @@ public class TrustedVaultClient {
                                 -> {
                             if (isNativeRegistered(nativeTrustedVaultClientAndroid)) {
                                 TrustedVaultClientJni.get().fetchKeysCompleted(
-                                        nativeTrustedVaultClientAndroid, accountInfo.getGaiaId(),
-                                        keys.toArray(new byte[0][]));
+                                        nativeTrustedVaultClientAndroid, requestId,
+                                        accountInfo.getGaiaId(), keys.toArray(new byte[0][]));
                             }
                         },
                         (exception) -> {
                             if (isNativeRegistered(nativeTrustedVaultClientAndroid)) {
                                 TrustedVaultClientJni.get().fetchKeysCompleted(
-                                        nativeTrustedVaultClientAndroid, accountInfo.getGaiaId(),
-                                        new byte[0][]);
+                                        nativeTrustedVaultClientAndroid, requestId,
+                                        accountInfo.getGaiaId(), new byte[0][]);
                             }
                         });
     }
@@ -187,7 +187,7 @@ public class TrustedVaultClient {
      */
     @CalledByNative
     private static void markKeysAsStale(
-            long nativeTrustedVaultClientAndroid, CoreAccountInfo accountInfo) {
+            long nativeTrustedVaultClientAndroid, int requestId, CoreAccountInfo accountInfo) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
 
         get().mBackend.markKeysAsStale(accountInfo)
@@ -196,7 +196,7 @@ public class TrustedVaultClient {
                                 -> {
                             if (isNativeRegistered(nativeTrustedVaultClientAndroid)) {
                                 TrustedVaultClientJni.get().markKeysAsStaleCompleted(
-                                        nativeTrustedVaultClientAndroid, result);
+                                        nativeTrustedVaultClientAndroid, requestId, result);
                             }
                         },
                         (exception) -> {
@@ -205,15 +205,17 @@ public class TrustedVaultClient {
                                 // difference so let's return true indicating that it might have,
                                 // since false positives are allowed.
                                 TrustedVaultClientJni.get().markKeysAsStaleCompleted(
-                                        nativeTrustedVaultClientAndroid, true);
+                                        nativeTrustedVaultClientAndroid, requestId, true);
                             }
                         });
     }
 
     @NativeMethods
     interface Natives {
-        void fetchKeysCompleted(long nativeTrustedVaultClientAndroid, String gaiaId, byte[][] keys);
-        void markKeysAsStaleCompleted(long nativeTrustedVaultClientAndroid, boolean result);
+        void fetchKeysCompleted(
+                long nativeTrustedVaultClientAndroid, int requestId, String gaiaId, byte[][] keys);
+        void markKeysAsStaleCompleted(
+                long nativeTrustedVaultClientAndroid, int requestId, boolean result);
         void notifyKeysChanged(long nativeTrustedVaultClientAndroid);
     }
 }
