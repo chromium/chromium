@@ -785,6 +785,11 @@ int HeadlessShellMain(int argc, const char** argv) {
         command_line.GetSwitchValueASCII(switches::kUseGL));
   }
 
+  if (command_line.HasSwitch(switches::kUseANGLE)) {
+    builder.SetANGLEImplementation(
+        command_line.GetSwitchValueASCII(switches::kUseANGLE));
+  }
+
   if (command_line.HasSwitch(switches::kUserDataDir)) {
     builder.SetUserDataDir(
         command_line.GetSwitchValuePath(switches::kUserDataDir));

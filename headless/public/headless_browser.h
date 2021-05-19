@@ -150,6 +150,10 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   // string can be used to disable GL rendering (e.g., WebGL support).
   std::string gl_implementation;
 
+  // Choose the ANGLE implementation to use for rendering.
+  // Only relevant if the gl_implementation above is set to "angle".
+  std::string angle_implementation;
+
   // Default per-context options, can be specialized on per-context basis.
 
   std::string product_name_and_version;
@@ -236,6 +240,7 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
   Builder& SetDisableSandbox(bool disable_sandbox);
   Builder& SetEnableResourceScheduler(bool enable_resource_scheduler);
   Builder& SetGLImplementation(const std::string& gl_implementation);
+  Builder& SetANGLEImplementation(const std::string& angle_implementation);
   Builder& SetAppendCommandLineFlagsCallback(
       const Options::AppendCommandLineFlagsCallback& callback);
 #if defined(OS_WIN)

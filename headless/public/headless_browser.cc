@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "build/build_config.h"
 #include "content/public/common/user_agent.h"
 #include "headless/public/version.h"
 #include "ui/gl/gl_switches.h"
@@ -36,6 +37,7 @@ Options::Options(int argc, const char** argv)
     : argc(argc),
       argv(argv),
       gl_implementation(gl::kGLImplementationSwiftShaderForWebGLName),
+      angle_implementation(gl::kANGLEImplementationNoneName),
       product_name_and_version(GetProductNameAndVersion()),
       user_agent(content::BuildUserAgentFromProduct(product_name_and_version)),
       window_size(kDefaultWindowSize),
@@ -116,6 +118,12 @@ Builder& Builder::SetEnableResourceScheduler(bool enable_resource_scheduler) {
 
 Builder& Builder::SetGLImplementation(const std::string& gl_implementation) {
   options_.gl_implementation = gl_implementation;
+  return *this;
+}
+
+Builder& Builder::SetANGLEImplementation(
+    const std::string& angle_implementation) {
+  options_.angle_implementation = angle_implementation;
   return *this;
 }
 

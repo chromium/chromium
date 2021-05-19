@@ -105,6 +105,10 @@ const char kTimeout[] = "timeout";
 // rendering.
 const char kUseGL[] = "use-gl";
 
+// Sets the ANGLE implementation to use. Only relevant if "use-gl" is set to
+// "angle"
+const char kUseANGLE[] = "use-angle";
+
 // A string used to override the default user agent with a custom one.
 const char kUserAgent[] = "user-agent";
 

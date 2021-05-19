@@ -215,6 +215,10 @@ bool HeadlessContentMainDelegate::BasicStartupComplete(int* exit_code) {
     if (!options()->gl_implementation.empty()) {
       command_line->AppendSwitchASCII(::switches::kUseGL,
                                       options()->gl_implementation);
+      if (!options()->angle_implementation.empty()) {
+        command_line->AppendSwitchASCII(::switches::kUseANGLE,
+                                        options()->angle_implementation);
+      }
     } else {
       command_line->AppendSwitch(::switches::kDisableGpu);
     }
