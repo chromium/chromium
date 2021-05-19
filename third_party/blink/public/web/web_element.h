@@ -85,6 +85,9 @@ class BLINK_EXPORT WebElement : public WebNode {
   // Returns true if this is an autonomous custom element.
   bool IsAutonomousCustomElement() const;
 
+  // Returns the owning shadow host for this element, if there is one.
+  WebElement OwnerShadowHost() const;
+
   // Returns an author ShadowRoot attached to this element, regardless
   // of open or closed.  This returns null WebNode if this
   // element has no ShadowRoot or has a UA ShadowRoot.

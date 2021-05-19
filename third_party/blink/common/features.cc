@@ -973,5 +973,10 @@ const base::Feature kMinimizeAudioProcessingForUnusedOutput{
     "MinimizeAudioProcessingForUnusedOutput",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Makes autofill look across shadow boundaries when collecting form controls to
+// fill.
+const base::Feature kAutofillShadowDOM{"AutofillShadowDOM",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

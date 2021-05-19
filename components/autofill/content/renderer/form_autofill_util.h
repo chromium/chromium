@@ -70,6 +70,18 @@ enum ExtractMask {
                                  // kMaxDataLength.
 };
 
+struct ShadowFieldData {
+  ShadowFieldData();
+  ShadowFieldData(const ShadowFieldData& other);
+  ~ShadowFieldData();
+
+  // If the form control is inside shadow DOM, then these lists will contain
+  // id and name attributes of the parent shadow host elements. There may be
+  // more than one if the form control is in nested shadow DOM.
+  std::vector<std::u16string> shadow_host_id_attributes;
+  std::vector<std::u16string> shadow_host_name_attributes;
+};
+
 // Gets up to kMaxListSize data list values (with corresponding label) for the
 // given element, each value and label have as far as kMaxDataLength.
 void GetDataListSuggestions(const blink::WebInputElement& element,
@@ -167,7 +179,8 @@ void WebFormControlElementToFormField(
     const blink::WebFormControlElement& element,
     const FieldDataManager* field_data_manager,
     ExtractMask extract_mask,
-    FormFieldData* field);
+    FormFieldData* field,
+    ShadowFieldData* shadow_data = nullptr);
 
 // Fills |form| with the FormData object corresponding to the |form_element|.
 // If |field| is non-NULL, also fills |field| with the FormField object
@@ -346,12 +359,12 @@ FindFormControlElementsByUniqueRendererId(
 // attribute of |element| or the value of the aria-label attribute of
 // |element|, with priority given to the aria-labelledby attribute.
 std::u16string GetAriaLabel(const blink::WebDocument& document,
-                            const blink::WebFormControlElement& element);
+                            const blink::WebElement& element);
 
 // Returns the ARIA label text of the elements denoted by the aria-describedby
 // attribute of |element|.
 std::u16string GetAriaDescription(const blink::WebDocument& document,
-                                  const blink::WebFormControlElement& element);
+                                  const blink::WebElement& element);
 
 }  // namespace form_util
 }  // namespace autofill
