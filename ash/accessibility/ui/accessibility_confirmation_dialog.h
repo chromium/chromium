@@ -29,6 +29,9 @@ class AccessibilityConfirmationDialog : public views::DialogDelegateView {
   AccessibilityConfirmationDialog& operator=(
       const AccessibilityConfirmationDialog&) = delete;
 
+  // views::DialogDelegate:
+  bool ShouldShowCloseButton() const override;
+
   base::WeakPtr<AccessibilityConfirmationDialog> GetWeakPtr();
 
  private:

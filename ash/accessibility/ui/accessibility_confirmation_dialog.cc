@@ -67,6 +67,10 @@ AccessibilityConfirmationDialog::AccessibilityConfirmationDialog(
 
 AccessibilityConfirmationDialog::~AccessibilityConfirmationDialog() = default;
 
+bool AccessibilityConfirmationDialog::ShouldShowCloseButton() const {
+  return false;
+}
+
 base::WeakPtr<AccessibilityConfirmationDialog>
 AccessibilityConfirmationDialog::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
