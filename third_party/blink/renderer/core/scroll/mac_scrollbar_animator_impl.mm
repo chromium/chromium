@@ -818,13 +818,11 @@ void MacScrollbarAnimatorImpl::UpdateScrollerStyle() {
 }
 
 void MacScrollbarAnimatorImpl::StartScrollbarPaintTimer() {
-  // Post a task with 1 ms delay to give a chance to run other immediate tasks
-  // that may cancel this.
   initial_scrollbar_paint_task_handle_ = PostDelayedCancellableTask(
       *task_runner_, FROM_HERE,
       WTF::Bind(&MacScrollbarAnimatorImpl::InitialScrollbarPaintTask,
                 WrapWeakPersistent(this)),
-      base::TimeDelta::FromMilliseconds(1));
+      base::TimeDelta::FromMilliseconds(100));
 }
 
 bool MacScrollbarAnimatorImpl::ScrollbarPaintTimerIsActive() const {
