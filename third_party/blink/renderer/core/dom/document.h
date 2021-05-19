@@ -210,7 +210,6 @@ class V8NodeFilter;
 class V8UnionElementCreationOptionsOrString;
 class ViewportData;
 class VisitedLinkState;
-class WebComputedAXTree;
 class WebMouseEvent;
 class WorkletAnimationController;
 enum class CSSPropertyID;
@@ -1580,9 +1579,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // associated Web App Manifest, it will return false.
   bool IsInWebAppScope() const;
 
-  ComputedAccessibleNode* GetOrCreateComputedAccessibleNode(
-      AXID ax_id,
-      WebComputedAXTree* tree);
+  ComputedAccessibleNode* GetOrCreateComputedAccessibleNode(AXID ax_id);
 
   bool HaveRenderBlockingResourcesLoaded() const;
 

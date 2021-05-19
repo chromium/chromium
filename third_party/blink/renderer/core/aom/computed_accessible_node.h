@@ -46,7 +46,7 @@ class ComputedAccessibleNode : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  ComputedAccessibleNode(AXID, WebComputedAXTree*, Document*);
+  ComputedAccessibleNode(AXID, Document*);
   ~ComputedAccessibleNode() override = default;
 
   void Trace(Visitor*) const override;
@@ -95,6 +95,7 @@ class ComputedAccessibleNode : public ScriptWrappable {
   ScriptPromise ensureUpToDate(ScriptState*);
 
  private:
+  WebComputedAXTree* GetTree() const;
   absl::optional<bool> GetBoolAttribute(WebAOMBoolAttribute) const;
   absl::optional<int32_t> GetIntAttribute(WebAOMIntAttribute) const;
   absl::optional<float> GetFloatAttribute(WebAOMFloatAttribute) const;
@@ -103,7 +104,6 @@ class ComputedAccessibleNode : public ScriptWrappable {
   AXID ax_id_;
 
   // This tree is owned by the RenderFrame.
-  blink::WebComputedAXTree* tree_;
   Member<Document> document_;
   std::unique_ptr<AXContext> ax_context_;
 };

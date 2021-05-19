@@ -100,17 +100,15 @@ void ComputedAccessibleNodePromiseResolver::UpdateTreeAndResolve() {
   AXID ax_id = cache.GetAXID(element_);
 
   ComputedAccessibleNode* accessible_node =
-      document.GetOrCreateComputedAccessibleNode(ax_id, tree);
+      document.GetOrCreateComputedAccessibleNode(ax_id);
   resolver_->Resolve(accessible_node);
 }
 
 // ComputedAccessibleNode ------------------------------------------------------
 
 ComputedAccessibleNode::ComputedAccessibleNode(AXID ax_id,
-                                               WebComputedAXTree* tree,
                                                Document* document)
     : ax_id_(ax_id),
-      tree_(tree),
       document_(document),
       ax_context_(std::make_unique<AXContext>(*document)) {}
 
@@ -220,7 +218,8 @@ const String ComputedAccessibleNode::autocomplete() const {
 
 const String ComputedAccessibleNode::checked() const {
   WebString out;
-  if (tree_->GetCheckedStateForAXNode(ax_id_, &out)) {
+
+  if (GetTree() && GetTree()->GetCheckedStateForAXNode(ax_id_, &out)) {
     return out;
   }
   return String();
@@ -238,7 +237,7 @@ const String ComputedAccessibleNode::placeholder() const {
 
 const String ComputedAccessibleNode::role() const {
   WebString out;
-  if (tree_->GetRoleForAXNode(ax_id_, &out)) {
+  if (GetTree() && GetTree()->GetRoleForAXNode(ax_id_, &out)) {
     return out;
   }
   return String();
@@ -253,49 +252,79 @@ const String ComputedAccessibleNode::valueText() const {
 }
 
 ComputedAccessibleNode* ComputedAccessibleNode::parent() const {
-  int32_t parent_ax_id;
-  if (!tree_->GetParentIdForAXNode(ax_id_, &parent_ax_id)) {
+  WebComputedAXTree* tree = GetTree();
+  if (!tree) {
     return nullptr;
   }
-  return document_->GetOrCreateComputedAccessibleNode(parent_ax_id, tree_);
+  int32_t parent_ax_id;
+  if (!tree->GetParentIdForAXNode(ax_id_, &parent_ax_id)) {
+    return nullptr;
+  }
+  return document_->GetOrCreateComputedAccessibleNode(parent_ax_id);
 }
 
 ComputedAccessibleNode* ComputedAccessibleNode::firstChild() const {
-  int32_t child_ax_id;
-  if (!tree_->GetFirstChildIdForAXNode(ax_id_, &child_ax_id)) {
+  WebComputedAXTree* tree = GetTree();
+  if (!tree) {
     return nullptr;
   }
-  return document_->GetOrCreateComputedAccessibleNode(child_ax_id, tree_);
+  int32_t child_ax_id;
+  if (!tree->GetFirstChildIdForAXNode(ax_id_, &child_ax_id)) {
+    return nullptr;
+  }
+  return document_->GetOrCreateComputedAccessibleNode(child_ax_id);
 }
 
 ComputedAccessibleNode* ComputedAccessibleNode::lastChild() const {
-  int32_t child_ax_id;
-  if (!tree_->GetLastChildIdForAXNode(ax_id_, &child_ax_id)) {
+  WebComputedAXTree* tree = GetTree();
+  if (!tree) {
     return nullptr;
   }
-  return document_->GetOrCreateComputedAccessibleNode(child_ax_id, tree_);
+  int32_t child_ax_id;
+  if (!tree->GetLastChildIdForAXNode(ax_id_, &child_ax_id)) {
+    return nullptr;
+  }
+  return document_->GetOrCreateComputedAccessibleNode(child_ax_id);
 }
 
 ComputedAccessibleNode* ComputedAccessibleNode::previousSibling() const {
-  int32_t sibling_ax_id;
-  if (!tree_->GetPreviousSiblingIdForAXNode(ax_id_, &sibling_ax_id)) {
+  WebComputedAXTree* tree = GetTree();
+  if (!tree) {
     return nullptr;
   }
-  return document_->GetOrCreateComputedAccessibleNode(sibling_ax_id, tree_);
+  int32_t sibling_ax_id;
+  if (!tree->GetPreviousSiblingIdForAXNode(ax_id_, &sibling_ax_id)) {
+    return nullptr;
+  }
+  return document_->GetOrCreateComputedAccessibleNode(sibling_ax_id);
 }
 
 ComputedAccessibleNode* ComputedAccessibleNode::nextSibling() const {
-  int32_t sibling_ax_id;
-  if (!tree_->GetNextSiblingIdForAXNode(ax_id_, &sibling_ax_id)) {
+  WebComputedAXTree* tree = GetTree();
+  if (!tree) {
     return nullptr;
   }
-  return document_->GetOrCreateComputedAccessibleNode(sibling_ax_id, tree_);
+  int32_t sibling_ax_id;
+  if (!tree->GetNextSiblingIdForAXNode(ax_id_, &sibling_ax_id)) {
+    return nullptr;
+  }
+  return document_->GetOrCreateComputedAccessibleNode(sibling_ax_id);
+}
+
+WebComputedAXTree* ComputedAccessibleNode::GetTree() const {
+  LocalFrame* local_frame = document_->GetFrame();
+  if (!local_frame)
+    return nullptr;
+
+  WebLocalFrameClient* client =
+      WebLocalFrameImpl::FromFrame(local_frame)->Client();
+  return client->GetOrCreateWebComputedAXTree();
 }
 
 absl::optional<bool> ComputedAccessibleNode::GetBoolAttribute(
     WebAOMBoolAttribute attr) const {
   bool value;
-  if (tree_->GetBoolAttributeForAXNode(ax_id_, attr, &value))
+  if (GetTree() && GetTree()->GetBoolAttributeForAXNode(ax_id_, attr, &value))
     return value;
   return absl::nullopt;
 }
@@ -303,7 +332,7 @@ absl::optional<bool> ComputedAccessibleNode::GetBoolAttribute(
 absl::optional<int32_t> ComputedAccessibleNode::GetIntAttribute(
     WebAOMIntAttribute attr) const {
   int32_t value;
-  if (tree_->GetIntAttributeForAXNode(ax_id_, attr, &value))
+  if (GetTree() && GetTree()->GetIntAttributeForAXNode(ax_id_, attr, &value))
     return value;
   return absl::nullopt;
 }
@@ -311,7 +340,7 @@ absl::optional<int32_t> ComputedAccessibleNode::GetIntAttribute(
 absl::optional<float> ComputedAccessibleNode::GetFloatAttribute(
     WebAOMFloatAttribute attr) const {
   float value;
-  if (tree_->GetFloatAttributeForAXNode(ax_id_, attr, &value))
+  if (GetTree() && GetTree()->GetFloatAttributeForAXNode(ax_id_, attr, &value))
     return value;
   return absl::nullopt;
 }
@@ -319,7 +348,7 @@ absl::optional<float> ComputedAccessibleNode::GetFloatAttribute(
 const String ComputedAccessibleNode::GetStringAttribute(
     WebAOMStringAttribute attr) const {
   WebString out;
-  if (tree_->GetStringAttributeForAXNode(ax_id_, attr, &out)) {
+  if (GetTree() && GetTree()->GetStringAttributeForAXNode(ax_id_, attr, &out)) {
     return out;
   }
   return String();
