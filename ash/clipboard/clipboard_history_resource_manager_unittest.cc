@@ -131,16 +131,16 @@ TEST_F(ClipboardHistoryResourceManagerTest, GetLabel) {
       .SetFilenames({ui::FileInfo(base::FilePath("/dir/filename"),
                                   base::FilePath("filename"))})
       .SetBookmarkTitle("Bookmark Title")
-      .SetBitmap(gfx::test::CreateBitmap(10, 10))
+      .SetPng(gfx::test::CreatePNGBytes(10))
       .SetFileSystemData({u"/path/to/File.txt", u"/path/to/Other%20File.txt"})
       .SetWebSmartPaste(true);
 
-  // Bitmap data always take precedence.
+  // PNG data always take precedence.
   EXPECT_EQ(resource_manager()->GetLabel(builder.Build()), u"Image");
 
-  builder.ClearBitmap();
+  builder.ClearPng();
 
-  // In the absence of bitmap data, HTML data takes precedence, but we use
+  // In the absence of PNG data, HTML data takes precedence, but we use
   // plain-text format for the label.
   EXPECT_EQ(resource_manager()->GetLabel(builder.Build()), u"Text");
 

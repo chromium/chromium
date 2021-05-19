@@ -335,9 +335,8 @@ void ClipboardHostImpl::OnReadPng(ui::ClipboardBuffer clipboard_buffer,
                                   const std::vector<uint8_t>& data) {
   std::string string_data(
       reinterpret_cast<const char*>(data.data(), data.data() + data.size()));
-  // TODO(crbug.com/1201018): Create GetPngType() and use it here.
   PasteIfPolicyAllowed(
-      clipboard_buffer, ui::ClipboardFormatType::GetBitmapType(),
+      clipboard_buffer, ui::ClipboardFormatType::GetPngType(),
       std::move(string_data),
       base::BindOnce(
           [](std::vector<uint8_t> data, ReadPngCallback callback,

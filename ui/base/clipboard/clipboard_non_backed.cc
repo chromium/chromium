@@ -183,7 +183,7 @@ class ClipboardInternal {
   // Reads image from the ClipboardData.
   SkBitmap ReadImage() const {
     SkBitmap img;
-    if (!HasFormat(ClipboardInternalFormat::kBitmap))
+    if (!HasFormat(ClipboardInternalFormat::kPng))
       return img;
 
     // A shallow copy should be fine here, but just to be safe...
@@ -435,9 +435,10 @@ bool ClipboardNonBacked::IsFormatAvailable(
   if (format == ClipboardFormatType::GetRtfType())
     return clipboard_internal_->IsFormatAvailable(
         ClipboardInternalFormat::kRtf);
-  if (format == ClipboardFormatType::GetBitmapType())
+  if (format == ClipboardFormatType::GetPngType() ||
+      format == ClipboardFormatType::GetBitmapType())
     return clipboard_internal_->IsFormatAvailable(
-        ClipboardInternalFormat::kBitmap);
+        ClipboardInternalFormat::kPng);
   if (format == ClipboardFormatType::GetWebKitSmartPasteType())
     return clipboard_internal_->IsFormatAvailable(
         ClipboardInternalFormat::kWeb);

@@ -211,6 +211,7 @@ source_set("clipboard_test_support") {
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
     "//ui/base:features",
+    "//ui/gfx",
   ]
 
   if (is_android) {

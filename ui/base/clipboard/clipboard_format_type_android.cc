@@ -90,9 +90,14 @@ const ClipboardFormatType& ClipboardFormatType::GetRtfType() {
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetBitmapType() {
+const ClipboardFormatType& ClipboardFormatType::GetPngType() {
   static base::NoDestructor<ClipboardFormatType> type(kMimeTypePNG);
   return *type;
+}
+
+// static
+const ClipboardFormatType& ClipboardFormatType::GetBitmapType() {
+  return ClipboardFormatType::GetPngType();
 }
 
 // static

@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "skia/ext/skia_utils_base.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/skia_util.h"
 
 namespace ui {
@@ -22,7 +23,7 @@ ClipboardData::ClipboardData(const ClipboardData& other) {
   markup_data_ = other.markup_data_;
   url_ = other.url_;
   rtf_data_ = other.rtf_data_;
-  bitmap_ = other.bitmap();
+  png_ = other.png_;
   bookmark_title_ = other.bookmark_title_;
   bookmark_url_ = other.bookmark_url_;
   custom_data_format_ = other.custom_data_format_;
@@ -48,7 +49,7 @@ bool ClipboardData::operator==(const ClipboardData& that) const {
          custom_data_data_ == that.custom_data_data() &&
          web_smart_paste_ == that.web_smart_paste() &&
          svg_data_ == that.svg_data() && filenames_ == that.filenames() &&
-         gfx::BitmapsAreEqual(bitmap_, that.bitmap()) &&
+         png_ == that.png() &&
          (src_.get() ? (that.source() && *src_.get() == *that.source())
                      : !that.source());
 }
@@ -57,10 +58,22 @@ bool ClipboardData::operator!=(const ClipboardData& that) const {
   return !(*this == that);
 }
 
+void ClipboardData::SetPngData(std::vector<uint8_t> png) {
+  png_ = std::move(png);
+  format_ |= static_cast<int>(ClipboardInternalFormat::kPng);
+}
+
+SkBitmap ClipboardData::bitmap() const {
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(png_.data(), png_.size(), &bitmap);
+  return bitmap;
+}
+
 void ClipboardData::SetBitmapData(const SkBitmap& bitmap) {
   DCHECK_EQ(bitmap.colorType(), kN32_SkColorType);
-  bitmap_ = bitmap;
-  format_ |= static_cast<int>(ClipboardInternalFormat::kBitmap);
+  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
+                                    &png_);
+  format_ |= static_cast<int>(ClipboardInternalFormat::kPng);
 }
 
 void ClipboardData::SetCustomData(const std::string& data_format,

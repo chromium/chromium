@@ -29,7 +29,7 @@ constexpr char16_t kFileSystemSourcesType[] = u"fs/sources";
 
 // The array of formats in order of decreasing priority.
 constexpr ui::ClipboardInternalFormat kPrioritizedFormats[] = {
-    ui::ClipboardInternalFormat::kBitmap,
+    ui::ClipboardInternalFormat::kPng,
     ui::ClipboardInternalFormat::kHtml,
     ui::ClipboardInternalFormat::kText,
     ui::ClipboardInternalFormat::kRtf,
@@ -53,7 +53,8 @@ absl::optional<ui::ClipboardInternalFormat> CalculateMainFormat(
 ClipboardHistoryDisplayFormat CalculateDisplayFormat(
     const ui::ClipboardData& data) {
   switch (CalculateMainFormat(data).value()) {
-    case ui::ClipboardInternalFormat::kBitmap:
+    case ui::ClipboardInternalFormat::kPng:
+      // TODO(crbug.com/1207638): Rename this to kImage or kPng.
       return ClipboardHistoryDisplayFormat::kBitmap;
     case ui::ClipboardInternalFormat::kHtml:
       if ((data.markup_data().find("<img") == std::string::npos) &&

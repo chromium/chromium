@@ -99,6 +99,12 @@ const ClipboardFormatType& ClipboardFormatType::GetRtfType() {
 }
 
 // static
+const ClipboardFormatType& ClipboardFormatType::GetPngType() {
+  static base::NoDestructor<ClipboardFormatType> type(NSPasteboardTypePNG);
+  return *type;
+}
+
+// static
 const ClipboardFormatType& ClipboardFormatType::GetBitmapType() {
   static base::NoDestructor<ClipboardFormatType> type(NSTIFFPboardType);
   return *type;

@@ -8,8 +8,8 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/memory/ref_counted_memory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/file_info.h"
 
 namespace ui {
@@ -67,9 +67,11 @@ class ASH_EXPORT ClipboardHistoryItemBuilder {
       const std::string& bookmark_title);
   ClipboardHistoryItemBuilder& ClearBookmarkTitle();
 
-  // Sets/clears `bitmap_` data.
-  ClipboardHistoryItemBuilder& SetBitmap(const SkBitmap& bitmap);
-  ClipboardHistoryItemBuilder& ClearBitmap();
+  // Sets/clears `png_` data.
+  ClipboardHistoryItemBuilder& SetPng(std::vector<uint8_t> png);
+  ClipboardHistoryItemBuilder& SetPng(
+      const scoped_refptr<base::RefCountedMemory>& png);
+  ClipboardHistoryItemBuilder& ClearPng();
 
   // Sets/clears `custom_format_` and `custom_data_` data.
   ClipboardHistoryItemBuilder& SetCustomData(const std::string& custom_format,
@@ -93,7 +95,7 @@ class ASH_EXPORT ClipboardHistoryItemBuilder {
   absl::optional<std::string> rtf_;
   std::vector<ui::FileInfo> filenames_;
   absl::optional<std::string> bookmark_title_;
-  absl::optional<SkBitmap> bitmap_;
+  absl::optional<std::vector<uint8_t>> png_;
   absl::optional<std::string> custom_format_;
   absl::optional<std::string> custom_data_;
   absl::optional<bool> web_smart_paste_;

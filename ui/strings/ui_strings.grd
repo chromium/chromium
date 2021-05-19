@@ -1074,7 +1074,7 @@ need to be translated for each locale.-->
       </message>
 
       <!-- Clipboard history menu -->
-      <message name="IDS_CLIPBOARD_HISTORY_MENU_BITMAP_IMAGE" desc="Accessibility text for the bitmap image shown on the clipboard history menu">
+      <message name="IDS_CLIPBOARD_HISTORY_MENU_PNG_IMAGE" desc="Accessibility text for the PNG image shown on the clipboard history menu">
         Image.
       </message>
       <message name="IDS_CLIPBOARD_HISTORY_MENU_HTML_IMAGE" desc="Accessibility text for the HTML-rendered image shown on the clipboard history menu">

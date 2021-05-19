@@ -159,7 +159,7 @@ std::u16string ClipboardHistoryResourceManager::GetLabel(
     const ClipboardHistoryItem& item) const {
   const ui::ClipboardData& data = item.data();
   switch (ClipboardHistoryUtil::CalculateMainFormat(data).value()) {
-    case ui::ClipboardInternalFormat::kBitmap:
+    case ui::ClipboardInternalFormat::kPng:
       RecordPlaceholderString(ClipboardHistoryPlaceholderStringType::kBitmap);
       return GetLocalizedString(IDS_CLIPBOARD_MENU_IMAGE);
     case ui::ClipboardInternalFormat::kText:

@@ -779,7 +779,7 @@ void ClipboardWin::WriteBitmap(const SkBitmap& bitmap) {
                                         &png_encoded_bitmap)) {
     HGLOBAL png_hglobal = skia::CreateHGlobalForByteArray(png_encoded_bitmap);
     if (png_hglobal)
-      WriteToClipboard(ClipboardFormatType::GetPNGType(), png_hglobal);
+      WriteToClipboard(ClipboardFormatType::GetPngType(), png_hglobal);
   }
   HGLOBAL dibv5_hglobal = skia::CreateDIBV5ImageDataFromN32SkBitmap(bitmap);
   if (dibv5_hglobal)

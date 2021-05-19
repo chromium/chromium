@@ -15,9 +15,11 @@
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/image_view.h"
@@ -235,11 +237,13 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
             clipboard_history_item, container_->resource_manager_,
             base::BindRepeating(&BitmapContentsView::UpdateImageViewSize,
                                 weak_ptr_factory_.GetWeakPtr()));
-      case ui::ClipboardInternalFormat::kBitmap: {
+      case ui::ClipboardInternalFormat::kPng: {
         auto image_view = std::make_unique<views::ImageView>();
-        gfx::ImageSkia bitmap_image = gfx::ImageSkia::CreateFrom1xBitmap(
-            clipboard_history_item->data().bitmap());
-        image_view->SetImage(bitmap_image);
+        gfx::Image image = gfx::Image::CreateFrom1xPNGBytes(
+            clipboard_history_item->data().png().data(),
+            clipboard_history_item->data().png().size());
+        ui::ImageModel image_model = ui::ImageModel::FromImage(image);
+        image_view->SetImage(image_model);
         return image_view;
       }
       default:
@@ -262,7 +266,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     // should meet at least one edge of the contents bounds.
     float scaling_up_ratio = 0.f;
     switch (container_->data_format_) {
-      case ui::ClipboardInternalFormat::kBitmap: {
+      case ui::ClipboardInternalFormat::kPng: {
         scaling_up_ratio = std::fmin(width_ratio, height_ratio);
         break;
       }
@@ -318,8 +322,8 @@ std::u16string ClipboardHistoryBitmapItemView::GetAccessibleName() const {
   switch (data_format_) {
     case ui::ClipboardInternalFormat::kHtml:
       return l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_MENU_HTML_IMAGE);
-    case ui::ClipboardInternalFormat::kBitmap:
-      return l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_MENU_BITMAP_IMAGE);
+    case ui::ClipboardInternalFormat::kPng:
+      return l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_MENU_PNG_IMAGE);
     default:
       NOTREACHED();
       return std::u16string();

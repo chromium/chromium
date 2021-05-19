@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
+#include <vector>
 
 #include "ash/clipboard/clipboard_history_item.h"
 #include "base/notreached.h"
@@ -12,6 +13,7 @@
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
@@ -32,8 +34,8 @@ ClipboardHistoryItem ClipboardHistoryItemBuilder::Build() const {
     data.set_filenames(filenames_);
   if (bookmark_title_.has_value())
     data.set_bookmark_title(bookmark_title_.value());
-  if (bitmap_.has_value())
-    data.SetBitmapData(bitmap_.value());
+  if (png_.has_value())
+    data.SetPngData(png_.value());
   if (custom_format_.has_value() && custom_data_.has_value())
     data.SetCustomData(custom_format_.value(), custom_data_.value());
   if (web_smart_paste_.has_value())
@@ -46,7 +48,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::Clear() {
   markup_ = absl::nullopt;
   rtf_ = absl::nullopt;
   bookmark_title_ = absl::nullopt;
-  bitmap_ = absl::nullopt;
+  png_ = absl::nullopt;
   custom_format_ = absl::nullopt;
   custom_data_ = absl::nullopt;
   web_smart_paste_ = absl::nullopt;
@@ -69,8 +71,8 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetFormat(
                                         base::FilePath("filename"))});
     case ui::ClipboardInternalFormat::kBookmark:
       return SetBookmarkTitle("Bookmark Title");
-    case ui::ClipboardInternalFormat::kBitmap:
-      return SetBitmap(gfx::test::CreateBitmap(10, 10));
+    case ui::ClipboardInternalFormat::kPng:
+      return SetPng(gfx::test::CreatePNGBytes(10));
     case ui::ClipboardInternalFormat::kCustom:
       return SetCustomData("Custom Format", "Custom Data");
     case ui::ClipboardInternalFormat::kWeb:
@@ -94,8 +96,8 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearFormat(
       return ClearFilenames();
     case ui::ClipboardInternalFormat::kBookmark:
       return ClearBookmarkTitle();
-    case ui::ClipboardInternalFormat::kBitmap:
-      return ClearBitmap();
+    case ui::ClipboardInternalFormat::kPng:
+      return ClearPng();
     case ui::ClipboardInternalFormat::kCustom:
       return ClearCustomData();
     case ui::ClipboardInternalFormat::kWeb:
@@ -171,14 +173,20 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearBookmarkTitle() {
   return *this;
 }
 
-ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetBitmap(
-    const SkBitmap& bitmap) {
-  bitmap_ = bitmap;
+ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetPng(
+    const scoped_refptr<base::RefCountedMemory>& png) {
+  std::vector<uint8_t> data(png->data(), png->data() + png->size());
+  return SetPng(std::move(data));
+}
+
+ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetPng(
+    std::vector<uint8_t> png) {
+  png_ = std::move(png);
   return *this;
 }
 
-ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearBitmap() {
-  bitmap_ = absl::nullopt;
+ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearPng() {
+  png_ = absl::nullopt;
   return *this;
 }
 
