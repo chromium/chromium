@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/cast_streaming/cast_message_port_impl.h"
+#include "components/cast_streaming/browser/cast_message_port_impl.h"
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/cast/message_port/test_message_port_receiver.h"
-#include "fuchsia/cast_streaming/message_serialization.h"
+#include "components/cast_streaming/browser/message_serialization.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cast_streaming {

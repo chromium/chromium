@@ -127,7 +127,6 @@ test("e2e_tests") {
     ":test_receiver",
     ":test_sender",
     "//base/test:test_support",
-    "//components/cast/message_port:test_message_port_receiver",
     "//components/openscreen_platform:openscreen_platform_net",
     "//media",
     "//mojo/core/embedder",
@@ -140,12 +139,16 @@ test("e2e_tests") {
   ]
 }
 
-# NOTE: This source set is intentionally empty. It is used to force the building
-# of the code defined in this directory, as it is production code which must
-# be validated as part of the CQ.
-# TODO(crbug.com/1207721): Add unit tests for code in this directory.
+# TODO(crbug.com/1207721): Add more unit tests for code in this directory.
 source_set("unit_tests") {
   testonly = true
-  deps = [ ":browser" ]
-  sources = []
+  deps = [
+    ":browser",
+    ":core",
+    "//base",
+    "//base/test:test_support",
+    "//components/cast/message_port:test_message_port_receiver",
+    "//testing/gtest",
+  ]
+  sources = [ "cast_message_port_impl_unittest.cc" ]
 }
