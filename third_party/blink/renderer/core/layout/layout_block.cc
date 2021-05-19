@@ -2270,11 +2270,11 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
   parent->UpdateAnonymousChildStyle(nullptr, *new_style);
   LayoutBlock* layout_block;
   if (new_display == EDisplay::kFlex) {
-    layout_block = LayoutObjectFactory::CreateFlexibleBox(parent->GetDocument(),
-                                                          *new_style, legacy);
+    layout_block =
+        LayoutObjectFactory::CreateFlexibleBox(parent->GetDocument(), legacy);
   } else if (new_display == EDisplay::kGrid) {
-    layout_block = LayoutObjectFactory::CreateGrid(parent->GetDocument(),
-                                                   *new_style, legacy);
+    layout_block =
+        LayoutObjectFactory::CreateGrid(parent->GetDocument(), legacy);
   } else {
     DCHECK(new_display == EDisplay::kBlock ||
            new_display == EDisplay::kFlowRoot);

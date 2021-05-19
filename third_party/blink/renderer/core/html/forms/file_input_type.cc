@@ -209,8 +209,7 @@ void FileInputType::CustomStyleForLayoutObject(ComputedStyle& style) {
 
 LayoutObject* FileInputType::CreateLayoutObject(const ComputedStyle& style,
                                                 LegacyLayout legacy) const {
-  return LayoutObjectFactory::CreateFileUploadControl(GetElement(), style,
-                                                      legacy);
+  return LayoutObjectFactory::CreateFileUploadControl(GetElement(), legacy);
 }
 
 InputType::ValueMode FileInputType::GetValueMode() const {

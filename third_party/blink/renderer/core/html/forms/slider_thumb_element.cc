@@ -327,7 +327,7 @@ HTMLInputElement* SliderContainerElement::HostInput() const {
 LayoutObject* SliderContainerElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  return LayoutObjectFactory::CreateFlexibleBox(*this, style, legacy);
+  return LayoutObjectFactory::CreateFlexibleBox(*this, legacy);
 }
 
 void SliderContainerElement::DefaultEventHandler(Event& event) {

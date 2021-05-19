@@ -254,7 +254,7 @@ LayoutObject* RangeInputType::CreateLayoutObject(const ComputedStyle& style,
                                                  LegacyLayout legacy) const {
   // TODO(crbug.com/1131352): input[type=range] should not use
   // LayoutFlexibleBox.
-  return LayoutObjectFactory::CreateFlexibleBox(GetElement(), style, legacy);
+  return LayoutObjectFactory::CreateFlexibleBox(GetElement(), legacy);
 }
 
 Decimal RangeInputType::ParseToNumber(const String& src,

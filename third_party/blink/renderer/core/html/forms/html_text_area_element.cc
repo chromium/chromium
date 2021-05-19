@@ -263,7 +263,7 @@ bool HTMLTextAreaElement::TypeShouldForceLegacyLayout() const {
 LayoutObject* HTMLTextAreaElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  return LayoutObjectFactory::CreateTextControlMultiLine(*this, style, legacy);
+  return LayoutObjectFactory::CreateTextControlMultiLine(*this, legacy);
 }
 
 void HTMLTextAreaElement::AppendToFormData(FormData& form_data) {

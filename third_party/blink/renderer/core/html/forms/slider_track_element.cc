@@ -13,7 +13,7 @@ SliderTrackElement::SliderTrackElement(Document& document)
 
 LayoutObject* SliderTrackElement::CreateLayoutObject(const ComputedStyle& style,
                                                      LegacyLayout legacy) {
-  return LayoutObjectFactory::CreateSliderTrack(*this, style, legacy);
+  return LayoutObjectFactory::CreateSliderTrack(*this, legacy);
 }
 
 }  // namespace blink

@@ -285,8 +285,7 @@ bool TextFieldInputType::TypeShouldForceLegacyLayout() const {
 LayoutObject* TextFieldInputType::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) const {
-  return LayoutObjectFactory::CreateTextControlSingleLine(GetElement(), style,
-                                                          legacy);
+  return LayoutObjectFactory::CreateTextControlSingleLine(GetElement(), legacy);
 }
 
 void TextFieldInputType::CreateShadowSubtree() {

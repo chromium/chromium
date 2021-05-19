@@ -77,7 +77,7 @@ void BaseButtonInputType::AppendToFormData(FormData&) const {}
 LayoutObject* BaseButtonInputType::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) const {
-  return LayoutObjectFactory::CreateButton(GetElement(), style, legacy);
+  return LayoutObjectFactory::CreateButton(GetElement(), legacy);
 }
 
 InputType::ValueMode BaseButtonInputType::GetValueMode() const {

@@ -17,7 +17,7 @@ HTMLRTElement::HTMLRTElement(Document& document)
 LayoutObject* HTMLRTElement::CreateLayoutObject(const ComputedStyle& style,
                                                 LegacyLayout legacy) {
   if (style.Display() == EDisplay::kBlock)
-    return LayoutObjectFactory::CreateRubyText(this, style, legacy);
+    return LayoutObjectFactory::CreateRubyText(this, legacy);
   return LayoutObject::CreateObject(this, style, legacy);
 }
 

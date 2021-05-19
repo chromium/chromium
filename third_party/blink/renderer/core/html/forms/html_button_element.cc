@@ -57,7 +57,7 @@ LayoutObject* HTMLButtonElement::CreateLayoutObject(const ComputedStyle& style,
       display == EDisplay::kInlineLayoutCustom ||
       display == EDisplay::kLayoutCustom)
     return HTMLFormControlElement::CreateLayoutObject(style, legacy);
-  return LayoutObjectFactory::CreateButton(*this, style, legacy);
+  return LayoutObjectFactory::CreateButton(*this, legacy);
 }
 
 const AtomicString& HTMLButtonElement::FormControlType() const {
