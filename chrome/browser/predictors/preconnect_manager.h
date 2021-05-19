@@ -20,7 +20,9 @@
 #include "net/base/network_isolation_key.h"
 #include "url/gurl.h"
 
-class Profile;
+namespace content {
+class BrowserContext;
+}
 
 namespace network {
 namespace mojom {
@@ -145,7 +147,8 @@ class PreconnectManager {
         bool success) {}
   };
 
-  PreconnectManager(base::WeakPtr<Delegate> delegate, Profile* profile);
+  PreconnectManager(base::WeakPtr<Delegate> delegate,
+                    content::BrowserContext* browser_context);
   virtual ~PreconnectManager();
 
   // Starts preconnect and preresolve jobs keyed by |url|.
@@ -210,7 +213,7 @@ class PreconnectManager {
   network::mojom::NetworkContext* GetNetworkContext() const;
 
   base::WeakPtr<Delegate> delegate_;
-  Profile* const profile_;
+  content::BrowserContext* const browser_context_;
   std::list<PreresolveJobId> queued_jobs_;
   PreresolveJobMap preresolve_jobs_;
   std::map<GURL, std::unique_ptr<PreresolveInfo>> preresolve_info_;

@@ -10,7 +10,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
-#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -69,12 +69,12 @@ PreresolveJob::PreresolveJob(PreresolveJob&& other) = default;
 PreresolveJob::~PreresolveJob() = default;
 
 PreconnectManager::PreconnectManager(base::WeakPtr<Delegate> delegate,
-                                     Profile* profile)
+                                     content::BrowserContext* browser_context)
     : delegate_(std::move(delegate)),
-      profile_(profile),
+      browser_context_(browser_context),
       inflight_preresolves_count_(0) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile_);
+  DCHECK(browser_context_);
 }
 
 PreconnectManager::~PreconnectManager() = default;
@@ -329,13 +329,13 @@ network::mojom::NetworkContext* PreconnectManager::GetNetworkContext() const {
   if (network_context_)
     return network_context_;
 
-  if (profile_->AsTestingProfile()) {
-    // We're testing and |network_context_| wasn't set. Return nullptr to avoid
-    // hitting the network.
-    return nullptr;
-  }
+#if defined(UNIT_TEST)
+  // We're testing and |network_context_| wasn't set. Return nullptr to avoid
+  // hitting the network.
+  return nullptr;
+#endif
 
-  return profile_->GetDefaultStoragePartition()->GetNetworkContext();
+  return browser_context_->GetDefaultStoragePartition()->GetNetworkContext();
 }
 
 }  // namespace predictors
