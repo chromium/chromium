@@ -1599,8 +1599,9 @@ void NavigationRequest::BeginNavigation() {
 
   if (!NeedsUrlLoader()) {
     // The types of pages that don't need a URL Loader should never get served
-    // from the BackForwardCache.
+    // from the BackForwardCache or activated from a prerender.
     DCHECK(!IsServedFromBackForwardCache());
+    DCHECK(!IsPrerenderedPageActivation());
 
     // There is no need to make a network request for this navigation, so commit
     // it immediately.
