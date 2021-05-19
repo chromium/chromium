@@ -6181,20 +6181,6 @@
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
-      'V8 Blink Linux Layout NG': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-18.04',
-            },
-          ],
-          'hard_timeout': 900,
-        },
-        'test_suites': {
-          'gtest_tests': 'blink_unittests',
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
       'V8 Blink Mac': {
         'swarming': {
           'dimension_sets': [
