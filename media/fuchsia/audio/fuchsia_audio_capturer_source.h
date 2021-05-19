@@ -10,10 +10,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/audio_capturer_source.h"
+#include "media/base/media_export.h"
 
 namespace media {
 
-class FuchsiaAudioCapturerSource : public AudioCapturerSource {
+class MEDIA_EXPORT FuchsiaAudioCapturerSource : public AudioCapturerSource {
  public:
   explicit FuchsiaAudioCapturerSource(
       fidl::InterfaceHandle<fuchsia::media::AudioCapturer> capturer_handle);

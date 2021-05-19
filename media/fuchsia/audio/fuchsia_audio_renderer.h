@@ -13,6 +13,7 @@
 #include "media/base/audio_renderer.h"
 #include "media/base/buffering_state.h"
 #include "media/base/demuxer_stream.h"
+#include "media/base/media_export.h"
 #include "media/base/time_source.h"
 #include "media/fuchsia/common/vmo_buffer_writer_queue.h"
 
@@ -24,7 +25,8 @@ class MediaLog;
 // AudioRenderer implementation that output audio to AudioConsumer interface on
 // Fuchsia. Unlike the default AudioRendererImpl it doesn't decode audio and
 // sends encoded stream directly to AudioConsumer provided by the platform.
-class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
+class MEDIA_EXPORT FuchsiaAudioRenderer : public AudioRenderer,
+                                          public TimeSource {
  public:
   FuchsiaAudioRenderer(MediaLog* media_log,
                        fidl::InterfaceHandle<fuchsia::media::AudioConsumer>
@@ -155,6 +157,10 @@ class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
 
   std::unique_ptr<DecryptingDemuxerStream> decrypting_demuxer_stream_;
 
+  // Indicates that StartPlaying() has been called. Note that playback doesn't
+  // start until TimeSource::StartTicking() is called.
+  bool renderer_started_ = false;
+
   BufferingState buffer_state_ = BUFFERING_HAVE_NOTHING;
 
   base::TimeDelta last_packet_timestamp_ = base::TimeDelta::Min();
@@ -162,10 +168,10 @@ class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
 
   VmoBufferWriterQueue input_queue_;
 
-  // Lead time range requested by the |audio_consumer_|. Initialized to 0 until
-  // the initial AudioConsumerStatus is received.
-  base::TimeDelta min_lead_time_;
-  base::TimeDelta max_lead_time_;
+  // Lead time range requested by the |audio_consumer_|. Initialized to  the
+  // [100ms, 500ms] until the initial AudioConsumerStatus is received.
+  base::TimeDelta min_lead_time_ = base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta max_lead_time_ = base::TimeDelta::FromMilliseconds(500);
 
   // Set to true after we've received end-of-stream from the |demuxer_stream_|.
   // The renderer may be restarted after Flush().

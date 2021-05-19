@@ -233,6 +233,8 @@ void FuchsiaAudioRenderer::InitializeStreamSink(
   audio_consumer_->CreateStreamSink(
       std::move(vmos_for_stream_sink), std::move(stream_type),
       std::move(compression).value(), stream_sink_.NewRequest());
+
+  ScheduleReadDemuxerStream();
 }
 
 TimeSource* FuchsiaAudioRenderer::GetTimeSource() {
@@ -243,12 +245,15 @@ void FuchsiaAudioRenderer::Flush(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   FlushInternal();
+  renderer_started_ = false;
+
   std::move(callback).Run();
 }
 
 void FuchsiaAudioRenderer::StartPlaying() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  renderer_started_ = true;
   ScheduleReadDemuxerStream();
 }
 
@@ -435,6 +440,8 @@ void FuchsiaAudioRenderer::OnAudioConsumerStatusChanged(
     return;
   }
 
+  bool reschedule_read_timer = false;
+
   if (status.has_presentation_timeline()) {
     if (GetPlaybackState() != PlaybackState::kStopped) {
       base::AutoLock lock(timeline_lock_);
@@ -447,10 +454,11 @@ void FuchsiaAudioRenderer::OnAudioConsumerStatusChanged(
           status.presentation_timeline().subject_time);
       reference_delta_ = status.presentation_timeline().reference_delta;
       media_delta_ = status.presentation_timeline().subject_delta;
+
+      reschedule_read_timer = true;
     }
   }
 
-  bool reschedule_read_timer = false;
   if (status.has_min_lead_time()) {
     auto new_min_lead_time =
         base::TimeDelta::FromZxDuration(status.min_lead_time());
@@ -481,20 +489,28 @@ void FuchsiaAudioRenderer::OnAudioConsumerStatusChanged(
 void FuchsiaAudioRenderer::ScheduleReadDemuxerStream() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!demuxer_stream_ || read_timer_.IsRunning() || is_demuxer_read_pending_ ||
-      is_at_end_of_stream_ || input_queue_.IsBlocked()) {
+  if (!renderer_started_ || !demuxer_stream_ || read_timer_.IsRunning() ||
+      is_demuxer_read_pending_ || is_at_end_of_stream_ ||
+      input_queue_.IsBlocked()) {
     return;
   }
 
   base::TimeDelta next_read_delay;
   if (!last_packet_timestamp_.is_min()) {
-    auto relative_buffer_pos = last_packet_timestamp_ - CurrentMediaTime();
+    std::vector<base::TimeTicks> wall_clock_times;
+    bool is_time_moving =
+        GetWallClockTimes({last_packet_timestamp_}, &wall_clock_times);
+    base::TimeDelta relative_buffer_pos =
+        wall_clock_times[0] - base::TimeTicks::Now();
 
-    if (!min_lead_time_.is_zero() && relative_buffer_pos > min_lead_time_) {
-      SetBufferState(BUFFERING_HAVE_ENOUGH);
-    }
+    // Check if we have buffered more than |max_lead_time_|.
+    if (relative_buffer_pos >= max_lead_time_) {
+      // If playback is not active then there is no need to buffer more.
+      if (!is_time_moving)
+        return;
 
-    if (!max_lead_time_.is_zero() && relative_buffer_pos > max_lead_time_) {
+      // If the buffer is larger than |max_lead_time_|, then the next read
+      // should be delayed.
       next_read_delay = relative_buffer_pos - max_lead_time_;
     }
   }
@@ -537,7 +553,7 @@ void FuchsiaAudioRenderer::OnDemuxerStreamReadDone(
       input_queue_.ResetBuffers();
 
       InitializeStreamSink(demuxer_stream_->audio_decoder_config());
-      ScheduleReadDemuxerStream();
+      client_->OnAudioConfigChange(demuxer_stream_->audio_decoder_config());
     } else {
       DCHECK_EQ(read_status, DemuxerStream::kAborted);
     }
@@ -552,7 +568,7 @@ void FuchsiaAudioRenderer::OnDemuxerStreamReadDone(
       return;
     }
 
-    last_packet_timestamp_ = buffer->timestamp();
+    last_packet_timestamp_ = buffer->timestamp() + buffer->duration();
   }
 
   input_queue_.EnqueueBuffer(std::move(buffer));
@@ -598,6 +614,17 @@ void FuchsiaAudioRenderer::OnStreamSendDone(
     std::unique_ptr<StreamProcessorHelper::IoPacket> packet) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  // Check if we need to update buffering state after sending more than
+  // |min_lead_time_| to the AudioConsumer.
+  if (buffer_state_ == BUFFERING_HAVE_NOTHING) {
+    std::vector<base::TimeTicks> wall_clock_times;
+    GetWallClockTimes({packet->timestamp()}, &wall_clock_times);
+    base::TimeDelta relative_buffer_pos =
+        wall_clock_times[0] - base::TimeTicks::Now();
+    if (relative_buffer_pos >= min_lead_time_)
+      SetBufferState(BUFFERING_HAVE_ENOUGH);
+  }
+
   // Release the packet first to ensure it's returned to VmoBufferWriterQueue
   // before ScheduleReadDemuxerStream().
   packet.reset();
@@ -617,7 +644,9 @@ void FuchsiaAudioRenderer::FlushInternal() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(GetPlaybackState() == PlaybackState::kStopped || is_at_end_of_stream_);
 
-  stream_sink_->DiscardAllPacketsNoReply();
+  if (stream_sink_)
+    stream_sink_->DiscardAllPacketsNoReply();
+
   SetBufferState(BUFFERING_HAVE_NOTHING);
   last_packet_timestamp_ = base::TimeDelta::Min();
   read_timer_.Stop();

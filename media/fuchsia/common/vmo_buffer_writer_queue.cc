@@ -75,7 +75,7 @@ void VmoBufferWriterQueue::Start(std::vector<VmoBuffer> buffers,
 }
 
 bool VmoBufferWriterQueue::IsBlocked() const {
-  return input_queue_position_ < pending_buffers_.size();
+  return unused_buffers_.empty();
 }
 
 void VmoBufferWriterQueue::PumpPackets() {

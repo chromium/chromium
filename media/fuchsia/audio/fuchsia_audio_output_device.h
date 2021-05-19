@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/audio_renderer_sink.h"
+#include "media/base/media_export.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -31,7 +32,7 @@ namespace media {
 // All work is performed on the TaskRunner passed to Create(). It must be an IO
 // thread to allow FIDL usage. AudioRendererSink can be used on a different
 // thread.
-class FuchsiaAudioOutputDevice : public AudioRendererSink {
+class MEDIA_EXPORT FuchsiaAudioOutputDevice : public AudioRendererSink {
  public:
   static scoped_refptr<FuchsiaAudioOutputDevice> Create(
       fidl::InterfaceHandle<fuchsia::media::AudioConsumer>

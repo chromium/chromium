@@ -7,10 +7,15 @@ source_set("audio") {
 
   deps = [
     "//base",
-    "//media",
+    "//media/base",
+    "//media/filters",
+    "//media/fuchsia/cdm",
+    "//media/fuchsia/common",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.audio",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
   ]
+
+  configs += [ "//media:subcomponent_config" ]
 
   sources = [
     "fuchsia_audio_capturer_source.cc",
@@ -40,7 +45,6 @@ source_set("unittests") {
   testonly = true
 
   deps = [
-    ":audio",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -52,5 +56,6 @@ source_set("unittests") {
   sources = [
     "fuchsia_audio_capturer_source_test.cc",
     "fuchsia_audio_output_device_test.cc",
+    "fuchsia_audio_renderer_test.cc",
   ]
 }
