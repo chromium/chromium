@@ -54,6 +54,15 @@ public class AdaptiveToolbarFeatures {
     }
 
     /**
+     * Returns {@code true} if the adaptive button customization is enabled. Requires native
+     * libraries.
+     */
+    public static boolean isCustomizationEnabled() {
+        return ChromeFeatureList.isEnabled(
+                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION);
+    }
+
+    /**
      * When the adaptive toolbar is configured in a single button variant mode, returns the {@link
      * AdaptiveToolbarButtonVariant} being used. Returns {@link
      * AdaptiveToolbarButtonVariant#UNKNOWN} otherwise.

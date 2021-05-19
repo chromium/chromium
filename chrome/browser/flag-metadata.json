@@ -56,7 +56,12 @@
   {
     "name": "adaptive-button-in-top-toolbar",
     "owners": [ "bttk", "chrome-segmentation-platform@google.com" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 94
+  },
+  {
+    "name": "adaptive-button-in-top-toolbar-customization",
+    "owners": [ "bttk", "chrome-segmentation-platform@google.com" ],
+    "expiry_milestone": 94
   },
   {
     "name": "add-to-homescreen-iph",

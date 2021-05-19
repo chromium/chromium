@@ -97,7 +97,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &download::features::kSmartSuggestionForLargeDownloads,
     &download::features::kUseDownloadOfflineContentProvider,
     &embedder_support::kShowTrustedPublisherURL,
-    &features::kAdaptiveButtonInTopToolbar,
     &features::kClearOldBrowsingData,
     &features::kContinuousFeeds,
     &features::kContinuousSearch,
@@ -132,6 +131,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feed::kWebFeed,
     &feed::kXsurfaceMetricsReporting,
     &history::kHideFromApi3Transitions,
+    &kAdaptiveButtonInTopToolbar,
+    &kAdaptiveButtonInTopToolbarCustomization,
     &kAddToHomescreenIPH,
     &kAllowNewIncognitoTabIntents,
     &kAllowRemoteContextForNotifications,
@@ -334,6 +335,13 @@ const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
 }  // namespace
 
 // Alphabetical:
+
+const base::Feature kAdaptiveButtonInTopToolbar{
+    "AdaptiveButtonInTopToolbar", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kAdaptiveButtonInTopToolbarCustomization{
+    "AdaptiveButtonInTopToolbarCustomization",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kAddToHomescreenIPH{"AddToHomescreenIPH",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

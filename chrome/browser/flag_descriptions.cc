@@ -3450,6 +3450,10 @@ const char kVideoTutorialsInstantFetchDescription[] =
 const char kAdaptiveButtonInTopToolbarName[] = "Adaptive button in top toolbar";
 const char kAdaptiveButtonInTopToolbarDescription[] =
     "Enables showing an adaptive action button in the top toolbar";
+const char kAdaptiveButtonInTopToolbarCustomizationName[] =
+    "Adaptive button in top toolbar customization";
+const char kAdaptiveButtonInTopToolbarCustomizationDescription[] =
+    "Enables UI for customizing the adaptive action button in the top toolbar";
 const char kShareButtonInTopToolbarName[] = "Share button in top toolbar";
 const char kShareButtonInTopToolbarDescription[] =
     "Enables UI to initiate sharing from the top toolbar. Enabling Adaptive "

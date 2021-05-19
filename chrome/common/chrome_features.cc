@@ -23,12 +23,6 @@ const base::Feature kActivityReportingSessionType{
     "ActivityReportingSessionType", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(IS_CHROMEOS_ASH)
 
-#if defined(OS_ANDROID)
-// Enables showing an adaptive action button in the top toolbar.
-const base::Feature kAdaptiveButtonInTopToolbar{
-    "AdaptiveButtonInTopToolbar", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // defined(OS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables or disables logging for adaptive screen brightness on Chrome OS.
 const base::Feature kAdaptiveScreenBrightnessLogging{
