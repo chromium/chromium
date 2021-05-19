@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
@@ -335,7 +334,7 @@ LayoutText* Text::CreateTextLayoutObject(const ComputedStyle& style,
     return new LayoutSVGInlineText(this, DataImpl());
 
   if (style.HasTextCombine())
-    return new LayoutTextCombine(this, DataImpl());
+    return LayoutObjectFactory::CreateTextCombine(this, DataImpl(), legacy);
 
   return LayoutObjectFactory::CreateText(this, DataImpl(), legacy);
 }

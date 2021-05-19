@@ -35,6 +35,32 @@ TEST_P(LayoutObjectFactoryTest, BR) {
     EXPECT_FALSE(layout_object.IsLayoutNGObject());
 }
 
+TEST_P(LayoutObjectFactoryTest, TextCombineInHorizontal) {
+  InsertStyleElement(
+      "div { writing-mode: horizontal-tb; }"
+      "tyc { text-combine-upright: all; }");
+  SetBodyInnerHTML("<div><tyc id=sample>ab</tyc></div>");
+  const auto& sample_layout_object = *GetLayoutObjectByElementId("sample");
+  EXPECT_EQ(R"DUMP(
+LayoutInline TYC id="sample"
+  +--LayoutTextCombine #text "ab"
+)DUMP",
+            ToSimpleLayoutTree(sample_layout_object));
+}
+
+TEST_P(LayoutObjectFactoryTest, TextCombineInVertical) {
+  InsertStyleElement(
+      "div { writing-mode: vertical-rl; }"
+      "tyc { text-combine-upright: all; }");
+  SetBodyInnerHTML("<div><tyc id=sample>ab</tyc></div>");
+  const auto& sample_layout_object = *GetLayoutObjectByElementId("sample");
+  EXPECT_EQ(R"DUMP(
+LayoutInline TYC id="sample"
+  +--LayoutTextCombine #text "ab"
+)DUMP",
+            ToSimpleLayoutTree(sample_layout_object));
+}
+
 TEST_P(LayoutObjectFactoryTest, WordBreak) {
   SetBodyInnerHTML("<wbr id=sample>");
   const auto& layout_object = *GetLayoutObjectByElementId("sample");

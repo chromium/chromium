@@ -76,6 +76,9 @@ class LayoutObjectFactory {
                                                    LegacyLayout legacy);
 
   static LayoutText* CreateText(Node*, scoped_refptr<StringImpl>, LegacyLayout);
+  static LayoutText* CreateTextCombine(Node*,
+                                       scoped_refptr<StringImpl>,
+                                       LegacyLayout);
   static LayoutTextFragment* CreateTextFragment(Node*,
                                                 StringImpl*,
                                                 int start_offset,

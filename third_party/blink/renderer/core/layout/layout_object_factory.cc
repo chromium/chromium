@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/layout_table_section.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_control_multi_line.h"
 #include "third_party/blink/renderer/core/layout/layout_text_control_single_line.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
@@ -290,6 +291,13 @@ LayoutText* LayoutObjectFactory::CreateText(Node* node,
   if (force_legacy)
     layout_text->SetForceLegacyLayout();
   return layout_text;
+}
+
+LayoutText* LayoutObjectFactory::CreateTextCombine(
+    Node* node,
+    scoped_refptr<StringImpl> str,
+    LegacyLayout legacy) {
+  return new LayoutTextCombine(node, str);
 }
 
 LayoutTextFragment* LayoutObjectFactory::CreateTextFragment(
