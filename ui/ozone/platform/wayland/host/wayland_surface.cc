@@ -180,16 +180,15 @@ void WaylandSurface::SetBufferScale(int32_t new_scale, bool update_bounds) {
     return;
 
   buffer_scale_ = new_scale;
-  // As per specification, wp_viewporter interface disconnects the direct
-  // relationship between the buffer and the surface size. So, no need to send
-  // |buffer_scale_| to compositor if wp_viewporter interface is available.
-  if (viewport() && !display_size_px_.IsEmpty()) {
+  wl_surface_set_buffer_scale(surface_.get(), buffer_scale_);
+
+  if (!display_size_px_.IsEmpty()) {
     gfx::Size viewport_dst =
         gfx::ScaleToCeiledSize(display_size_px_, 1.f / buffer_scale_);
+    if (viewport()) {
       wp_viewport_set_destination(viewport(), viewport_dst.width(),
                                   viewport_dst.height());
-  } else {
-    wl_surface_set_buffer_scale(surface_.get(), buffer_scale_);
+    }
   }
 
   connection_->ScheduleFlush();
