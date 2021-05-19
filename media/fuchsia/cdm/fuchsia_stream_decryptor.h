@@ -28,10 +28,9 @@ class FuchsiaStreamDecryptorBase : public StreamProcessorHelper::Client {
 
  protected:
   // StreamProcessorHelper::Client overrides.
-  void AllocateInputBuffers(
-      const fuchsia::media::StreamBufferConstraints& stream_constraints) final;
   void OnOutputFormat(fuchsia::media::StreamOutputFormat format) final;
 
+  void AllocateInputBuffers();
   void DecryptInternal(scoped_refptr<DecoderBuffer> encrypted);
   void ResetStream();
 

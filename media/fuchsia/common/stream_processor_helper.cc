@@ -9,6 +9,14 @@
 
 namespace media {
 
+namespace {
+
+// Input buffers are allocate once per decoder, the |buffer_lifetime_ordinal| is
+// always the same.
+constexpr uint64_t kInputBufferLifetimeOrdinal = 1;
+
+}  // namespace
+
 StreamProcessorHelper::IoPacket::IoPacket(size_t index,
                                           size_t offset,
                                           size_t size,
@@ -68,8 +76,6 @@ StreamProcessorHelper::StreamProcessorHelper(
 
   processor_.events().OnStreamFailed =
       fit::bind_member(this, &StreamProcessorHelper::OnStreamFailed);
-  processor_.events().OnInputConstraints =
-      fit::bind_member(this, &StreamProcessorHelper::OnInputConstraints);
   processor_.events().OnFreeInputPacket =
       fit::bind_member(this, &StreamProcessorHelper::OnFreeInputPacket);
   processor_.events().OnOutputConstraints =
@@ -94,7 +100,7 @@ void StreamProcessorHelper::Process(IoPacket input) {
 
   fuchsia::media::Packet packet;
   packet.mutable_header()->set_buffer_lifetime_ordinal(
-      input_buffer_lifetime_ordinal_);
+      kInputBufferLifetimeOrdinal);
   packet.mutable_header()->set_packet_index(input.buffer_index());
   packet.set_buffer_index(packet.header().packet_index());
   packet.set_timestamp_ish(input.timestamp().InNanoseconds());
@@ -161,33 +167,13 @@ void StreamProcessorHelper::OnStreamFailed(uint64_t stream_lifetime_ordinal,
   OnError();
 }
 
-void StreamProcessorHelper::OnInputConstraints(
-    fuchsia::media::StreamBufferConstraints constraints) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // Buffer lifetime ordinal is an odd number incremented by 2 for each buffer
-  // generation as required by StreamProcessor.
-  input_buffer_lifetime_ordinal_ += 2;
-
-  DCHECK(input_packets_.empty());
-  input_buffer_constraints_ = std::move(constraints);
-
-  client_->AllocateInputBuffers(input_buffer_constraints_);
-}
-
 void StreamProcessorHelper::OnFreeInputPacket(
     fuchsia::media::PacketHeader free_input_packet) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!free_input_packet.has_buffer_lifetime_ordinal() ||
-      !free_input_packet.has_packet_index()) {
+  if (!free_input_packet.has_packet_index()) {
     DLOG(ERROR) << "Received OnFreeInputPacket() with missing required fields.";
     OnError();
-    return;
-  }
-
-  if (free_input_packet.buffer_lifetime_ordinal() !=
-      input_buffer_lifetime_ordinal_) {
     return;
   }
 
@@ -323,14 +309,13 @@ void StreamProcessorHelper::OnError() {
   client_->OnError();
 }
 
-void StreamProcessorHelper::CompleteInputBuffersAllocation(
+void StreamProcessorHelper::SetInputBufferCollectionToken(
     fuchsia::sysmem::BufferCollectionTokenPtr sysmem_token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!input_buffer_constraints_.IsEmpty());
+
   fuchsia::media::StreamBufferPartialSettings settings;
-  settings.set_buffer_lifetime_ordinal(input_buffer_lifetime_ordinal_);
-  settings.set_buffer_constraints_version_ordinal(
-      input_buffer_constraints_.buffer_constraints_version_ordinal());
+  settings.set_buffer_lifetime_ordinal(kInputBufferLifetimeOrdinal);
+  settings.set_buffer_constraints_version_ordinal(0);
   settings.set_sysmem_token(std::move(sysmem_token));
   processor_->SetInputBufferPartialSettings(std::move(settings));
 }

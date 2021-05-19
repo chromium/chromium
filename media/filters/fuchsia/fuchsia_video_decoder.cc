@@ -55,24 +55,28 @@ namespace {
 // Number of output buffers allocated "for camping". This value is passed to
 // sysmem to ensure that we get one output buffer for the frame currently
 // displayed on the screen.
-const uint32_t kOutputBuffersForCamping = 1;
+constexpr uint32_t kOutputBuffersForCamping = 1;
 
 // Maximum number of frames we expect to have queued up while playing video.
 // Higher values require more memory for output buffers. Lower values make it
 // more likely that renderer will stall because decoded frames are not available
 // on time.
-const uint32_t kMaxUsedOutputBuffers = 5;
+constexpr uint32_t kMaxUsedOutputBuffers = 5;
 
 // Use 2 buffers for decoder input. Limiting total number of buffers to 2 allows
 // to minimize required memory without significant effect on performance.
-const size_t kNumInputBuffers = 2;
+constexpr size_t kNumInputBuffers = 2;
 
 // Some codecs do not support splitting video frames across multiple input
 // buffers, so the buffers need to be large enough to fit all video frames. The
-// buffer size is calculated to fit 1080p frame with MinCR=2 (per H264 spec),
-// plus 128KiB for SEI/SPS/PPS. (note that the same size is used for all codecs,
-// not just H264).
-const size_t kInputBufferSize = 1920 * 1080 * 3 / 2 / 2 + 128 * 1024;
+// buffer size is calculated to fit 1080p I420 frame with MinCR=2 (per H264
+// spec), plus 128KiB for SEI/SPS/PPS. (note that the same size is used for all
+// codecs, not just H264).
+constexpr size_t kInputBufferSize = 1920 * 1080 * 3 / 2 / 2 + 128 * 1024;
+
+// Input buffers are allocate once per decoder, the |buffer_lifetime_ordinal| is
+// always the same.
+constexpr uint64_t kInputBufferLifetimeOrdinal = 1;
 
 // Helper used to hold mailboxes for the output textures. OutputMailbox may
 // outlive FuchsiaVideoDecoder if is referenced by a VideoFrame.
@@ -224,8 +228,6 @@ class FuchsiaVideoDecoder : public VideoDecoder,
   // Event handlers for |decoder_|.
   void OnStreamFailed(uint64_t stream_lifetime_ordinal,
                       fuchsia::media::StreamError error);
-  void OnInputConstraints(
-      fuchsia::media::StreamBufferConstraints input_constraints);
   void OnFreeInputPacket(fuchsia::media::PacketHeader free_input_packet);
   void OnOutputConstraints(
       fuchsia::media::StreamOutputConstraints output_constraints);
@@ -235,6 +237,8 @@ class FuchsiaVideoDecoder : public VideoDecoder,
                       bool error_detected_during);
   void OnOutputEndOfStream(uint64_t stream_lifetime_ordinal,
                            bool error_detected_before);
+
+  void AllocateInputBuffers();
 
   // Drops all pending input buffers and then calls all pending DecodeCB with
   // |status|. Returns true if the decoder still exists.
@@ -310,7 +314,6 @@ class FuchsiaVideoDecoder : public VideoDecoder,
   VmoBufferWriterQueue input_writer_queue_;
 
   // Input buffers for |decoder_|.
-  uint64_t input_buffer_lifetime_ordinal_ = 1;
   std::unique_ptr<SysmemCollectionClient> input_buffer_collection_;
   base::flat_map<size_t, InputDecoderPacket> in_flight_input_packets_;
 
@@ -462,8 +465,6 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   decoder_.events().OnStreamFailed =
       fit::bind_member(this, &FuchsiaVideoDecoder::OnStreamFailed);
-  decoder_.events().OnInputConstraints =
-      fit::bind_member(this, &FuchsiaVideoDecoder::OnInputConstraints);
   decoder_.events().OnFreeInputPacket =
       fit::bind_member(this, &FuchsiaVideoDecoder::OnFreeInputPacket);
   decoder_.events().OnOutputConstraints =
@@ -476,6 +477,8 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
       fit::bind_member(this, &FuchsiaVideoDecoder::OnOutputEndOfStream);
 
   decoder_->EnableOnStreamFailed();
+
+  AllocateInputBuffers();
 
   current_codec_ = config.codec();
 
@@ -581,27 +584,19 @@ void FuchsiaVideoDecoder::OnStreamFailed(uint64_t stream_lifetime_ordinal,
   OnError();
 }
 
-void FuchsiaVideoDecoder::OnInputConstraints(
-    fuchsia::media::StreamBufferConstraints stream_constraints) {
-  // Buffer lifetime ordinal is an odd number incremented by 2 for each buffer
-  // generation as required by StreamProcessor.
-  input_buffer_lifetime_ordinal_ += 2;
-  decoder_input_constraints_ = std::move(stream_constraints);
-
-  ReleaseInputBuffers();
+void FuchsiaVideoDecoder::AllocateInputBuffers() {
+  DCHECK(!input_buffer_collection_);
 
   input_buffer_collection_ = sysmem_allocator_.AllocateNewCollection();
-
   input_buffer_collection_->CreateSharedToken(base::BindOnce(
       &FuchsiaVideoDecoder::SetInputBufferCollection, base::Unretained(this)));
-
   if (decryptor_) {
     input_buffer_collection_->CreateSharedToken(base::BindOnce(
         &FuchsiaSecureStreamDecryptor::SetOutputBufferCollectionToken,
         base::Unretained(decryptor_.get())));
   }
 
-  // Create buffer constrains for the input buffer collection.
+  // Create buffer constraints for the input buffer collection.
   fuchsia::sysmem::BufferCollectionConstraints buffer_constraints;
   if (decryptor_) {
     buffer_constraints.usage.none = fuchsia::sysmem::noneUsage;
@@ -630,9 +625,8 @@ void FuchsiaVideoDecoder::OnInputConstraints(
 void FuchsiaVideoDecoder::SetInputBufferCollection(
     fuchsia::sysmem::BufferCollectionTokenPtr token) {
   fuchsia::media::StreamBufferPartialSettings settings;
-  settings.set_buffer_lifetime_ordinal(input_buffer_lifetime_ordinal_);
-  settings.set_buffer_constraints_version_ordinal(
-      decoder_input_constraints_->buffer_constraints_version_ordinal());
+  settings.set_buffer_lifetime_ordinal(kInputBufferLifetimeOrdinal);
+  settings.set_buffer_constraints_version_ordinal(0);
   settings.set_sysmem_token(std::move(token));
   decoder_->SetInputBufferPartialSettings(std::move(settings));
 }
@@ -658,7 +652,7 @@ void FuchsiaVideoDecoder::SendInputPacket(
     StreamProcessorHelper::IoPacket packet) {
   fuchsia::media::Packet media_packet;
   media_packet.mutable_header()->set_buffer_lifetime_ordinal(
-      input_buffer_lifetime_ordinal_);
+      kInputBufferLifetimeOrdinal);
   media_packet.mutable_header()->set_packet_index(packet.buffer_index());
   media_packet.set_buffer_index(packet.buffer_index());
   media_packet.set_timestamp_ish(packet.timestamp().InNanoseconds());
@@ -685,15 +679,9 @@ void FuchsiaVideoDecoder::ProcessEndOfStream() {
 
 void FuchsiaVideoDecoder::OnFreeInputPacket(
     fuchsia::media::PacketHeader free_input_packet) {
-  if (!free_input_packet.has_buffer_lifetime_ordinal() ||
-      !free_input_packet.has_packet_index()) {
+  if (!free_input_packet.has_packet_index()) {
     DLOG(ERROR) << "Received OnFreeInputPacket() with missing required fields.";
     OnError();
-    return;
-  }
-
-  if (free_input_packet.buffer_lifetime_ordinal() !=
-      input_buffer_lifetime_ordinal_) {
     return;
   }
 

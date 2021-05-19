@@ -100,7 +100,9 @@ FuchsiaStreamDecryptorBase::FuchsiaStreamDecryptorBase(
     size_t min_buffer_size)
     : processor_(std::move(processor), this),
       min_buffer_size_(min_buffer_size),
-      allocator_("CrFuchsiaStreamDecryptorBase") {}
+      allocator_("CrFuchsiaStreamDecryptorBase") {
+  AllocateInputBuffers();
+}
 
 FuchsiaStreamDecryptorBase::~FuchsiaStreamDecryptorBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -126,14 +128,12 @@ void FuchsiaStreamDecryptorBase::ResetStream() {
   input_writer_queue_.ResetQueue();
 }
 
-// StreamProcessorHelper::Client implementation:
-void FuchsiaStreamDecryptorBase::AllocateInputBuffers(
-    const fuchsia::media::StreamBufferConstraints& stream_constraints) {
+void FuchsiaStreamDecryptorBase::AllocateInputBuffers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   input_buffer_collection_ = allocator_.AllocateNewCollection();
   input_buffer_collection_->CreateSharedToken(
-      base::BindOnce(&StreamProcessorHelper::CompleteInputBuffersAllocation,
+      base::BindOnce(&StreamProcessorHelper::SetInputBufferCollectionToken,
                      base::Unretained(&processor_)));
   input_buffer_collection_->Initialize(
       VmoBuffer::GetRecommendedConstraints(kMinBufferCount, min_buffer_size_,

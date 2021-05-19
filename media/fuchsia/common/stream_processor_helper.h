@@ -76,11 +76,8 @@ class MEDIA_EXPORT StreamProcessorHelper {
 
   class Client {
    public:
-    // Allocate input/output buffers with the given constraints. Client should
-    // call ProvideInput/OutputBufferCollectionToken to finish the buffer
-    // allocation flow.
-    virtual void AllocateInputBuffers(
-        const fuchsia::media::StreamBufferConstraints& stream_constraints) = 0;
+    // Allocate output buffers with the given constraints. Client should call
+    // ProvideIOutputBufferCollectionToken to finish the buffer allocation flow.
     virtual void AllocateOutputBuffers(
         const fuchsia::media::StreamBufferConstraints& stream_constraints) = 0;
 
@@ -118,10 +115,12 @@ class MEDIA_EXPORT StreamProcessorHelper {
   // StreamProcessor without calling Reset.
   void ProcessEos();
 
-  // Provide input/output BufferCollectionToken to finish StreamProcessor buffer
-  // setup flow.
-  void CompleteInputBuffersAllocation(
+  // Sets buffer collection tocken to use for input buffers.
+  void SetInputBufferCollectionToken(
       fuchsia::sysmem::BufferCollectionTokenPtr token);
+
+  // Provide output BufferCollectionToken to finish StreamProcessor buffer
+  // setup flow. Should be called only after AllocateOutputBuffers.
   void CompleteOutputBuffersAllocation(
       fuchsia::sysmem::BufferCollectionTokenPtr token);
 
@@ -156,10 +155,6 @@ class MEDIA_EXPORT StreamProcessorHelper {
   // Set to true if we've sent an input packet with the current
   // stream_lifetime_ordinal_.
   bool active_stream_ = false;
-
-  // Input buffers.
-  uint64_t input_buffer_lifetime_ordinal_ = 1;
-  fuchsia::media::StreamBufferConstraints input_buffer_constraints_;
 
   // Map from packet index to corresponding input IoPacket. IoPacket should be
   // owned by this class until StreamProcessor released the buffer.
