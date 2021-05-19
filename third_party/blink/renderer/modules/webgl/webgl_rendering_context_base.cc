@@ -5433,6 +5433,9 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
   if (isContextLost())
     return;
 
+  // TODO(crbug.com/1210718): It may be possible to simplify this code
+  // by consolidating on CanvasImageSource::GetSourceImageForCanvas().
+
   if (!ValidateHTMLImageElement(security_origin, func_name, image,
                                 exception_state))
     return;
@@ -5638,6 +5641,9 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
   if (isContextLost())
     return;
 
+  // TODO(crbug.com/1210718): It may be possible to simplify this code
+  // by consolidating on CanvasImageSource::GetSourceImageForCanvas().
+
   if (!ValidateCanvasRenderingContextHost(security_origin, func_name,
                                           context_host, exception_state))
     return;
@@ -5786,6 +5792,9 @@ void WebGLRenderingContextBase::TexImageHelperHTMLVideoElement(
   if (isContextLost())
     return;
 
+  // TODO(crbug.com/1210718): It may be possible to simplify this code
+  // by consolidating on CanvasImageSource::GetSourceImageForCanvas().
+
   if (!ValidateHTMLVideoElement(security_origin, func_name, video,
                                 exception_state)) {
     return;
@@ -5845,6 +5854,9 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
   const char* func_name = GetTexImageFunctionName(function_id);
   if (isContextLost())
     return;
+
+  // TODO(crbug.com/1210718): It may be possible to simplify this code
+  // by consolidating on CanvasImageSource::GetSourceImageForCanvas().
 
   WebGLTexture* texture =
       ValidateTexImageBinding(func_name, function_id, target);
@@ -6179,6 +6191,10 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
   const char* func_name = GetTexImageFunctionName(function_id);
   if (isContextLost())
     return;
+
+  // TODO(crbug.com/1210718): It may be possible to simplify this code
+  // by consolidating on CanvasImageSource::GetSourceImageForCanvas().
+
   if (!ValidateImageBitmap(func_name, bitmap, exception_state))
     return;
   WebGLTexture* texture =
