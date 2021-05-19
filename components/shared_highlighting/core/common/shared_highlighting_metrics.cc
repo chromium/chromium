@@ -22,6 +22,11 @@ TextFragmentLinkOpenSource GetLinkSource(const GURL& referrer) {
 
 }  // namespace
 
+void LogDesktopLinkGenerationCopiedLinkType(LinkGenerationCopiedLinkType type) {
+  base::UmaHistogramEnumeration("SharedHighlights.Desktop.CopiedLinkType",
+                                type);
+}
+
 void LogLinkGenerationErrorReason(LinkGenerationError reason) {
   base::UmaHistogramEnumeration("SharedHighlights.LinkGenerated.Error", reason);
 }

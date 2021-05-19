@@ -43737,6 +43737,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="20" label="kOtherReason"/>
 </enum>
 
+<enum name="LinkGenerationCopiedLinkType">
+  <int value="0" label="Copied from new right-click menu generation"/>
+  <int value="1" label="Copied from existing highlight right-click menu"/>
+</enum>
+
 <enum name="LinkGenerationError">
   <int value="0" label="Incorrect selector"/>
   <int value="1" label="No range available"/>

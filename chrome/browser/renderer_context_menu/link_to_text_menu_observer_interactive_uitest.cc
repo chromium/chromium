@@ -7,6 +7,7 @@
 #include "base/macros.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
@@ -15,6 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -266,6 +268,51 @@ IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest,
   std::u16string text;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
   EXPECT_EQ(u"http://foo.com/#:~:text=hello%20world", text);
+}
+
+IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest,
+                       LinkGenerationCopiedLinkTypeMetric_NewGeneration) {
+  base::HistogramTester histogram_tester;
+
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/");
+  params.selection_text = u"hello world";
+  observer()->OverrideGeneratedSelectorForTesting("hello%20world");
+  InitMenu(params);
+  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
+
+  // Verify that the copy type metric was correctly set
+  histogram_tester.ExpectTotalCount("SharedHighlights.Desktop.CopiedLinkType",
+                                    1);
+  histogram_tester.ExpectBucketCount(
+      "SharedHighlights.Desktop.CopiedLinkType",
+      shared_highlighting::LinkGenerationCopiedLinkType::
+          kCopiedFromNewGeneration,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest,
+                       LinkGenerationCopiedLinkTypeMetric_ReShare) {
+  base::HistogramTester histogram_tester;
+
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/#:~:text=hello%20world");
+  params.selection_text = u"";
+  params.opened_from_highlight = true;
+  observer()->OverrideGeneratedSelectorForTesting("hello%20world");
+  InitMenu(params);
+  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
+
+  // Verify that the copy type metric was correctly set
+  histogram_tester.ExpectTotalCount("SharedHighlights.Desktop.CopiedLinkType",
+                                    1);
+  histogram_tester.ExpectBucketCount(
+      "SharedHighlights.Desktop.CopiedLinkType",
+      shared_highlighting::LinkGenerationCopiedLinkType::
+          kCopiedFromExistingHighlight,
+      1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

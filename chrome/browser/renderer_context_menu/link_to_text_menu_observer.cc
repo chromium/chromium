@@ -203,6 +203,10 @@ void LinkToTextMenuObserver::CopyLinkToClipboard() {
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
                                 std::move(data_transfer_endpoint));
   scw.WriteText(base::UTF8ToUTF16(generated_link_.value()));
+
+  LogDesktopLinkGenerationCopiedLinkType(
+      shared_highlighting::LinkGenerationCopiedLinkType::
+          kCopiedFromNewGeneration);
 }
 
 void LinkToTextMenuObserver::Timeout() {
@@ -217,6 +221,13 @@ void LinkToTextMenuObserver::Timeout() {
 }
 
 void LinkToTextMenuObserver::ReshareLink() {
+  if (generated_selector_for_testing_.has_value()) {
+    std::vector<std::string> test_selectors{
+        generated_selector_for_testing_.value()};
+    OnGetExistingSelectorsComplete(test_selectors);
+    return;
+  }
+
   GetRemote()->GetExistingSelectors(
       base::BindOnce(&LinkToTextMenuObserver::OnGetExistingSelectorsComplete,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -239,6 +250,10 @@ void LinkToTextMenuObserver::OnGetExistingSelectorsComplete(
   url_to_share = shared_highlighting::AppendSelectors(url_to_share, selectors);
 
   scw.WriteText(base::UTF8ToUTF16(url_to_share.spec()));
+
+  LogDesktopLinkGenerationCopiedLinkType(
+      shared_highlighting::LinkGenerationCopiedLinkType::
+          kCopiedFromExistingHighlight);
 }
 
 void LinkToTextMenuObserver::RemoveHighlight() {

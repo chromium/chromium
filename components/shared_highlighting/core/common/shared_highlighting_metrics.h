@@ -14,6 +14,16 @@ namespace shared_highlighting {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// The type of copied Shared Highlighting Link on Desktop.
+// Update corresponding |LinkGenerationCopiedLinkType| in enums.xml.
+enum class LinkGenerationCopiedLinkType {
+  kCopiedFromNewGeneration = 0,
+  kCopiedFromExistingHighlight = 1,
+  kMaxValue = kCopiedFromExistingHighlight
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // The type of errors that can happen during link generation.
 // Update corresponding |LinkGenerationError| in enums.xml.
 enum class LinkGenerationError {
@@ -54,6 +64,9 @@ enum class TextFragmentLinkOpenSource {
 
   kMaxValue = kSearchEngine,
 };
+
+// Records the type of link generation that was copied on desktop.
+void LogDesktopLinkGenerationCopiedLinkType(LinkGenerationCopiedLinkType type);
 
 // Records the reason why the link generation failed.
 void LogLinkGenerationErrorReason(LinkGenerationError reason);
