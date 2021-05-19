@@ -9198,6 +9198,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="PictureInPictureButton" label="Picture-in-Picture button"/>
   <suffix name="PictureInPictureOverflowButton"
       label="Picture-in-Picture overflow button"/>
+  <suffix name="PlaybackSpeedButton" label="Playback speed button"/>
+  <suffix name="PlaybackSpeedOverflowButton"
+      label="Playback speed overlay button"/>
   <suffix name="PlayOverlayButton" label="Play overlay button"/>
   <suffix name="PlayPauseButton" label="Play/pause button"/>
   <suffix name="PlayPauseOverflowButton" label="Play/pause overflow button"/>

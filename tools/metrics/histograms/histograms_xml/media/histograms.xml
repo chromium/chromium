@@ -1359,8 +1359,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Controls.CTR" enum="MediaControlsCTREvent"
-    expires_after="2020-04-05">
-  <owner>mlamouri@chromium.org</owner>
+    expires_after="2022-05-18">
+  <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     Records events related to click through rate (CTR) calculation.
@@ -1374,6 +1374,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     visibility. Furthermore, because the controls UI changes while loading,
     &quot;Displayed&quot; is only computed when metadata are available unless
     preloading was disabled on the element or the browser.
+
+    Data is missing from 2020-04-05 to 2021-05-18.
   </summary>
 </histogram>
 
