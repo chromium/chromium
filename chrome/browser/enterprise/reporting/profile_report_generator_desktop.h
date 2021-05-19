@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -49,7 +48,7 @@ class ProfileReportGeneratorDesktop : public ProfileReportGenerator::Delegate {
   policy::MachineLevelUserCloudPolicyManager* GetCloudPolicyManager() override;
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 };
 
 }  // namespace enterprise_reporting

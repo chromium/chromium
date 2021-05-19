@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -72,7 +71,7 @@ class ExpectBrowserActivationForProfile : public BrowserListObserver {
   }
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   base::RunLoop loop_;
 };
 
@@ -97,7 +96,7 @@ class BrowserAddedObserver : public BrowserListObserver {
   }
 
  private:
-  CheckedPtr<Browser> browser_;
+  Browser* browser_;
   base::RunLoop run_loop_;
 };
 

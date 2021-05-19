@@ -6,7 +6,6 @@
 #define COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_TABLE_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/webdata/common/webdata_export.h"
 
 namespace sql {
@@ -59,8 +58,8 @@ class WEBDATA_EXPORT WebDatabaseTable {
   // class exists. Since lifetime of WebDatabaseTable objects slightly
   // exceeds that of WebDatabase, they should not be used in
   // ~WebDatabaseTable.
-  CheckedPtr<sql::Database> db_;
-  CheckedPtr<sql::MetaTable> meta_table_;
+  sql::Database* db_;
+  sql::MetaTable* meta_table_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebDatabaseTable);

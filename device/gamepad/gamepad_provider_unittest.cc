@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/platform_thread.h"
@@ -91,7 +90,7 @@ class GamepadProviderTest : public testing::Test, public GamepadTestHelper {
   std::unique_ptr<GamepadProvider> provider_;
 
   // Pointer owned by the provider.
-  CheckedPtr<MockGamepadDataFetcher> mock_data_fetcher_;
+  MockGamepadDataFetcher* mock_data_fetcher_;
 
   DISALLOW_COPY_AND_ASSIGN(GamepadProviderTest);
 };

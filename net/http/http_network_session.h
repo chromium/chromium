@@ -17,7 +17,6 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -168,30 +167,29 @@ class NET_EXPORT HttpNetworkSession {
     Context(const Context& other);
     ~Context();
 
-    CheckedPtr<ClientSocketFactory> client_socket_factory;
-    CheckedPtr<HostResolver> host_resolver;
-    CheckedPtr<CertVerifier> cert_verifier;
-    CheckedPtr<TransportSecurityState> transport_security_state;
-    CheckedPtr<CTPolicyEnforcer> ct_policy_enforcer;
-    CheckedPtr<SCTAuditingDelegate> sct_auditing_delegate;
-    CheckedPtr<ProxyResolutionService> proxy_resolution_service;
-    CheckedPtr<ProxyDelegate> proxy_delegate;
-    CheckedPtr<const HttpUserAgentSettings> http_user_agent_settings;
-    CheckedPtr<SSLConfigService> ssl_config_service;
-    CheckedPtr<HttpAuthHandlerFactory> http_auth_handler_factory;
-    CheckedPtr<HttpServerProperties> http_server_properties;
-    CheckedPtr<NetLog> net_log;
-    CheckedPtr<SocketPerformanceWatcherFactory>
-        socket_performance_watcher_factory;
-    CheckedPtr<NetworkQualityEstimator> network_quality_estimator;
-    CheckedPtr<QuicContext> quic_context;
+    ClientSocketFactory* client_socket_factory;
+    HostResolver* host_resolver;
+    CertVerifier* cert_verifier;
+    TransportSecurityState* transport_security_state;
+    CTPolicyEnforcer* ct_policy_enforcer;
+    SCTAuditingDelegate* sct_auditing_delegate;
+    ProxyResolutionService* proxy_resolution_service;
+    ProxyDelegate* proxy_delegate;
+    const HttpUserAgentSettings* http_user_agent_settings;
+    SSLConfigService* ssl_config_service;
+    HttpAuthHandlerFactory* http_auth_handler_factory;
+    HttpServerProperties* http_server_properties;
+    NetLog* net_log;
+    SocketPerformanceWatcherFactory* socket_performance_watcher_factory;
+    NetworkQualityEstimator* network_quality_estimator;
+    QuicContext* quic_context;
 #if BUILDFLAG(ENABLE_REPORTING)
-    CheckedPtr<ReportingService> reporting_service;
-    CheckedPtr<NetworkErrorLoggingService> network_error_logging_service;
+    ReportingService* reporting_service;
+    NetworkErrorLoggingService* network_error_logging_service;
 #endif
 
     // Optional factory to use for creating QuicCryptoClientStreams.
-    CheckedPtr<QuicCryptoClientStreamFactory> quic_crypto_client_stream_factory;
+    QuicCryptoClientStreamFactory* quic_crypto_client_stream_factory;
   };
 
   enum SocketPoolType {
@@ -309,18 +307,18 @@ class NET_EXPORT HttpNetworkSession {
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
-  const CheckedPtr<NetLog> net_log_;
-  const CheckedPtr<HttpServerProperties> http_server_properties_;
-  const CheckedPtr<CertVerifier> cert_verifier_;
-  const CheckedPtr<HttpAuthHandlerFactory> http_auth_handler_factory_;
-  const CheckedPtr<HostResolver> host_resolver_;
+  NetLog* const net_log_;
+  HttpServerProperties* const http_server_properties_;
+  CertVerifier* const cert_verifier_;
+  HttpAuthHandlerFactory* const http_auth_handler_factory_;
+  HostResolver* const host_resolver_;
 
 #if BUILDFLAG(ENABLE_REPORTING)
-  const CheckedPtr<ReportingService> reporting_service_;
-  const CheckedPtr<NetworkErrorLoggingService> network_error_logging_service_;
+  ReportingService* const reporting_service_;
+  NetworkErrorLoggingService* const network_error_logging_service_;
 #endif
-  const CheckedPtr<ProxyResolutionService> proxy_resolution_service_;
-  const CheckedPtr<SSLConfigService> ssl_config_service_;
+  ProxyResolutionService* const proxy_resolution_service_;
+  SSLConfigService* const ssl_config_service_;
 
   HttpAuthCache http_auth_cache_;
   SSLClientSessionCache ssl_client_session_cache_;

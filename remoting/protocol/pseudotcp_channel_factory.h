@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "remoting/protocol/stream_channel_factory.h"
 
 namespace remoting {
@@ -41,7 +40,7 @@ class PseudoTcpChannelFactory : public StreamChannelFactory {
                             ChannelCreatedCallback callback,
                             int result);
 
-  CheckedPtr<DatagramChannelFactory> datagram_channel_factory_;
+  DatagramChannelFactory* datagram_channel_factory_;
 
   PendingSocketsMap pending_sockets_;
 

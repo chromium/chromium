@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/cart/cart_discount_fetcher.h"
@@ -24,7 +23,7 @@ class CartLoader {
   virtual void LoadAllCarts(CartDB::LoadCallback callback);
 
  private:
-  CheckedPtr<CartService> cart_service_;
+  CartService* cart_service_;
 };
 
 class CartDiscountUpdater {
@@ -35,7 +34,7 @@ class CartDiscountUpdater {
                       const cart_db::ChromeCartContentProto new_proto);
 
  private:
-  CheckedPtr<CartService> cart_service_;
+  CartService* cart_service_;
 };
 
 class CartLoaderAndUpdaterFactory {
@@ -47,7 +46,7 @@ class CartLoaderAndUpdaterFactory {
   virtual std::unique_ptr<CartDiscountUpdater> createCartDiscountUpdater();
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 };
 
 // This is used to fetch discounts for active Carts in cart_db. It starts

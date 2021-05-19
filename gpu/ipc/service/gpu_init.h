@@ -6,7 +6,6 @@
 #define GPU_IPC_SERVICE_GPU_INIT_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/config/device_perf_info.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -86,7 +85,7 @@ class GPU_IPC_SERVICE_EXPORT GpuInit {
  private:
   bool InitializeVulkan();
 
-  CheckedPtr<GpuSandboxHelper> sandbox_helper_ = nullptr;
+  GpuSandboxHelper* sandbox_helper_ = nullptr;
   bool gl_use_swiftshader_ = false;
   std::unique_ptr<GpuWatchdogThread> watchdog_thread_;
   GPUInfo gpu_info_;

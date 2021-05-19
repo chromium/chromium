@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace device {
@@ -264,7 +263,7 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
   std::vector<bool> device_connected_state_changed_values_;
 #endif
   int device_removed_count_;
-  CheckedPtr<BluetoothDevice> last_device_;
+  BluetoothDevice* last_device_;
 
   // GATT related:
   int gatt_service_added_count_;

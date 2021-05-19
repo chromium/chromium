@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
@@ -52,7 +51,7 @@ class RoundedRectLayerPainter : public ui::LayerDelegate {
                                   float new_device_scale_factor) override {}
 
  private:
-  CheckedPtr<View> container_;
+  View* container_;
 };
 
 void RoundedRectLayerPainter::OnPaintLayer(const ui::PaintContext& context) {
@@ -97,9 +96,9 @@ class AnimationContainer : public View {
   void ButtonPressed();
 
  private:
-  CheckedPtr<View> control_panel_;
-  CheckedPtr<View> animation_panel_;
-  CheckedPtr<LayerView> animation_view_ = nullptr;
+  View* control_panel_;
+  View* animation_panel_;
+  LayerView* animation_view_ = nullptr;
 };
 
 AnimationContainer::AnimationContainer() {

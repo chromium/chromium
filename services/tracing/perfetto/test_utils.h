@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/trace_test_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -58,7 +57,7 @@ class TestDataSource : public PerfettoTracedProcess::DataSourceBase {
   TestDataSource(const std::string& data_source_name, size_t send_packet_count);
 
   size_t send_packet_count_;
-  CheckedPtr<tracing::PerfettoProducer> producer_ = nullptr;
+  tracing::PerfettoProducer* producer_ = nullptr;
   perfetto::DataSourceConfig config_;
   base::OnceClosure start_tracing_callback_ = base::OnceClosure();
 };
@@ -76,7 +75,7 @@ class MockProducerClient : public ProducerClient {
     MockProducerClient* operator*() { return client_; }
 
    private:
-    const CheckedPtr<MockProducerClient> client_;
+    MockProducerClient* const client_;
   };
 
   ~MockProducerClient() override;
@@ -171,8 +170,8 @@ class MockConsumer : public perfetto::Consumer {
   size_t received_test_packets_ = 0;
   PacketReceivedCallback packet_received_callback_;
   std::vector<DataSourceStatus> data_sources_;
-  CheckedPtr<base::RunLoop> on_started_runloop_ = nullptr;
-  CheckedPtr<base::RunLoop> on_stopped_runloop_ = nullptr;
+  base::RunLoop* on_started_runloop_ = nullptr;
+  base::RunLoop* on_stopped_runloop_ = nullptr;
   perfetto::TraceConfig trace_config_;
 };
 

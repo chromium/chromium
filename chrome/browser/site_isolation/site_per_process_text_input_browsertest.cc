@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -106,8 +105,8 @@ class ViewTextInputTypeObserver : public content::TextInputManagerObserverBase {
       OnSuccess();
   }
 
-  CheckedPtr<content::WebContents> web_contents_;
-  CheckedPtr<content::RenderWidgetHostView> view_;
+  content::WebContents* web_contents_;
+  content::RenderWidgetHostView* view_;
   const ui::TextInputType expected_type_;
 
   DISALLOW_COPY_AND_ASSIGN(ViewTextInputTypeObserver);
@@ -134,7 +133,7 @@ class ViewSelectionBoundsChangedObserver
       OnSuccess();
   }
 
-  const CheckedPtr<const content::RenderWidgetHostView> expected_view_;
+  const content::RenderWidgetHostView* const expected_view_;
 
   DISALLOW_COPY_AND_ASSIGN(ViewSelectionBoundsChangedObserver);
 };
@@ -160,7 +159,7 @@ class ViewCompositionRangeChangedObserver
       OnSuccess();
   }
 
-  const CheckedPtr<const content::RenderWidgetHostView> expected_view_;
+  const content::RenderWidgetHostView* const expected_view_;
 
   DISALLOW_COPY_AND_ASSIGN(ViewCompositionRangeChangedObserver);
 };
@@ -188,7 +187,7 @@ class ViewTextSelectionObserver : public content::TextInputManagerObserverBase {
     }
   }
 
-  const CheckedPtr<const content::RenderWidgetHostView> expected_view_;
+  const content::RenderWidgetHostView* const expected_view_;
   const size_t expected_length_;
 
   DISALLOW_COPY_AND_ASSIGN(ViewTextSelectionObserver);

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_FEDERATED_LEARNING_FLOC_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_FEDERATED_LEARNING_FLOC_SERVICE_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_service_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -33,7 +32,7 @@ class CONTENT_EXPORT FlocServiceImpl final
   // |this| can only be destroyed by FrameServiceBase.
   ~FlocServiceImpl() override;
 
-  const CheckedPtr<RenderFrameHostImpl> render_frame_host_;
+  RenderFrameHostImpl* const render_frame_host_;
 };
 
 }  // namespace content

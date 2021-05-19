@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SSL_INSECURE_FORM_INSECURE_FORM_CONTROLLER_CLIENT_H_
 #define CHROME_BROWSER_SSL_INSECURE_FORM_INSECURE_FORM_CONTROLLER_CLIENT_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/security_interstitials/content/content_metrics_helper.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 
@@ -31,7 +30,7 @@ class InsecureFormControllerClient
   void Proceed() override;
 
  private:
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 };
 
 #endif  // CHROME_BROWSER_SSL_INSECURE_FORM_INSECURE_FORM_CONTROLLER_CLIENT_H_

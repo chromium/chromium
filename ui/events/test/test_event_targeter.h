@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/events/event_targeter.h"
 
 namespace ui {
@@ -33,7 +32,7 @@ class TestEventTargeter : public EventTargeter {
   EventTarget* FindNextBestTarget(EventTarget* previous_target,
                                   Event* event) override;
 
-  CheckedPtr<TestEventTarget> target_;
+  TestEventTarget* target_;
   bool should_bubble_;
 
   DISALLOW_COPY_AND_ASSIGN(TestEventTargeter);

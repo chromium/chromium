@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -55,7 +54,7 @@ class PreferredAppsList {
     void Observe(PreferredAppsList* list);
 
    private:
-    CheckedPtr<PreferredAppsList> list_ = nullptr;
+    PreferredAppsList* list_ = nullptr;
   };
 
   PreferredAppsList();

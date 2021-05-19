@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "extensions/browser/extension_registry.h"
@@ -64,7 +63,7 @@ class OnStartupHandler : public SettingsPageUIHandler,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(OnStartupHandler);
 };

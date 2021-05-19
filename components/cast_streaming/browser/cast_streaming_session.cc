@@ -5,7 +5,6 @@
 #include "components/cast_streaming/browser/public/cast_streaming_session.h"
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "components/cast_streaming/browser/cast_message_port_impl.h"
 #include "components/cast_streaming/browser/config_conversions.h"
@@ -110,7 +109,7 @@ class CastStreamingSession::Internal
         audio_receiver, std::move(data_pipe_producer),
         base::BindRepeating(
             &CastStreamingSession::Client::OnAudioBufferReceived,
-            base::Unretained(client_.get())),
+            base::Unretained(client_)),
         base::BindRepeating(&base::OneShotTimer::Reset,
                             base::Unretained(&data_timeout_timer_)));
 
@@ -143,7 +142,7 @@ class CastStreamingSession::Internal
         video_receiver, std::move(data_pipe_producer),
         base::BindRepeating(
             &CastStreamingSession::Client::OnVideoBufferReceived,
-            base::Unretained(client_.get())),
+            base::Unretained(client_)),
         base::BindRepeating(&base::OneShotTimer::Reset,
                             base::Unretained(&data_timeout_timer_)));
 
@@ -278,7 +277,7 @@ class CastStreamingSession::Internal
   base::OneShotTimer data_timeout_timer_;
 
   bool is_initialized_ = false;
-  const CheckedPtr<CastStreamingSession::Client> client_;
+  CastStreamingSession::Client* const client_;
   std::unique_ptr<StreamConsumer> audio_consumer_;
   std::unique_ptr<StreamConsumer> video_consumer_;
 };

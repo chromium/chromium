@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,18 +32,17 @@ struct PageActionIconParams {
   // Leaving these params unset will leave the icon default values untouched.
   // TODO(crbug.com/1061634): Make these fields non-optional.
   absl::optional<SkColor> icon_color;
-  CheckedPtr<const gfx::FontList> font_list = nullptr;
+  const gfx::FontList* font_list = nullptr;
 
   int between_icon_spacing = 0;
-  CheckedPtr<Browser> browser = nullptr;
-  CheckedPtr<CommandUpdater> command_updater = nullptr;
-  CheckedPtr<IconLabelBubbleView::Delegate> icon_label_bubble_delegate =
-      nullptr;
-  CheckedPtr<PageActionIconView::Delegate> page_action_icon_delegate = nullptr;
+  Browser* browser = nullptr;
+  CommandUpdater* command_updater = nullptr;
+  IconLabelBubbleView::Delegate* icon_label_bubble_delegate = nullptr;
+  PageActionIconView::Delegate* page_action_icon_delegate = nullptr;
   // If in the future another class also wants to observe button changes, this
   // type could be an abstract class that simply exposes an ObserveButton()
   // method.
-  CheckedPtr<ToolbarIconContainerView> button_observer = nullptr;
+  ToolbarIconContainerView* button_observer = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_PARAMS_H_

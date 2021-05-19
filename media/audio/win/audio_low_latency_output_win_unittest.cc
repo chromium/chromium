@@ -14,7 +14,6 @@
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -97,7 +96,7 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
     // Write the array which contains delta times to a text file.
     size_t elements_written = 0;
     while (elements_written < elements_to_write_) {
-      fprintf(text_file_.get(), "%d\n", delta_times_[elements_written]);
+      fprintf(text_file_, "%d\n", delta_times_[elements_written]);
       ++elements_written;
     }
 
@@ -144,7 +143,7 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
   std::unique_ptr<int[]> delta_times_;
   int pos_;
   base::TimeTicks previous_call_time_;
-  CheckedPtr<FILE> text_file_;
+  FILE* text_file_;
   size_t elements_to_write_;
 };
 
@@ -216,7 +215,7 @@ class AudioOutputStreamWrapper {
     return aos;
   }
 
-  CheckedPtr<AudioManager> audio_man_;
+  AudioManager* audio_man_;
   AudioParameters::Format format_;
   int channels_;
   ChannelLayout channel_layout_;

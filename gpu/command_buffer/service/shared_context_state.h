@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/mru_cache.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -271,7 +270,7 @@ class GPU_GLES2_EXPORT SharedContextState
    private:
     gpu::CommandBufferId command_buffer_id_;
     const uint64_t client_tracing_id_;
-    const CheckedPtr<gpu::MemoryTracker::Observer> observer_;
+    gpu::MemoryTracker::Observer* const observer_;
     uint64_t size_ = 0;
   };
 

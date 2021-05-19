@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 
 class PrefService;
@@ -59,7 +58,7 @@ class ScopedDictionaryPrefUpdate {
   void RecordPath(const std::vector<std::string>& path);
 
   // Weak pointer.
-  const CheckedPtr<PrefService> service_;
+  PrefService* const service_;
   // Path of the preference being updated.
   const std::string path_;
 

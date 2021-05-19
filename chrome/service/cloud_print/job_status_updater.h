@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/service/cloud_print/cloud_print_url_fetcher.h"
 #include "chrome/service/cloud_print/print_system.h"
@@ -71,7 +70,7 @@ class JobStatusUpdater : public base::RefCountedThreadSafe<JobStatusUpdater>,
   scoped_refptr<CloudPrintURLFetcher> request_;
   const GURL cloud_print_server_url_;
   scoped_refptr<PrintSystem> print_system_;
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
   // A flag that is set to true in Stop() and will ensure the next scheduled
   // task will do nothing.
   bool stopped_ = false;

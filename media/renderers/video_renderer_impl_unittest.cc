@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -65,7 +64,7 @@ class VideoRendererImplTest : public testing::Test {
   std::vector<std::unique_ptr<VideoDecoder>> CreateVideoDecodersForTest() {
     decoder_ = new NiceMock<MockVideoDecoder>();
     std::vector<std::unique_ptr<VideoDecoder>> decoders;
-    decoders.push_back(base::WrapUnique(decoder_.get()));
+    decoders.push_back(base::WrapUnique(decoder_));
     ON_CALL(*decoder_, Initialize_(_, _, _, _, _, _))
         .WillByDefault(DoAll(
             SaveArg<4>(&output_cb_),
@@ -348,7 +347,7 @@ class VideoRendererImplTest : public testing::Test {
   // Fixture members.
   std::unique_ptr<VideoRendererImpl> renderer_;
   base::SimpleTestTickClock tick_clock_;
-  CheckedPtr<NiceMock<MockVideoDecoder>> decoder_;  // Owned by |renderer_|.
+  NiceMock<MockVideoDecoder>* decoder_;    // Owned by |renderer_|.
   NiceMock<MockDemuxerStream> demuxer_stream_;
   bool simulate_decode_delay_;
 

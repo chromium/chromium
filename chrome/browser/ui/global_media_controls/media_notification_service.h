@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
@@ -178,7 +177,7 @@ class MediaNotificationService
   // PresentationRequest.
   bool HasOpenDialogForPresentationRequest() const;
 
-  CheckedPtr<MediaDialogDelegate> dialog_delegate_ = nullptr;
+  MediaDialogDelegate* dialog_delegate_ = nullptr;
 
   // True if the dialog was opened by |SetDialogDelegateForWebContents()|. The
   // value does not indicate whether the MediaDialogView is opened or not.

@@ -6,7 +6,6 @@
 #define UI_VIEWS_TEST_BUTTON_TEST_API_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace ui {
 class Event;
@@ -25,7 +24,7 @@ class ButtonTestApi {
   void NotifyClick(const ui::Event& event);
 
  private:
-  CheckedPtr<Button> button_;
+  Button* button_;
 
   DISALLOW_COPY_AND_ASSIGN(ButtonTestApi);
 };

@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/input/input_disposition_handler.h"
 #include "content/browser/renderer_host/input/input_router.h"
 
@@ -86,7 +85,7 @@ class MockInputDispositionHandler : public InputDispositionHandler {
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result);
 
-  CheckedPtr<InputRouter> input_router_;
+  InputRouter* input_router_;
 
   size_t ack_count_;
   blink::WebInputEvent::Type ack_event_type_;

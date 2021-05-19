@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -724,7 +723,7 @@ class RenderFrameChangedWatcher : public content::WebContentsObserver {
 
  private:
   base::RunLoop run_loop_;
-  CheckedPtr<content::RenderFrameHost> created_frame_;
+  content::RenderFrameHost* created_frame_;
 };
 
 // Test that a browser action popup with a web iframe works correctly. The
@@ -910,8 +909,8 @@ class NavigatingExtensionPopupInteractiveTest
     }
   }
 
-  CheckedPtr<const Extension> popup_extension_;
-  CheckedPtr<const Extension> other_extension_;
+  const Extension* popup_extension_;
+  const Extension* other_extension_;
 };
 
 // Tests that an extension pop-up cannot be navigated to a web page.

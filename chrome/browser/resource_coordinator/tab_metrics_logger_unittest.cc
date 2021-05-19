@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/browser_process.h"
@@ -104,7 +103,7 @@ class FakeBrowserWindow : public TestBrowserWindow {
   }
 
  private:
-  CheckedPtr<Browser> browser_ = nullptr;
+  Browser* browser_ = nullptr;
   bool is_active_ = false;
   ui::WindowShowState show_state_ = ui::SHOW_STATE_NORMAL;
 
@@ -135,9 +134,9 @@ class TabMetricsLoggerTest : public ChromeRenderViewHostTestHarness {
 
   TabActivitySimulator tab_activity_simulator_;
   std::unique_ptr<Browser> browser_;
-  CheckedPtr<TabStripModel> tab_strip_model_;
-  CheckedPtr<content::WebContents> web_contents_;
-  CheckedPtr<content::WebContentsTester> web_contents_tester_;
+  TabStripModel* tab_strip_model_;
+  content::WebContents* web_contents_;
+  content::WebContentsTester* web_contents_tester_;
   TabMetricsLogger::PageMetrics pg_metrics_;
 
   void TearDown() override {

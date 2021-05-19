@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -138,7 +137,7 @@ class CommonNameMismatchRedirectObserver
     web_contents_->RemoveUserData(UserDataKey());
   }
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   const std::string request_url_hostname_;
   const std::string suggested_url_hostname_;
 
@@ -400,16 +399,16 @@ class SSLErrorHandlerDelegateImpl : public SSLErrorHandler::Delegate {
       std::unique_ptr<security_interstitials::SecurityInterstitialPage>
           interstitial_page);
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   const net::SSLInfo ssl_info_;
-  const CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
   const int cert_error_;
   const int options_mask_;
   const GURL request_url_;
   std::unique_ptr<CommonNameMismatchHandler> common_name_mismatch_handler_;
   std::unique_ptr<SSLCertReporter> ssl_cert_reporter_;
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
-  CheckedPtr<captive_portal::CaptivePortalService> captive_portal_service_;
+  captive_portal::CaptivePortalService* captive_portal_service_;
 #endif
   std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory_;
   SSLErrorHandler::OnBlockingPageShownCallback on_blocking_page_shown_callback_;
@@ -545,7 +544,7 @@ void SSLErrorHandlerDelegateImpl::OnBlockingPageReady(
     std::unique_ptr<security_interstitials::SecurityInterstitialPage>
         interstitial_page) {
   if (on_blocking_page_shown_callback_) {
-    on_blocking_page_shown_callback_.Run(web_contents_.get(), request_url_,
+    on_blocking_page_shown_callback_.Run(web_contents_, request_url_,
                                          "SSL_ERROR", cert_error_);
   }
 

@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/sessions/core/live_tab_context.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -102,7 +101,7 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
       Profile* profile);
 
  private:
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserLiveTabContext);
 };

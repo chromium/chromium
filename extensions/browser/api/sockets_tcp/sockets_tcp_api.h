@@ -11,7 +11,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/browser/api/socket/socket_api.h"
 #include "extensions/common/api/sockets_tcp.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -64,7 +63,7 @@ class SocketsTcpCreateFunction : public TCPSocketAsyncApiFunction {
   FRIEND_TEST_ALL_PREFIXES(SocketsTcpUnitTest, Create);
   std::unique_ptr<sockets_tcp::Create::Params> params_;
 
-  CheckedPtr<content::BrowserContext> browser_context_ = nullptr;
+  content::BrowserContext* browser_context_ = nullptr;
 };
 
 class SocketsTcpUpdateFunction : public TCPSocketAsyncApiFunction {
@@ -99,7 +98,7 @@ class SocketsTcpSetPausedFunction : public TCPSocketAsyncApiFunction {
 
  private:
   std::unique_ptr<sockets_tcp::SetPaused::Params> params_;
-  CheckedPtr<TCPSocketEventDispatcher> socket_event_dispatcher_;
+  TCPSocketEventDispatcher* socket_event_dispatcher_;
 };
 
 class SocketsTcpSetKeepAliveFunction : public TCPSocketAsyncApiFunction {
@@ -163,7 +162,7 @@ class SocketsTcpConnectFunction
   void OnCompleted(int net_result);
 
   std::unique_ptr<sockets_tcp::Connect::Params> params_;
-  CheckedPtr<TCPSocketEventDispatcher> socket_event_dispatcher_;
+  TCPSocketEventDispatcher* socket_event_dispatcher_;
 };
 
 class SocketsTcpDisconnectFunction : public TCPSocketAsyncApiFunction {

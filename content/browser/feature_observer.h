@@ -7,7 +7,6 @@
 
 #include "base/containers/stack_container.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -46,7 +45,7 @@ class CONTENT_EXPORT FeatureObserver : public blink::mojom::FeatureObserver {
   mojo::ReceiverSet<blink::mojom::ObservedFeature> features_by_type_
       [static_cast<int>(blink::mojom::ObservedFeatureType::kMaxValue) + 1];
 
-  const CheckedPtr<FeatureObserverClient> client_;
+  FeatureObserverClient* const client_;
   const GlobalFrameRoutingId id_;
 };
 

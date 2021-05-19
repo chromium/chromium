@@ -29,7 +29,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/hash/legacy_hash.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_math.h"
@@ -293,7 +292,7 @@ class ScopedGLErrorSuppressor {
   ~ScopedGLErrorSuppressor();
  private:
   const char* function_name_;
-  CheckedPtr<ErrorState> error_state_;
+  ErrorState* error_state_;
   DISALLOW_COPY_AND_ASSIGN(ScopedGLErrorSuppressor);
 };
 
@@ -309,8 +308,8 @@ class ScopedTextureBinder {
   ~ScopedTextureBinder();
 
  private:
-  CheckedPtr<ContextState> state_;
-  CheckedPtr<ErrorState> error_state_;
+  ContextState* state_;
+  ErrorState* error_state_;
   GLenum target_;
   DISALLOW_COPY_AND_ASSIGN(ScopedTextureBinder);
 };
@@ -325,8 +324,8 @@ class ScopedRenderBufferBinder {
   ~ScopedRenderBufferBinder();
 
  private:
-  CheckedPtr<ContextState> state_;
-  CheckedPtr<ErrorState> error_state_;
+  ContextState* state_;
+  ErrorState* error_state_;
   DISALLOW_COPY_AND_ASSIGN(ScopedRenderBufferBinder);
 };
 
@@ -338,7 +337,7 @@ class ScopedFramebufferBinder {
   ~ScopedFramebufferBinder();
 
  private:
-  CheckedPtr<GLES2DecoderImpl> decoder_;
+  GLES2DecoderImpl* decoder_;
   DISALLOW_COPY_AND_ASSIGN(ScopedFramebufferBinder);
 };
 
@@ -354,7 +353,7 @@ class ScopedResolvedFramebufferBinder {
   ~ScopedResolvedFramebufferBinder();
 
  private:
-  CheckedPtr<GLES2DecoderImpl> decoder_;
+  GLES2DecoderImpl* decoder_;
   bool resolve_and_bind_;
   DISALLOW_COPY_AND_ASSIGN(ScopedResolvedFramebufferBinder);
 };
@@ -374,7 +373,7 @@ class ScopedFramebufferCopyBinder {
   ~ScopedFramebufferCopyBinder();
 
  private:
-  CheckedPtr<GLES2DecoderImpl> decoder_;
+  GLES2DecoderImpl* decoder_;
   std::unique_ptr<ScopedFramebufferBinder> framebuffer_binder_;
   GLuint temp_texture_;
   GLuint temp_framebuffer_;
@@ -389,7 +388,7 @@ class ScopedPixelUnpackState {
   ~ScopedPixelUnpackState();
 
  private:
-  CheckedPtr<ContextState> state_;
+  ContextState* state_;
   DISALLOW_COPY_AND_ASSIGN(ScopedPixelUnpackState);
 };
 
@@ -444,7 +443,7 @@ class BackTexture {
   MemoryTypeTracker memory_tracker_;
   size_t bytes_allocated_;
   gfx::Size size_;
-  CheckedPtr<GLES2DecoderImpl> decoder_;
+  GLES2DecoderImpl* decoder_;
 
   scoped_refptr<TextureRef> texture_ref_;
 
@@ -482,7 +481,7 @@ class BackRenderbuffer {
   gl::GLApi* api() const;
 
  private:
-  CheckedPtr<GLES2DecoderImpl> decoder_;
+  GLES2DecoderImpl* decoder_;
   MemoryTypeTracker memory_tracker_;
   size_t bytes_allocated_;
   GLuint id_;
@@ -523,7 +522,7 @@ class BackFramebuffer {
   gl::GLApi* api() const;
 
  private:
-  CheckedPtr<GLES2DecoderImpl> decoder_;
+  GLES2DecoderImpl* decoder_;
   GLuint id_;
   DISALLOW_COPY_AND_ASSIGN(BackFramebuffer);
 };
@@ -849,7 +848,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
     void LoseContext() { has_context_ = false; }
 
    private:
-    CheckedPtr<GLES2DecoderImpl> decoder_ = nullptr;
+    GLES2DecoderImpl* decoder_ = nullptr;
     bool success_ = false;
     bool has_context_ = true;
   };
@@ -19753,7 +19752,7 @@ void GLES2DecoderImpl::DoFlushMappedBufferRange(
   }
   char* client_data = reinterpret_cast<char*>(mapped_range->GetShmPointer());
   DCHECK(client_data);
-  char* gpu_data = reinterpret_cast<char*>(mapped_range->pointer.get());
+  char* gpu_data = reinterpret_cast<char*>(mapped_range->pointer);
   DCHECK(gpu_data);
   memcpy(gpu_data + offset, client_data + offset, size);
   if (buffer->shadowed()) {

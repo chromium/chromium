@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_checker.h"
@@ -352,7 +351,7 @@ class RenderFrameDeletedObserver : public WebContentsObserver {
 
  private:
   // Will be nullptr after deletion.
-  CheckedPtr<RenderFrameHost> rfh_;
+  RenderFrameHost* rfh_;
   std::unique_ptr<base::RunLoop> runner_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrameDeletedObserver);

@@ -14,7 +14,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/current_thread.h"
 #include "content/public/browser/browser_thread.h"
@@ -60,13 +59,13 @@ class UserData : public base::SupportsUserData::Data {
       return NULL;
     UserData* data = static_cast<UserData*>(
         web_contents->GetUserData(kAwContentsClientBridge));
-    return data ? data->contents_.get() : NULL;
+    return data ? data->contents_ : NULL;
   }
 
   explicit UserData(AwContentsClientBridge* ptr) : contents_(ptr) {}
 
  private:
-  CheckedPtr<AwContentsClientBridge> contents_;
+  AwContentsClientBridge* contents_;
 
   DISALLOW_COPY_AND_ASSIGN(UserData);
 };

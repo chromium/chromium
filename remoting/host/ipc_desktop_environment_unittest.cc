@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/process.h"
@@ -217,7 +216,7 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   std::string client_jid_;
 
   // Clipboard stub that receives clipboard events from the desktop process.
-  CheckedPtr<protocol::ClipboardStub> clipboard_stub_;
+  protocol::ClipboardStub* clipboard_stub_;
 
   // The daemons's end of the daemon-to-desktop channel.
   std::unique_ptr<IPC::ChannelProxy> desktop_channel_;
@@ -243,7 +242,7 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   std::unique_ptr<DesktopProcess> desktop_process_;
 
   // Input injector owned by |desktop_process_|.
-  CheckedPtr<MockInputInjector> remote_input_injector_;
+  MockInputInjector* remote_input_injector_;
 
   // The last |terminal_id| passed to ConnectTermina();
   int terminal_id_;

@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_BOX_LAYOUT_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_BOX_LAYOUT_EXAMPLE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/examples/layout_example_base.h"
@@ -39,15 +38,15 @@ class VIEWS_EXAMPLES_EXPORT BoxLayoutExample : public LayoutExampleBase {
   void MainAxisAlignmentChanged();
   void CrossAxisAlignmentChanged();
 
-  CheckedPtr<BoxLayout> layout_ = nullptr;
-  CheckedPtr<Combobox> orientation_ = nullptr;
-  CheckedPtr<Combobox> main_axis_alignment_ = nullptr;
-  CheckedPtr<Combobox> cross_axis_alignment_ = nullptr;
-  CheckedPtr<Textfield> between_child_spacing_ = nullptr;
-  CheckedPtr<Textfield> default_flex_ = nullptr;
-  CheckedPtr<Textfield> min_cross_axis_size_ = nullptr;
+  BoxLayout* layout_ = nullptr;
+  Combobox* orientation_ = nullptr;
+  Combobox* main_axis_alignment_ = nullptr;
+  Combobox* cross_axis_alignment_ = nullptr;
+  Textfield* between_child_spacing_ = nullptr;
+  Textfield* default_flex_ = nullptr;
+  Textfield* min_cross_axis_size_ = nullptr;
   InsetTextfields border_insets_;
-  CheckedPtr<Checkbox> collapse_margins_ = nullptr;
+  Checkbox* collapse_margins_ = nullptr;
 };
 
 }  // namespace examples

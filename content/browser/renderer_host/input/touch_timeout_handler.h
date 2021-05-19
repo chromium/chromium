@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/browser/renderer_host/input/timeout_monitor.h"
@@ -56,7 +55,7 @@ class TouchTimeoutHandler {
   base::TimeDelta GetTimeoutDelay() const;
   bool HasTimeoutEvent() const;
 
-  CheckedPtr<PassthroughTouchEventQueue> touch_queue_;
+  PassthroughTouchEventQueue* touch_queue_;
 
   // How long to wait on a touch ack before cancelling the touch sequence.
   const base::TimeDelta desktop_timeout_delay_;

@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -179,7 +178,7 @@ class BulletedPermissionsList : public views::View {
       layout_->SkipColumns(1);
   }
 
-  CheckedPtr<views::GridLayout> layout_;
+  views::GridLayout* layout_;
 };
 
 BEGIN_METADATA(BulletedPermissionsList, views::View)

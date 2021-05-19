@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -52,7 +51,7 @@ class VideoSourceProviderImpl : public mojom::VideoSourceProvider {
   void OnClientDisconnectedOrClosed();
   void OnVideoSourceLastClientDisconnected(const std::string& device_id);
 
-  const CheckedPtr<DeviceFactory> device_factory_;
+  DeviceFactory* const device_factory_;
   base::RepeatingClosure on_last_client_disconnected_cb_;
   int client_count_ = 0;
   int closed_but_not_yet_disconnected_client_count_ = 0;

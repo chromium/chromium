@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -128,7 +127,7 @@ class BookmarkAppRegistrar : public web_app::AppRegistrar,
       extension_observation_{this};
 
   // Observers may find this pointer via FindExtension method.
-  CheckedPtr<const Extension> bookmark_app_being_observed_ = nullptr;
+  const Extension* bookmark_app_being_observed_ = nullptr;
 };
 
 }  // namespace extensions

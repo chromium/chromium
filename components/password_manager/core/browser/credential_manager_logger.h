@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "url/gurl.h"
 
@@ -34,7 +33,7 @@ class CredentialManagerLogger {
 
  private:
   // The LogManager to which logs can be sent for display.
-  const CheckedPtr<const autofill::LogManager> log_manager_;
+  const autofill::LogManager* const log_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(CredentialManagerLogger);
 };

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/sessions/core/session_id.h"
 
@@ -92,7 +91,7 @@ class SessionServiceBaseTestHelper {
   explicit SessionServiceBaseTestHelper(SessionServiceBase* base);
 
  private:
-  CheckedPtr<SessionServiceBase> service_;
+  SessionServiceBase* service_;
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_SERVICE_BASE_TEST_HELPER_H_

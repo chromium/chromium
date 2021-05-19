@@ -6,7 +6,6 @@
 #define UI_VIEWS_WINDOW_FRAME_BACKGROUND_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/views_export.h"
@@ -94,16 +93,16 @@ class VIEWS_EXPORT FrameBackground {
   int top_area_height_ = 0;
 
   // Images for the sides of the frame.
-  CheckedPtr<const gfx::ImageSkia> left_edge_ = nullptr;
-  CheckedPtr<const gfx::ImageSkia> top_edge_ = nullptr;
-  CheckedPtr<const gfx::ImageSkia> right_edge_ = nullptr;
-  CheckedPtr<const gfx::ImageSkia> bottom_edge_ = nullptr;
+  const gfx::ImageSkia* left_edge_ = nullptr;
+  const gfx::ImageSkia* top_edge_ = nullptr;
+  const gfx::ImageSkia* right_edge_ = nullptr;
+  const gfx::ImageSkia* bottom_edge_ = nullptr;
 
   // Images for the corners of the frame.
-  CheckedPtr<const gfx::ImageSkia> top_left_corner_ = nullptr;
-  CheckedPtr<const gfx::ImageSkia> top_right_corner_ = nullptr;
-  CheckedPtr<const gfx::ImageSkia> bottom_left_corner_ = nullptr;
-  CheckedPtr<const gfx::ImageSkia> bottom_right_corner_ = nullptr;
+  const gfx::ImageSkia* top_left_corner_ = nullptr;
+  const gfx::ImageSkia* top_right_corner_ = nullptr;
+  const gfx::ImageSkia* bottom_left_corner_ = nullptr;
+  const gfx::ImageSkia* bottom_right_corner_ = nullptr;
 
   // Vertical inset for theme image when drawing maximized.
   int maximized_top_inset_ = 0;

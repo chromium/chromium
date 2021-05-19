@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 
 class SharingMessageSender;
@@ -23,7 +22,7 @@ class AckMessageHandler : public SharingMessageHandler {
                  SharingMessageHandler::DoneCallback done_callback) override;
 
  private:
-  CheckedPtr<SharingMessageSender> sharing_message_sender_;
+  SharingMessageSender* sharing_message_sender_;
 
   DISALLOW_COPY_AND_ASSIGN(AckMessageHandler);
 };

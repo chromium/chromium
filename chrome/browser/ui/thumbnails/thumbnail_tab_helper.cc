@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
@@ -176,7 +175,7 @@ class ThumbnailTabHelper::TabStateTracker
     capture_driver_.UpdatePageReadiness(readiness);
   }
 
-  const CheckedPtr<ThumbnailTabHelper> thumbnail_tab_helper_;
+  ThumbnailTabHelper* const thumbnail_tab_helper_;
 
   ThumbnailCaptureDriver capture_driver_{
       this, &thumbnail_tab_helper_->GetScheduler()};

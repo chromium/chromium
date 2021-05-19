@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/android_affiliation/fake_affiliation_fetcher.h"
 
@@ -49,7 +48,7 @@ class FakeAffiliationAPI {
   }
 
  private:
-  CheckedPtr<FakeAffiliationFetcherFactory> fake_fetcher_factory_ = nullptr;
+  FakeAffiliationFetcherFactory* fake_fetcher_factory_ = nullptr;
   std::vector<AffiliatedFacets> preset_equivalence_relation_;
 };
 

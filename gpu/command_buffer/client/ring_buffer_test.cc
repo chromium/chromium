@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
@@ -85,7 +84,7 @@ class BaseRingBufferTest : public testing::Test {
   bool delay_set_token_;
 
   std::unique_ptr<int8_t[]> buffer_;
-  CheckedPtr<int8_t> buffer_start_;
+  int8_t* buffer_start_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
