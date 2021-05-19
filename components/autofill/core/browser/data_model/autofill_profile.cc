@@ -964,6 +964,12 @@ void AutofillProfile::RecordAndLogUse() {
   UMA_HISTOGRAM_COUNTS_1000("Autofill.DaysSinceLastUse.Profile",
                             (AutofillClock::Now() - use_date()).InDays());
   RecordUse();
+  LogVerificationStatuses();
+}
+
+void AutofillProfile::LogVerificationStatuses() {
+  AutofillMetrics::LogVerificationStatusOfNameTokensOnProfileUsage(*this);
+  AutofillMetrics::LogVerificationStatusOfAddressTokensOnProfileUsage(*this);
 }
 
 bool AutofillProfile::HasGreaterFrescocencyThan(

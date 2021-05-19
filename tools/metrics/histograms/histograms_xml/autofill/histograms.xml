@@ -164,6 +164,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="Autofill.AddressTokenVerificationStatusAtProfileUsage.{AddressType}"
+    enum="AufofillStructuredTokenVerificationStatus" expires_after="M96">
+  <owner>koerber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    For each {AddressType} in a given AutofillProfile, the verification status
+    of the corresponding non-empty type is recorded when a profile is used to
+    fill a form.
+  </summary>
+  <token key="AddressType">
+    <variant name="Any" summary="any of the following"/>
+    <variant name="ApartmentNumber"
+        summary="the apartment number of the address"/>
+    <variant name="FloorNumber" summary="the floor number of the address"/>
+    <variant name="HouseNumber" summary="the house number of the address"/>
+    <variant name="Premise" summary="the premise of the address"/>
+    <variant name="StreetAddress" summary="the full street address"/>
+    <variant name="StreetName" summary="the street name of the address"/>
+    <variant name="SubPremise" summary="the subpremise of the address"/>
+  </token>
+</histogram>
+
+<histogram
     name="Autofill.Autocomplete.NotOff.EditedAutofilledFieldAtSubmission"
     enum="AutofilledFieldUserEditingStatus" expires_after="2021-11-07">
   <owner>schwering@google.com</owner>
@@ -1239,6 +1262,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     wallet sync transport is migrated (part of the migration from using email to
     using Gaia ID as the account identifier).
   </summary>
+</histogram>
+
+<histogram name="Autofill.NameTokenVerificationStatusAtProfileUsage.{NameType}"
+    enum="AufofillStructuredTokenVerificationStatus" expires_after="M96">
+  <owner>koerber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    For each {NameType} in a given AutofillProfile, the verification status of
+    the corresponding non-empty type is recorded when a profile is used to fill
+    a form.
+  </summary>
+  <token key="NameType">
+    <variant name="Any" summary="any of the following"/>
+    <variant name="FirstLast" summary="the first last name of the profile"/>
+    <variant name="Full" summary="the full name of the profile"/>
+    <variant name="Last" summary="the last name of the profile"/>
+    <variant name="Middle" summary="the middle name of the profile"/>
+    <variant name="SecondLast" summary="the second last name of the profile"/>
+  </token>
 </histogram>
 
 <histogram

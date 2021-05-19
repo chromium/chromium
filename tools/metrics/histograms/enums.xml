@@ -4755,6 +4755,15 @@ others/histograms.xml -->
   <int value="2" label="Processing in WebRTC"/>
 </enum>
 
+<enum name="AufofillStructuredTokenVerificationStatus">
+  <int value="0" label="No Status"/>
+  <int value="1" label="Parsed"/>
+  <int value="2" label="Formatted"/>
+  <int value="3" label="Observed"/>
+  <int value="4" label="User-Verified"/>
+  <int value="5" label="Server-Parsed"/>
+</enum>
+
 <enum name="AuthenticatedLaunchUserEvent">
   <obsolete>
     Removed in M90.

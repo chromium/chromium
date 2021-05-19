@@ -1618,6 +1618,16 @@ class AutofillMetrics {
   // Logs when the virtual card metadata for one card have been updated.
   static void LogVirtualCardMetadataSynced(bool existing_card);
 
+  // Logs the verification status of non-empty name-related profile tokens when
+  // a profile is used to fill a form.
+  static void LogVerificationStatusOfNameTokensOnProfileUsage(
+      const AutofillProfile& profile);
+
+  // Logs the verification status of non-empty address-related profile tokens
+  // when a profile is used to fill a form.
+  static void LogVerificationStatusOfAddressTokensOnProfileUsage(
+      const AutofillProfile& profile);
+
   // The total number of values in the |CardUploadDecisionMetric| enum. Must be
   // updated each time a new value is added.
   static const int kNumCardUploadDecisionMetrics = 19;

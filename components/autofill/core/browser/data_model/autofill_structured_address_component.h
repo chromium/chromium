@@ -39,6 +39,7 @@ enum class VerificationStatus {
   kUserVerified = 4,
   // The token was parsed by the server.
   kServerParsed = 5,
+  kMaxValue = kServerParsed
 };
 
 // Prints the string representation of |status| to |os|.

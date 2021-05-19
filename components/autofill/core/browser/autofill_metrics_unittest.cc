@@ -8092,6 +8092,95 @@ TEST_F(AutofillMetricsTest, DaysSinceLastUse_Profile) {
                                      1);
 }
 
+// Test that we log the verification status of name tokens.
+TEST_F(AutofillMetricsTest, LogVerificationStatusesOfNameTokens) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInNames);
+
+  base::HistogramTester histogram_tester;
+  AutofillProfile profile;
+  profile.SetRawInfoWithVerificationStatus(
+      NAME_FULL, u"First Last",
+      structured_address::VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(
+      NAME_FIRST, u"First", structured_address::VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(
+      NAME_LAST, u"Last", structured_address::VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(
+      NAME_LAST_SECOND, u"Last",
+      structured_address::VerificationStatus::kParsed);
+
+  AutofillMetrics::LogVerificationStatusOfNameTokensOnProfileUsage(profile);
+
+  std::string base_histo =
+      "Autofill.NameTokenVerificationStatusAtProfileUsage.";
+
+  histogram_tester.ExpectUniqueSample(
+      base_histo + "Full", structured_address::VerificationStatus::kObserved,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      base_histo + "First", structured_address::VerificationStatus::kParsed, 1);
+  histogram_tester.ExpectUniqueSample(
+      base_histo + "Last", structured_address::VerificationStatus::kParsed, 1);
+  histogram_tester.ExpectUniqueSample(
+      base_histo + "SecondLast",
+      structured_address::VerificationStatus::kParsed, 1);
+
+  histogram_tester.ExpectTotalCount(base_histo + "Middle", 0);
+  histogram_tester.ExpectTotalCount(base_histo + "FirstLast", 0);
+
+  histogram_tester.ExpectTotalCount(base_histo + "Any", 4);
+  histogram_tester.ExpectBucketCount(
+      base_histo + "Any", structured_address::VerificationStatus::kObserved, 1);
+  histogram_tester.ExpectBucketCount(
+      base_histo + "Any", structured_address::VerificationStatus::kParsed, 3);
+}
+
+// Test that we log the verification status of address tokens..
+TEST_F(AutofillMetricsTest, LogVerificationStatusesOfAddressTokens) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInAddresses);
+
+  base::HistogramTester histogram_tester;
+  AutofillProfile profile;
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS, u"123 StreetName",
+      structured_address::VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_HOUSE_NUMBER, u"123",
+      structured_address::VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_NAME, u"StreetName",
+      structured_address::VerificationStatus::kObserved);
+
+  AutofillMetrics::LogVerificationStatusOfAddressTokensOnProfileUsage(profile);
+
+  std::string base_histo =
+      "Autofill.AddressTokenVerificationStatusAtProfileUsage.";
+
+  histogram_tester.ExpectUniqueSample(
+      base_histo + "StreetAddress",
+      structured_address::VerificationStatus::kFormatted, 1);
+  histogram_tester.ExpectUniqueSample(
+      base_histo + "StreetName",
+      structured_address::VerificationStatus::kObserved, 1);
+  histogram_tester.ExpectUniqueSample(
+      base_histo + "HouseNumber",
+      structured_address::VerificationStatus::kObserved, 1);
+
+  histogram_tester.ExpectTotalCount(base_histo + "FloorNumber", 0);
+  histogram_tester.ExpectTotalCount(base_histo + "ApartmentNumber", 0);
+  histogram_tester.ExpectTotalCount(base_histo + "Premise", 0);
+  histogram_tester.ExpectTotalCount(base_histo + "SubPremise", 0);
+
+  histogram_tester.ExpectTotalCount(base_histo + "Any", 3);
+  histogram_tester.ExpectBucketCount(
+      base_histo + "Any", structured_address::VerificationStatus::kFormatted,
+      1);
+  histogram_tester.ExpectBucketCount(
+      base_histo + "Any", structured_address::VerificationStatus::kObserved, 2);
+}
+
 // Verify that we correctly log the submitted form's state.
 TEST_F(AutofillMetricsTest, AutofillFormSubmittedState) {
   // Start with a form with insufficiently many fields.

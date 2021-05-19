@@ -207,7 +207,12 @@ class AutofillProfile : public AutofillDataModel {
 
   // Logs the number of days since the profile was last used, records its
   // use and updates |previous_use_date_| to the last value of |use_date_|.
+  // Also initiates the logging of the structured token verification statuses.
   void RecordAndLogUse();
+
+  // Logs the verification status of non-empty structured name and address
+  // tokens. Should be called when a profile is used to fill a form.
+  void LogVerificationStatuses();
 
   // Returns true if the current profile has greater frescocency than the
   // |other|. Frescocency is a combination of validation score and frecency to
