@@ -1118,7 +1118,7 @@
       "chrome-apps-platform-rationalization@google.com",
       "quickoffice-chrome-eng@google.com"
     ],
-    "expiry_milestone": 88
+    "expiry_milestone": 95
   },
   {
     "name": "disable-threaded-scrolling",
