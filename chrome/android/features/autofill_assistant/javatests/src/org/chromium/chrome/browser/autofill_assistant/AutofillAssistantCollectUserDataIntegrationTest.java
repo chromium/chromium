@@ -510,6 +510,67 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         waitUntilKeyboardMatchesCondition(mTestRule, false);
     }
 
+    /**
+     * Clicking on an input text should make the chip disappear, on focus lost the chip should
+     * appear again.
+     */
+    @Test
+    @MediumTest
+    public void testChipsAreHiddenOnKeyboardAppering() throws Exception {
+        String profileId = mHelper.addDummyProfile("John Doe", "johndoe@gmail.com");
+        mHelper.addDummyCreditCard(profileId);
+
+        ArrayList<ActionProto> list = new ArrayList<>();
+        UserFormSectionProto userFormSectionProto =
+                UserFormSectionProto.newBuilder()
+                        .setTitle("User form")
+                        .setTextInputSection(
+                                TextInputSectionProto.newBuilder()
+                                        .addInputFields(TextInputProto.newBuilder()
+                                                                .setHint("Field 1")
+                                                                .setInputType(InputType.INPUT_TEXT)
+                                                                .setClientMemoryKey("field_1"))
+                                        .addInputFields(TextInputProto.newBuilder()
+                                                                .setHint("Field 2")
+                                                                .setInputType(InputType.INPUT_TEXT)
+                                                                .setClientMemoryKey("field_2")))
+                        .build();
+
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setCollectUserData(
+                                 CollectUserDataProto.newBuilder()
+                                         .setPrivacyNoticeText("3rd party privacy text")
+                                         .setShowTermsAsCheckbox(true)
+                                         .setRequestTermsAndConditions(true)
+                                         .setAcceptTermsAndConditionsText("accept terms")
+                                         .setTermsAndConditionsState(
+                                                 TermsAndConditionsState.ACCEPTED)
+                                         .addAdditionalPrependedSections(userFormSectionProto))
+                         .build());
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                        .setPath("form_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
+                                ChipProto.newBuilder().setText("Payment")))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+
+        waitUntilViewMatchesCondition(withText("User form"), isDisplayed());
+        onView(withText("User form")).perform(click());
+        waitUntilViewMatchesCondition(withContentDescription("Field 1"), isDisplayed());
+        onView(withContentDescription("Continue")).check(matches(isDisplayed()));
+        onView(withContentDescription("Field 1")).perform(click());
+        waitUntilKeyboardMatchesCondition(mTestRule, true);
+        waitUntilViewMatchesCondition(withContentDescription("Continue"), not(isDisplayed()));
+        onView(allOf(withContentDescription("Close"), isDisplayed())).perform(click());
+        waitUntilKeyboardMatchesCondition(mTestRule, false);
+        waitUntilViewMatchesCondition(withContentDescription("Continue"), isDisplayed());
+    }
+
     @Test
     @MediumTest
     public void testIncompleteAddressOnCompleteCard() throws Exception {

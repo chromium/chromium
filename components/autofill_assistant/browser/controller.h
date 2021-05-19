@@ -266,6 +266,7 @@ class Controller : public ScriptExecutorDelegate,
   bool ShouldShowOverlay() const override;
   void ShutdownIfNecessary() override;
   void OnKeyboardVisibilityChanged(bool visible) override;
+  void OnInputTextFocusChanged(bool is_text_focused) override;
 
  private:
   friend ControllerTest;
@@ -402,6 +403,8 @@ class Controller : public ScriptExecutorDelegate,
 
   bool StateNeedsUI(AutofillAssistantState state);
 
+  bool ShouldChipsBeVisible();
+  bool ShouldUpdateChipVisibility();
   void SetVisibilityAndUpdateUserActions();
 
   void MakeDetailsVisible(size_t details_index);
@@ -578,7 +581,9 @@ class Controller : public ScriptExecutorDelegate,
   std::vector<std::string> browse_domains_allowlist_;
   bool browse_mode_invisible_ = false;
   bool is_keyboard_showing_ = false;
+  bool is_focus_on_bottom_sheet_text_input_ = false;
   bool show_feedback_chip_on_graceful_shutdown_ = false;
+  bool are_chips_visible_ = true;
 
   // Only set during a ShowGenericUiAction.
   std::unique_ptr<GenericUserInterfaceProto> generic_user_interface_;

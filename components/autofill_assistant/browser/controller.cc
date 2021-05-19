@@ -402,12 +402,22 @@ void Controller::SetUserActions(
   SetVisibilityAndUpdateUserActions();
 }
 
+bool Controller::ShouldChipsBeVisible() {
+  return !(is_keyboard_showing_ && is_focus_on_bottom_sheet_text_input_);
+}
+
+bool Controller::ShouldUpdateChipVisibility() {
+  return are_chips_visible_ != ShouldChipsBeVisible();
+}
+
 void Controller::SetVisibilityAndUpdateUserActions() {
-  // All non-cancel chips should be hidden while the keyboard is showing.
+  // All non-cancel chips should be hidden while the keyboard is showing to fill
+  // an input text field in the bottom sheet.
+  are_chips_visible_ = ShouldChipsBeVisible();
   if (user_actions_) {
     for (UserAction& user_action : *user_actions_) {
       if (user_action.chip().type != CANCEL_ACTION) {
-        user_action.chip().visible = !is_keyboard_showing_;
+        user_action.chip().visible = are_chips_visible_;
       }
     }
   }
@@ -2106,7 +2116,18 @@ bool Controller::StateNeedsUI(AutofillAssistantState state) {
 
 void Controller::OnKeyboardVisibilityChanged(bool visible) {
   is_keyboard_showing_ = visible;
-  SetVisibilityAndUpdateUserActions();
+
+  if (ShouldUpdateChipVisibility()) {
+    SetVisibilityAndUpdateUserActions();
+  }
+}
+
+void Controller::OnInputTextFocusChanged(bool is_text_focused) {
+  is_focus_on_bottom_sheet_text_input_ = is_text_focused;
+
+  if (ShouldUpdateChipVisibility()) {
+    SetVisibilityAndUpdateUserActions();
+  }
 }
 
 ElementArea* Controller::touchable_element_area() {

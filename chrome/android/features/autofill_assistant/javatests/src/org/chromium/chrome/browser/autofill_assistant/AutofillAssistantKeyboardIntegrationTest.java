@@ -13,7 +13,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getElementValue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
@@ -301,9 +300,10 @@ public class AutofillAssistantKeyboardIntegrationTest {
         waitUntilKeyboardMatchesCondition(mTestRule, /* isShowing= */ true);
     }
 
+    // When the keyboard is showing to type in the website, nothing should happen to the chips.
     @Test
     @MediumTest
-    public void hideChipsWhileKeyboardShowing() throws Exception {
+    public void doNotHideChipsWhileKeyboardShowingForWebsiteTextInput() throws Exception {
         SelectorProto element =
                 (SelectorProto) SelectorProto.newBuilder()
                         .addFilters(
@@ -352,15 +352,14 @@ public class AutofillAssistantKeyboardIntegrationTest {
 
         tapElement(mTestRule, "profile_name");
         waitUntilKeyboardMatchesCondition(mTestRule, /* isShowing= */ true);
-        waitUntilViewMatchesCondition(withText("Done"), not(isDisplayed()));
-        // Chips of type CANCEL should stay visible.
+        onView(withText("Done")).check(matches(isDisplayed()));
         onView(withText("Cancel")).check(matches(isDisplayed()));
 
         // Clicking on a cancel chip while the keyboard is showing hides the keyboard instead of
         // closing Autofill Assistant.
         onView(withText("Cancel")).perform(click());
         waitUntilKeyboardMatchesCondition(mTestRule, /* isShowing= */ false);
-        waitUntilViewMatchesCondition(withText("Done"), isDisplayed());
+        onView(withText("Done")).check(matches(isDisplayed()));
         onView(withText("Cancel")).check(matches(isDisplayed()));
     }
 }

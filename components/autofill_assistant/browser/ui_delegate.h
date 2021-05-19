@@ -269,6 +269,10 @@ class UiDelegate {
   // Called when the visibility of the keyboard has changed.
   virtual void OnKeyboardVisibilityChanged(bool visible) = 0;
 
+  // Called when the user starts or finishes to focus an input text field in the
+  // bottom sheet.
+  virtual void OnInputTextFocusChanged(bool is_text_focused) = 0;
+
  protected:
   UiDelegate() = default;
 };

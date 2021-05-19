@@ -214,8 +214,8 @@ class AssistantCollectUserDataBinder
             }
 
             @Override
-            public void onTextFocusLost() {
-                collectUserDataDelegate.onTextFocusLost();
+            public void onInputTextFocusChanged(boolean isFocused) {
+                collectUserDataDelegate.onInputTextFocusChanged(isFocused);
             }
         };
     }

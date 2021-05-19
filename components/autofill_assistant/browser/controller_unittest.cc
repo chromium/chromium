@@ -3006,4 +3006,37 @@ TEST_F(ControllerTest, OnScriptErrorWillAppendVanishingFeedbackChip) {
   EXPECT_TRUE(controller_->PerformUserAction(0));
 }
 
+// The chip should be hidden if and only if the keyboard is visible and the
+// focus is on a bottom sheet input text.
+TEST_F(ControllerTest, UpdateChipVisibility) {
+  InSequence seq;
+
+  UserAction user_action(ChipProto(), DirectActionProto(), true, std::string());
+  EXPECT_CALL(mock_observer_,
+              OnUserActionsChanged(UnorderedElementsAre(Property(
+                  &UserAction::chip, Field(&Chip::visible, Eq(true))))))
+      .Times(1);
+  auto user_actions = std::make_unique<std::vector<UserAction>>();
+  user_actions->emplace_back(std::move(user_action));
+  controller_->SetUserActions(std::move(user_actions));
+
+  EXPECT_CALL(mock_observer_, OnUserActionsChanged(_)).Times(0);
+  controller_->OnKeyboardVisibilityChanged(true);
+
+  EXPECT_CALL(mock_observer_,
+              OnUserActionsChanged(UnorderedElementsAre(Property(
+                  &UserAction::chip, Field(&Chip::visible, Eq(false))))))
+      .Times(1);
+  controller_->OnInputTextFocusChanged(true);
+
+  EXPECT_CALL(mock_observer_,
+              OnUserActionsChanged(UnorderedElementsAre(Property(
+                  &UserAction::chip, Field(&Chip::visible, Eq(true))))))
+      .Times(1);
+  controller_->OnKeyboardVisibilityChanged(false);
+
+  EXPECT_CALL(mock_observer_, OnUserActionsChanged(_)).Times(0);
+  controller_->OnInputTextFocusChanged(false);
+}
+
 }  // namespace autofill_assistant

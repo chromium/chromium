@@ -177,7 +177,7 @@ public class AutofillAssistantCollectUserDataTestHelper {
         }
 
         @Override
-        public void onTextFocusLost() {}
+        public void onInputTextFocusChanged(boolean isFocused) {}
 
         @Override
         public boolean isContactComplete(@Nullable AutofillContact contact) {

@@ -51,8 +51,8 @@ public interface AssistantCollectUserDataDelegate {
     /** The value of a key/value pair has changed. */
     void onKeyValueChanged(String key, AssistantValue value);
 
-    /** The focus on a text field has been lost */
-    void onTextFocusLost();
+    /** The focus on an input text field has changed */
+    void onInputTextFocusChanged(boolean isFocused);
 
     /**
      * Returns true if the contact is complete.

@@ -90,8 +90,10 @@ class AssistantCollectUserDataDelegate {
                          const base::android::JavaParamRef<jstring>& jkey,
                          const base::android::JavaParamRef<jobject>& jvalue);
 
-  void OnTextFocusLost(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& jcaller);
+  void OnInputTextFocusChanged(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller,
+      jboolean jis_focused);
 
   bool IsContactComplete(
       JNIEnv* env,

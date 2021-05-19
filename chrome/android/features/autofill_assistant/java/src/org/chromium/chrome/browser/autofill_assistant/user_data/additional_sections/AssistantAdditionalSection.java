@@ -13,7 +13,7 @@ public interface AssistantAdditionalSection {
     /** Delegate interface for generic key/value widgets. */
     interface Delegate {
         void onValueChanged(String key, AssistantValue value);
-        void onTextFocusLost();
+        void onInputTextFocusChanged(boolean isFocused);
     }
 
     /** Returns the root view of the section. */

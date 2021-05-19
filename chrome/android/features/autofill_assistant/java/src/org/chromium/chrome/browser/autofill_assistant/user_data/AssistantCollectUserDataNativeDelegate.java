@@ -161,11 +161,11 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
     }
 
     @Override
-    public void onTextFocusLost() {
+    public void onInputTextFocusChanged(boolean isFocused) {
         if (mNativeAssistantCollectUserDataDelegate != 0) {
-            AssistantCollectUserDataNativeDelegateJni.get().onTextFocusLost(
+            AssistantCollectUserDataNativeDelegateJni.get().onInputTextFocusChanged(
                     mNativeAssistantCollectUserDataDelegate,
-                    AssistantCollectUserDataNativeDelegate.this);
+                    AssistantCollectUserDataNativeDelegate.this, isFocused);
         }
     }
 
@@ -248,8 +248,8 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
                 AssistantCollectUserDataNativeDelegate caller);
         void onKeyValueChanged(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller, String key, AssistantValue value);
-        void onTextFocusLost(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller);
+        void onInputTextFocusChanged(long nativeAssistantCollectUserDataDelegate,
+                AssistantCollectUserDataNativeDelegate caller, boolean isFocused);
         boolean isContactComplete(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller,
                 @Nullable PersonalDataManager.AutofillProfile address);

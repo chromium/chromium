@@ -180,10 +180,11 @@ void AssistantCollectUserDataDelegate::OnKeyValueChanged(
       ui_controller_android_utils::ToNativeValue(env, jvalue));
 }
 
-void AssistantCollectUserDataDelegate::OnTextFocusLost(
+void AssistantCollectUserDataDelegate::OnInputTextFocusChanged(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
-  ui_controller_->OnTextFocusLost();
+    const base::android::JavaParamRef<jobject>& jcaller,
+    jboolean jis_focused) {
+  ui_controller_->OnInputTextFocusChanged(jis_focused);
 }
 
 base::android::ScopedJavaGlobalRef<jobject>
