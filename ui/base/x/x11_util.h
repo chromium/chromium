@@ -40,7 +40,6 @@ class SkPixmap;
 namespace base {
 template <typename T>
 struct DefaultSingletonTraits;
-class Value;
 }
 
 namespace gfx {
@@ -378,13 +377,6 @@ COMPONENT_EXPORT(UI_BASE_X) bool IsX11WindowFullScreen(x11::Window window);
 // Suspends or resumes the X screen saver.  Must be called on the UI thread.
 COMPONENT_EXPORT(UI_BASE_X) void SuspendX11ScreenSaver(bool suspend);
 
-// Returns human readable description of the window manager, desktop, and
-// other system properties related to the compositing.
-COMPONENT_EXPORT(UI_BASE_X)
-void StoreGpuExtraInfoIntoListValue(x11::VisualId system_visual,
-                                    x11::VisualId rgba_visual,
-                                    base::Value& list_value);
-
 // Returns true if the window manager supports the given hint.
 COMPONENT_EXPORT(UI_BASE_X) bool WmSupportsHint(x11::Atom atom);
 
@@ -412,8 +404,7 @@ x11::Future<void> SendClientMessage(
 // Return true if VulkanSurface is supported.
 COMPONENT_EXPORT(UI_BASE_X) bool IsVulkanSurfaceSupported();
 
-// Returns whether the visual supports alpha.
-// The function examines the _CHROMIUM_INSIDE_XVFB environment variable.
+// Returns whether ARGB visuals are supported.
 COMPONENT_EXPORT(UI_BASE_X) bool DoesVisualHaveAlphaForTest();
 
 // Returns an icon for a native window referred by |target_window_id|. Can be
@@ -440,14 +431,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XVisualManager {
                      x11::ColorMap* colormap,
                      bool* visual_has_alpha);
 
-  // Called by GpuDataManagerImplPrivate when GPUInfo becomes available.  It is
-  // necessary for the GPU process to find out which visuals are best for GL
-  // because we don't want to load GL in the browser process.  Returns false iff
-  // |default_visual_id| or |transparent_visual_id| are invalid.
-  bool UpdateVisualsOnGpuInfoChanged(bool software_rendering,
-                                     x11::VisualId default_visual_id,
-                                     x11::VisualId transparent_visual_id);
-
   // Are all of the system requirements met for using transparent visuals?
   bool ArgbVisualAvailable() const;
 
@@ -470,31 +453,14 @@ class COMPONENT_EXPORT(UI_BASE_X) XVisualManager {
 
    private:
     x11::ColorMap colormap_{};
-    x11::Connection* const connection_;
   };
 
   XVisualManager();
 
-  bool GetVisualInfoImpl(x11::VisualId visual_id,
-                         uint8_t* depth,
-                         x11::ColorMap* colormap,
-                         bool* visual_has_alpha);
-
-  mutable base::Lock lock_;
-
   std::unordered_map<x11::VisualId, std::unique_ptr<XVisualData>> visuals_;
 
-  x11::Connection* const connection_;
-
-  x11::VisualId default_visual_id_{};
-
-  // The system visual is usually the same as the default visual, but
-  // may not be in general.
-  x11::VisualId system_visual_id_{};
+  x11::VisualId opaque_visual_id_{};
   x11::VisualId transparent_visual_id_{};
-
-  bool using_software_rendering_ = false;
-  bool have_gpu_argb_visual_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(XVisualManager);
 };

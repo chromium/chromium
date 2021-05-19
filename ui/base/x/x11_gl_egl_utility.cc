@@ -39,20 +39,8 @@ namespace ui {
 
 void GetPlatformExtraDisplayAttribs(EGLenum platform_type,
                                     std::vector<EGLAttrib>* attributes) {
-  // ANGLE_NULL and SwiftShader backends don't use the visual,
-  // and may run without X11 where we can't get it anyway.
-  if ((platform_type != EGL_PLATFORM_ANGLE_TYPE_NULL_ANGLE) &&
-      (std::find(attributes->begin(), attributes->end(),
-                 EGL_PLATFORM_ANGLE_DEVICE_TYPE_SWIFTSHADER_ANGLE) ==
-       attributes->end())) {
-    x11::VisualId visual_id;
-    XVisualManager::GetInstance()->ChooseVisualForWindow(
-        true, &visual_id, nullptr, nullptr, nullptr);
-    attributes->push_back(EGL_X11_VISUAL_ID_ANGLE);
-    attributes->push_back(static_cast<EGLAttrib>(visual_id));
-    attributes->push_back(EGL_PLATFORM_ANGLE_NATIVE_PLATFORM_TYPE_ANGLE);
-    attributes->push_back(EGL_PLATFORM_X11_EXT);
-  }
+  attributes->push_back(EGL_PLATFORM_ANGLE_NATIVE_PLATFORM_TYPE_ANGLE);
+  attributes->push_back(EGL_PLATFORM_X11_EXT);
 }
 
 void ChoosePlatformCustomAlphaAndBufferSize(EGLint* alpha_size,
@@ -70,13 +58,6 @@ void ChoosePlatformCustomAlphaAndBufferSize(EGLint* alpha_size,
 
 bool IsTransparentBackgroundSupported() {
   return ui::XVisualManager::GetInstance()->ArgbVisualAvailable();
-}
-
-bool UpdateVisualsOnGpuInfoChanged(bool software_rendering,
-                                   x11::VisualId default_visual_id,
-                                   x11::VisualId transparent_visual_id) {
-  return XVisualManager::GetInstance()->UpdateVisualsOnGpuInfoChanged(
-      software_rendering, default_visual_id, transparent_visual_id);
 }
 
 }  // namespace ui

@@ -290,8 +290,6 @@ component("gl") {
       "gl_image_glx_native_pixmap.h",
       "gl_surface_glx.cc",
       "gl_surface_glx.h",
-      "gl_visual_picker_glx.cc",
-      "gl_visual_picker_glx.h",
       "glx_util.cc",
       "glx_util.h",
     ]

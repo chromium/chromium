@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "ui/gfx/x/connection.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_glx.h"
-#include "ui/gl/gl_visual_picker_glx.h"
 
 namespace gl {
 

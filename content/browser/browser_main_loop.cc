@@ -194,10 +194,6 @@
 #include <glib-object.h>
 #endif
 
-#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
-#include "content/browser/gpu_data_manager_visual_proxy_ozone_linux.h"
-#endif
-
 #if defined(OS_WIN)
 #include "media/device_monitors/system_message_window_win.h"
 #include "sandbox/win/src/process_mitigations.h"
@@ -806,15 +802,6 @@ int BrowserMainLoop::PreCreateThreads() {
   // We report Uma metrics on a periodic basis when running the full browser,
   // while avoiding doing so in unit tests by making it explicitly enabled here.
   GpuDataManagerImpl::GetInstance()->StartUmaTimer();
-
-// Temporarily used by both Ozone/Linux and X11/Linux. Once X11/Linux goes
-// away, will be used only by Ozone/Linux.
-// TODO(https://crbug.com/1085700): make sure it's only used by Ozone/Linux.
-#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
-  gpu_data_manager_visual_proxy_ =
-      std::make_unique<GpuDataManagerVisualProxyOzoneLinux>(
-          GpuDataManagerImpl::GetInstance());
-#endif
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || defined(OS_ANDROID)
   // Single-process is an unsupported and not fully tested mode, so

@@ -97,9 +97,8 @@ def run_executable(
 
   Args:
     cmd: Command to be executed.
-    env: A copy of environment variables, "DISPLAY" and
-      "_CHROMIUM_INSIDE_XVFB" will be set if Xvfb is used. "WAYLAND_DISPLAY"
-      will be set if Weston is used.
+    env: A copy of environment variables. "DISPLAY" and will be set if Xvfb is
+      used. "WAYLAND_DISPLAY" will be set if Weston is used.
     stdoutfile: If provided, symbolization via script is disabled and stdout
       is written to this file as well as to stdout.
     use_openbox: A flag to use openbox process.
@@ -141,7 +140,6 @@ def run_executable(
 
 
 def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr):
-  env['_CHROMIUM_INSIDE_XVFB'] = '1'
   openbox_proc = None
   xcompmgr_proc = None
   xvfb_proc = None

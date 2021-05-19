@@ -44,14 +44,6 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformGLEGLUtility {
 
   // X11 specific; returns whether the platform supports visuals.
   virtual bool HasVisualManager();
-
-  // X11 specific; sets new visuals.
-  // Must be called only if the X11 visual manager is available.
-  // Should be called when the updated GPU info is available.
-  // Returns whether the visuals provided were valid.
-  virtual bool UpdateVisualsOnGpuInfoChanged(bool software_rendering,
-                                             uint32_t default_visual_id,
-                                             uint32_t transparent_visual_id);
 };
 
 }  // namespace ui

@@ -66,14 +66,10 @@ class XvfbLinuxTest(unittest.TestCase):
   def test_no_xvfb_flag(self):
     proc = launch_process(['--no-xvfb'])
     proc.wait()
-    environ_flag = read_subprocess_message(proc, 'Inside_xvfb :')
-    self.assertEqual(environ_flag, 'None')
 
   def test_xvfb_flag(self):
     proc = launch_process([])
     proc.wait()
-    environ_flag = read_subprocess_message(proc, 'Inside_xvfb :')
-    self.assertEqual(environ_flag, '1')
 
   def test_xvfb_race_condition(self):
     proc_list = [launch_process([]) for _ in range(15)]

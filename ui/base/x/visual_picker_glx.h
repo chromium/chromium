@@ -2,43 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GL_GL_VISUAL_PICKER_GLX_H_
-#define UI_GL_GL_VISUAL_PICKER_GLX_H_
+#ifndef UI_BASE_X_VISUAL_PICKER_GLX_H_
+#define UI_BASE_X_VISUAL_PICKER_GLX_H_
 
-
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/glx.h"
-#include "ui/gl/gl_export.h"
 
 namespace base {
 template <typename T>
 struct DefaultSingletonTraits;
 }
 
-namespace gl {
+namespace ui {
 
 // Picks the best X11 visuals to use for GL.  This class is adapted from GTK's
 // pick_better_visual_for_gl.  Tries to find visuals that
 // 1. Support GL
 // 2. Support double buffer
 // 3. Have an alpha channel only if we want one
-class GL_EXPORT GLVisualPickerGLX {
+class COMPONENT_EXPORT(UI_BASE_X) VisualPickerGlx {
  public:
-  static GLVisualPickerGLX* GetInstance();
+  static VisualPickerGlx* GetInstance();
 
-  ~GLVisualPickerGLX();
+  ~VisualPickerGlx();
 
   x11::VisualId system_visual() const { return system_visual_; }
 
   x11::VisualId rgba_visual() const { return rgba_visual_; }
 
-  x11::Glx::FbConfig GetFbConfigForFormat(gfx::BufferFormat format) const;
+  x11::Glx::FbConfig GetFbConfigForFormat(gfx::BufferFormat format);
 
  private:
-  friend struct base::DefaultSingletonTraits<GLVisualPickerGLX>;
+  friend struct base::DefaultSingletonTraits<VisualPickerGlx>;
 
   x11::VisualId PickBestGlVisual(
       const x11::Glx::GetVisualConfigsReply& configs,
@@ -58,13 +57,14 @@ class GL_EXPORT GLVisualPickerGLX {
   x11::VisualId system_visual_;
   x11::VisualId rgba_visual_;
 
-  base::flat_map<gfx::BufferFormat, x11::Glx::FbConfig> config_map_;
+  std::unique_ptr<base::flat_map<gfx::BufferFormat, x11::Glx::FbConfig>>
+      config_map_;
 
-  GLVisualPickerGLX();
+  VisualPickerGlx();
 
-  DISALLOW_COPY_AND_ASSIGN(GLVisualPickerGLX);
+  DISALLOW_COPY_AND_ASSIGN(VisualPickerGlx);
 };
 
-}  // namespace gl
+}  // namespace ui
 
-#endif  // UI_GL_GL_VISUAL_PICKER_GLX_H_
+#endif  // UI_BASE_X_VISUAL_PICKER_GLX_H_

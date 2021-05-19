@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "ui/base/x/visual_picker_glx.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_image_glx.h"
 #include "ui/gl/gl_surface_glx.h"
-#include "ui/gl/gl_visual_picker_glx.h"
 #include "ui/gl/glx_util.h"
 
 namespace gl {
@@ -46,7 +46,7 @@ GLImageGLX::~GLImageGLX() {
 
 bool GLImageGLX::Initialize(x11::Pixmap pixmap) {
   auto fbconfig_id =
-      GLVisualPickerGLX::GetInstance()->GetFbConfigForFormat(format_);
+      ui::VisualPickerGlx::GetInstance()->GetFbConfigForFormat(format_);
 
   auto* connection = x11::Connection::Get();
   GLXFBConfig config = GetGlxFbConfigForXProtoFbConfig(connection, fbconfig_id);

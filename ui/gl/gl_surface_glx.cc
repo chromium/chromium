@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "ui/base/x/visual_picker_glx.h"
 #include "ui/base/x/x11_display_util.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/base/x/x11_xrandr_interval_only_vsync_provider.h"
@@ -32,7 +33,6 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_presentation_helper.h"
-#include "ui/gl/gl_visual_picker_glx.h"
 #include "ui/gl/glx_util.h"
 #include "ui/gl/sync_control_vsync_provider.h"
 
@@ -437,7 +437,7 @@ bool GLSurfaceGLX::InitializeOneOff() {
     return false;
   }
 
-  auto* visual_picker = gl::GLVisualPickerGLX::GetInstance();
+  auto* visual_picker = ui::VisualPickerGlx::GetInstance();
   auto visual_id = visual_picker->rgba_visual();
   if (visual_id == x11::VisualId{})
     visual_id = visual_picker->system_visual();

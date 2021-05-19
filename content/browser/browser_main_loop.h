@@ -108,10 +108,6 @@ class Watcher;
 class ScreenOrientationDelegate;
 #endif
 
-#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
-class GpuDataManagerVisualProxyOzoneLinux;
-#endif
-
 // Implements the main browser loop stages called from BrowserMainRunner.
 // See comments in browser_main_parts.h for additional info.
 class CONTENT_EXPORT BrowserMainLoop {
@@ -341,10 +337,6 @@ class CONTENT_EXPORT BrowserMainLoop {
   // Members initialized in |PreCreateThreads()| -------------------------------
   // Torn down in ShutdownThreadsAndCleanUp.
   std::unique_ptr<base::MemoryPressureMonitor> memory_pressure_monitor_;
-#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
-  std::unique_ptr<GpuDataManagerVisualProxyOzoneLinux>
-      gpu_data_manager_visual_proxy_;
-#endif
 
   // Members initialized in |CreateThreads()| ----------------------------------
   std::unique_ptr<BrowserProcessIOThread> io_thread_;

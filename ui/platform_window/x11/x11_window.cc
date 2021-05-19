@@ -207,8 +207,7 @@ X11Window::~X11Window() {
 }
 
 void X11Window::Initialize(PlatformWindowInitProperties properties) {
-  PlatformWindowOpacity opacity = properties.opacity;
-  CreateXWindow(properties, opacity);
+  CreateXWindow(properties);
 
   // It can be a status icon window.  If it fails to initialize, don't provide
   // it with a native window handle, close ourselves and let the client destroy
@@ -400,10 +399,8 @@ void X11Window::Initialize(PlatformWindowInitProperties properties) {
   if (properties.icon)
     SetWindowIcons(gfx::ImageSkia(), *properties.icon);
 
-  if (properties.type == PlatformWindowType::kDrag &&
-      opacity == PlatformWindowOpacity::kTranslucentWindow) {
+  if (properties.type == PlatformWindowType::kDrag)
     SetOpacity(kDragWidgetOpacity);
-  }
 
   SetWmDragHandler(this, this);
 
@@ -961,10 +958,13 @@ void X11Window::SizeConstraintsChanged() {
 }
 
 bool X11Window::IsTranslucentWindowOpacitySupported() const {
-  // This function may be called before InitX11Window() (which
-  // initializes |visual_has_alpha_|), so we cannot simply return
-  // |visual_has_alpha_|.
-  return ui::XVisualManager::GetInstance()->ArgbVisualAvailable();
+  // If this function may be called before InitX11Window() (which
+  // initializes |visual_has_alpha_|), return whether it is possible
+  // to create windows with ARGB visuals.
+  if (xwindow_ == x11::Window::None)
+    ui::XVisualManager::GetInstance()->ArgbVisualAvailable();
+
+  return visual_has_alpha_;
 }
 
 void X11Window::SetOpacity(float opacity) {
@@ -1519,19 +1519,13 @@ void X11Window::ConvertEventLocationToTargetLocation(
                                              located_event);
 }
 
-void X11Window::CreateXWindow(const PlatformWindowInitProperties& properties,
-                              PlatformWindowOpacity& opacity) {
+void X11Window::CreateXWindow(const PlatformWindowInitProperties& properties) {
   auto bounds = properties.bounds;
   gfx::Size adjusted_size_in_pixels = AdjustSizeForDisplay(bounds.size());
   bounds.set_size(adjusted_size_in_pixels);
   const auto override_redirect =
       properties.x11_extension_delegate &&
       properties.x11_extension_delegate->IsOverrideRedirect(IsWmTiling());
-  if (properties.type == PlatformWindowType::kDrag) {
-    opacity = ui::IsCompositingManagerPresent()
-                  ? PlatformWindowOpacity::kTranslucentWindow
-                  : PlatformWindowOpacity::kOpaqueWindow;
-  }
 
   workspace_extension_delegate_ = properties.workspace_extension_delegate;
   x11_extension_delegate_ = properties.x11_extension_delegate;
@@ -1575,7 +1569,7 @@ void X11Window::CreateXWindow(const PlatformWindowInitProperties& properties,
   override_redirect_ = req.override_redirect.has_value();
 
   bool enable_transparent_visuals;
-  switch (opacity) {
+  switch (properties.opacity) {
     case PlatformWindowOpacity::kOpaqueWindow:
       enable_transparent_visuals = false;
       break;

@@ -23,9 +23,6 @@ if __name__ == '__main__':
   signal.signal(signal.SIGTERM, print_signal)
   signal.signal(signal.SIGINT, print_signal)
 
-  # test if inside xvfb flag is set.
-  print 'Inside_xvfb :{}'.format(
-      os.environ.get('_CHROMIUM_INSIDE_XVFB', 'None'))
   # test the subprocess display number.
   print 'Display :{}'.format(os.environ.get('DISPLAY', 'None'))
 

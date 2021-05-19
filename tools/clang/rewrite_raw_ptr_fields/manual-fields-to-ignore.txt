@@ -45,7 +45,7 @@ blink::SVGFilterBuilder::last_effect_
 # Populated manually - the rewriter has trouble appending |.get()| inside macros
 # that work with |XDisplay*|.
 extensions::GlobalShortcutListenerX11::x_display_
-gl::GLVisualPickerGLX::display_
+ui::VisualPickerGlx::display_
 media::(anonymous namespace)::UserInputMonitorLinuxCore::x_record_display_
 media::cast::test::LinuxOutputWindow::display_
 remoting::(anonymous namespace)::InputInjectorX11::Core::display_

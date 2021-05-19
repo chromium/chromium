@@ -163,14 +163,6 @@ std::string DesktopScreenX11::GetCurrentWorkspace() {
   return x11_display_manager_->GetCurrentWorkspace();
 }
 
-base::Value DesktopScreenX11::GetGpuExtraInfoAsListValue(
-    const gfx::GpuExtraInfo& gpu_extra_info) {
-  auto result = ui::GetDesktopEnvironmentInfoAsListValue();
-  ui::StoreGpuExtraInfoIntoListValue(gpu_extra_info.system_visual,
-                                     gpu_extra_info.rgba_visual, result);
-  return result;
-}
-
 void DesktopScreenX11::OnEvent(const x11::Event& event) {
   x11_display_manager_->OnEvent(event);
 }

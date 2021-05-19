@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gl/gl_visual_picker_glx.h"
+#include "ui/base/x/visual_picker_glx.h"
 
 #include <algorithm>
 #include <bitset>
@@ -13,11 +13,47 @@
 #include "base/memory/singleton.h"
 #include "base/stl_util.h"
 #include "ui/gfx/x/future.h"
-#include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_context.h"
-#include "ui/gl/gl_surface_glx.h"
 
-namespace gl {
+// These constants are obtained from GL/glx.h and GL/glxext.h.
+constexpr uint32_t GLX_LEVEL = 3;
+constexpr uint32_t GLX_DOUBLEBUFFER = 5;
+constexpr uint32_t GLX_STEREO = 6;
+constexpr uint32_t GLX_BUFFER_SIZE = 2;
+constexpr uint32_t GLX_AUX_BUFFERS = 7;
+constexpr uint32_t GLX_RED_SIZE = 8;
+constexpr uint32_t GLX_GREEN_SIZE = 9;
+constexpr uint32_t GLX_BLUE_SIZE = 10;
+constexpr uint32_t GLX_ALPHA_SIZE = 11;
+constexpr uint32_t GLX_DEPTH_SIZE = 12;
+constexpr uint32_t GLX_STENCIL_SIZE = 13;
+constexpr uint32_t GLX_ACCUM_RED_SIZE = 14;
+constexpr uint32_t GLX_ACCUM_GREEN_SIZE = 15;
+constexpr uint32_t GLX_ACCUM_BLUE_SIZE = 16;
+constexpr uint32_t GLX_ACCUM_ALPHA_SIZE = 17;
+
+constexpr uint32_t GLX_CONFIG_CAVEAT = 0x20;
+constexpr uint32_t GLX_VISUAL_CAVEAT_EXT = 0x20;
+constexpr uint32_t GLX_X_VISUAL_TYPE = 0x22;
+
+constexpr uint32_t GLX_BIND_TO_TEXTURE_TARGETS_EXT = 0x20D3;
+
+constexpr uint32_t GLX_NONE = 0x8000;
+constexpr uint32_t GLX_NONE_EXT = 0x8000;
+constexpr uint32_t GLX_TRUE_COLOR = 0x8002;
+constexpr uint32_t GLX_VISUAL_ID = 0x800B;
+constexpr uint32_t GLX_DRAWABLE_TYPE = 0x8010;
+constexpr uint32_t GLX_RENDER_TYPE = 0x8011;
+constexpr uint32_t GLX_FBCONFIG_ID = 0x8013;
+
+constexpr uint32_t GLX_PIXMAP_BIT = 0x00000002;
+constexpr uint32_t GLX_TEXTURE_2D_BIT_EXT = 0x00000002;
+
+constexpr uint32_t GLX_SAMPLE_BUFFERS_ARB = 100000;
+constexpr uint32_t GLX_SAMPLES = 100001;
+
+constexpr uint32_t GL_FALSE = 0;
+
+namespace ui {
 
 namespace {
 
@@ -47,17 +83,19 @@ int VisualScore(x11::VisualClass c_class) {
 }  // anonymous namespace
 
 // static
-GLVisualPickerGLX* GLVisualPickerGLX::GetInstance() {
-  return base::Singleton<GLVisualPickerGLX>::get();
+VisualPickerGlx* VisualPickerGlx::GetInstance() {
+  return base::Singleton<VisualPickerGlx>::get();
 }
 
-x11::Glx::FbConfig GLVisualPickerGLX::GetFbConfigForFormat(
-    gfx::BufferFormat format) const {
-  auto it = config_map_.find(format);
-  return it == config_map_.end() ? x11::Glx::FbConfig{} : it->second;
+x11::Glx::FbConfig VisualPickerGlx::GetFbConfigForFormat(
+    gfx::BufferFormat format) {
+  if (!config_map_)
+    FillConfigMap();
+  auto it = config_map_->find(format);
+  return it == config_map_->end() ? x11::Glx::FbConfig{} : it->second;
 }
 
-x11::VisualId GLVisualPickerGLX::PickBestGlVisual(
+x11::VisualId VisualPickerGlx::PickBestGlVisual(
     const x11::Glx::GetVisualConfigsReply& configs,
     base::RepeatingCallback<bool(const x11::Connection::VisualInfo&)> pred,
     bool want_alpha) const {
@@ -129,7 +167,7 @@ x11::VisualId GLVisualPickerGLX::PickBestGlVisual(
   return best_visual;
 }
 
-x11::VisualId GLVisualPickerGLX::PickBestSystemVisual(
+x11::VisualId VisualPickerGlx::PickBestSystemVisual(
     const x11::Glx::GetVisualConfigsReply& configs) const {
   x11::Connection::VisualInfo default_visual_info =
       *connection_->GetVisualInfoFromId(
@@ -154,7 +192,7 @@ x11::VisualId GLVisualPickerGLX::PickBestSystemVisual(
       IsArgbVisual(default_visual_info));
 }
 
-x11::VisualId GLVisualPickerGLX::PickBestRgbaVisual(
+x11::VisualId VisualPickerGlx::PickBestRgbaVisual(
     const x11::Glx::GetVisualConfigsReply& configs) const {
   int best_class_score = -1;
   for (const auto& depth : connection_->default_screen().allowed_depths) {
@@ -171,9 +209,10 @@ x11::VisualId GLVisualPickerGLX::PickBestRgbaVisual(
                           true);
 }
 
-void GLVisualPickerGLX::FillConfigMap() {
-  if (!GLSurfaceGLX::HasGLXExtension("GLX_EXT_texture_from_pixmap"))
-    return;
+void VisualPickerGlx::FillConfigMap() {
+  DCHECK(!config_map_);
+  config_map_ =
+      std::make_unique<base::flat_map<gfx::BufferFormat, x11::Glx::FbConfig>>();
 
   if (auto configs = connection_->glx()
                          .GetFBConfigs({connection_->DefaultScreenId()})
@@ -235,18 +274,18 @@ void GLVisualPickerGLX::FillConfigMap() {
       auto b = get(GLX_BLUE_SIZE);
       auto a = get(GLX_ALPHA_SIZE);
       if (r == 5 && g == 6 && b == 5 && a == 0)
-        config_map_[gfx::BufferFormat::BGR_565] = fbconfig;
+        (*config_map_)[gfx::BufferFormat::BGR_565] = fbconfig;
       else if (r == 8 && g == 8 && b == 8 && a == 0)
-        config_map_[gfx::BufferFormat::BGRX_8888] = fbconfig;
+        (*config_map_)[gfx::BufferFormat::BGRX_8888] = fbconfig;
       else if (r == 10 && g == 10 && b == 10 && a == 0)
-        config_map_[gfx::BufferFormat::BGRA_1010102] = fbconfig;
+        (*config_map_)[gfx::BufferFormat::BGRA_1010102] = fbconfig;
       else if (r == 8 && g == 8 && b == 8 && a == 8)
-        config_map_[gfx::BufferFormat::BGRA_8888] = fbconfig;
+        (*config_map_)[gfx::BufferFormat::BGRA_8888] = fbconfig;
     }
   }
 }
 
-GLVisualPickerGLX::GLVisualPickerGLX() : connection_(x11::Connection::Get()) {
+VisualPickerGlx::VisualPickerGlx() : connection_(x11::Connection::Get()) {
   auto configs = connection_->glx()
                      .GetVisualConfigs({connection_->DefaultScreenId()})
                      .Sync();
@@ -255,10 +294,8 @@ GLVisualPickerGLX::GLVisualPickerGLX() : connection_(x11::Connection::Get()) {
     system_visual_ = PickBestSystemVisual(*configs.reply);
     rgba_visual_ = PickBestRgbaVisual(*configs.reply);
   }
-
-  FillConfigMap();
 }
 
-GLVisualPickerGLX::~GLVisualPickerGLX() = default;
+VisualPickerGlx::~VisualPickerGlx() = default;
 
-}  // namespace gl
+}  // namespace ui

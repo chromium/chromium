@@ -134,8 +134,6 @@ std::string X11ScreenOzone::GetCurrentWorkspace() {
 base::Value X11ScreenOzone::GetGpuExtraInfoAsListValue(
     const gfx::GpuExtraInfo& gpu_extra_info) {
   auto result = GetDesktopEnvironmentInfoAsListValue();
-  StoreGpuExtraInfoIntoListValue(gpu_extra_info.system_visual,
-                                 gpu_extra_info.rgba_visual, result);
   StorePlatformNameIntoListValue(result, "x11");
   return result;
 }

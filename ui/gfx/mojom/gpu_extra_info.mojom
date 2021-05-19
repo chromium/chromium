@@ -23,9 +23,5 @@ struct GpuExtraInfo {
   array<ANGLEFeature> angle_features;
 
   [EnableIf=enable_x11_params]
-  uint64 system_visual;
-  [EnableIf=enable_x11_params]
-  uint64 rgba_visual;
-  [EnableIf=enable_x11_params]
   array<gfx.mojom.BufferUsageAndFormat> gpu_memory_buffer_support_x11;
 };

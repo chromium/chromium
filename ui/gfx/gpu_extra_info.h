@@ -66,9 +66,6 @@ struct GFX_EXPORT GpuExtraInfo {
   ANGLEFeatures angle_features;
 
 #if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
-  x11::VisualId system_visual{};
-  x11::VisualId rgba_visual{};
-
   std::vector<gfx::BufferUsageAndFormat> gpu_memory_buffer_support_x11;
 #endif
 };

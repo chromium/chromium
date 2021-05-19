@@ -220,8 +220,7 @@ class X11_WINDOW_EXPORT X11Window
   // Depending on presence of the compositing manager and window type, may
   // change the opacity, in which case returns the final opacity type through
   // |opacity|.
-  void CreateXWindow(const PlatformWindowInitProperties& properties,
-                     PlatformWindowOpacity& opacity);
+  void CreateXWindow(const PlatformWindowInitProperties& properties);
   void CloseXWindow();
   void Map(bool inactive = false);
   void SetFullscreen(bool fullscreen);
