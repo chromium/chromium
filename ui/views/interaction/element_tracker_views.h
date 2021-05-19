@@ -20,14 +20,13 @@ namespace views {
 
 class View;
 
-// Wraps a View in an ui::ElementTrackerElement.
-class VIEWS_EXPORT ElementTrackerElementViews
-    : public ui::ElementTrackerElement {
+// Wraps a View in an ui::TrackedElement.
+class VIEWS_EXPORT TrackedElementViews : public ui::TrackedElement {
  public:
-  ElementTrackerElementViews(View* view,
-                             ui::ElementIdentifier identifier,
-                             ui::ElementContext context);
-  ~ElementTrackerElementViews() override;
+  TrackedElementViews(View* view,
+                      ui::ElementIdentifier identifier,
+                      ui::ElementContext context);
+  ~TrackedElementViews() override;
 
   View* view() { return view_; }
   const View* view() const { return view_; }
@@ -38,7 +37,7 @@ class VIEWS_EXPORT ElementTrackerElementViews
   View* const view_;
 };
 
-// Manages ElementTrackerElements associated with View objects.
+// Manages TrackedElements associated with View objects.
 class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
  public:
   using ViewList = std::vector<View*>;
@@ -50,6 +49,13 @@ class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
   // the same across all Views associated with a root Widget (such as an
   // application window).
   static ui::ElementContext GetContextForView(View* view);
+
+  // Returns the corresponding TrackedElementViews for the given view, or
+  // null if none exists. Note that views which are not visible or not added to
+  // a Widget may not have associated elements, and that the returned object
+  // may be transient.
+  TrackedElementViews* GetElementForView(View* view);
+  const TrackedElementViews* GetElementForView(const View* view) const;
 
   // Called by View after the kUniqueElementKey property is set.
   void RegisterView(ui::ElementIdentifier element_id, View* view);

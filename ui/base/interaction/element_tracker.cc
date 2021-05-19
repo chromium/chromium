@@ -45,11 +45,7 @@ class ElementTracker::ElementData {
     return elements_.size();
   }
 
-  bool processing_removal() const { return processing_removal_; }
-
-  const std::list<ElementTrackerElement*>& elements() const {
-    return elements_;
-  }
+  const std::list<TrackedElement*>& elements() const { return elements_; }
 
   Subscription AddElementShownCallback(Callback callback) {
     return shown_callbacks_.Add(callback);
@@ -63,7 +59,7 @@ class ElementTracker::ElementData {
     return hidden_callbacks_.Add(callback);
   }
 
-  void NotifyElementShown(ElementTrackerElement* element) {
+  void NotifyElementShown(TrackedElement* element) {
     DCHECK_EQ(identifier().raw_value(), element->identifier().raw_value());
     DCHECK_EQ(static_cast<intptr_t>(context()),
               static_cast<intptr_t>(element->context()));
@@ -73,15 +69,12 @@ class ElementTracker::ElementData {
     shown_callbacks_.Notify(element);
   }
 
-  void NotifyElementActivated(ElementTrackerElement* element) {
+  void NotifyElementActivated(TrackedElement* element) {
     DCHECK(base::Contains(element_lookup_, element));
     activated_callbacks_.Notify(element);
   }
 
-  void NotifyElementHidden(ElementTrackerElement* element) {
-    // We don't want to delete this object during a callback while we're in the
-    // middle of cleaning up the object, so put a guard around this operation.
-    base::AutoReset<bool> guard(&processing_removal_, true);
+  void NotifyElementHidden(TrackedElement* element) {
     const auto it = element_lookup_.find(element);
     DCHECK(it != element_lookup_.end());
     elements_.erase(it->second);
@@ -92,30 +85,80 @@ class ElementTracker::ElementData {
  private:
   const ElementIdentifier identifier_;
   const ElementContext context_;
-  bool processing_removal_ = false;
 
   // Holds elements in the order they were added to this data block, so that the
   // first element or the first element that matches some criterion can be
   // easily found.
-  std::list<ElementTrackerElement*> elements_;
+  std::list<TrackedElement*> elements_;
 
   // Provides a fast lookup into `elements_` by element for checking and
   // removal. Since there could be many elements (e.g. tabs in a browser) we
   // don't want removing a series of them to turn into an O(n^2) operation.
-  std::map<ElementTrackerElement*, std::list<ElementTrackerElement*>::iterator>
+  std::map<TrackedElement*, std::list<TrackedElement*>::iterator>
       element_lookup_;
 
-  base::RepeatingCallbackList<void(ElementTrackerElement*)> shown_callbacks_;
-  base::RepeatingCallbackList<void(ElementTrackerElement*)>
-      activated_callbacks_;
-  base::RepeatingCallbackList<void(ElementTrackerElement*)> hidden_callbacks_;
+  base::RepeatingCallbackList<void(TrackedElement*)> shown_callbacks_;
+  base::RepeatingCallbackList<void(TrackedElement*)> activated_callbacks_;
+  base::RepeatingCallbackList<void(TrackedElement*)> hidden_callbacks_;
 };
 
-ElementTrackerElement::ElementTrackerElement(ElementIdentifier id,
-                                             ElementContext context)
+// Ensures that ElementData objects get cleaned up, but only after all callbacks
+// have returned. Otherwise a subscription could be canceled during a callback,
+// resulting in the ElementData and the callback list being deleted before the
+// callback has returned.
+class ElementTracker::GarbageCollector {
+ public:
+  // Represents a call stack frame in which garbage collection can happen.
+  // Garbage collection doesn't actually occur until all nested Frames are
+  // destructed.
+  class Frame {
+   public:
+    explicit Frame(GarbageCollector* gc) : gc_(gc) {
+      gc_->IncrementFrameCount();
+    }
+
+    ~Frame() { gc_->DecrementFrameCount(); }
+
+    void Add(ElementData* data) { gc_->AddCandidate(data); }
+
+   private:
+    GarbageCollector* const gc_;
+  };
+
+  explicit GarbageCollector(ElementTracker* tracker) : tracker_(tracker) {}
+
+ private:
+  void AddCandidate(ElementData* data) {
+    DCHECK_GE(frame_count_, 0);
+    candidates_.insert(data);
+  }
+
+  void IncrementFrameCount() { ++frame_count_; }
+
+  void DecrementFrameCount() {
+    DCHECK_GE(frame_count_, 0);
+    if (--frame_count_ > 0)
+      return;
+
+    for (ElementData* data : candidates_) {
+      if (data->empty()) {
+        const auto result = tracker_->element_data_.erase(
+            LookupKey(data->identifier(), data->context()));
+        DCHECK(result);
+      }
+    }
+    candidates_.clear();
+  }
+
+  ElementTracker* const tracker_;
+  std::set<ElementData*> candidates_;
+  int frame_count_ = 0;
+};
+
+TrackedElement::TrackedElement(ElementIdentifier id, ElementContext context)
     : identifier_(id), context_(context) {}
 
-ElementTrackerElement::~ElementTrackerElement() = default;
+TrackedElement::~TrackedElement() = default;
 
 // static
 ElementTracker* ElementTracker::GetElementTracker() {
@@ -128,9 +171,8 @@ ElementTrackerFrameworkDelegate* ElementTracker::GetFrameworkDelegate() {
   return static_cast<ElementTrackerFrameworkDelegate*>(GetElementTracker());
 }
 
-ElementTrackerElement* ElementTracker::GetUniqueElement(
-    ElementIdentifier id,
-    ElementContext context) {
+TrackedElement* ElementTracker::GetUniqueElement(ElementIdentifier id,
+                                                 ElementContext context) {
   const auto it = element_data_.find(LookupKey(id, context));
   if (it == element_data_.end() || it->second->num_elements() == 0)
     return nullptr;
@@ -138,7 +180,7 @@ ElementTrackerElement* ElementTracker::GetUniqueElement(
   return it->second->elements().front();
 }
 
-ElementTrackerElement* ElementTracker::GetFirstMatchingElement(
+TrackedElement* ElementTracker::GetFirstMatchingElement(
     ElementIdentifier id,
     ElementContext context) {
   const auto it = element_data_.find(LookupKey(id, context));
@@ -187,30 +229,37 @@ ElementTracker::Subscription ElementTracker::AddElementHiddenCallback(
   return GetOrAddElementData(id, context)->AddElementHiddenCallback(callback);
 }
 
-ElementTracker::ElementTracker() = default;
-ElementTracker::~ElementTracker() = default;
+ElementTracker::ElementTracker()
+    : gc_(std::make_unique<GarbageCollector>(this)) {}
 
-void ElementTracker::NotifyElementShown(ElementTrackerElement* element) {
+ElementTracker::~ElementTracker() {
+  NOTREACHED();
+}
+
+void ElementTracker::NotifyElementShown(TrackedElement* element) {
+  GarbageCollector::Frame gc_frame(gc_.get());
   DCHECK(!base::Contains(element_to_data_lookup_, element));
   ElementData* const element_data =
       GetOrAddElementData(element->identifier(), element->context());
-  element_data->NotifyElementShown(element);
   element_to_data_lookup_.emplace(element, element_data);
+  element_data->NotifyElementShown(element);
 }
 
-void ElementTracker::NotifyElementActivated(ElementTrackerElement* element) {
+void ElementTracker::NotifyElementActivated(TrackedElement* element) {
+  GarbageCollector::Frame gc_frame(gc_.get());
   const auto it = element_to_data_lookup_.find(element);
   DCHECK(it != element_to_data_lookup_.end());
   it->second->NotifyElementActivated(element);
 }
 
-void ElementTracker::NotifyElementHidden(ElementTrackerElement* element) {
+void ElementTracker::NotifyElementHidden(TrackedElement* element) {
+  GarbageCollector::Frame gc_frame(gc_.get());
   const auto it = element_to_data_lookup_.find(element);
   DCHECK(it != element_to_data_lookup_.end());
   ElementData* const data = it->second;
-  data->NotifyElementHidden(element);
   element_to_data_lookup_.erase(it);
-  MaybeCleanup(data);
+  data->NotifyElementHidden(element);
+  gc_frame.Add(data);
 }
 
 ElementTracker::ElementData* ElementTracker::GetOrAddElementData(
@@ -228,14 +277,57 @@ ElementTracker::ElementData* ElementTracker::GetOrAddElementData(
 }
 
 void ElementTracker::MaybeCleanup(ElementData* data) {
-  // If there is still data, or we're in the middle of processing an element
-  // being removed, do not clean up this data block.
-  if (!data->empty() || data->processing_removal())
+  GarbageCollector::Frame gc_frame(gc_.get());
+  gc_frame.Add(data);
+}
+
+SafeElementReference::SafeElementReference() = default;
+
+SafeElementReference::SafeElementReference(TrackedElement* element)
+    : element_(element) {
+  Subscribe();
+}
+
+SafeElementReference::SafeElementReference(SafeElementReference&& other)
+    : element_(other.element_) {
+  // Have to rebind instead of moving the subscription since the other
+  // reference's this pointer is bound.
+  Subscribe();
+  other.subscription_ = ElementTracker::Subscription();
+  other.element_ = nullptr;
+}
+
+SafeElementReference& SafeElementReference::operator=(
+    SafeElementReference&& other) {
+  if (&other != this) {
+    element_ = other.element_;
+    // Have to rebind instead of moving the subscription since the other
+    // reference's this pointer is bound.
+    Subscribe();
+    other.subscription_ = ElementTracker::Subscription();
+    other.element_ = nullptr;
+  }
+  return *this;
+}
+
+SafeElementReference::~SafeElementReference() = default;
+
+void SafeElementReference::Subscribe() {
+  if (!element_)
     return;
 
-  const auto result =
-      element_data_.erase(LookupKey(data->identifier(), data->context()));
-  DCHECK(result);
+  subscription_ = ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+      element_->identifier(), element_->context(),
+      base::BindRepeating(&SafeElementReference::OnElementHidden,
+                          base::Unretained(this)));
+}
+
+void SafeElementReference::OnElementHidden(TrackedElement* element) {
+  if (element != element_)
+    return;
+
+  subscription_ = ElementTracker::Subscription();
+  element_ = nullptr;
 }
 
 }  // namespace ui

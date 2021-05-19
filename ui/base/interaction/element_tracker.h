@@ -6,6 +6,7 @@
 #define UI_BASE_INTERACTION_ELEMENT_TRACKER_H_
 
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -19,34 +20,35 @@
 
 namespace ui {
 
-// Represents a UI element in a platform-agnostic manner.
+// Represents a visible UI element in a platform-agnostic manner.
 //
 // A pointer to this object may be stored after the element becomes visible, but
 // is only valid until the "element hidden" event is called for this element;
-// see `ElementTracker` below.
+// see `ElementTracker` below. If you want to hold a pointer that will be valid
+// only as long as the element is visible, use a SafeElementReference.
 //
 // You should derive a class for each UI framework whose elements you wish to
 // track. See README.md for information on how to create your own framework
 // implementations.
-class COMPONENT_EXPORT(UI_BASE) ElementTrackerElement {
+class COMPONENT_EXPORT(UI_BASE) TrackedElement {
  public:
   // Used by IsA() and AsA() methods to do runtime type-checking.
   using FrameworkIdentifier = ElementIdentifier;
 
-  virtual ~ElementTrackerElement();
+  virtual ~TrackedElement();
 
   ElementIdentifier identifier() const { return identifier_; }
   ElementContext context() const { return context_; }
 
   // Returns whether this element is a specific subtype - for example, a
-  // views::ViewsElementTrackerElement.
+  // views::ViewsTrackedElement.
   template <typename T>
   bool IsA() const {
     return AsA<T>();
   }
 
   // Dynamically casts this element to a specific subtype, such as a
-  // views::ViewsElementTrackerElement, returning null if the element is the
+  // views::ViewsTrackedElement, returning null if the element is the
   // wrong type.
   template <typename T>
   T* AsA() {
@@ -56,7 +58,7 @@ class COMPONENT_EXPORT(UI_BASE) ElementTrackerElement {
   }
 
   // Dynamically casts this element to a specific subtype, such as a
-  // views::ViewsElementTrackerElement, returning null if the element is the
+  // views::ViewsTrackedElement, returning null if the element is the
   // wrong type. This version converts const objects.
   template <typename T>
   const T* AsA() const {
@@ -66,7 +68,7 @@ class COMPONENT_EXPORT(UI_BASE) ElementTrackerElement {
   }
 
  protected:
-  ElementTrackerElement(ElementIdentifier identifier, ElementContext context);
+  TrackedElement(ElementIdentifier identifier, ElementContext context);
 
   // Override this in derived classes with a unique FrameworkIdentifier.
   // You must also define a static GetFrameworkIdentifier() method that returns
@@ -86,17 +88,17 @@ class COMPONENT_EXPORT(UI_BASE) ElementTrackerElement {
 };
 
 // These macros can be used to help define platform-specific subclasses of
-// `ElementTrackerElement`.
+// `TrackedElement`.
 #define DECLARE_ELEMENT_TRACKER_METADATA()             \
   static FrameworkIdentifier GetFrameworkIdentifier(); \
   FrameworkIdentifier GetInstanceFrameworkIdentifier() const override;
 #define DEFINE_ELEMENT_TRACKER_METADATA(ClassName)                   \
-  ui::ElementTrackerElement::FrameworkIdentifier                     \
+  ui::TrackedElement::FrameworkIdentifier                            \
   ClassName::GetFrameworkIdentifier() {                              \
     DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(k##ClassName##Identifier); \
     return k##ClassName##Identifier;                                 \
   }                                                                  \
-  ui::ElementTrackerElement::FrameworkIdentifier                     \
+  ui::TrackedElement::FrameworkIdentifier                            \
   ClassName::GetInstanceFrameworkIdentifier() const {                \
     return GetFrameworkIdentifier();                                 \
   }
@@ -109,9 +111,9 @@ class COMPONENT_EXPORT(UI_BASE) ElementTrackerElement {
 // changes context or identifier.
 class COMPONENT_EXPORT(UI_BASE) ElementTrackerFrameworkDelegate {
  public:
-  virtual void NotifyElementShown(ElementTrackerElement* element) = 0;
-  virtual void NotifyElementActivated(ElementTrackerElement* element) = 0;
-  virtual void NotifyElementHidden(ElementTrackerElement* element) = 0;
+  virtual void NotifyElementShown(TrackedElement* element) = 0;
+  virtual void NotifyElementActivated(TrackedElement* element) = 0;
+  virtual void NotifyElementHidden(TrackedElement* element) = 0;
 };
 
 // Tracks elements as they become visible, are activated by the user, and
@@ -121,9 +123,9 @@ class COMPONENT_EXPORT(UI_BASE) ElementTrackerFrameworkDelegate {
 class COMPONENT_EXPORT(UI_BASE) ElementTracker
     : ElementTrackerFrameworkDelegate {
  public:
-  using Callback = base::RepeatingCallback<void(ElementTrackerElement*)>;
+  using Callback = base::RepeatingCallback<void(TrackedElement*)>;
   using Subscription = base::CallbackListSubscription;
-  using ElementList = std::vector<ElementTrackerElement*>;
+  using ElementList = std::vector<TrackedElement*>;
 
   // Gets the element tracker to be used by clients to subscribe to and receive
   // events.
@@ -138,16 +140,16 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
   //
   // Use when you want to verify that there's only one matching element in the
   // given context.
-  ElementTrackerElement* GetUniqueElement(ElementIdentifier id,
-                                          ElementContext context);
+  TrackedElement* GetUniqueElement(ElementIdentifier id,
+                                   ElementContext context);
 
   // Returns the same result as GetUniqueElement() except that no error is
   // generated if there is more than one matching element.
   //
   // Use when you just need *an* element in the given context, and don't care if
   // there's more than one.
-  ElementTrackerElement* GetFirstMatchingElement(ElementIdentifier id,
-                                                 ElementContext context);
+  TrackedElement* GetFirstMatchingElement(ElementIdentifier id,
+                                          ElementContext context);
 
   // Returns a list of all visible elements with identifier `id` in `context`.
   // The list may be empty.
@@ -172,9 +174,9 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
   // Adds a callback that will be called whenever an element with identifier
   // `id` in `context` is hidden.
   //
-  // Note: the ElementTrackerElement* passed to the callback may not remain
+  // Note: the TrackedElement* passed to the callback may not remain
   // valid after the call, even if the same element object in its UI framework
-  // is re-shown (a new ElementTrackerElement may be generated).
+  // is re-shown (a new TrackedElement may be generated).
   Subscription AddElementHiddenCallback(ElementIdentifier id,
                                         ElementContext context,
                                         Callback callback);
@@ -182,17 +184,19 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
  private:
   friend class base::NoDestructor<ElementTracker>;
   class ElementData;
+  class GarbageCollector;
   using LookupKey = std::pair<ElementIdentifier, ElementContext>;
   FRIEND_TEST_ALL_PREFIXES(ElementTrackerTest, CleanupAfterElementHidden);
   FRIEND_TEST_ALL_PREFIXES(ElementTrackerTest, CleanupAfterCallbacksRemoved);
+  FRIEND_TEST_ALL_PREFIXES(ElementTrackerTest, HideDuringShowCallback);
 
   ElementTracker();
   ~ElementTracker();
 
   // ElementTrackerFrameworkDelegate:
-  void NotifyElementShown(ElementTrackerElement* element) override;
-  void NotifyElementActivated(ElementTrackerElement* element) override;
-  void NotifyElementHidden(ElementTrackerElement* element) override;
+  void NotifyElementShown(TrackedElement* element) override;
+  void NotifyElementActivated(TrackedElement* element) override;
+  void NotifyElementHidden(TrackedElement* element) override;
 
   ElementData* GetOrAddElementData(ElementIdentifier id,
                                    ElementContext context);
@@ -200,7 +204,30 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
   void MaybeCleanup(ElementData* data);
 
   std::map<LookupKey, std::unique_ptr<ElementData>> element_data_;
-  std::map<ElementTrackerElement*, ElementData*> element_to_data_lookup_;
+  std::map<TrackedElement*, ElementData*> element_to_data_lookup_;
+  std::unique_ptr<GarbageCollector> gc_;
+};
+
+// Holds an TrackedElement reference and nulls it out if the element goes
+// away. In other words, acts as a weak reference for TrackedElements.
+class COMPONENT_EXPORT(UI_BASE) SafeElementReference {
+ public:
+  SafeElementReference();
+  explicit SafeElementReference(TrackedElement* element);
+  SafeElementReference(SafeElementReference&& other);
+  SafeElementReference& operator=(SafeElementReference&& other);
+  ~SafeElementReference();
+
+  TrackedElement* get() { return element_; }
+  explicit operator bool() const { return element_; }
+  bool operator!() const { return !element_; }
+
+ private:
+  void Subscribe();
+  void OnElementHidden(TrackedElement* element);
+
+  ElementTracker::Subscription subscription_;
+  TrackedElement* element_ = nullptr;
 };
 
 }  // namespace ui

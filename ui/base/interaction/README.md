@@ -114,14 +114,14 @@ object that allows you to:
 * Register for callbacks when the user interacts with an element with a given
   identifier and context (known as _activation_)
 
-`ElementTrackerElement`, a polymorphic class defined in
+`TrackedElement`, a polymorphic class defined in
 [`element_tracker.h`](/ui/base/interaction/element_tracker.h), represents a
 platform-agnostic UI element with an identifier and context. There must be a 1:1
 correspondence between a visible named UI element and an
-`ElementTrackerElement`; the `ElementTrackerElement` is what is passed to
+`TrackedElement`; the `TrackedElement` is what is passed to
 callbacks when the UI element is shown, hidden, or activated.
 
-Each framework has its own derived version of `ElementTrackerElement` that may
+Each framework has its own derived version of `TrackedElement` that may
 provide additional information about the element. If you know what platform the
 element is from you may use the `AsA()` template method to dynamically downcast
 to the platform-specific element type. If you are working in an environment with
@@ -129,7 +129,7 @@ multiple presentation frameworks, you can use the `IsA()` method to determine if
 the element is of the expected type.
 
 Here is an example that shows some of the functionality of `ElementTracker` and
-`ElementTrackerElement`. Note that you must specify the `ElementContext` in
+`TrackedElement`. Note that you must specify the `ElementContext` in
 which you are listening:
 ``` cpp
 void ListenForShowEvent(ui::ElementIdentifier id, ui::ElementContext context) {
@@ -139,26 +139,159 @@ void ListenForShowEvent(ui::ElementIdentifier id, ui::ElementContext context) {
       ->AddElementShownCallback(id, context, callback);
 }
 
-void OnElementShown(ui::ElementTrackerElement* element) {
+void OnElementShown(ui::TrackedElement* element) {
 // Technically you don't need the IsA() call here, since AsA() returns null if
 // the object is the wrong type.
-if (element->IsA<views::ElementTrackerElementViews>()) {
+if (element->IsA<views::TrackedElementViews>()) {
   views::View* const view =
-      element->AsA<views::ElementTrackerElementViews>()->view();
+      element->AsA<views::TrackedElementViews>()->view();
   // Do something with the view that was shown here.
 }
 ```
 ## Defining and following user interaction sequences
 
-*(Add documentation for `InteractionSequence` here)*
+The `InteractionSequence` class provides a way to describe a sequence of
+interactions between the application and the user (real or simulated). Sequences
+are useful for e.g. creating user education tutorials guiding the user through
+the steps of using a new feature, or for simulating user input during
+interaction testing.
 
-...
+Each sequence consists of a series of steps of the following types:
+* **Shown** - a UI element becomes visible to the user
+* **Activated** - the user clics on or otherwise interacts with the UI element
+* **Hidden** - a UI element stops being visible to the user
+
+These are equivalent to the corresponding events provided by `ElementTracker`.
+All of the steps must be followed in order, or the sequence is _aborted_.
+Callbacks may be registered at the start and end of each step, and for when the
+sequence completes or aborts.
+
+Events not in the sequence (other UI elements appearing, focus changes, mouse
+hover, scroll) are ignored unless they result in a required UI element being
+dismissed (such as if a dialog or menu is closed).
+
+To create an interaction sequence, use a `InteractionSequence::Builder`. To add
+steps to the builder, use an `InteractionSequence::StepBuilder`, or call a
+convenience method like `InitialElement()`. Here is an example that expects the
+user to interact with a feature entry point and then displays a help bubble on
+the resulting dialog:
+
+``` cpp
+initial_element =
+    ElementTracker::GetFirstMatchingElement(kFeatureEntryPointID, context());
+sequence_ = InteractionSequence::Builder()
+    .SetCompletedCallback(base::BindOnce(
+        &MyClass::OnSequenceComplete,
+        base::Unretained(this)))
+    .AddStep(InteractionSequence::InitialElement(initial_element))
+    .AddStep(InteractionSequence::StepBuilder()
+        .SetElementID(initial_element->identifier())
+        .SetType(StepType::kActivated)
+        .Build())
+    .AddStep(InteractionSequence::StepBuilder()
+        .SetElementID(kFeatureDialogID)
+        .SetType(StepType::kShown)
+        .SetStartCallback(&MyClass::ShowHelpBubble, base::Unretained(this))
+        .Build())
+    .Build();
+sequence_->Start();
+```
+
+### Interaction steps
+
+Each `Step` has properties that can be set via its `StepBuilder`:
+* **Type** - whether this is a show, activate, or hide step
+* **Element ID** - the identifier of the element involved in the step
+* **Must be visible at start** - the element must be visible at the start of the
+  step or else the sequence is aborted
+* **Must remain visible** - the element must remain visible until the next step
+  begins; not compatible with **hidden** steps
+* **Start callback** - called as soon as the step is started
+* **End callback** - called as soon as the next step is started, or the sequence
+  aborts or completes
+
+Of these, only **Type** and **Element ID** are required. If you do not specify
+whether the element must be visible at start or remain visible, default values
+will be assigned according to the type of step. All callbacks are optional.
+
+Instead of using `StepBuilder`, for the initial step you can call
+`InteractionSequence::InitialElement()`. This creates a default **shown** step
+for an element that is already visible; it expects the element to be visible
+when `Start()` is called or the sequence will abort. You may pass optional
+step start and end callbacks to `InitialElement()`; these are useful for
+displaying an initial prompt to the user (in the case of a tutorial).
+
+There is an additional method on `StepBuilder`, `SetContext()`, but it is only
+used by helper methods and for testing. You should instead use
+`Builder::SetContext()` or `InteractionSequence::InitialElement()`. There is
+currently no support for cross-context sequences and setting conflicting
+contexts in a sequence is an error and will crash if DCHECK is enabled.
+
+### Step callbacks
+
+Each step callback (start or end) has three parameters:
+* **Element** - the element involved in the step; null if the element is not
+  available (i.e. was hidden before the callback could be called)
+* **Identifier** - the `ElementIdentifier` associated with the step, which is
+  always valid even if the element is null
+* **Type** - the step type; **shown**, **activated**, or **hidden**
+
+The **element** can be used to retrieve the UI element in your framework by
+downcasting via `AsA()` - see
+[UI Elements and element events](#UI%20Elements%20and%20element%20events) above.
+
+Typically, when using a sequence to run a tutorial, this will be the code that
+shows or hides a tutorial dialog or prompt. When using the sequence for
+interaction testing, the callback will contain the code to simulate the next
+input to the UI.
+
+### Best practices
+
+In general, it will be pretty obvious how to construct your sequence, because
+you know the steps you need to perform in the UI to get where you want to go.
+However, keep the following in mind:
+* Try to start the sequence with a step generated by `InitialElement()`, keyed
+  to a UI element you know will be visible when the sequence starts.
+* Do not assume the order in which elements will become visible when a surface
+  is shown.
+* Do not assume that interacting with a button or menu item will bring up a
+  resulting surface (another menu, a dialog) _before_ the initial button or
+  menu item disappears.
+
+To elaborate on the third point: it is better to have the following steps in the
+case where a menu item brings up a dialog:
+1. Menu item shown
+2. Menu item activated (does not need to remain visible; default)
+3. Dialog element shown (does not need to be visible at start; default)
+
+If you specify that the menu item must stay visible or that the dialog element
+must be visible at step start, the sequence could fail depending on the order in
+which the presentation framework dismisses the menu and displays the dialog.
+
+However, in the case where you want the user to navigate a series of submenus,
+if the platform supports menu-open-via-hover you may not receive the
+**activated** signal and a sequence like the following might work better:
+1. Menu item shown
+2. Submenu item shown (triggers as soon as the submenu is opened, regardless of
+   how)
+3. Submenu item activated
+4. ...
+
+### Known limitations
+
+* Cannot nest sequences (might be able to in some cases via callbacks)
+* Cannot provide alternate sets of steps in the same sequence
+* Cannot skip ahead (e.g. if the user uses a shortcut key to bypass a menu)
+* Cannot restart steps (e.g. if the user hovers a submenu containing the next
+  element, then un-hovers it, then hovers it again)
+
+All of these can be addressed if a relevant, concrete need is found.
 
 ## Supporting additional UI frameworks
 
 If you want to use ElementTracker with a framework that isn't supported yet, you
 must at minimum do the following:
-1. Derive a class from `ElementTrackerElement` representing visual elements in
+1. Derive a class from `TrackedElement` representing visual elements in
    your framework.
 2. Determine how `ElementContext`s are defined in your framework.
 3. Implement code to create and register your derived element objects with
@@ -172,20 +305,20 @@ an example implementation.
 When you are done, please add the folder containing the implementation code to
 the [Supported Frameworks](#Supported%20Frameworks) section below.
 
-### 1. Derive a class from `ElementTrackerElement`
+### 1. Derive a class from `TrackedElement`
 
-When you derive a class from `ElementTrackerElement` to use for your UI
+When you derive a class from `TrackedElement` to use for your UI
 framework, you are obliged to declare specific metadata in order to support
 `IsA()` and `AsA()`. To do this, add the following to the class definition:
 ``` cpp
-class ElementTrackerElementMyPlatform {
+class TrackedElementMyPlatform {
  public:
-  // This provides the required ElementTrackerElement metadata support.
+  // This provides the required TrackedElement metadata support.
   DECLARE_ELEMENT_TRACKER_METADATA();
 }
 
 // In the corresponding .cc file:
-DEFINE_ELEMENT_TRACKER_METADATA(ElementTrackerElementMyPlatform)
+DEFINE_ELEMENT_TRACKER_METADATA(TrackedElementMyPlatform)
 ```
 You will also be expected to pass an immutable identifier and context into the
 constructor, and if the element object stores a pointer or handle to the
@@ -214,11 +347,11 @@ method for finding the primary window.
 ### 3. Managing the lifetime of your elements and sending events
 
 How your platform manages the lifetime of elements is entirely up to you. You
-could create an `ElementTrackerElement` whenever a named UI element in your
+could create an `TrackedElement` whenever a named UI element in your
 framework becomes visible to the user, or you could have every UI element
-with an associated `ElementIdentifier` hold a permanent `ElementTrackerElement`.
+with an associated `ElementIdentifier` hold a permanent `TrackedElement`.
 
-The one requirement is that a single `ElementTrackerElement` must be associated
+The one requirement is that a single `TrackedElement` must be associated
 with any named UI element, and must remain associated with that implementation
 as long as the element remains visible.
 
@@ -255,7 +388,7 @@ How you proxy events from UI elements to calls to
 `ElementTrackerFrameworkDelegate` is entirely up to you. In Views we go through
 a mediator object -
 [`ElementTrackerViews`](ui/views/interaction/element_tracker_views.h) - which
-first maps the `Button`, `MenuItem`, etc. to an `ElementTrackerElementViews`
+first maps the `Button`, `MenuItem`, etc. to an `TrackedElementViews`
 before passing that object to the appropriate delegate method.
 
 ## Supported Frameworks
@@ -265,3 +398,4 @@ Please add additional frameworks to this list as they become supported.
 
 * Views:
   * [`ElementTrackerViews`](/ui/views/interaction/element_tracker_views.h)
+  * [`InteractionSequenceViews`](/ui/views/interaction/interaction_sequence_views.h)

@@ -106,6 +106,8 @@ component("base") {
     "interaction/element_identifier.h",
     "interaction/element_tracker.cc",
     "interaction/element_tracker.h",
+    "interaction/interaction_sequence.cc",
+    "interaction/interaction_sequence.h",
     "l10n/formatter.cc",
     "l10n/formatter.h",
     "l10n/l10n_font_util.cc",
@@ -696,6 +698,8 @@ if (!is_ios) {
 static_library("test_support") {
   testonly = true
   sources = [
+    "interaction/element_test_util.cc",
+    "interaction/element_test_util.h",
     "resource/mock_resource_bundle_delegate.cc",
     "resource/mock_resource_bundle_delegate.h",
   ]
@@ -890,6 +894,7 @@ test("ui_base_unittests") {
     "clipboard/file_info_unittest.cc",
     "ime/utf_offset_unittest.cc",
     "interaction/element_tracker_unittest.cc",
+    "interaction/interaction_sequence_unittest.cc",
     "l10n/l10n_util_unittest.cc",
     "l10n/time_format_unittest.cc",
     "layout_unittest.cc",

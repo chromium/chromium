@@ -14,6 +14,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -37,15 +38,14 @@ bool IsViewVisibleToUser(View* view, bool force_widget_visible = false) {
 
 }  // namespace
 
-ElementTrackerElementViews::ElementTrackerElementViews(
-    View* view,
-    ui::ElementIdentifier identifier,
-    ui::ElementContext context)
-    : ElementTrackerElement(identifier, context), view_(view) {}
+TrackedElementViews::TrackedElementViews(View* view,
+                                         ui::ElementIdentifier identifier,
+                                         ui::ElementContext context)
+    : TrackedElement(identifier, context), view_(view) {}
 
-ElementTrackerElementViews::~ElementTrackerElementViews() = default;
+TrackedElementViews::~TrackedElementViews() = default;
 
-DEFINE_ELEMENT_TRACKER_METADATA(ElementTrackerElementViews)
+DEFINE_ELEMENT_TRACKER_METADATA(TrackedElementViews)
 
 class ElementTrackerViews::ElementDataViews : public ViewObserver,
                                               public WidgetObserver {
@@ -82,6 +82,12 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
       tracker_->element_data_.erase(id_);
   }
 
+  TrackedElementViews* GetElementForView(View* view) {
+    const auto it = view_data_lookup_.find(view);
+    DCHECK(it != view_data_lookup_.end());
+    return it->second->element.get();
+  }
+
   void NotifyViewActivated(View* view) {
     const auto it = view_data_lookup_.find(view);
     DCHECK(it != view_data_lookup_.end());
@@ -114,7 +120,7 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
     bool visible() const { return static_cast<bool>(element); }
     View* const view;
     ui::ElementContext context;
-    std::unique_ptr<ElementTrackerElementViews> element;
+    std::unique_ptr<TrackedElementViews> element;
   };
 
   using ViewDataList = std::list<ViewData>;
@@ -151,7 +157,7 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
         it->second->context && IsViewVisibleToUser(view, force_widget_visible);
     if (visible && !was_visible) {
       data.element =
-          std::make_unique<ElementTrackerElementViews>(view, id_, data.context);
+          std::make_unique<TrackedElementViews>(view, id_, data.context);
       ui::ElementTracker::GetFrameworkDelegate()->NotifyElementShown(
           data.element.get());
     } else if (!visible && was_visible) {
@@ -186,6 +192,16 @@ ui::ElementContext ElementTrackerViews::GetContextForView(View* view) {
   const Widget* const widget = view->GetWidget();
   return widget ? ui::ElementContext(widget->GetPrimaryWindowWidget())
                 : ui::ElementContext();
+}
+
+TrackedElementViews* ElementTrackerViews::GetElementForView(View* view) {
+  const auto identifier = view->GetProperty(kElementIdentifierKey);
+  if (!identifier)
+    return nullptr;
+  const auto it = element_data_.find(identifier);
+  if (it == element_data_.end())
+    return nullptr;
+  return it->second->GetElementForView(view);
 }
 
 void ElementTrackerViews::RegisterView(ui::ElementIdentifier element_id,

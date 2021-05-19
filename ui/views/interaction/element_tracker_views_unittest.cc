@@ -33,8 +33,21 @@ namespace {
 
 enum ElementEventType { kShown, kActivated, kHidden };
 
+View* ElementToView(ui::TrackedElement* element) {
+  auto* const view_element = element->AsA<TrackedElementViews>();
+  return view_element ? view_element->view() : nullptr;
+}
+
+// Watches events on the ElementTracker and converts the resulting values back
+// into Views from the original ui::TrackedElement objects. Monitoring
+// callbacks in this way could be done with gmock but the boilerplate would be
+// unfortunately complicated (for some events, the correct parameters are not
+// known until after the call is made, since the call itself might create the
+// element in question). So instead we use this helper class.
 class ElementEventWatcher {
  public:
+  // Watches the specified `event_type` on Views with identifier `id` in
+  // `context`.
   ElementEventWatcher(ui::ElementIdentifier id,
                       ui::ElementContext context,
                       ElementEventType event_type)
@@ -61,9 +74,9 @@ class ElementEventWatcher {
   View* last_view() { return last_view_; }
 
  private:
-  void OnEvent(ui::ElementTrackerElement* element) {
+  void OnEvent(ui::TrackedElement* element) {
     EXPECT_EQ(id_.raw_value(), element->identifier().raw_value());
-    last_view_ = element->AsA<ElementTrackerElementViews>()->view();
+    last_view_ = ElementToView(element);
     ++event_count_;
   }
 
@@ -73,17 +86,12 @@ class ElementEventWatcher {
   View* last_view_ = nullptr;
 };
 
-View* ElementToView(ui::ElementTrackerElement* element) {
-  auto* const view_element = element->AsA<ElementTrackerElementViews>();
-  return view_element ? view_element->view() : nullptr;
-}
-
 ElementTrackerViews::ViewList ElementsToViews(
     ui::ElementTracker::ElementList elements) {
   ElementTrackerViews::ViewList result;
   std::transform(elements.begin(), elements.end(), std::back_inserter(result),
-                 [](ui::ElementTrackerElement* element) {
-                   return element->AsA<ElementTrackerElementViews>()->view();
+                 [](ui::TrackedElement* element) {
+                   return element->AsA<TrackedElementViews>()->view();
                  });
   return result;
 }
@@ -381,7 +389,7 @@ TEST_F(ElementTrackerViewsTest, CanLookUpElementByIdentifier) {
   auto* button = widget_->SetContentsView(std::move(button_ptr));
   EXPECT_EQ(button, ui::ElementTracker::GetElementTracker()
                         ->GetUniqueElement(kTestElementID, context())
-                        ->AsA<ElementTrackerElementViews>()
+                        ->AsA<TrackedElementViews>()
                         ->view());
 
   // Hiding the view will make the view not findable through the base element
@@ -394,7 +402,7 @@ TEST_F(ElementTrackerViewsTest, CanLookUpElementByIdentifier) {
   button->SetVisible(true);
   EXPECT_EQ(button, ui::ElementTracker::GetElementTracker()
                         ->GetUniqueElement(kTestElementID, context())
-                        ->AsA<ElementTrackerElementViews>()
+                        ->AsA<TrackedElementViews>()
                         ->view());
 
   // Once the view is destroyed, however, the result should be null again.
@@ -408,7 +416,7 @@ TEST_F(ElementTrackerViewsTest, CanLookUpElementByIdentifier) {
   button->SetProperty(kElementIdentifierKey, kTestElementID);
   EXPECT_EQ(button, ui::ElementTracker::GetElementTracker()
                         ->GetUniqueElement(kTestElementID, context())
-                        ->AsA<ElementTrackerElementViews>()
+                        ->AsA<TrackedElementViews>()
                         ->view());
 
   // When the view is deleted, the result once again becomes null.
@@ -468,7 +476,7 @@ TEST_F(ElementTrackerViewsTest, CanGetFirstElementByIdentifier) {
   // The first button should be returned.
   EXPECT_EQ(button, ui::ElementTracker::GetElementTracker()
                         ->GetFirstMatchingElement(kTestElementID, context())
-                        ->AsA<ElementTrackerElementViews>()
+                        ->AsA<TrackedElementViews>()
                         ->view());
 
   // Set the buttons' visibility; this should change whether the element tracker
@@ -476,7 +484,7 @@ TEST_F(ElementTrackerViewsTest, CanGetFirstElementByIdentifier) {
   button->SetVisible(false);
   EXPECT_EQ(button2, ui::ElementTracker::GetElementTracker()
                          ->GetFirstMatchingElement(kTestElementID, context())
-                         ->AsA<ElementTrackerElementViews>()
+                         ->AsA<TrackedElementViews>()
                          ->view());
   button2->SetVisible(false);
   EXPECT_EQ(nullptr,
@@ -488,14 +496,14 @@ TEST_F(ElementTrackerViewsTest, CanGetFirstElementByIdentifier) {
   button->SetVisible(true);
   EXPECT_EQ(button2, ui::ElementTracker::GetElementTracker()
                          ->GetFirstMatchingElement(kTestElementID, context())
-                         ->AsA<ElementTrackerElementViews>()
+                         ->AsA<TrackedElementViews>()
                          ->view());
 
   // Remove the second button. The first should now be returned.
   contents->RemoveChildViewT(button2);
   EXPECT_EQ(button, ui::ElementTracker::GetElementTracker()
                         ->GetFirstMatchingElement(kTestElementID, context())
-                        ->AsA<ElementTrackerElementViews>()
+                        ->AsA<TrackedElementViews>()
                         ->view());
 
   // Remove the first button. There will be no matching views.
@@ -646,6 +654,49 @@ TEST_F(ElementTrackerViewsTest, CanGetVisibilityByIdentifier) {
   button->SetVisible(false);
   EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
       kTestElementID, context()));
+}
+
+TEST_F(ElementTrackerViewsTest, CanLookupElementByView) {
+  // Should initially be false.
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+
+  auto button_ptr = std::make_unique<LabelButton>();
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+
+  // The button is not attached to a widget so there is no associated element
+  // object.
+  EXPECT_EQ(nullptr, ElementTrackerViews::GetInstance()->GetElementForView(
+                         button_ptr.get()));
+
+  // Adding the (visible) view to a widget will cause an element to be
+  // generated.
+  auto* button = widget_->SetContentsView(std::move(button_ptr));
+  EXPECT_NE(nullptr,
+            ElementTrackerViews::GetInstance()->GetElementForView(button));
+
+  // Once the view is destroyed, however, the result should be false again.
+  widget_->GetRootView()->RemoveChildView(button);
+  EXPECT_EQ(nullptr,
+            ElementTrackerViews::GetInstance()->GetElementForView(button));
+  delete button;
+
+  // Create a second view with the same ID but start it as not visible.
+  button = widget_->SetContentsView(std::make_unique<LabelButton>());
+  button->SetVisible(false);
+  button->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_EQ(nullptr,
+            ElementTrackerViews::GetInstance()->GetElementForView(button));
+
+  // Now set the visibility to true.
+  button->SetVisible(true);
+  EXPECT_NE(nullptr,
+            ElementTrackerViews::GetInstance()->GetElementForView(button));
+
+  // Set visibility to false again.
+  button->SetVisible(false);
+  EXPECT_EQ(nullptr,
+            ElementTrackerViews::GetInstance()->GetElementForView(button));
 }
 
 // The following tests ensure conformity with the different platforms' Views
