@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACCESSIBILITY_CAPTION_UTIL_H_
-#define CHROME_BROWSER_ACCESSIBILITY_CAPTION_UTIL_H_
+#ifndef COMPONENTS_LIVE_CAPTION_CAPTION_UTIL_H_
+#define COMPONENTS_LIVE_CAPTION_CAPTION_UTIL_H_
 
+#include "components/prefs/pref_service.h"
 #include "ui/native_theme/caption_style.h"
 
 class PrefService;
@@ -17,4 +18,4 @@ absl::optional<ui::CaptionStyle> GetCaptionStyleFromUserSettings(
 
 }  // namespace captions
 
-#endif  // CHROME_BROWSER_ACCESSIBILITY_CAPTION_UTIL_H_
+#endif  // COMPONENTS_LIVE_CAPTION_CAPTION_UTIL_H_

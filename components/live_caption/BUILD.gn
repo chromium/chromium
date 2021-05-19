@@ -32,3 +32,18 @@ source_set("constants") {
     "pref_names.h",
   ]
 }
+
+source_set("utils") {
+  sources = [
+    "caption_util.cc",
+    "caption_util.h",
+  ]
+
+  deps = [
+    ":constants",
+    "//base",
+    "//components/prefs",
+    "//ui/base",
+    "//ui/native_theme",
+  ]
+}
