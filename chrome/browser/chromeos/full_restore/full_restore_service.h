@@ -9,7 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync_preferences/pref_service_syncable_observer.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -88,7 +88,11 @@ class FullRestoreService : public KeyedService,
   void RecordRestoreAction(const std::string& notification_id,
                            RestoreAction restore_action);
 
+  // Callback used when the pref |kRestoreAppsAndPagesPrefName| changes.
+  void OnPreferenceChanged(const std::string& pref_name);
+
   Profile* profile_ = nullptr;
+  PrefChangeRegistrar pref_change_registrar_;
 
   bool is_shut_down_ = false;
 

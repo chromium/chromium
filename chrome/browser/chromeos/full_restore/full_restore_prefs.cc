@@ -29,7 +29,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
     return;
 
   registry->RegisterIntegerPref(
-      kRestoreAppsAndPagesPrefName, static_cast<int>(RestoreOption::kAlways),
+      kRestoreAppsAndPagesPrefName,
+      static_cast<int>(RestoreOption::kAskEveryTime),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   registry->RegisterIntegerPref(kRestoreSelectedCountPrefName, 0);
@@ -37,6 +38,16 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 bool HasRestorePref(PrefService* prefs) {
   return prefs->HasPrefPath(kRestoreAppsAndPagesPrefName);
+}
+
+bool CanPerformRestore(PrefService* prefs) {
+  if (!HasRestorePref(prefs))
+    return true;
+
+  return static_cast<RestoreOption>(prefs->GetInteger(
+             kRestoreAppsAndPagesPrefName)) == RestoreOption::kDoNotRestore
+             ? false
+             : true;
 }
 
 void SetDefaultRestorePrefIfNecessary(PrefService* prefs) {

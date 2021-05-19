@@ -57,6 +57,7 @@ TEST_F(FullRestorePrefsTest, NewUser) {
 
   SetDefaultRestorePrefIfNecessary(pref_service_.get());
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  EXPECT_TRUE(CanPerformRestore(pref_service_.get()));
 }
 
 // When a user upgrades to the full restore release, set 'ask every time' as the
@@ -70,6 +71,7 @@ TEST_F(FullRestorePrefsTest, UpgradingFromRestore) {
   RegisterProfilePrefs(registry());
   SetDefaultRestorePrefIfNecessary(pref_service_.get());
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  EXPECT_TRUE(CanPerformRestore(pref_service_.get()));
 }
 
 // When a user upgrades to the full restore release, set 'do not restore' as the
@@ -83,6 +85,7 @@ TEST_F(FullRestorePrefsTest, UpgradingFromNotRestore) {
   RegisterProfilePrefs(registry());
   SetDefaultRestorePrefIfNecessary(pref_service_.get());
   EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());
+  EXPECT_FALSE(CanPerformRestore(pref_service_.get()));
 }
 
 // For a new Chrome OS user, set 'always restore' as the default value if the
@@ -93,6 +96,7 @@ TEST_F(FullRestorePrefsTest, NewChromeOSUserFromRestore) {
   RegisterProfilePrefs(registry());
   SetDefaultRestorePrefIfNecessary(pref_service_.get());
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  EXPECT_TRUE(CanPerformRestore(pref_service_.get()));
 
   SessionStartupPref::RegisterProfilePrefs(registry());
   pref_service_->SetInteger(
@@ -101,6 +105,7 @@ TEST_F(FullRestorePrefsTest, NewChromeOSUserFromRestore) {
 
   UpdateRestorePrefIfNecessary(pref_service_.get());
   EXPECT_EQ(RestoreOption::kAlways, GetRestoreOption());
+  EXPECT_TRUE(CanPerformRestore(pref_service_.get()));
 }
 
 // For a new Chrome OS user, set 'ask every time' as the default value if the
@@ -111,6 +116,7 @@ TEST_F(FullRestorePrefsTest, NewChromeOSUserFromNotRestore) {
   RegisterProfilePrefs(registry());
   SetDefaultRestorePrefIfNecessary(pref_service_.get());
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  EXPECT_TRUE(CanPerformRestore(pref_service_.get()));
 
   SessionStartupPref::RegisterProfilePrefs(registry());
   pref_service_->SetInteger(
@@ -119,6 +125,7 @@ TEST_F(FullRestorePrefsTest, NewChromeOSUserFromNotRestore) {
 
   UpdateRestorePrefIfNecessary(pref_service_.get());
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  EXPECT_TRUE(CanPerformRestore(pref_service_.get()));
 }
 
 }  // namespace full_restore

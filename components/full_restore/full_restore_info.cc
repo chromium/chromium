@@ -4,11 +4,13 @@
 
 #include "components/full_restore/full_restore_info.h"
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "components/account_id/account_id.h"
 
 namespace full_restore {
 
+// static
 FullRestoreInfo* FullRestoreInfo::GetInstance() {
   static base::NoDestructor<FullRestoreInfo> full_restore_info;
   return full_restore_info.get();
@@ -27,7 +29,7 @@ void FullRestoreInfo::RemoveObserver(Observer* observer) {
 }
 
 bool FullRestoreInfo::ShouldRestore(const AccountId& account_id) {
-  return restore_flags_.find(account_id) != restore_flags_.end();
+  return base::Contains(restore_flags_, account_id);
 }
 
 void FullRestoreInfo::SetRestoreFlag(const AccountId& account_id,
@@ -42,6 +44,24 @@ void FullRestoreInfo::SetRestoreFlag(const AccountId& account_id,
 
   for (auto& observer : observers_)
     observer.OnRestoreFlagChanged(account_id, should_restore);
+}
+
+bool FullRestoreInfo::CanPerformRestore(const AccountId& account_id) {
+  return base::Contains(restore_prefs_, account_id);
+}
+
+void FullRestoreInfo::SetRestorePref(const AccountId& account_id,
+                                     bool could_restore) {
+  if (could_restore == CanPerformRestore(account_id))
+    return;
+
+  if (could_restore)
+    restore_prefs_.insert(account_id);
+  else
+    restore_prefs_.erase(account_id);
+
+  for (auto& observer : observers_)
+    observer.OnRestorePrefChanged(account_id, could_restore);
 }
 
 void FullRestoreInfo::OnAppLaunched(aura::Window* window) {

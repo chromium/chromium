@@ -43,6 +43,7 @@ const int kMaxConsecutiveRestoreSelectionCount = 3;
 const char kRestoreNotificationHistogramName[] = "Apps.RestoreNotification";
 const char kRestoreForCrashNotificationHistogramName[] =
     "Apps.RestoreForCrashNotification";
+const char kRestoreSettingHistogramName[] = "Apps.RestoreSetting";
 
 // static
 FullRestoreService* FullRestoreService::GetForProfile(Profile* profile) {
@@ -131,14 +132,30 @@ void FullRestoreService::RestoreForTesting() {
 }
 
 void FullRestoreService::Init() {
+  PrefService* prefs = profile_->GetPrefs();
+  DCHECK(prefs);
+
+  pref_change_registrar_.Init(prefs);
+  pref_change_registrar_.Add(
+      kRestoreAppsAndPagesPrefName,
+      base::BindRepeating(&FullRestoreService::OnPreferenceChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+
+  const user_manager::User* user =
+      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+  if (user) {
+    ::full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(
+        user->GetAccountId(), CanPerformRestore(prefs));
+  }
+
   // If the system crashed before reboot, show the restore notification.
   if (profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
+    if (!HasRestorePref(prefs))
+      SetDefaultRestorePrefIfNecessary(prefs);
+
     ShowRestoreNotification(kRestoreForCrashNotificationId);
     return;
   }
-
-  PrefService* prefs = profile_->GetPrefs();
-  DCHECK(prefs);
 
   // If it is the first time to run Chrome OS, we don't have restore data, so we
   // don't need to consider restoration.
@@ -238,6 +255,23 @@ void FullRestoreService::RecordRestoreAction(const std::string& notification_id,
                                     ? kRestoreNotificationHistogramName
                                     : kRestoreForCrashNotificationHistogramName,
                                 restore_action);
+}
+
+void FullRestoreService::OnPreferenceChanged(const std::string& pref_name) {
+  DCHECK_EQ(pref_name, kRestoreAppsAndPagesPrefName);
+  //  if (pref_name != kRestoreAppsAndPagesPrefName)
+  //    return;
+
+  RestoreOption restore_option = static_cast<RestoreOption>(
+      profile_->GetPrefs()->GetInteger(kRestoreAppsAndPagesPrefName));
+  base::UmaHistogramEnumeration(kRestoreSettingHistogramName, restore_option);
+
+  const user_manager::User* user =
+      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+  if (user) {
+    ::full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(
+        user->GetAccountId(), CanPerformRestore(profile_->GetPrefs()));
+  }
 }
 
 }  // namespace full_restore

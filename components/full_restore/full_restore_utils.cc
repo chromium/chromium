@@ -65,6 +65,10 @@ bool ShouldRestore(const AccountId& account_id) {
   return FullRestoreInfo::GetInstance()->ShouldRestore(account_id);
 }
 
+bool CanPerformRestore(const AccountId& account_id) {
+  return FullRestoreInfo::GetInstance()->CanPerformRestore(account_id);
+}
+
 void SetActiveProfilePath(const base::FilePath& profile_path) {
   if (!ash::features::IsFullRestoreEnabled())
     return;

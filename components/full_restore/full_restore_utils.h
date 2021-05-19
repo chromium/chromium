@@ -101,6 +101,13 @@ int32_t GetArcRestoreWindowId(int32_t task_id);
 // and the user's choice from the notification. Otherwise, returns false.
 COMPONENT_EXPORT(FULL_RESTORE) bool ShouldRestore(const AccountId& account_id);
 
+// Returns true if the restore pref is 'Always' or 'Ask every time', as we
+// could restore apps and pages based on the user's choice from the
+// notification for |account_id|. Otherwise, returns false, when the restore
+// pref is 'Do not restore'.
+COMPONENT_EXPORT(FULL_RESTORE)
+bool CanPerformRestore(const AccountId& account_id);
+
 // Sets the current active profile path.
 COMPONENT_EXPORT(FULL_RESTORE)
 void SetActiveProfilePath(const base::FilePath& profile_path);
