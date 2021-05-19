@@ -5,6 +5,7 @@
 #include "content/common/background_fetch/background_fetch_types.h"
 
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
 namespace {
 

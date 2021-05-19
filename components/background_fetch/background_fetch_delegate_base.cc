@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace background_fetch {

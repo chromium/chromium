@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
+
 #include <fcntl.h>
 #include <grp.h>
 #include <poll.h>
@@ -26,6 +27,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
+#include "media/capture/video/chromeos/mojom/cros_camera_client.mojom.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"

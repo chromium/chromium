@@ -23,6 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/util/values/values_util.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/crx_file/id_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"

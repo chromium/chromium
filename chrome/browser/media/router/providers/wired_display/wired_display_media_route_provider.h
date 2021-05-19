@@ -18,6 +18,7 @@
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver.h"
 #include "components/media_router/common/media_route_provider_helper.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
+#include "components/media_router/common/mojom/media_status.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

@@ -41,6 +41,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/payments/payment_handler_host.mojom.h"
 
 namespace payments {
 namespace {

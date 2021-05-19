@@ -19,6 +19,7 @@
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
+#include "services/viz/privileged/mojom/compositing/external_begin_frame_controller.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "ui/gfx/geometry/size.h"

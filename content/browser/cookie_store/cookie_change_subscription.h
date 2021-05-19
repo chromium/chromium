@@ -14,6 +14,11 @@
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom.h"
 #include "url/gurl.h"
 
+namespace net {
+class CanonicalCookie;
+enum class CookieAccessSemantics;
+}  // namespace net
+
 namespace content {
 
 namespace proto {

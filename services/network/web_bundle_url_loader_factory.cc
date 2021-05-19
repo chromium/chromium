@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "components/web_package/web_bundle_parser.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -15,6 +16,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cross_origin_read_blocking.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/web_bundle_chunked_buffer.h"
 #include "services/network/web_bundle_memory_quota_consumer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

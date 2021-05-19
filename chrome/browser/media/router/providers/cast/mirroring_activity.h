@@ -14,6 +14,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 #include "components/cast_channel/cast_message_handler.h"
 #include "components/media_router/common/media_route.h"
+#include "components/media_router/common/mojom/logger.mojom.h"
 #include "components/media_router/common/mojom/media_router.mojom-forward.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/mirroring_service_host.mojom.h"

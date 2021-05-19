@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob_registry.h"
 
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom-blink.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob.h"

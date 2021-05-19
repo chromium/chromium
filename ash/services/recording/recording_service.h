@@ -27,7 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom-forward.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace recording {

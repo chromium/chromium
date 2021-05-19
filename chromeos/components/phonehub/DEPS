@@ -11,5 +11,6 @@ include_rules = [
   "+device/bluetooth",
   "+net",
   "+services/data_decoder/public/cpp",
+  "+services/data_decoder/public/mojom",
   "+ui/gfx",
 ]

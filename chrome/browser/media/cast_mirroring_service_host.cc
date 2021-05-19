@@ -36,6 +36,8 @@
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/video_capture_device_launcher.h"
 #include "content/public/browser/web_contents.h"
+#include "media/audio/audio_device_description.h"
+#include "media/mojo/mojom/audio_input_stream.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"

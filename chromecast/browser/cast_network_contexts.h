@@ -18,6 +18,7 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/proxy_config.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 class PrefProxyConfigTracker;
 

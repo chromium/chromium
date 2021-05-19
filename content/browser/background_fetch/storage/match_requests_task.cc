@@ -8,6 +8,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/storage/database_helpers.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"

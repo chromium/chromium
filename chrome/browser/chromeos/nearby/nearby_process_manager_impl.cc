@@ -12,6 +12,7 @@
 #include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/sharing/webrtc/sharing_mojo_service.h"
+#include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace chromeos {

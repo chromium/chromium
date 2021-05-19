@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "components/services/filesystem/public/mojom/directory.mojom.h"
+#include "components/services/filesystem/public/mojom/file.mojom.h"
 
 namespace base {
 class FilePath;

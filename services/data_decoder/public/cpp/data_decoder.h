@@ -16,6 +16,10 @@
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace mojo_base {
+class BigBuffer;
+}
+
 namespace data_decoder {
 
 // Encapsulates an exclusive connection to an isolated instance of the Data

@@ -121,6 +121,8 @@
 #include "services/network/public/mojom/net_log.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/p2p.mojom.h"
+#include "services/network/public/mojom/p2p_trusted.mojom.h"
 #include "services/network/public/mojom/proxy_config.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"

@@ -89,6 +89,7 @@
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager_util.h"
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #endif
 

@@ -13,6 +13,7 @@
 #include "third_party/blink/public/common/messaging/cloneable_message.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/mojom/array_buffer/array_buffer_contents.mojom.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/messaging/user_activation_snapshot.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 

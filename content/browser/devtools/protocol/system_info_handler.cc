@@ -26,6 +26,7 @@
 #include "gpu/config/gpu_feature_type.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_switches.h"
+#include "media/base/video_codecs.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "gpu/config/gpu_util.h"
 #endif

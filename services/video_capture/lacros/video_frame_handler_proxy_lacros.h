@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_capture/public/mojom/scoped_access_permission.mojom.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 
 namespace video_capture {

@@ -24,6 +24,7 @@
 #include "gin/dictionary.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "v8/include/v8.h"

@@ -7,8 +7,8 @@
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/site_for_cookies.h"
-#include "services/network/public/mojom/cookie_manager.mojom-blink-forward.h"
-#include "services/network/public/mojom/restricted_cookie_manager.mojom-blink-forward.h"
+#include "services/network/public/mojom/cookie_manager.mojom-blink.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"

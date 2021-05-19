@@ -6,6 +6,8 @@
 
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/net_errors.h"
 
 namespace {
 bool g_skip_copying_for_testing = false;

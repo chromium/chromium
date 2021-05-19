@@ -18,6 +18,10 @@
 
 class GURL;
 
+namespace network {
+struct CrossOriginEmbedderPolicy;
+}
+
 namespace content {
 
 class BrowserContext;

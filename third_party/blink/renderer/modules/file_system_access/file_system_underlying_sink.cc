@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_underlying_sink.h"
 
 #include "mojo/public/cpp/system/string_data_source.h"
+#include "net/base/net_errors.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view_or_blob_or_usv_string.h"

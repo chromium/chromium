@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/blob/serialized_blob_mojom_traits.h"
 
+#include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom-blink.h"
 
 namespace mojo {

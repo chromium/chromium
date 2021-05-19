@@ -14,7 +14,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/xr/service/xr_frame_sink_client_impl.h"
 #include "content/browser/xr/xr_utils.h"
 #include "content/public/browser/browser_task_traits.h"

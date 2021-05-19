@@ -12,6 +12,8 @@
 #include "chrome/browser/speech/speech_recognizer.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 class SpeechRecognizerDelegate;

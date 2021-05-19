@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/appcache/application_cache_host_for_frame.h"
 
+#include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/events/application_cache_error_event.h"

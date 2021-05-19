@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/validation_rules_storage_factory.h"
 #include "chrome/browser/browser_process.h"

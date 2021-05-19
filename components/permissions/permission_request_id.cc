@@ -4,6 +4,7 @@
 
 #include "components/permissions/permission_request_id.h"
 
+#include <inttypes.h>
 #include <stdint.h>
 
 #include "base/strings/stringprintf.h"

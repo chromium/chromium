@@ -14,6 +14,7 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_u2f_device.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {

@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 #include "url/gurl.h"
 
 namespace chromeos {

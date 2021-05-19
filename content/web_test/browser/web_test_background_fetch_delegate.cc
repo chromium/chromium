@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {

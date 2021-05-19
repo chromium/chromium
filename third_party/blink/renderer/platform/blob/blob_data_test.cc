@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -13,6 +14,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/renderer/platform/blob/blob_bytes_provider.h"

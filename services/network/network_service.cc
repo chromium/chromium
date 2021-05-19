@@ -64,6 +64,7 @@
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/cpp/load_info_util.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/url_loader.h"
 
 #if defined(OS_ANDROID) && defined(ARCH_CPU_ARMEL)

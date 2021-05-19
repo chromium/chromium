@@ -10,6 +10,7 @@
 #include "ios/components/io_thread/ios_io_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 class PrefService;
 

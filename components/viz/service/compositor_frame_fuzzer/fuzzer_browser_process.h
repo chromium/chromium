@@ -16,6 +16,7 @@
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
 #include "components/viz/test/fake_display_client.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "services/viz/privileged/mojom/compositing/external_begin_frame_controller.mojom.h"
 
 namespace viz {
 

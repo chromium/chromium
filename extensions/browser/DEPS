@@ -73,4 +73,8 @@ specific_include_rules = {
     "+components/services/unzip",
     "+services/data_decoder",
   ],
+  "extension_prefs.cc": [
+    # For CONTENT_SETTING_ALLOW / BLOCK.
+    "+components/content_settings/core/common",
+  ],
 }

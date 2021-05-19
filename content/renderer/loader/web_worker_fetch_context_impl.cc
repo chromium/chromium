@@ -22,6 +22,7 @@
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
+#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom.h"
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_context.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"

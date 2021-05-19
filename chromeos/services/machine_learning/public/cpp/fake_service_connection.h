@@ -19,6 +19,7 @@
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/tensor.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
+#include "chromeos/services/machine_learning/public/mojom/text_suggester.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/web_platform_handwriting.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

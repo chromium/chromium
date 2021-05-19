@@ -23,6 +23,7 @@
 #include "net/base/net_errors.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 

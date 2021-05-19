@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "ui/display/display.h"
 
 namespace ash {
 

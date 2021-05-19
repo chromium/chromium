@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "ui/gfx/image/image.h"
 
 using google::protobuf::RepeatedPtrField;

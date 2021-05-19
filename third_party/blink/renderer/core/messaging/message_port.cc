@@ -29,6 +29,7 @@
 #include <memory>
 
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"

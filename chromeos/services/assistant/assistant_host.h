@@ -8,6 +8,7 @@
 #include "base/threading/thread.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/display_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
