@@ -1068,8 +1068,9 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
     UMA_HISTOGRAM_EXACT_LINEAR(
         "ContextMenu.SelectedOptionDesktop.MisspelledWord", enum_id,
         GetUmaValueMax(UmaEnumIdLookupType::ContextSpecificEnumId));
-  } else if (!params_.selection_text.empty() &&
-             params_.media_type == ContextMenuDataMediaType::kNone) {
+  } else if ((!params_.selection_text.empty() ||
+              params_.opened_from_highlight) &&
+              params_.media_type == ContextMenuDataMediaType::kNone) {
     // Probably just text.
     UMA_HISTOGRAM_EXACT_LINEAR(
         "ContextMenu.SelectedOptionDesktop.SelectedText", enum_id,
