@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "content/browser/conversions/sent_report_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -117,8 +118,10 @@ void ConversionNetworkSenderImpl::SendReport(ConversionReport* report,
         storage_partition_->GetURLLoaderFactoryForBrowserProcess();
   }
 
+  GURL report_url = GetReportUrl(*report);
+
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GetReportUrl(*report);
+  resource_request->url = report_url;
   resource_request->referrer =
       GURL(report->impression.ConversionDestination().Serialize());
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
@@ -180,6 +183,7 @@ void ConversionNetworkSenderImpl::SendReport(ConversionReport* report,
       url_loader_factory_.get(),
       base::BindOnce(&ConversionNetworkSenderImpl::OnReportSent,
                      base::Unretained(this), std::move(it),
+                     std::move(report_url), std::move(report_body),
                      std::move(sent_callback)));
   LogMetricsOnReportSend(report);
 }
@@ -191,9 +195,17 @@ void ConversionNetworkSenderImpl::SetURLLoaderFactoryForTesting(
 
 void ConversionNetworkSenderImpl::OnReportSent(
     UrlLoaderList::iterator it,
+    GURL report_url,
+    std::string report_body,
     ReportSentCallback sent_callback,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   network::SimpleURLLoader* loader = it->get();
+
+  SentReportInfo sent_report_info = {
+      .report_url = std::move(report_url),
+      .report_body = std::move(report_body),
+      .http_response_code = headers ? headers->response_code() : 0,
+  };
 
   // Consider a non-200 HTTP code as a non-internal error.
   int net_error = loader->NetError();
@@ -219,7 +231,7 @@ void ConversionNetworkSenderImpl::OnReportSent(
   }
 
   loaders_in_progress_.erase(it);
-  std::move(sent_callback).Run();
+  std::move(sent_callback).Run(std::move(sent_report_info));
 }
 
 }  // namespace content

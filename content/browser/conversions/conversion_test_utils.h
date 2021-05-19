@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -16,6 +17,7 @@
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/conversion_storage.h"
+#include "content/browser/conversions/sent_report_info.h"
 #include "content/browser/conversions/storable_conversion.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "content/test/test_content_browser_client.h"
@@ -144,9 +146,10 @@ class TestConversionManager : public ConversionManager {
   void GetActiveImpressionsForWebUI(
       base::OnceCallback<void(std::vector<StorableImpression>)> callback)
       override;
-  void GetReportsForWebUI(
+  void GetPendingReportsForWebUI(
       base::OnceCallback<void(std::vector<ConversionReport>)> callback,
       base::Time max_report_time) override;
+  const base::circular_deque<SentReportInfo>& GetSentReportsForWebUI() override;
   void SendReportsForWebUI(base::OnceClosure done) override;
   const ConversionPolicy& GetConversionPolicy() const override;
   void ClearData(base::Time delete_begin,
@@ -157,6 +160,8 @@ class TestConversionManager : public ConversionManager {
   void SetActiveImpressionsForWebUI(
       std::vector<StorableImpression> impressions);
   void SetReportsForWebUI(std::vector<ConversionReport> reports);
+  void SetSentReportsForWebUI(
+      base::circular_deque<SentReportInfo> sent_reports);
 
   // Resets all counters on this.
   void Reset();
@@ -192,6 +197,7 @@ class TestConversionManager : public ConversionManager {
 
   std::vector<StorableImpression> impressions_;
   std::vector<ConversionReport> reports_;
+  base::circular_deque<SentReportInfo> sent_reports_;
 };
 
 // Helper class to construct a StorableImpression for tests using default data.
@@ -242,6 +248,10 @@ testing::AssertionResult ImpressionsEqual(const StorableImpression& expected,
 testing::AssertionResult ReportsEqual(
     const std::vector<ConversionReport>& expected,
     const std::vector<ConversionReport>& actual);
+
+testing::AssertionResult SentReportInfosEqual(
+    const base::circular_deque<SentReportInfo>& expected,
+    const base::circular_deque<SentReportInfo>& actual);
 
 std::vector<ConversionReport> GetConversionsToReportForTesting(
     ConversionManagerImpl* manager,

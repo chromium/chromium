@@ -27,6 +27,8 @@ namespace content {
 
 namespace {
 
+const size_t kMaxSentReportsToStore = 100;
+
 // The shared-task runner for all conversion storage operations. Note that
 // different ConversionManagerImpl perform operations on the same task
 // runner. This prevents any potential races when a given context is destroyed
@@ -77,10 +79,11 @@ std::unique_ptr<ConversionManagerImpl> ConversionManagerImpl::CreateForTesting(
     std::unique_ptr<ConversionPolicy> policy,
     const base::Clock* clock,
     const base::FilePath& user_data_directory,
-    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy) {
+    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
+    size_t max_sent_reports_to_store) {
   return base::WrapUnique<ConversionManagerImpl>(new ConversionManagerImpl(
       std::move(reporter), std::move(policy), clock, user_data_directory,
-      std::move(special_storage_policy)));
+      std::move(special_storage_policy), max_sent_reports_to_store));
 }
 
 ConversionManagerImpl::ConversionManagerImpl(
@@ -96,14 +99,16 @@ ConversionManagerImpl::ConversionManagerImpl(
                   switches::kConversionsDebugMode)),
           base::DefaultClock::GetInstance(),
           user_data_directory,
-          std::move(special_storage_policy)) {}
+          std::move(special_storage_policy),
+          kMaxSentReportsToStore) {}
 
 ConversionManagerImpl::ConversionManagerImpl(
     std::unique_ptr<ConversionReporter> reporter,
     std::unique_ptr<ConversionPolicy> policy,
     const base::Clock* clock,
     const base::FilePath& user_data_directory,
-    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy)
+    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
+    size_t max_sent_reports_to_store)
     : debug_mode_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kConversionsDebugMode)),
       clock_(clock),
@@ -113,6 +118,7 @@ ConversionManagerImpl::ConversionManagerImpl(
           user_data_directory,
           std::make_unique<ConversionStorageDelegateImpl>(debug_mode_),
           clock_)),
+      max_sent_reports_to_store_(max_sent_reports_to_store),
       conversion_policy_(std::move(policy)),
       special_storage_policy_(std::move(special_storage_policy)),
       weak_factory_(this) {
@@ -178,11 +184,16 @@ void ConversionManagerImpl::GetActiveImpressionsForWebUI(
       .Then(std::move(callback));
 }
 
-void ConversionManagerImpl::GetReportsForWebUI(
+void ConversionManagerImpl::GetPendingReportsForWebUI(
     base::OnceCallback<void(std::vector<ConversionReport>)> callback,
     base::Time max_report_time) {
   const int kMaxReports = 1000;
   GetAndHandleReports(std::move(callback), max_report_time, kMaxReports);
+}
+
+const base::circular_deque<SentReportInfo>&
+ConversionManagerImpl::GetSentReportsForWebUI() {
+  return sent_reports_;
 }
 
 void ConversionManagerImpl::SendReportsForWebUI(base::OnceClosure done) {
@@ -280,15 +291,27 @@ void ConversionManagerImpl::HandleReportsSentFromWebUI(
                           base::Unretained(this), std::move(all_reports_sent)));
 }
 
-void ConversionManagerImpl::OnReportSent(int64_t conversion_id) {
+void ConversionManagerImpl::MaybeStoreSentReportInfo(
+    absl::optional<SentReportInfo> info) {
+  if (info.has_value()) {
+    while (sent_reports_.size() >= max_sent_reports_to_store_)
+      sent_reports_.pop_front();
+    sent_reports_.push_back(*info);
+  }
+}
+
+void ConversionManagerImpl::OnReportSent(int64_t conversion_id,
+                                         absl::optional<SentReportInfo> info) {
   conversion_storage_.AsyncCall(&ConversionStorage::DeleteConversion)
       .WithArgs(conversion_id)
       .Then(base::DoNothing::Once<bool>());
+  MaybeStoreSentReportInfo(std::move(info));
 }
 
 void ConversionManagerImpl::OnReportSentFromWebUI(
     base::OnceClosure reports_sent_barrier,
-    int64_t conversion_id) {
+    int64_t conversion_id,
+    absl::optional<SentReportInfo> info) {
   // |reports_sent_barrier| is a OnceClosure view of a RepeatingClosure obtained
   // by base::BarrierClosure().
   conversion_storage_.AsyncCall(&ConversionStorage::DeleteConversion)
@@ -296,6 +319,7 @@ void ConversionManagerImpl::OnReportSentFromWebUI(
       .Then(base::BindOnce([](base::OnceClosure callback,
                               bool result) { std::move(callback).Run(); },
                            std::move(reports_sent_barrier)));
+  MaybeStoreSentReportInfo(std::move(info));
 }
 
 }  // namespace content

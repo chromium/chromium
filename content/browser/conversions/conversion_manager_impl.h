@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
@@ -20,6 +21,7 @@
 #include "content/browser/conversions/conversion_policy.h"
 #include "content/browser/conversions/conversion_storage.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -63,10 +65,12 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
 
     // Adds |reports| to a shared queue of reports that need to be sent. Runs
     // |report_sent_callback| for every report that is sent, with the associated
-    // |conversion_id| of the report.
+    // |conversion_id| of the report. |SentReportInfo| is not available if the
+    // report was not sent.
     virtual void AddReportsToQueue(
         std::vector<ConversionReport> reports,
-        base::RepeatingCallback<void(int64_t)> report_sent_callback) = 0;
+        base::RepeatingCallback<void(int64_t, absl::optional<SentReportInfo>)>
+            report_sent_callback) = 0;
   };
 
   // Configures underlying storage to be setup in memory, rather than on
@@ -78,7 +82,8 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
       std::unique_ptr<ConversionPolicy> policy,
       const base::Clock* clock,
       const base::FilePath& user_data_directory,
-      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
+      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
+      size_t max_sent_reports_to_store);
 
   ConversionManagerImpl(
       StoragePartition* storage_partition,
@@ -94,9 +99,10 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   void GetActiveImpressionsForWebUI(
       base::OnceCallback<void(std::vector<StorableImpression>)> callback)
       override;
-  void GetReportsForWebUI(
+  void GetPendingReportsForWebUI(
       base::OnceCallback<void(std::vector<ConversionReport>)> callback,
       base::Time max_report_time) override;
+  const base::circular_deque<SentReportInfo>& GetSentReportsForWebUI() override;
   void SendReportsForWebUI(base::OnceClosure done) override;
   const ConversionPolicy& GetConversionPolicy() const override;
   void ClearData(base::Time delete_begin,
@@ -110,7 +116,8 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
       std::unique_ptr<ConversionPolicy> policy,
       const base::Clock* clock,
       const base::FilePath& user_data_directory,
-      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
+      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
+      size_t max_sent_reports_to_store);
 
   // Retrieves at most |limit| reports from storage whose |report_time| <=
   // |max_report_time|, and calls |handler_function| on them; use a negative
@@ -134,14 +141,17 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   void HandleReportsSentFromWebUI(base::OnceClosure done,
                                   std::vector<ConversionReport> reports);
 
+  void MaybeStoreSentReportInfo(absl::optional<SentReportInfo> info);
+
   // Notify storage to delete the given |conversion_id| when its associated
   // report has been sent.
-  void OnReportSent(int64_t conversion_id);
+  void OnReportSent(int64_t conversion_id, absl::optional<SentReportInfo> info);
 
   // Similar to OnReportSent, but invokes |reports_sent_barrier| when the
   // report has been removed from storage.
   void OnReportSentFromWebUI(base::OnceClosure reports_sent_barrier,
-                             int64_t conversion_id);
+                             int64_t conversion_id,
+                             absl::optional<SentReportInfo> info);
 
   // Friend to expose the ConversionStorage for certain tests.
   friend std::vector<ConversionReport> GetConversionsToReportForTesting(
@@ -163,6 +173,13 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   std::unique_ptr<ConversionReporter> reporter_;
 
   base::SequenceBound<ConversionStorage> conversion_storage_;
+
+  // Stores info for the last |max_sent_reports_to_store_| reports sent in this
+  // session for display in conversion internals UI.
+  base::circular_deque<SentReportInfo> sent_reports_;
+
+  // This is needed to avoid leaking memory.
+  const size_t max_sent_reports_to_store_;
 
   // Policy used for controlling API configurations such as reporting and
   // attribution models. Unique ptr so it can be overridden for testing.

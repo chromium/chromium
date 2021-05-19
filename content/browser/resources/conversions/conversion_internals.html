@@ -104,6 +104,28 @@
       <button id="send-reports">Send All Reports</button>
     </div>
   </div>
+  <h2> Sent Conversion Reports </h2>
+  <div class="content">
+    <div class="table-wrapper">
+      <table id="sent-report-table">
+        <thead>
+          <tr class="header-row">
+            <th>
+              Report URL
+            </th>
+            <th>
+              Report Body
+            </th>
+            <th>
+              HTTP Response Code
+            </th>
+          </tr>
+        </thead>
+        <tbody id="sent-report-table-body">
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <template id="impressionrow">
@@ -127,6 +149,14 @@
     <td class="reporting-origin-cell"></td>
     <td class="report-time-cell"></td>
     <td class="source-type-cell"></td>
+  </tr>
+</template>
+
+<template id="sentreportrow">
+  <tr>
+    <td class="report-url-data-cell"></td>
+    <td class="report-body-data-cell"></td>
+    <td class="http-response-code-data-cell"></td>
   </tr>
 </template>
 </body>

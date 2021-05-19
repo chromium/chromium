@@ -149,10 +149,15 @@ void TestConversionManager::GetActiveImpressionsForWebUI(
   std::move(callback).Run(impressions_);
 }
 
-void TestConversionManager::GetReportsForWebUI(
+void TestConversionManager::GetPendingReportsForWebUI(
     base::OnceCallback<void(std::vector<ConversionReport>)> callback,
     base::Time max_report_time) {
   std::move(callback).Run(reports_);
+}
+
+const base::circular_deque<SentReportInfo>&
+TestConversionManager::GetSentReportsForWebUI() {
+  return sent_reports_;
 }
 
 void TestConversionManager::SendReportsForWebUI(base::OnceClosure done) {
@@ -182,6 +187,11 @@ void TestConversionManager::SetActiveImpressionsForWebUI(
 void TestConversionManager::SetReportsForWebUI(
     std::vector<ConversionReport> reports) {
   reports_ = std::move(reports);
+}
+
+void TestConversionManager::SetSentReportsForWebUI(
+    base::circular_deque<SentReportInfo> reports) {
+  sent_reports_ = std::move(reports);
 }
 
 void TestConversionManager::Reset() {
@@ -298,6 +308,29 @@ testing::AssertionResult ReportsEqual(
                            conversion.impression.expiry_time(),
                            conversion.impression.priority(),
                            conversion.conversion_data, conversion.report_time);
+  };
+
+  if (expected.size() != actual.size())
+    return testing::AssertionFailure() << "Expected length " << expected.size()
+                                       << ", actual: " << actual.size();
+
+  for (size_t i = 0; i < expected.size(); i++) {
+    if (tie(expected[i]) != tie(actual[i])) {
+      return testing::AssertionFailure()
+             << "Expected " << expected[i] << " at index " << i
+             << ", actual: " << actual[i];
+    }
+  }
+
+  return testing::AssertionSuccess();
+}
+
+testing::AssertionResult SentReportInfosEqual(
+    const base::circular_deque<SentReportInfo>& expected,
+    const base::circular_deque<SentReportInfo>& actual) {
+  const auto tie = [](const SentReportInfo& info) {
+    return std::make_tuple(info.report_url, info.report_body,
+                           info.http_response_code);
   };
 
   if (expected.size() != actual.size())

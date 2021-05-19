@@ -216,6 +216,66 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
+                       WebUIShownWithNoSentReports_NoSentReportsDisplayed) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
+
+  TestConversionManager manager;
+  OverrideWebUIConversionManager(&manager);
+
+  std::string wait_script = R"(
+    let table = document.getElementById("sent-report-table-body");
+    let obs = new MutationObserver(() => {
+      if (table.children.length === 1 &&
+          table.children[0].children[0].innerText ===
+          "No sent reports.") {
+        document.title = $1;
+      }
+    });
+    obs.observe(table, {'childList': true});)";
+  EXPECT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
+
+  TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
+  ClickRefreshButton();
+  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
+                       WebUIShownWithSentReport_SentReportsDisplayed) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
+
+  TestConversionManager manager;
+  manager.SetSentReportsForWebUI({
+      {.report_url = GURL("https://example.com/1"),
+       .report_body = "a",
+       .http_response_code = 200},
+      {.report_url = GURL("https://example.com/2"),
+       .report_body = "b",
+       .http_response_code = 404},
+  });
+  OverrideWebUIConversionManager(&manager);
+
+  std::string wait_script = R"(
+    let table = document.getElementById("sent-report-table-body");
+    let obs = new MutationObserver(() => {
+      if (table.children.length === 2 &&
+          table.children[0].children[0].innerText === "https://example.com/1" &&
+          table.children[0].children[1].innerText === "a" &&
+          table.children[0].children[2].innerText === "200" &&
+          table.children[1].children[0].innerText === "https://example.com/2" &&
+          table.children[1].children[1].innerText === "b" &&
+          table.children[1].children[2].innerText === "404") {
+        document.title = $1;
+      }
+    });
+    obs.observe(table, {'childList': true});)";
+  EXPECT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
+
+  TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
+  ClickRefreshButton();
+  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
                        WebUIShownWithManager_DebugModeDisabled) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 

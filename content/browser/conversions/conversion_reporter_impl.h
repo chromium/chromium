@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/conversions/conversion_report.h"
+#include "content/browser/conversions/sent_report_info.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -42,7 +43,7 @@ class CONTENT_EXPORT ConversionReporterImpl
     virtual ~NetworkSender() = default;
 
     // Callback used to notify caller that the requested report has been sent.
-    using ReportSentCallback = base::OnceCallback<void()>;
+    using ReportSentCallback = base::OnceCallback<void(SentReportInfo)>;
 
     // Generates and sends a conversion report matching |report|. This should
     // generate a secure POST quest with no-credentials. Does not persist the
@@ -60,7 +61,8 @@ class CONTENT_EXPORT ConversionReporterImpl
   // ConversionManagerImpl::ConversionReporter:
   void AddReportsToQueue(
       std::vector<ConversionReport> reports,
-      base::RepeatingCallback<void(int64_t)> report_sent_callback) override;
+      base::RepeatingCallback<void(int64_t, absl::optional<SentReportInfo>)>
+          report_sent_callback) override;
 
   void SetNetworkSenderForTesting(
       std::unique_ptr<NetworkSender> network_sender);
@@ -71,7 +73,9 @@ class CONTENT_EXPORT ConversionReporterImpl
 
   // Called when a conversion report sent via NetworkSender::SendReport() has
   // completed loading.
-  void OnReportSent(int64_t conversion_id);
+  void OnReportSent(int64_t conversion_id, absl::optional<SentReportInfo> info);
+  // Adapter for use with |NetworkSender::SendReport()|.
+  void OnReportSentWithInfo(int64_t conversion_id, SentReportInfo info);
 
   // Comparator used to order ConversionReports by their report time, with the
   // smallest time at the top of |report_queue_|.
@@ -91,7 +95,9 @@ class CONTENT_EXPORT ConversionReporterImpl
   // sent by |network_sender_|, and their associated report sent callbacks. The
   // number of concurrent conversion reports being sent at any time is expected
   // to be small, so a flat_map is used.
-  base::flat_map<int64_t, base::OnceCallback<void(int64_t)>>
+  base::flat_map<
+      int64_t,
+      base::OnceCallback<void(int64_t, absl::optional<SentReportInfo>)>>
       conversion_report_callbacks_;
 
   const base::Clock* clock_;

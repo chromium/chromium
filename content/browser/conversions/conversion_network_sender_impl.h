@@ -8,12 +8,14 @@
 #include <stdint.h>
 #include <list>
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/conversion_reporter_impl.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/gurl.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -53,6 +55,8 @@ class CONTENT_EXPORT ConversionNetworkSenderImpl
 
   // Called when headers are available for a sent report.
   void OnReportSent(UrlLoaderList::iterator it,
+                    GURL report_url,
+                    std::string report_body,
                     ReportSentCallback sent_callback,
                     scoped_refptr<net::HttpResponseHeaders> headers);
 

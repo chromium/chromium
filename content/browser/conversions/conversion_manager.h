@@ -9,8 +9,10 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/containers/circular_deque.h"
 #include "content/browser/conversions/conversion_policy.h"
 #include "content/browser/conversions/conversion_report.h"
+#include "content/browser/conversions/sent_report_info.h"
 #include "content/browser/conversions/storable_conversion.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "content/common/content_export.h"
@@ -54,9 +56,14 @@ class CONTENT_EXPORT ConversionManager {
 
   // Get all pending reports that are currently stored in this partition. Used
   // for populating WebUI.
-  virtual void GetReportsForWebUI(
+  virtual void GetPendingReportsForWebUI(
       base::OnceCallback<void(std::vector<ConversionReport>)> callback,
       base::Time max_report_time) = 0;
+
+  // Get all reports sent in this session. Used for populating WebUI. Limited to
+  // last 100.
+  virtual const base::circular_deque<SentReportInfo>&
+  GetSentReportsForWebUI() = 0;
 
   // Sends all pending reports immediately, and runs |done| once they have all
   // been sent.
