@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckFragmentView;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditUiFactory;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase;
+import org.chromium.chrome.browser.privacy_sandbox.FlocSettingsFragment;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
@@ -361,6 +362,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
         if (fragment instanceof PrivacySandboxSettingsFragment) {
             ((PrivacySandboxSettingsFragment) fragment)
+                    .setCctHelpers(LaunchIntentDispatcher::createCustomTabActivityIntent,
+                            IntentHandler::addTrustedIntentExtras);
+        }
+        if (fragment instanceof FlocSettingsFragment) {
+            ((FlocSettingsFragment) fragment)
                     .setCctHelpers(LaunchIntentDispatcher::createCustomTabActivityIntent,
                             IntentHandler::addTrustedIntentExtras);
         }

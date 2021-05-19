@@ -32,4 +32,8 @@
         android:summary="@string/privacy_sandbox_floc_reset_description"
         app:allowDividerBelow="false" />
 
+    <org.chromium.components.browser_ui.settings.ButtonPreference
+        android:key="reset_floc_button"
+        app:allowDividerBelow="false" />
+
 </PreferenceScreen>

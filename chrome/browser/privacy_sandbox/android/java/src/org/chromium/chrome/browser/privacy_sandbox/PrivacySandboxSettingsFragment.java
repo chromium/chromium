@@ -68,17 +68,12 @@ public class PrivacySandboxSettingsFragment
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_sandbox_preferences);
 
         // Remove the FLoC page Preference if the Phase 2 flag is disabled.
-        Preference flocPreference = findPreference(FLOC_PREFERENCE);
         if (!phaseTwoEnabled()) {
-            getPreferenceScreen().removePreference(flocPreference);
+            getPreferenceScreen().removePreference(findPreference(FLOC_PREFERENCE));
         } else {
             // Modify the Privacy Sandbox elements.
             getPreferenceScreen().removePreference(findPreference(EXPERIMENT_DESCRIPTION_TITLE));
-            flocPreference.setSummary(PrivacySandboxBridge.getFlocStatusString());
-            // When the entire Privacy Sandbox is disabled, deactivate the preference.
-            if (!PrivacySandboxBridge.isPrivacySandboxEnabled()) {
-                flocPreference.setEnabled(false);
-            }
+            updateFlocPreference();
         }
 
         // Format the Privacy Sandbox description, which has a link.
@@ -119,12 +114,7 @@ public class PrivacySandboxSettingsFragment
         RecordUserAction.record(enabled ? "Settings.PrivacySandbox.ApisEnabled"
                                         : "Settings.PrivacySandbox.ApisDisabled");
         PrivacySandboxBridge.setPrivacySandboxEnabled(enabled);
-        // Update the Preference linking to the FLoC page if shown.
-        Preference flocPreference = findPreference(FLOC_PREFERENCE);
-        if (flocPreference != null) {
-            flocPreference.setEnabled(enabled);
-            flocPreference.setSummary(PrivacySandboxBridge.getFlocStatusString());
-        }
+        updateFlocPreference();
         return true;
     }
 
@@ -152,6 +142,12 @@ public class PrivacySandboxSettingsFragment
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateFlocPreference();
     }
 
     /**
@@ -218,5 +214,14 @@ public class PrivacySandboxSettingsFragment
 
     private boolean phaseTwoEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_2);
+    }
+
+    private void updateFlocPreference() {
+        // Update the Preference linking to the FLoC page if shown.
+        Preference flocPreference = findPreference(FLOC_PREFERENCE);
+        if (flocPreference != null) {
+            flocPreference.setEnabled(PrivacySandboxBridge.isPrivacySandboxEnabled());
+            flocPreference.setSummary(PrivacySandboxBridge.getFlocStatusString());
+        }
     }
 }

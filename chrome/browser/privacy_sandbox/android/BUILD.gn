@@ -56,7 +56,6 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable-night/privacy_sandbox_illustration.xml",
     "java/res/drawable/privacy_sandbox_illustration.xml",
-    "java/res/layout/floc_button.xml",
     "java/res/layout/privacy_sandbox_header.xml",
     "java/res/values/dimens.xml",
     "java/res/xml/floc_preferences.xml",

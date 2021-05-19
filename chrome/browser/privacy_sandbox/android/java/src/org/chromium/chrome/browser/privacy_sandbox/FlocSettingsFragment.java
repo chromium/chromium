@@ -4,26 +4,43 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Browser;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.IntentUtils;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.ButtonCompat;
 
 /**
  * Settings fragment for FLoC settings as part of Privacy Sandbox.
  */
-public class FlocSettingsFragment extends PreferenceFragmentCompat {
+public class FlocSettingsFragment extends PreferenceFragmentCompat
+        implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
+    public static final String FLOC_REGIONS_DEFAULT_URL = "https://www.privacysandbox.com";
+
     public static final String FLOC_DESCRIPTION = "floc_description";
+    public static final String FLOC_TOGGLE = "floc_toggle";
     public static final String FLOC_STATUS = "floc_status";
     public static final String FLOC_GROUP = "floc_group";
     public static final String FLOC_UPDATE = "floc_update";
+    public static final String RESET_FLOC_BUTTON = "reset_floc_button";
 
+    private PrivacySandboxHelpers.CustomTabIntentHelper mCustomTabHelper;
+    private PrivacySandboxHelpers.TrustedIntentHelper mTrustedIntentHelper;
     private ButtonCompat mResetButton;
 
     /**
@@ -34,29 +51,55 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat {
         // Add all preferences and set the title.
         getActivity().setTitle(R.string.prefs_privacy_sandbox_floc);
         SettingsUtils.addPreferencesFromResource(this, R.xml.floc_preferences);
-        findPreference(FLOC_DESCRIPTION).setSummary(R.string.privacy_sandbox_floc_description);
+        findPreference(FLOC_DESCRIPTION)
+                .setSummary(SpanApplier.applySpans(
+                        getContext().getString(R.string.privacy_sandbox_floc_description),
+                        new SpanInfo("<link>", "</link>",
+                                new NoUnderlineClickableSpan(getContext().getResources(),
+                                        (widget) -> openUrlInCct(getFlocRegionsUrl())))));
+        // Configure the toggle.
+        ChromeSwitchPreference flocToggle = (ChromeSwitchPreference) findPreference(FLOC_TOGGLE);
+        flocToggle.setOnPreferenceChangeListener(this);
+        flocToggle.setChecked(PrivacySandboxBridge.isFlocEnabled());
+        // Configure the reset button.
+        Preference resetButton = findPreference(RESET_FLOC_BUTTON);
+        resetButton.setOnPreferenceClickListener(this);
+        resetButton.setTitle(R.string.privacy_sandbox_floc_reset_button);
+
         updateInformation();
     }
 
     @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LinearLayout view =
-                (LinearLayout) super.onCreateView(inflater, container, savedInstanceState);
-        // Add a button to the bottom of the preferences view.
-        LinearLayout buttonView =
-                (LinearLayout) inflater.inflate(R.layout.floc_button, view, false);
-        mResetButton = (ButtonCompat) buttonView.findViewById(R.id.floc_reset_button);
-        view.addView(buttonView);
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        String key = preference.getKey();
+        if (!FLOC_TOGGLE.equals(key)) return true;
+        boolean enabled = (boolean) newValue;
+        PrivacySandboxBridge.setFlocEnabled(enabled);
         updateInformation();
-        return view;
+        return true;
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        String key = preference.getKey();
+        if (!RESET_FLOC_BUTTON.equals(key)) return true;
+        PrivacySandboxBridge.resetFlocId();
+        updateInformation();
+        return true;
+    }
+
+    /**
+     * Set the necessary CCT helpers to be able to natively open links. This is needed because the
+     * helpers are not modularized.
+     */
+    public void setCctHelpers(PrivacySandboxHelpers.CustomTabIntentHelper tabHelper,
+            PrivacySandboxHelpers.TrustedIntentHelper intentHelper) {
+        mCustomTabHelper = tabHelper;
+        mTrustedIntentHelper = intentHelper;
     }
 
     private void updateInformation() {
-        // At the time this method is invoked, the reset button might not be defined yet.
-        if (mResetButton != null) {
-            mResetButton.setEnabled(PrivacySandboxBridge.isFlocIdResettable());
-        }
+        findPreference(RESET_FLOC_BUTTON).setEnabled(PrivacySandboxBridge.isFlocIdResettable());
 
         findPreference(FLOC_STATUS)
                 .setSummary(getContext().getString(R.string.privacy_sandbox_floc_status_title)
@@ -67,5 +110,25 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat {
         findPreference(FLOC_UPDATE)
                 .setSummary(getContext().getString(R.string.privacy_sandbox_floc_update_title)
                         + "\n" + PrivacySandboxBridge.getFlocUpdateString());
+    }
+
+    private String getFlocRegionsUrl() {
+        // TODO(crbug.com/1205781): use a FeatureParam to control this.
+        return FLOC_REGIONS_DEFAULT_URL;
+    }
+
+    private void openUrlInCct(String url) {
+        assert (mCustomTabHelper != null)
+                && (mTrustedIntentHelper != null)
+            : "CCT helpers must be set on PrivacySandboxSettingsFragment before opening a link.";
+        CustomTabsIntent customTabIntent =
+                new CustomTabsIntent.Builder().setShowTitle(true).build();
+        customTabIntent.intent.setData(Uri.parse(url));
+        Intent intent = mCustomTabHelper.createCustomTabActivityIntent(
+                getContext(), customTabIntent.intent);
+        intent.setPackage(getContext().getPackageName());
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
+        mTrustedIntentHelper.addTrustedIntentExtras(intent);
+        IntentUtils.safeStartActivity(getContext(), intent);
     }
 }

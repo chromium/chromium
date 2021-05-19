@@ -832,7 +832,7 @@ Privacy Sandbox trials are still in active development and are available in sele
         FLoC
       </message>
       <message name="IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION" desc="Describes the FLoC technology as part of Privacy Sandbox.">
-        When on and the status is active, Chrome uses your browsing history over 7 days to determine a group, or “cohort”, that you’re in. Advertisers can select ads for the group. Your browsing history is not shared and is kept private on your device. In some regions, this trial is not active.
+        When on and the status is active, Chrome uses your browsing history over 7 days to determine a group, or “cohort”, that you’re in. Advertisers can select ads for the group. Your browsing history is kept private on your device. This trial is active only in <ph name="BEGIN_LINK">&lt;link&gt;</ph>some regions<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_FLOC_STATUS_TITLE" desc="Title for FLoC experiment status.">
         Status
