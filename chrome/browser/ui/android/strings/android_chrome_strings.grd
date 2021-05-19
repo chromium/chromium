@@ -803,6 +803,11 @@ Privacy Sandbox preserves the vitality of the open web by creating better ways t
 
 Privacy Sandbox is still in active development and is available in selected regions. For now, sites may try out Privacy Sandbox while continuing to use current web technologies like third-party cookies. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
+      <message name="IDS_PRIVACY_SANDBOX_DESCRIPTION_TWO" desc="Description of the 'Privacy Sandbox' when phase 2 flag is enabled.">
+        <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Sandbox<ph name="END_LINK">&lt;/link&gt;</ph> is an ongoing initiative to develop new technologies that will safeguard you from tracking mechanisms while preserving the open web.
+
+Privacy Sandbox trials are still in active development and are available in selected regions. For now, sites may try out Privacy Sandbox while continuing to use current web technologies like third-party cookies.
+      </message>
       <message name="IDS_PRIVACY_SANDBOX_TOGGLE" desc="Title for the Privacy Sandbox toggle.">
         Privacy Sandbox trials
       </message>
@@ -812,6 +817,13 @@ Privacy Sandbox is still in active development and is available in selected regi
 <ph name="BEGIN_LIST_ITEM1">&lt;li1&gt;</ph>Advertisers can learn when thousands of users share a similar interest – like a crowd at a concert — and select ads for the crowd, rather than an individual person.<ph name="END_LIST_ITEM1">&lt;/li1&gt;</ph>
 
 <ph name="BEGIN_LIST_ITEM2">&lt;li2&gt;</ph>Advertisers can study the effectiveness of ads in a way that does not track you across sites.<ph name="END_LIST_ITEM2">&lt;/li2&gt;</ph>
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_TOGGLE_DESCRIPTION_TWO" desc="Description for the Privacy Sandbox toggle when phase 2 flag is enabled.">
+        When on, sites may use the privacy-preserving techniques shown here to provide their content and services. These include alternatives to cross-site tracking. More trials may be added over time.
+
+<ph name="BEGIN_LIST_ITEM1">&lt;li1&gt;</ph>Advertisers and publishers can use the FLoC technique.<ph name="END_LIST_ITEM1">&lt;/li1&gt;</ph>
+
+<ph name="BEGIN_LIST_ITEM2">&lt;li2&gt;</ph>Advertisers and publishers can study the effectiveness of ads in a way that does not track you across sites.<ph name="END_LIST_ITEM2">&lt;/li2&gt;</ph>
       </message>
       <message name="IDS_PRIVACY_SANDBOX_SNACKBAR_MESSAGE" desc="The text displayed in the snackbar, which gives the user an option to navigate to the Privacy Sandbox settings page. 'Privacy sandbox' has TC ID 5753235213964358658.">
         Learn about and control new technologies that aim to replace third-party cookies

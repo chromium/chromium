@@ -69,7 +69,7 @@ public class PrivacySandboxSettingsFragment
 
         // Remove the FLoC page Preference if the Phase 2 flag is disabled.
         Preference flocPreference = findPreference(FLOC_PREFERENCE);
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_2)) {
+        if (!phaseTwoEnabled()) {
             getPreferenceScreen().removePreference(flocPreference);
         } else {
             // Modify the Privacy Sandbox elements.
@@ -84,14 +84,18 @@ public class PrivacySandboxSettingsFragment
         // Format the Privacy Sandbox description, which has a link.
         findPreference(EXPERIMENT_DESCRIPTION_PREFERENCE)
                 .setSummary(SpanApplier.applySpans(
-                        getContext().getString(R.string.privacy_sandbox_description),
+                        getContext().getString(phaseTwoEnabled()
+                                        ? R.string.privacy_sandbox_description_two
+                                        : R.string.privacy_sandbox_description),
                         new SpanInfo("<link>", "</link>",
                                 new NoUnderlineClickableSpan(getContext().getResources(),
                                         (widget) -> openUrlInCct(getPrivacySandboxUrl())))));
         // Format the toggle description, which has bullet points.
         findPreference(TOGGLE_DESCRIPTION_PREFERENCE)
                 .setSummary(SpanApplier.applySpans(
-                        getContext().getString(R.string.privacy_sandbox_toggle_description),
+                        getContext().getString(phaseTwoEnabled()
+                                        ? R.string.privacy_sandbox_toggle_description_two
+                                        : R.string.privacy_sandbox_toggle_description),
                         new SpanInfo("<li1>", "</li1>", new ChromeBulletSpan(getContext())),
                         new SpanInfo("<li2>", "</li2>", new ChromeBulletSpan(getContext()))));
 
@@ -210,5 +214,9 @@ public class PrivacySandboxSettingsFragment
         } else if (mPrivacySandboxReferrer == PrivacySandboxReferrer.COOKIES_SNACKBAR) {
             RecordUserAction.record("Settings.PrivacySandbox.OpenedFromCookiesPageToast");
         }
+    }
+
+    private boolean phaseTwoEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_2);
     }
 }
