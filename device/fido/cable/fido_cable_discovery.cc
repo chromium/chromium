@@ -562,6 +562,8 @@ void FidoCableDiscovery::ValidateAuthenticatorHandshakeMessage(
 
 absl::optional<FidoCableDiscovery::V1DiscoveryDataAndEID>
 FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
+  const std::vector<uint8_t>* const service_data =
+      device->GetServiceDataForUUID(CableAdvertisementUUID());
   absl::optional<CableEidArray> maybe_eid_from_service_data =
       MaybeGetEidFromServiceData(device);
   std::vector<CableEidArray> uuids = GetUUIDs(device);
@@ -592,6 +594,8 @@ FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
         GetCableDiscoveryDataFromAuthenticatorEid(*maybe_eid_from_service_data);
     FIDO_LOG(DEBUG) << "  Service data: "
                     << ResultDebugString(*maybe_eid_from_service_data, result);
+  } else if (service_data) {
+    FIDO_LOG(DEBUG) << "  Service data: " << base::HexEncode(*service_data);
   } else {
     FIDO_LOG(DEBUG) << "  Service data: <none>";
   }
@@ -622,11 +626,12 @@ FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
     }
   }
 
-  // Try all combinations of 16- and 4-byte UUIDs to form 20-byte advert
-  // payloads. (We don't know if something in the BLE stack might add other
-  // short UUIDs to a BLE advert message).
   if (advert_callback_) {
     std::array<uint8_t, 16 + 4> v2_advert;
+
+    // Try all combinations of 16- and 4-byte UUIDs to form 20-byte advert
+    // payloads. (We don't know if something in the BLE stack might add other
+    // short UUIDs to a BLE advert message).
     for (const auto& uuid128 : uuid128s) {
       static_assert(EXTENT(uuid128) == 16, "");
       memcpy(v2_advert.data(), uuid128.data(), 16);
@@ -636,6 +641,11 @@ FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
         memcpy(v2_advert.data() + 16, uuid32.data(), 4);
         advert_callback_.Run(v2_advert);
       }
+    }
+
+    if (service_data && service_data->size() == v2_advert.size()) {
+      memcpy(v2_advert.data(), service_data->data(), v2_advert.size());
+      advert_callback_.Run(v2_advert);
     }
   }
 
@@ -650,7 +660,7 @@ FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
 // static
 absl::optional<CableEidArray> FidoCableDiscovery::MaybeGetEidFromServiceData(
     const BluetoothDevice* device) {
-  const auto* service_data =
+  const std::vector<uint8_t>* service_data =
       device->GetServiceDataForUUID(CableAdvertisementUUID());
   if (!service_data) {
     return absl::nullopt;
