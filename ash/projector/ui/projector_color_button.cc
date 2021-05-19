@@ -14,8 +14,9 @@ ProjectorColorButton::ProjectorColorButton(
     views::Button::PressedCallback callback,
     SkColor color,
     int size,
-    float radius)
-    : ProjectorButton(callback) {
+    float radius,
+    const std::u16string& name)
+    : ProjectorButton(callback, name) {
   // Add the color view.
   auto* color_view = AddChildView(std::make_unique<View>());
   color_view->SetBounds((kProjectorButtonSize - size) / 2,

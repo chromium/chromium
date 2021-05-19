@@ -7,9 +7,12 @@
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/work_area_insets.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
@@ -46,6 +49,23 @@ constexpr gfx::Insets kMarkerBarViewPadding(4, 15, 4, 15);
 
 constexpr SkColor kProjectorColors[] = {SK_ColorBLACK, SK_ColorWHITE,
                                         SK_ColorBLUE};
+
+std::u16string GetColorName(SkColor color) {
+  int name = IDS_UNKNOWN_COLOR_BUTTON;
+  switch (color) {
+    case SK_ColorBLACK:
+      name = IDS_BLACK_COLOR_BUTTON;
+      break;
+    case SK_ColorWHITE:
+      name = IDS_WHITE_COLOR_BUTTON;
+      break;
+    case SK_ColorBLUE:
+      name = IDS_BLUE_COLOR_BUTTON;
+      break;
+  }
+  DCHECK_NE(name, IDS_UNKNOWN_COLOR_BUTTON);
+  return l10n_util::GetStringUTF16(name);
+}
 
 }  // namespace
 
@@ -167,7 +187,7 @@ void ProjectorBarView::InitLayout() {
   key_idea_button_ = AddChildView(std::make_unique<ProjectorImageButton>(
       base::BindRepeating(&ProjectorBarView::OnKeyIdeaButtonPressed,
                           base::Unretained(this)),
-      kProjectorKeyIdeaIcon));
+      kProjectorKeyIdeaIcon, l10n_util::GetStringUTF16(IDS_KEY_IDEA_BUTTON)));
   key_idea_button_->SetState(views::Button::ButtonState::STATE_DISABLED);
 
   // Add separator view
@@ -177,13 +197,14 @@ void ProjectorBarView::InitLayout() {
   laser_pointer_button_ = AddChildView(std::make_unique<ProjectorImageButton>(
       base::BindRepeating(&ProjectorBarView::OnLaserPointerPressed,
                           base::Unretained(this)),
-      kPaletteTrayIconLaserPointerIcon));
+      kPaletteTrayIconLaserPointerIcon,
+      l10n_util::GetStringUTF16(IDS_LASER_POINTER_BUTTON)));
 
   // Add marker button.
   marker_button_ = AddChildView(std::make_unique<ProjectorImageButton>(
       base::BindRepeating(&ProjectorBarView::OnMarkerPressed,
                           base::Unretained(this)),
-      kProjectorMarkerIcon));
+      kProjectorMarkerIcon, l10n_util::GetStringUTF16(IDS_MARKER_BUTTON)));
 
   CreateMarkerOptionsBar();
 
@@ -213,33 +234,37 @@ void ProjectorBarView::CreateMarkerOptionsBar() {
       box_layout->AddChildView(std::make_unique<ProjectorImageButton>(
           base::BindRepeating(&ProjectorBarView::OnInkPenButtonPressed,
                               base::Unretained(this)),
-          kInkPenIcon));
+          kInkPenIcon, l10n_util::GetStringUTF16(IDS_INK_PEN_BUTTON)));
   marker_pen_button_ =
       box_layout->AddChildView(std::make_unique<ProjectorImageButton>(
           base::BindRepeating(&ProjectorBarView::OnMarkerPenButtonPressed,
                               base::Unretained(this)),
-          kMarkerIcon));
+          kMarkerIcon, l10n_util::GetStringUTF16(IDS_MARKER_PEN_BUTTON)));
 
   for (const auto& color : kProjectorColors) {
+    std::u16string button_name = l10n_util::GetStringFUTF16(
+        IDS_MARKER_COLOR_BUTTON, GetColorName(color));
     marker_color_buttons_.push_back(
         box_layout->AddChildView(std::make_unique<ProjectorColorButton>(
             base::BindRepeating(&ProjectorBarView::OnChangeMarkerColorPressed,
                                 base::Unretained(this), color),
-            color, kColorButtonColorViewSize, kColorButtonViewRadius)));
+            color, kColorButtonColorViewSize, kColorButtonViewRadius,
+            button_name)));
   }
 
   undo_button_ =
       box_layout->AddChildView(std::make_unique<ProjectorImageButton>(
           base::BindRepeating(&ProjectorBarView::OnUndoButtonPressed,
                               base::Unretained(this)),
-          kUndoIcon));
+          kUndoIcon, l10n_util::GetStringUTF16(IDS_UNDO_BUTTON)));
 
   // Add clear all markers button.
   clear_all_markers_button_ =
       box_layout->AddChildView(std::make_unique<ProjectorImageButton>(
           base::BindRepeating(&ProjectorBarView::OnClearAllMarkersPressed,
                               base::Unretained(this)),
-          kTrashCanIcon));
+          kTrashCanIcon,
+          l10n_util::GetStringUTF16(IDS_CLEAR_ALL_MARKERS_BUTTON)));
 
   // This button is disabled by default until marker mode activated.
   clear_all_markers_button_->SetEnabled(marker_button_->GetToggled());
@@ -248,11 +273,13 @@ void ProjectorBarView::CreateMarkerOptionsBar() {
       box_layout->AddChildView(std::make_unique<ProjectorImageButton>(
           base::BindRepeating(&ProjectorBarView::OnCaretButtonPressed,
                               base::Unretained(this), /* expand =*/true),
-          kCaretRightIcon));
+          kCaretRightIcon,
+          l10n_util::GetStringUTF16(IDS_EXPAND_MARKER_TOOLS_BUTTON)));
   caret_left_ = box_layout->AddChildView(std::make_unique<ProjectorImageButton>(
       base::BindRepeating(&ProjectorBarView::OnCaretButtonPressed,
                           base::Unretained(this), /* expand =*/false),
-      kCaretLeftIcon));
+      kCaretLeftIcon,
+      l10n_util::GetStringUTF16(IDS_COLLAPSE_MARKER_TOOLS_BUTTON)));
 
   marker_bar_ = AddChildView(std::move(box_layout));
   marker_bar_->SetVisible(false);
@@ -270,13 +297,13 @@ void ProjectorBarView::CreateTrailingButtonsBar() {
       box_layout->AddChildView(std::make_unique<ProjectorImageButton>(
           base::BindRepeating(&ProjectorBarView::OnMagnifierButtonPressed,
                               base::Unretained(this), /* enabled =*/true),
-          kZoomInIcon));
+          kZoomInIcon, l10n_util::GetStringUTF16(IDS_START_MAGNIFIER_BUTTON)));
   magnifier_start_button_->SetVisible(true);
   magnifier_stop_button_ =
       box_layout->AddChildView(std::make_unique<ProjectorImageButton>(
           base::BindRepeating(&ProjectorBarView::OnMagnifierButtonPressed,
                               base::Unretained(this), /* enabled =*/false),
-          kZoomOutIcon));
+          kZoomOutIcon, l10n_util::GetStringUTF16(IDS_STOP_MAGNIFIER_BUTTON)));
   magnifier_stop_button_->SetVisible(false);
 
   AddSeparatorViewToView(box_layout.get());
@@ -286,14 +313,16 @@ void ProjectorBarView::CreateTrailingButtonsBar() {
       box_layout->AddChildView(std::make_unique<ProjectorImageButton>(
           base::BindRepeating(&ProjectorBarView::OnSelfieCamPressed,
                               base::Unretained(this), /*enabled=*/true),
-          kProjectorSelfieCamOnIcon));
+          kProjectorSelfieCamOnIcon,
+          l10n_util::GetStringUTF16(IDS_START_SELFIE_CAMERA_BUTTON)));
   selfie_cam_on_button_->SetVisible(true);
 
   selfie_cam_off_button_ =
       box_layout->AddChildView(std::make_unique<ProjectorImageButton>(
           base::BindRepeating(&ProjectorBarView::OnSelfieCamPressed,
                               base::Unretained(this), /*enabled=*/false),
-          kProjectorSelfieCamOffIcon));
+          kProjectorSelfieCamOffIcon,
+          l10n_util::GetStringUTF16(IDS_STOP_SELFIE_CAMERA_BUTTON)));
   selfie_cam_off_button_->SetVisible(false);
 
   // Add closed caption show/hide buttons.
@@ -301,7 +330,8 @@ void ProjectorBarView::CreateTrailingButtonsBar() {
       box_layout->AddChildView(std::make_unique<ProjectorImageButton>(
           base::BindRepeating(&ProjectorBarView::SetCaptionState,
                               base::Unretained(this), false),
-          kHideClosedCaptionIcon));
+          kHideClosedCaptionIcon,
+          l10n_util::GetStringUTF16(IDS_STOP_CLOSED_CAPTIONS_BUTTON)));
   closed_caption_hide_button_->SetVisible(false);
   closed_caption_hide_button_->SetState(
       views::Button::ButtonState::STATE_DISABLED);
@@ -310,7 +340,8 @@ void ProjectorBarView::CreateTrailingButtonsBar() {
       box_layout->AddChildView(std::make_unique<ProjectorImageButton>(
           base::BindRepeating(&ProjectorBarView::SetCaptionState,
                               base::Unretained(this), true),
-          kShowClosedCaptionIcon));
+          kShowClosedCaptionIcon,
+          l10n_util::GetStringUTF16(IDS_START_CLOSED_CAPTIONS_BUTTON)));
   closed_caption_show_button_->SetVisible(true);
   closed_caption_show_button_->SetState(
       views::Button::ButtonState::STATE_DISABLED);
@@ -322,7 +353,8 @@ void ProjectorBarView::CreateTrailingButtonsBar() {
           base::BindRepeating(
               &ProjectorBarView::OnChangeBarLocationButtonPressed,
               base::Unretained(this)),
-          kAutoclickPositionBottomLeftIcon));
+          kAutoclickPositionBottomLeftIcon,
+          l10n_util::GetStringUTF16(IDS_BAR_LOCATION_BUTTON)));
   bar_location_button_->SetVisible(true);
   tools_bar_ = AddChildView(std::move(box_layout));
 }

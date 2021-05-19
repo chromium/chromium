@@ -5,6 +5,8 @@
 #ifndef ASH_PROJECTOR_UI_PROJECTOR_IMAGE_BUTTON_H_
 #define ASH_PROJECTOR_UI_PROJECTOR_IMAGE_BUTTON_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/projector/ui/projector_button.h"
 
@@ -19,7 +21,8 @@ namespace ash {
 class ASH_EXPORT ProjectorImageButton : public ProjectorButton {
  public:
   ProjectorImageButton(views::Button::PressedCallback callback,
-                       const gfx::VectorIcon& icon);
+                       const gfx::VectorIcon& icon,
+                       const std::u16string& name);
   ProjectorImageButton(const ProjectorImageButton&) = delete;
   ProjectorImageButton& operator=(const ProjectorImageButton&) = delete;
   ~ProjectorImageButton() override = default;

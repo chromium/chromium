@@ -13,8 +13,9 @@ namespace ash {
 
 ProjectorImageButton::ProjectorImageButton(
     views::Button::PressedCallback callback,
-    const gfx::VectorIcon& icon)
-    : ProjectorButton(callback) {
+    const gfx::VectorIcon& icon,
+    const std::u16string& name)
+    : ProjectorButton(callback, name) {
   SetVectorIcon(icon);
 }
 

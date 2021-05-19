@@ -21,8 +21,9 @@ constexpr gfx::Insets kButtonPadding{0};
 
 }  // namespace
 
-ProjectorButton::ProjectorButton(views::Button::PressedCallback callback)
-    : ToggleImageButton(callback) {
+ProjectorButton::ProjectorButton(views::Button::PressedCallback callback,
+                                 const std::u16string& name)
+    : ToggleImageButton(callback), name_(name) {
   SetPreferredSize({kProjectorButtonSize, kProjectorButtonSize});
   SetBorder(views::CreateEmptyBorder(kButtonPadding));
 
@@ -59,6 +60,11 @@ void ProjectorButton::OnThemeChanged() {
   SetHasInkDropActionOnClick(true);
   ink_drop()->SetBaseColor(ripple_attributes.base_color);
   ink_drop()->SetHighlightOpacity(ripple_attributes.highlight_opacity);
+}
+
+void ProjectorButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kButton;
+  node_data->SetName(name_);
 }
 
 }  // namespace ash

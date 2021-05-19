@@ -3591,6 +3591,93 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SHIMLESS_RMA_APP_TITLE" translateable="false" desc="The title of shimless RMA flow SWA. Shimless RMA guides repair technicians through step-by-step repair flow.">
         Shimless RMA
       </message>
+
+      <!-- Strings for Projector-->
+
+      <message name="IDS_KEY_IDEA_BUTTON" desc="The name for the key idea button.">
+        Add key idea
+      </message>
+
+      <message name="IDS_LASER_POINTER_BUTTON" desc="The name for the laser pointer button.">
+        Laser pointer
+      </message>
+
+      <message name="IDS_MARKER_BUTTON" desc="The name for the marker button.">
+        Marker
+      </message>
+
+      <message name="IDS_INK_PEN_BUTTON" desc="The name for the ink pen button.">
+        Ink pen
+      </message>
+
+      <message name="IDS_MARKER_PEN_BUTTON" desc="The name for the marker pen button.">
+        Marker pen
+      </message>
+
+      <message name="IDS_MARKER_COLOR_BUTTON" desc="The name for the marker color button.">
+        <ph name="COLOR_PARAMETER">$1<ex>blue</ex></ph> marker color
+      </message>
+
+      <message name="IDS_UNDO_BUTTON" desc="The name for the undo button.">
+        Undo
+      </message>
+
+      <message name="IDS_CLEAR_ALL_MARKERS_BUTTON" desc="The name for the clear all markers button.">
+        Clear all markers
+      </message>
+
+      <message name="IDS_EXPAND_MARKER_TOOLS_BUTTON" desc="The name for the expand marker tools button.">
+        Expand marker tools
+      </message>
+
+      <message name="IDS_COLLAPSE_MARKER_TOOLS_BUTTON" desc="The name for the collapse marker tools button.">
+        Collapse marker tools
+      </message>
+
+      <message name="IDS_START_MAGNIFIER_BUTTON" desc="The name for the start magnifier button.">
+        Start magnifier
+      </message>
+
+      <message name="IDS_STOP_MAGNIFIER_BUTTON" desc="The name for the stop magnifier button.">
+        Stop magnifier
+      </message>
+
+      <message name="IDS_START_SELFIE_CAMERA_BUTTON" desc="The name for the start selfie camera button.">
+        Start selfie camera
+      </message>
+
+      <message name="IDS_STOP_SELFIE_CAMERA_BUTTON" desc="The name for the stop selfie camera button.">
+        Stop selfie camera
+      </message>
+
+      <message name="IDS_START_CLOSED_CAPTIONS_BUTTON" desc="The name for start closed captions button.">
+        Start closed captions
+      </message>
+
+      <message name="IDS_STOP_CLOSED_CAPTIONS_BUTTON" desc="The name for stop closed captions button.">
+        Stop closed captions
+      </message>
+
+      <message name="IDS_BAR_LOCATION_BUTTON" desc="The name for the bar location button.">
+        Toggle bar location
+      </message>
+
+      <message name="IDS_BLACK_COLOR_BUTTON" desc="The name for the black marker button.">
+        Black
+      </message>
+
+      <message name="IDS_WHITE_COLOR_BUTTON" desc="The name for the white marker button.">
+        White
+      </message>
+
+      <message name="IDS_BLUE_COLOR_BUTTON" desc="The name for the blue marker button.">
+        Blue
+      </message>
+
+      <message name="IDS_UNKNOWN_COLOR_BUTTON" desc="The name for the unknown marker button.">
+        Unknown
+      </message>
+
     </messages>
   </release>
 </grit>

@@ -5,6 +5,8 @@
 #ifndef ASH_PROJECTOR_UI_PROJECTOR_BUTTON_H_
 #define ASH_PROJECTOR_UI_PROJECTOR_BUTTON_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -17,7 +19,8 @@ class ASH_EXPORT ProjectorButton : public views::ToggleImageButton {
  public:
   const int kProjectorButtonSize = 32;
 
-  explicit ProjectorButton(views::Button::PressedCallback callback);
+  ProjectorButton(views::Button::PressedCallback callback,
+                  const std::u16string& name);
   ProjectorButton(const ProjectorButton&) = delete;
   ProjectorButton& operator=(const ProjectorButton&) = delete;
   ~ProjectorButton() override = default;
@@ -25,6 +28,10 @@ class ASH_EXPORT ProjectorButton : public views::ToggleImageButton {
   // views::ToggleImageButton:
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
+ private:
+  std::u16string name_;
 };
 
 }  // namespace ash

@@ -5,6 +5,8 @@
 #ifndef ASH_PROJECTOR_UI_PROJECTOR_COLOR_BUTTON_H_
 #define ASH_PROJECTOR_UI_PROJECTOR_COLOR_BUTTON_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/projector/ui/projector_button.h"
 
@@ -17,7 +19,8 @@ class ASH_EXPORT ProjectorColorButton : public ProjectorButton {
   ProjectorColorButton(views::Button::PressedCallback callback,
                        SkColor color,
                        int size,
-                       float radius);
+                       float radius,
+                       const std::u16string& name);
   ProjectorColorButton(const ProjectorColorButton&) = delete;
   ProjectorColorButton& operator=(const ProjectorColorButton&) = delete;
   ~ProjectorColorButton() override = default;
