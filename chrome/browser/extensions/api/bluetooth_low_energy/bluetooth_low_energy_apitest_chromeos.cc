@@ -78,17 +78,16 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs,
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableBLEAdvertising);
   ASSERT_TRUE(RunExtensionTest(
-      {.name = "api_test/bluetooth_low_energy/register_advertisement_flag",
-       .launch_as_platform_app = true}))
+      "api_test/bluetooth_low_energy/register_advertisement_flag",
+      {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs,
                        RegisterAdvertisement_NotKioskSession) {
   ASSERT_TRUE(RunExtensionTest(
-      {.name =
-           "api_test/bluetooth_low_energy/register_advertisement_no_kiosk_mode",
-       .launch_as_platform_app = true}))
+      "api_test/bluetooth_low_energy/register_advertisement_no_kiosk_mode",
+      {.launch_as_platform_app = true}))
       << message_;
 }
 
@@ -96,9 +95,9 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs,
                        RegisterAdvertisement_KioskSessionOnly) {
   EnterKioskSession();
   ASSERT_TRUE(
-      RunExtensionTest({.name = "api_test/bluetooth_low_energy/"
-                                "register_advertisement_kiosk_session_only",
-                        .launch_as_platform_app = true}))
+      RunExtensionTest("api_test/bluetooth_low_energy/"
+                       "register_advertisement_kiosk_session_only",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 
@@ -106,18 +105,18 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs,
                        RegisterAdvertisement) {
   EnterKioskSession();
   SetAutoLaunchApp();
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "api_test/bluetooth_low_energy/register_advertisement",
-       .launch_as_platform_app = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("api_test/bluetooth_low_energy/register_advertisement",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs, ResetAdvertising) {
   EnterKioskSession();
   SetAutoLaunchApp();
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "api_test/bluetooth_low_energy/reset_all_advertisements",
-       .launch_as_platform_app = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("api_test/bluetooth_low_energy/reset_all_advertisements",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 
@@ -125,44 +124,47 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs,
                        SetAdvertisingInterval) {
   EnterKioskSession();
   SetAutoLaunchApp();
-  ASSERT_TRUE(RunExtensionTest({.name = "api_test/bluetooth_low_energy/"
-                                        "set_advertising_interval",
-                                .launch_as_platform_app = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("api_test/bluetooth_low_energy/"
+                       "set_advertising_interval",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs, CreateService) {
   EnterKioskSession();
   SetAutoLaunchApp();
-  ASSERT_TRUE(RunExtensionTest({.name = "api_test/bluetooth_low_energy/"
-                                        "create_service",
-                                .launch_as_platform_app = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("api_test/bluetooth_low_energy/"
+                       "create_service",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs, CreateService_Flag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableBLEAdvertising);
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "api_test/bluetooth_low_energy/create_service_flag",
-       .launch_as_platform_app = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("api_test/bluetooth_low_energy/create_service_flag",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs,
                        CreateService_NotKioskSession) {
   ASSERT_TRUE(RunExtensionTest(
-      {.name = "api_test/bluetooth_low_energy/create_service_no_kiosk_mode",
-       .launch_as_platform_app = true}))
+      "api_test/bluetooth_low_energy/create_service_no_kiosk_mode",
+      {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs,
                        CreateService_KioskSessionOnly) {
   EnterKioskSession();
-  ASSERT_TRUE(RunExtensionTest({.name = "api_test/bluetooth_low_energy/"
-                                        "create_service_kiosk_session_only",
-                                .launch_as_platform_app = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("api_test/bluetooth_low_energy/"
+                       "create_service_kiosk_session_only",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 
@@ -170,45 +172,50 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs,
                        CreateCharacteristic) {
   EnterKioskSession();
   SetAutoLaunchApp();
-  ASSERT_TRUE(RunExtensionTest({.name = "api_test/bluetooth_low_energy/"
-                                        "create_characteristic",
-                                .launch_as_platform_app = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("api_test/bluetooth_low_energy/"
+                       "create_characteristic",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs, CreateDescriptor) {
   EnterKioskSession();
   SetAutoLaunchApp();
-  ASSERT_TRUE(RunExtensionTest({.name = "api_test/bluetooth_low_energy/"
-                                        "create_descriptor",
-                                .launch_as_platform_app = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("api_test/bluetooth_low_energy/"
+                       "create_descriptor",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs, RegisterService) {
   EnterKioskSession();
   SetAutoLaunchApp();
-  ASSERT_TRUE(RunExtensionTest({.name = "api_test/bluetooth_low_energy/"
-                                        "register_service",
-                                .launch_as_platform_app = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("api_test/bluetooth_low_energy/"
+                       "register_service",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs, UnregisterService) {
   EnterKioskSession();
   SetAutoLaunchApp();
-  ASSERT_TRUE(RunExtensionTest({.name = "api_test/bluetooth_low_energy/"
-                                        "unregister_service",
-                                .launch_as_platform_app = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("api_test/bluetooth_low_energy/"
+                       "unregister_service",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs, RemoveService) {
   EnterKioskSession();
   SetAutoLaunchApp();
-  ASSERT_TRUE(RunExtensionTest({.name = "api_test/bluetooth_low_energy/"
-                                        "remove_service",
-                                .launch_as_platform_app = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("api_test/bluetooth_low_energy/"
+                       "remove_service",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 
@@ -216,9 +223,10 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs,
                        NotifyCharacteristicValueChanged) {
   EnterKioskSession();
   SetAutoLaunchApp();
-  ASSERT_TRUE(RunExtensionTest({.name = "api_test/bluetooth_low_energy/"
-                                        "notify_characteristic_value_changed",
-                                .launch_as_platform_app = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("api_test/bluetooth_low_energy/"
+                       "notify_characteristic_value_changed",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 
@@ -226,10 +234,10 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs,
                        NotifyCharacteristicValueChanged_ErrorConditions) {
   EnterKioskSession();
   SetAutoLaunchApp();
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "api_test/bluetooth_low_energy/"
-               "notify_characteristic_value_changed_error_conditions",
-       .launch_as_platform_app = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("api_test/bluetooth_low_energy/"
+                       "notify_characteristic_value_changed_error_conditions",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 

@@ -153,8 +153,7 @@ TEST(TabCaptureCaptureOffscreenTabTest, DetermineInitialSize) {
 // Tests API behaviors, including info queries, and constraints violations.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ApiTests) {
   AddExtensionToCommandLineAllowlist();
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tab_capture", .page_url = "api_tests.html"}))
+  ASSERT_TRUE(RunExtensionTest("tab_capture", {.page_url = "api_tests.html"}))
       << message_;
 }
 
@@ -162,8 +161,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ApiTests) {
 // off-screen tabs.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MaxOffscreenTabs) {
   AddExtensionToCommandLineAllowlist();
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tab_capture", .page_url = "max_offscreen_tabs.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("tab_capture", {.page_url = "max_offscreen_tabs.html"}))
       << message_;
 }
 
@@ -181,8 +180,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest, DISABLED_EndToEndWithoutRemoting)
   // and color values can be off by a lot. That said, color accuracy is being
   // tested by a suite of content_browsertests.
   ASSERT_TRUE(RunExtensionTest(
-      {.name = "tab_capture",
-       .page_url = "end_to_end.html?method=local&colorDeviation=50"}))
+      "tab_capture",
+      {.page_url = "end_to_end.html?method=local&colorDeviation=50"}))
       << message_;
 }
 
@@ -200,8 +199,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest, DISABLED_EndToEndThroughWebRTC) {
   // See note in EndToEndWithoutRemoting test about why |colorDeviation| is
   // being set so high.
   ASSERT_TRUE(RunExtensionTest(
-      {.name = "tab_capture",
-       .page_url = "end_to_end.html?method=webrtc&colorDeviation=50"}))
+      "tab_capture",
+      {.page_url = "end_to_end.html?method=webrtc&colorDeviation=50"}))
       << message_;
 }
 
@@ -213,8 +212,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest, OffscreenTabEndToEnd) {
     return;
   }
   AddExtensionToCommandLineAllowlist();
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tab_capture", .page_url = "offscreen_end_to_end.html"}))
+  ASSERT_TRUE(RunExtensionTest("tab_capture",
+                               {.page_url = "offscreen_end_to_end.html"}))
       << message_;
   // Verify that offscreen profile has been destroyed.
   ASSERT_FALSE(profile()->HasPrimaryOTRProfile());
@@ -227,8 +226,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest, OffscreenTabEvilTests) {
     return;
   }
   AddExtensionToCommandLineAllowlist();
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tab_capture", .page_url = "offscreen_evil_tests.html"}))
+  ASSERT_TRUE(RunExtensionTest("tab_capture",
+                               {.page_url = "offscreen_evil_tests.html"}))
       << message_;
   // Verify that offscreen profile has been destroyed.
   ASSERT_FALSE(profile()->HasPrimaryOTRProfile());
@@ -238,8 +237,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest, OffscreenTabEvilTests) {
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GetUserMediaTest) {
   ExtensionTestMessageListener listener("ready", true);
 
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tab_capture", .page_url = "get_user_media_test.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("tab_capture", {.page_url = "get_user_media_test.html"}))
       << message_;
 
   EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -268,8 +267,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ActiveTabPermission) {
   ExtensionTestMessageListener before_open_new_tab("ready3", true);
   ExtensionTestMessageListener before_allowlist_extension("ready4", true);
 
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tab_capture", .page_url = "active_tab_permission_test.html"}))
+  ASSERT_TRUE(RunExtensionTest("tab_capture",
+                               {.page_url = "active_tab_permission_test.html"}))
       << message_;
 
   // Open a new tab and make sure capture is denied.
@@ -315,8 +314,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, FullscreenEvents) {
   ExtensionTestMessageListener capture_started("tab_capture_started", false);
   ExtensionTestMessageListener entered_fullscreen("entered_fullscreen", false);
 
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tab_capture", .page_url = "fullscreen_test.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("tab_capture", {.page_url = "fullscreen_test.html"}))
       << message_;
   EXPECT_TRUE(capture_started.WaitUntilSatisfied());
 
@@ -343,8 +342,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, FullscreenEvents) {
 #endif
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_GrantForChromePages) {
   ExtensionTestMessageListener before_open_tab("ready1", true);
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tab_capture", .page_url = "active_tab_chrome_pages.html"}))
+  ASSERT_TRUE(RunExtensionTest("tab_capture",
+                               {.page_url = "active_tab_chrome_pages.html"}))
       << message_;
   EXPECT_TRUE(before_open_tab.WaitUntilSatisfied());
 
@@ -368,10 +367,10 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_GrantForChromePages) {
 // Tests that a tab in incognito mode can be captured.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, CaptureInSplitIncognitoMode) {
   AddExtensionToCommandLineAllowlist();
-  ASSERT_TRUE(RunExtensionTest({.name = "tab_capture",
-                                .page_url = "start_tab_capture.html",
-                                .open_in_incognito = true},
-                               {.allow_in_incognito = true}))
+  ASSERT_TRUE(RunExtensionTest(
+      "tab_capture",
+      {.page_url = "start_tab_capture.html", .open_in_incognito = true},
+      {.allow_in_incognito = true}))
       << message_;
 }
 
@@ -379,8 +378,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, CaptureInSplitIncognitoMode) {
 // do not.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, Constraints) {
   AddExtensionToCommandLineAllowlist();
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "tab_capture", .page_url = "constraints.html"}))
+  ASSERT_TRUE(RunExtensionTest("tab_capture", {.page_url = "constraints.html"}))
       << message_;
 }
 
@@ -422,8 +420,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
   // Run an extension test that just turns on tab capture, which should cause
   // the indicator to turn on.
   AddExtensionToCommandLineAllowlist();
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "tab_capture", .page_url = "start_tab_capture.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("tab_capture", {.page_url = "start_tab_capture.html"}))
       << message_;
 
   // Run the browser until the indicator turns on.

@@ -102,7 +102,7 @@ class ProxySettingsApiTest : public ExtensionApiTest {
 // Tests direct connection settings.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyDirectSettings) {
   ASSERT_TRUE(
-      RunExtensionTest({.name = "proxy/direct"}, {.allow_in_incognito = true}))
+      RunExtensionTest("proxy/direct", {}, {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension);
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyDirectSettings) {
 // disabled or enabled.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsChangeOnDisableEnable) {
   ASSERT_TRUE(
-      RunExtensionTest({.name = "proxy/direct"}, {.allow_in_incognito = true}))
+      RunExtensionTest("proxy/direct", {}, {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension);
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsChangeOnDisableEnable) {
 // the extension is uninstalled.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsRemovedOnUninstall) {
   ASSERT_TRUE(
-      RunExtensionTest({.name = "proxy/direct"}, {.allow_in_incognito = true}))
+      RunExtensionTest("proxy/direct", {}, {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension);
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsRemovedOnUninstall) {
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
                        PRE_SettingsRemovedOnPolicyBlocklist) {
   ASSERT_TRUE(
-      RunExtensionTest({.name = "proxy/direct"}, {.allow_in_incognito = true}))
+      RunExtensionTest("proxy/direct", {}, {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension);
@@ -205,8 +205,7 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsRemovedOnPolicyBlocklist) {
 
 // Tests auto-detect settings.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyAutoSettings) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "proxy/auto"}, {.allow_in_incognito = true}))
+  ASSERT_TRUE(RunExtensionTest("proxy/auto", {}, {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension);
@@ -301,8 +300,8 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxySystem) {
 
 // Tests setting separate proxies for each scheme.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyFixedIndividual) {
-  ASSERT_TRUE(RunExtensionTest({.name = "proxy/individual"},
-                               {.allow_in_incognito = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("proxy/individual", {}, {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension);
@@ -335,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyFixedIndividual) {
 // Tests setting values only for incognito mode
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
                        ProxyFixedIndividualIncognitoOnly) {
-  ASSERT_TRUE(RunExtensionTest({.name = "proxy/individual_incognito_only"},
+  ASSERT_TRUE(RunExtensionTest("proxy/individual_incognito_only", {},
                                {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
@@ -362,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
 // Tests setting values also for incognito mode
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
                        ProxyFixedIndividualIncognitoAlso) {
-  ASSERT_TRUE(RunExtensionTest({.name = "proxy/individual_incognito_also"},
+  ASSERT_TRUE(RunExtensionTest("proxy/individual_incognito_also", {},
                                {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
@@ -406,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyFixedIndividualRemove) {
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
     ProxyBypass) {
   ASSERT_TRUE(
-      RunExtensionTest({.name = "proxy/bypass"}, {.allow_in_incognito = true}))
+      RunExtensionTest("proxy/bypass", {}, {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension);
@@ -434,23 +433,23 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
 // then attempts to fetch "example.test", expecting the listeners of
 // chrome.proxy.onProxyError to fire with ERR_PROXY_CONNECTION_FAILED.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyEventsInvalidProxy) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "proxy/events", .page_url = "invalid_proxy.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("proxy/events", {.page_url = "invalid_proxy.html"}))
       << message_;
 }
 
 // Tests error events: PAC script parse error.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyEventsParseError) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "proxy/events", .page_url = "parse_error.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("proxy/events", {.page_url = "parse_error.html"}))
       << message_;
 }
 
 // Tests that chrome.proxy.onProxyError is NOT called in the case of a
 // non-proxy error.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyEventsOtherError) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "proxy/events", .page_url = "other_error.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("proxy/events", {.page_url = "other_error.html"}))
       << message_;
 }
 
