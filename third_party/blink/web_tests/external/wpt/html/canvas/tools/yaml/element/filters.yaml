@@ -109,3 +109,17 @@
     @assert pixel 10,30 ==~ 0,255,0,255;
     @assert pixel 60,30 ==~ 0,255,0,255;
   expected: green
+
+- name: 2d.filter.canvasFilterObject.convolveMatrix.exceptions
+  desc: Test exceptions on CanvasFilter() convolveMatrix
+  code: |
+    @assert throws TypeError new CanvasFilter({convolveMatrix: {}});
+    @assert throws TypeError new CanvasFilter({convolveMatrix: null});
+    @assert throws TypeError new CanvasFilter({convolveMatrix: {divisor: 2}});
+    @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: null}});
+    @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: 1}});
+    @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: [[1, 0], [0]]}});
+    @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: [[1, "a"], [0]]}});
+    @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: [[1, 0], 0]}});
+    @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: [[1, 0], [0, Infinity]]}});
+

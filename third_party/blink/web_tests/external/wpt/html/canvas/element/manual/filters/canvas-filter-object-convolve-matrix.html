@@ -1,0 +1,38 @@
+<head>
+    <link rel="match" href="canvas-filter-object-convolve-matrix-expected.html">
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+</body>
+<script>
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  const convolveFilter = new CanvasFilter({convolveMatrix: {
+    kernelMatrix: [
+      [3, 0, 0],
+      [0, 0, 0],
+      [0, 0, -3],
+    ],
+  }});
+
+  function draw() {
+    ctx.fillRect(20, 20, 100, 100);
+
+    ctx.beginPath();
+    ctx.arc(150, 70, 50, 0, 2*Math.PI);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(220, 20);
+    ctx.lineTo(170, 120);
+    ctx.lineTo(270, 120);
+    ctx.lineTo(220, 20);
+    ctx.fill();
+  }
+  ctx.fillStyle = "rgba(0,255,0,0.5)";
+  draw();
+  ctx.fillStyle = "rgba(255,0,255,0.5)";
+  ctx.filter = convolveFilter;
+  draw();
+</script>

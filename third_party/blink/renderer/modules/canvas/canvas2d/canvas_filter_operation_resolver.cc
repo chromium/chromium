@@ -8,22 +8,39 @@
 namespace blink {
 
 namespace {
-double GetDoubleValueOrZero(v8::Local<v8::Object> v8_object,
-                            WTF::String key,
-                            ScriptState* script_state) {
+double GetDoubleOr(double default_value,
+                   v8::Local<v8::Object> v8_object,
+                   WTF::String key,
+                   ScriptState* script_state) {
   v8::Local<v8::Value> v8_value;
   if (!v8_object
            ->Get(script_state->GetContext(),
                  V8String(script_state->GetIsolate(), key))
            .ToLocal(&v8_value) ||
       !v8_value->IsNumber()) {
-    return 0;
+    return default_value;
   }
 
   double result = v8_value.As<v8::Number>()->Value();
   if (!std::isfinite(result))
-    return 0;
+    return default_value;
   return result;
+}
+
+bool GetBooleanOr(bool default_value,
+                  v8::Local<v8::Object> v8_object,
+                  WTF::String key,
+                  ScriptState* script_state) {
+  v8::Local<v8::Value> v8_value;
+  if (!v8_object
+           ->Get(script_state->GetContext(),
+                 V8String(script_state->GetIsolate(), key))
+           .ToLocal(&v8_value) ||
+      !v8_value->IsBoolean()) {
+    return default_value;
+  }
+
+  return v8_value.As<v8::Boolean>()->Value();
 }
 
 String GetStringValue(v8::Local<v8::Object> v8_object,
@@ -37,14 +54,13 @@ String GetStringValue(v8::Local<v8::Object> v8_object,
     return String();
   return ToCoreStringWithUndefinedOrNullCheck(v8_type);
 }
-}  // namespace
 
-BlurFilterOperation* ResolveBlur(v8::Local<v8::Object> v8_filter_object,
+BlurFilterOperation* ResolveBlur(v8::Local<v8::Object> v8_filter_obj,
                                  ScriptState* script_state,
                                  ExceptionState& exception_state) {
   Length std_deviation = Length::Fixed(0);
   v8::Local<v8::Value> v8_std_deviation;
-  if (v8_filter_object
+  if (v8_filter_obj
           ->Get(script_state->GetContext(),
                 V8String(script_state->GetIsolate(), "stdDeviation"))
           .ToLocal(&v8_std_deviation)) {
@@ -69,12 +85,12 @@ BlurFilterOperation* ResolveBlur(v8::Local<v8::Object> v8_filter_object,
 }
 
 ColorMatrixFilterOperation* ResolveColorMatrix(
-    v8::Local<v8::Object> v8_filter_object,
+    v8::Local<v8::Object> v8_filter_obj,
     ScriptState* script_state,
     ExceptionState& exception_state) {
   v8::Local<v8::Value> v8_value;
   v8::Local<v8::Array> v8_array;
-  if (v8_filter_object
+  if (v8_filter_obj
           ->Get(script_state->GetContext(),
                 V8String(script_state->GetIsolate(), "values"))
           .ToLocal(&v8_value)) {
@@ -121,6 +137,122 @@ ColorMatrixFilterOperation* ResolveColorMatrix(
       values, FilterOperation::COLOR_MATRIX);
 }
 
+struct KernelMatrix {
+  Vector<float> values;
+  int width = 0;
+  int height = 0;
+};
+
+// For resolving feConvolveMatrix type filters
+KernelMatrix* GetKernelMatrix(v8::Local<v8::Object> v8_filter_obj,
+                              ScriptState* script_state,
+                              ExceptionState& exception_state) {
+  v8::Local<v8::Value> v8_value;
+  v8::Local<v8::Array> v8_kernel_matrix;
+  if (v8_filter_obj
+          ->Get(script_state->GetContext(),
+                V8String(script_state->GetIsolate(), "kernelMatrix"))
+          .ToLocal(&v8_value)) {
+    if (!v8_value->IsArray()) {
+      exception_state.ThrowTypeError(
+          "Failed to construct convolve matrix filter. 'kernelMatrix' must be "
+          "an array of arrays representing an n by m matrix.");
+      return nullptr;
+    }
+    v8_kernel_matrix = v8_value.As<v8::Array>();
+  }
+
+  KernelMatrix* kernel_matrix = new KernelMatrix();
+  kernel_matrix->height = v8_kernel_matrix->Length();
+  v8::Local<v8::Array> v8_kernel_matrix_row;
+  if (!v8_kernel_matrix->Get(script_state->GetContext(), 0)
+           .ToLocal(&v8_value) ||
+      !v8_value->IsArray()) {
+    exception_state.ThrowTypeError(
+        "Failed to construct convolve matrix filter. 'kernelMatrix' must be an "
+        "array of arrays representing an n by m matrix.");
+    return nullptr;
+  }
+  v8_kernel_matrix_row = v8_value.As<v8::Array>();
+  kernel_matrix->width = v8_kernel_matrix_row->Length();
+  kernel_matrix->values.ReserveInitialCapacity(kernel_matrix->width *
+                                               kernel_matrix->height);
+
+  for (int y = 0; y < kernel_matrix->height; ++y) {
+    if (!v8_kernel_matrix->Get(script_state->GetContext(), y)
+             .ToLocal(&v8_value) ||
+        !v8_value->IsArray()) {
+      exception_state.ThrowTypeError(
+          "Failed to construct convolve matrix filter. 'kernelMatrix' must be "
+          "an array of arrays representing an n by m matrix.");
+      return nullptr;
+    }
+    v8_kernel_matrix_row = v8_value.As<v8::Array>();
+    if (int(v8_kernel_matrix_row->Length()) != kernel_matrix->width) {
+      exception_state.ThrowTypeError(
+          "Failed to construct convolve matrix filter. All rows of the "
+          "'kernelMatrix' must be the same length.");
+      return nullptr;
+    }
+
+    for (int x = 0; x < kernel_matrix->width; ++x) {
+      if (!v8_kernel_matrix_row->Get(script_state->GetContext(), x)
+               .ToLocal(&v8_value) ||
+          !v8_value->IsNumber()) {
+        exception_state.ThrowTypeError(
+            "Failed to construct convolve matrix filter. All 'kernelMatrix' "
+            "values must be numbers.");
+        return nullptr;
+      }
+      const float value = v8_value.As<v8::Number>()->Value();
+      if (!std::isfinite(value)) {
+        exception_state.ThrowTypeError(
+            "Failed to construct convolve matrix filter, 'kernel_matrix' must "
+            "have finite values.");
+        return kernel_matrix;
+      }
+      kernel_matrix->values.push_back(value);
+    }
+  }
+
+  return kernel_matrix;
+}
+
+ConvolveMatrixFilterOperation* ResolveConvolveMatrix(
+    v8::Local<v8::Object> v8_filter_obj,
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  KernelMatrix* kernel_matrix =
+      GetKernelMatrix(v8_filter_obj, script_state, exception_state);
+
+  if (!kernel_matrix)
+    return nullptr;
+
+  IntSize kernel_size(kernel_matrix->width, kernel_matrix->height);
+  double divisor = GetDoubleOr(1, v8_filter_obj, "divisor", script_state);
+  double bias = GetDoubleOr(0, v8_filter_obj, "bias", script_state);
+  IntPoint target_offset =
+      IntPoint(int(GetDoubleOr(kernel_matrix->width / 2, v8_filter_obj,
+                               "targetX", script_state)),
+               int(GetDoubleOr(kernel_matrix->height / 2, v8_filter_obj,
+                               "targetY", script_state)));
+  FEConvolveMatrix::EdgeModeType edge_mode =
+      FEConvolveMatrix::EDGEMODE_DUPLICATE;
+  String edge_mode_string =
+      GetStringValue(v8_filter_obj, "edgeMode", script_state);
+  if (edge_mode_string == "wrap")
+    edge_mode = FEConvolveMatrix::EDGEMODE_WRAP;
+  if (edge_mode_string == "none")
+    edge_mode = FEConvolveMatrix::EDGEMODE_NONE;
+  bool preserve_alpha =
+      GetBooleanOr(false, v8_filter_obj, "preserve_alpha", script_state);
+
+  return MakeGarbageCollected<ConvolveMatrixFilterOperation>(
+      kernel_size, divisor, bias, target_offset, edge_mode, preserve_alpha,
+      kernel_matrix->values);
+}
+}  // namespace
+
 FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
     ScriptState* script_state,
     HeapVector<Member<CanvasFilterDictionary>> filters,
@@ -142,12 +274,12 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
             &v8_object)) {
       String type = GetStringValue(v8_object, "type", script_state);
       if (type == "hueRotate") {
-        double amount = GetDoubleValueOrZero(v8_object, "values", script_state);
+        double amount = GetDoubleOr(0, v8_object, "values", script_state);
         operations.Operations().push_back(
             MakeGarbageCollected<BasicColorMatrixFilterOperation>(
                 amount, FilterOperation::HUE_ROTATE));
       } else if (type == "saturate") {
-        double amount = GetDoubleValueOrZero(v8_object, "values", script_state);
+        double amount = GetDoubleOr(0, v8_object, "values", script_state);
         operations.Operations().push_back(
             MakeGarbageCollected<BasicColorMatrixFilterOperation>(
                 amount, FilterOperation::SATURATE));
@@ -158,6 +290,14 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
       } else if (auto* color_matrix_operation = ResolveColorMatrix(
                      v8_object, script_state, exception_state)) {
         operations.Operations().push_back(color_matrix_operation);
+      }
+    }
+    if (filter->hasConvolveMatrix() &&
+        filter->convolveMatrix().V8Value()->ToObject(context).ToLocal(
+            &v8_object)) {
+      if (auto* convolve_operation =
+              ResolveConvolveMatrix(v8_object, script_state, exception_state)) {
+        operations.Operations().push_back(convolve_operation);
       }
     }
   }

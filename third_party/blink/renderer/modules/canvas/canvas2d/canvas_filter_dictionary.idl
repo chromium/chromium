@@ -6,4 +6,5 @@
 dictionary CanvasFilterDictionary {
   object blur;
   object colorMatrix;
+  object convolveMatrix;
 };

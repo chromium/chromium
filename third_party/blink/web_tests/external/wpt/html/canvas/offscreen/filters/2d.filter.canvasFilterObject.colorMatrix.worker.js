@@ -60,5 +60,6 @@ _assertPixelApprox(offscreenCanvas, 60,10, 0,255,0,255, "60,10", "0,255,0,255", 
 _assertPixelApprox(offscreenCanvas, 10,30, 0,255,0,255, "10,30", "0,255,0,255", 2);
 _assertPixelApprox(offscreenCanvas, 60,30, 0,255,0,255, "60,30", "0,255,0,255", 2);
 t.done();
+
 });
 done();
