@@ -11,7 +11,7 @@
 #include "base/check_op.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
@@ -114,9 +114,9 @@ TEST_F(BrowsingDataRemoverImplTest, InvokesObservers) {
   TestBrowsingDataRemoverObserver observer;
   ASSERT_TRUE(observer.last_remove_mask() != kRemoveMask);
 
-  ScopedObserver<BrowsingDataRemover, BrowsingDataRemoverObserver>
+  base::ScopedObservation<BrowsingDataRemover, BrowsingDataRemoverObserver>
       scoped_observer(&observer);
-  scoped_observer.Add(&browsing_data_remover_);
+  scoped_observer.Observe(&browsing_data_remover_);
 
   browsing_data_remover_.Remove(browsing_data::TimePeriod::ALL_TIME,
                                 kRemoveMask, base::DoNothing());

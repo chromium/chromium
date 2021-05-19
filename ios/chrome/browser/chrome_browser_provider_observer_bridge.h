@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 
 // Objective-C protocol mirroring ChromeBrowserProvider::Observer.
@@ -36,9 +36,9 @@ class ChromeBrowserProviderObserverBridge
   void OnChromeBrowserProviderWillBeDestroyed() override;
 
   __weak id<ChromeBrowserProviderObserver> observer_;
-  ScopedObserver<ios::ChromeBrowserProvider,
-                 ios::ChromeBrowserProvider::Observer>
-      scoped_observer_{this};
+  base::ScopedObservation<ios::ChromeBrowserProvider,
+                          ios::ChromeBrowserProvider::Observer>
+      scoped_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserProviderObserverBridge);
 };

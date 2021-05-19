@@ -82,14 +82,14 @@ SearchEngineTabHelper::SearchEngineTabHelper(web::WebState* web_state)
                           base::Unretained(this)),
       kCommandPrefix);
   DCHECK(favicon::WebFaviconDriver::FromWebState(web_state));
-  favicon_driver_observer_.Add(
+  favicon_driver_observation_.Observe(
       favicon::WebFaviconDriver::FromWebState(web_state));
 }
 
 void SearchEngineTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
   web_state_ = nullptr;
-  favicon_driver_observer_.RemoveAll();
+  favicon_driver_observation_.Reset();
 }
 
 // When favicon is updated, notify TemplateURLService about the change.

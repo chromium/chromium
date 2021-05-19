@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/mac/bundle_locations.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/version.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -119,9 +119,7 @@ class UpgradeInfoBarDismissObserver
     : public infobars::InfoBarManager::Observer {
  public:
   UpgradeInfoBarDismissObserver()
-      : infobar_delegate_(nullptr),
-        dismiss_delegate_(nil),
-        scoped_observer_(this) {}
+      : infobar_delegate_(nullptr), dismiss_delegate_(nil) {}
 
   ~UpgradeInfoBarDismissObserver() override {}
 
@@ -129,7 +127,7 @@ class UpgradeInfoBarDismissObserver
                         UpgradeInfoBarDelegate* infobar_delegate,
                         NSString* tab_id,
                         UpgradeCenter* dismiss_delegate) {
-    scoped_observer_.Add(infobar_manager);
+    scoped_observation_.Observe(infobar_manager);
     infobar_delegate_ = infobar_delegate;
     dismiss_delegate_ = dismiss_delegate;
     tab_id_ = [tab_id copy];
@@ -148,14 +146,16 @@ class UpgradeInfoBarDismissObserver
 
   void OnManagerShuttingDown(
       infobars::InfoBarManager* infobar_manager) override {
-    scoped_observer_.Remove(infobar_manager);
+    DCHECK(scoped_observation_.IsObservingSource(infobar_manager));
+    scoped_observation_.Reset();
   }
 
   UpgradeInfoBarDelegate* infobar_delegate_;
   __weak UpgradeCenter* dismiss_delegate_;
   __strong NSString* tab_id_;
-  ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-      scoped_observer_;
+  base::ScopedObservation<infobars::InfoBarManager,
+                          infobars::InfoBarManager::Observer>
+      scoped_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UpgradeInfoBarDismissObserver);
 };
