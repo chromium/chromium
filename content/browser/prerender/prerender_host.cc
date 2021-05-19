@@ -144,10 +144,6 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     return frame_tree_->controller();
   }
 
-  RenderFrameHostImpl* GetMainFrame() {
-    return frame_tree_->root()->current_frame_host();
-  }
-
   ActivateResult Activate(NavigationRequest& navigation_request) {
     if (frame_tree_->root()->HasNavigation()) {
       // We do not yet support activation if there is an ongoing navigation in
@@ -229,6 +225,8 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     on_stopped_loading_for_tests_ = loop.QuitClosure();
     loop.Run();
   }
+
+  FrameTree* frame_tree() { return frame_tree_.get(); }
 
  private:
   // WebContents where this prerenderer is embedded.
@@ -325,7 +323,9 @@ std::unique_ptr<BackForwardCacheImpl::Entry> PrerenderHost::Activate(
 }
 
 RenderFrameHostImpl* PrerenderHost::GetPrerenderedMainFrameHost() {
-  return page_holder_->GetMainFrame();
+  DCHECK(page_holder_->frame_tree());
+  DCHECK(page_holder_->frame_tree()->root()->current_frame_host());
+  return page_holder_->frame_tree()->root()->current_frame_host();
 }
 
 void PrerenderHost::RecordFinalStatus(base::PassKey<PrerenderHostRegistry>,
@@ -335,16 +335,12 @@ void PrerenderHost::RecordFinalStatus(base::PassKey<PrerenderHostRegistry>,
 
 void PrerenderHost::CreatePageHolder(WebContentsImpl& web_contents) {
   page_holder_ = std::make_unique<PageHolder>(web_contents);
-  frame_tree_node_id_ = page_holder_->GetMainFrame()->GetFrameTreeNodeId();
+  frame_tree_node_id_ =
+      page_holder_->frame_tree()->root()->frame_tree_node_id();
 }
 
 void PrerenderHost::WaitForLoadStopForTesting() {
   page_holder_->WaitForLoadCompletionForTesting();  // IN-TEST
-}
-
-FrameTree* PrerenderHost::GetPrerenderedFrameTree() {
-  DCHECK(page_holder_);
-  return page_holder_->GetMainFrame()->frame_tree();
 }
 
 void PrerenderHost::RecordFinalStatus(FinalStatus status) {

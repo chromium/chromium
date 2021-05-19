@@ -119,9 +119,6 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
 
   void RecordFinalStatus(FinalStatus status);
 
-  // Returns the frame tree associated with |prerendered_contents_|;
-  FrameTree* GetPrerenderedFrameTree();
-
   void CreatePageHolder(WebContentsImpl& web_contents);
 
   const blink::mojom::PrerenderAttributesPtr attributes_;

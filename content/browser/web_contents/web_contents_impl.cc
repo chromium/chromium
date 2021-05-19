@@ -1311,6 +1311,99 @@ int WebContentsImpl::SendToAllFramesIncludingPending(IPC::Message* message) {
   return SendToAllFramesImpl(frame_tree_, /*include_pending=*/true, message);
 }
 
+void WebContentsImpl::ForEachRenderFrameHost(
+    RenderFrameHost::FrameIterationCallback on_frame) {
+  ForEachRenderFrameHost(RenderFrameHostImpl::FrameIterationWrapper(on_frame));
+}
+
+void WebContentsImpl::ForEachRenderFrameHost(
+    RenderFrameHost::FrameIterationAlwaysContinueCallback on_frame) {
+  ForEachRenderFrameHost(RenderFrameHostImpl::FrameIterationWrapper(on_frame));
+}
+
+void WebContentsImpl::ForEachRenderFrameHost(
+    RenderFrameHostImpl::FrameIterationCallbackImpl on_frame) {
+  ForEachRenderFrameHostImpl(on_frame, /* include_speculative */ false);
+}
+
+void WebContentsImpl::ForEachRenderFrameHost(
+    RenderFrameHostImpl::FrameIterationAlwaysContinueCallbackImpl on_frame) {
+  ForEachRenderFrameHost(RenderFrameHostImpl::FrameIterationWrapper(on_frame));
+}
+
+void WebContentsImpl::ForEachRenderFrameHostIncludingSpeculative(
+    RenderFrameHostImpl::FrameIterationCallbackImpl on_frame) {
+  ForEachRenderFrameHostImpl(on_frame, /* include_speculative */ true);
+}
+
+void WebContentsImpl::ForEachRenderFrameHostIncludingSpeculative(
+    RenderFrameHostImpl::FrameIterationAlwaysContinueCallbackImpl on_frame) {
+  ForEachRenderFrameHostIncludingSpeculative(
+      RenderFrameHostImpl::FrameIterationWrapper(on_frame));
+}
+
+void WebContentsImpl::ForEachRenderFrameHostImpl(
+    RenderFrameHostImpl::FrameIterationCallbackImpl on_frame,
+    bool include_speculative) {
+  // Since |RenderFrameHostImpl::ForEachRenderFrameHost| will reach the
+  // RenderFrameHosts descending from a specified root, it is enough to start
+  // iteration from each of the outermost main frames to reach everything in
+  // this WebContents. However, if iteration stops early in
+  // |RenderFrameHostImpl::ForEachRenderFrameHost|, we also need to stop early
+  // by not iterating over additional outermost main frames.
+  bool iteration_stopped = false;
+  RenderFrameHostImpl::FrameIterationCallbackImpl on_frame_with_termination =
+      base::BindRepeating(
+          [](bool& iteration_stopped,
+             RenderFrameHostImpl::FrameIterationCallbackImpl on_frame,
+             RenderFrameHostImpl* rfh) {
+            const auto action = on_frame.Run(rfh);
+            if (action == RenderFrameHost::FrameIterationAction::kStop) {
+              iteration_stopped = true;
+            }
+            return action;
+          },
+          std::ref(iteration_stopped), on_frame);
+
+  for (auto* rfh : GetOutermostMainFrames()) {
+    if (include_speculative) {
+      rfh->ForEachRenderFrameHostIncludingSpeculative(
+          on_frame_with_termination);
+    } else {
+      rfh->ForEachRenderFrameHost(on_frame_with_termination);
+    }
+
+    if (iteration_stopped) {
+      return;
+    }
+  }
+}
+
+std::vector<RenderFrameHostImpl*> WebContentsImpl::GetOutermostMainFrames() {
+  std::vector<RenderFrameHostImpl*> result;
+  result.push_back(GetMainFrame());
+
+  for (const auto& entry : GetController().GetBackForwardCache().GetEntries()) {
+    result.push_back(entry->render_frame_host.get());
+  }
+
+  if (blink::features::IsPrerender2Enabled()) {
+    const std::vector<RenderFrameHostImpl*> prerendered_main_frames =
+        GetPrerenderHostRegistry()->GetPrerenderedMainFrames();
+    result.insert(result.end(), prerendered_main_frames.begin(),
+                  prerendered_main_frames.end());
+  }
+
+  // In the case of inner WebContents, we still allow this method to be called,
+  // but the semantics of the values being returned are "outermost
+  // within this WebContents" as opposed to truly outermost. We would not expect
+  // any other outermost pages besides the primary page in the case of inner
+  // WebContents.
+  DCHECK(!GetOuterWebContents() || (result.size() == 1));
+
+  return result;
+}
+
 void WebContentsImpl::ExecutePageBroadcastMethod(
     PageBroadcastMethodCallback callback) {
   OPTIONAL_TRACE_EVENT0("content",

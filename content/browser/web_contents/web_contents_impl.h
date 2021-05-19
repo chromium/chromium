@@ -354,6 +354,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       const base::RepeatingCallback<void(RenderFrameHost*)>& on_frame) override;
   std::vector<RenderFrameHost*> GetAllFrames() override;
   int SendToAllFrames(IPC::Message* message) override;
+  void ForEachRenderFrameHost(
+      RenderFrameHost::FrameIterationCallback on_frame) override;
+  void ForEachRenderFrameHost(
+      RenderFrameHost::FrameIterationAlwaysContinueCallback on_frame) override;
   RenderViewHostImpl* GetRenderViewHost() override;
   RenderWidgetHostView* GetRenderWidgetHostView() override;
   RenderWidgetHostView* GetTopLevelRenderWidgetHostView() override;
@@ -1248,6 +1252,20 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   std::vector<RenderFrameHost*> GetAllFramesIncludingPending();
   int SendToAllFramesIncludingPending(IPC::Message* message);
 
+  // These are the content internal equivalents of
+  // |WebContents::ForEachRenderFrameHost| whose comment can be referred to
+  // for details. Content internals can also access speculative
+  // RenderFrameHostImpls if necessary by using the
+  // |ForEachRenderFrameHostIncludingSpeculative| variations.
+  void ForEachRenderFrameHost(
+      RenderFrameHostImpl::FrameIterationCallbackImpl on_frame);
+  void ForEachRenderFrameHost(
+      RenderFrameHostImpl::FrameIterationAlwaysContinueCallbackImpl on_frame);
+  void ForEachRenderFrameHostIncludingSpeculative(
+      RenderFrameHostImpl::FrameIterationCallbackImpl on_frame);
+  void ForEachRenderFrameHostIncludingSpeculative(
+      RenderFrameHostImpl::FrameIterationAlwaysContinueCallbackImpl on_frame);
+
   // Computes and returns the content specific preferences for this WebContents.
   // Recomputes only the "fast" preferences (those not requiring slow
   // platform/device polling); the remaining "slow" ones are recomputed only if
@@ -1740,6 +1758,16 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Checks whether the given FrameTree is the primary one (the one whose URL is
   // shown in the address bar), as opposed to one in for example a Prerender.
   bool IsPrimaryFrameTree(const FrameTree& frame_tree) const;
+
+  // This is the actual implementation of the various overloads of
+  // |ForEachRenderFrameHost|.
+  void ForEachRenderFrameHostImpl(
+      RenderFrameHostImpl::FrameIterationCallbackImpl on_frame,
+      bool include_speculative);
+
+  // Returns the primary main frame, followed by the main frames of any other
+  // outermost frame trees in this WebContents.
+  std::vector<RenderFrameHostImpl*> GetOutermostMainFrames();
 
   // Called when the base::ScopedClosureRunner returned by
   // IncrementCapturerCount() is destructed.

@@ -209,6 +209,18 @@ PrerenderHost* PrerenderHostRegistry::FindReservedHostById(
   return iter->second.get();
 }
 
+std::vector<RenderFrameHostImpl*>
+PrerenderHostRegistry::GetPrerenderedMainFrames() {
+  std::vector<RenderFrameHostImpl*> result;
+  for (auto& i : prerender_host_by_frame_tree_node_id_) {
+    result.push_back(i.second->GetPrerenderedMainFrameHost());
+  }
+  for (auto& i : reserved_prerender_host_by_frame_tree_node_id_) {
+    result.push_back(i.second->GetPrerenderedMainFrameHost());
+  }
+  return result;
+}
+
 PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
     const GURL& prerendering_url) {
   auto id_iter = frame_tree_node_id_by_url_.find(prerendering_url);

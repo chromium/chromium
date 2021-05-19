@@ -3848,6 +3848,44 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                                      /* count */ 1);
 }
 
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, ForEachRenderFrameHost) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url =
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  // In the absence of any pages besides the primary page (e.g. nothing in
+  // bfcache, no prerendered pages), iterating over the RenderFrameHosts of the
+  // WebContents would just produce the RenderFrameHosts of the primary page.
+  EXPECT_THAT(CollectAllRenderFrameHosts(web_contents),
+              testing::ContainerEq(
+                  CollectAllRenderFrameHosts(web_contents->GetMainFrame())));
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       ForEachRenderFrameHostInnerContents) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_a(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  auto* inner_contents = CreateAndAttachInnerContents(
+      web_contents->GetMainFrame()->child_at(0)->current_frame_host());
+  ASSERT_TRUE(NavigateToURLFromRenderer(inner_contents, url_b));
+
+  // Calling |WebContents::ForEachRenderFrameHost| on an inner contents does not
+  // add much value over |RenderFrameHost::ForEachRenderFrameHost|, since we
+  // don't have any pages besides the primary page, however for completeness, we
+  // allow it to be called and confirm that it just returns the RenderFrameHosts
+  // of the primary page.
+  EXPECT_THAT(CollectAllRenderFrameHosts(inner_contents),
+              testing::ContainerEq(
+                  CollectAllRenderFrameHosts(inner_contents->GetMainFrame())));
+}
+
 namespace {
 
 class LoadingObserver : public WebContentsObserver {

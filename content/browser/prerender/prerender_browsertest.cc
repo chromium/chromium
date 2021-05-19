@@ -834,8 +834,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivatePageWithInnerContents) {
   EXPECT_EQ(GetRequestCount(kInnerContentsUrl), 1);
 }
 
-// Tests that RenderFrameHost::ForEachRenderFrameHost behaves correctly when
-// prerendering.
+// Tests that |RenderFrameHost::ForEachRenderFrameHost| and
+// |WebContents::ForEachRenderFrameHost| behave correctly when prerendering.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ForEachRenderFrameHost) {
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   // All frames are same-origin due to prerendering restrictions for
@@ -843,6 +843,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ForEachRenderFrameHost) {
   const GURL kPrerenderingUrl =
       GetUrl("/cross_site_iframe_factory.html?a.test(a.test(a.test),a.test)");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  RenderFrameHostImpl* initiator_render_frame_host = current_frame_host();
 
   const int host_id = AddPrerender(kPrerenderingUrl);
   RenderFrameHostImpl* prerendered_render_frame_host =
@@ -857,6 +859,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ForEachRenderFrameHost) {
   EXPECT_THAT(CollectAllRenderFrameHosts(prerendered_render_frame_host),
               testing::ElementsAre(prerendered_render_frame_host, rfh_sub_1,
                                    rfh_sub_2, rfh_sub_1_1));
+
+  // When iterating over all RenderFrameHosts in a WebContents, we should see
+  // the RFHs of both the primary page and the prerendered page.
+  EXPECT_THAT(CollectAllRenderFrameHosts(web_contents_impl()),
+              testing::UnorderedElementsAre(initiator_render_frame_host,
+                                            prerendered_render_frame_host,
+                                            rfh_sub_1, rfh_sub_2, rfh_sub_1_1));
 }
 
 class MojoCapabilityControlTestContentBrowserClient

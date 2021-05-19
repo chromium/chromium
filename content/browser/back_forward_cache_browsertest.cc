@@ -1456,8 +1456,9 @@ IN_PROC_BROWSER_TEST_F(
   ExpectCached(*delete_observers[3], /*cached=*/true, /*backgrounded=*/false);
 }
 
-// Tests that RenderFrameHost::ForEachRenderFrameHost behaves correctly when
-// bfcached.
+// Tests that |RenderFrameHost::ForEachRenderFrameHost| and
+// |WebContents::ForEachRenderFrameHost| behave correctly with bfcached
+// RenderFrameHosts.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachRenderFrameHost) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(
@@ -1480,6 +1481,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachRenderFrameHost) {
   // Ensure the visited frames are what we would expect for the page before
   // entering bfcache.
   EXPECT_THAT(CollectAllRenderFrameHosts(rfh_a),
+              testing::ElementsAre(rfh_a, rfh_b, rfh_d, rfh_c));
+  EXPECT_THAT(CollectAllRenderFrameHosts(web_contents()),
               testing::ElementsAre(rfh_a, rfh_b, rfh_d, rfh_c));
 
   // 2) Navigate to e.
@@ -1505,10 +1508,30 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachRenderFrameHost) {
   // works.
   EXPECT_THAT(CollectAllRenderFrameHosts(rfh_b),
               testing::ElementsAre(rfh_b, rfh_c));
+
+  // When iterating over all RenderFrameHosts in a WebContents, we should see
+  // the RFHs of both the primary page and the bfcached page.
+  EXPECT_THAT(CollectAllRenderFrameHosts(web_contents()),
+              testing::UnorderedElementsAre(rfh_a, rfh_b, rfh_c, rfh_d, rfh_e));
+
+  {
+    // If we stop iteration in |WebContents::ForEachRenderFrameHost|, we stop
+    // the entire iteration, not just iteration in the page being iterated at
+    // that point. In this case, if we stop iteration in the primary page, we do
+    // not continue to iterate in the bfcached page.
+    bool stopped = false;
+    web_contents()->ForEachRenderFrameHost(
+        base::BindLambdaForTesting([&](RenderFrameHostImpl* rfh) {
+          EXPECT_FALSE(stopped);
+          stopped = true;
+          return RenderFrameHost::FrameIterationAction::kStop;
+        }));
+  }
 }
 
-// Tests that RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculative
-// behaves correctly when a FrameTreeNode has both a speculative RFH and a
+// Tests that |RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculative|
+// and |WebContentsImpl::ForEachRenderFrameHostIncludingSpeculative|
+// behave correctly when a FrameTreeNode has both a speculative RFH and a
 // bfcached RFH.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        ForEachRenderFrameHostWithSpeculative) {
@@ -1562,6 +1585,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // the speculative RFH. In particular, we should not see the bfcached RFH.
   EXPECT_THAT(CollectAllRenderFrameHostsIncludingSpeculative(rfh_c),
               testing::ElementsAre(rfh_c));
+
+  // When iterating over all RenderFrameHosts in a WebContents, we should see
+  // the RFHs of both the primary page and the bfcached page.
+  EXPECT_THAT(CollectAllRenderFrameHostsIncludingSpeculative(web_contents()),
+              testing::UnorderedElementsAre(rfh_a, rfh_b, rfh_c));
 }
 
 // Similar to BackForwardCacheBrowserTest.SubframeSurviveCache*

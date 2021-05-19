@@ -90,6 +90,12 @@ std::vector<RenderFrameHostImpl*> CollectAllRenderFrameHosts(
 std::vector<RenderFrameHostImpl*>
 CollectAllRenderFrameHostsIncludingSpeculative(
     RenderFrameHostImpl* starting_rfh);
+// Returns the frames visited by |WebContentsImpl::ForEachRenderFrameHost|
+// in the same order.
+std::vector<RenderFrameHostImpl*> CollectAllRenderFrameHosts(
+    WebContentsImpl* web_contents);
+std::vector<RenderFrameHostImpl*>
+CollectAllRenderFrameHostsIncludingSpeculative(WebContentsImpl* web_contents);
 
 // Open a new popup passing no URL to window.open, which results in a blank page
 // and no last committed entry. Returns the newly created shell. Also saves the

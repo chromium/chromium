@@ -1823,6 +1823,14 @@ std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
   return visited_frames;
 }
 
+std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
+    WebContents* web_contents) {
+  std::vector<RenderFrameHost*> visited_frames;
+  web_contents->ForEachRenderFrameHost(base::BindLambdaForTesting(
+      [&](RenderFrameHost* rfh) { visited_frames.push_back(rfh); }));
+  return visited_frames;
+}
+
 bool ExecuteWebUIResourceTest(WebContents* web_contents,
                               const std::vector<int>& js_resource_ids) {
   // Inject WebUI test runner script first prior to other scripts required to

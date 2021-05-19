@@ -876,6 +876,10 @@ RenderFrameHost* ChildFrameAt(RenderFrameHost* frame, size_t index);
 // the same order.
 std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
     RenderFrameHost* starting_rfh);
+// Returns the frames visited by |WebContents::ForEachRenderFrameHost| in
+// the same order.
+std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
+    WebContents* web_contents);
 
 // Executes the WebUI resource test runner injecting each resource ID in
 // |js_resource_ids| prior to executing the tests.

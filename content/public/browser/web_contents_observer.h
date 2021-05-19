@@ -91,7 +91,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // listen for when RenderFrame objects are created.
   virtual void RenderFrameDeleted(RenderFrameHost* render_frame_host) {}
 
-  // This method is invoked whenever one of the current frames of a WebContents
+  // This method is invoked whenever one of the frames of a WebContents
   // swaps its RenderFrameHost with another one; for example because that frame
   // navigated and the new content is in a different process. The
   // RenderFrameHost that has been replaced is in |old_host|, which can be
@@ -99,8 +99,10 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // created and no old RenderFrameHost exists.
   //
   // This method, in combination with |FrameDeleted|, is appropriate for
-  // observers wishing to track the set of current RenderFrameHosts -- i.e.,
-  // those hosts that would be visited by calling WebContents::ForEachFrame().
+  // observers wishing to track the set of RenderFrameHosts that are current in
+  // their frame tree. Note that being current in a frame tree is separate from
+  // the lifecycle state of the RenderFrameHosts. Consider using
+  // |RenderFrameHostStateChanged|.
   virtual void RenderFrameHostChanged(RenderFrameHost* old_host,
                                       RenderFrameHost* new_host) {}
 

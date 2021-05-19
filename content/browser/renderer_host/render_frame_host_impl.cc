@@ -1696,38 +1696,14 @@ bool RenderFrameHostImpl::IsDescendantOf(RenderFrameHost* ancestor) {
   return false;
 }
 
-namespace {
-
-template <typename RfhType>
-RenderFrameHostImpl::FrameIterationCallbackImpl ContinueIterationWrapper(
-    base::RepeatingCallback<void(RfhType*)> on_frame) {
-  return base::BindRepeating(
-      [](base::RepeatingCallback<void(RfhType*)> on_frame,
-         RenderFrameHostImpl* rfh) {
-        on_frame.Run(rfh);
-        return RenderFrameHost::FrameIterationAction::kContinue;
-      },
-      on_frame);
-}
-
-}  // namespace
-
 void RenderFrameHostImpl::ForEachRenderFrameHost(
     FrameIterationCallback on_frame) {
-  // There's no automatic conversion from FrameIterationCallback to
-  // FrameIterationCallbackImpl, so this wrapper just forwards the
-  // RenderFrameHost argument.
-  FrameIterationCallbackImpl on_frame_impl = base::BindRepeating(
-      [](FrameIterationCallback on_frame, RenderFrameHostImpl* rfh) {
-        return on_frame.Run(rfh);
-      },
-      on_frame);
-  ForEachRenderFrameHost(on_frame_impl);
+  ForEachRenderFrameHost(FrameIterationWrapper(on_frame));
 }
 
 void RenderFrameHostImpl::ForEachRenderFrameHost(
     FrameIterationAlwaysContinueCallback on_frame) {
-  ForEachRenderFrameHost(ContinueIterationWrapper(on_frame));
+  ForEachRenderFrameHost(FrameIterationWrapper(on_frame));
 }
 
 void RenderFrameHostImpl::ForEachRenderFrameHost(
@@ -1737,7 +1713,7 @@ void RenderFrameHostImpl::ForEachRenderFrameHost(
 
 void RenderFrameHostImpl::ForEachRenderFrameHost(
     FrameIterationAlwaysContinueCallbackImpl on_frame) {
-  ForEachRenderFrameHost(ContinueIterationWrapper(on_frame));
+  ForEachRenderFrameHost(FrameIterationWrapper(on_frame));
 }
 
 void RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculative(
@@ -1747,8 +1723,7 @@ void RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculative(
 
 void RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculative(
     FrameIterationAlwaysContinueCallbackImpl on_frame) {
-  ForEachRenderFrameHostIncludingSpeculative(
-      ContinueIterationWrapper(on_frame));
+  ForEachRenderFrameHostIncludingSpeculative(FrameIterationWrapper(on_frame));
 }
 
 void RenderFrameHostImpl::ForEachRenderFrameHostImpl(

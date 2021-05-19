@@ -318,6 +318,8 @@ class WebContents : public PageNavigator,
   virtual const GURL& GetLastCommittedURL() = 0;
 
   // Returns the main frame for the currently active view.
+  // With MPArch, this returns the primary main frame. This WebContents may have
+  // additional main frames for prerendered pages, bfcached pages, etc.
   virtual RenderFrameHost* GetMainFrame() = 0;
 
   // Returns the focused frame for the currently active view.
@@ -342,6 +344,7 @@ class WebContents : public PageNavigator,
   virtual RenderFrameHost* UnsafeFindFrameByFrameTreeNodeId(
       int frame_tree_node_id) = 0;
 
+  // TODO(1208438): Migrate to |ForEachRenderFrameHost|.
   // Calls |on_frame| for each frame in the currently active view.
   // Note: The RenderFrameHost parameter is not guaranteed to have a live
   // RenderFrame counterpart in the renderer process. Callbacks should check
@@ -350,13 +353,29 @@ class WebContents : public PageNavigator,
   virtual void ForEachFrame(
       const base::RepeatingCallback<void(RenderFrameHost*)>& on_frame) = 0;
 
+  // TODO(1208438): Migrate to |ForEachRenderFrameHost|.
   // Returns a vector of all RenderFrameHosts in the currently active view in
   // breadth-first traversal order.
   virtual std::vector<RenderFrameHost*> GetAllFrames() = 0;
 
+  // TODO(1208438): Migrate to |ForEachRenderFrameHost|.
   // Sends the given IPC to all live frames in this WebContents and returns the
   // number of sent messages (i.e. the number of processed frames).
   virtual int SendToAllFrames(IPC::Message* message) = 0;
+
+  // Calls |on_frame| for every RenderFrameHost in this WebContents. Note that
+  // this includes RenderFrameHosts that are not descended from the primary main
+  // frame (e.g. bfcached pages and prerendered pages). The order of traversal
+  // for RenderFrameHosts within a page is consistent with
+  // |RenderFrameHost::ForEachRenderFrameHost|'s order, however no order is
+  // guaranteed between pages.
+  // For callers only interested in the primary page,
+  // |GetMainFrame()->ForEachRenderFrameHost()| can be used.
+  // See |RenderFrameHost::ForEachRenderFrameHost| for details.
+  virtual void ForEachRenderFrameHost(
+      RenderFrameHost::FrameIterationCallback on_frame) = 0;
+  virtual void ForEachRenderFrameHost(
+      RenderFrameHost::FrameIterationAlwaysContinueCallback on_frame) = 0;
 
   // Gets the current RenderViewHost for this tab.
   virtual RenderViewHost* GetRenderViewHost() = 0;

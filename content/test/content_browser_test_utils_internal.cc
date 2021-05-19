@@ -177,6 +177,23 @@ CollectAllRenderFrameHostsIncludingSpeculative(
   return visited_frames;
 }
 
+std::vector<RenderFrameHostImpl*> CollectAllRenderFrameHosts(
+    WebContentsImpl* web_contents) {
+  std::vector<RenderFrameHostImpl*> visited_frames;
+  web_contents->ForEachRenderFrameHost(base::BindLambdaForTesting(
+      [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); }));
+  return visited_frames;
+}
+
+std::vector<RenderFrameHostImpl*>
+CollectAllRenderFrameHostsIncludingSpeculative(WebContentsImpl* web_contents) {
+  std::vector<RenderFrameHostImpl*> visited_frames;
+  web_contents->ForEachRenderFrameHostIncludingSpeculative(
+      base::BindLambdaForTesting(
+          [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); }));
+  return visited_frames;
+}
+
 Shell* OpenBlankWindow(WebContentsImpl* web_contents) {
   FrameTreeNode* root = web_contents->GetFrameTree()->root();
   ShellAddedObserver new_shell_observer;
