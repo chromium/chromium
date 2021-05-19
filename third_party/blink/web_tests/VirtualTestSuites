@@ -1045,5 +1045,10 @@
     "prefix": "popup-disabled",
     "bases": [],
     "args": ["--stable-release-mode"]
+  },
+  {
+  "prefix": "playback_speed_button",
+  "bases": ["media/controls"],
+  "args": [ "--enable-features=PlaybackSpeedButton" ]
   }
 ]

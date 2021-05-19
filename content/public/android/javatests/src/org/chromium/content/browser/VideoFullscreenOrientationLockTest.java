@@ -107,8 +107,9 @@ public class VideoFullscreenOrientationLockTest {
     private Rect fullscreenButtonBounds(Rect videoRect) {
         Rect panel = buttonPanelBounds(videoRect);
 
-        // The fullscreen button is the second rightmost button in the panel.
-        int right = panel.right - BUTTON_WIDTH;
+        // In these tests, we have no overflow items, so the fullscreen button is the rightmost
+        // button in the panel.
+        int right = panel.right;
         int left = right - BUTTON_WIDTH;
         return new Rect(left, panel.top, right, panel.bottom);
     }
