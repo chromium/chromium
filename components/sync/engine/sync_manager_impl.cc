@@ -377,7 +377,7 @@ void SyncManagerImpl::NudgeForInitialDownload(ModelType type) {
 void SyncManagerImpl::NudgeForCommit(ModelType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   debug_info_event_listener_.OnNudgeFromDatatype(type);
-  scheduler_->ScheduleLocalNudge(type, FROM_HERE);
+  scheduler_->ScheduleLocalNudge(type);
 }
 
 void SyncManagerImpl::OnSyncCycleEvent(const SyncCycleEvent& event) {
@@ -448,8 +448,7 @@ void SyncManagerImpl::OnIncomingInvalidation(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   allstatus_.IncrementNotificationsReceived();
-  scheduler_->ScheduleInvalidationNudge(type, std::move(invalidation),
-                                        FROM_HERE);
+  scheduler_->ScheduleInvalidationNudge(type, std::move(invalidation));
 }
 
 void SyncManagerImpl::RefreshTypes(ModelTypeSet types) {
@@ -457,7 +456,7 @@ void SyncManagerImpl::RefreshTypes(ModelTypeSet types) {
   if (types.Empty()) {
     LOG(WARNING) << "Sync received refresh request with no types specified.";
   } else {
-    scheduler_->ScheduleLocalRefreshRequest(types, FROM_HERE);
+    scheduler_->ScheduleLocalRefreshRequest(types);
   }
 }
 

@@ -22,15 +22,11 @@ class FakeSyncScheduler : public SyncScheduler {
 
   void Start(Mode mode, base::Time last_poll_time) override;
   void Stop() override;
-  void ScheduleLocalNudge(ModelType type,
-                          const base::Location& nudge_location) override;
-  void ScheduleLocalRefreshRequest(
-      ModelTypeSet types,
-      const base::Location& nudge_location) override;
+  void ScheduleLocalNudge(ModelType type) override;
+  void ScheduleLocalRefreshRequest(ModelTypeSet types) override;
   void ScheduleInvalidationNudge(
       ModelType type,
-      std::unique_ptr<InvalidationInterface> interface,
-      const base::Location& nudge_location) override;
+      std::unique_ptr<InvalidationInterface> interface) override;
   void ScheduleConfiguration(ConfigurationParams params) override;
 
   void ScheduleInitialSyncNudge(ModelType model_type) override;

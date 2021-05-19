@@ -16,18 +16,13 @@ void FakeSyncScheduler::Start(Mode mode, base::Time last_poll_time) {}
 
 void FakeSyncScheduler::Stop() {}
 
-void FakeSyncScheduler::ScheduleLocalNudge(
-    ModelType type,
-    const base::Location& nudge_location) {}
+void FakeSyncScheduler::ScheduleLocalNudge(ModelType type) {}
 
-void FakeSyncScheduler::ScheduleLocalRefreshRequest(
-    ModelTypeSet types,
-    const base::Location& nudge_location) {}
+void FakeSyncScheduler::ScheduleLocalRefreshRequest(ModelTypeSet types) {}
 
 void FakeSyncScheduler::ScheduleInvalidationNudge(
     ModelType type,
-    std::unique_ptr<InvalidationInterface> interface,
-    const base::Location& nudge_location) {}
+    std::unique_ptr<InvalidationInterface> interface) {}
 
 void FakeSyncScheduler::ScheduleConfiguration(ConfigurationParams params) {
   std::move(params.ready_task).Run();
