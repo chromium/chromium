@@ -24,7 +24,9 @@ public abstract class PictureInPicture {
      * @return boolean true if Picture-In-Picture is enabled, otherwise false.
      */
     public static boolean isEnabled(Context context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        // Some versions of Android crash when the activity enters Picture-in-Picture
+        // immediately after it exits Picture-in-Picture. See b/143784148
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             return false;
         }
 
