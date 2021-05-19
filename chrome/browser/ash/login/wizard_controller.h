@@ -274,7 +274,7 @@ class WizardController {
   void ShowHIDDetectionScreen();
   void ShowDeviceDisabledScreen();
   void ShowEncryptionMigrationScreen();
-  void ShowSupervisionTransitionScreen();
+  void ShowManagementTransitionScreen();
   void ShowUpdateRequiredScreen();
   void ShowAssistantOptInFlowScreen();
   void ShowMultiDeviceSetupScreen();
@@ -338,7 +338,7 @@ class WizardController {
   void OnMarketingOptInScreenExit(MarketingOptInScreen::Result result);
   void OnResetScreenExit();
   void OnDeviceModificationCanceled();
-  void OnSupervisionTransitionScreenExit();
+  void OnManagementTransitionScreenExit();
   void OnUpdateRequiredScreenExit();
   void OnOobeFlowFinished();
   void OnPackagedLicenseScreenExit(PackagedLicenseScreen::Result result);
@@ -496,7 +496,7 @@ class WizardController {
   friend class WizardControllerOobeConfigurationTest;
   friend class WizardControllerOobeResumeTest;
   friend class WizardControllerScreenPriorityTest;
-  friend class WizardControllerSupervisionTransitionOobeTest;
+  friend class WizardControllerManagementTransitionOobeTest;
 
   base::CallbackListSubscription accessibility_subscription_;
 

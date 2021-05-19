@@ -43,8 +43,8 @@ class SigninUI {
 
   // Starts user onboarding after successful sign-in for new users.
   virtual void StartUserOnboarding() = 0;
-  // Show UI for supervision transition flow.
-  virtual void StartSupervisionTransition() = 0;
+  // Show UI for management transition flow.
+  virtual void StartManagementTransition() = 0;
 
   virtual void StartEncryptionMigration(
       const UserContext& user_context,

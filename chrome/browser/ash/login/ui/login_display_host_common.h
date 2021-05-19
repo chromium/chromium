@@ -65,7 +65,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   // SigninUI:
   void SetAuthSessionForOnboarding(const UserContext& user_context) final;
   void StartUserOnboarding() final;
-  void StartSupervisionTransition() final;
+  void StartManagementTransition() final;
   void StartEncryptionMigration(
       const UserContext& user_context,
       EncryptionMigrationMode migration_mode,

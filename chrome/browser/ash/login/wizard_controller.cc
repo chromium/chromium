@@ -75,6 +75,7 @@
 #include "chrome/browser/ash/login/screens/kiosk_autolaunch_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_enable_screen.h"
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
+#include "chrome/browser/ash/login/screens/management_transition_screen.h"
 #include "chrome/browser/ash/login/screens/marketing_opt_in_screen.h"
 #include "chrome/browser/ash/login/screens/multidevice_setup_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
@@ -85,7 +86,6 @@
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
-#include "chrome/browser/ash/login/screens/supervision_transition_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/browser/ash/login/screens/tpm_error_screen.h"
 #include "chrome/browser/ash/login/screens/update_required_screen.h"
@@ -139,6 +139,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_enable_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/multidevice_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
@@ -151,7 +152,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/tpm_error_screen_handler.h"
@@ -233,7 +233,7 @@ const chromeos::StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
     chromeos::EnableDebuggingScreenView::kScreenId,
     chromeos::KioskAutolaunchScreenView::kScreenId,
     chromeos::KioskEnableScreenView::kScreenId,
-    chromeos::SupervisionTransitionScreenView::kScreenId,
+    chromeos::ManagementTransitionScreenView::kScreenId,
     chromeos::TpmErrorView::kScreenId,
     chromeos::WrongHWIDScreenView::kScreenId,
 };
@@ -625,9 +625,9 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
       oobe_ui->GetView<DeviceDisabledScreenHandler>()));
   append(std::make_unique<EncryptionMigrationScreen>(
       oobe_ui->GetView<EncryptionMigrationScreenHandler>()));
-  append(std::make_unique<SupervisionTransitionScreen>(
-      oobe_ui->GetView<SupervisionTransitionScreenHandler>(),
-      base::BindRepeating(&WizardController::OnSupervisionTransitionScreenExit,
+  append(std::make_unique<ManagementTransitionScreen>(
+      oobe_ui->GetView<ManagementTransitionScreenHandler>(),
+      base::BindRepeating(&WizardController::OnManagementTransitionScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<UpdateRequiredScreen>(
       oobe_ui->GetView<UpdateRequiredScreenHandler>(),
@@ -876,8 +876,8 @@ void WizardController::ShowEncryptionMigrationScreen() {
   SetCurrentScreen(GetScreen(EncryptionMigrationScreenView::kScreenId));
 }
 
-void WizardController::ShowSupervisionTransitionScreen() {
-  SetCurrentScreen(GetScreen(SupervisionTransitionScreenView::kScreenId));
+void WizardController::ShowManagementTransitionScreen() {
+  SetCurrentScreen(GetScreen(ManagementTransitionScreenView::kScreenId));
 }
 
 void WizardController::ShowUpdateRequiredScreen() {
@@ -1561,8 +1561,8 @@ void WizardController::OnDeviceModificationCanceled() {
   ShowPackagedLicenseScreen();
 }
 
-void WizardController::OnSupervisionTransitionScreenExit() {
-  OnScreenExit(SupervisionTransitionScreenView::kScreenId, kDefaultExitReason);
+void WizardController::OnManagementTransitionScreenExit() {
+  OnScreenExit(ManagementTransitionScreenView::kScreenId, kDefaultExitReason);
 
   OnOobeFlowFinished();
 }
@@ -1897,8 +1897,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowFingerprintSetupScreen();
   } else if (screen_id == MarketingOptInScreenView::kScreenId) {
     ShowMarketingOptInScreen();
-  } else if (screen_id == SupervisionTransitionScreenView::kScreenId) {
-    ShowSupervisionTransitionScreen();
+  } else if (screen_id == ManagementTransitionScreenView::kScreenId) {
+    ShowManagementTransitionScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == ActiveDirectoryPasswordChangeView::kScreenId ||

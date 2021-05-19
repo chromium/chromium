@@ -12375,6 +12375,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Image" label=""/>
   <suffix name="Kiosk-enable" label=""/>
   <suffix name="Locale-switch" label=""/>
+  <suffix name="Management-transition" label=""/>
   <suffix name="Marketing-opt-in" label=""/>
   <suffix name="Multidevice-setup" label="">
     <obsolete>
@@ -12390,7 +12391,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Pin-setup" label=""/>
   <suffix name="Recommend-apps" label=""/>
   <suffix name="Reset" label=""/>
-  <suffix name="Supervision-transition" label=""/>
+  <suffix name="Supervision-transition" label="">
+    <obsolete>
+      Renamed to Management-transition in M92.
+    </obsolete>
+  </suffix>
   <suffix name="Sync-consent" label=""/>
   <suffix name="Tos" label=""/>
   <suffix name="Update" label=""/>
@@ -12461,6 +12466,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Locale-switch.NoSwitchNeeded" label=""/>
   <suffix name="Locale-switch.SwitchFailed" label=""/>
   <suffix name="Locale-switch.SwitchSucceded" label=""/>
+  <suffix name="Management-transition.Next" label=""/>
   <suffix name="Marketing-opt-in.Next" label=""/>
   <suffix name="Multidevice-setup-screen.Next" label=""/>
   <suffix name="Multidevice-setup.Next" label="">
@@ -12484,7 +12490,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Recommend-apps.Selected" label=""/>
   <suffix name="Recommend-apps.Skipped" label=""/>
   <suffix name="Reset.Cancel" label=""/>
-  <suffix name="Supervision-transition.Next" label=""/>
+  <suffix name="Supervision-transition.Next" label="">
+    <obsolete>
+      Renamed to Management-transition.Next in M92.
+    </obsolete>
+  </suffix>
   <suffix name="Sync-consent.Next" label=""/>
   <suffix name="Terms-of-service.Accepted" label=""/>
   <suffix name="Terms-of-service.Declined" label=""/>

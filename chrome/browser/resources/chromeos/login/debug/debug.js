@@ -755,21 +755,21 @@ cr.define('cr.ui.login.debug', function() {
       ],
     },
     {
-      id: 'supervision-transition',
+      id: 'management-transition',
       kind: ScreenKind.OTHER,
       handledSteps: 'progress',
       states: [
         {
           id: 'adding',
           trigger: (screen) => {
-            screen.setIsRemovingSupervision(false);
+            screen.setIsRemovingManagement(false);
             screen.setUIStep('progress');
           },
         },
         {
           id: 'removing',
           trigger: (screen) => {
-            screen.setIsRemovingSupervision(true);
+            screen.setIsRemovingManagement(true);
             screen.setUIStep('progress');
           },
         },

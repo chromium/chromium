@@ -15,9 +15,9 @@ js_type_check("closure_compile_local") {
     ":active_directory_password_change",
     ":encryption_migration",
     ":gaia_password_changed",
+    ":management_transition",
     ":offline_login",
     ":public_session_terms_of_service",
-    ":supervision_transition",
     ":update_required_card",
   ]
 }
@@ -73,7 +73,7 @@ js_library("public_session_terms_of_service") {
   ]
 }
 
-js_library("supervision_transition") {
+js_library("management_transition") {
   deps = [
     "../../components:login_screen_behavior",
     "../../components/oobe_adaptive_dialog:oobe_adaptive_dialog",

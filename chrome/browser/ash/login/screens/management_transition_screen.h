@@ -2,28 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_SUPERVISION_TRANSITION_SCREEN_H_
-#define CHROME_BROWSER_ASH_LOGIN_SCREENS_SUPERVISION_TRANSITION_SCREEN_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_MANAGEMENT_TRANSITION_SCREEN_H_
+#define CHROME_BROWSER_ASH_LOGIN_SCREENS_MANAGEMENT_TRANSITION_SCREEN_H_
 
 #include "base/callback.h"
 #include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
 
 namespace ash {
 
-class SupervisionTransitionScreen : public BaseScreen {
+class ManagementTransitionScreen : public BaseScreen {
  public:
-  SupervisionTransitionScreen(SupervisionTransitionScreenView* view,
-                              const base::RepeatingClosure& exit_callback);
-  ~SupervisionTransitionScreen() override;
+  ManagementTransitionScreen(ManagementTransitionScreenView* view,
+                             const base::RepeatingClosure& exit_callback);
+  ~ManagementTransitionScreen() override;
 
   // Called when view is destroyed so there's no dead reference to it.
-  void OnViewDestroyed(SupervisionTransitionScreenView* view_);
+  void OnViewDestroyed(ManagementTransitionScreenView* view_);
 
   // Called when transition has finished, exits the screen.
-  void OnSupervisionTransitionFinished();
+  void OnManagementTransitionFinished();
 
  protected:
   // BaseScreen:
@@ -33,10 +33,10 @@ class SupervisionTransitionScreen : public BaseScreen {
   base::RepeatingClosure* exit_callback() { return &exit_callback_; }
 
  private:
-  SupervisionTransitionScreenView* view_;
+  ManagementTransitionScreenView* view_;
   base::RepeatingClosure exit_callback_;
 
-  DISALLOW_COPY_AND_ASSIGN(SupervisionTransitionScreen);
+  DISALLOW_COPY_AND_ASSIGN(ManagementTransitionScreen);
 };
 
 }  // namespace ash
@@ -44,7 +44,7 @@ class SupervisionTransitionScreen : public BaseScreen {
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
 namespace chromeos {
-using ::ash::SupervisionTransitionScreen;
+using ::ash::ManagementTransitionScreen;
 }
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_SUPERVISION_TRANSITION_SCREEN_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MANAGEMENT_TRANSITION_SCREEN_H_

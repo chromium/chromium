@@ -19,8 +19,8 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
-#include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/session/arc_session_runner.h"
@@ -34,21 +34,22 @@
 namespace ash {
 namespace {
 
-constexpr char kSupervisionTransitionId[] = "supervision-transition";
+// Renamed from "supervision-transition".
+constexpr char kManagementTransitionId[] = "management-transition";
 
-const test::UIPath kSupervisionDialog = {kSupervisionTransitionId,
-                                         "supervisionTransitionDialog"};
-const test::UIPath kErrorDialog = {kSupervisionTransitionId,
-                                   "supervisionTransitionErrorDialog"};
-const test::UIPath kAcceptButton = {kSupervisionTransitionId, "accept-button"};
+const test::UIPath kManagementDialog = {kManagementTransitionId,
+                                        "managementTransitionDialog"};
+const test::UIPath kErrorDialog = {kManagementTransitionId,
+                                   "managementTransitionErrorDialog"};
+const test::UIPath kAcceptButton = {kManagementTransitionId, "accept-button"};
 
 // Param returns the original user type.
-class SupervisionTransitionScreenTest
+class ManagementTransitionScreenTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<LoggedInUserMixin::LogInType> {
  public:
-  SupervisionTransitionScreenTest() = default;
-  ~SupervisionTransitionScreenTest() override = default;
+  ManagementTransitionScreenTest() = default;
+  ~ManagementTransitionScreenTest() override = default;
 
   // MixinBasedInProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -93,17 +94,17 @@ class SupervisionTransitionScreenTest
       embedded_test_server(), this, false /*should_launch_browser*/};
 };
 
-IN_PROC_BROWSER_TEST_P(SupervisionTransitionScreenTest,
+IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest,
                        PRE_SuccessfulTransition) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   profile->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn, true);
   arc::SetArcPlayStoreEnabledForProfile(profile, true);
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisionTransitionScreenTest, SuccessfulTransition) {
-  OobeScreenWaiter(SupervisionTransitionScreenView::kScreenId).Wait();
+IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest, SuccessfulTransition) {
+  OobeScreenWaiter(ManagementTransitionScreenView::kScreenId).Wait();
 
-  test::OobeJS().ExpectVisiblePath(kSupervisionDialog);
+  test::OobeJS().ExpectVisiblePath(kManagementDialog);
   test::OobeJS().ExpectHiddenPath(kErrorDialog);
 
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
@@ -119,18 +120,18 @@ IN_PROC_BROWSER_TEST_P(SupervisionTransitionScreenTest, SuccessfulTransition) {
   logged_in_user_mixin().GetLoginManagerMixin()->WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisionTransitionScreenTest, PRE_TransitionTimeout) {
+IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest, PRE_TransitionTimeout) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   profile->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn, true);
   arc::SetArcPlayStoreEnabledForProfile(profile, true);
 }
 
 // Flaky on linux-chromeos-rel (see https://crbug.com/1032997)
-IN_PROC_BROWSER_TEST_P(SupervisionTransitionScreenTest,
+IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest,
                        DISABLED_TransitionTimeout) {
-  OobeScreenWaiter(SupervisionTransitionScreenView::kScreenId).Wait();
+  OobeScreenWaiter(ManagementTransitionScreenView::kScreenId).Wait();
 
-  test::OobeJS().ExpectVisiblePath(kSupervisionDialog);
+  test::OobeJS().ExpectVisiblePath(kManagementDialog);
   test::OobeJS().ExpectHiddenPath(kErrorDialog);
 
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
@@ -139,7 +140,7 @@ IN_PROC_BROWSER_TEST_P(SupervisionTransitionScreenTest,
   base::OneShotTimer* timer =
       LoginDisplayHost::default_host()
           ->GetOobeUI()
-          ->GetHandler<SupervisionTransitionScreenHandler>()
+          ->GetHandler<ManagementTransitionScreenHandler>()
           ->GetTimerForTesting();
   ASSERT_TRUE(timer->IsRunning());
   timer->FireNow();
@@ -148,7 +149,7 @@ IN_PROC_BROWSER_TEST_P(SupervisionTransitionScreenTest,
       arc::prefs::kArcDataRemoveRequested));
 
   test::OobeJS().CreateVisibilityWaiter(true, kErrorDialog)->Wait();
-  test::OobeJS().ExpectHiddenPath(kSupervisionDialog);
+  test::OobeJS().ExpectHiddenPath(kManagementDialog);
 
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
@@ -158,18 +159,17 @@ IN_PROC_BROWSER_TEST_P(SupervisionTransitionScreenTest,
   logged_in_user_mixin().GetLoginManagerMixin()->WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisionTransitionScreenTest,
-                       PRE_SkipTransitionIfArcNeverStarted) {
-}
+IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest,
+                       PRE_SkipTransitionIfArcNeverStarted) {}
 
-IN_PROC_BROWSER_TEST_P(SupervisionTransitionScreenTest,
+IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest,
                        SkipTransitionIfArcNeverStarted) {
   // Login should go through without being interrupted.
   logged_in_user_mixin().GetLoginManagerMixin()->WaitForActiveSession();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         SupervisionTransitionScreenTest,
+                         ManagementTransitionScreenTest,
                          testing::Values(LoggedInUserMixin::LogInType::kRegular,
                                          LoggedInUserMixin::LogInType::kChild));
 

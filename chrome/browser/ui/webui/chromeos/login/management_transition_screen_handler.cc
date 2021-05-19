@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
 
 #include "ash/public/cpp/login_screen.h"
 #include "base/bind.h"
@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/screens/supervision_transition_screen.h"
+#include "chrome/browser/ash/login/screens/management_transition_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -28,55 +28,54 @@ constexpr base::TimeDelta kWaitingTimeout = base::TimeDelta::FromMinutes(2);
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId SupervisionTransitionScreenView::kScreenId;
+constexpr StaticOobeScreenId ManagementTransitionScreenView::kScreenId;
 
-SupervisionTransitionScreenHandler::SupervisionTransitionScreenHandler(
+ManagementTransitionScreenHandler::ManagementTransitionScreenHandler(
     JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-}
+    : BaseScreenHandler(kScreenId, js_calls_container) {}
 
-SupervisionTransitionScreenHandler::~SupervisionTransitionScreenHandler() {
+ManagementTransitionScreenHandler::~ManagementTransitionScreenHandler() {
   if (screen_)
     screen_->OnViewDestroyed(this);
   timer_.Stop();
 }
 
-void SupervisionTransitionScreenHandler::DeclareLocalizedValues(
+void ManagementTransitionScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("removingSupervisionTitle", IDS_REMOVING_SUPERVISION_TITLE);
   builder->Add("addingSupervisionTitle", IDS_ADDING_SUPERVISION_TITLE);
-  builder->Add("supervisionTransitionIntroMessage",
+  builder->Add("managementTransitionIntroMessage",
                IDS_SUPERVISION_TRANSITION_MESSAGE);
-  builder->Add("supervisionTransitionErrorTitle",
+  builder->Add("managementTransitionErrorTitle",
                IDS_SUPERVISION_TRANSITION_ERROR_TITLE);
-  builder->Add("supervisionTransitionErrorMessage",
+  builder->Add("managementTransitionErrorMessage",
                IDS_SUPERVISION_TRANSITION_ERROR_MESSAGE);
-  builder->Add("supervisionTransitionButton",
+  builder->Add("managementTransitionErrorButton",
                IDS_SUPERVISION_TRANSITION_ERROR_BUTTON);
 }
 
-void SupervisionTransitionScreenHandler::RegisterMessages() {
+void ManagementTransitionScreenHandler::RegisterMessages() {
   AddCallback(
-      "finishSupervisionTransition",
-      &SupervisionTransitionScreenHandler::OnSupervisionTransitionFinished);
+      "finishManagementTransition",
+      &ManagementTransitionScreenHandler::OnManagementTransitionFinished);
   BaseScreenHandler::RegisterMessages();
 }
 
-void SupervisionTransitionScreenHandler::Bind(
-    SupervisionTransitionScreen* screen) {
+void ManagementTransitionScreenHandler::Bind(
+    ManagementTransitionScreen* screen) {
   BaseScreenHandler::SetBaseScreen(screen);
   screen_ = screen;
   if (page_is_ready())
     Initialize();
 }
 
-void SupervisionTransitionScreenHandler::Unbind() {
+void ManagementTransitionScreenHandler::Unbind() {
   screen_ = nullptr;
   BaseScreenHandler::SetBaseScreen(nullptr);
   timer_.Stop();
 }
 
-void SupervisionTransitionScreenHandler::Show() {
+void ManagementTransitionScreenHandler::Show() {
   if (!page_is_ready() || !screen_) {
     show_on_init_ = true;
     return;
@@ -87,7 +86,7 @@ void SupervisionTransitionScreenHandler::Show() {
   timer_.Start(
       FROM_HERE, kWaitingTimeout,
       base::BindOnce(
-          &SupervisionTransitionScreenHandler::OnSupervisionTransitionFailed,
+          &ManagementTransitionScreenHandler::OnManagementTransitionFailed,
           weak_factory_.GetWeakPtr()));
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -97,30 +96,30 @@ void SupervisionTransitionScreenHandler::Show() {
   registrar_.Add(
       arc::prefs::kArcSupervisionTransition,
       base::BindRepeating(
-          &SupervisionTransitionScreenHandler::OnSupervisionTransitionFinished,
+          &ManagementTransitionScreenHandler::OnManagementTransitionFinished,
           weak_factory_.GetWeakPtr()));
 
   // Disable system tray, shutdown button and prevent login as guest when
-  // supervision transition screen is shown.
+  // management transition screen is shown.
   SystemTrayClientImpl::Get()->SetPrimaryTrayEnabled(false);
   ash::LoginScreen::Get()->EnableShutdownButton(false);
   ash::LoginScreen::Get()->SetAllowLoginAsGuest(false);
   ash::LoginScreen::Get()->SetIsFirstSigninStep(false);
 
   base::DictionaryValue data;
-  data.SetBoolean("isRemovingSupervision",
+  data.SetBoolean("isRemovingManagement",
                   arc::GetSupervisionTransition(profile) ==
                       arc::ArcSupervisionTransition::CHILD_TO_REGULAR);
   ShowScreenWithData(kScreenId, &data);
 }
 
-void SupervisionTransitionScreenHandler::Hide() {}
+void ManagementTransitionScreenHandler::Hide() {}
 
-base::OneShotTimer* SupervisionTransitionScreenHandler::GetTimerForTesting() {
+base::OneShotTimer* ManagementTransitionScreenHandler::GetTimerForTesting() {
   return &timer_;
 }
 
-void SupervisionTransitionScreenHandler::Initialize() {
+void ManagementTransitionScreenHandler::Initialize() {
   if (!screen_ || !show_on_init_)
     return;
 
@@ -128,29 +127,29 @@ void SupervisionTransitionScreenHandler::Initialize() {
   show_on_init_ = false;
 }
 
-void SupervisionTransitionScreenHandler::OnSupervisionTransitionFailed() {
-  LOG(ERROR) << "Supervision transition failed; resetting ARC++ data.";
+void ManagementTransitionScreenHandler::OnManagementTransitionFailed() {
+  LOG(ERROR) << "Management transition failed; resetting ARC++ data.";
   // Prevent ARC++ data removal below from triggering the success flow (since it
-  // will reset the supervision transition pref).
+  // will reset the management transition pref).
   registrar_.RemoveAll();
   timed_out_ = true;
   arc::ArcSessionManager::Get()->RequestArcDataRemoval();
   arc::ArcSessionManager::Get()->StopAndEnableArc();
   if (screen_) {
     AllowJavascript();
-    FireWebUIListener("supervision-transition-failed");
+    FireWebUIListener("management-transition-failed");
   }
 }
 
-void SupervisionTransitionScreenHandler::OnSupervisionTransitionFinished() {
-  // This method is called both when supervision transition succeeds (observing
+void ManagementTransitionScreenHandler::OnManagementTransitionFinished() {
+  // This method is called both when management transition succeeds (observing
   // pref changes) and when it fails ("OK" button from error screen, see
   // RegisterMessages()). Once this screen exits, user session will be started,
   // so there's no need to re-enable shutdown button from login screen, only the
   // system tray.
   SystemTrayClientImpl::Get()->SetPrimaryTrayEnabled(true);
   if (screen_)
-    screen_->OnSupervisionTransitionFinished();
+    screen_->OnManagementTransitionFinished();
 
   UMA_HISTOGRAM_BOOLEAN("Arc.Supervision.Transition.Screen.Successful",
                         !timed_out_);

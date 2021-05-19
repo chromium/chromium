@@ -1825,7 +1825,7 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
                    arc::ArcSupervisionTransition::NO_TRANSITION) {
       LoginDisplayHost::default_host()
           ->GetSigninUI()
-          ->StartSupervisionTransition();
+          ->StartManagementTransition();
       return false;
     }
   }
