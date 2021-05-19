@@ -2719,11 +2719,11 @@
     ],
 
     'release_trybot_backuprefptr_arm': [
-      'release_trybot', 'backuprefptr', 'android_without_codecs', 'arm',
+      'release_trybot', 'backuprefptr', 'android', 'arm',
     ],
 
     'release_trybot_backuprefptr_arm64': [
-      'release_trybot', 'backuprefptr', 'android_without_codecs', 'arm64',
+      'release_trybot', 'backuprefptr', 'android', 'arm64',
     ],
 
     'release_trybot_paeverywhere_x64': [
