@@ -304,6 +304,14 @@ void PrivacySandboxSettings::ResetFlocId() const {
   SetFlocDataAccessibleFromNow(/*reset_calculate_timer=*/true);
 }
 
+bool PrivacySandboxSettings::IsFlocPrefEnabled() const {
+  return pref_service_->GetBoolean(prefs::kPrivacySandboxFlocEnabled);
+}
+
+void PrivacySandboxSettings::SetFlocPrefEnabled(bool enabled) const {
+  pref_service_->SetBoolean(prefs::kPrivacySandboxFlocEnabled, enabled);
+}
+
 bool PrivacySandboxSettings::IsConversionMeasurementAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {

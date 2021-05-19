@@ -113,6 +113,14 @@ class PrivacySandboxSettings : public KeyedService,
   // current time and resets the time to the next FLoC id calculation
   void ResetFlocId() const;
 
+  // Returns whether the FLoC preference is enabled. This should only be used
+  // for displaying the preference state to the user, and should *not* be used
+  // for determining whether FLoC is allowed or not.
+  bool IsFlocPrefEnabled() const;
+
+  // Sets the FLoC preference to |enabled|.
+  void SetFlocPrefEnabled(bool enabled) const;
+
   // Determines whether Conversion Measurement is allowable in a particular
   // context. Should be called at both impression & conversion. At each of these
   // points |top_frame_origin| is the same as either the impression origin or

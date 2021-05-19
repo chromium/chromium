@@ -1102,6 +1102,39 @@ TEST_F(PrivacySandboxSettingsTest, IsFlocIdResettable) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsFlocIdResettable());
 }
 
+TEST_F(PrivacySandboxSettingsTest, IsFlocPrefEnabled) {
+  // IsFlocPrefEnabled should directly reflect the state of the FLoC pref.
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, true);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocPrefEnabled());
+
+  // The Privacy Sandbox APIs pref should not impact the return value.
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxApisEnabled, false);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocPrefEnabled());
+
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, false);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocPrefEnabled());
+}
+
+TEST_F(PrivacySandboxSettingsTest, SetFlocPrefEnabled) {
+  // The FLoc pref should always be updated by this function, regardless of
+  // other Sandbox State.
+  privacy_sandbox_settings()->SetFlocPrefEnabled(false);
+  EXPECT_FALSE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxFlocEnabled));
+
+  // Disabling the sandbox shouldn't prevent the pref from being updated. This
+  // state is not directly allowable by the UI, but the state itself is valid
+  // as far as the PrivacySandboxSettings service is concerned.
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxApisEnabled, false);
+  privacy_sandbox_settings()->SetFlocPrefEnabled(true);
+  EXPECT_TRUE(profile()->GetTestingPrefService()->GetBoolean(
+      prefs::kPrivacySandboxFlocEnabled));
+}
+
 TEST_F(PrivacySandboxSettingsTest, ReconciliationOutcome) {
   // Check that reconciling preferences has the appropriate outcome based on
   // the current user cookie settings.
