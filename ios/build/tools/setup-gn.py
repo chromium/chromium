@@ -1,27 +1,19 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import argparse
+import configparser
 import convert_gn_xcodeproj
 import errno
+import io
 import os
 import re
 import shutil
 import subprocess
 import sys
 import tempfile
-
-try:
-  import configparser
-except ImportError:
-  import ConfigParser as configparser
-
-try:
-  import StringIO as io
-except ImportError:
-  import io
 
 
 SUPPORTED_TARGETS = ('iphoneos', 'iphonesimulator', 'maccatalyst')
@@ -41,7 +33,7 @@ LLDBINIT_SKIP_PATTERNS = (
     re.compile('^settings append target.source-map .* /google/src/.*$'),
 )
 
-class ConfigParserWithStringInterpolation(configparser.SafeConfigParser):
+class ConfigParserWithStringInterpolation(configparser.ConfigParser):
 
   '''A .ini file parser that supports strings and environment variables.'''
 
@@ -55,7 +47,7 @@ class ConfigParserWithStringInterpolation(configparser.SafeConfigParser):
   def getstring(self, section, option, fallback=''):
     try:
       raw_value = self.get(section, option)
-    except configparser.NoOptionError, _:
+    except configparser.NoOptionError:
       return fallback
     return self._UnquoteString(self._ExpandEnvVar(raw_value))
 
