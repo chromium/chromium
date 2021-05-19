@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.RealObject;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -60,6 +61,8 @@ import java.util.Map;
             ChromeSurveyControllerFlowTest.ShadowSurveyInfoBar.class,
             ChromeSurveyControllerFlowTest.ShadowInfoBarContainer.class
         })
+//TODO(crbug.com/1210371): Rewrite using paused loop. See crbug for details.
+@LooperMode(LooperMode.Mode.LEGACY)
 public class ChromeSurveyControllerFlowTest {
     // clang-format on
     private static final String TEST_TRIGGER_ID = "test_trigger_id";
