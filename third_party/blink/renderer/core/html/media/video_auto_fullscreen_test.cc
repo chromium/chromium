@@ -169,7 +169,9 @@ TEST_F(VideoAutoFullscreen, ExitFullscreenDoesNotPauseWithPlaysInline) {
   EXPECT_FALSE(Video()->paused());
 }
 
-TEST_F(VideoAutoFullscreen, OnPlayTriggersFullscreenWithoutGesture) {
+// This test is disabled because it requires adding a fake activation in
+// production code (crbug.com/1082258).
+TEST_F(VideoAutoFullscreen, DISABLED_OnPlayTriggersFullscreenWithoutGesture) {
   Video()->SetSrc("http://example.com/foo.mp4");
 
   LocalFrame::NotifyUserActivation(
