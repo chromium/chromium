@@ -339,6 +339,7 @@
     },
     {
       name: "CaptureHandle",
+      origin_trial_feature_name: "CaptureHandle",
       depends_on: ["GetDisplayMedia"],
       status: {"Android": "", "default": "experimental"},
     },
