@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/content/segmentation_model_handler.h"
+#include "components/segmentation_platform/internal/execution/segmentation_model_handler.h"
 
 #include <memory>
 #include <vector>
 
 #include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/segmentation_platform/internal/content/segmentation_model_executor.h"
+#include "components/segmentation_platform/internal/execution/segmentation_model_executor.h"
 
 namespace segmentation_platform {
 

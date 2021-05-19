@@ -26,59 +26,30 @@ static_library("internal") {
   ]
 
   deps = [
-    ":content",
     "//base",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
-    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
   ]
-}
 
-source_set("content") {
-  visibility = [ ":*" ]
+  public_deps =
+      [ "//components/optimization_guide/proto:optimization_guide_proto" ]
 
   if (build_with_tflite_lib) {
-    sources = [
-      "content/segmentation_model_executor.cc",
-      "content/segmentation_model_executor.h",
-      "content/segmentation_model_handler.cc",
-      "content/segmentation_model_handler.h",
+    sources += [
+      "execution/segmentation_model_executor.cc",
+      "execution/segmentation_model_executor.h",
+      "execution/segmentation_model_handler.cc",
+      "execution/segmentation_model_handler.h",
     ]
 
-    deps = [
-      "//base",
+    deps += [
       "//third_party/tflite:tflite_public_headers",
       "//third_party/tflite-support",
     ]
 
-    public_deps = [
-      "//components/optimization_guide/core",
-      "//components/optimization_guide/proto:optimization_guide_proto",
-    ]
-  }
-}
-
-source_set("content_unit_tests") {
-  testonly = true
-
-  visibility = [ ":unit_tests" ]
-
-  if (build_with_tflite_lib) {
-    # IMPORTANT NOTE: When adding new tests, also remember to update the list of
-    # tests in //components/segmentation_platform/components_unittests.filter
-    sources = [ "content/segmentation_model_executor_unittest.cc" ]
-
-    deps = [
-      ":content",
-      ":internal",
-      "//base",
-      "//base/test:test_support",
-      "//components/optimization_guide/core:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
+    public_deps += [ "//components/optimization_guide/core" ]
   }
 }
 
@@ -98,7 +69,6 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":content_unit_tests",
     ":internal",
     "//base/test:test_support",
     "//components/leveldb_proto:test_support",
@@ -106,6 +76,17 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (build_with_tflite_lib) {
+    # IMPORTANT NOTE: When adding new tests, also remember to update the list of
+    # tests in //components/segmentation_platform/components_unittests.filter
+    sources += [ "execution/segmentation_model_executor_unittest.cc" ]
+
+    deps += [
+      "//base",
+      "//components/optimization_guide/core:test_support",
+    ]
+  }
 }
 
 if (is_android) {

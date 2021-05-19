@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/content/segmentation_model_executor.h"
+#include "components/segmentation_platform/internal/execution/segmentation_model_executor.h"
 
 #include <memory>
 
@@ -15,7 +15,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/segmentation_platform/internal/content/segmentation_model_handler.h"
+#include "components/segmentation_platform/internal/execution/segmentation_model_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
