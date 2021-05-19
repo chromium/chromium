@@ -862,8 +862,17 @@ void StyleEngine::PlatformColorsChanged() {
 }
 
 bool StyleEngine::ShouldSkipInvalidationFor(const Element& element) const {
+  DCHECK(element.GetDocument() == &GetDocument())
+      << "Only schedule invalidations using the StyleEngine of the Document "
+         "which owns the element.";
   if (!element.InActiveDocument())
     return true;
+  if (!global_rule_set_) {
+    // TODO(crbug.com/1175902): This is a speculative fix for a crash.
+    NOTREACHED()
+        << "global_rule_set_ should only be null for inactive documents.";
+    return true;
+  }
   if (GetDocument().InStyleRecalc()) {
 #if DCHECK_IS_ON()
     // TODO(futhark): The InStyleRecalc() if-guard above should have been a
