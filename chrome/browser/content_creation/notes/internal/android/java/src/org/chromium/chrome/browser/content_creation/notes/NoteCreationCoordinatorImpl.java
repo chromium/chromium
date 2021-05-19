@@ -25,7 +25,8 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator {
 
     private TopBarCoordinator mTopBarCoordinator;
 
-    public NoteCreationCoordinatorImpl(Activity activity, NoteService noteService) {
+    public NoteCreationCoordinatorImpl(
+            Activity activity, NoteService noteService, String selectedText) {
         mActivity = activity;
 
         mListModel = new ModelList();
@@ -34,7 +35,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator {
                 new NoteCreationMediator(mListModel, new GoogleFontService(mActivity), noteService);
 
         mDialog = new NoteCreationDialog();
-        mDialog.initDialog(this::onViewCreated);
+        mDialog.initDialog(this::onViewCreated, selectedText);
     }
 
     @Override
@@ -56,5 +57,6 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator {
      */
     private void onViewCreated(View view) {
         mTopBarCoordinator = new TopBarCoordinator(mActivity, view, this::dismissDialog);
+        mDialog.createRecyclerViews(mListModel);
     }
 }

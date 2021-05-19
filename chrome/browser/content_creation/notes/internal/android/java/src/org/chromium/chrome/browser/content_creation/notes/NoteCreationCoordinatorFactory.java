@@ -15,8 +15,9 @@ public class NoteCreationCoordinatorFactory {
     /**
      * @return a NoteCreationCoordinator instance.
      */
-    public static NoteCreationCoordinator create(Activity activity) {
+    public static NoteCreationCoordinator create(Activity activity, String selectedText) {
         Profile profile = Profile.getLastUsedRegularProfile();
-        return new NoteCreationCoordinatorImpl(activity, NoteServiceFactory.getForProfile(profile));
+        return new NoteCreationCoordinatorImpl(
+                activity, NoteServiceFactory.getForProfile(profile), selectedText);
     }
 }

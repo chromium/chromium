@@ -51,6 +51,9 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/note_background_outline.xml",
+    "java/res/drawable/note_title_outline.xml",
+    "java/res/layout/carousel_item.xml",
     "java/res/layout/creation_dialog.xml",
     "java/res/layout/top_bar.xml",
   ]

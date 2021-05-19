@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="60dp"
+        android:paddingEnd="24dp"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical"
+        android:background="@color/modern_grey_200">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingLeft="18dp"
+            android:paddingRight="18dp"
+            android:layout_marginBottom="17dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/note_title_outline"
+            android:textAppearance="@style/TextAppearance.TextSmall" />
+
+        <LinearLayout
+            android:id="@+id/background"
+            android:layout_width="280dp"
+            android:layout_height="240dp"
+            android:gravity="center_horizontal"
+            android:background="@drawable/note_background_outline"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="6"
+                android:paddingLeft="20dp"
+                android:paddingTop="20dp"
+                android:paddingRight="20dp"
+                android:paddingBottom="20dp"
+                android:textAppearance="@style/TextAppearance.Headline" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>
