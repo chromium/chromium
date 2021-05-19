@@ -3019,12 +3019,6 @@ const char kEnableUseAaudioDriverName[] = "Use AAudio Driver";
 const char kEnableUseAaudioDriverDescription[] =
     "Enable the use of AAudio, if supported by the current Android version.";
 
-const char kEphemeralTabUsingBottomSheetName[] =
-    "An ephemeral Preview Tab using the bottom sheet";
-const char kEphemeralTabUsingBottomSheetDescription[] =
-    "Enable a 'Preview page/image' at a linked page into the bottom sheet. "
-    "No other flags are needed for this feature.";
-
 const char kExploreSitesName[] = "Explore websites";
 const char kExploreSitesDescription[] =
     "Enables portal from new tab page to explore websites.";

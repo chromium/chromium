@@ -195,7 +195,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDownloadRename,
     &kDuetTabStripIntegrationAndroid,
     &kEnhancedProtectionPromoCard,
-    &kEphemeralTabUsingBottomSheet,
     &kExperimentsForAgsa,
     &kExploreSites,
     &kFocusOmniboxInIncognitoTabIntents,
@@ -540,9 +539,6 @@ const base::Feature kDuetTabStripIntegrationAndroid{
 
 const base::Feature kEnhancedProtectionPromoCard{
     "EnhancedProtectionPromoCard", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kEphemeralTabUsingBottomSheet{
-    "EphemeralTabUsingBottomSheet", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kExperimentsForAgsa{"ExperimentsForAgsa",
                                         base::FEATURE_ENABLED_BY_DEFAULT};

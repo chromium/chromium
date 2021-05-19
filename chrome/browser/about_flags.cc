@@ -1588,22 +1588,6 @@ const FeatureEntry::FeatureVariation
          base::size(kOverridePrefsForHrefTranslateForceAuto), nullptr}};
 
 #if defined(OS_ANDROID)
-const FeatureEntry::FeatureParam kEphemeralTabOpenPeek[] = {
-    {"ephemeral_tab_open_mode", "0"}};
-const FeatureEntry::FeatureParam kEphemeralTabOpenHalf[] = {
-    {"ephemeral_tab_open_mode", "1"}};
-const FeatureEntry::FeatureParam kEphemeralTabOpenFull[] = {
-    {"ephemeral_tab_open_mode", "2"}};
-const FeatureEntry::FeatureVariation kEphemeralTabOpenVariations[] = {
-    {"Open at peek state", kEphemeralTabOpenPeek,
-     base::size(kEphemeralTabOpenPeek), nullptr},
-    {"Open at half state", kEphemeralTabOpenHalf,
-     base::size(kEphemeralTabOpenHalf), nullptr},
-    {"Open at full state", kEphemeralTabOpenFull,
-     base::size(kEphemeralTabOpenFull), nullptr}};
-#endif
-
-#if defined(OS_ANDROID)
 const FeatureEntry::FeatureParam kExploreSitesExperimental = {
     chrome::android::explore_sites::kExploreSitesVariationParameterName,
     chrome::android::explore_sites::kExploreSitesVariationExperimental};
@@ -5176,15 +5160,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseAngleDescription, kOsWin,
      MULTI_VALUE_TYPE(kUseAngleChoices)},
 #endif
-#if defined(OS_ANDROID)
-    {"enable-ephemeral-tab-bottom-sheet",
-     flag_descriptions::kEphemeralTabUsingBottomSheetName,
-     flag_descriptions::kEphemeralTabUsingBottomSheetDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kEphemeralTabUsingBottomSheet,
-         kEphemeralTabOpenVariations,
-         "EphemeralTabOpenMode")},
-#endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-assistant-dsp", flag_descriptions::kEnableGoogleAssistantDspName,
