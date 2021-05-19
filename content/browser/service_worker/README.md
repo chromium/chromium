@@ -255,7 +255,7 @@ remotes to `mojom.blink.ServiceWorkerRegistrationObject` and
 > ServiceWorkerRegistration and ServiceWorker, or maybe prohibiting destructions
 > initiated from the renderer may work.
 > In addition, we have a Mojo interface for in-process communication across threads like
-> [this](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/public/mojom/service_worker/controller_service_worker.mojom;l=95;drc=6e8b402a6231405b753919029c9027404325ea00).
+> [this](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/mojom/service_worker/controller_service_worker.mojom;l=95;drc=6e8b402a6231405b753919029c9027404325ea00).
 > Mojo is now slightly overused for abstraction of layers for service workers.
 
 #### Browser <-> Renderer (shared worker)
@@ -471,7 +471,7 @@ Here's the explanation about the each section:
 We run a limited number of
 [Telemetry](https://chromium.googlesource.com/catapult/+/HEAD/telemetry/README.md)
 benchmark tests for service worker and a few microbenchmarks in
-[blink_perf](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/harnesses/blink_perf.md#service-worker-perf-tests)
+[blink_perf](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/blink_perf.md#service-worker-perf-tests)
 ([crbug](https://crbug.com/1019097)).
 
 Telemetry tests are part of the [Loading
@@ -513,7 +513,7 @@ Code links and resources:
 - PWA test suite: see 'pwa' in
   [loading_mobile.py](/tools/perf/page_sets/loading_mobile.py), as of March 2019
   [here](https://cs.chromium.org/chromium/src/tools/perf/page_sets/loading_mobile.py?l=88&rcl=e590d4e0ae6d3cbdabee199ea6fabe152a3eea83).
-- [cache_temperature.py](https://chromium.googlesource.com/catapult/+/master/telemetry/telemetry/page/cache_temperature.py)
+- [cache_temperature.py](https://chromium.googlesource.com/catapult/+/main/telemetry/telemetry/page/cache_temperature.py)
 - "Perf benchmark for PWAs using the loading benchmark": [crbug](https://crbug.com/736697) and
   [design doc](https://docs.google.com/document/d/1Nf97CVp1X7aSqvAspyJ7yOCDyr1osUNrnfrGwZ_Yuuo/edit?usp=sharing).
 

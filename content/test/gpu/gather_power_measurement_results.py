@@ -105,7 +105,7 @@ def GetJsonForLatestNBuilds(bot, build_count):
 
 def FindStepLogURL(steps, step_name, log_name):
   # The format of this JSON-encoded protobuf is defined here:
-  # https://chromium.googlesource.com/infra/luci/luci-go/+/master/
+  # https://chromium.googlesource.com/infra/luci/luci-go/+/main/
   #   buildbucket/proto/step.proto
   # It's easiest to just use the RPC explorer to fetch one and see
   # what's desired to extract.

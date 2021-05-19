@@ -44,7 +44,7 @@ import subprocess
 # Schemas:
 # - go/buildbucket-bq and go/buildbucket-proto/build.proto
 # - go/luci/cq/bq and
-#   https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/cv/api/bigquery/v1/attempt.proto
+#   https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/cv/api/bigquery/v1/attempt.proto
 #
 # Original author: maruel@
 # pylint: enable=line-too-long

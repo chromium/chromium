@@ -12,7 +12,7 @@
 
 namespace content {
 
-// https://chromium.googlesource.com/chromium/src/+/master/docs/linux/zygote.md
+// https://chromium.googlesource.com/chromium/src/+/main/docs/linux/zygote.md
 
 // The zygote host is an interface, in the browser process, to the zygote
 // process.

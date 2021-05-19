@@ -28,7 +28,7 @@ namespace content {
 
 // Handles interprocess communication with the Linux zygote process. The zygote
 // does not use standard Chrome IPC or mojo, see:
-// https://chromium.googlesource.com/chromium/src/+/master/docs/linux/sandbox_ipc.md
+// https://chromium.googlesource.com/chromium/src/+/main/docs/linux/sandbox_ipc.md
 class CONTENT_EXPORT ZygoteCommunication {
  public:
   enum class ZygoteType { kSandboxed, kUnsandboxed };

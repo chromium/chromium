@@ -142,7 +142,7 @@ class Zygote {
   std::vector<ZygoteProcessInfo> to_reap_;
 
   // Sandbox IPC channel for renderers to invoke services from the browser. See
-  // https://chromium.googlesource.com/chromium/src/+/master/docs/linux/sandbox_ipc.md
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/linux/sandbox_ipc.md
   base::GlobalDescriptors::Descriptor ipc_backchannel_;
 };
 

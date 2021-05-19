@@ -10,7 +10,7 @@
 // # ./out/libfuzzer/content_security_policy_util_fuzzer
 //
 // For more details, see
-// https://chromium.googlesource.com/chromium/src/+/master/testing/libfuzzer/README.md
+// https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/README.md
 
 #include "base/at_exit.h"
 #include "base/command_line.h"

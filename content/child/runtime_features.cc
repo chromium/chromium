@@ -429,7 +429,7 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
   // SwitchToFeatureMap entry to the initializer list below.
   // Note: command line switches are now discouraged, please consider
   // using base::Feature instead.
-  // https://chromium.googlesource.com/chromium/src/+/refs/heads/master/docs/configuration.md#switches
+  // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/configuration.md#switches
   using wrf = WebRuntimeFeatures;
   const SwitchToFeatureMap switchToFeatureMapping[] = {
       // Stable Features

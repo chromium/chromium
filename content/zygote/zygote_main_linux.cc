@@ -108,7 +108,7 @@ static bool EnterSuidSandbox(sandbox::SetuidSandboxClient* setuid_sandbox,
   if (!setuid_sandbox->IsSuidSandboxUpToDate()) {
     LOG(WARNING) << "You are using a wrong version of the setuid binary!\n"
                     "Please read "
-                    "https://chromium.googlesource.com/chromium/src/+/master/"
+                    "https://chromium.googlesource.com/chromium/src/+/main/"
                     "docs/linux/suid_sandbox_development.md."
                     "\n\n";
   }
