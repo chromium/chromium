@@ -174,6 +174,26 @@ using content::BrowserThread;
 
 namespace {
 
+// Used in metrics for NukeProfileFromDisk(). Keep in sync with enums.xml.
+//
+// Entries should not be renumbered and numeric values should never be reused.
+//
+// Note: there are maximum 3 attempts to nuke a profile.
+enum class NukeProfileResult {
+  // Success values. Make sure they are consecutive.
+  kSuccessFirstAttempt = 0,
+  kSuccessSecondAttempt = 1,
+  kSuccessThirdAttempt = 2,
+
+  // Failure values. Make sure they are consecutive.
+  kFailureFirstAttempt = 10,
+  kFailureSecondAttempt = 11,
+  kFailureThirdAttempt = 12,
+  kMaxValue = kFailureThirdAttempt,
+};
+
+const size_t kNukeProfileMaxRetryCount = 3;
+
 // Profile deletion can pass through two stages:
 enum class ProfileDeletionStage {
   // At SCHEDULING stage some actions are made before profile deletion,
@@ -281,13 +301,63 @@ void CancelProfileDeletion(const base::FilePath& path) {
 }
 #endif
 
-// Physically remove deleted profile directories from disk.
-void NukeProfileFromDisk(const base::FilePath& profile_path) {
+NukeProfileResult GetNukeProfileResult(size_t retry_count, bool success) {
+  DCHECK_LT(retry_count, kNukeProfileMaxRetryCount);
+  const size_t value =
+      retry_count +
+      static_cast<size_t>(success ? NukeProfileResult::kSuccessFirstAttempt
+                                  : NukeProfileResult::kFailureFirstAttempt);
+  DCHECK_LE(value, static_cast<size_t>(NukeProfileResult::kMaxValue));
+  return static_cast<NukeProfileResult>(value);
+}
+
+// Implementation of NukeProfileFromDisk(), retrying at most |max_retry_count|
+// times on failure. |retry_count| (initially 0) keeps track of the
+// number of attempts so far.
+void NukeProfileFromDiskImpl(const base::FilePath& profile_path,
+                             size_t retry_count,
+                             size_t max_retry_count,
+                             base::OnceClosure done_callback) {
+  // TODO(crbug.com/1191455): Make FileSystemProxy/FileSystemImpl expose its
+  // LockTable, and/or fire events when locks are released. That way we could
+  // wait for all the locks in |profile_path| to be released, rather than having
+  // this retry logic.
+  const base::TimeDelta kRetryDelay = base::TimeDelta::FromSeconds(1);
+
   // Delete both the profile directory and its corresponding cache.
   base::FilePath cache_path;
   chrome::GetUserCacheDirectory(profile_path, &cache_path);
-  base::DeletePathRecursively(profile_path);
-  base::DeletePathRecursively(cache_path);
+
+  bool success = base::DeletePathRecursively(profile_path);
+  success = base::DeletePathRecursively(cache_path) && success;
+
+  base::UmaHistogramEnumeration("Profile.NukeFromDisk.Result",
+                                GetNukeProfileResult(retry_count, success));
+
+  if (!success && retry_count < max_retry_count - 1) {
+    // Failed, try again in |kRetryDelay| seconds.
+    base::ThreadPool::PostDelayedTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        base::BindOnce(&NukeProfileFromDiskImpl, profile_path, retry_count + 1,
+                       max_retry_count, std::move(done_callback)),
+        kRetryDelay);
+    return;
+  }
+
+  if (done_callback) {
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                 std::move(done_callback));
+  }
+}
+
+// Physically remove deleted profile directories from disk. Afterwards, calls
+// |done_callback| on the UI thread.
+void NukeProfileFromDisk(const base::FilePath& profile_path,
+                         base::OnceClosure done_callback) {
+  NukeProfileFromDiskImpl(profile_path, /*retry_count=*/0,
+                          kNukeProfileMaxRetryCount, std::move(done_callback));
 }
 
 // Called after a deleted profile was checked and cleaned up.
@@ -493,7 +563,8 @@ void ProfileManager::ShutdownSessionServices() {
 void ProfileManager::NukeDeletedProfilesFromDisk() {
   for (const auto& item : ProfilesToDelete()) {
     if (item.second == ProfileDeletionStage::MARKED)
-      NukeProfileFromDisk(item.first);
+      NukeProfileFromDiskImpl(item.first, /*retry_count=*/0,
+                              /*max_retry_count=*/1, base::OnceClosure());
   }
   ProfilesToDelete().clear();
 }
@@ -1094,7 +1165,8 @@ void ProfileManager::CleanUpEphemeralProfiles() {
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(&NukeProfileFromDisk, profile_path));
+        base::BindOnce(&NukeProfileFromDisk, profile_path,
+                       base::OnceClosure()));
 
     storage.RemoveProfile(profile_path);
   }
@@ -1115,12 +1187,12 @@ void ProfileManager::CleanUpDeletedProfiles() {
       if (base::PathExists(*profile_path)) {
         LOG(WARNING) << "Files of a deleted profile still exist after restart. "
                         "Cleaning up now.";
-        base::ThreadPool::PostTaskAndReply(
+        base::ThreadPool::PostTask(
             FROM_HERE,
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-            base::BindOnce(&NukeProfileFromDisk, *profile_path),
-            base::BindOnce(&ProfileCleanedUp, value.Clone()));
+            base::BindOnce(&NukeProfileFromDisk, *profile_path,
+                           base::BindOnce(&ProfileCleanedUp, value.Clone())));
       } else {
         // Everything is fine, the profile was removed on shutdown.
         content::GetUIThreadTaskRunner({})->PostTask(
@@ -1680,10 +1752,11 @@ void ProfileManager::RemoveProfile(const base::FilePath& profile_dir) {
   // TODO(crbug.com/1191455): This can also fail if an object is holding a lock
   // to a file in the profile directory. This happens flakily, e.g. with the
   // LevelDB for GCMStore. The locked files don't get deleted properly.
-  base::ThreadPool::PostTask(FROM_HERE,
-                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-                              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-                             base::BindOnce(&NukeProfileFromDisk, profile_dir));
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&NukeProfileFromDisk, profile_dir, base::OnceClosure()));
 }
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1838,7 +1911,7 @@ void ProfileManager::OnLoadProfileForProfileDeletion(
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(&NukeProfileFromDisk, profile_dir));
+        base::BindOnce(&NukeProfileFromDisk, profile_dir, base::OnceClosure()));
   }
 
   storage.RemoveProfile(profile_dir);

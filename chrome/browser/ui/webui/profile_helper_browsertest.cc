@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
 #include "chrome/browser/browser_features.h"
@@ -267,8 +268,16 @@ IN_PROC_BROWSER_TEST_P(ProfileHelperTestWithDestroyProfile,
   EXPECT_TRUE(base::Contains(*browser_list, original_browser));
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 
-  // TODO(crbug.com/1191455): Once RemoveProfile()/NukeProfileFromDisk() aren't
-  // flaky anymore, EXPECT_FALSE(PathExists(additional_profile_dir)).
+  if (destroy_profile) {
+    // Check that NukeProfileFromDisk() works correctly.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::Time start = base::Time::Now();
+    while (base::PathExists(additional_profile_dir) &&
+           base::Time::Now() - start < TestTimeouts::action_timeout()) {
+      base::RunLoop().RunUntilIdle();
+    }
+    EXPECT_FALSE(base::PathExists(additional_profile_dir));
+  }
 }
 
 #if defined(OS_CHROMEOS)

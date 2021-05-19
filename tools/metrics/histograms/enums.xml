@@ -57143,6 +57143,15 @@ Called by update_net_trust_anchors.py.-->
   <int value="0" label="0x00000000 - STATUS_SUCCESS"/>
 </enum>
 
+<enum name="NukeProfileResult">
+  <int value="0" label="Success (1st attempt)"/>
+  <int value="1" label="Success (2nd attempt)"/>
+  <int value="2" label="Success (3rd attempt)"/>
+  <int value="10" label="Failure (1st attempt)"/>
+  <int value="11" label="Failure (2nd attempt)"/>
+  <int value="12" label="Failure (3rd attempt)"/>
+</enum>
+
 <enum name="NullableBoolean">
   <summary>
     A Nullable Boolean can True, False or Null (ie: unset or absent).

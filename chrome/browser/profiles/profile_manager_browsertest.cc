@@ -14,6 +14,7 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
@@ -685,8 +686,16 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_EphemeralProfile) {
   EXPECT_EQ(1U, browser_list->size());
   EXPECT_EQ(initial_profile_count, storage.GetNumberOfProfiles());
 
-  // TODO(crbug.com/1191455): Once RemoveProfile()/NukeProfileFromDisk() aren't
-  // flaky anymore, EXPECT_FALSE(PathExists(path_profile2)).
+  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+    // Check that NukeProfileFromDisk() works correctly.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::Time start = base::Time::Now();
+    while (base::PathExists(path_profile2) &&
+           base::Time::Now() - start < TestTimeouts::action_timeout()) {
+      base::RunLoop().RunUntilIdle();
+    }
+    EXPECT_FALSE(base::PathExists(path_profile2));
+  }
 }
 
 // The test makes sense on those platforms where the keychain exists.
