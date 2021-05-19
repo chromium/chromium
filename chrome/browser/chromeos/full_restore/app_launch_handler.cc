@@ -39,6 +39,8 @@ namespace full_restore {
 namespace {
 
 constexpr char kRestoredAppLaunchHistogramPrefix[] = "Apps.RestoredAppLaunch";
+constexpr char kArcGhostWindowLaunchHistogramPrefix[] =
+    "Apps.ArcGhostWindowLaunch";
 
 // Returns apps::AppTypeName used for metrics.
 apps::AppTypeName GetHistogrameAppType(apps::mojom::AppType app_type) {
@@ -198,7 +200,7 @@ void AppLaunchHandler::LaunchBrowser() {
     return;
   }
 
-  RecordRestoredAppsCount(apps::AppTypeName::kChromeBrowser);
+  RecordRestoredAppLaunch(apps::AppTypeName::kChromeBrowser);
 
   restore_data_->RemoveApp(extension_misc::kChromeAppId);
 
@@ -270,7 +272,7 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
     return;
 
   for (const auto& it : launch_list) {
-    RecordRestoredAppsCount(GetHistogrameAppType(app_type));
+    RecordRestoredAppLaunch(GetHistogrameAppType(app_type));
 
     DCHECK(it.second->container.has_value());
     DCHECK(it.second->disposition.has_value());
@@ -298,7 +300,7 @@ void AppLaunchHandler::LaunchArcApp(
   auto* arc_handler = FullRestoreArcTaskHandler::GetForProfile(profile_);
 
   for (const auto& it : launch_list) {
-    RecordRestoredAppsCount(apps::AppTypeName::kArc);
+    RecordRestoredAppLaunch(apps::AppTypeName::kArc);
 
     DCHECK(it.second->event_flag.has_value());
 
@@ -317,8 +319,11 @@ void AppLaunchHandler::LaunchArcApp(
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
     if (!window_info->bounds.is_null() && arc_handler &&
         arc_handler->window_handler()) {
+      RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/true);
       arc_handler->window_handler()->LaunchArcGhostWindow(
           app_id, arc_session_id, it.second.get());
+    } else {
+      RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/false);
     }
 #endif
 
@@ -335,10 +340,15 @@ void AppLaunchHandler::LaunchArcApp(
   }
 }
 
-void AppLaunchHandler::RecordRestoredAppsCount(
+void AppLaunchHandler::RecordRestoredAppLaunch(
     apps::AppTypeName app_type_name) {
   base::UmaHistogramEnumeration(kRestoredAppLaunchHistogramPrefix,
                                 app_type_name);
+}
+
+void AppLaunchHandler::RecordArcGhostWindowLaunch(bool is_arc_ghost_window) {
+  base::UmaHistogramBoolean(kArcGhostWindowLaunchHistogramPrefix,
+                            is_arc_ghost_window);
 }
 
 }  // namespace full_restore

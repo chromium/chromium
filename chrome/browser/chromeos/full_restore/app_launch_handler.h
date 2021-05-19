@@ -77,7 +77,8 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   void LaunchArcApp(const std::string& app_id,
                     const ::full_restore::RestoreData::LaunchList& launch_list);
 
-  void RecordRestoredAppsCount(apps::AppTypeName app_type_name);
+  void RecordRestoredAppLaunch(apps::AppTypeName app_type_name);
+  void RecordArcGhostWindowLaunch(bool is_arc_ghost_window);
 
   Profile* profile_ = nullptr;
 
