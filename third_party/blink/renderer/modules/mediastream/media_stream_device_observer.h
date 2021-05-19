@@ -41,7 +41,9 @@ class MODULES_EXPORT MediaStreamDeviceObserver
       WebMediaStreamDeviceObserver::OnDeviceStoppedCb on_device_stopped_cb,
       WebMediaStreamDeviceObserver::OnDeviceChangedCb on_device_changed_cb,
       WebMediaStreamDeviceObserver::OnDeviceRequestStateChangeCb
-          on_device_request_state_change_cb);
+          on_device_request_state_change_cb,
+      WebMediaStreamDeviceObserver::OnDeviceCaptureHandleChangeCb
+          on_device_capture_handle_change_cb);
   void AddStream(const String& label, const blink::MediaStreamDevice& device);
   bool RemoveStream(const String& label);
   void RemoveStreamDevice(const blink::MediaStreamDevice& device);
@@ -72,6 +74,8 @@ class MODULES_EXPORT MediaStreamDeviceObserver
     WebMediaStreamDeviceObserver::OnDeviceChangedCb on_device_changed_cb;
     WebMediaStreamDeviceObserver::OnDeviceRequestStateChangeCb
         on_device_request_state_change_cb;
+    WebMediaStreamDeviceObserver::OnDeviceCaptureHandleChangeCb
+        on_device_capture_handle_change_cb;
     MediaStreamDevices audio_devices;
     MediaStreamDevices video_devices;
   };

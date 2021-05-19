@@ -46,6 +46,16 @@ void WebPlatformMediaStreamSource::SetDevice(const MediaStreamDevice& device) {
   device_ = device;
 }
 
+void WebPlatformMediaStreamSource::SetCaptureHandle(
+    media::mojom::CaptureHandlePtr capture_handle) {
+  if (!device_.display_media_info.has_value()) {
+    DVLOG(1) << "Not a display-capture device.";
+    return;
+  }
+  auto& info = device_.display_media_info.value();
+  info->capture_handle = std::move(capture_handle);
+}
+
 void WebPlatformMediaStreamSource::SetStopCallback(
     SourceStoppedCallback stop_callback) {
   DCHECK(stop_callback_.is_null());

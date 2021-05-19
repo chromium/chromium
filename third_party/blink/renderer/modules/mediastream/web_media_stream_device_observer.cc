@@ -29,11 +29,13 @@ void WebMediaStreamDeviceObserver::AddStream(
     const MediaStreamDevices& video_devices,
     OnDeviceStoppedCb on_device_stopped_cb,
     OnDeviceChangedCb on_device_changed_cb,
-    OnDeviceRequestStateChangeCb on_device_request_state_change_cb) {
+    OnDeviceRequestStateChangeCb on_device_request_state_change_cb,
+    OnDeviceCaptureHandleChangeCb on_device_capture_handle_change_cb) {
   observer_->AddStream(label, audio_devices, video_devices,
                        std::move(on_device_stopped_cb),
                        std::move(on_device_changed_cb),
-                       std::move(on_device_request_state_change_cb));
+                       std::move(on_device_request_state_change_cb),
+                       std::move(on_device_capture_handle_change_cb));
 }
 
 void WebMediaStreamDeviceObserver::AddStream(const WebString& label,

@@ -145,9 +145,18 @@ void MediaStreamDeviceObserver::OnDeviceCaptureHandleChange(
     const MediaStreamDevice& device) {
   DVLOG(1) << __func__ << " label=" << label << " device_id=" << device.id;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // TODO(crbug.com/1200910): Handle this message by (1) returning the correct
-  // value from getSettings() and (2) firing capture-handle-changed event
-  // if necessary.
+
+  auto it = label_stream_map_.find(label);
+  if (it == label_stream_map_.end()) {
+    // This can happen if a user stops a device from JS at the same
+    // time as the underlying media device is unplugged from the system.
+    return;
+  }
+  Stream* stream = &it->value;
+
+  if (stream->on_device_capture_handle_change_cb) {
+    stream->on_device_capture_handle_change_cb.Run(device);
+  }
 }
 
 void MediaStreamDeviceObserver::BindMediaStreamDeviceObserverReceiver(
@@ -163,7 +172,9 @@ void MediaStreamDeviceObserver::AddStream(
     WebMediaStreamDeviceObserver::OnDeviceStoppedCb on_device_stopped_cb,
     WebMediaStreamDeviceObserver::OnDeviceChangedCb on_device_changed_cb,
     WebMediaStreamDeviceObserver::OnDeviceRequestStateChangeCb
-        on_device_request_state_change_cb) {
+        on_device_request_state_change_cb,
+    WebMediaStreamDeviceObserver::OnDeviceCaptureHandleChangeCb
+        on_device_capture_handle_change_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   Stream stream;
@@ -171,6 +182,8 @@ void MediaStreamDeviceObserver::AddStream(
   stream.on_device_changed_cb = std::move(on_device_changed_cb);
   stream.on_device_request_state_change_cb =
       std::move(on_device_request_state_change_cb);
+  stream.on_device_capture_handle_change_cb =
+      std::move(on_device_capture_handle_change_cb);
   stream.audio_devices = audio_devices;
   stream.video_devices = video_devices;
 

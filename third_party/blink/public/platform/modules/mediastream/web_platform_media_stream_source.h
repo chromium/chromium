@@ -53,6 +53,10 @@ class BLINK_PLATFORM_EXPORT WebPlatformMediaStreamSource {
   // JavaScript call to GetUserMedia. F.E a camera or microphone.
   void SetDevice(const MediaStreamDevice& device);
 
+  // Sets the capture-handle for a source that has been created by a
+  // JavaScript call to one of the display-capture APIs (e.g. getDisplayMedia).
+  void SetCaptureHandle(media::mojom::CaptureHandlePtr capture_handle);
+
   // Sets a callback that will be triggered when StopSource is called.
   void SetStopCallback(SourceStoppedCallback stop_callback);
 
