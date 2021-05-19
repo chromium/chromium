@@ -61,11 +61,11 @@
 
   /* Mark the first and 10th group as scroll targets to get the correct scroll
    * snapping behavior. */
-  #tabs emoji-group-button:nth-child(2) {
+  #tabs :nth-child(2) {
     scroll-snap-align: center;
     scroll-snap-stop: always;
   }
-  #tabs emoji-group-button:nth-child(14) {
+  #tabs :nth-child(14) {
     scroll-snap-align: center;
     scroll-snap-stop: always;
   }
@@ -140,7 +140,8 @@
   }
 
   .fake {
-    --cr-icon-button-hover-background-color: transparent;
+    flex-shrink: 0;
+    width: var(--emoji-group-button-size);
   }
 </style>
 
@@ -175,24 +176,24 @@
       </template>
       <!--Fake group button to increase maximum scrolling, need an icon to
         render as invisible-->
-      <emoji-group-button class="fake" icon="[[emojiGroupTabs[0].icon]]"
+      <div class="fake"
         tabindex="-1">
-      </emoji-group-button>
-      <emoji-group-button class="fake" icon="[[emojiGroupTabs[0].icon]]"
+      </div>
+      <div class="fake"
         tabindex="-1">
-      </emoji-group-button>
-      <emoji-group-button class="fake" icon="[[emojiGroupTabs[0].icon]]"
+      </div>
+      <div class="fake"
         tabindex="-1">
-      </emoji-group-button>
-      <emoji-group-button class="fake" icon="[[emojiGroupTabs[0].icon]]"
+      </div>
+      <div class="fake"
         tabindex="-1">
-      </emoji-group-button>
-      <emoji-group-button class="fake" icon="[[emojiGroupTabs[0].icon]]"
+      </div>
+      <div class="fake"
         tabindex="-1">
-      </emoji-group-button>
-      <emoji-group-button class="fake" icon="[[emojiGroupTabs[0].icon]]"
+      </div>
+      <div class="fake"
         tabindex="-1">
-      </emoji-group-button>
+      </div>
       <emoji-group-button id="RightChevronScrollTarget"
         icon="[[emojiGroupTabs[0].icon]]" tabindex="-1">
       </emoji-group-button>
