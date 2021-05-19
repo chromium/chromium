@@ -41,38 +41,39 @@ if (target_cpu == "x64") {
 # a manifest file.
 #
 # Parameters:
-#   package_basename: Determines the package basename in CIPD.
+#   package_basename: Determines the package basename in CIPD. Only required if
+#                     |package_relative_path| is not specified
 #   package_relative_path: Specify the package location relative to the fuchsia/
 #                          CIPD subdirectory. Defaults to a package name
-#                          based on package_basename.
+#                          based on |package_basename|.
 #   description: Sets the "description" field in CIPD package definition.
 #
 # Optional parameters used directly by fuchsia_cipd_package template:
-#   "package_root",
-#   "package_definition_name",
-#   "package_definition_dir",
 #   "install_mode",
-#   "files",
-#   "directories",
 #   "sources",
+#   "data",
+#   "data_deps"
+#   "deps",
+#   "testonly",
 
 template("cipd_archive") {
   forward_variables_from(invoker,
                          [
                            "package_basename",
                            "package_relative_path",
-                           "package_root",
-                           "package_definition_name",
-                           "package_definition_dir",
                            "description",
                            "install_mode",
-                           "files",
-                           "directories",
                            "sources",
+                           "data",
+                           "data_deps",
                            "deps",
                            "testonly",
-                           "visibility",
                          ])
+
+  assert(
+      (defined(package_basename) && !defined(package_relative_path)) ||
+          (!defined(package_basename) && defined(package_relative_path)),
+      "only one of \"package_basename\" and \"package_relative_path\" should be set")
 
   # Produces a consolidated license file.
   action("${target_name}_license") {
