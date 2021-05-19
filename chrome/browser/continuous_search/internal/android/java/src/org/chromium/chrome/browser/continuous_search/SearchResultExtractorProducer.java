@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.continuous_search;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.continuous_search.SearchResultExtractorClientStatus;
 import org.chromium.content_public.browser.WebContents;
@@ -26,8 +28,14 @@ import java.util.Set;
  */
 @JNINamespace("continuous_search")
 public class SearchResultExtractorProducer extends SearchResultProducer {
+    private static final String MINIUM_URL_COUNT_PARAM = "minimum_url_count";
+    private static final int DEFAULT_MINIUM_URL_COUNT = 5;
+
     private long mNativeSearchResultExtractorProducer;
     private @State int mState;
+
+    @VisibleForTesting
+    int mMinimumUrlCount;
 
     @IntDef({State.READY, State.CAPTURING, State.CANCELLED})
     @Retention(RetentionPolicy.SOURCE)
@@ -41,6 +49,9 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
         super(tab, listener);
         mNativeSearchResultExtractorProducer = SearchResultExtractorProducerJni.get().create(this);
         mState = State.READY;
+        mMinimumUrlCount = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.CONTINUOUS_SEARCH, MINIUM_URL_COUNT_PARAM,
+                DEFAULT_MINIUM_URL_COUNT);
     }
 
     @CalledByNative
@@ -60,6 +71,7 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
         if (oldState == State.CANCELLED) return;
 
         int groupOffset = 0;
+        int urlCount = 0;
         List<PageGroup> groups = new ArrayList<PageGroup>();
         for (int i = 0; i < groupLabel.length; i++) {
             List<PageItem> results = new ArrayList<PageItem>();
@@ -69,10 +81,16 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
                 if (!groupUrls.add(urls[groupOffset + j])) continue;
 
                 results.add(new PageItem(urls[groupOffset + j], titles[groupOffset + j]));
+                urlCount++;
             }
             groupOffset += groupSize[i];
 
             groups.add(new PageGroup(groupLabel[i], isAdGroup[i], results));
+        }
+
+        if (urlCount < mMinimumUrlCount) {
+            mListener.onError(SearchResultExtractorClientStatus.NOT_ENOUGH_RESULTS);
+            return;
         }
 
         assert !GURL.isEmptyOrInvalid(url);
@@ -113,6 +131,11 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
         if (mState == State.CAPTURING) {
             mState = State.CANCELLED;
         }
+    }
+
+    @Override
+    int getSuccessStatus() {
+        return SearchResultExtractorClientStatus.SUCCESS;
     }
 
     void destroy() {

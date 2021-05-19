@@ -19,6 +19,7 @@ enum SearchResultExtractorClientStatus {
   kNativeNotInitialized,
   kAlreadyCapturing,
   kWebContentsHasNonSrpUrl,
+  kNotEnoughResults,
   kMaxValue,
 };
 

@@ -95,10 +95,6 @@ void SearchResultExtractorProducer::OnResultsCallback(
     const std::string& query,
     SearchResultExtractorClientStatus status,
     mojom::CategoryResultsPtr results) {
-  base::UmaHistogramEnumeration(
-      "Browser.ContinuousSearch.SearchResultExtractionStatus", status,
-      SearchResultExtractorClientStatus::kMaxValue);
-
   JNIEnv* env = base::android::AttachCurrentThread();
   if (status != SearchResultExtractorClientStatus::kSuccess) {
     java_interface_->OnError(env, java_ref_, status);

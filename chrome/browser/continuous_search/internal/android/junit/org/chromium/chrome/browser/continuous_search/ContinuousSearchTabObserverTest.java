@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
@@ -13,16 +14,24 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.robolectric.annotation.Config;
 
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.continuous_search.SearchResultExtractorClientStatus;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -30,6 +39,7 @@ import org.chromium.url.JUnitTestGURLs;
  * Tests for {@link ContinuousSearchTabObserver}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowRecordHistogram.class})
 public class ContinuousSearchTabObserverTest {
     private static final String TEST_QUERY = "Foo";
 
@@ -41,11 +51,15 @@ public class ContinuousSearchTabObserverTest {
     private ContinuousNavigationUserDataImpl mUserDataMock;
     @Mock
     private SearchResultProducer mProducerMock;
+    @Mock
+    private SearchResultExtractorProducer.Natives mSearchResultExtractorProducerJniMock;
 
     private GURL mSrpUrl;
     private GURL mNonSrpUrl;
     private ContinuousSearchTabObserver mObserver;
 
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule
     public JniMocker mJniMocker = new JniMocker();
 
@@ -59,6 +73,8 @@ public class ContinuousSearchTabObserverTest {
 
     @Before
     public void setUp() {
+        ShadowRecordHistogram.reset();
+
         mSrpUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
         mNonSrpUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
 
@@ -161,5 +177,26 @@ public class ContinuousSearchTabObserverTest {
     public void testOnActivityAttachmentChanged() {
         // Test no-op.
         mObserver.onActivityAttachmentChanged(mTabMock, null);
+    }
+
+    /**
+     * Verifies that histogram recording works.
+     */
+    @Test
+    @EnableFeatures({ChromeFeatureList.CONTINUOUS_SEARCH})
+    public void testHistogramRecording() {
+        SearchResultProducerFactory.overrideFactory(null);
+        mJniMocker.mock(
+                SearchResultExtractorProducerJni.TEST_HOOKS, mSearchResultExtractorProducerJniMock);
+        final long nativePtr = 123L;
+        doReturn(nativePtr).when(mSearchResultExtractorProducerJniMock).create(any());
+
+        mObserver.onPageLoadStarted(mTabMock, mSrpUrl);
+        mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
+
+        Assert.assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        "Browser.ContinuousSearch.SearchResultExtractionStatus",
+                        SearchResultExtractorClientStatus.WEB_CONTENTS_GONE));
     }
 }

@@ -29,4 +29,11 @@ public abstract class SearchResultProducer {
      * Cancels the request.
      */
     abstract void cancel();
+
+    /**
+     * Gets the OK status of a class.
+     */
+    int getSuccessStatus() {
+        return 0;
+    }
 }

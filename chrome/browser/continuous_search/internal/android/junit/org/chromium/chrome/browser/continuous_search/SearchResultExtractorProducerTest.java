@@ -22,6 +22,7 @@ import org.mockito.Mock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.continuous_search.SearchResultExtractorClientStatus;
 import org.chromium.content_public.browser.WebContents;
@@ -29,6 +30,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -61,6 +63,9 @@ public class SearchResultExtractorProducerTest {
         mJniMocker.mock(
                 SearchResultExtractorProducerJni.TEST_HOOKS, mSearchResultExtractorProducerJniMock);
         when(mSearchResultExtractorProducerJniMock.create(any())).thenReturn(FAKE_NATIVE_ADDRESS);
+        ChromeFeatureList.setTestFeatures(
+                Collections.singletonMap(ChromeFeatureList.CONTINUOUS_SEARCH, true));
+
         mSearchResultProducer = new SearchResultExtractorProducer(mTabMock, mListenerMock);
         when(mTabMock.getWebContents()).thenReturn(mWebContentsMock);
         when(mWebContentsMock.getLastCommittedUrl()).thenReturn(mTestUrl);
@@ -70,6 +75,7 @@ public class SearchResultExtractorProducerTest {
      * Starts fetching data.
      */
     private void startFetching() {
+        mSearchResultProducer.mMinimumUrlCount = 0;
         mSearchResultProducer.fetchResults(mTestUrl, TEST_QUERY);
 
         verify(mSearchResultExtractorProducerJniMock, times(1))
@@ -258,7 +264,7 @@ public class SearchResultExtractorProducerTest {
     }
 
     /**
-     * Verify that results can be requested successfully if a pre-emptive cancel is issued.
+     * Verify that no error is reported after cancellation.
      */
     @Test
     public void testOnErrorNoOpOnCancel() {
@@ -266,5 +272,18 @@ public class SearchResultExtractorProducerTest {
         mSearchResultProducer.cancel();
         mSearchResultProducer.onError(SearchResultExtractorClientStatus.WEB_CONTENTS_GONE);
         verify(mListenerMock, never()).onError(anyInt());
+    }
+
+    /**
+     * Verify no result is reported if there are an insufficient number of URLs.
+     */
+    @Test
+    public void testMinimumRequiredResults() {
+        startFetching();
+        mSearchResultProducer.mMinimumUrlCount = 6;
+        // Treat the fetch as being cancelled as no result is returned.
+        finishFetching(true);
+        verify(mListenerMock, times(1))
+                .onError(SearchResultExtractorClientStatus.NOT_ENOUGH_RESULTS);
     }
 }
