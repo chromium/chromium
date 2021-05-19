@@ -175,6 +175,15 @@ const base::Feature kPortalsCrossOrigin{"PortalsCrossOrigin",
 // trials.
 const base::Feature kFencedFrames{"FencedFrames",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
+const base::FeatureParam<FencedFramesImplementationType>::Option
+    fenced_frame_implementation_types[] = {
+        {FencedFramesImplementationType::kShadowDOM, "shadow_dom"},
+        {FencedFramesImplementationType::kMPArch, "mparch"}};
+const base::FeatureParam<FencedFramesImplementationType>
+    kFencedFramesImplementationTypeParam{
+        &kFencedFrames, "implementation_type",
+        FencedFramesImplementationType::kShadowDOM,
+        &fenced_frame_implementation_types};
 
 // Enable the prerender2. https://crbug.com/1126305.
 const base::Feature kPrerender2{"Prerender2",

@@ -159,6 +159,7 @@
     {
       name: "fencedframe",
       interfaceName: "HTMLFencedFrameElement",
+      interfaceHeaderDir: "third_party/blink/renderer/core/html/fenced_frame",
       runtimeEnabled: "FencedFrames",
       // This element could be enabled in some documents but not others (due to
       // origin trials), so we need custom type helpers.
