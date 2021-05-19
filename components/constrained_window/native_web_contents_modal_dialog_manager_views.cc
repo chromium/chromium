@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -36,15 +37,15 @@ NativeWebContentsModalDialogManagerViews::
     NativeWebContentsModalDialogManagerViews(
         gfx::NativeWindow dialog,
         SingleWebContentsDialogManagerDelegate* native_delegate)
-    : native_delegate_(native_delegate),
-      dialog_(dialog),
-      host_(nullptr),
-      host_destroying_(false) {
+    : native_delegate_(native_delegate), dialog_(dialog) {
   ManageDialog();
 }
 
 NativeWebContentsModalDialogManagerViews::
     ~NativeWebContentsModalDialogManagerViews() {
+  // Temporary, for debugging https://crbug.com/1207814.
+  CHECK(!within_show_);
+
   if (host_)
     host_->RemoveObserver(this);
 
@@ -97,11 +98,16 @@ void NativeWebContentsModalDialogManagerViews::Show() {
         widget->GetNativeWindow()->parent());
   }
 #endif
-  // |host_| may be null during tab drag.
-  if (host_)
-    constrained_window::UpdateWebContentsModalDialogPosition(widget, host_);
+
+  // `host_` should not be null. If you can reproduce this, please comment on
+  // https://crbug.com/1207814.
+  CHECK(host_);
+  // Temporary, for debugging https://crbug.com/1207814.
+  base::AutoReset<bool> within_show(&within_show_, true);
+
+  constrained_window::UpdateWebContentsModalDialogPosition(widget, host_);
   widget->Show();
-  if (host_ && host_->ShouldActivateDialog())
+  if (host_->ShouldActivateDialog())
     Focus();
 
 #if defined(USE_AURA)
@@ -180,7 +186,7 @@ void NativeWebContentsModalDialogManagerViews::HostChanged(
 
   host_ = new_host;
 
-  // |host_| may be null during WebContents destruction or Win32 tab dragging.
+  // |host_| may be null during WebContents destruction.
   if (host_) {
     host_->AddObserver(this);
 
