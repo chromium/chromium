@@ -55,7 +55,7 @@ bool EnablePCScanForMallocPartitionsIfNeeded() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_ALLOW_PCSCAN
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan)) {
-    base::allocator::EnablePCScan();
+    base::allocator::EnablePCScan(/*dcscan*/ false);
     return true;
   }
 #endif
@@ -67,7 +67,13 @@ bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanBrowserOnly)) {
-    base::allocator::EnablePCScan();
+    const bool dcscan_wanted =
+        base::FeatureList::IsEnabled(base::features::kPartitionAllocDCScan);
+#if !defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
+    CHECK(!dcscan_wanted)
+        << "DCScan is currently only supported on Linux based systems";
+#endif
+    base::allocator::EnablePCScan(dcscan_wanted);
     return true;
   }
 #endif

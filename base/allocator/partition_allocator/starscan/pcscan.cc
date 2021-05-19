@@ -9,8 +9,8 @@
 namespace base {
 namespace internal {
 
-void PCScan::Initialize() {
-  PCScanInternal::Instance().Initialize();
+void PCScan::Initialize(WantedWriteProtectionMode wpmode) {
+  PCScanInternal::Instance().Initialize(wpmode);
 }
 
 void PCScan::RegisterScannableRoot(Root* root) {
@@ -68,8 +68,8 @@ void PCScan::UninitForTesting() {
   ReinitPCScanMetadataAllocatorForTesting();          // IN-TEST
 }
 
-void PCScan::ReinitForTesting() {
-  PCScanInternal::Instance().ReinitForTesting();  // IN-TEST
+void PCScan::ReinitForTesting(WantedWriteProtectionMode wpmode) {
+  PCScanInternal::Instance().ReinitForTesting(wpmode);  // IN-TEST
 }
 
 void PCScan::FinishScanForTesting() {

@@ -22,6 +22,7 @@
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_page.h"
@@ -303,14 +304,11 @@ void PCScanSnapshot::Take(size_t pcscan_epoch) {
     typename Root::ScopedGuard guard(root->lock_);
 
     // Take a snapshot of all super pages and scannable slot spans.
-    // TODO(bikineev): Consider making current_extent lock-free and moving it
-    // to the concurrent thread.
     for (auto* super_page_extent = root->first_extent; super_page_extent;
          super_page_extent = super_page_extent->next) {
       for (char* super_page = super_page_extent->super_page_base;
            super_page != super_page_extent->super_pages_end;
            super_page += kSuperPageSize) {
-        // TODO(bikineev): Consider following freelists instead of slot spans.
         const size_t visited_slot_spans = IterateSlotSpans<ThreadSafe>(
             super_page, true /*with_quarantine*/,
             [this](SlotSpan* slot_span) -> bool {
@@ -424,11 +422,13 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
       }
     }
     ~SyncScope() {
-      // First, notify other scanning threads that this thread is done.
+      // First, notify the scanning thread that this thread is done.
       NotifyThreads();
+      // Then, unprotect all scanned pages, if needed.
+      task_.UnprotectPartitions();
       if (context == Context::kScanner) {
         // The scanner thread must wait here until all safepoints leave.
-        // Otherwise, sweeping may free a page that can be accessed by a
+        // Otherwise, sweeping may free a page that can later be accessed by a
         // descheduled mutator.
         WaitForOtherThreads();
       }
@@ -491,6 +491,9 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
   // Clear quarantined objects and prepare card table for fast lookup
   void ClearQuarantinedObjectsAndPrepareCardTable();
 
+  // Unprotect all slot spans from all partitions.
+  void UnprotectPartitions();
+
   // Sweeps (frees) unreachable quarantined entries. Returns the size of swept
   // objects.
   void SweepQuarantine();
@@ -507,6 +510,8 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
   std::mutex mutex_;
   std::condition_variable condvar_;
   std::atomic<size_t> number_of_scanning_threads_{0u};
+  // We can unprotect only once to reduce context-switches.
+  std::once_flag unprotect_once_flag_;
   PCScan& pcscan_;
 };
 
@@ -608,6 +613,19 @@ void PCScanTask::ClearQuarantinedObjectsAndPrepareCardTable() {
   });
 }
 
+void PCScanTask::UnprotectPartitions() {
+  std::call_once(unprotect_once_flag_, [this] {
+    auto& pcscan = PCScanInternal::Instance();
+    const auto unprotect = [&pcscan](const auto& slot_span) {
+      pcscan.UnprotectPages(
+          reinterpret_cast<uintptr_t>(slot_span.begin),
+          (slot_span.end - slot_span.begin) * sizeof(uintptr_t));
+    };
+    snapshot_.large_scan_areas_worklist().VisitNonConcurrently(unprotect);
+    snapshot_.scan_areas_worklist().VisitNonConcurrently(unprotect);
+  });
+}
+
 class PCScanScanLoop final : public ScanLoop<PCScanScanLoop> {
   friend class ScanLoop<PCScanScanLoop>;
 
@@ -696,7 +714,11 @@ void PCScanTask::ScanPartitions() {
   // is scanned contains quarantined objects.
   PCScanSnapshot::LargeScanAreasWorklist::RandomizedView large_scan_areas(
       snapshot_.large_scan_areas_worklist());
-  large_scan_areas.Visit([this, &scan_loop](auto scan_area) {
+  auto& pcscan = PCScanInternal::Instance();
+  large_scan_areas.Visit([this, &scan_loop, &pcscan](auto scan_area) {
+    // Protect slot span before scanning it.
+    pcscan.ProtectPages(reinterpret_cast<uintptr_t>(scan_area.begin),
+                        (scan_area.end - scan_area.begin) * sizeof(uintptr_t));
     // The bitmap is (a) always guaranteed to exist and (b) the same for all
     // objects in a given slot span.
     // TODO(chromium:1129751): Check mutator bitmap as well if performance
@@ -722,7 +744,10 @@ void PCScanTask::ScanPartitions() {
   // Scan areas with regular size slots.
   PCScanSnapshot::ScanAreasWorklist::RandomizedView scan_areas(
       snapshot_.scan_areas_worklist());
-  scan_areas.Visit([&scan_loop](auto scan_area) {
+  scan_areas.Visit([&scan_loop, &pcscan](auto scan_area) {
+    // Protect slot span before scanning it.
+    pcscan.ProtectPages(reinterpret_cast<uintptr_t>(scan_area.begin),
+                        (scan_area.end - scan_area.begin) * sizeof(uintptr_t));
     scan_loop.Run(scan_area.begin, scan_area.end);
   });
 
@@ -970,10 +995,18 @@ PCScanInternal::PCScanInternal() : simd_support_(DetectSimdSupport()) {}
 
 PCScanInternal::~PCScanInternal() = default;
 
-void PCScanInternal::Initialize() {
+void PCScanInternal::Initialize(PCScan::WantedWriteProtectionMode wpmode) {
   PA_DCHECK(!is_initialized_);
   CommitCardTable();
-  PCScan::SetClearType(PCScan::ClearType::kLazy);
+#if defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
+  if (wpmode == PCScan::WantedWriteProtectionMode::kEnabled)
+    write_protector_ = std::make_unique<UserFaultFDWriteProtector>();
+  else
+    write_protector_ = std::make_unique<NoWriteProtector>();
+#else
+  write_protector_ = std::make_unique<NoWriteProtector>();
+#endif  // defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
+  PCScan::SetClearType(write_protector_->SupportedClearType());
   is_initialized_ = true;
 }
 
@@ -1137,6 +1170,23 @@ void* PCScanInternal::GetCurrentThreadStackTop() const {
   return it != stack_tops_.end() ? it->second : nullptr;
 }
 
+void PCScanInternal::ProtectPages(uintptr_t begin, size_t size) {
+  // Slot-span sizes are multiple of system page size. However, the ranges that
+  // are recorded are not, since in the snapshot we only record the used
+  // payload. Therefore we align up the incoming range by 4k. The unused part of
+  // slot-spans doesn't need to be protected (the allocator will enter the
+  // safepoint before trying to allocate from it).
+  PA_DCHECK(write_protector_.get());
+  write_protector_->ProtectPages(
+      begin, (size + SystemPageSize() - 1) & ~(SystemPageSize() - 1));
+}
+
+void PCScanInternal::UnprotectPages(uintptr_t begin, size_t size) {
+  PA_DCHECK(write_protector_.get());
+  write_protector_->UnprotectPages(
+      begin, (size + SystemPageSize() - 1) & ~(SystemPageSize() - 1));
+}
+
 void PCScanInternal::ClearRootsForTesting() {
   // Set all roots as non-scannable and non-quarantinable.
   for (auto* root : scannable_roots_) {
@@ -1150,9 +1200,9 @@ void PCScanInternal::ClearRootsForTesting() {
   nonscannable_roots_.ClearForTesting();  // IN-TEST
 }
 
-void PCScanInternal::ReinitForTesting() {
+void PCScanInternal::ReinitForTesting(PCScan::WantedWriteProtectionMode mode) {
   is_initialized_ = false;
-  Initialize();
+  Initialize(mode);
 }
 
 void PCScanInternal::FinishScanForTesting() {

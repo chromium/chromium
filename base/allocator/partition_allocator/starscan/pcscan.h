@@ -52,11 +52,18 @@ class BASE_EXPORT PCScan final {
     kEager,
   };
 
+  // Based on the provided mode, PCScan will try to use a certain
+  // WriteProtector, if supported by the system.
+  enum class WantedWriteProtectionMode : uint8_t {
+    kDisabled,
+    kEnabled,
+  };
+
   PCScan(const PCScan&) = delete;
   PCScan& operator=(const PCScan&) = delete;
 
   // Initializes PCScan and prepares internal data structures.
-  static void Initialize();
+  static void Initialize(WantedWriteProtectionMode);
 
   // Registers a root for scanning.
   static void RegisterScannableRoot(Root* root);
@@ -132,7 +139,7 @@ class BASE_EXPORT PCScan final {
   static void FinishScanForTesting();
 
   // Reinitialize internal structures (e.g. card table).
-  static void ReinitForTesting();
+  static void ReinitForTesting(WantedWriteProtectionMode);
 
   size_t epoch() const { return scheduler_.epoch(); }
 

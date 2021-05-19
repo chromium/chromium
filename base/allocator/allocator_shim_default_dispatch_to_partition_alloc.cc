@@ -484,8 +484,10 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
 #endif  // BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
 
 #if PA_ALLOW_PCSCAN
-void EnablePCScan() {
-  internal::PCScan::Initialize();
+void EnablePCScan(bool dcscan) {
+  internal::PCScan::Initialize(
+      dcscan ? internal::PCScan::WantedWriteProtectionMode::kEnabled
+             : internal::PCScan::WantedWriteProtectionMode::kDisabled);
   internal::PCScan::RegisterScannableRoot(Allocator());
   if (Allocator() != AlignedAllocator())
     internal::PCScan::RegisterScannableRoot(AlignedAllocator());

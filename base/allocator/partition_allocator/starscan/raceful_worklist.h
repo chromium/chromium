@@ -60,10 +60,20 @@ class RacefulWorklist {
 
   void Push(const T& t) { data_.push_back(Node(t)); }
 
+  template <typename Function>
+  void VisitNonConcurrently(Function) const;
+
  private:
   Underlying data_;
   std::atomic<bool> fully_visited_{false};
 };
+
+template <typename T>
+template <typename Function>
+void RacefulWorklist<T>::VisitNonConcurrently(Function f) const {
+  for (const auto& t : data_)
+    f(t.value);
+}
 
 template <typename T>
 template <typename Function>

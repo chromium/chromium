@@ -54,5 +54,8 @@ const Feature kPartitionAllocPCScanStackScanning {
 #endif  // defined(PA_PCSCAN_STACK_SUPPORTED)
 };
 
+const Feature kPartitionAllocDCScan{"PartitionAllocDCScan",
+                                    FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace base

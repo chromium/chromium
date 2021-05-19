@@ -12,6 +12,7 @@
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/starscan_fwd.h"
+#include "base/allocator/partition_allocator/starscan/write_protector.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 
@@ -69,7 +70,7 @@ class PCScanInternal final {
 
   ~PCScanInternal();
 
-  void Initialize();
+  void Initialize(PCScan::WantedWriteProtectionMode);
   bool is_initialized() const { return is_initialized_; }
 
   void PerformScan(PCScan::InvocationMode);
@@ -107,9 +108,12 @@ class PCScanInternal final {
 
   void* GetCurrentThreadStackTop() const;
 
-  void ClearRootsForTesting();  // IN-TEST
-  void ReinitForTesting();      // IN-TEST
-  void FinishScanForTesting();  // IN-TEST
+  void ProtectPages(uintptr_t begin, size_t size);
+  void UnprotectPages(uintptr_t begin, size_t size);
+
+  void ClearRootsForTesting();                               // IN-TEST
+  void ReinitForTesting(PCScan::WantedWriteProtectionMode);  // IN-TEST
+  void FinishScanForTesting();                               // IN-TEST
 
  private:
   friend base::NoDestructor<PCScanInternal>;
@@ -137,6 +141,8 @@ class PCScanInternal final {
 
   const char* process_name_ = nullptr;
   const SimdSupport simd_support_;
+
+  std::unique_ptr<WriteProtector> write_protector_;
 
   bool is_initialized_ = false;
 };

@@ -34,6 +34,12 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_STARSCAN_NEON_SUPPORTED
 #endif
 
+#if defined(PA_HAS_64_BITS_POINTERS) && \
+    (defined(OS_LINUX) || defined(OS_ANDROID))
+// TODO(bikineev): Enable for ChromeOS.
+#define PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED
+#endif
+
 // POSIX is not only UNIX, e.g. macOS and other OSes. We do use Linux-specific
 // features such as futex(2).
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)

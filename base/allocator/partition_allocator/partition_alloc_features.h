@@ -28,6 +28,7 @@ extern const BASE_EXPORT Feature kPartitionAllocLargeThreadCacheSize;
 
 extern const BASE_EXPORT Feature kPartitionAllocPCScanMUAwareScheduler;
 extern const BASE_EXPORT Feature kPartitionAllocPCScanStackScanning;
+extern const BASE_EXPORT Feature kPartitionAllocDCScan;
 
 extern const BASE_EXPORT Feature kPartitionAllocLazyCommit;
 
