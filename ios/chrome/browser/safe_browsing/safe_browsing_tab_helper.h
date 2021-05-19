@@ -12,7 +12,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
@@ -178,8 +178,9 @@ class SafeBrowsingTabHelper
 
     web::WebState* web_state_ = nullptr;
     PolicyDecider* policy_decider_ = nullptr;
-    ScopedObserver<SafeBrowsingQueryManager, SafeBrowsingQueryManager::Observer>
-        scoped_observer_{this};
+    base::ScopedObservation<SafeBrowsingQueryManager,
+                            SafeBrowsingQueryManager::Observer>
+        scoped_observation_{this};
   };
 
   // Helper object that resets state for the policy decider when a navigation is
@@ -202,7 +203,8 @@ class SafeBrowsingTabHelper
     void WebStateDestroyed(web::WebState* web_state) override;
 
     PolicyDecider* policy_decider_ = nullptr;
-    ScopedObserver<web::WebState, web::WebStateObserver> scoped_observer_{this};
+    base::ScopedObservation<web::WebState, web::WebStateObserver>
+        scoped_observation_{this};
   };
 
   explicit SafeBrowsingTabHelper(web::WebState* web_state);

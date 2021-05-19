@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_PENDING_UNSAFE_RESOURCE_STORAGE_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_PENDING_UNSAFE_RESOURCE_STORAGE_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -58,8 +58,9 @@ class PendingUnsafeResourceStorage {
         SafeBrowsingUrlAllowList* allow_list) override;
 
     PendingUnsafeResourceStorage* storage_ = nullptr;
-    ScopedObserver<SafeBrowsingUrlAllowList, SafeBrowsingUrlAllowList::Observer>
-        scoped_observer_{this};
+    base::ScopedObservation<SafeBrowsingUrlAllowList,
+                            SafeBrowsingUrlAllowList::Observer>
+        scoped_observation_{this};
   };
 
   // Updates |policy_observer_| for the current value of |resource_|.

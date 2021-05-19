@@ -451,7 +451,8 @@ SafeBrowsingTabHelper::QueryObserver::QueryObserver(web::WebState* web_state,
                                                     PolicyDecider* decider)
     : web_state_(web_state), policy_decider_(decider) {
   DCHECK(policy_decider_);
-  scoped_observer_.Add(SafeBrowsingQueryManager::FromWebState(web_state));
+  scoped_observation_.Observe(
+      SafeBrowsingQueryManager::FromWebState(web_state));
 }
 
 SafeBrowsingTabHelper::QueryObserver::~QueryObserver() = default;
@@ -507,7 +508,8 @@ void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingQueryFinished(
 
 void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingQueryManagerDestroyed(
     SafeBrowsingQueryManager* manager) {
-  scoped_observer_.Remove(manager);
+  DCHECK(scoped_observation_.IsObservingSource(manager));
+  scoped_observation_.Reset();
 }
 
 #pragma mark - SafeBrowsingTabHelper::NavigationObserver
@@ -517,7 +519,7 @@ SafeBrowsingTabHelper::NavigationObserver::NavigationObserver(
     PolicyDecider* policy_decider)
     : policy_decider_(policy_decider) {
   DCHECK(policy_decider_);
-  scoped_observer_.Add(web_state);
+  scoped_observation_.Observe(web_state);
 }
 
 SafeBrowsingTabHelper::NavigationObserver::~NavigationObserver() = default;
@@ -539,5 +541,6 @@ void SafeBrowsingTabHelper::NavigationObserver::DidFinishNavigation(
 
 void SafeBrowsingTabHelper::NavigationObserver::WebStateDestroyed(
     web::WebState* web_state) {
-  scoped_observer_.Remove(web_state);
+  DCHECK(scoped_observation_.IsObservingSource(web_state));
+  scoped_observation_.Reset();
 }
