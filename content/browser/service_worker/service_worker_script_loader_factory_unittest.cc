@@ -122,8 +122,7 @@ TEST_F(ServiceWorkerScriptLoaderFactoryTest, ContextDestroyed) {
 }
 
 // This tests copying script and creating resume type
-// ServiceWorkerNewScriptLoaders when ServiceWorkerImportedScriptUpdateCheck
-// is enabled.
+// ServiceWorkerNewScriptLoaders.
 class ServiceWorkerScriptLoaderFactoryCopyResumeTest
     : public ServiceWorkerScriptLoaderFactoryTest {
  public:

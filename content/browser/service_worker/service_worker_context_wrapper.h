@@ -429,7 +429,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       ServiceWorkerContext::ResultCallback result_callback,
       blink::ServiceWorkerStatusCode service_worker_status);
 
-  // Called when ServiceWorkerImportedScriptUpdateCheck is enabled.
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
   CreateNonNetworkPendingURLLoaderFactoryBundleForUpdateCheck(
       BrowserContext* browser_context);

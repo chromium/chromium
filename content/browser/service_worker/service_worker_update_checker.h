@@ -22,8 +22,6 @@ namespace content {
 class ServiceWorkerContextCore;
 class ServiceWorkerVersion;
 
-// Used only when ServiceWorkerImportedScriptUpdateCheck is enabled.
-//
 // This is responsible for byte-for-byte update checking. Mostly corresponding
 // to step 1-9 in [[Update]] in the spec, but this stops to fetch scripts after
 // any changes found.

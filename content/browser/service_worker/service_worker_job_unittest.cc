@@ -1441,7 +1441,6 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
   bool force_start_worker_failure_ = false;
   absl::optional<bool> will_be_terminated_;
 
-  // These are used only when ServiceWorkerImportedScriptUpdateCheck is enabled.
   FakeNetwork fake_network_;
   std::unique_ptr<URLLoaderInterceptor> interceptor_;
 

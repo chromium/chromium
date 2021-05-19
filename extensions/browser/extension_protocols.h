@@ -61,8 +61,8 @@ CreateExtensionWorkerMainResourceURLLoaderFactory(
 
 // Creates a new network::mojom::URLLoaderFactory implementation suitable for
 // handling service worker main/imported script requests initiated by the
-// browser process to extension URLs during service worker update check when
-// ServiceWorkerImportedScriptUpdateCheck is enabled.
+// browser process to extension URLs when PlzServiceWorker is enabled or during
+// service worker update check.
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 CreateExtensionServiceWorkerScriptURLLoaderFactory(
     content::BrowserContext* browser_context);

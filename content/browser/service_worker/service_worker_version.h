@@ -571,7 +571,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
   void IncrementPendingUpdateHintCount();
   void DecrementPendingUpdateHintCount();
 
-  // ServiceWorkerImportedScriptUpdateCheck:
   // Called on versions created for an update check. Called if the check
   // determined an update exists before starting the worker for an install
   // event.
@@ -1094,12 +1093,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
 
   std::unique_ptr<blink::TrialTokenValidator> const validator_;
 
-  // Stores the result of byte-to-byte update check for each script. Used only
-  // when ServiceWorkerImportedScriptUpdateCheck is enabled.
+  // Stores the result of byte-to-byte update check for each script.
   std::map<GURL, ServiceWorkerUpdateChecker::ComparedScriptInfo>
       compared_script_info_map_;
 
-  // ServiceWorkerImportedScriptUpdateCheck:
   // If this version was created for an update check that found an update,
   // |updated_script_url_| is the URL of the script for which a byte-for-byte
   // change was found. Otherwise, it's the empty GURL.

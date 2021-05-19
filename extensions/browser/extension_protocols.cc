@@ -302,8 +302,7 @@ bool AllowExtensionResourceLoad(const network::ResourceRequest& request,
   // Dedicated Worker (with PlzDedicatedWorker) and Shared Worker main scripts
   // can be loaded with extension URLs in browser process.
   // Service Worker and the imported scripts can be loaded with extension URLs
-  // in browser process during update check when
-  // ServiceWorkerImportedScriptUpdateCheck is enabled.
+  // in browser process when PlzServiceWorker is enabled or during update check.
   if (child_id == content::ChildProcessHost::kInvalidUniqueID &&
       (blink::IsRequestDestinationFrame(destination) ||
        (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker) &&

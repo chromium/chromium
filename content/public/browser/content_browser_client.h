@@ -1307,8 +1307,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Allows the embedder to register per-scheme URLLoaderFactory
   // implementations to handle service worker main/imported script requests
   // initiated by the browser process for schemes not handled by the Network
-  // Service. Only called for service worker update check when
-  // ServiceWorkerImportedScriptUpdateCheck is enabled.
+  // Service. Only called for service worker update check.
   // The resulting |factories| must be used only by the browser process. The
   // caller must not send any of |factories| to any other process.
   virtual void RegisterNonNetworkServiceWorkerUpdateURLLoaderFactories(
