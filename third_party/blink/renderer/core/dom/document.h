@@ -1689,6 +1689,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void ActivateForPrerendering();
 
+  void AddWillDispatchPrerenderingchangeCallback(base::OnceClosure);
+
   void AddPostPrerenderingActivationStep(base::OnceClosure callback);
 
   class CORE_EXPORT PaintPreviewScope {
@@ -1862,6 +1864,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // TODO(bokan): This should eventually be based on the document loading-mode:
   // https://github.com/jeremyroman/alternate-loading-modes/blob/main/prerendering-state.md#documentprerendering
   bool is_prerendering_;
+
+  // Callbacks to execute upon activation of a prerendered page, just before the
+  // prerenderingchange event is dispatched.
+  Vector<base::OnceClosure> will_dispatch_prerenderingchange_callbacks_;
 
   // The callback list for post-prerendering activation step.
   // https://jeremyroman.github.io/alternate-loading-modes/#document-post-prerendering-activation-steps-list

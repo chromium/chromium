@@ -8185,6 +8185,12 @@ void Document::ActivateForPrerendering() {
   if (DocumentLoader* loader = Loader())
     loader->NotifyPrerenderingDocumentActivated();
 
+  Vector<base::OnceClosure> callbacks;
+  callbacks.swap(will_dispatch_prerenderingchange_callbacks_);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run();
+  }
+
   // https://jeremyroman.github.io/alternate-loading-modes/#prerendering-browsing-context-activate
   // Step 8.3.4 "Fire an event named prerenderingchange at doc."
   DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange));
@@ -8195,6 +8201,12 @@ void Document::ActivateForPrerendering() {
 
   if (LocalFrame* frame = GetFrame())
     frame->DidActivateForPrerendering();
+}
+
+void Document::AddWillDispatchPrerenderingchangeCallback(
+    base::OnceClosure closure) {
+  DCHECK(is_prerendering_);
+  will_dispatch_prerenderingchange_callbacks_.push_back(std::move(closure));
 }
 
 void Document::AddPostPrerenderingActivationStep(base::OnceClosure callback) {
