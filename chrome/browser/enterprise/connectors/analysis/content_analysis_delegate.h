@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -59,7 +60,7 @@ class ContentAnalysisDialog;
 //     safe_browsing::ContentAnalysisDelegate::CreateForWebContents(
 //         contents, std::move(data), base::BindOnce(...));
 //   }
-class ContentAnalysisDelegate {
+class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
  public:
   // Used as an input to CreateForWebContents() to describe what data needs
   // deeper scanning.  Any members can be empty.
@@ -134,26 +135,6 @@ class ContentAnalysisDelegate {
     std::string sha256;
   };
 
-  // Enum to identify which message to show once scanning is complete. Ordered
-  // by precedence for when multiple files have conflicting results.
-  // TODO(crbug.com/1055785): Refactor this to whatever solution is chosen.
-  enum class FinalResult {
-    // Show that an issue was found and that the upload is blocked.
-    FAILURE = 0,
-
-    // Show that files were not uploaded since they were too large.
-    LARGE_FILES = 1,
-
-    // Show that files were not uploaded since they were encrypted.
-    ENCRYPTED_FILES = 2,
-
-    // Show that DLP checks failed, but that the user can proceed if they want.
-    WARNING = 3,
-
-    // Show that no issue was found and that the user may proceed.
-    SUCCESS = 4,
-  };
-
   // Callback used with CreateForWebContents() that informs caller of verdict
   // of deep scans.
   using CompletionCallback =
@@ -169,17 +150,19 @@ class ContentAnalysisDelegate {
 
   ContentAnalysisDelegate(const ContentAnalysisDelegate&) = delete;
   ContentAnalysisDelegate& operator=(const ContentAnalysisDelegate&) = delete;
-  virtual ~ContentAnalysisDelegate();
+  ~ContentAnalysisDelegate() override;
+
+  // ContentAnalysisDelegateBase:
 
   // Called when the user decides to bypass the verdict they obtained from DLP.
   // This will allow the upload of files marked as DLP warnings.
-  void BypassWarnings();
+  void BypassWarnings() override;
 
   // Called when the user decides to cancel the file upload. This will stop the
   // upload to Chrome since the scan wasn't allowed to complete. If |warning| is
   // true, it means the user clicked Cancel after getting a warning, meaning the
   // "CancelledByUser" metrics should not be recorded.
-  void Cancel(bool warning);
+  void Cancel(bool warning) override;
 
   // Returns true if the deep scanning feature is enabled in the upload
   // direction via enterprise policies.  If the appropriate enterprise policies
@@ -308,7 +291,7 @@ class ContentAnalysisDelegate {
 
   // Updates |final_result_| following the precedence established by the
   // FinalResult enum.
-  void UpdateFinalResult(FinalResult message);
+  void UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult message);
 
   // Returns the BinaryUploadService used to upload content for deep scanning.
   // Virtual to override in tests.
@@ -354,7 +337,8 @@ class ContentAnalysisDelegate {
   safe_browsing::DeepScanAccessPoint access_point_;
 
   // Scanning result to be shown to the user once every request is done.
-  FinalResult final_result_ = FinalResult::SUCCESS;
+  ContentAnalysisDelegateBase::FinalResult final_result_ =
+      ContentAnalysisDelegateBase::FinalResult::SUCCESS;
 
   // Set to true at the end of UploadData to indicate requests have been made
   // for every file/text. This is read to ensure |this| isn't deleted too early.

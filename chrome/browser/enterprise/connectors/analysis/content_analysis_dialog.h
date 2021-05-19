@@ -9,7 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/animation/bounds_animator.h"
@@ -88,8 +88,9 @@ class ContentAnalysisDialog : public views::DialogDelegate,
     // Called at the end of ContentAnalysisDialog::UpdateDialog. |result| is
     // the value that UpdatedDialog used to transition from the pending state to
     // the success/failure/warning state.
-    virtual void DialogUpdated(ContentAnalysisDialog* dialog,
-                               ContentAnalysisDelegate::FinalResult result) {}
+    virtual void DialogUpdated(
+        ContentAnalysisDialog* dialog,
+        ContentAnalysisDelegateBase::FinalResult result) {}
 
     // Called at the end of ContentAnalysisDialog's destructor. |dialog| is a
     // pointer to the ContentAnalysisDialog being destructed. It can be used
@@ -106,7 +107,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   static base::TimeDelta GetMinimumPendingDialogTime();
   static base::TimeDelta GetSuccessDialogTimeout();
 
-  ContentAnalysisDialog(std::unique_ptr<ContentAnalysisDelegate> delegate,
+  ContentAnalysisDialog(std::unique_ptr<ContentAnalysisDelegateBase> delegate,
                         content::WebContents* web_contents,
                         safe_browsing::DeepScanAccessPoint access_point,
                         int files_count);
@@ -124,7 +125,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   // Updates the dialog with the result, and simply delete it from memory if
   // nothing should be shown.
-  void ShowResult(ContentAnalysisDelegate::FinalResult result,
+  void ShowResult(ContentAnalysisDelegateBase::FinalResult result,
                   const std::u16string& custom_message,
                   const GURL& learn_more_url);
 
@@ -225,7 +226,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // ensure the auto-closing success dialog handles focus correctly.
   void SuccessCallback();
 
-  std::unique_ptr<ContentAnalysisDelegate> delegate_;
+  std::unique_ptr<ContentAnalysisDelegateBase> delegate_;
 
   content::WebContents* web_contents_;
 
@@ -243,8 +244,8 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   DeepScanningDialogStatus dialog_status_ = DeepScanningDialogStatus::PENDING;
 
   // Used to show the appropriate message.
-  ContentAnalysisDelegate::FinalResult final_result_ =
-      ContentAnalysisDelegate::FinalResult::SUCCESS;
+  ContentAnalysisDelegateBase::FinalResult final_result_ =
+      ContentAnalysisDelegateBase::FinalResult::SUCCESS;
   std::u16string final_custom_message_;
   GURL final_learn_more_url_;
 

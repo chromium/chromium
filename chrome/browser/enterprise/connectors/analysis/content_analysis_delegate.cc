@@ -405,9 +405,9 @@ void ContentAnalysisDelegate::StringRequestCallback(
     if (should_warn) {
       text_warning_ = true;
       text_response_ = std::move(response);
-      UpdateFinalResult(FinalResult::WARNING);
+      UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::WARNING);
     } else {
-      UpdateFinalResult(FinalResult::FAILURE);
+      UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::FAILURE);
     }
   }
 
@@ -438,14 +438,15 @@ void ContentAnalysisDelegate::CompleteFileRequestCallback(
 
   if (!file_complies) {
     if (result == BinaryUploadService::Result::FILE_TOO_LARGE) {
-      UpdateFinalResult(FinalResult::LARGE_FILES);
+      UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::LARGE_FILES);
     } else if (result == BinaryUploadService::Result::FILE_ENCRYPTED) {
-      UpdateFinalResult(FinalResult::ENCRYPTED_FILES);
+      UpdateFinalResult(
+          ContentAnalysisDelegateBase::FinalResult::ENCRYPTED_FILES);
     } else if (should_warn) {
       file_warnings_[index] = std::move(response);
-      UpdateFinalResult(FinalResult::WARNING);
+      UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::WARNING);
     } else {
-      UpdateFinalResult(FinalResult::FAILURE);
+      UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::FAILURE);
     }
   }
 
@@ -597,7 +598,7 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
 
   // If showing the warning message, wait before running the callback. The
   // callback will be called either in BypassWarnings or Cancel.
-  if (final_result_ != FinalResult::WARNING)
+  if (final_result_ != ContentAnalysisDelegateBase::FinalResult::WARNING)
     RunCallback();
 
   if (!UpdateDialog() && data_uploaded_) {
@@ -643,7 +644,8 @@ void ContentAnalysisDelegate::OnGotFileInfo(
   UploadFileForDeepScanning(result, data_.paths[index], std::move(request));
 }
 
-void ContentAnalysisDelegate::UpdateFinalResult(FinalResult result) {
+void ContentAnalysisDelegate::UpdateFinalResult(
+    ContentAnalysisDelegateBase::FinalResult result) {
   if (result < final_result_)
     final_result_ = result;
 }

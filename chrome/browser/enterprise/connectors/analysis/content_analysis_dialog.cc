@@ -204,7 +204,7 @@ base::TimeDelta ContentAnalysisDialog::GetSuccessDialogTimeout() {
 }
 
 ContentAnalysisDialog::ContentAnalysisDialog(
-    std::unique_ptr<ContentAnalysisDelegate> delegate,
+    std::unique_ptr<ContentAnalysisDelegateBase> delegate,
     content::WebContents* web_contents,
     safe_browsing::DeepScanAccessPoint access_point,
     int files_count)
@@ -366,7 +366,7 @@ void ContentAnalysisDialog::WebContentsDestroyed() {
 }
 
 void ContentAnalysisDialog::ShowResult(
-    ContentAnalysisDelegate::FinalResult result,
+    ContentAnalysisDelegateBase::FinalResult result,
     const std::u16string& custom_message,
     const GURL& learn_more_url) {
   DCHECK(is_pending());
@@ -375,15 +375,15 @@ void ContentAnalysisDialog::ShowResult(
   final_learn_more_url_ = learn_more_url;
 
   switch (final_result_) {
-    case ContentAnalysisDelegate::FinalResult::ENCRYPTED_FILES:
-    case ContentAnalysisDelegate::FinalResult::LARGE_FILES:
-    case ContentAnalysisDelegate::FinalResult::FAILURE:
+    case ContentAnalysisDelegateBase::FinalResult::ENCRYPTED_FILES:
+    case ContentAnalysisDelegateBase::FinalResult::LARGE_FILES:
+    case ContentAnalysisDelegateBase::FinalResult::FAILURE:
       dialog_status_ = DeepScanningDialogStatus::FAILURE;
       break;
-    case ContentAnalysisDelegate::FinalResult::SUCCESS:
+    case ContentAnalysisDelegateBase::FinalResult::SUCCESS:
       dialog_status_ = DeepScanningDialogStatus::SUCCESS;
       break;
-    case ContentAnalysisDelegate::FinalResult::WARNING:
+    case ContentAnalysisDelegateBase::FinalResult::WARNING:
       dialog_status_ = DeepScanningDialogStatus::WARNING;
       break;
   }
@@ -648,12 +648,13 @@ std::u16string ContentAnalysisDialog::GetFailureMessage() const {
   if (has_custom_message())
     return GetCustomMessage();
 
-  if (final_result_ == ContentAnalysisDelegate::FinalResult::LARGE_FILES) {
+  if (final_result_ == ContentAnalysisDelegateBase::FinalResult::LARGE_FILES) {
     return l10n_util::GetPluralStringFUTF16(
         IDS_DEEP_SCANNING_DIALOG_LARGE_FILE_FAILURE_MESSAGE, files_count_);
   }
 
-  if (final_result_ == ContentAnalysisDelegate::FinalResult::ENCRYPTED_FILES) {
+  if (final_result_ ==
+      ContentAnalysisDelegateBase::FinalResult::ENCRYPTED_FILES) {
     return l10n_util::GetPluralStringFUTF16(
         IDS_DEEP_SCANNING_DIALOG_ENCRYPTED_FILE_FAILURE_MESSAGE, files_count_);
   }
