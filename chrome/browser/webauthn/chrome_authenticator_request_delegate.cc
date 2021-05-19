@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/chrome_version.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/device_event_log/device_event_log.h"
@@ -234,20 +235,22 @@ bool ChromeWebAuthenticationDelegate::IsFocused(
 ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfig
 ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfigForProfile(
     Profile* profile) {
-  constexpr char kTouchIdKeychainAccessGroup[] =
-      "EQHXZ8M8AV.com.google.Chrome.webauthn";
-  PrefService* prefs = profile->GetPrefs();
+  constexpr char kKeychainAccessGroup[] =
+      MAC_TEAM_IDENTIFIER_STRING "." MAC_BUNDLE_IDENTIFIER_STRING ".webauthn";
+
   std::string metadata_secret =
-      prefs->GetString(kWebAuthnTouchIdMetadataSecretPrefName);
+      profile->GetPrefs()->GetString(kWebAuthnTouchIdMetadataSecretPrefName);
   if (metadata_secret.empty() ||
       !base::Base64Decode(metadata_secret, &metadata_secret)) {
     metadata_secret = device::fido::mac::GenerateCredentialMetadataSecret();
-    prefs->SetString(
+    profile->GetPrefs()->SetString(
         kWebAuthnTouchIdMetadataSecretPrefName,
         base::Base64Encode(base::as_bytes(base::make_span(metadata_secret))));
   }
-  return TouchIdAuthenticatorConfig{kTouchIdKeychainAccessGroup,
-                                    std::move(metadata_secret)};
+
+  return TouchIdAuthenticatorConfig{
+      .keychain_access_group = kKeychainAccessGroup,
+      .metadata_secret = std::move(metadata_secret)};
 }
 
 absl::optional<ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfig>
