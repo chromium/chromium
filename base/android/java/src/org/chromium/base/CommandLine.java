@@ -268,9 +268,6 @@ public abstract class CommandLine {
         private HashMap<String, String> mSwitches = new HashMap<String, String>();
         private ArrayList<String> mArgs = new ArrayList<String>();
 
-        // The arguments begin at index 1, since index 0 contains the executable name.
-        private int mArgsBegin = 1;
-
         JavaCommandLine(@Nullable String[] args) {
             if (args == null || args.length == 0 || args[0] == null) {
                 mArgs.add("");
@@ -319,13 +316,13 @@ public abstract class CommandLine {
         public void appendSwitchWithValue(String switchString, String value) {
             mSwitches.put(switchString, value == null ? "" : value);
 
-            // Append the switch and update the switches/arguments divider mArgsBegin.
+            // Append the switch
             String combinedSwitchString = SWITCH_PREFIX + switchString;
             if (value != null && !value.isEmpty()) {
                 combinedSwitchString += SWITCH_VALUE_SEPARATOR + value;
             }
 
-            mArgs.add(mArgsBegin++, combinedSwitchString);
+            mArgs.add(combinedSwitchString);
         }
 
         @Override
@@ -363,10 +360,9 @@ public abstract class CommandLine {
 
             // Since we permit a switch to be added multiple times, we need to remove all instances
             // from mArgs.
-            for (int i = mArgsBegin - 1; i > 0; i--) {
+            for (int i = mArgs.size() - 1; i > 0; i--) {
                 if (mArgs.get(i).equals(combinedSwitchString)
                         || mArgs.get(i).startsWith(combinedSwitchString + SWITCH_VALUE_SEPARATOR)) {
-                    --mArgsBegin;
                     mArgs.remove(i);
                 }
             }
