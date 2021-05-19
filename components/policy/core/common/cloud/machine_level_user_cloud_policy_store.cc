@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -92,10 +93,28 @@ bool IsResultKeyEqual(const PolicyLoadResult& default_result,
 }
 
 void MachineLevelUserCloudPolicyStore::LoadImmediately() {
-  // There is no global dm token, stop loading the policy cache. The policy will
-  // be fetched in the end of enrollment process.
+  // There is no global dm token, stop loading the policy cache in order to
+  // avoid an unnecessary disk access. Policies will be fetched after enrollment
+  // succeeded.
   if (!machine_dm_token_.is_valid()) {
     VLOG(1) << "LoadImmediately ignored, no DM token present.";
+#if defined(OS_ANDROID)
+    // On Android, some dependencies (e.g. FirstRunActivity) are blocked until
+    // the PolicyService is initialized, which waits on all policy providers to
+    // indicate that policies are available.
+    //
+    // When cloud enrollment is not mandatory, machine-level cloud policies are
+    // loaded asynchronously and will be applied once they are fetched from the
+    // server. To avoid blocking those dependencies on Android, notify that the
+    // PolicyService initialization doesn't need to wait on cloud policies by
+    // sending out an empty policy set.
+    //
+    // The call to |PolicyLoaded| is exactly the same that would happen if this
+    // disk access optimization was not implemented.
+    PolicyLoadResult result;
+    result.status = policy::LOAD_RESULT_NO_POLICY_FILE;
+    PolicyLoaded(/*validate_in_background=*/false, result);
+#endif  // defined(OS_ANDROID)
     return;
   }
   VLOG(1) << "Load policy cache Immediately.";

@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -138,7 +139,11 @@ TEST_F(MachineLevelUserCloudPolicyStoreTest, LoadImmediatelyWithoutDMToken) {
   EXPECT_FALSE(store_->policy());
   EXPECT_TRUE(store_->policy_map().empty());
 
+#if defined(OS_ANDROID)
+  EXPECT_CALL(observer_, OnStoreLoaded(_)).Times(1);
+#else
   EXPECT_CALL(observer_, OnStoreLoaded(_)).Times(0);
+#endif
   EXPECT_CALL(observer_, OnStoreError(_)).Times(0);
 
   store_->LoadImmediately();
