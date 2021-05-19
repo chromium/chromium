@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -157,8 +158,11 @@ void ProfileAttributesEntry::Initialize(ProfileInfoCache* cache,
 
   is_force_signin_enabled_ = signin_util::IsForceSigninEnabled();
   if (is_force_signin_enabled_) {
-    if (!IsAuthenticated())
+    if (!IsAuthenticated() ||
+        (IsAuthError() &&
+         base::FeatureList::IsEnabled(features::kForceSignInReauth))) {
       is_force_signin_profile_locked_ = true;
+    }
 #if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
     defined(OS_WIN)
   } else if (IsSigninRequired()) {
