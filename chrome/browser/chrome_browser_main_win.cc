@@ -85,6 +85,7 @@
 #include "chrome/installer/util/installer_util_strings.h"
 #include "chrome/installer/util/l10n_string_util.h"
 #include "chrome/installer/util/shell_util.h"
+#include "chrome/installer/util/util_constants.h"
 #include "components/crash/core/app/crash_export_thunks.h"
 #include "components/crash/core/app/dump_hung_process_with_ptype.h"
 #include "components/crash/core/common/crash_key.h"
@@ -539,29 +540,17 @@ int DoUninstallTasks(bool chrome_still_running) {
 
   if (result != chrome::RESULT_CODE_UNINSTALL_USER_CANCEL) {
     // The following actions are just best effort.
-    // TODO(gab): Look into removing this code which is now redundant with the
-    // work done by setup.exe on uninstall.
     VLOG(1) << "Executing uninstall actions";
-    base::FilePath chrome_exe;
-    if (base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-      ShellUtil::ShortcutLocation user_shortcut_locations[] = {
-          ShellUtil::SHORTCUT_LOCATION_DESKTOP,
-          ShellUtil::SHORTCUT_LOCATION_QUICK_LAUNCH,
-          ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT,
-          ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED,
-          ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR,
-      };
-      for (size_t i = 0; i < base::size(user_shortcut_locations); ++i) {
-        if (!ShellUtil::RemoveShortcuts(user_shortcut_locations[i],
-                                        ShellUtil::CURRENT_USER, chrome_exe)) {
-          VLOG(1) << "Failed to delete shortcut at location "
-                  << user_shortcut_locations[i];
-        }
-      }
-    } else {
-      NOTREACHED();
+    // Remove shortcuts targeting chrome.exe or chrome_proxy.exe.
+    base::FilePath install_dir;
+    if (base::PathService::Get(base::DIR_EXE, &install_dir)) {
+      std::vector<base::FilePath> shortcut_targets{
+          install_dir.Append(installer::kChromeExe),
+          install_dir.Append(installer::kChromeProxyExe)};
+      ShellUtil::RemoveAllShortcuts(ShellUtil::CURRENT_USER, shortcut_targets);
     }
   }
+
   return result;
 }
 

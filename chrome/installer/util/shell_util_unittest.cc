@@ -61,6 +61,9 @@ class ShellUtilShortcutTest : public testing::Test {
     chrome_exe_ = temp_dir_.GetPath().Append(installer::kChromeExe);
     EXPECT_EQ(0, base::WriteFile(chrome_exe_, "", 0));
 
+    chrome_proxy_exe_ = temp_dir_.GetPath().Append(installer::kChromeProxyExe);
+    EXPECT_EQ(0, base::WriteFile(chrome_proxy_exe_, "", 0));
+
     manganese_exe_ = temp_dir_.GetPath().Append(kManganeseExe);
     EXPECT_EQ(0, base::WriteFile(manganese_exe_, "", 0));
 
@@ -221,6 +224,7 @@ class ShellUtilShortcutTest : public testing::Test {
   std::unique_ptr<base::ScopedPathOverride> common_startup_override_;
 
   base::FilePath chrome_exe_;
+  base::FilePath chrome_proxy_exe_;
   base::FilePath manganese_exe_;
   base::FilePath iron_exe_;
   base::FilePath other_ico_;
@@ -419,7 +423,8 @@ TEST_F(ShellUtilShortcutTest, RemoveChromeShortcut) {
   ASSERT_TRUE(base::PathExists(shortcut_path));
 
   ASSERT_TRUE(ShellUtil::RemoveShortcuts(ShellUtil::SHORTCUT_LOCATION_DESKTOP,
-                                         ShellUtil::CURRENT_USER, chrome_exe_));
+                                         ShellUtil::CURRENT_USER,
+                                         {chrome_exe_}));
   ASSERT_FALSE(base::PathExists(shortcut_path));
   ASSERT_TRUE(base::PathExists(shortcut_path.DirName()));
 }
@@ -434,7 +439,8 @@ TEST_F(ShellUtilShortcutTest, RemoveSystemLevelChromeShortcut) {
   ASSERT_TRUE(base::PathExists(shortcut_path));
 
   ASSERT_TRUE(ShellUtil::RemoveShortcuts(ShellUtil::SHORTCUT_LOCATION_DESKTOP,
-                                         ShellUtil::SYSTEM_LEVEL, chrome_exe_));
+                                         ShellUtil::SYSTEM_LEVEL,
+                                         {chrome_exe_}));
   ASSERT_FALSE(base::PathExists(shortcut_path));
   ASSERT_TRUE(base::PathExists(shortcut_path.DirName()));
 }
@@ -474,11 +480,230 @@ TEST_F(ShellUtilShortcutTest, RemoveMultipleChromeShortcuts) {
 
   // Remove shortcuts that target "chrome.exe".
   ASSERT_TRUE(ShellUtil::RemoveShortcuts(ShellUtil::SHORTCUT_LOCATION_DESKTOP,
-                                         ShellUtil::CURRENT_USER, chrome_exe_));
+                                         ShellUtil::CURRENT_USER,
+                                         {chrome_exe_}));
   ASSERT_FALSE(base::PathExists(shortcut1_path));
   ASSERT_FALSE(base::PathExists(shortcut2_path));
   ASSERT_TRUE(base::PathExists(shortcut3_path));
   ASSERT_TRUE(base::PathExists(shortcut1_path.DirName()));
+}
+
+TEST_F(ShellUtilShortcutTest, RemoveMultiTargetShortcuts) {
+  // Shortcut 1: targets "chrome.exe"; no arguments.
+  test_properties_.set_shortcut_name(L"Chrome 1");
+  test_properties_.set_arguments(L"");
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath shortcut1_path = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_);
+  ASSERT_TRUE(base::PathExists(shortcut1_path));
+
+  // Shortcut 2: targets "chrome_proxy.exe"; no arguments.
+  test_properties_.set_shortcut_name(L"Chrome Proxy 2");
+  test_properties_.set_target(chrome_proxy_exe_);
+  test_properties_.set_arguments(L"");
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath shortcut2_path = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_);
+  ASSERT_TRUE(base::PathExists(shortcut2_path));
+
+  // Shortcut 3: targets "chrome_proxy.exe"; has arguments; icon set to
+  // "other.ico".
+  test_properties_.set_shortcut_name(L"Chrome Proxy 3");
+  test_properties_.set_target(chrome_proxy_exe_);
+  test_properties_.set_arguments(L"--profile-directory=\"Profile 2\"");
+  test_properties_.set_icon(other_ico_, 0);
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath shortcut3_path = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_);
+  ASSERT_TRUE(base::PathExists(shortcut3_path));
+
+  // Shortcut 4: targets "iron.exe"; has arguments; icon set to "chrome.exe".
+  test_properties_.set_shortcut_name(L"Iron 4");
+  test_properties_.set_target(iron_exe_);
+  test_properties_.set_icon(chrome_exe_, 3);
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath shortcut4_path = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_);
+  ASSERT_TRUE(base::PathExists(shortcut4_path));
+
+  // Shortcut 5: targets "manganese.exe"; has arguments; icon set to
+  // "chrome.exe".
+  test_properties_.set_shortcut_name(L"Manganese 5");
+  test_properties_.set_target(manganese_exe_);
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath shortcut5_path = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_);
+  ASSERT_TRUE(base::PathExists(shortcut5_path));
+
+  // Remove per-user shortcuts that target "chrome.exe", "chrome_proxy.exe" and
+  // "iron.exe".
+  ASSERT_TRUE(ShellUtil::RemoveShortcuts(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, ShellUtil::CURRENT_USER,
+      {chrome_exe_, chrome_proxy_exe_, iron_exe_}));
+  ASSERT_FALSE(base::PathExists(shortcut1_path));
+  ASSERT_FALSE(base::PathExists(shortcut2_path));
+  ASSERT_FALSE(base::PathExists(shortcut3_path));
+  ASSERT_FALSE(base::PathExists(shortcut4_path));
+  ASSERT_TRUE(base::PathExists(shortcut5_path));
+}
+
+TEST_F(ShellUtilShortcutTest, RemoveSystemLevelMultiTargetShortcuts) {
+  test_properties_.level = ShellUtil::SYSTEM_LEVEL;
+  // Shortcut 1: targets "chrome.exe"; no arguments.
+  test_properties_.set_shortcut_name(L"Chrome 1");
+  test_properties_.set_arguments(L"");
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath shortcut1_path = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_);
+  ASSERT_TRUE(base::PathExists(shortcut1_path));
+
+  // Shortcut 2: targets "chrome_proxy.exe"; no arguments.
+  test_properties_.set_shortcut_name(L"Chrome Proxy 2");
+  test_properties_.set_target(chrome_proxy_exe_);
+  test_properties_.set_arguments(L"");
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath shortcut2_path = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_);
+  ASSERT_TRUE(base::PathExists(shortcut2_path));
+
+  // Shortcut 3: targets "chrome_proxy.exe"; has arguments; icon set to
+  // "other.ico".
+  test_properties_.set_shortcut_name(L"Chrome Proxy 3");
+  test_properties_.set_target(chrome_proxy_exe_);
+  test_properties_.set_arguments(L"--profile-directory=\"Profile 2\"");
+  test_properties_.set_icon(other_ico_, 0);
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath shortcut3_path = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_);
+  ASSERT_TRUE(base::PathExists(shortcut3_path));
+
+  // Shortcut 4: targets "iron.exe"; has arguments; icon set to "chrome.exe".
+  test_properties_.set_shortcut_name(L"Iron 4");
+  test_properties_.set_target(iron_exe_);
+  test_properties_.set_icon(chrome_exe_, 3);
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath shortcut4_path = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_);
+  ASSERT_TRUE(base::PathExists(shortcut4_path));
+
+  // Shortcut 5: targets "manganese.exe"; has arguments; icon set to
+  // "chrome.exe".
+  test_properties_.set_shortcut_name(L"Manganese 5");
+  test_properties_.set_target(manganese_exe_);
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath shortcut5_path = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_);
+  ASSERT_TRUE(base::PathExists(shortcut5_path));
+
+  // Remove system level shortcuts that target "chrome.exe", "chrome_proxy.exe"
+  // and "iron.exe".
+  ASSERT_TRUE(ShellUtil::RemoveShortcuts(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, ShellUtil::SYSTEM_LEVEL,
+      {chrome_exe_, chrome_proxy_exe_, iron_exe_}));
+  ASSERT_FALSE(base::PathExists(shortcut1_path));
+  ASSERT_FALSE(base::PathExists(shortcut2_path));
+  ASSERT_FALSE(base::PathExists(shortcut3_path));
+  ASSERT_FALSE(base::PathExists(shortcut4_path));
+  ASSERT_TRUE(base::PathExists(shortcut5_path));
+}
+
+TEST_F(ShellUtilShortcutTest, RemoveAllShortcutsMultipleLocations) {
+  // Shortcut 1: targets "chrome.exe"; desktop shortcut.
+  test_properties_.set_shortcut_name(L"Chrome Desktop 1");
+  test_properties_.set_target(chrome_exe_);
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath shortcut1_path = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_);
+  ASSERT_TRUE(base::PathExists(shortcut1_path));
+
+  // Shortcut 2: targets "chrome_proxy.exe"; start menu shortcut.
+  test_properties_.set_shortcut_name(L"Chrome Proxy Startup 2");
+  test_properties_.set_target(chrome_proxy_exe_);
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath shortcut2_path = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT, test_properties_);
+  ASSERT_TRUE(base::PathExists(shortcut2_path));
+
+  // Shortcut 3: targets "iron.exe"; has arguments; icon set to "chrome.exe".
+  test_properties_.set_shortcut_name(L"Iron 3");
+  test_properties_.set_target(iron_exe_);
+  test_properties_.set_icon(chrome_exe_, 3);
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath shortcut3_path = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_);
+  ASSERT_TRUE(base::PathExists(shortcut3_path));
+
+  ShellUtil::RemoveAllShortcuts(ShellUtil::CURRENT_USER,
+                                {chrome_exe_, chrome_proxy_exe_});
+  ASSERT_FALSE(base::PathExists(shortcut1_path));
+  ASSERT_FALSE(base::PathExists(shortcut2_path));
+  ASSERT_TRUE(base::PathExists(shortcut3_path));
+}
+
+TEST_F(ShellUtilShortcutTest, RemoveAllShortcutsSystemLevelMultipleLocations) {
+  test_properties_.level = ShellUtil::SYSTEM_LEVEL;
+  // Shortcut 1: targets "chrome.exe"; desktop shortcut.
+  test_properties_.set_shortcut_name(L"Chrome Desktop 1");
+  test_properties_.set_target(chrome_exe_);
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath shortcut1_path = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_);
+  ASSERT_TRUE(base::PathExists(shortcut1_path));
+
+  // Shortcut 2: targets "chrome_proxy.exe"; start menu shortcut.
+  test_properties_.set_shortcut_name(L"Chrome Proxy Startup 2");
+  test_properties_.set_target(chrome_proxy_exe_);
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath shortcut2_path = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT, test_properties_);
+  ASSERT_TRUE(base::PathExists(shortcut2_path));
+
+  // Shortcut 3: targets "iron.exe"; has arguments; icon set to "chrome.exe".
+  test_properties_.set_shortcut_name(L"Iron 3");
+  test_properties_.set_target(iron_exe_);
+  test_properties_.set_icon(chrome_exe_, 3);
+  ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
+  base::FilePath shortcut3_path = GetExpectedShortcutPath(
+      ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_);
+  ASSERT_TRUE(base::PathExists(shortcut3_path));
+
+  ShellUtil::RemoveAllShortcuts(ShellUtil::SYSTEM_LEVEL,
+                                {chrome_exe_, chrome_proxy_exe_});
+  ASSERT_FALSE(base::PathExists(shortcut1_path));
+  ASSERT_FALSE(base::PathExists(shortcut2_path));
+  ASSERT_TRUE(base::PathExists(shortcut3_path));
 }
 
 TEST_F(ShellUtilShortcutTest, RetargetShortcutsWithArgs) {
@@ -777,13 +1002,13 @@ TEST_F(ShellUtilShortcutTest, CreateMultipleStartMenuShortcutsAndRemoveFolder) {
   ASSERT_TRUE(base::PathExists(chrome_shortcut_folder));
   ASSERT_TRUE(ShellUtil::RemoveShortcuts(
       ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED,
-      ShellUtil::CURRENT_USER, chrome_exe_));
+      ShellUtil::CURRENT_USER, {chrome_exe_}));
   ASSERT_FALSE(base::PathExists(chrome_shortcut_folder));
 
   ASSERT_TRUE(base::PathExists(chrome_apps_shortcut_folder));
   ASSERT_TRUE(ShellUtil::RemoveShortcuts(
       ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR,
-      ShellUtil::CURRENT_USER, chrome_exe_));
+      ShellUtil::CURRENT_USER, {chrome_exe_}));
   ASSERT_FALSE(base::PathExists(chrome_apps_shortcut_folder));
 }
 
@@ -802,7 +1027,7 @@ TEST_F(ShellUtilShortcutTest,
   ASSERT_TRUE(base::PathExists(shortcut_path));
   ASSERT_TRUE(
       ShellUtil::RemoveShortcuts(ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT,
-                                 ShellUtil::CURRENT_USER, chrome_exe_));
+                                 ShellUtil::CURRENT_USER, {chrome_exe_}));
   // The shortcut should be removed but the "Start Menu" root directory should
   // remain.
   ASSERT_TRUE(base::PathExists(fake_start_menu_.GetPath()));
@@ -831,7 +1056,8 @@ TEST_F(ShellUtilShortcutTest, DontRemoveChromeShortcutIfPointsToAnotherChrome) {
   // |other_chrome_exe| and RemoveChromeShortcut() is being told that the
   // removed shortcut should point to |chrome_exe_|.
   ASSERT_TRUE(ShellUtil::RemoveShortcuts(ShellUtil::SHORTCUT_LOCATION_DESKTOP,
-                                         ShellUtil::CURRENT_USER, chrome_exe_));
+                                         ShellUtil::CURRENT_USER,
+                                         {chrome_exe_}));
   ASSERT_TRUE(base::PathExists(shortcut_path));
   ASSERT_TRUE(base::PathExists(shortcut_path.DirName()));
 }

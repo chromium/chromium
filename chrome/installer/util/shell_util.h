@@ -589,14 +589,23 @@ class ShellUtil {
   // Removes installed shortcut(s) at |location|.
   // |level|: CURRENT_USER to remove per-user shortcuts, or SYSTEM_LEVEL to
   // remove all-users shortcuts.
-  // |target_exe|: Shortcut target exe; shortcuts will only be deleted when
-  // their target is |target_exe|.
+  // |target_paths|: A vector of shortcut target exe paths; shortcuts will only
+  // be deleted when their target is one of |target_paths|.
   // If |location| is a Chrome-specific folder, it will be deleted as well.
   // Returns true if all shortcuts pointing to |target_exe| are successfully
   // deleted, including the case where no such shortcuts are found.
   static bool RemoveShortcuts(ShortcutLocation location,
                               ShellChange level,
-                              const base::FilePath& target_exe);
+                              const std::vector<base::FilePath>& target_paths);
+
+  // Removes installed shortcut(s) from all ShellUtil::ShortcutLocations.
+  // |level|: CURRENT_USER to remove per-user shortcuts, or SYSTEM_LEVEL to
+  // remove all-users shortcuts.
+  // |target_paths|: A vector of shortcut target exe paths; shortcuts will only
+  // be deleted when their target is one of |target_paths|.
+  static void RemoveAllShortcuts(
+      ShellChange level,
+      const std::vector<base::FilePath>& target_paths);
 
   // Updates the target of all shortcuts in |location| that satisfy the
   // following:

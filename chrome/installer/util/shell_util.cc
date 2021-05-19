@@ -1294,12 +1294,13 @@ using ShortcutFilterCallback =
     base::RepeatingCallback<bool(const base::FilePath& shortcut_path,
                                  const std::wstring& args)>;
 
-// FilterTargetEq is a shortcut filter that matches only shortcuts that have a
-// specific target, and optionally matches shortcuts that have non-empty
-// arguments.
-class FilterTargetEq {
+// FilterTargetContains is a shortcut filter that matches shortcuts that target
+// any of a set of candidate files, and optionally matches shortcuts that have
+// non-empty arguments.
+class FilterTargetContains {
  public:
-  FilterTargetEq(const base::FilePath& desired_target_exe, bool require_args);
+  FilterTargetContains(const std::vector<base::FilePath>& target_paths,
+                       bool require_args);
 
   // Returns true if filter rules are satisfied, i.e.:
   // - |target_path|'s target == |desired_target_compare_|, and
@@ -1312,27 +1313,33 @@ class FilterTargetEq {
   ShortcutFilterCallback AsShortcutFilterCallback();
 
  private:
-  InstallUtil::ProgramCompare desired_target_compare_;
-
+  std::vector<InstallUtil::ProgramCompare> desired_target_compare_;
   bool require_args_;
 };
 
-FilterTargetEq::FilterTargetEq(const base::FilePath& desired_target_exe,
-                               bool require_args)
-    : desired_target_compare_(desired_target_exe),
+FilterTargetContains::FilterTargetContains(
+    const std::vector<base::FilePath>& target_paths,
+    bool require_args)
+    : desired_target_compare_(std::begin(target_paths), std::end(target_paths)),
       require_args_(require_args) {}
 
-bool FilterTargetEq::Match(const base::FilePath& target_path,
-                           const std::wstring& args) const {
-  if (!desired_target_compare_.EvaluatePath(target_path))
+bool FilterTargetContains::Match(const base::FilePath& target_path,
+                                 const std::wstring& args) const {
+  auto comparator = [&target_path](const auto& target_compare) {
+    return target_compare.EvaluatePath(target_path);
+  };
+  if (std::none_of(std::begin(desired_target_compare_),
+                   std::end(desired_target_compare_), comparator)) {
     return false;
+  }
   if (require_args_ && args.empty())
     return false;
   return true;
 }
 
-ShortcutFilterCallback FilterTargetEq::AsShortcutFilterCallback() {
-  return base::BindRepeating(&FilterTargetEq::Match, base::Unretained(this));
+ShortcutFilterCallback FilterTargetContains::AsShortcutFilterCallback() {
+  return base::BindRepeating(&FilterTargetContains::Match,
+                             base::Unretained(this));
 }
 
 // Shortcut operations for BatchShortcutAction().
@@ -1352,7 +1359,7 @@ bool ShortcutOpUnpinFromTaskbar(const base::FilePath& shortcut_path) {
 
 bool ShortcutOpDelete(const base::FilePath& shortcut_path) {
   bool ret = base::DeleteFile(shortcut_path);
-  LOG_IF(ERROR, !ret) << "Failed to remove " << shortcut_path.value();
+  PLOG_IF(ERROR, !ret) << "Failed to remove " << shortcut_path.value();
   return ret;
 }
 
@@ -2446,13 +2453,14 @@ bool ShellUtil::RegisterChromeForProtocols(
 }
 
 // static
-bool ShellUtil::RemoveShortcuts(ShortcutLocation location,
-                                ShellChange level,
-                                const base::FilePath& target_exe) {
+bool ShellUtil::RemoveShortcuts(
+    ShortcutLocation location,
+    ShellChange level,
+    const std::vector<base::FilePath>& target_paths) {
   if (!ShortcutLocationIsSupported(location))
     return true;  // Vacuous success.
 
-  FilterTargetEq shortcut_filter(target_exe, false);
+  FilterTargetContains shortcut_filter(target_paths, false);
   // Main operation to apply to each shortcut in the directory specified.
   ShortcutOperationCallback shortcut_operation =
       location == SHORTCUT_LOCATION_TASKBAR_PINS
@@ -2472,6 +2480,19 @@ bool ShellUtil::RemoveShortcuts(ShortcutLocation location,
 }
 
 // static
+void ShellUtil::RemoveAllShortcuts(
+    ShellChange level,
+    const std::vector<base::FilePath>& target_paths) {
+  // Delete and unpin all shortcuts that point to |target_paths| from all
+  // ShellUtil::ShortcutLocations for the given |level|.
+  for (int location = SHORTCUT_LOCATION_FIRST;
+       location < NUM_SHORTCUT_LOCATIONS; ++location) {
+    RemoveShortcuts(static_cast<ShortcutLocation>(location), level,
+                    target_paths);
+  }
+}
+
+// static
 bool ShellUtil::RetargetShortcutsWithArgs(
     ShortcutLocation location,
     ShellChange level,
@@ -2480,7 +2501,7 @@ bool ShellUtil::RetargetShortcutsWithArgs(
   if (!ShortcutLocationIsSupported(location))
     return true;  // Vacuous success.
 
-  FilterTargetEq shortcut_filter(old_target_exe, true);
+  FilterTargetContains shortcut_filter({old_target_exe}, true);
   ShortcutOperationCallback shortcut_operation =
       base::BindRepeating(&ShortcutOpRetarget, old_target_exe, new_target_exe);
   return BatchShortcutAction(shortcut_filter.AsShortcutFilterCallback(),
@@ -2497,7 +2518,7 @@ bool ShellUtil::ShortcutListMaybeRemoveUnknownArgs(
     std::vector<std::pair<base::FilePath, std::wstring>>* shortcuts) {
   if (!ShortcutLocationIsSupported(location))
     return false;
-  FilterTargetEq shortcut_filter(chrome_exe, true);
+  FilterTargetContains shortcut_filter({chrome_exe}, true);
   ShortcutOperationCallback shortcut_operation = base::BindRepeating(
       &ShortcutOpListOrRemoveUnknownArgs, do_removal, shortcuts);
   return BatchShortcutAction(shortcut_filter.AsShortcutFilterCallback(),
@@ -2510,7 +2531,7 @@ bool ShellUtil::ResetShortcutFileAttributes(ShortcutLocation location,
                                             const base::FilePath& chrome_exe) {
   if (!ShortcutLocationIsSupported(location))
     return false;
-  FilterTargetEq shortcut_filter(chrome_exe, /*require_args=*/false);
+  FilterTargetContains shortcut_filter({chrome_exe}, /*require_args=*/false);
   ShortcutOperationCallback shortcut_operation =
       base::BindRepeating(&ShortcutOpResetAttributes);
   return BatchShortcutAction(shortcut_filter.AsShortcutFilterCallback(),
