@@ -114,6 +114,9 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
           builder=builder,
           num_of_shards=num_of_shards
       )
+      for shard_index, bot_index in selected_config:
+        bot_id = self._bot_configs[bot_index]['id']
+        shard_map['extra_infos']['bot #%s' % shard_index] = bot_id
     return shard_map
 
   def append_additional_args(self, args, shard_index):
