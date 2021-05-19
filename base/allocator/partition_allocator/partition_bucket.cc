@@ -153,10 +153,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     PA_DCHECK(!metadata->extent.super_page_base);
     PA_DCHECK(!metadata->extent.super_pages_end);
     PA_DCHECK(!metadata->extent.next);
-    // Call FromSlotInnerPtr instead of FromSlotStartPtr, because the bucket
-    // isn't set up yet to properly assert the slot start.
-    PA_DCHECK(PartitionPage<thread_safe>::FromSlotInnerPtr(slot) ==
-              &metadata->page);
+    PA_DCHECK(PartitionPage<thread_safe>::FromPtr(slot) == &metadata->page);
 
     page = &metadata->page;
     PA_DCHECK(!page->slot_span_metadata_offset);
