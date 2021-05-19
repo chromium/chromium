@@ -19,7 +19,7 @@ suite('history-toolbar', function() {
   setup(function() {
     document.body.innerHTML = '';
     testService = new TestBrowserService();
-    BrowserService.instance_ = testService;
+    BrowserService.setInstance(testService);
 
     app = document.createElement('history-app');
     document.body.appendChild(app);

@@ -23,7 +23,7 @@ suite('routing-test', function() {
   setup(function() {
     window.history.replaceState({}, '', '/');
     document.body.innerHTML = '';
-    BrowserService.instance_ = new TestBrowserService();
+    BrowserService.setInstance(new TestBrowserService());
     app = document.createElement('history-app');
     document.body.appendChild(app);
 

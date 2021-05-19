@@ -18,7 +18,7 @@ suite('history-list supervised-user', function() {
   setup(function() {
     document.body.innerHTML = '';
     testService = new TestBrowserService();
-    BrowserService.instance_ = testService;
+    BrowserService.setInstance(testService);
 
     testService.setQueryResult({
       info: createHistoryInfo(),

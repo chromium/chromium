@@ -15,7 +15,7 @@ suite('<history-toolbar>', function() {
   setup(function() {
     document.body.innerHTML = '';
     window.history.replaceState({}, '', '/');
-    BrowserService.instance_ = new TestBrowserService();
+    BrowserService.setInstance(new TestBrowserService());
 
     app = document.createElement('history-app');
     document.body.appendChild(app);

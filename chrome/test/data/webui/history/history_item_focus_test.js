@@ -12,7 +12,7 @@ suite('<history-item> focus test', function() {
 
   setup(function() {
     document.body.innerHTML = '';
-    BrowserService.instance_ = new TestBrowserService();
+    BrowserService.setInstance(new TestBrowserService());
 
     item = document.createElement('history-item');
     item.item = createHistoryEntry('2016-03-16 10:00', 'http://www.google.com');

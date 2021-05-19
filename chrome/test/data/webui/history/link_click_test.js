@@ -10,7 +10,7 @@ suite('listenForPrivilegedLinkClicks unit test', function() {
   test('click handler', async () => {
     document.body.innerHTML = '';
     const testService = new TestBrowserService();
-    BrowserService.instance_ = testService;
+    BrowserService.setInstance(testService);
 
     listenForPrivilegedLinkClicks();
     document.body.innerHTML = `

@@ -26,7 +26,7 @@ suite('<history-list>', function() {
     window.history.replaceState({}, '', '/');
     document.body.innerHTML = '';
     testService = new TestBrowserService();
-    BrowserService.instance_ = testService;
+    BrowserService.setInstance(testService);
     testService.setQueryResult({
       info: createHistoryInfo(),
       value: TEST_HISTORY_RESULTS,

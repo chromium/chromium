@@ -69,7 +69,7 @@ suite(history_list_test.suiteName, function() {
     window.history.replaceState({}, '', '/');
     document.body.innerHTML = '';
     testService = new TestBrowserService();
-    BrowserService.instance_ = testService;
+    BrowserService.setInstance(testService);
 
     app = document.createElement('history-app');
   });

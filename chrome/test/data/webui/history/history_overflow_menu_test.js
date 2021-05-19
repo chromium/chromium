@@ -15,7 +15,7 @@ suite('#overflow-menu', function() {
   setup(function() {
     document.body.innerHTML = '';
     const testService = new TestBrowserService();
-    BrowserService.instance_ = testService;
+    BrowserService.setInstance(testService);
 
     const app = document.createElement('history-app');
     document.body.appendChild(app);

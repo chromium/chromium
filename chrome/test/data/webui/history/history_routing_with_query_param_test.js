@@ -17,7 +17,7 @@ suite('routing-with-query-param', function() {
     document.body.innerHTML = '';
     window.history.replaceState({}, '', '/?q=query');
     testService = new TestBrowserService();
-    BrowserService.instance_ = testService;
+    BrowserService.setInstance(testService);
     // Ignore the initial empty query so that we can correctly check the
     // search term for the second call to queryHistory().
     testService.ignoreNextQuery();

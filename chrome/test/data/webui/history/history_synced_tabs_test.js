@@ -34,7 +34,7 @@ suite('<history-synced-device-manager>', function() {
     document.body.innerHTML = '';
     window.history.replaceState({}, '', '/');
     testService = new TestBrowserService();
-    BrowserService.instance_ = testService;
+    BrowserService.setInstance(testService);
 
     // Need to ensure lazy_load.html has been imported so that the device
     // manager custom element is defined.

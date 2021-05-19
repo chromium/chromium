@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {RESULTS_PER_PAGE} from './constants.js';
 import {ForeignSession, HistoryEntry, HistoryQuery} from './externs.js';
 
@@ -119,6 +119,17 @@ export class BrowserService {
   startSignInFlow() {
     chrome.send('startSignInFlow');
   }
+
+  /** @return {!BrowserService} */
+  static getInstance() {
+    return instance || (instance = new BrowserService());
+  }
+
+  /** @param {!BrowserService} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(BrowserService);
+/** @type {?BrowserService} */
+let instance = null;

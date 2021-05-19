@@ -28,7 +28,7 @@ suite('<history-item> unit test', function() {
 
   setup(function() {
     document.body.innerHTML = '';
-    BrowserService.instance_ = new TestBrowserService();
+    BrowserService.setInstance(new TestBrowserService());
 
     item = document.createElement('history-item');
     item.item = TEST_HISTORY_RESULTS[0];
@@ -72,7 +72,7 @@ suite('<history-item> integration test', function() {
   setup(function() {
     document.body.innerHTML = '';
     const testService = new TestBrowserService();
-    BrowserService.instance_ = testService;
+    BrowserService.setInstance(testService);
 
     const app = document.createElement('history-app');
     document.body.appendChild(app);

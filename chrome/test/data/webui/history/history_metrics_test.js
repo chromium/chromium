@@ -22,7 +22,7 @@ suite('Metrics', function() {
   setup(async () => {
     document.body.innerHTML = '';
 
-    BrowserService.instance_ = new TestBrowserService();
+    BrowserService.setInstance(new TestBrowserService());
     testService = BrowserService.getInstance();
 
     actionMap = testService.actionMap;
