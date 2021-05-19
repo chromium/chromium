@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -82,8 +82,9 @@ class BlockedPopupTabHelper
   // For management of infobars::InfoBarManager::Observer registration.  This
   // object will not start observing the InfoBarManager until ShowInfoBars() is
   // called.
-  ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-      scoped_observer_;
+  base::ScopedObservation<infobars::InfoBarManager,
+                          infobars::InfoBarManager::Observer>
+      scoped_observation_{this};
 
   WEB_STATE_USER_DATA_KEY_DECL();
 

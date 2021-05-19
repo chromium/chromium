@@ -117,7 +117,7 @@ class BlockPopupInfoBarDelegate : public ConfirmInfoBarDelegate {
 }  // namespace
 
 BlockedPopupTabHelper::BlockedPopupTabHelper(web::WebState* web_state)
-    : web_state_(web_state), infobar_(nullptr), scoped_observer_(this) {}
+    : web_state_(web_state), infobar_(nullptr) {}
 
 BlockedPopupTabHelper::~BlockedPopupTabHelper() = default;
 
@@ -141,13 +141,14 @@ void BlockedPopupTabHelper::OnInfoBarRemoved(infobars::InfoBar* infobar,
   if (infobar == infobar_) {
     infobar_ = nullptr;
     popups_.clear();
-    scoped_observer_.RemoveAll();
+    scoped_observation_.Reset();
   }
 }
 
 void BlockedPopupTabHelper::OnManagerShuttingDown(
     infobars::InfoBarManager* infobar_manager) {
-  scoped_observer_.Remove(infobar_manager);
+  DCHECK(scoped_observation_.IsObservingSource(infobar_manager));
+  scoped_observation_.Reset();
 }
 
 void BlockedPopupTabHelper::ShowInfoBar() {
@@ -188,13 +189,13 @@ void BlockedPopupTabHelper::RegisterAsInfoBarManagerObserverIfNeeded(
     infobars::InfoBarManager* infobar_manager) {
   DCHECK(infobar_manager);
 
-  if (scoped_observer_.IsObserving(infobar_manager)) {
+  if (scoped_observation_.IsObservingSource(infobar_manager)) {
     return;
   }
 
   // Verify that this object is never observing more than one InfoBarManager.
-  DCHECK(!scoped_observer_.IsObservingSources());
-  scoped_observer_.Add(infobar_manager);
+  DCHECK(!scoped_observation_.IsObserving());
+  scoped_observation_.Observe(infobar_manager);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(BlockedPopupTabHelper)

@@ -37,7 +37,7 @@ class BlockedPopupTabHelperTest : public ChromeWebTest {
 
   // Returns true if InfoBarManager is being observed.
   bool IsObservingSources() {
-    return GetBlockedPopupTabHelper()->scoped_observer_.IsObservingSources();
+    return GetBlockedPopupTabHelper()->scoped_observation_.IsObserving();
   }
 
   // Returns BlockedPopupTabHelper that is being tested.
