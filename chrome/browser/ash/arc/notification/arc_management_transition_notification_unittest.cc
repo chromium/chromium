@@ -10,11 +10,13 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
@@ -26,9 +28,22 @@
 
 namespace arc {
 
+namespace {
+
+struct TransitionNotificationParams {
+  TransitionNotificationParams(ArcSupervisionTransition arc_transition,
+                               const gfx::VectorIcon* notification_icon)
+      : arc_transition(arc_transition), notification_icon(notification_icon) {}
+
+  ArcSupervisionTransition arc_transition;
+  const gfx::VectorIcon* notification_icon;
+};
+
+}  // namespace
+
 class ArcManagementTransitionNotificationTest
     : public testing::Test,
-      public testing::WithParamInterface<ArcSupervisionTransition> {
+      public testing::WithParamInterface<TransitionNotificationParams> {
  public:
   ArcManagementTransitionNotificationTest() = default;
   ~ArcManagementTransitionNotificationTest() override = default;
@@ -59,6 +74,14 @@ class ArcManagementTransitionNotificationTest
   }
   ArcAppTest* arc_app_test() { return &arc_app_test_; }
 
+  const gfx::VectorIcon* expected_notification_icon() {
+    return GetParam().notification_icon;
+  }
+
+  ArcSupervisionTransition arc_transition() {
+    return GetParam().arc_transition;
+  }
+
  private:
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
@@ -72,10 +95,16 @@ class ArcManagementTransitionNotificationTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     ArcManagementTransitionNotificationTest,
-    ::testing::Values(ArcSupervisionTransition::NO_TRANSITION,
-                      ArcSupervisionTransition::CHILD_TO_REGULAR,
-                      ArcSupervisionTransition::REGULAR_TO_CHILD,
-                      ArcSupervisionTransition::UNMANAGED_TO_MANAGED));
+    ::testing::Values(
+        TransitionNotificationParams(ArcSupervisionTransition::NO_TRANSITION,
+                                     nullptr),
+        TransitionNotificationParams(ArcSupervisionTransition::CHILD_TO_REGULAR,
+                                     &kNotificationFamilyLinkIcon),
+        TransitionNotificationParams(ArcSupervisionTransition::REGULAR_TO_CHILD,
+                                     &kNotificationFamilyLinkIcon),
+        TransitionNotificationParams(
+            ArcSupervisionTransition::UNMANAGED_TO_MANAGED,
+            &chromeos::kEnterpriseIcon)));
 
 TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
   ASSERT_TRUE(arc_app_test()->fake_apps().size());
@@ -85,7 +114,7 @@ TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
       ArcAppTest::GetAppId(arc_app_test()->fake_apps()[0]);
 
   profile()->GetPrefs()->SetInteger(prefs::kArcSupervisionTransition,
-                                    static_cast<int>(GetParam()));
+                                    static_cast<int>(arc_transition()));
 
   // Attempt to launch ARC app triggers notification.
   LaunchApp(profile(), app_id, 0 /* event_flags */,
@@ -97,7 +126,7 @@ TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
 
   // In case no management transition in progress notification is not
   // triggered.
-  if (GetParam() == ArcSupervisionTransition::NO_TRANSITION) {
+  if (arc_transition() == ArcSupervisionTransition::NO_TRANSITION) {
     EXPECT_FALSE(display_service()->GetNotification(
         kManagementTransitionNotificationId));
     // Last launch is set, indicating that launch attempt was not blocked.
@@ -105,8 +134,17 @@ TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
     return;
   }
 
-  EXPECT_TRUE(
-      display_service()->GetNotification(kManagementTransitionNotificationId));
+  {
+    auto notification =
+        display_service()->GetNotification(kManagementTransitionNotificationId);
+
+    // Notification is shown.
+    ASSERT_TRUE(notification);
+    // Notification has expected icon.
+    EXPECT_EQ(&notification->vector_small_image(),
+              expected_notification_icon());
+  }
+
   // Last launch is not set, indicating that launch attempt was blocked.
   EXPECT_TRUE(app_info->last_launch_time.is_null());
 
@@ -120,7 +158,7 @@ TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
   // Re-activate notification and check opt out. On opt-out notification is also
   // automatially dismissed.
   profile()->GetPrefs()->SetInteger(prefs::kArcSupervisionTransition,
-                                    static_cast<int>(GetParam()));
+                                    static_cast<int>(arc_transition()));
   ShowManagementTransitionNotification(profile());
   EXPECT_TRUE(
       display_service()->GetNotification(kManagementTransitionNotificationId));

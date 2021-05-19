@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -82,6 +83,15 @@ class NotificationDelegate : public message_center::NotificationDelegate,
   DISALLOW_COPY_AND_ASSIGN(NotificationDelegate);
 };
 
+const gfx::VectorIcon& GetNotificationIcon(
+    ArcSupervisionTransition transition) {
+  if (transition == ArcSupervisionTransition::UNMANAGED_TO_MANAGED) {
+    return chromeos::kEnterpriseIcon;
+  } else {
+    return kNotificationFamilyLinkIcon;
+  }
+}
+
 }  // namespace
 
 const char kManagementTransitionNotificationId[] =
@@ -106,7 +116,7 @@ void ShowManagementTransitionNotification(Profile* profile) {
           l10n_util::GetStringUTF16(IDS_ARC_CHILD_TRANSITION_MESSAGE),
           l10n_util::GetStringUTF16(IDS_ARC_NOTIFICATION_DISPLAY_SOURCE),
           GURL(), notifier_id, message_center::RichNotificationData(),
-          new NotificationDelegate(profile), kNotificationFamilyLinkIcon,
+          new NotificationDelegate(profile), GetNotificationIcon(transition),
           message_center::SystemNotificationWarningLevel::NORMAL);
   NotificationDisplayService::GetForProfile(profile)->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
