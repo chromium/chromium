@@ -6657,7 +6657,7 @@
     {
       name: "-internal-empty-line-height",
       property_methods: ["ParseSingleValue" ],
-      inherited: false,
+      inherited: true,
       field_group: "*",
       field_template: "primitive",
       type_name: "bool",
