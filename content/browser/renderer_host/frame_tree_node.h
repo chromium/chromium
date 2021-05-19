@@ -99,7 +99,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // a fresh set of CSP).
   // TODO(arthursonzogni): Remove this function. The frame/document must not be
   // left temporarily with lax state.
-  void ResetForNavigation(bool was_served_from_back_forward_cache);
+  void ResetForNavigation();
 
   FrameTree* frame_tree() const { return frame_tree_; }
   Navigator& navigator() { return frame_tree()->navigator(); }
