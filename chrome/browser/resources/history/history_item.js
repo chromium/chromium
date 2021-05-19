@@ -12,6 +12,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -113,11 +114,8 @@ export class HistoryItemElement extends HistoryItemElementBase {
     /** @private {boolean} */
     this.isShiftKeyDown_ = false;
 
-    /** @private {?function(!Event)} */
-    this.boundOnKeyDown_ = null;
-
-    /** @private {?function()} */
-    this.boundOnMouseOver_ = null;
+    /** @private {!EventTracker} */
+    this.eventTracker_ = new EventTracker();
   }
 
   /** @override */
@@ -129,16 +127,15 @@ export class HistoryItemElement extends HistoryItemElementBase {
     afterNextRender(this, function() {
       // Adding listeners asynchronously to reduce blocking time, since these
       // history items are items in a potentially long list.
-      this.boundOnKeyDown_ = e => this.onCheckboxKeydown_(e);
-      this.$.checkbox.addEventListener('keydown', this.boundOnKeyDown_);
+      this.eventTracker_.add(
+          this.$.checkbox, 'keydown', e => this.onCheckboxKeydown_(e));
     });
   }
 
   /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.$.checkbox.removeEventListener('keydown', this.boundOnKeyDown_);
-    this.boundOnKeyDown_ = null;
+    this.eventTracker_.remove(this.$.checkbox, 'keydown');
   }
 
   /**
@@ -352,10 +349,8 @@ export class HistoryItemElement extends HistoryItemElementBase {
     this.$.icon.style.backgroundImage = getFaviconForPageURL(
         this.item.url, this.item.isUrlInRemoteUserData,
         this.item.remoteIconUrlForUma);
-
-    this.boundOnMouseOver_ = () => this.addTimeTitle_();
-    this.$['time-accessed'].addEventListener(
-        'mouseover', this.boundOnMouseOver_);
+    this.eventTracker_.add(
+        this.$['time-accessed'], 'mouseover', () => this.addTimeTitle_());
   }
 
   /**
@@ -380,8 +375,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
   addTimeTitle_() {
     const el = this.$['time-accessed'];
     el.setAttribute('title', new Date(this.item.time).toString());
-    el.removeEventListener('mouseover', this.boundOnMouseOver_);
-    this.boundOnMouseOver_ = null;
+    this.eventTracker_.remove(el, 'mouseover');
   }
 
   /**

@@ -159,6 +159,7 @@ js_library("history_item") {
     ":constants",
     ":externs",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:event_tracker.m",
     "//ui/webui/resources/js:icon.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
@@ -220,6 +221,7 @@ js_library("query_manager") {
     ":externs",
     ":router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:event_tracker.m",
   ]
 }
 

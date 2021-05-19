@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserService} from './browser_service.js';
@@ -54,27 +55,23 @@ export class HistoryQueryManagerElement extends PolymerElement {
   constructor() {
     super();
 
-    /** @private {!Object<string, !function(!Event)>} */
-    this.documentListeners_ = {};
+    /** @private {!EventTracker} */
+    this.eventTracker_ = new EventTracker();
   }
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-    this.documentListeners_['change-query'] = this.onChangeQuery_.bind(this);
-    this.documentListeners_['query-history'] = this.onQueryHistory_.bind(this);
-
-    for (const e in this.documentListeners_) {
-      document.addEventListener(e, this.documentListeners_[e]);
-    }
+    this.eventTracker_.add(
+        document, 'change-query', this.onChangeQuery_.bind(this));
+    this.eventTracker_.add(
+        document, 'query-history', this.onQueryHistory_.bind(this));
   }
 
   /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
-    for (const e in this.documentListeners_) {
-      document.removeEventListener(e, this.documentListeners_[e]);
-    }
+    this.eventTracker_.removeAll();
   }
 
   initialize() {
