@@ -52,7 +52,7 @@ const base::Feature kEnableLauncherSearchNormalization{
 const base::Feature kCategoricalSearch{"CategoricalSearch",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kLauncherQueryHighlighting{
-    "LauncherQueryHighlighting", base::FEATURE_DISABLED_BY_DEFAULT};
+    "LauncherQueryHighlighting", base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsAppDataSearchEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppDataSearch);
