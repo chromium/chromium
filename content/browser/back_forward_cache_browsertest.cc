@@ -11531,4 +11531,175 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheOptInBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
+class BackForwardCacheUnloadStrategyBrowserTest
+    : public BackForwardCacheBrowserTest,
+      public testing::WithParamInterface<std::string> {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(features::kBackForwardCache, "unload_support",
+                              GetParam());
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  void InstallUnloadHandlerOnSubFrame() {
+    TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
+    EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+      const iframeElement = document.createElement("iframe");
+      iframeElement.src = "%s";
+      document.body.appendChild(iframeElement);
+      )"));
+    navigation_observer.Wait();
+    RenderFrameHostImpl* subframe_render_frame_host =
+        current_frame_host()->child_at(0)->current_frame_host();
+    EXPECT_TRUE(
+        ExecJs(subframe_render_frame_host, "window.onunload = () => 42;"));
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BackForwardCacheUnloadStrategyBrowserTest,
+                         testing::Values("always",
+                                         "opt_in_header_required",
+                                         "no"));
+
+IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
+                       UnloadHandlerPresentWithOptInHeader) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com",
+                                            "/set-header?"
+                                            "BFCache-Opt-In: unload"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  EXPECT_TRUE(ExecJs(current_frame_host(), "window.onunload = () => 42;"));
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Go back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  if (GetParam() == "always" || GetParam() == "opt_in_header_required") {
+    ExpectRestored(FROM_HERE);
+  } else {
+    ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                           kUnloadHandlerExistsInMainFrame},
+                      {}, {}, {}, FROM_HERE);
+  }
+
+  // 4) Go forward.
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  ExpectRestored(FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
+                       UnloadHandlerPresentWithoutOptInHeader) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/unload.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Go back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  if (GetParam() == "always") {
+    ExpectRestored(FROM_HERE);
+  } else if (GetParam() == "opt_in_header_required") {
+    ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                           kOptInUnloadHeaderNotPresent},
+                      {}, {}, {}, FROM_HERE);
+  } else {
+    ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                           kUnloadHandlerExistsInMainFrame},
+                      {}, {}, {}, FROM_HERE);
+  }
+
+  // 4) Go forward.
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  ExpectRestored(FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
+                       UnloadHandlerPresentInSubFrameWithOptInHeader) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com",
+                                            "/set-header?"
+                                            "BFCache-Opt-In: unload"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  InstallUnloadHandlerOnSubFrame();
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Go back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  if (GetParam() == "always" || GetParam() == "opt_in_header_required") {
+    ExpectRestored(FROM_HERE);
+  } else {
+    ASSERT_EQ("no", GetParam());
+    ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                           kUnloadHandlerExistsInSubFrame},
+                      {}, {}, {}, FROM_HERE);
+  }
+
+  // 4) Go forward.
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  ExpectRestored(FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
+                       UnloadHandlerPresentInSubFrameWithoutOptInHeader) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  InstallUnloadHandlerOnSubFrame();
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Go back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  if (GetParam() == "always") {
+    ExpectRestored(FROM_HERE);
+  } else {
+    ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                           kUnloadHandlerExistsInSubFrame},
+                      {}, {}, {}, FROM_HERE);
+  }
+
+  // 4) Go forward.
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  ExpectRestored(FROM_HERE);
+}
+
 }  // namespace content

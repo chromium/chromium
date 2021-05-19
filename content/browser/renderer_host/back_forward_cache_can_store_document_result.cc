@@ -160,6 +160,12 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
     case Reason::kOptInUnloadHeaderNotPresent:
       return "BFCache-Opt-In header not present, or does not include `unload` "
              "token, and an experimental config which requires it is active.";
+    case Reason::kUnloadHandlerExistsInMainFrame:
+      return "Unload handler exists in the main frame, and the current "
+             "experimental config doesn't permit it to be BFCached.";
+    case Reason::kUnloadHandlerExistsInSubFrame:
+      return "Unload handler exists in a sub frame, and the current "
+             "experimental config doesn't permit it to be BFCached.";
   }
 }
 

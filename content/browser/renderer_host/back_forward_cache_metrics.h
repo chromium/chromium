@@ -101,7 +101,9 @@ class BackForwardCacheMetrics
     kBrowsingInstanceNotSwapped = 47,
     kBackForwardCacheDisabledForDelegate = 48,
     kOptInUnloadHeaderNotPresent = 49,
-    kMaxValue = kOptInUnloadHeaderNotPresent,
+    kUnloadHandlerExistsInMainFrame = 50,
+    kUnloadHandlerExistsInSubFrame = 51,
+    kMaxValue = kUnloadHandlerExistsInSubFrame,
   };
 
   using NotRestoredReasons =
