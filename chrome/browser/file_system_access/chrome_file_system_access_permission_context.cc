@@ -218,6 +218,9 @@ const struct {
     // Similar Mac specific blocks.
     {base::DIR_APP_DATA, nullptr, kBlockAllChildren},
     {base::DIR_HOME, FILE_PATH_LITERAL("Library"), kBlockAllChildren},
+    // Allow access to iCloud files.
+    {base::DIR_HOME, FILE_PATH_LITERAL("Library/Mobile Documents"),
+     kDontBlockChildren},
 #endif
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
     // On Linux also block access to devices via /dev, as well as security
