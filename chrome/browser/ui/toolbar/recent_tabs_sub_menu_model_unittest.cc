@@ -303,7 +303,9 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
   EXPECT_TRUE(model.IsEnabledAt(1));
   EXPECT_FALSE(model.IsEnabledAt(2));
   EXPECT_TRUE(model.IsEnabledAt(3));
+  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU, model.GetTypeAt(3));
   EXPECT_TRUE(model.IsEnabledAt(4));
+  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU, model.GetTypeAt(4));
   model.ActivatedAt(3);
   model.ActivatedAt(4);
   EXPECT_FALSE(model.IsEnabledAt(6));
@@ -420,6 +422,7 @@ TEST_F(RecentTabsSubMenuModelTest,
   EXPECT_EQ(ui::MenuModel::TYPE_SEPARATOR, model.GetTypeAt(1));
   EXPECT_FALSE(model.IsEnabledAt(2));
   EXPECT_TRUE(model.IsEnabledAt(3));
+  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU, model.GetTypeAt(3));
   EXPECT_TRUE(model.IsEnabledAt(4));
   EXPECT_TRUE(model.IsEnabledAt(5));
   model.ActivatedAt(3);

@@ -81,6 +81,8 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   using TabNavigationItems = std::vector<TabNavigationItem>;
   using WindowItems = std::vector<SessionID>;
   using GroupItems = std::vector<SessionID>;
+  struct SubMenuItem;
+  using SubMenuItems = std::vector<SubMenuItem>;
 
   // Index of the separator that follows the history menu item. Used as a
   // reference position for inserting local entries.
@@ -107,6 +109,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // Build the recently closed window item with parameters needed to restore it,
   // and add it to the menumodel at |curr_model_index|.
   void BuildLocalWindowItem(SessionID window_id,
+                            std::unique_ptr<ui::SimpleMenuModel> window_model,
                             int num_tabs,
                             int curr_model_index);
 
@@ -114,12 +117,26 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // and add it to the menumodel at |curr_model_index|.
   void BuildLocalGroupItem(SessionID session_id,
                            tab_groups::TabGroupVisualData visual_data,
+                           std::unique_ptr<ui::SimpleMenuModel> group_model,
                            int num_tabs,
                            int curr_model_index);
 
   // Build the tab item for other devices with parameters needed to restore it.
   void BuildOtherDevicesTabItem(const std::string& session_tag,
                                 const sessions::SessionTab& tab);
+
+  // Create a submenu model representing the tabs within a window.
+  std::unique_ptr<ui::SimpleMenuModel> CreateWindowSubMenuModel(
+      const sessions::TabRestoreService::Window& window);
+
+  // Create a submenu model representing the tabs within a tab group.
+  std::unique_ptr<ui::SimpleMenuModel> CreateGroupSubMenuModel(
+      const sessions::TabRestoreService::Group& group);
+
+  // Return the command id of the given id's parent submenu, if it has one that
+  // is created by this menu model. Otherwise, return -1. This will be the case
+  // for all items whose parent is the RecentTabsSubMenuModel itself.
+  int GetParentCommandId(int command_id) const;
 
   // Add the favicon for the device section header.
   void AddDeviceFavicon(int index_in_menu,
@@ -186,6 +203,12 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // vector.  Upon invocation of the menu, information is retrieved from
   // |local_group_items_| and used to create the specified group.
   GroupItems local_group_items_;
+
+  // SubMenu items for submenu entry points representing local recently
+  // closed groups and windows.  The |command_id| for these is set to
+  // |kFirstLocalSubMenuCommandId| plus the index into the vector. These are
+  // not executable.
+  SubMenuItems local_sub_menu_items_;
 
   // Index of the last local entry (recently closed tab or window or group) in
   // the menumodel.

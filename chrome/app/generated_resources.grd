@@ -1235,6 +1235,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TAKE_SCREENSHOT" desc="The text label of the Take Screenshot menu item">
           T&amp;ake screenshot
         </message>
+        <message name="IDS_RESTORE_ALL_TABS" desc="The text label of the Restore All Tabs menu item.">
+          R&amp;estore all tabs
+        </message>
         <message name="IDS_RESTORE_TAB" desc="The text label of the Restore Tab menu item">
           R&amp;eopen closed tab
         </message>
@@ -1272,6 +1275,9 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_TAKE_SCREENSHOT" desc="The text label of the Take Screenshot menu item">
           T&amp;ake Screenshot
+        </message>
+        <message name="IDS_RESTORE_ALL_TABS" desc="In Title Case: The text label of the Restore All Tabs menu item.">
+          R&amp;estore All Tabs
         </message>
         <message name="IDS_RESTORE_TAB" desc="In Title Case: The text label of the Restore Tab menu item">
           R&amp;eopen Closed Tab
