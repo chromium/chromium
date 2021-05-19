@@ -53,7 +53,9 @@ action("remoting_me2me_host_deb_installer") {
     "debian/control",
     "debian/copyright",
     "debian/postinst",
+    "debian/postrm",
     "debian/preinst",
+    "debian/prerm",
     "debian/rules",
     "debian/triggers",
   ]
