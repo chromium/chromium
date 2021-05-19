@@ -4218,7 +4218,7 @@
     },
 
     'lacros_skylab_poc': {
-      'mainline_lacros_tast_tests': {
+      'lacros_fyi_tast_tests': {
         'tast_expr': '("group:mainline" && "dep:lacros")',
         'timeout_sec': 10800,
       },
