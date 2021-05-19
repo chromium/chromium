@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.android.util.concurrent.RoboExecutorService;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -49,6 +50,8 @@ import org.chromium.components.webapk.lib.common.WebApkConstants;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+// TODO(crbug.com/1210371): Change to use paused looper. See crbug for details.
+@LooperMode(LooperMode.Mode.LEGACY)
 public class WebappDisclosureControllerTest {
     private static final String UNBOUND_PACKAGE = "unbound";
     private static final String BOUND_PACKAGE = WebApkConstants.WEBAPK_PACKAGE_PREFIX + ".bound";
