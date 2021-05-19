@@ -33,18 +33,6 @@ namespace {
 constexpr char kSessionStorageManagerKeyName[] =
     "StorageAPI SessionStorageManager";
 
-// Adds all StringValues from a ListValue to a vector of strings.
-void AddAllStringValues(const base::ListValue& from,
-                        std::vector<std::string>* to) {
-  DCHECK(to->empty());
-  std::string as_string;
-  for (const auto& entry : from.GetList()) {
-    if (entry.GetAsString(&as_string)) {
-      to->push_back(as_string);
-    }
-  }
-}
-
 // Returns a vector of any strings within the given list.
 std::vector<std::string> GetKeysFromList(const base::Value& list) {
   DCHECK(list.is_list());
@@ -54,15 +42,6 @@ std::vector<std::string> GetKeysFromList(const base::Value& list) {
     auto* as_string = value.GetIfString();
     if (as_string)
       keys.push_back(*as_string);
-  }
-  return keys;
-}
-
-// Gets the keys of a DictionaryValue.
-std::vector<std::string> GetKeys(const base::DictionaryValue& dict) {
-  std::vector<std::string> keys;
-  for (base::DictionaryValue::Iterator it(dict); !it.IsAtEnd(); it.Advance()) {
-    keys.push_back(it.key());
   }
   return keys;
 }
@@ -230,7 +209,7 @@ ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunWithStorage(
     ValueStore* storage) {
   TRACE_EVENT1("browser", "StorageStorageAreaGetFunction::RunWithStorage",
                "extension_id", extension_id());
-  base::Value* input = NULL;
+  base::Value* input = nullptr;
   if (!args_->Get(0, &input))
     return BadMessage();
 
@@ -238,33 +217,19 @@ ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunWithStorage(
     case base::Value::Type::NONE:
       return UseReadResult(storage->Get());
 
-    case base::Value::Type::STRING: {
-      std::string as_string;
-      input->GetAsString(&as_string);
-      return UseReadResult(storage->Get(as_string));
-    }
+    case base::Value::Type::STRING:
+      return UseReadResult(storage->Get(input->GetString()));
 
-    case base::Value::Type::LIST: {
-      // TODO(crbug.com/1200931): Replace with GetKeysFromList() and delete
-      // AddAllStringValues().
-      std::vector<std::string> as_string_list;
-      AddAllStringValues(*static_cast<base::ListValue*>(input),
-                         &as_string_list);
-      return UseReadResult(storage->Get(as_string_list));
-    }
+    case base::Value::Type::LIST:
+      return UseReadResult(storage->Get(GetKeysFromList(*input)));
 
     case base::Value::Type::DICTIONARY: {
-      // TODO(crbug.com/1200931): Replace with GetKeysFromDict() and delete
-      // GetKeys().
-      base::DictionaryValue* as_dict =
-          static_cast<base::DictionaryValue*>(input);
-      ValueStore::ReadResult result = storage->Get(GetKeys(*as_dict));
+      ValueStore::ReadResult result = storage->Get(GetKeysFromDict(*input));
       if (!result.status().ok()) {
         return UseReadResult(std::move(result));
       }
-
       std::unique_ptr<base::DictionaryValue> with_default_values =
-          as_dict->CreateDeepCopy();
+          static_cast<base::DictionaryValue*>(input)->CreateDeepCopy();
       with_default_values->MergeDictionary(&result.settings());
       return UseReadResult(ValueStore::ReadResult(
           std::move(with_default_values), result.PassStatus()));
@@ -325,7 +290,7 @@ StorageStorageAreaGetBytesInUseFunction::RunWithStorage(ValueStore* storage) {
                "StorageStorageAreaGetBytesInUseFunction::RunWithStorage",
                "extension_id", extension_id());
 
-  base::Value* input = NULL;
+  base::Value* input = nullptr;
   if (!args_->Get(0, &input))
     return BadMessage();
 
@@ -336,20 +301,13 @@ StorageStorageAreaGetBytesInUseFunction::RunWithStorage(ValueStore* storage) {
       bytes_in_use = storage->GetBytesInUse();
       break;
 
-    case base::Value::Type::STRING: {
-      std::string as_string;
-      input->GetAsString(&as_string);
-      bytes_in_use = storage->GetBytesInUse(as_string);
+    case base::Value::Type::STRING:
+      bytes_in_use = storage->GetBytesInUse(input->GetString());
       break;
-    }
 
-    case base::Value::Type::LIST: {
-      std::vector<std::string> as_string_list;
-      AddAllStringValues(*static_cast<base::ListValue*>(input),
-                         &as_string_list);
-      bytes_in_use = storage->GetBytesInUse(as_string_list);
+    case base::Value::Type::LIST:
+      bytes_in_use = storage->GetBytesInUse(GetKeysFromList(*input));
       break;
-    }
 
     default:
       return BadMessage();
@@ -369,7 +327,7 @@ ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunWithStorage(
     ValueStore* storage) {
   TRACE_EVENT1("browser", "StorageStorageAreaSetFunction::RunWithStorage",
                "extension_id", extension_id());
-  base::DictionaryValue* input = NULL;
+  base::DictionaryValue* input = nullptr;
   if (!args_->GetDictionary(0, &input))
     return BadMessage();
   return UseWriteResult(storage->Set(ValueStore::DEFAULTS, *input));
@@ -415,23 +373,16 @@ ExtensionFunction::ResponseValue
 StorageStorageAreaRemoveFunction::RunWithStorage(ValueStore* storage) {
   TRACE_EVENT1("browser", "StorageStorageAreaRemoveFunction::RunWithStorage",
                "extension_id", extension_id());
-  base::Value* input = NULL;
+  base::Value* input = nullptr;
   if (!args_->Get(0, &input))
     return BadMessage();
 
   switch (input->type()) {
-    case base::Value::Type::STRING: {
-      std::string as_string;
-      input->GetAsString(&as_string);
-      return UseWriteResult(storage->Remove(as_string));
-    }
+    case base::Value::Type::STRING:
+      return UseWriteResult(storage->Remove(input->GetString()));
 
-    case base::Value::Type::LIST: {
-      std::vector<std::string> as_string_list;
-      AddAllStringValues(*static_cast<base::ListValue*>(input),
-                         &as_string_list);
-      return UseWriteResult(storage->Remove(as_string_list));
-    }
+    case base::Value::Type::LIST:
+      return UseWriteResult(storage->Remove(GetKeysFromList(*input)));
 
     default:
       return BadMessage();
