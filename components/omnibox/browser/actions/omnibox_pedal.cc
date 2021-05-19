@@ -8,6 +8,7 @@
 #include <cctype>
 #include <numeric>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/omnibox/browser/buildflags.h"
@@ -239,6 +240,16 @@ const gfx::VectorIcon& OmniboxPedal::GetVectorIcon() const {
 
 void OmniboxPedal::AddSynonymGroup(SynonymGroup&& group) {
   synonym_groups_.push_back(std::move(group));
+}
+
+void OmniboxPedal::RecordActionShown() const {
+  base::UmaHistogramEnumeration("Omnibox.PedalShown", id(),
+                                OmniboxPedalId::TOTAL_COUNT);
+}
+
+void OmniboxPedal::RecordActionExecuted() const {
+  base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal", id(),
+                                OmniboxPedalId::TOTAL_COUNT);
 }
 
 size_t OmniboxPedal::EstimateMemoryUsage() const {

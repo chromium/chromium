@@ -71,6 +71,12 @@ class OmniboxAction {
   // Provides read access to labels associated with this Action.
   const LabelStrings& GetLabelStrings() const;
 
+  // Records that the action was shown.
+  virtual void RecordActionShown() const {}
+
+  // Records that the action was executed.
+  virtual void RecordActionExecuted() const {}
+
   // Takes the action associated with this Action.  Non-navigation
   // Actions must override the default, but Navigation Actions don't need to.
   virtual void Execute(ExecutionContext& context) const;

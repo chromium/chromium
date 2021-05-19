@@ -724,15 +724,12 @@ void OmniboxEditModel::ExecutePedal(const AutocompleteMatch& match,
   // Record the presence of any Pedals in the result set.
   for (const AutocompleteMatch& match_in_result : result()) {
     if (match_in_result.pedal) {
-      base::UmaHistogramEnumeration("Omnibox.PedalShown",
-                                    match_in_result.pedal->id(),
-                                    OmniboxPedalId::TOTAL_COUNT);
+      match_in_result.pedal->RecordActionShown();
     }
   }
 
-  // Record the use of this Pedal.
-  base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal", pedal->id(),
-                                OmniboxPedalId::TOTAL_COUNT);
+  pedal->RecordActionExecuted();
+
   {
     // This block resets omnibox to unedited state and closes popup, which
     // may not seem necessary in cases of navigation but makes sense for
@@ -763,9 +760,7 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   // Record the presence of any Pedals in the result set.
   for (const AutocompleteMatch& match_in_result : result()) {
     if (match_in_result.pedal) {
-      base::UmaHistogramEnumeration("Omnibox.PedalShown",
-                                    match_in_result.pedal->id(),
-                                    OmniboxPedalId::TOTAL_COUNT);
+      match_in_result.pedal->RecordActionShown();
     }
   }
 

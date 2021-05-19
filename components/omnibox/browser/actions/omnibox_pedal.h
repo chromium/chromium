@@ -163,16 +163,10 @@ class OmniboxPedal : public OmniboxAction {
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
   // Returns the default vector icon to use for Pedals that do not specify one.
   static const gfx::VectorIcon& GetDefaultVectorIcon();
-
-  // Returns the vector icon to represent this Pedal's action in suggestion.
-  const gfx::VectorIcon& GetVectorIcon() const override;
 #endif
 
   // Move a synonym group into this Pedal's collection.
   void AddSynonymGroup(SynonymGroup&& group);
-
-  // Estimates RAM usage in bytes for this Pedal.
-  size_t EstimateMemoryUsage() const override;
 
   OmniboxPedalId id() const { return id_; }
 
@@ -182,6 +176,14 @@ class OmniboxPedal : public OmniboxAction {
   // tokens not covered by any synonym group, then it's not a concept match and
   // this returns false. |match_sequence| is consumed/mutated by this method.
   bool IsConceptMatch(TokenSequence& match_sequence) const;
+
+  // OmniboxAction overrides:
+  void RecordActionShown() const override;
+  void RecordActionExecuted() const override;
+#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+  const gfx::VectorIcon& GetVectorIcon() const override;
+#endif
+  size_t EstimateMemoryUsage() const override;
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalTest, SynonymGroupErasesFirstMatchOnly);
