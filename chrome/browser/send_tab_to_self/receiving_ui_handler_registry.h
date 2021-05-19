@@ -20,6 +20,7 @@ struct DefaultSingletonTraits;
 namespace send_tab_to_self {
 
 class ReceivingUiHandler;
+class SendTabToSelfToolbarButtonController;
 
 // Registry responsible for keeping track of which UI handlers are appropriate
 // for each platform. A platform can have multiple handlers which are
@@ -34,6 +35,11 @@ class ReceivingUiHandlerRegistry {
   // Returns all the handlers to perform UI updates for the platform.
   // Called by the SendTabToSelfClientService.
   const std::vector<std::unique_ptr<ReceivingUiHandler>>& GetHandlers() const;
+
+  // Return the SendTabToSelfToolbarButtonController owned by the registry
+  // for the given |profile|.
+  SendTabToSelfToolbarButtonController* GetToolbarButtonControllerForProfile(
+      Profile* profile);
 
  private:
   friend struct base::DefaultSingletonTraits<ReceivingUiHandlerRegistry>;

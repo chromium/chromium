@@ -61,6 +61,10 @@ namespace media_router {
 class CastToolbarButton;
 }
 
+namespace send_tab_to_self {
+class SendTabToSelfToolbarButtonView;
+}
+
 namespace views {
 class FlexLayout;
 }
@@ -150,6 +154,10 @@ class ToolbarView : public views::AccessiblePaneView,
   media_router::CastToolbarButton* cast_button() const { return cast_; }
   ToolbarButton* read_later_button() const { return read_later_button_; }
   MediaToolbarButtonView* media_button() const { return media_button_; }
+  send_tab_to_self::SendTabToSelfToolbarButtonView* send_tab_to_self_button()
+      const {
+    return send_tab_to_self_button_;
+  }
   ToolbarAccountIconContainerView* toolbar_account_icon_container() const {
     return toolbar_account_icon_container_;
   }
@@ -271,6 +279,8 @@ class ToolbarView : public views::AccessiblePaneView,
   ToolbarAccountIconContainerView* toolbar_account_icon_container_ = nullptr;
   AvatarToolbarButton* avatar_ = nullptr;
   MediaToolbarButtonView* media_button_ = nullptr;
+  send_tab_to_self::SendTabToSelfToolbarButtonView* send_tab_to_self_button_ =
+      nullptr;
   BrowserAppMenuButton* app_menu_button_ = nullptr;
 
   Browser* const browser_;
