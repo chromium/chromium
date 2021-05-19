@@ -90,6 +90,7 @@ public class FirstRunIntegrationTest {
     private static final String TEST_URL = "https://test.com";
     private static final String FOO_URL = "https://foo.com";
     private static final long ACTIVITY_WAIT_LONG_MS = TimeUnit.SECONDS.toMillis(10);
+    private static final String TEST_ENROLLMENT_TOKEN = "enrollment-token";
 
     @Rule
     public MultiActivityTestRule mTestRule = new MultiActivityTestRule();
@@ -204,6 +205,13 @@ public class FirstRunIntegrationTest {
         restrictions.putInt("TosDialogBehavior", TosDialogBehavior.SKIP);
         AbstractAppRestrictionsProvider.setTestRestrictions(restrictions);
         setDeviceOwnedForMock();
+    }
+
+    private void enableCloudManagementViaPolicy() {
+        setHasAppRestrictionForMock(true);
+        Bundle restrictions = new Bundle();
+        restrictions.putString("CloudManagementEnrollmentToken", TEST_ENROLLMENT_TOKEN);
+        AbstractAppRestrictionsProvider.setTestRestrictions(restrictions);
     }
 
     private void launchCustomTabs(String url) {
@@ -680,6 +688,18 @@ public class FirstRunIntegrationTest {
 
         unblockOnFlowIsKnown();
         verifyUrlEquals(TEST_URL, waitAndGetUriFromChromeActivity(CustomTabActivity.class));
+    }
+
+    @Test
+    @MediumTest
+    public void testCloudManagementDoesNotBlockFirstRun() throws Exception {
+        // Ensures FRE is not blocked if cloud management is enabled.
+        enableCloudManagementViaPolicy();
+
+        launchViewIntent(TEST_URL);
+        FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
+        clickThroughFirstRun(firstRunActivity, SearchEnginePromoType.DONT_SHOW);
+        verifyUrlEquals(TEST_URL, waitAndGetUriFromChromeActivity(ChromeTabbedActivity.class));
     }
 
     private void clickButton(final Activity activity, final int id, final String message) {
