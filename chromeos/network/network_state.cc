@@ -533,8 +533,6 @@ void NetworkState::SetGuid(const std::string& guid) {
 network_config::mojom::ActivationStateType
 NetworkState::GetMojoActivationState() const {
   using network_config::mojom::ActivationStateType;
-  if (IsNonShillCellularNetwork())
-    return ActivationStateType::kNoService;
   if (activation_state_.empty())
     return ActivationStateType::kUnknown;
   if (activation_state_ == shill::kActivationStateActivated)
@@ -626,6 +624,7 @@ std::unique_ptr<NetworkState> NetworkState::CreateNonShillCellularNetwork(
   new_state->iccid_ = iccid;
   new_state->eid_ = eid;
   new_state->guid_ = guid;
+  new_state->activation_state_ = shill::kActivationStateActivated;
   return new_state;
 }
 
