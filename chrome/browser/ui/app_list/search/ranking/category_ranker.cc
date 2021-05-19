@@ -27,7 +27,8 @@ enum class Category {
   kAssistant = 4,
   kSettings = 5,
   kHelp = 6,
-  kMaxValue = kHelp,
+  kPlayStore = 7,
+  kMaxValue = kPlayStore,
 };
 
 std::u16string CategoryDebugString(const Category category) {
@@ -44,16 +45,16 @@ std::u16string CategoryDebugString(const Category category) {
       return u"(settings) ";
     case Category::kHelp:
       return u"(help) ";
+    case Category::kPlayStore:
+      return u"(play store) ";
   }
 }
 
 Category ResultTypeToCategory(ResultType result_type) {
   switch (result_type) {
     case ResultType::kInstalledApp:
-    case ResultType::kPlayStoreApp:
     case ResultType::kInstantApp:
     case ResultType::kInternalApp:
-    case ResultType::kPlayStoreReinstallApp:
     case ResultType::kArcAppShortcut:
       return Category::kApp;
     case ResultType::kOmnibox:
@@ -73,6 +74,9 @@ Category ResultTypeToCategory(ResultType result_type) {
       return Category::kSettings;
     case ResultType::kHelpApp:
       return Category::kHelp;
+    case ResultType::kPlayStoreReinstallApp:
+    case ResultType::kPlayStoreApp:
+      return Category::kPlayStore;
     // Never used in the search backend.
     case ResultType::kUnknown:
     // Suggested content toggle fake result type. Used only in ash, not in the
@@ -118,6 +122,7 @@ void CategoryRanker::InitializeCategoryScores() {
   // categories will appear in reverse order to the Record calls. This must
   // record every category.
   category_ranker_->Record(CategoryToString(Category::kAssistant));
+  category_ranker_->Record(CategoryToString(Category::kPlayStore));
   category_ranker_->Record(CategoryToString(Category::kWeb));
   category_ranker_->Record(CategoryToString(Category::kFiles));
   category_ranker_->Record(CategoryToString(Category::kHelp));
