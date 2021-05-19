@@ -561,25 +561,15 @@ bool MessagePumpForUI::ProcessPumpReplacementMessage() {
   MSG msg;
   bool have_message = false;
   {
-    // ::PeekMessage may process internal events.
-    auto scoped_do_work = run_state_->delegate->BeginWorkItem();
-
+    // Note: Ideally this call wouldn't process sent-messages (as we already did
+    // that in the PeekMessage call that lead to receiving this kMsgHaveWork),
+    // but there's no way to specify this (omitting PM_QS_SENDMESSAGE as in
+    // crrev.com/791043 doesn't do anything). Hence this call must be considered
+    // as a potential work item.
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("base"),
                  "MessagePumpForUI::ProcessPumpReplacementMessage PeekMessage");
-
-    // The system headers don't define PM_QS_ALLEVENTS; it's equivalent to
-    // PM_QS_INPUT | PM_QS_PAINT | PM_QS_POSTMESSAGE. i.e., anything but
-    // QS_SENDMESSAGE.
-    // Since we're looking to replace our kMsgHaveWork posted message, we can
-    // ignore sent messages (which never compete with posted messages in the
-    // initial PeekMessage call).
-    constexpr auto PM_QS_ALLEVENTS = QS_ALLEVENTS << 16;
-    static_assert(
-        PM_QS_ALLEVENTS == (PM_QS_INPUT | PM_QS_PAINT | PM_QS_POSTMESSAGE), "");
-    static_assert((PM_QS_ALLEVENTS & PM_QS_SENDMESSAGE) == 0, "");
-
-    have_message = ::PeekMessage(&msg, nullptr, 0, 0,
-                                 PM_REMOVE | PM_QS_ALLEVENTS) != FALSE;
+    auto scoped_do_work = run_state_->delegate->BeginWorkItem();
+    have_message = ::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) != FALSE;
   }
 
   // Expect no message or a message different than kMsgHaveWork.
