@@ -50,7 +50,6 @@ public final class NavigationImpl extends INavigation.Stub {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
-        NavigationImplJni.get().setJavaNavigation(mNativeNavigationImpl, NavigationImpl.this);
     }
 
     public IClientNavigation getClientNavigation() {
@@ -299,7 +298,6 @@ public final class NavigationImpl extends INavigation.Stub {
 
     @NativeMethods
     interface Natives {
-        void setJavaNavigation(long nativeNavigationImpl, NavigationImpl caller);
         int getState(long nativeNavigationImpl);
         String getUri(long nativeNavigationImpl);
         String[] getRedirectChain(long nativeNavigationImpl);

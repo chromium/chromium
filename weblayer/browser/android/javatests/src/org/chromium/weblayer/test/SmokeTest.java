@@ -10,6 +10,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.PixelCopy;
@@ -143,7 +144,7 @@ public class SmokeTest {
                 Runtime.getRuntime().gc();
                 throw new CriteriaNotSatisfiedException("No enqueued reference");
             }
-            Criteria.checkThat(reference, Matchers.is(enqueuedReference));
+            Assert.assertEquals(reference, enqueuedReference);
         });
     }
 
@@ -199,7 +200,28 @@ public class SmokeTest {
                 Runtime.getRuntime().gc();
                 throw new CriteriaNotSatisfiedException("No enqueued reference");
             }
-            Criteria.checkThat(reference, Matchers.is(enqueuedReference));
+            Assert.assertEquals(reference, enqueuedReference);
+        });
+    }
+
+    // Verifies recreating the Activity destroys the original Fragment when using ViewModel.
+    @Test
+    @SmallTest
+    public void testRecreateActivityDestroysFragmentUseViewModel() throws Throwable {
+        Bundle extras = new Bundle();
+        extras.putBoolean(InstrumentationActivity.EXTRA_USE_VIEW_MODEL, true);
+        mActivityTestRule.launchShellWithUrl("about:blank", extras);
+        ReferenceQueue<Fragment> referenceQueue = new ReferenceQueue<>();
+        PhantomReference<Fragment> reference =
+                new PhantomReference<>(mActivityTestRule.getFragment(), referenceQueue);
+        mActivityTestRule.recreateActivity();
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Reference enqueuedReference = referenceQueue.poll();
+            if (enqueuedReference == null) {
+                Runtime.getRuntime().gc();
+                throw new CriteriaNotSatisfiedException("No enqueued reference");
+            }
+            Assert.assertEquals(reference, enqueuedReference);
         });
     }
 }

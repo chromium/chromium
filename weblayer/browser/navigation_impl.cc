@@ -57,12 +57,6 @@ NavigationImpl::TakeParamsToLoadWhenSafe() {
 }
 
 #if defined(OS_ANDROID)
-void NavigationImpl::SetJavaNavigation(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_navigation) {
-  java_navigation_ = java_navigation;
-}
-
 ScopedJavaLocalRef<jstring> NavigationImpl::GetUri(JNIEnv* env) {
   return ScopedJavaLocalRef<jstring>(
       base::android::ConvertUTF8ToJavaString(env, GetURL().spec()));
@@ -154,6 +148,13 @@ void NavigationImpl::SetResponse(
 std::unique_ptr<embedder_support::WebResourceResponse>
 NavigationImpl::TakeResponse() {
   return std::move(response_);
+}
+
+void NavigationImpl::SetJavaNavigation(
+    const base::android::ScopedJavaGlobalRef<jobject>& java_navigation) {
+  // SetJavaNavigation() should only be called once.
+  DCHECK(!java_navigation_);
+  java_navigation_ = java_navigation;
 }
 
 #endif

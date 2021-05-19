@@ -197,7 +197,7 @@ public abstract class FragmentHostingRemoteFragmentImpl extends RemoteFragmentIm
         super.onDetach();
         mContext = null;
 
-        // If the Fragment is retained, onDestory won't be called during configuration changes. We
+        // If the Fragment is retained, onDestroy won't be called during configuration changes. We
         // have to create a new FragmentController that's attached to the correct Context when
         // reattaching this Fragment, so destroy the existing one here.
         if (!mFragmentController.getSupportFragmentManager().isDestroyed()) {

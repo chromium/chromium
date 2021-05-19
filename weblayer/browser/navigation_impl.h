@@ -69,9 +69,6 @@ class NavigationImpl : public Navigation {
   TakeParamsToLoadWhenSafe();
 
 #if defined(OS_ANDROID)
-  void SetJavaNavigation(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_navigation);
   int GetState(JNIEnv* env) { return static_cast<int>(GetState()); }
   base::android::ScopedJavaLocalRef<jstring> GetUri(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobjectArray> GetRedirectChain(JNIEnv* env);
@@ -106,6 +103,8 @@ class NavigationImpl : public Navigation {
       std::unique_ptr<embedder_support::WebResourceResponse> response);
   std::unique_ptr<embedder_support::WebResourceResponse> TakeResponse();
 
+  void SetJavaNavigation(
+      const base::android::ScopedJavaGlobalRef<jobject>& java_navigation);
   base::android::ScopedJavaGlobalRef<jobject> java_navigation() {
     return java_navigation_;
   }

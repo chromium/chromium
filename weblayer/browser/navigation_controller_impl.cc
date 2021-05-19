@@ -428,8 +428,11 @@ void NavigationControllerImpl::DidStartNavigation(
     {
       TRACE_EVENT0("weblayer",
                    "Java_NavigationControllerImpl_createNavigation");
-      Java_NavigationControllerImpl_createNavigation(
-          env, java_controller_, reinterpret_cast<jlong>(navigation));
+      ScopedJavaLocalRef<jobject> java_navigation =
+          Java_NavigationControllerImpl_createNavigation(
+              env, java_controller_, reinterpret_cast<jlong>(navigation));
+      navigation->SetJavaNavigation(
+          base::android::ScopedJavaGlobalRef<jobject>(java_navigation));
     }
     TRACE_EVENT0("weblayer", "Java_NavigationControllerImpl_navigationStarted");
     Java_NavigationControllerImpl_navigationStarted(
