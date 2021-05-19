@@ -414,8 +414,8 @@ sk_sp<PaintShader> PaintShader::CreateDecodedImage(
 }
 
 sk_sp<SkShader> PaintShader::GetSkShader(SkFilterQuality quality) const {
-  SkSamplingOptions sampling(quality,
-                             SkSamplingOptions::kMedium_asMipmapLinear);
+  SkSamplingOptions sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(quality));
 
   switch (shader_type_) {
     case Type::kEmpty:

@@ -8,6 +8,7 @@
 #include "cc/tiles/image_decode_cache_utils.h"
 
 #include "base/check.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
@@ -43,8 +44,7 @@ bool ImageDecodeCacheUtils::ScaleToHalfFloatPixmapUsingN32Intermediate(
     return false;
   if (!n32_pixmap.scalePixels(
           n32_resized_bitmap.pixmap(),
-          SkSamplingOptions(filter_quality,
-                            SkSamplingOptions::kMedium_asMipmapLinear)))
+          PaintFlags::FilterQualityToSkSamplingOptions(filter_quality)))
     return false;
   // Convert back to f16 and return
   return n32_resized_bitmap.readPixels(*scaled_pixmap, 0, 0);

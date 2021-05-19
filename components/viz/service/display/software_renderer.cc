@@ -549,7 +549,8 @@ void SoftwareRenderer::DrawRenderPassQuad(
   SkMatrix content_mat = SkMatrix::RectToRect(content_rect, dest_rect);
 
   sk_sp<SkShader> shader;
-  SkSamplingOptions sampling(current_paint_.getFilterQuality());
+  SkSamplingOptions sampling(cc::PaintFlags::FilterQualityToSkSamplingOptions(
+      current_paint_.getFilterQuality()));
   if (!filter_image) {
     shader = source_bitmap.makeShader(sampling, content_mat);
   } else {

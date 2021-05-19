@@ -1746,9 +1746,9 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
       [this, image_source, image, src_rect, dst_rect](
           cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
       {
-        SkSamplingOptions sampling(
-            flags ? flags->getFilterQuality() : kNone_SkFilterQuality,
-            SkSamplingOptions::kMedium_asMipmapLinear);
+        SkSamplingOptions sampling =
+            PaintFlags::FilterQualityToSkSamplingOptions(
+                flags ? flags->getFilterQuality() : kNone_SkFilterQuality);
         DrawImageInternal(c, image_source, image.get(), src_rect, dst_rect,
                           sampling, flags);
       },

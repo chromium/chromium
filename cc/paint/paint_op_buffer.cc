@@ -12,6 +12,7 @@
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/image_provider.h"
+#include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
@@ -1558,11 +1559,10 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     canvas->scale(1.f / scale_adjustment.width(),
                   1.f / scale_adjustment.height());
   }
-  canvas->drawImage(
-      decoded_image.image().get(), op->left, op->top,
-      SkSamplingOptions(decoded_image.filter_quality(),
-                        SkSamplingOptions::kMedium_asMipmapLinear),
-      &paint);
+  canvas->drawImage(decoded_image.image().get(), op->left, op->top,
+                    PaintFlags::FilterQualityToSkSamplingOptions(
+                        decoded_image.filter_quality()),
+                    &paint);
 }
 
 void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
@@ -1642,11 +1642,10 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
   adjusted_src = AdjustSrcRectForScale(adjusted_src, scale_adjustment);
   flags->DrawToSk(canvas, [op, &decoded_image, adjusted_src](SkCanvas* c,
                                                              const SkPaint& p) {
-    c->drawImageRect(
-        decoded_image.image().get(), adjusted_src, op->dst,
-        SkSamplingOptions(decoded_image.filter_quality(),
-                          SkSamplingOptions::kMedium_asMipmapLinear),
-        &p, op->constraint);
+    SkSamplingOptions options = PaintFlags::FilterQualityToSkSamplingOptions(
+        decoded_image.filter_quality());
+    c->drawImageRect(decoded_image.image().get(), adjusted_src, op->dst,
+                     options, &p, op->constraint);
   });
 }
 

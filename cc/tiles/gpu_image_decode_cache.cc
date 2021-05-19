@@ -27,6 +27,7 @@
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/histograms.h"
 #include "cc/base/switches.h"
+#include "cc/paint/paint_flags.h"
 #include "cc/raster/scoped_grcontext_access.h"
 #include "cc/raster/tile_task.h"
 #include "cc/tiles/mipmap_util.h"
@@ -304,8 +305,8 @@ bool DrawAndScaleImage(
 
   const SkFilterQuality filter_quality =
       CalculateDesiredFilterQuality(draw_image);
-  const SkSamplingOptions sampling(filter_quality,
-                                   SkSamplingOptions::kMedium_asMipmapLinear);
+  const SkSamplingOptions sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(filter_quality));
 
   bool decode_to_f16_using_n32_intermediate =
       decode_info.colorType() == kRGBA_F16_SkColorType &&

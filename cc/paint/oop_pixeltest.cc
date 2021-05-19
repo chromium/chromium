@@ -16,6 +16,7 @@
 #include "cc/layers/recording_source.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_filter.h"
+#include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/raster/playback_image_provider.h"
 #include "cc/raster/raster_source.h"
@@ -543,7 +544,9 @@ TEST_P(OopImagePixelTest, DrawImage) {
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  SkSamplingOptions sampling(FilterQuality());
+  SkSamplingOptions sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(FilterQuality()));
+
   display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
                                        nullptr);
   display_item_list->EndPaintOfUnpaired(rect);
@@ -582,7 +585,8 @@ TEST_P(OopImagePixelTest, DrawImageScaled) {
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
   display_item_list->push<ScaleOp>(0.5f, 0.5f);
-  SkSamplingOptions sampling(FilterQuality());
+  SkSamplingOptions sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(FilterQuality()));
   display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
                                        nullptr);
   display_item_list->EndPaintOfUnpaired(rect);
@@ -656,7 +660,8 @@ TEST_P(OopImagePixelTest, DrawRecordShaderWithImageScaled) {
       PaintImage::GetNextId());
   auto paint_image = builder.TakePaintImage();
   auto paint_record = sk_make_sp<PaintOpBuffer>();
-  SkSamplingOptions sampling(FilterQuality());
+  SkSamplingOptions sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(FilterQuality()));
   paint_record->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling, nullptr);
   auto paint_record_shader = PaintShader::MakePaintRecord(
       paint_record, gfx::RectToSkRect(rect), SkTileMode::kRepeat,
@@ -754,7 +759,8 @@ TEST_P(OopImagePixelTest, DrawImageWithTargetColorSpace) {
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  SkSamplingOptions sampling(FilterQuality());
+  SkSamplingOptions sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(FilterQuality()));
   display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
                                        nullptr);
   display_item_list->EndPaintOfUnpaired(rect);
@@ -800,7 +806,8 @@ TEST_P(OopImagePixelTest, DrawImageWithSourceColorSpace) {
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  SkSamplingOptions sampling(FilterQuality());
+  SkSamplingOptions sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(FilterQuality()));
   display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
                                        nullptr);
   display_item_list->EndPaintOfUnpaired(rect);
@@ -845,7 +852,8 @@ TEST_P(OopImagePixelTest, DrawImageWithSourceAndTargetColorSpace) {
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  SkSamplingOptions sampling(FilterQuality());
+  SkSamplingOptions sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(FilterQuality()));
   display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
                                        nullptr);
   display_item_list->EndPaintOfUnpaired(rect);
@@ -885,7 +893,8 @@ TEST_P(OopImagePixelTest, DrawImageWithSetMatrix) {
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  SkSamplingOptions sampling(FilterQuality());
+  SkSamplingOptions sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(FilterQuality()));
   display_item_list->push<SetMatrixOp>(SkM44::Scale(0.5f, 0.5f));
   display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
                                        nullptr);

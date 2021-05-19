@@ -14,6 +14,7 @@
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/image_transfer_cache_entry.h"
+#include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_op_buffer_serializer.h"
 #include "cc/paint/paint_op_reader.h"
@@ -1469,11 +1470,11 @@ void PushDrawImageOps(PaintOpBuffer* buffer) {
   size_t len =
       std::min({test_images.size(), test_flags.size(), test_floats.size() - 1});
   for (size_t i = 0; i < len; ++i) {
-    buffer->push<DrawImageOp>(
-        test_images[i], test_floats[i], test_floats[i + 1],
-        SkSamplingOptions(test_flags[i].getFilterQuality(),
-                          SkSamplingOptions::kMedium_asMipmapLinear),
-        &test_flags[i]);
+    buffer->push<DrawImageOp>(test_images[i], test_floats[i],
+                              test_floats[i + 1],
+                              PaintFlags::FilterQualityToSkSamplingOptions(
+                                  test_flags[i].getFilterQuality()),
+                              &test_flags[i]);
   }
 
   // Test optional flags
@@ -1489,11 +1490,11 @@ void PushDrawImageRectOps(PaintOpBuffer* buffer) {
     SkCanvas::SrcRectConstraint constraint =
         i % 2 ? SkCanvas::kStrict_SrcRectConstraint
               : SkCanvas::kFast_SrcRectConstraint;
-    buffer->push<DrawImageRectOp>(
-        test_images[i], test_rects[i], test_rects[i + 1],
-        SkSamplingOptions(test_flags[i].getFilterQuality(),
-                          SkSamplingOptions::kMedium_asMipmapLinear),
-        &test_flags[i], constraint);
+    buffer->push<DrawImageRectOp>(test_images[i], test_rects[i],
+                                  test_rects[i + 1],
+                                  PaintFlags::FilterQualityToSkSamplingOptions(
+                                      test_flags[i].getFilterQuality()),
+                                  &test_flags[i], constraint);
   }
 
   // Test optional flags.

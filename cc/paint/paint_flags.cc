@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "cc/paint/paint_flags.h"
 
 #include "cc/paint/paint_filter.h"
@@ -142,6 +144,22 @@ SkPaint PaintFlags::ToSkPaint() const {
   paint.setStyle(static_cast<SkPaint::Style>(getStyle()));
   paint.setFilterQuality(getFilterQuality());
   return paint;
+}
+
+SkSamplingOptions PaintFlags::FilterQualityToSkSamplingOptions(
+    SkFilterQuality filter_quality) {
+  switch (filter_quality) {
+    case SkFilterQuality::kHigh_SkFilterQuality:
+      return SkSamplingOptions(SkCubicResampler::Mitchell());
+    case SkFilterQuality::kMedium_SkFilterQuality:
+      return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear);
+    case SkFilterQuality::kLow_SkFilterQuality:
+      return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNone);
+    case SkFilterQuality::kNone_SkFilterQuality:
+      return SkSamplingOptions(SkFilterMode::kNearest, SkMipmapMode::kNone);
+    default:
+      NOTREACHED();
+  }
 }
 
 bool PaintFlags::IsValid() const {

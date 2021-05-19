@@ -896,21 +896,19 @@ void PaintCanvasVideoRenderer::Paint(
   } else if (video_frame->HasTextures()) {
     DCHECK_EQ(video_frame->coded_size(),
               gfx::Size(image.width(), image.height()));
-    canvas->drawImageRect(
-        image, gfx::RectToSkRect(video_frame->visible_rect()),
-        SkRect::MakeWH(video_frame->visible_rect().width(),
-                       video_frame->visible_rect().height()),
-        SkSamplingOptions(flags.getFilterQuality(),
-                          SkSamplingOptions::kMedium_asMipmapLinear),
-        &video_flags, SkCanvas::kStrict_SrcRectConstraint);
+    canvas->drawImageRect(image, gfx::RectToSkRect(video_frame->visible_rect()),
+                          SkRect::MakeWH(video_frame->visible_rect().width(),
+                                         video_frame->visible_rect().height()),
+                          cc::PaintFlags::FilterQualityToSkSamplingOptions(
+                              flags.getFilterQuality()),
+                          &video_flags, SkCanvas::kStrict_SrcRectConstraint);
   } else {
     DCHECK_EQ(video_frame->visible_rect().size(),
               gfx::Size(image.width(), image.height()));
-    canvas->drawImage(
-        image, 0, 0,
-        SkSamplingOptions(flags.getFilterQuality(),
-                          SkSamplingOptions::kMedium_asMipmapLinear),
-        &video_flags);
+    canvas->drawImage(image, 0, 0,
+                      cc::PaintFlags::FilterQualityToSkSamplingOptions(
+                          flags.getFilterQuality()),
+                      &video_flags);
   }
 
   if (need_transform)

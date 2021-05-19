@@ -159,9 +159,8 @@ class PLATFORM_EXPORT GraphicsContext {
   }
 
   SkSamplingOptions ImageSamplingOptions() const {
-    return SkSamplingOptions(
-        static_cast<SkFilterQuality>(ImageInterpolationQuality()),
-        SkSamplingOptions::kMedium_asMipmapLinear);
+    return PaintFlags::FilterQualityToSkSamplingOptions(
+        static_cast<SkFilterQuality>(ImageInterpolationQuality()));
   }
 
   // Specify the device scale factor which may change the way document markers
@@ -392,8 +391,8 @@ class PLATFORM_EXPORT GraphicsContext {
   SkSamplingOptions ComputeSamplingOptions(Image* image,
                                            const FloatRect& dest,
                                            const FloatRect& src) const {
-    return SkSamplingOptions(ComputeFilterQuality(image, dest, src),
-                             SkSamplingOptions::kMedium_asMipmapLinear);
+    return PaintFlags::FilterQualityToSkSamplingOptions(
+        ComputeFilterQuality(image, dest, src));
   }
 
   // Sets target URL of a clickable area.

@@ -664,8 +664,8 @@ ImagePaintFilter::ImagePaintFilter(PaintImage image,
       src_rect_(src_rect),
       dst_rect_(dst_rect),
       filter_quality_(filter_quality) {
-  SkSamplingOptions sampling(filter_quality,
-                             SkSamplingOptions::kMedium_asMipmapLinear);
+  SkSamplingOptions sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(filter_quality));
   cached_sk_filter_ = SkImageFilters::Image(image_.GetSkImage(), src_rect_,
                                             dst_rect_, sampling);
 }
@@ -1035,9 +1035,7 @@ MatrixPaintFilter::MatrixPaintFilter(const SkMatrix& matrix,
       filter_quality_(filter_quality),
       input_(std::move(input)) {
   cached_sk_filter_ = SkImageFilters::MatrixTransform(
-      matrix_,
-      SkSamplingOptions(filter_quality_,
-                        SkSamplingOptions::kMedium_asMipmapLinear),
+      matrix_, PaintFlags::FilterQualityToSkSamplingOptions(filter_quality_),
       GetSkFilter(input_.get()));
 }
 
