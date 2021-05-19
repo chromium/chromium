@@ -4010,11 +4010,6 @@ void RenderFrameImpl::WillSendRequestInternal(
             routing_id_, request));
   }
 
-  // This is an instance where we embed a copy of the routing id
-  // into the data portion of the message. This can cause problems if we
-  // don't register this id on the browser side, since the download manager
-  // expects to find a RenderViewHost based off the id.
-  request.SetRequestorID(render_view_->GetRoutingID());
   request.SetHasUserGesture(frame_->HasTransientUserActivation());
 
   if (!render_view_->GetRendererPreferences().enable_referrers) {

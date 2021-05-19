@@ -323,7 +323,6 @@ class WebURLLoaderTest : public testing::Test {
     request->priority = net::IDLE;
     client()->loader()->LoadAsynchronously(
         std::move(request), /*url_request_extra_data=*/nullptr,
-        /*requestor_id=*/0,
         /*no_mime_sniffing=*/false,
         std::make_unique<ResourceLoadInfoNotifierWrapper>(
             /*resource_load_info_notifier=*/nullptr),
@@ -682,7 +681,6 @@ TEST_F(WebURLLoaderTest, SyncLengths) {
 
   client()->loader()->LoadSynchronously(
       std::move(request), /*url_request_extra_data=*/nullptr,
-      /*requestor_id=*/0,
       /*pass_response_pipe_to_client=*/false, /*no_mime_sniffing=*/false,
       base::TimeDelta(), nullptr, response, error, data, encoded_data_length,
       encoded_body_length, downloaded_blob,

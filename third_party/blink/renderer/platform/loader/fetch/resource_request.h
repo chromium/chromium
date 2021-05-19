@@ -238,10 +238,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
     report_raw_headers_ = report_raw_headers;
   }
 
-  // Allows the request to be matched up with its requestor.
-  int RequestorID() const { return requestor_id_; }
-  void SetRequestorID(int requestor_id) { requestor_id_ = requestor_id; }
-
   // True if request was user initiated.
   bool HasUserGesture() const { return has_user_gesture_; }
   void SetHasUserGesture(bool);
@@ -574,7 +570,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool site_for_cookies_set_ : 1;
   ResourceLoadPriority priority_;
   int intra_priority_value_;
-  int requestor_id_;
   PreviewsState previews_state_;
   scoped_refptr<WebURLRequestExtraData> url_request_extra_data_;
   mojom::blink::RequestContextType request_context_;

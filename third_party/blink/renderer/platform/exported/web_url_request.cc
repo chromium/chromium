@@ -295,14 +295,6 @@ void WebURLRequest::SetRequestDestination(
   resource_request_->SetRequestDestination(destination);
 }
 
-int WebURLRequest::RequestorID() const {
-  return resource_request_->RequestorID();
-}
-
-void WebURLRequest::SetRequestorID(int requestor_id) {
-  resource_request_->SetRequestorID(requestor_id);
-}
-
 bool WebURLRequest::PassResponsePipeToClient() const {
   return resource_request_->DownloadToBlob();
 }
