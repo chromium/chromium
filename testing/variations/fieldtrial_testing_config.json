@@ -5723,22 +5723,6 @@
             ]
         }
     ],
-    "PageInfoV2": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PageInfoV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "PageLoadMetricsBufferTimer": [
         {
             "platforms": [

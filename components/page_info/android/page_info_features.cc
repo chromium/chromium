@@ -17,7 +17,6 @@ namespace {
 const base::Feature* kFeaturesExposedToJava[] = {
     &kPageInfoDiscoverability,
     &kPageInfoHistory,
-    &kPageInfoV2,
 };
 
 }  // namespace

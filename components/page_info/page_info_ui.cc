@@ -279,10 +279,6 @@ PageInfoUI::PageFeatureInfo::PageFeatureInfo()
 
 std::unique_ptr<PageInfoUI::SecurityDescription>
 PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
-  bool page_info_v2_enabled = false;
-#if defined(OS_ANDROID)
-  page_info_v2_enabled = base::FeatureList::IsEnabled(page_info::kPageInfoV2);
-#endif
   switch (identity_info.safe_browsing_status) {
     case PageInfo::SAFE_BROWSING_STATUS_NONE:
       break;
@@ -329,73 +325,97 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
   }
 
   switch (identity_info.identity_status) {
-    case PageInfo::SITE_IDENTITY_STATUS_INTERNAL_PAGE:
 #if defined(OS_ANDROID)
+    case PageInfo::SITE_IDENTITY_STATUS_INTERNAL_PAGE:
       return CreateSecurityDescription(SecuritySummaryColor::GREEN, 0,
                                        IDS_PAGE_INFO_INTERNAL_PAGE,
                                        SecurityDescriptionType::INTERNAL);
-#else
-      // Internal pages on desktop have their own UI implementations which
-      // should never call this function.
-      NOTREACHED();
-      FALLTHROUGH;
-#endif
     case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
-      FALLTHROUGH;
     case PageInfo::SITE_IDENTITY_STATUS_CERT:
-      FALLTHROUGH;
     case PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT:
       switch (identity_info.connection_status) {
         case PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE:
           return CreateSecurityDescription(
-              SecuritySummaryColor::RED,
-              page_info_v2_enabled ? IDS_PAGE_INFO_NOT_SECURE_SUMMARY_SHORT
-                                   : IDS_PAGE_INFO_NOT_SECURE_SUMMARY,
+              SecuritySummaryColor::RED, IDS_PAGE_INFO_NOT_SECURE_SUMMARY_SHORT,
               IDS_PAGE_INFO_NOT_SECURE_DETAILS,
               SecurityDescriptionType::CONNECTION);
         case PageInfo::SITE_CONNECTION_STATUS_INSECURE_FORM_ACTION:
           return CreateSecurityDescription(
               SecuritySummaryColor::RED,
-              page_info_v2_enabled ? IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY_SHORT
-                                   : IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY,
+              IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY_SHORT,
               IDS_PAGE_INFO_NOT_SECURE_DETAILS,
               SecurityDescriptionType::CONNECTION);
         case PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE:
           return CreateSecurityDescription(
               SecuritySummaryColor::RED,
-              page_info_v2_enabled ? IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY_SHORT
-                                   : IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY,
+              IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY_SHORT,
               IDS_PAGE_INFO_MIXED_CONTENT_DETAILS,
               SecurityDescriptionType::CONNECTION);
         case PageInfo::SITE_CONNECTION_STATUS_LEGACY_TLS:
           return CreateSecurityDescription(
               SecuritySummaryColor::RED,
-              page_info_v2_enabled ? IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY_SHORT
-                                   : IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY,
+              IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY_SHORT,
               IDS_PAGE_INFO_LEGACY_TLS_DETAILS,
               SecurityDescriptionType::CONNECTION);
         default:
-          int secure_details = IDS_PAGE_INFO_SECURE_DETAILS;
-#if defined(OS_ANDROID)
-          if (page_info_v2_enabled) {
-            // Do not show details for secure connections.
-            secure_details = 0;
-          }
-#endif
-          return CreateSecurityDescription(
-              SecuritySummaryColor::GREEN, IDS_PAGE_INFO_SECURE_SUMMARY,
-              secure_details, SecurityDescriptionType::CONNECTION);
+          // Do not show details for secure connections.
+          return CreateSecurityDescription(SecuritySummaryColor::GREEN,
+                                           IDS_PAGE_INFO_SECURE_SUMMARY, 0,
+                                           SecurityDescriptionType::CONNECTION);
       }
     case PageInfo::SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM:
     case PageInfo::SITE_IDENTITY_STATUS_UNKNOWN:
     case PageInfo::SITE_IDENTITY_STATUS_NO_CERT:
     default:
-      return CreateSecurityDescription(
-          SecuritySummaryColor::RED,
-          page_info_v2_enabled ? IDS_PAGE_INFO_NOT_SECURE_SUMMARY_SHORT
-                               : IDS_PAGE_INFO_NOT_SECURE_SUMMARY,
-          IDS_PAGE_INFO_NOT_SECURE_DETAILS,
-          SecurityDescriptionType::CONNECTION);
+      return CreateSecurityDescription(SecuritySummaryColor::RED,
+                                       IDS_PAGE_INFO_NOT_SECURE_SUMMARY_SHORT,
+                                       IDS_PAGE_INFO_NOT_SECURE_DETAILS,
+                                       SecurityDescriptionType::CONNECTION);
+#else
+    case PageInfo::SITE_IDENTITY_STATUS_INTERNAL_PAGE:
+      // Internal pages on desktop have their own UI implementations which
+      // should never call this function.
+      NOTREACHED();
+      FALLTHROUGH;
+    case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
+    case PageInfo::SITE_IDENTITY_STATUS_CERT:
+    case PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT:
+      switch (identity_info.connection_status) {
+        case PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE:
+          return CreateSecurityDescription(SecuritySummaryColor::RED,
+                                           IDS_PAGE_INFO_NOT_SECURE_SUMMARY,
+                                           IDS_PAGE_INFO_NOT_SECURE_DETAILS,
+                                           SecurityDescriptionType::CONNECTION);
+        case PageInfo::SITE_CONNECTION_STATUS_INSECURE_FORM_ACTION:
+          return CreateSecurityDescription(SecuritySummaryColor::RED,
+                                           IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY,
+                                           IDS_PAGE_INFO_NOT_SECURE_DETAILS,
+                                           SecurityDescriptionType::CONNECTION);
+        case PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE:
+          return CreateSecurityDescription(SecuritySummaryColor::RED,
+                                           IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY,
+                                           IDS_PAGE_INFO_MIXED_CONTENT_DETAILS,
+                                           SecurityDescriptionType::CONNECTION);
+        case PageInfo::SITE_CONNECTION_STATUS_LEGACY_TLS:
+          return CreateSecurityDescription(SecuritySummaryColor::RED,
+                                           IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY,
+                                           IDS_PAGE_INFO_LEGACY_TLS_DETAILS,
+                                           SecurityDescriptionType::CONNECTION);
+        default:
+          return CreateSecurityDescription(SecuritySummaryColor::GREEN,
+                                           IDS_PAGE_INFO_SECURE_SUMMARY,
+                                           IDS_PAGE_INFO_SECURE_DETAILS,
+                                           SecurityDescriptionType::CONNECTION);
+      }
+    case PageInfo::SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM:
+    case PageInfo::SITE_IDENTITY_STATUS_UNKNOWN:
+    case PageInfo::SITE_IDENTITY_STATUS_NO_CERT:
+    default:
+      return CreateSecurityDescription(SecuritySummaryColor::RED,
+                                       IDS_PAGE_INFO_NOT_SECURE_SUMMARY,
+                                       IDS_PAGE_INFO_NOT_SECURE_DETAILS,
+                                       SecurityDescriptionType::CONNECTION);
+#endif
   }
 }
 
@@ -525,95 +545,39 @@ SkColor PageInfoUI::GetSecondaryTextColor() {
 #if defined(OS_ANDROID)
 // static
 int PageInfoUI::GetIdentityIconID(PageInfo::SiteIdentityStatus status) {
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2)) {
-    switch (status) {
-      case PageInfo::SITE_IDENTITY_STATUS_UNKNOWN:
-      case PageInfo::SITE_IDENTITY_STATUS_INTERNAL_PAGE:
-      case PageInfo::SITE_IDENTITY_STATUS_CERT:
-      case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
-        return IDR_PAGEINFO_GOOD_V2;
-      case PageInfo::SITE_IDENTITY_STATUS_NO_CERT:
-      case PageInfo::SITE_IDENTITY_STATUS_ERROR:
-      case PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT:
-      case PageInfo::SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM:
-        return IDR_PAGEINFO_BAD_V2;
-    }
-
-    return 0;
-  }
-
-  int resource_id = IDR_PAGEINFO_INFO;
   switch (status) {
     case PageInfo::SITE_IDENTITY_STATUS_UNKNOWN:
     case PageInfo::SITE_IDENTITY_STATUS_INTERNAL_PAGE:
-      break;
     case PageInfo::SITE_IDENTITY_STATUS_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
-      resource_id = IDR_PAGEINFO_GOOD;
-      break;
+      return IDR_PAGEINFO_GOOD;
     case PageInfo::SITE_IDENTITY_STATUS_NO_CERT:
-      resource_id = IDR_PAGEINFO_WARNING_MAJOR;
-      break;
     case PageInfo::SITE_IDENTITY_STATUS_ERROR:
-      resource_id = IDR_PAGEINFO_BAD;
-      break;
     case PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT:
-      resource_id = IDR_PAGEINFO_ENTERPRISE_MANAGED;
-      break;
     case PageInfo::SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM:
-      resource_id = IDR_PAGEINFO_WARNING_MINOR;
-      break;
-    default:
-      NOTREACHED();
-      break;
+      return IDR_PAGEINFO_BAD;
   }
 
-  return resource_id;
+  return 0;
 }
 
 // static
 int PageInfoUI::GetConnectionIconID(PageInfo::SiteConnectionStatus status) {
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2)) {
-    switch (status) {
-      case PageInfo::SITE_CONNECTION_STATUS_UNKNOWN:
-      case PageInfo::SITE_CONNECTION_STATUS_INTERNAL_PAGE:
-      case PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED:
-        return IDR_PAGEINFO_GOOD_V2;
-      case PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE:
-      case PageInfo::SITE_CONNECTION_STATUS_INSECURE_FORM_ACTION:
-      case PageInfo::SITE_CONNECTION_STATUS_LEGACY_TLS:
-      case PageInfo::SITE_CONNECTION_STATUS_UNENCRYPTED:
-      case PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE:
-      case PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED_ERROR:
-        return IDR_PAGEINFO_BAD_V2;
-    }
-
-    return 0;
-  }
-  int resource_id = IDR_PAGEINFO_INFO;
-
   switch (status) {
     case PageInfo::SITE_CONNECTION_STATUS_UNKNOWN:
     case PageInfo::SITE_CONNECTION_STATUS_INTERNAL_PAGE:
-      break;
     case PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED:
-      resource_id = IDR_PAGEINFO_GOOD;
-      break;
+      return IDR_PAGEINFO_GOOD;
     case PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE:
     case PageInfo::SITE_CONNECTION_STATUS_INSECURE_FORM_ACTION:
     case PageInfo::SITE_CONNECTION_STATUS_LEGACY_TLS:
-      resource_id = IDR_PAGEINFO_WARNING_MINOR;
-      break;
     case PageInfo::SITE_CONNECTION_STATUS_UNENCRYPTED:
-      resource_id = IDR_PAGEINFO_WARNING_MAJOR;
-      break;
     case PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE:
     case PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED_ERROR:
-      resource_id = IDR_PAGEINFO_BAD;
-      break;
+      return IDR_PAGEINFO_BAD;
   }
 
-  return resource_id;
+  return 0;
 }
 
 int PageInfoUI::GetIdentityIconColorID(PageInfo::SiteIdentityStatus status) {

@@ -32,21 +32,6 @@ static_library("android") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable-hdpi/pageinfo_bad.png",
-    "java/res/drawable-hdpi/pageinfo_good.png",
-    "java/res/drawable-hdpi/pageinfo_warning.png",
-    "java/res/drawable-mdpi/pageinfo_bad.png",
-    "java/res/drawable-mdpi/pageinfo_good.png",
-    "java/res/drawable-mdpi/pageinfo_warning.png",
-    "java/res/drawable-xhdpi/pageinfo_bad.png",
-    "java/res/drawable-xhdpi/pageinfo_good.png",
-    "java/res/drawable-xhdpi/pageinfo_warning.png",
-    "java/res/drawable-xxhdpi/pageinfo_bad.png",
-    "java/res/drawable-xxhdpi/pageinfo_good.png",
-    "java/res/drawable-xxhdpi/pageinfo_warning.png",
-    "java/res/drawable-xxxhdpi/pageinfo_bad.png",
-    "java/res/drawable-xxxhdpi/pageinfo_good.png",
-    "java/res/drawable-xxxhdpi/pageinfo_warning.png",
     "java/res/drawable/ic_tune_24dp.xml",
     "java/res/drawable/page_info_bg.xml",
     "java/res/layout/connection_info.xml",

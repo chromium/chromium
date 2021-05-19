@@ -14,7 +14,6 @@ const base::Feature kPageInfoDiscoverability{"PageInfoDiscoverability",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kPageInfoHistory{"PageInfoHistory",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kPageInfoV2{"PageInfoV2", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 #if !defined(OS_ANDROID)

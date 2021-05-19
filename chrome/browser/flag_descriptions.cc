@@ -3185,10 +3185,6 @@ const char kPageInfoHistoryDescription[] =
     "Enable a history sub page to the page info menu, and a button to forget "
     "a site, removing all preferences and history.";
 
-const char kPageInfoV2Name[] = "Page info version two";
-const char kPageInfoV2Description[] =
-    "Enable the second version of the page info menu.";
-
 extern const char kPageInfoV2DesktopName[];
 extern const char kPageInfoV2DesktopDescription[];
 
