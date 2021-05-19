@@ -172,6 +172,11 @@ export class FocusRingManager {
    * @private
    */
   updateFocusRings_(primaryRingNode, previewRingNode) {
+    if (SwitchAccess.mode === SAConstants.Mode.POINT_SCAN &&
+        !MenuManager.isMenuOpen()) {
+      return;
+    }
+
     const focusRings = [];
     this.rings_.forEach((ring) => focusRings.push(ring));
     chrome.accessibilityPrivate.setFocusRings(focusRings);

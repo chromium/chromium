@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FocusRingManager} from './focus_ring_manager.js';
 import {MenuManager} from './menu_manager.js';
 import {Navigator} from './navigator.js';
 import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
@@ -112,6 +113,7 @@ export class ActionManager {
       case SwitchAccessMenuAction.RIGHT_CLICK:
         // Exit menu, then click (so the action will hit the desired target,
         // instead of the menu).
+        FocusRingManager.clearAll();
         ActionManager.exitCurrentMenu();
         Navigator.byPoint.performMouseAction(action);
         break;
