@@ -225,7 +225,11 @@ class PLATFORM_EXPORT ResourceFetcher
 
   MHTMLArchive* Archive() const { return archive_.Get(); }
 
+  // Set the deferring state of each loader owned by this ResourceFetcher. This
+  // method must be called when the page freezing state changes.
+  // TODO(yhirano): Rename this to a more easily recognizable name.
   void SetDefersLoading(WebURLLoader::DeferType);
+
   void StopFetching();
 
   bool ShouldDeferImageLoad(const KURL&) const;
