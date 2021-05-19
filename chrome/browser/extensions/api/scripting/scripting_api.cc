@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/json/json_writer.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -246,6 +248,9 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
   }
 
   if (injection_.files) {
+    if (injection_.args)
+      return RespondNow(Error("'args' may not be used with file injections."));
+
     // JS files don't require localization.
     constexpr bool kRequiresLocalization = false;
     std::string error;
@@ -262,10 +267,24 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
   DCHECK(injection_.func);
 
   // TODO(devlin): This (wrapping a function to create an IIFE) is pretty hacky,
-  // and won't work well when we support currying arguments. Add support to the
-  // ScriptExecutor to better support this case.
-  std::string code_to_execute =
-      base::StringPrintf("(%s)()", injection_.func->c_str());
+  // and along with the JSON-serialization of the arguments to curry in.
+  // Add support to the ScriptExecutor to better support this case.
+  std::string args_expression;
+  if (injection_.args) {
+    std::vector<std::string> string_args;
+    string_args.reserve(injection_.args->size());
+    for (const auto& arg : *injection_.args) {
+      DCHECK(arg);
+      std::string json;
+      if (!base::JSONWriter::Write(*arg, &json))
+        return RespondNow(Error("Unserializable argument passed."));
+      string_args.push_back(std::move(json));
+    }
+    args_expression = base::JoinString(string_args, ",");
+  }
+
+  std::string code_to_execute = base::StringPrintf(
+      "(%s)(%s)", injection_.func->c_str(), args_expression.c_str());
 
   std::string error;
   if (!Execute(std::move(code_to_execute), /*script_src=*/GURL(), &error))

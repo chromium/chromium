@@ -14,6 +14,16 @@ function injectedFunction() {
   return document.title;
 }
 
+function injectedFunctionWithArgument(newTitle) {
+  document.title = newTitle;
+  return document.title;
+}
+
+function echoArguments() {
+  const args = Array.from(arguments);
+  return args;
+}
+
 async function getSingleTab(query) {
   const tabs = await new Promise(resolve => {
     chrome.tabs.query(query, resolve);
@@ -36,6 +46,69 @@ chrome.test.runTests([
     chrome.test.assertEq(NEW_TITLE_FROM_FUNCTION, results[0].result);
     tab = await getSingleTab(query);
     chrome.test.assertEq(NEW_TITLE_FROM_FUNCTION, tab.title);
+    chrome.test.succeed();
+  },
+
+  async function changeTitleWithCurriedArguments() {
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    const customNewTitle = 'Custom Title';
+    const results = await chrome.scripting.executeScript({
+      target: {
+        tabId: tab.id,
+      },
+      func: injectedFunctionWithArgument,
+      args: [customNewTitle],
+    });
+    chrome.test.assertEq(1, results.length);
+    chrome.test.assertEq(customNewTitle, results[0].result);
+    tab = await getSingleTab(query);
+    chrome.test.assertEq(customNewTitle, tab.title);
+    chrome.test.succeed();
+  },
+
+  async function echoArgsOfDifferentTypes() {
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    const args = [
+        42,
+        0.07,
+        'foo',
+        true,
+        [1, 2, 3],
+        { key: 'value' },
+        null,
+    ];
+    const results = await chrome.scripting.executeScript({
+      target: {
+        tabId: tab.id,
+      },
+      func: echoArguments,
+      args: args,
+    });
+    chrome.test.assertEq(1, results.length);
+    chrome.test.assertEq(args, results[0].result);
+    chrome.test.succeed();
+  },
+
+  async function nullInArgsIsNotPreserved() {
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    const args = [
+        { key: 'value', nullKey: null },
+    ];
+    const results = await chrome.scripting.executeScript({
+      target: {
+        tabId: tab.id,
+      },
+      func: echoArguments,
+      args: args,
+    });
+    chrome.test.assertEq(1, results.length);
+    // Currently, null values in objects are not preserved. We should fix this,
+    // but the IDL extension schema currently does not support the preserveNull
+    // attribute, and adding it in for arrays is non-trivial.
+    chrome.test.assertEq([{ key: 'value' }], results[0].result);
     chrome.test.succeed();
   },
 
@@ -231,4 +304,41 @@ chrome.test.runTests([
     chrome.test.assertEq(expectedTitle, tab.title);
     chrome.test.succeed();
   },
+
+  async function unserializableCurriedArguments() {
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    const expectedError =
+        'Error in invocation of scripting.executeScript(' +
+        'scripting.ScriptInjection injection, optional function callback): ' +
+        'Error at parameter \'injection\': Error at property \'args\': ' +
+        'Error at index 0: Value is unserializable.';
+    chrome.test.assertThrows(
+        chrome.scripting.executeScript,
+        [{
+          target: {
+            tabId: tab.id,
+          },
+          func: echoArguments,
+          args: [function() {}],
+        }],
+        expectedError);
+    chrome.test.succeed();
+  },
+
+  async function argsPassedWithFiles() {
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    const expectedError =
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.executeScript({
+          target: {
+            tabId: tab.id,
+          },
+          files: ['script_file.js'],
+          args: ['foo'],
+        }),
+        `Error: 'args' may not be used with file injections.`);
+    chrome.test.succeed();
+  }
 ]);

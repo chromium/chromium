@@ -37,6 +37,11 @@ namespace scripting {
     // specified.
     [serializableFunction]InjectedFunction? func;
 
+    // The arguments to curry into a provided function. This is only valid if
+    // the <code>func</code> parameter is specified. These arguments must be
+    // JSON-serializable.
+    any[]? args;
+
     // We used to call the injected function `function`, but this is
     // incompatible with JavaScript's object declaration shorthand (see
     // https://crbug.com/1166438). We leave this silently in for backwards
