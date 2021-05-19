@@ -535,8 +535,11 @@ void Cord::InlineRep::AssignSlow(const Cord::InlineRep& src) {
     EmplaceTree(CordRep::Ref(src.as_tree()), src.data_, method);
     return;
   }
+
   CordRep* tree = as_tree();
   if (CordRep* src_tree = src.tree()) {
+    // Leave any existing `cordz_info` in place, and let MaybeTrackCord()
+    // decide if this cord should be (or remains to be) sampled or not.
     data_.set_tree(CordRep::Ref(src_tree));
     CordzInfo::MaybeTrackCord(data_, src.data_, method);
   } else {

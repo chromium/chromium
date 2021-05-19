@@ -14,6 +14,8 @@
 
 #include "absl/strings/internal/cordz_functions.h"
 
+#include <thread>  // NOLINT we need real clean new threads
+
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "absl/base/config.h"
@@ -61,6 +63,22 @@ TEST(CordzFunctionsTest, ShouldProfileAlways) {
   EXPECT_THAT(cordz_next_sample, Le(1));
 
   set_cordz_mean_interval(orig_sample_rate);
+}
+
+TEST(CordzFunctionsTest, DoesNotAlwaysSampleFirstCord) {
+  // Set large enough interval such that the chance of 'tons' of threads
+  // randomly sampling the first call is infinitely small.
+  set_cordz_mean_interval(10000);
+  int tries = 0;
+  bool sampled = false;
+  do {
+    ++tries;
+    ASSERT_THAT(tries, Le(1000));
+    std::thread thread([&sampled] {
+      sampled = cordz_should_profile();
+    });
+    thread.join();
+  } while (sampled);
 }
 
 TEST(CordzFunctionsTest, ShouldProfileRate) {

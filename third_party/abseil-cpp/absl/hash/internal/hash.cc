@@ -18,9 +18,8 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace hash_internal {
 
-uint64_t HashState::CombineLargeContiguousImpl32(uint64_t state,
-                                                 const unsigned char* first,
-                                                 size_t len) {
+uint64_t MixingHashState::CombineLargeContiguousImpl32(
+    uint64_t state, const unsigned char* first, size_t len) {
   while (len >= PiecewiseChunkSize()) {
     state =
         Mix(state, absl::hash_internal::CityHash32(reinterpret_cast<const char*>(first),
@@ -33,9 +32,8 @@ uint64_t HashState::CombineLargeContiguousImpl32(uint64_t state,
                                std::integral_constant<int, 4>{});
 }
 
-uint64_t HashState::CombineLargeContiguousImpl64(uint64_t state,
-                                                 const unsigned char* first,
-                                                 size_t len) {
+uint64_t MixingHashState::CombineLargeContiguousImpl64(
+    uint64_t state, const unsigned char* first, size_t len) {
   while (len >= PiecewiseChunkSize()) {
     state = Mix(state, Hash64(first, PiecewiseChunkSize()));
     len -= PiecewiseChunkSize();
@@ -46,7 +44,7 @@ uint64_t HashState::CombineLargeContiguousImpl64(uint64_t state,
                                std::integral_constant<int, 8>{});
 }
 
-ABSL_CONST_INIT const void* const HashState::kSeed = &kSeed;
+ABSL_CONST_INIT const void* const MixingHashState::kSeed = &kSeed;
 
 // The salt array used by Wyhash. This array is NOT the mechanism used to make
 // absl::Hash non-deterministic between program invocations.  See `Seed()` for
@@ -61,7 +59,7 @@ constexpr uint64_t kWyhashSalt[5] = {
     uint64_t{0x452821E638D01377},
 };
 
-uint64_t HashState::WyhashImpl(const unsigned char* data, size_t len) {
+uint64_t MixingHashState::WyhashImpl(const unsigned char* data, size_t len) {
   return Wyhash(data, len, Seed(), kWyhashSalt);
 }
 

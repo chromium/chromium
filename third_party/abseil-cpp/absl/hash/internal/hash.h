@@ -379,7 +379,7 @@ template <typename H, typename... Ts>
 // This SFINAE gets MSVC confused under some conditions. Let's just disable it
 // for now.
 H
-#else  // _MSC_VER
+#else   // _MSC_VER
 typename std::enable_if<absl::conjunction<is_hashable<Ts>...>::value, H>::type
 #endif  // _MSC_VER
 AbslHashValue(H hash_state, const std::tuple<Ts...>& t) {
@@ -714,8 +714,8 @@ template <typename T>
 struct is_hashable
     : std::integral_constant<bool, HashSelect::template Apply<T>::value> {};
 
-// HashState
-class ABSL_DLL HashState : public HashStateBase<HashState> {
+// MixingHashState
+class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
   // absl::uint128 is not an alias or a thin wrapper around the intrinsic.
   // We use the intrinsic when available to improve performance.
 #ifdef ABSL_HAVE_INTRINSIC_INT128
@@ -734,22 +734,23 @@ class ABSL_DLL HashState : public HashStateBase<HashState> {
 
  public:
   // Move only
-  HashState(HashState&&) = default;
-  HashState& operator=(HashState&&) = default;
+  MixingHashState(MixingHashState&&) = default;
+  MixingHashState& operator=(MixingHashState&&) = default;
 
-  // HashState::combine_contiguous()
+  // MixingHashState::combine_contiguous()
   //
   // Fundamental base case for hash recursion: mixes the given range of bytes
   // into the hash state.
-  static HashState combine_contiguous(HashState hash_state,
-                                      const unsigned char* first, size_t size) {
-    return HashState(
+  static MixingHashState combine_contiguous(MixingHashState hash_state,
+                                            const unsigned char* first,
+                                            size_t size) {
+    return MixingHashState(
         CombineContiguousImpl(hash_state.state_, first, size,
                               std::integral_constant<int, sizeof(size_t)>{}));
   }
-  using HashState::HashStateBase::combine_contiguous;
+  using MixingHashState::HashStateBase::combine_contiguous;
 
-  // HashState::hash()
+  // MixingHashState::hash()
   //
   // For performance reasons in non-opt mode, we specialize this for
   // integral types.
@@ -761,24 +762,24 @@ class ABSL_DLL HashState : public HashStateBase<HashState> {
     return static_cast<size_t>(Mix(Seed(), static_cast<uint64_t>(value)));
   }
 
-  // Overload of HashState::hash()
+  // Overload of MixingHashState::hash()
   template <typename T, absl::enable_if_t<!IntegralFastPath<T>::value, int> = 0>
   static size_t hash(const T& value) {
-    return static_cast<size_t>(combine(HashState{}, value).state_);
+    return static_cast<size_t>(combine(MixingHashState{}, value).state_);
   }
 
  private:
   // Invoked only once for a given argument; that plus the fact that this is
   // move-only ensures that there is only one non-moved-from object.
-  HashState() : state_(Seed()) {}
+  MixingHashState() : state_(Seed()) {}
 
   // Workaround for MSVC bug.
   // We make the type copyable to fix the calling convention, even though we
   // never actually copy it. Keep it private to not affect the public API of the
   // type.
-  HashState(const HashState&) = default;
+  MixingHashState(const MixingHashState&) = default;
 
-  explicit HashState(uint64_t state) : state_(state) {}
+  explicit MixingHashState(uint64_t state) : state_(state) {}
 
   // Implementation of the base case for combine_contiguous where we actually
   // mix the bytes into the state.
@@ -792,7 +793,6 @@ class ABSL_DLL HashState : public HashStateBase<HashState> {
                                         const unsigned char* first, size_t len,
                                         std::integral_constant<int, 8>
                                         /* sizeof_size_t */);
-
 
   // Slow dispatch path for calls to CombineContiguousImpl with a size argument
   // larger than PiecewiseChunkSize().  Has the same effect as calling
@@ -911,8 +911,8 @@ class ABSL_DLL HashState : public HashStateBase<HashState> {
   uint64_t state_;
 };
 
-// HashState::CombineContiguousImpl()
-inline uint64_t HashState::CombineContiguousImpl(
+// MixingHashState::CombineContiguousImpl()
+inline uint64_t MixingHashState::CombineContiguousImpl(
     uint64_t state, const unsigned char* first, size_t len,
     std::integral_constant<int, 4> /* sizeof_size_t */) {
   // For large values we use CityHash, for small ones we just use a
@@ -934,8 +934,8 @@ inline uint64_t HashState::CombineContiguousImpl(
   return Mix(state, v);
 }
 
-// Overload of HashState::CombineContiguousImpl()
-inline uint64_t HashState::CombineContiguousImpl(
+// Overload of MixingHashState::CombineContiguousImpl()
+inline uint64_t MixingHashState::CombineContiguousImpl(
     uint64_t state, const unsigned char* first, size_t len,
     std::integral_constant<int, 8> /* sizeof_size_t */) {
   // For large values we use Wyhash or CityHash depending on the platform, for
@@ -976,7 +976,9 @@ struct PoisonedHash : private AggregateBarrier {
 
 template <typename T>
 struct HashImpl {
-  size_t operator()(const T& value) const { return HashState::hash(value); }
+  size_t operator()(const T& value) const {
+    return MixingHashState::hash(value);
+  }
 };
 
 template <typename T>

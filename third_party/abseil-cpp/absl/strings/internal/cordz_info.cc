@@ -293,6 +293,16 @@ void CordzInfo::TrackCord(InlineData& cord, const InlineData& src,
   cordz_info->Track();
 }
 
+void CordzInfo::MaybeTrackCordImpl(InlineData& cord, const InlineData& src,
+                                   MethodIdentifier method) {
+  if (src.is_profiled()) {
+    TrackCord(cord, src, method);
+  } else if (cord.is_profiled()) {
+    cord.cordz_info()->Untrack();
+    cord.clear_cordz_info();
+  }
+}
+
 CordzInfo::MethodIdentifier CordzInfo::GetParentMethod(const CordzInfo* src) {
   if (src == nullptr) return MethodIdentifier::kUnknown;
   return src->parent_method_ != MethodIdentifier::kUnknown ? src->parent_method_

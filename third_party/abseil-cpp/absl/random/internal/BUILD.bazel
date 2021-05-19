@@ -717,7 +717,6 @@ cc_test(
 
 cc_test(
     name = "iostream_state_saver_test",
-    size = "small",
     srcs = ["iostream_state_saver_test.cc"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [

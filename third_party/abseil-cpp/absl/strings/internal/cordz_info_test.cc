@@ -74,19 +74,49 @@ TEST(CordzInfoTest, TrackCord) {
   info->Untrack();
 }
 
-TEST(CordzInfoTest, MaybeTrackCordOnSampledCord) {
-  TestCordData data1;
-  CordzInfo::TrackCord(data1.data, kTrackCordMethod);
-  CordzInfo* info1 = data1.data.cordz_info();
-  TestCordData data2;
-  CordzInfo::MaybeTrackCord(data2.data, data1.data, kTrackCordMethod);
-  CordzInfo* info2 = data2.data.cordz_info();
-  ASSERT_THAT(info2, Ne(nullptr));
-  EXPECT_THAT(info2->GetCordRepForTesting(), Eq(data2.rep.rep));
-  info2->Untrack();
-  info1->Untrack();
+TEST(CordzInfoTest, MaybeTrackChildCordWithoutSampling) {
+  CordzSamplingIntervalHelper sample_none(99999);
+  TestCordData parent, child;
+  CordzInfo::MaybeTrackCord(child.data, parent.data, kTrackCordMethod);
+  EXPECT_THAT(child.data.cordz_info(), Eq(nullptr));
 }
 
+TEST(CordzInfoTest, MaybeTrackChildCordWithSampling) {
+  CordzSamplingIntervalHelper sample_all(1);
+  TestCordData parent, child;
+  CordzInfo::MaybeTrackCord(child.data, parent.data, kTrackCordMethod);
+  EXPECT_THAT(child.data.cordz_info(), Eq(nullptr));
+}
+
+TEST(CordzInfoTest, MaybeTrackChildCordWithoutSamplingParentSampled) {
+  CordzSamplingIntervalHelper sample_none(99999);
+  TestCordData parent, child;
+  CordzInfo::TrackCord(parent.data, kTrackCordMethod);
+  CordzInfo::MaybeTrackCord(child.data, parent.data, kTrackCordMethod);
+  CordzInfo* parent_info = parent.data.cordz_info();
+  CordzInfo* child_info = child.data.cordz_info();
+  ASSERT_THAT(child_info, Ne(nullptr));
+  EXPECT_THAT(child_info->GetCordRepForTesting(), Eq(child.rep.rep));
+  EXPECT_THAT(child_info->GetParentStack(), parent_info->GetStack());
+  parent_info->Untrack();
+  child_info->Untrack();
+}
+
+TEST(CordzInfoTest, MaybeTrackChildCordWithoutSamplingChildSampled) {
+  CordzSamplingIntervalHelper sample_none(99999);
+  TestCordData parent, child;
+  CordzInfo::TrackCord(child.data, kTrackCordMethod);
+  CordzInfo::MaybeTrackCord(child.data, parent.data, kTrackCordMethod);
+  EXPECT_THAT(child.data.cordz_info(), Eq(nullptr));
+}
+
+TEST(CordzInfoTest, MaybeTrackChildCordWithSamplingChildSampled) {
+  CordzSamplingIntervalHelper sample_all(1);
+  TestCordData parent, child;
+  CordzInfo::TrackCord(child.data, kTrackCordMethod);
+  CordzInfo::MaybeTrackCord(child.data, parent.data, kTrackCordMethod);
+  EXPECT_THAT(child.data.cordz_info(), Eq(nullptr));
+}
 
 TEST(CordzInfoTest, UntrackCord) {
   TestCordData data;

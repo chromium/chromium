@@ -2893,6 +2893,47 @@ TEST(Btree, AllocMoveConstructor_DifferentAlloc) {
   EXPECT_EQ(bytes_used2, original_bytes_used);
 }
 
+bool IntCmp(const int a, const int b) { return a < b; }
+
+TEST(Btree, SupportsFunctionPtrComparator) {
+  absl::btree_set<int, decltype(IntCmp) *> set(IntCmp);
+  set.insert({1, 2, 3});
+  EXPECT_THAT(set, ElementsAre(1, 2, 3));
+  EXPECT_TRUE(set.key_comp()(1, 2));
+  EXPECT_TRUE(set.value_comp()(1, 2));
+
+  absl::btree_map<int, int, decltype(IntCmp) *> map(&IntCmp);
+  map[1] = 1;
+  EXPECT_THAT(map, ElementsAre(Pair(1, 1)));
+  EXPECT_TRUE(map.key_comp()(1, 2));
+  // TODO(ezb): support value_comp() in this case and uncomment.
+  // EXPECT_TRUE(map.value_comp()(std::make_pair(1, 1), std::make_pair(2, 2)));
+}
+
+template <typename Compare>
+struct TransparentPassThroughComp {
+  using is_transparent = void;
+
+  // This will fail compilation if we attempt a comparison that Compare does not
+  // support, and the failure will happen inside the function implementation so
+  // it can't be avoided by using SFINAE on this comparator.
+  template <typename T, typename U>
+  bool operator()(const T &lhs, const U &rhs) const {
+    return Compare()(lhs, rhs);
+  }
+};
+
+TEST(Btree,
+     SupportsTransparentComparatorThatDoesNotImplementAllVisibleOperators) {
+  absl::btree_set<MultiKey, TransparentPassThroughComp<MultiKeyComp>> set;
+  set.insert(MultiKey{1, 2});
+  EXPECT_TRUE(set.contains(1));
+}
+
+TEST(Btree, ConstructImplicitlyWithUnadaptedComparator) {
+  absl::btree_set<MultiKey, MultiKeyComp> set = {{}, MultiKeyComp{}};
+}
+
 }  // namespace
 }  // namespace container_internal
 ABSL_NAMESPACE_END

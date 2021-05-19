@@ -77,13 +77,31 @@ class ABSL_LOCKABLE CordzInfo : public CordzHandle {
   static void MaybeTrackCord(InlineData& cord, MethodIdentifier method);
 
   // Maybe sample the cord identified by 'cord' for method 'method'.
-  // `src` identifies a 'parent' cord which content is copied into the current
-  // cord, typically the input cord for an assign emthod or copy constructor.
-  // Invokes the corresponding `TrackCord` method if either cord is sampled, or
-  // if `cord` is randomly picked for sampling. Possible scenarios:
-  //   * `src` is sampled: `cord` will be set to sampled if not already sampled.
-  //     Parent stack and update stats of `src` are copied into `cord`
-  //   * `src` is not sampled: `cord` may be randomly picked for sampling.
+  // `src` identifies a 'parent' cord which is assigned to `cord`, typically the
+  // input cord for a copy constructor, or an assign method such as `operator=`
+  // `cord` will be sampled if (and only if) `src` is sampled.
+  // If `cord` is currently being sampled and `src` is not being sampled, then
+  // this function will stop sampling the cord and reset the cord's cordz_info.
+  //
+  // Previously this function defined that `cord` will be sampled if either
+  // `src` is sampled, or if `cord` is randomly picked for sampling. However,
+  // this can cause issues, as there may be paths where some cord is assigned an
+  // indirect copy of it's own value. As such a 'string of copies' would then
+  // remain sampled (`src.is_profiled`), then assigning such a cord back to
+  // 'itself' creates a cycle where the cord will converge to 'always sampled`.
+  //
+  // For example:
+  //
+  //   Cord x;
+  //   for (...) {
+  //     // Copy ctor --> y.is_profiled := x.is_profiled | random(...)
+  //     Cord y = x;
+  //     ...
+  //     // Assign x = y --> x.is_profiled = y.is_profiled | random(...)
+  //     //              ==> x.is_profiled |= random(...)
+  //     //              ==> x converges to 'always profiled'
+  //     x = y;
+  //   }
   static void MaybeTrackCord(InlineData& cord, const InlineData& src,
                              MethodIdentifier method);
 
@@ -138,6 +156,11 @@ class ABSL_LOCKABLE CordzInfo : public CordzHandle {
   // Returns the current value of `rep_` for testing purposes only.
   CordRep* GetCordRepForTesting() const ABSL_NO_THREAD_SAFETY_ANALYSIS {
     return rep_;
+  }
+
+  // Sets the current value of `rep_` for testing purposes only.
+  void SetCordRepForTesting(CordRep* rep) ABSL_NO_THREAD_SAFETY_ANALYSIS {
+    rep_ = rep;
   }
 
   // Returns the stack trace for where the cord was first sampled. Cords are
@@ -201,6 +224,12 @@ class ABSL_LOCKABLE CordzInfo : public CordzHandle {
 #endif
   }
 
+  // Non-inlined implementation of `MaybeTrackCord`, which is executed if
+  // either `src` is sampled or `cord` is sampled, and either untracks or
+  // tracks `cord` as documented per `MaybeTrackCord`.
+  static void MaybeTrackCordImpl(InlineData& cord, const InlineData& src,
+                                 MethodIdentifier method);
+
   ABSL_CONST_INIT static List global_list_;
   List* const list_ = &global_list_;
 
@@ -232,9 +261,8 @@ inline ABSL_ATTRIBUTE_ALWAYS_INLINE void CordzInfo::MaybeTrackCord(
 
 inline ABSL_ATTRIBUTE_ALWAYS_INLINE void CordzInfo::MaybeTrackCord(
     InlineData& cord, const InlineData& src, MethodIdentifier method) {
-  if (ABSL_PREDICT_FALSE(InlineData::is_either_profiled(cord, src)) ||
-      ABSL_PREDICT_FALSE(cordz_should_profile())) {
-    TrackCord(cord, src, method);
+  if (ABSL_PREDICT_FALSE(InlineData::is_either_profiled(cord, src))) {
+    MaybeTrackCordImpl(cord, src, method);
   }
 }
 

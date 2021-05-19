@@ -30,15 +30,6 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace cord_internal {
 
-// See https://bugs.llvm.org/show_bug.cgi?id=48477
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshadow"
-#if __has_warning("-Wshadow-field")
-#pragma clang diagnostic ignored "-Wshadow-field"
-#endif
-#endif
-
 // All operations modifying a ring buffer are implemented as static methods
 // requiring a CordRepRing instance with a reference adopted by the method.
 //
@@ -210,23 +201,23 @@ class CordRepRing : public CordRep {
   // referencing up to `size` capacity directly before the existing data.
   Span<char> GetPrependBuffer(size_t size);
 
-  // Returns a cord ring buffer containing `length` bytes of data starting at
+  // Returns a cord ring buffer containing `len` bytes of data starting at
   // `offset`. If the input is not shared, this function will remove all head
   // and tail child nodes outside of the requested range, and adjust the new
   // head and tail nodes as required. If the input is shared, this function
   // returns a new instance sharing some or all of the nodes from the input.
-  static CordRepRing* SubRing(CordRepRing* r, size_t offset, size_t length,
+  static CordRepRing* SubRing(CordRepRing* r, size_t offset, size_t len,
                               size_t extra = 0);
 
-  // Returns a cord ring buffer with the first `length` bytes removed.
+  // Returns a cord ring buffer with the first `len` bytes removed.
   // If the input is not shared, this function will remove all head child nodes
   // fully inside the first `length` bytes, and adjust the new head as required.
   // If the input is shared, this function returns a new instance sharing some
   // or all of the nodes from the input.
-  static CordRepRing* RemoveSuffix(CordRepRing* r, size_t length,
+  static CordRepRing* RemoveSuffix(CordRepRing* r, size_t len,
                                    size_t extra = 0);
 
-  // Returns a cord ring buffer with the last `length` bytes removed.
+  // Returns a cord ring buffer with the last `len` bytes removed.
   // If the input is not shared, this function will remove all head child nodes
   // fully inside the first `length` bytes, and adjust the new head as required.
   // If the input is shared, this function returns a new instance sharing some
@@ -242,12 +233,12 @@ class CordRepRing : public CordRep {
   // function returns false, and `fragment` is left unchanged.
   bool IsFlat(absl::string_view* fragment) const;
 
-  // Returns true if the data starting at `offset` with length `length` is
+  // Returns true if the data starting at `offset` with length `len` is
   // managed by this instance inside a single contiguous buffer, in which case
   // the (optional) output parameter `fragment` is set to the contiguous memory
   // starting at offset `offset` with length `length`. Otherwise, the function
   // returns false, and `fragment` is left unchanged.
-  bool IsFlat(size_t offset, size_t length, absl::string_view* fragment) const;
+  bool IsFlat(size_t offset, size_t len, absl::string_view* fragment) const;
 
   // Testing only: set capacity to requested capacity.
   void SetCapacityForTesting(size_t capacity);
@@ -473,10 +464,10 @@ class CordRepRing : public CordRep {
                                      size_t length, size_t extra);
 
   // Appends or prepends (depending on AddMode) the ring buffer in `ring' to
-  // `rep` starting at `offset` with length `length`.
+  // `rep` starting at `offset` with length `len`.
   template <AddMode mode>
   static CordRepRing* AddRing(CordRepRing* rep, CordRepRing* ring,
-                              size_t offset, size_t length);
+                              size_t offset, size_t len);
 
   // Increases the data offset for entry `index` by `n`.
   void AddDataOffset(index_type index, size_t n);
@@ -596,22 +587,18 @@ inline bool CordRepRing::IsFlat(absl::string_view* fragment) const {
   return false;
 }
 
-inline bool CordRepRing::IsFlat(size_t offset, size_t length,
+inline bool CordRepRing::IsFlat(size_t offset, size_t len,
                                 absl::string_view* fragment) const {
   const Position pos = Find(offset);
   const absl::string_view data = entry_data(pos.index);
-  if (data.length() >= length && data.length() - length >= pos.offset) {
-    if (fragment) *fragment = data.substr(pos.offset, length);
+  if (data.length() >= len && data.length() - len >= pos.offset) {
+    if (fragment) *fragment = data.substr(pos.offset, len);
     return true;
   }
   return false;
 }
 
 std::ostream& operator<<(std::ostream& s, const CordRepRing& rep);
-
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
 
 }  // namespace cord_internal
 ABSL_NAMESPACE_END

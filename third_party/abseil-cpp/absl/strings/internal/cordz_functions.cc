@@ -44,7 +44,10 @@ std::atomic<int> g_cordz_mean_interval(50000);
 
 #ifdef ABSL_INTERNAL_CORDZ_ENABLED
 
-ABSL_CONST_INIT thread_local int64_t cordz_next_sample = 0;
+// Special negative 'not initialized' per thread value for cordz_next_sample.
+static constexpr int64_t kInitCordzNextSample = -1;
+
+ABSL_CONST_INIT thread_local int64_t cordz_next_sample = kInitCordzNextSample;
 
 // kIntervalIfDisabled is the number of profile-eligible events need to occur
 // before the code will confirm that cordz is still disabled.
@@ -77,8 +80,11 @@ ABSL_ATTRIBUTE_NOINLINE bool cordz_should_profile_slow() {
   }
 
   if (cordz_next_sample <= 0) {
+    // If first check on current thread, check cordz_should_profile()
+    // again using the created (initial) stride in cordz_next_sample.
+    const bool initialized = cordz_next_sample != kInitCordzNextSample;
     cordz_next_sample = exponential_biased_generator.GetStride(mean_interval);
-    return true;
+    return initialized || cordz_should_profile();
   }
 
   --cordz_next_sample;

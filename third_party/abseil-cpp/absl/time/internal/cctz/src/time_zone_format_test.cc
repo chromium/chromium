@@ -1135,7 +1135,7 @@ TEST(Parse, ExtendedSeconds) {
   // All %E<prec>S cases are treated the same as %E*S on input.
   auto precisions = {"*", "0", "1",  "2",  "3",  "4",  "5",  "6", "7",
                      "8", "9", "10", "11", "12", "13", "14", "15"};
-  for (const std::string& prec : precisions) {
+  for (const std::string prec : precisions) {
     const std::string fmt = "%E" + prec + "S";
     SCOPED_TRACE(fmt);
     time_point<chrono::nanoseconds> tp = unix_epoch;
@@ -1217,7 +1217,7 @@ TEST(Parse, ExtendedSubeconds) {
   // All %E<prec>f cases are treated the same as %E*f on input.
   auto precisions = {"*", "0", "1",  "2",  "3",  "4",  "5",  "6", "7",
                      "8", "9", "10", "11", "12", "13", "14", "15"};
-  for (const std::string& prec : precisions) {
+  for (const std::string prec : precisions) {
     const std::string fmt = "%E" + prec + "f";
     SCOPED_TRACE(fmt);
     time_point<chrono::nanoseconds> tp = unix_epoch - chrono::seconds(1);

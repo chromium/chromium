@@ -24,11 +24,13 @@ int resize_call_count = 0;
 // resize() method has been called.
 struct resizable_string {
   size_t size() const { return 0; }
+  size_t capacity() const { return 0; }
   char& operator[](size_t) {
     static char c = '\0';
     return c;
   }
   void resize(size_t) { resize_call_count += 1; }
+  void reserve(size_t) {}
 };
 
 int resize_default_init_call_count = 0;
@@ -37,12 +39,14 @@ int resize_default_init_call_count = 0;
 // resize() and __resize_default_init() methods have been called.
 struct resize_default_init_string {
   size_t size() const { return 0; }
+  size_t capacity() const { return 0; }
   char& operator[](size_t) {
     static char c = '\0';
     return c;
   }
   void resize(size_t) { resize_call_count += 1; }
   void __resize_default_init(size_t) { resize_default_init_call_count += 1; }
+  void reserve(size_t) {}
 };
 
 TEST(ResizeUninit, WithAndWithout) {
@@ -60,6 +64,9 @@ TEST(ResizeUninit, WithAndWithout) {
     absl::strings_internal::STLStringResizeUninitialized(&rs, 237);
     EXPECT_EQ(resize_call_count, 1);
     EXPECT_EQ(resize_default_init_call_count, 0);
+    absl::strings_internal::STLStringResizeUninitializedAmortized(&rs, 1000);
+    EXPECT_EQ(resize_call_count, 2);
+    EXPECT_EQ(resize_default_init_call_count, 0);
   }
 
   resize_call_count = 0;
@@ -76,7 +83,23 @@ TEST(ResizeUninit, WithAndWithout) {
     absl::strings_internal::STLStringResizeUninitialized(&rus, 237);
     EXPECT_EQ(resize_call_count, 0);
     EXPECT_EQ(resize_default_init_call_count, 1);
+    absl::strings_internal::STLStringResizeUninitializedAmortized(&rus, 1000);
+    EXPECT_EQ(resize_call_count, 0);
+    EXPECT_EQ(resize_default_init_call_count, 2);
   }
+}
+
+TEST(ResizeUninit, Amortized) {
+  std::string str;
+  size_t prev_cap = str.capacity();
+  int cap_increase_count = 0;
+  for (int i = 0; i < 1000; ++i) {
+    absl::strings_internal::STLStringResizeUninitializedAmortized(&str, i);
+    size_t new_cap = str.capacity();
+    if (new_cap > prev_cap) ++cap_increase_count;
+    prev_cap = new_cap;
+  }
+  EXPECT_LT(cap_increase_count, 50);
 }
 
 }  // namespace

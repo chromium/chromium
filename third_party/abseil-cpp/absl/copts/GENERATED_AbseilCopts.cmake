@@ -77,7 +77,7 @@ list(APPEND ABSL_LLVM_FLAGS
     "-Woverlength-strings"
     "-Wpointer-arith"
     "-Wself-assign"
-    "-Wshadow"
+    "-Wshadow-all"
     "-Wstring-conversion"
     "-Wtautological-overlap-compare"
     "-Wundef"

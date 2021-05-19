@@ -17,6 +17,7 @@
 #ifndef ABSL_STRINGS_INTERNAL_RESIZE_UNINITIALIZED_H_
 #define ABSL_STRINGS_INTERNAL_RESIZE_UNINITIALIZED_H_
 
+#include <algorithm>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -64,6 +65,28 @@ inline constexpr bool STLStringSupportsNontrashingResize(string_type*) {
 template <typename string_type, typename = void>
 inline void STLStringResizeUninitialized(string_type* s, size_t new_size) {
   ResizeUninitializedTraits<string_type>::Resize(s, new_size);
+}
+
+// Used to ensure exponential growth so that the amortized complexity of
+// increasing the string size by a small amount is O(1), in contrast to
+// O(str->size()) in the case of precise growth.
+template <typename string_type>
+void STLStringReserveAmortized(string_type* s, size_t new_size) {
+  const size_t cap = s->capacity();
+  if (new_size > cap) {
+    // Make sure to always grow by at least a factor of 2x.
+    s->reserve((std::max)(new_size, 2 * cap));
+  }
+}
+
+// Like STLStringResizeUninitialized(str, new_size), except guaranteed to use
+// exponential growth so that the amortized complexity of increasing the string
+// size by a small amount is O(1), in contrast to O(str->size()) in the case of
+// precise growth.
+template <typename string_type>
+void STLStringResizeUninitializedAmortized(string_type* s, size_t new_size) {
+  STLStringReserveAmortized(s, new_size);
+  STLStringResizeUninitialized(s, new_size);
 }
 
 }  // namespace strings_internal
