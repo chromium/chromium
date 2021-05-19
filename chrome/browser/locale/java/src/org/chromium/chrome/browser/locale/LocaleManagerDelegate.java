@@ -84,7 +84,11 @@ public class LocaleManagerDelegate {
         mSearchEnginePromoCompleted = state == SearchEnginePromoState.CHECKED_AND_SHOWN;
     }
 
-    void setDefaulSearchEngineDelegate(DefaultSearchEngineDialogHelper.Delegate delegate) {
+    /**
+     * Sets the delegate for {@link DefaultSearchEngineDialogHelper}.
+     * @param delegate Delegate used to select/notify the default search engine.
+     */
+    public void setDefaulSearchEngineDelegate(DefaultSearchEngineDialogHelper.Delegate delegate) {
         mSearchEngineHelperDelegate = delegate;
     }
 
