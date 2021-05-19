@@ -25,6 +25,7 @@ using autofill::features::kAutofillAblationStudyAblationWeightPerMilleParam;
 using autofill::features::kAutofillAblationStudyEnabledForAddressesParam;
 using autofill::features::kAutofillAblationStudyEnabledForPaymentsParam;
 using autofill::features::kAutofillEnableAblationStudy;
+using autofill::features::kAutofillShowTypePredictions;
 
 namespace {
 
@@ -114,6 +115,10 @@ AblationGroup AutofillAblationStudy::GetAblationGroup(
     const GURL& url,
     FormTypeForAblationStudy form_type) const {
   if (!base::FeatureList::IsEnabled(kAutofillEnableAblationStudy)) {
+    return AblationGroup::kDefault;
+  }
+  if (base::FeatureList::IsEnabled(kAutofillShowTypePredictions)) {
+    // Disable ablation study while debugging.
     return AblationGroup::kDefault;
   }
 
