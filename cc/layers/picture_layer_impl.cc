@@ -1311,6 +1311,13 @@ bool PictureLayerImpl::ShouldAdjustRasterScale() const {
   if (!raster_contents_scale_.x() || !raster_contents_scale_.y())
     return true;
 
+  // Adjust raster scale if the raster source size changed. This is mainly to
+  // reset the preserved scale for will-change:transform but may also help in
+  // other cases, which won't affect performance much because the change has
+  // involved the main thread and/or we'll (at least partly) re-raster anyway.
+  if (raster_source_size_changed_)
+    return true;
+
   if (directly_composited_image_size_) {
     // If we have a directly composited image size, but previous raster scale
     // calculations did not set an initial raster scale, we must recalcluate.
@@ -1383,10 +1390,9 @@ bool PictureLayerImpl::ShouldAdjustRasterScale() const {
 
   // Avoid frequent raster scale changes if we have an animating transform.
   if (draw_properties().screen_space_transform_is_animating) {
-    // Except when the device viewport rect or the raster source size has
-    // changed because the raster scale may depend on the rect.
-    if (layer_tree_impl()->device_viewport_rect_changed() ||
-        raster_source_size_changed_) {
+    // Except when the device viewport rect has changed because the raster scale
+    // may depend on the rect.
+    if (layer_tree_impl()->device_viewport_rect_changed()) {
       return true;
     }
     // Or when the raster scale is not affected by invalid scale and is too
