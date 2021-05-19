@@ -200,6 +200,9 @@ class Browser : public TabStripModelObserver,
     kErrorLoadingKiosk,
   };
 
+  // The default value for a browser's `restore_id` param.
+  static constexpr int kDefaultRestoreId = 0;
+
   // Callback that receives the result of a user being warned about closing a
   // browser window (for example, if closing the window would interrupt a
   // download). The parameter is whether the close should proceed.
@@ -250,7 +253,7 @@ class Browser : public TabStripModelObserver,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // The id from the restore data to restore the browser window.
-    int32_t restore_id = 0;
+    int32_t restore_id = kDefaultRestoreId;
 #endif
 
     bool is_focus_mode = false;

@@ -2116,6 +2116,12 @@ Browser* TabDragController::CreateBrowserForDrag(
   create_params.user_gesture = true;
   create_params.in_tab_dragging = true;
   create_params.initial_bounds = new_bounds;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Do not copy attached window's restore id as this will cause Full Restore to
+  // restore the newly created browser using the original browser's stored data.
+  // See crbug.com/1208923 for details.
+  create_params.restore_id = Browser::kDefaultRestoreId;
+#endif
   // Do not copy attached window's show state as the attached window might be a
   // maximized or fullscreen window and we do not want the newly created browser
   // window is a maximized or fullscreen window since it will prevent window
