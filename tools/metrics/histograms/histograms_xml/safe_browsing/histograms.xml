@@ -2061,45 +2061,57 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsingFCMService.IncomingMessageHasKey" enum="Boolean"
-    expires_after="M90">
+    expires_after="M95">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Whether the incoming message has the expected key. Recorded on every FCM
     message received by the Safe Browsing FCM handler.
+
+    Warning: This histogram was expired in M91 and restored in M92. Data may be
+    missing in M91.
   </summary>
 </histogram>
 
 <histogram name="SafeBrowsingFCMService.IncomingMessageHasValidToken"
-    enum="Boolean" expires_after="M90">
+    enum="Boolean" expires_after="M95">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Whether the incoming message has a token that was previously registered with
     the FCM handler. Recorded on every FCM message received by the Safe Browsing
     FCM handler.
+
+    Warning: This histogram was expired in M91 and restored in M92. Data may be
+    missing in M91.
   </summary>
 </histogram>
 
 <histogram name="SafeBrowsingFCMService.IncomingMessageParsedBase64"
-    enum="BooleanSuccess" expires_after="M90">
+    enum="BooleanSuccess" expires_after="M95">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Whether the incoming message was successfully parsed as valid base64-encoded
     data. Recorded on every FCM message received by the Safe Browsing FCM
     handler.
+
+    Warning: This histogram was expired in M91 and restored in M92. Data may be
+    missing in M91.
   </summary>
 </histogram>
 
 <histogram name="SafeBrowsingFCMService.IncomingMessageParsedProto"
-    enum="BooleanSuccess" expires_after="M90">
+    enum="BooleanSuccess" expires_after="M95">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Whether the incoming message was successfully parsed as a valid
     base64-encoded serialized proto. Recorded on every FCM message received by
     the Safe Browsing FCM handler.
+
+    Warning: This histogram was expired in M91 and restored in M92. Data may be
+    missing in M91.
   </summary>
 </histogram>
 
