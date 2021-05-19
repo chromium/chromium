@@ -1445,9 +1445,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
 
         // Increment and decrement are available when the role is a slider or
         // spin button.
-        const std::string& role_string =
-            node->GetStringAttribute(ax::mojom::StringAttribute::kRole);
-        auto role = ui::ParseAXEnum<ax::mojom::Role>(role_string.c_str());
+        auto role = node->data().role;
         if (role == ax::mojom::Role::kSlider ||
             role == ax::mojom::Role::kSpinButton) {
           standard_actions.push_back(
@@ -1576,13 +1574,17 @@ void AutomationInternalCustomBindings::AddRoutes() {
   RouteNodeIDFunction(
       "GetTableColumnCount",
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
-         AutomationAXTreeWrapper* tree_wrapper,
-         ui::AXNode* node) { result.Set(*node->GetTableColCount()); });
+         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
+        if (node->GetTableColCount())
+          result.Set(*node->GetTableColCount());
+      });
   RouteNodeIDFunction(
       "GetTableRowCount",
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
-         AutomationAXTreeWrapper* tree_wrapper,
-         ui::AXNode* node) { result.Set(*node->GetTableRowCount()); });
+         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
+        if (node->GetTableRowCount())
+          result.Set(*node->GetTableRowCount());
+      });
   RouteNodeIDFunction(
       "GetTableCellColumnHeaders",
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,

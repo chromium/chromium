@@ -368,6 +368,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, Intents) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, EnumValidity) {
+  StartEmbeddedTestServer();
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/tabs", .page_url = "enum_validity.html"}))
+      << message_;
+}
+
 #if defined(USE_AURA)
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, IframeNav) {

@@ -1049,9 +1049,6 @@ enum SortDirectionType {
     // text element; -1 if no selection.
     long? textSelEnd;
 
-    // The input type, like email or number.
-    DOMString? textInputType;
-
     // An array of Marker objects for this node.
     Marker[]? markers;
 

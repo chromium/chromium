@@ -1531,13 +1531,6 @@ chrome.automation.AutomationNode.prototype.textSelStart;
 chrome.automation.AutomationNode.prototype.textSelEnd;
 
 /**
- * The input type, like email or number.
- * @type {(string|undefined)}
- * @see https://developer.chrome.com/extensions/automation#type-textInputType
- */
-chrome.automation.AutomationNode.prototype.textInputType;
-
-/**
  * An array of Marker objects for this node.
  * @type {(!Array<!chrome.automation.Marker>|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-markers

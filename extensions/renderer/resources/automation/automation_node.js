@@ -1370,7 +1370,6 @@ var stringAttributes = [
   'liveStatus',
   'placeholder',
   'roleDescription',
-  'textInputType',
   'tooltip',
   'url'
 ];
@@ -1415,7 +1414,6 @@ var nodeRefAttributes = [
     ['tableRowHeaderId', 'tableRowHeader', null]];
 
 var intListAttributes = [
-    'lineBreaks',
     'wordEnds',
     'wordStarts'];
 
