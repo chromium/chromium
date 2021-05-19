@@ -391,6 +391,21 @@
   return self.interactionTransition;
 }
 
+- (void)navigationController:(UINavigationController*)navigationController
+       didShowViewController:(UIViewController*)viewController
+                    animated:(BOOL)animated {
+  DCHECK(navigationController == self.navigationController);
+  DCHECK(navigationController.viewControllers.count > 0);
+  DCHECK(navigationController.viewControllers[0] ==
+         self.defaultAccountCoordinator.viewController);
+  if (self.navigationController.viewControllers.count == 1 &&
+      self.accountChooserCoordinator) {
+    // AccountChooserCoordinator has been removed by "Back" button.
+    [self.accountChooserCoordinator stop];
+    self.accountChooserCoordinator = nil;
+  }
+}
+
 #pragma mark - UIViewControllerTransitioningDelegate
 
 - (UIPresentationController*)
