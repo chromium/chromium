@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_DOWNLOADS_DELEGATE_H_
 #define CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_DOWNLOADS_DELEGATE_H_
 
-#include <map>
+#include <memory>
+#include <set>
 
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -55,23 +57,23 @@ class HoldingSpaceDownloadsDelegate
   void OnDownloadCreated(content::DownloadManager* manager,
                          download::DownloadItem* download_item) override;
 
-  // Invoked when the specified `download_item` is updated.
-  void OnDownloadUpdated(const download::DownloadItem* download_item);
+  // Invoked when the specified `in_progress_download` is updated.
+  void OnDownloadUpdated(const InProgressDownload* in_progress_download);
 
-  // Invoked when the specified `download_item` is destroyed.
-  void OnDownloadDestroyed(const download::DownloadItem* download_item);
+  // Invoked when the specified `in_progress_download` is completed.
+  void OnDownloadCompleted(const InProgressDownload* in_progress_download);
 
-  // Invoked when a download of the specified `type` at the specified
-  // `file_path` has completed downloading. Note that the specified `type` must
-  // be a download type.
-  void OnDownloadCompleted(HoldingSpaceItem::Type type,
-                           const base::FilePath& file_path);
+  // Invoked when the specified `in_progress_download` fails. This may be due to
+  // cancellation, interruption, or destruction of the underlying download.
+  void OnDownloadFailed(const InProgressDownload* in_progress_download);
 
-  // The collection of in-progress downloads mapped by download ID. In the near
-  // future, each `InProgressDownload` will be associated with an in-progress
-  // holding space item and may be paused/resumed/cancelled/etc. in response to
-  // user interaction.
-  std::map<uint32_t, InProgressDownload> in_progress_downloads_by_id_;
+  // Invoked to erase the specified `in_progress_download` when it is no longer
+  // needed either due to completion or failure of the underlying download.
+  void EraseDownload(const InProgressDownload* in_progress_download);
+
+  // The collection of currently in-progress downloads.
+  std::set<std::unique_ptr<InProgressDownload>, base::UniquePtrComparator>
+      in_progress_downloads_;
 
   base::ScopedObservation<arc::ArcIntentHelperBridge,
                           arc::ArcIntentHelperObserver>
