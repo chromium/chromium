@@ -79,6 +79,8 @@
 #include "ui/base/ime/chromeos/fake_ime_keyboard.h"
 #include "ui/base/ime/chromeos/ime_keyboard.h"
 #include "ui/base/ime/chromeos/mock_input_method_manager.h"
+#include "ui/base/ime/init/input_method_factory.h"
+#include "ui/base/ime/mock_input_method.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -2141,6 +2143,62 @@ TEST_F(AcceleratorControllerTest, CalculatorKey) {
   EXPECT_CALL(*new_window_delegate_, OpenCalculator)
       .WillOnce(testing::Return());
   EXPECT_TRUE(ProcessInController(accelerator));
+}
+
+class AcceleratorControllerInputMethodTest : public AcceleratorControllerTest {
+ public:
+  AcceleratorControllerInputMethodTest() = default;
+  ~AcceleratorControllerInputMethodTest() override = default;
+
+  class AcceleratorMockInputMethod : public ui::MockInputMethod {
+   public:
+    AcceleratorMockInputMethod() : ui::MockInputMethod(nullptr) {}
+    void CancelComposition(const ui::TextInputClient* client) override {
+      cancel_composition_call_count++;
+    }
+
+    uint32_t cancel_composition_call_count = 0;
+  };
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kImprovedKeyboardShortcuts);
+
+    // Setup the mock input method to capture the calls to
+    // |CancelCompositionAfterAccelerator|. Ownersship is passed to
+    // ui::SetUpInputMethodForTesting().
+    mock_input_ = new AcceleratorMockInputMethod();
+    ui::SetUpInputMethodForTesting(mock_input_);
+    AcceleratorControllerTest::SetUp();
+  }
+
+ protected:
+  AcceleratorMockInputMethod* mock_input_ = nullptr;  // Not owned.
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// In some layouts positional accelerators can be on dead/compose keys. To
+// ensure that the input method is not left in a partially composed state
+// the composition state is reset when an accelerator is matched.
+TEST_F(AcceleratorControllerInputMethodTest, AcceleratorClearsComposition) {
+  EXPECT_EQ(0u, mock_input_->cancel_composition_call_count);
+
+  // An acclerator that isn't recognized will not cause composition to be
+  // cancelled.
+  ui::Accelerator unknown_accelerator(ui::VKEY_OEM_MINUS, ui::EF_NONE);
+  EXPECT_FALSE(controller_->IsRegistered(unknown_accelerator));
+  EXPECT_FALSE(ProcessInController(unknown_accelerator));
+  EXPECT_EQ(0u, mock_input_->cancel_composition_call_count);
+
+  // A matching accelerator should cause CancelCompositionAfterAccelerator() to
+  // be called.
+  ui::Accelerator accelerator(ui::VKEY_OEM_MINUS,
+                              ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(controller_->IsRegistered(accelerator));
+  EXPECT_TRUE(ProcessInController(accelerator));
+  EXPECT_EQ(1u, mock_input_->cancel_composition_call_count);
 }
 
 namespace {

@@ -2505,6 +2505,14 @@ void AcceleratorControllerImpl::PerformAction(
       HandleTopWindowMinimizeOnBack();
       break;
   }
+
+  // Reset any in progress composition.
+  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
+    auto* input_method =
+        Shell::Get()->window_tree_host_manager()->input_method();
+
+    input_method->CancelComposition(input_method->GetTextInputClient());
+  }
 }
 
 bool AcceleratorControllerImpl::ShouldActionConsumeKeyEvent(
