@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "base/stl_util.h"
@@ -65,6 +66,10 @@ namespace {
 bool g_lacros_enabled_for_test = false;
 
 absl::optional<bool> g_lacros_primary_browser_for_test;
+
+// The rootfs lacros-chrome metadata keys.
+constexpr char kLacrosMetadataContentKey[] = "content";
+constexpr char kLacrosMetadataVersionKey[] = "version";
 
 // Some account types require features that aren't yet supported by lacros.
 // See https://crbug.com/1080693
@@ -592,6 +597,42 @@ void RecordDataVer(PrefService* local_state,
   DictionaryPrefUpdate update(local_state, kDataVerPref);
   base::DictionaryValue* dict = update.Get();
   dict->SetString(user_id_hash, version.GetString());
+}
+
+base::Version GetRootfsLacrosVersionMayBlock(
+    const base::FilePath& version_file_path) {
+  if (!base::PathExists(version_file_path)) {
+    LOG(WARNING) << "The rootfs lacros-chrome metadata is missing.";
+    return {};
+  }
+
+  std::string metadata;
+  if (!base::ReadFileToString(version_file_path, &metadata)) {
+    PLOG(WARNING) << "Failed to read rootfs lacros-chrome metadata.";
+    return {};
+  }
+
+  absl::optional<base::Value> v = base::JSONReader::Read(metadata);
+  if (!v || !v->is_dict()) {
+    LOG(WARNING) << "Failed to parse rootfs lacros-chrome metadata.";
+    return {};
+  }
+
+  const base::Value* content = v->FindKey(kLacrosMetadataContentKey);
+  if (!content || !content->is_dict()) {
+    LOG(WARNING)
+        << "Failed to parse rootfs lacros-chrome metadata content key.";
+    return {};
+  }
+
+  const base::Value* version = content->FindKey(kLacrosMetadataVersionKey);
+  if (!version || !version->is_string()) {
+    LOG(WARNING)
+        << "Failed to parse rootfs lacros-chrome metadata version key.";
+    return {};
+  }
+
+  return base::Version{version->GetString()};
 }
 
 }  // namespace browser_util

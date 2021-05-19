@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
@@ -491,6 +492,58 @@ TEST_F(BrowserUtilTest, RecordDataVerWithMultipleUsers) {
   const base::DictionaryValue* dict =
       pref_service_.GetDictionary(browser_util::kDataVerPref);
   EXPECT_TRUE(dict->Equals(&expected));
+}
+
+TEST_F(BrowserUtilTest, GetRootfsLacrosVersionMayBlock) {
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  const std::string kVersion = "91.0.4457";
+  const std::string kContent =
+      "{\"content\":{\"version\":\"" + kVersion + "\"}}";
+  auto path = tmp_dir.GetPath().Append("file");
+  ASSERT_TRUE(base::WriteFile(path, kContent));
+
+  EXPECT_EQ(browser_util::GetRootfsLacrosVersionMayBlock(path),
+            base::Version(kVersion));
+}
+
+TEST_F(BrowserUtilTest, GetRootfsLacrosVersionMayBlockMissingVersion) {
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  const std::string kContent = "{\"content\":{}}";
+  auto path = tmp_dir.GetPath().Append("file");
+  ASSERT_TRUE(base::WriteFile(path, kContent));
+
+  EXPECT_FALSE(browser_util::GetRootfsLacrosVersionMayBlock(path).IsValid());
+}
+
+TEST_F(BrowserUtilTest, GetRootfsLacrosVersionMayBlockMissingContent) {
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  const std::string kContent = "{}";
+  auto path = tmp_dir.GetPath().Append("file");
+  ASSERT_TRUE(base::WriteFile(path, kContent));
+
+  EXPECT_FALSE(browser_util::GetRootfsLacrosVersionMayBlock(path).IsValid());
+}
+
+TEST_F(BrowserUtilTest, GetRootfsLacrosVersionMayBlockMissingFile) {
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  auto bad_path = tmp_dir.GetPath().Append("file");
+
+  EXPECT_FALSE(
+      browser_util::GetRootfsLacrosVersionMayBlock(bad_path).IsValid());
+}
+
+TEST_F(BrowserUtilTest, GetRootfsLacrosVersionMayBlockBadJson) {
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  const std::string kContent = "!@#$";
+  auto path = tmp_dir.GetPath().Append("file");
+  ASSERT_TRUE(base::WriteFile(path, kContent));
+
+  EXPECT_FALSE(browser_util::GetRootfsLacrosVersionMayBlock(path).IsValid());
 }
 
 }  // namespace crosapi

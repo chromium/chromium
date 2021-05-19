@@ -189,6 +189,11 @@ void RecordDataVer(PrefService* local_state,
                    const std::string& user_id_hash,
                    const base::Version& version);
 
+// Gets the version of the rootfs lacros-chrome. By reading the metadata json
+// file in the correct format.
+base::Version GetRootfsLacrosVersionMayBlock(
+    const base::FilePath& version_file_path);
+
 }  // namespace browser_util
 }  // namespace crosapi
 
