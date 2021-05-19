@@ -35,6 +35,7 @@
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "components/optimization_guide/core/prediction_model.h"
 #include "components/optimization_guide/core/prediction_model_fetcher.h"
 #include "components/optimization_guide/core/prediction_model_file.h"

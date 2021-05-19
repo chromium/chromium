@@ -8,7 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_model_provider.h"
 
 namespace optimization_guide {
 
@@ -26,7 +26,7 @@ const int kNoneCategoryId = -2;
 }  // namespace
 
 PageContentAnnotationsModelManager::PageContentAnnotationsModelManager(
-    optimization_guide::OptimizationGuideDecider* optimization_guide_decider) {
+    OptimizationGuideModelProvider* optimization_guide_model_provider) {
   proto::Any model_metadata;
   model_metadata.set_type_url(kPageTopicsModelMetadataTypeUrl);
   proto::PageTopicsModelMetadata page_topics_model_metadata;
@@ -38,7 +38,7 @@ PageContentAnnotationsModelManager::PageContentAnnotationsModelManager(
 
   page_topics_model_executor_handle_ =
       std::make_unique<BertModelExecutorHandle>(
-          optimization_guide_decider,
+          optimization_guide_model_provider,
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
           proto::OPTIMIZATION_TARGET_PAGE_TOPICS, model_metadata);

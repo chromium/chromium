@@ -32,15 +32,6 @@ void TestOptimizationGuideDecider::CanApplyOptimizationAsync(
                           /*optimization_metadata=*/{});
 }
 
-void TestOptimizationGuideDecider::AddObserverForOptimizationTargetModel(
-    optimization_guide::proto::OptimizationTarget optimization_target,
-    const absl::optional<proto::Any>& model_metadata,
-    optimization_guide::OptimizationTargetModelObserver* observer) {}
-
-void TestOptimizationGuideDecider::RemoveObserverForOptimizationTargetModel(
-    optimization_guide::proto::OptimizationTarget optimization_target,
-    optimization_guide::OptimizationTargetModelObserver* observer) {}
-
 OptimizationGuideDecision TestOptimizationGuideDecider::CanApplyOptimization(
     const GURL& url,
     proto::OptimizationType optimization_type,

@@ -5,7 +5,7 @@
 #include "components/optimization_guide/content/browser/page_content_annotations_model_manager.h"
 
 #include "base/path_service.h"
-#include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
+#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "content/public/test/browser_task_environment.h"
@@ -16,7 +16,8 @@ namespace optimization_guide {
 
 using testing::UnorderedElementsAre;
 
-class PageTopicsModelObserverTracker : public TestOptimizationGuideDecider {
+class PageTopicsModelObserverTracker
+    : public TestOptimizationGuideModelProvider {
  public:
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget target,

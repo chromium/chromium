@@ -6,9 +6,9 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 
@@ -34,14 +34,14 @@ void LogPageContentAnnotationsStorageStatus(
 #endif
 
 PageContentAnnotationsService::PageContentAnnotationsService(
-    OptimizationGuideDecider* optimization_guide_decider,
+    OptimizationGuideModelProvider* optimization_guide_model_provider,
     history::HistoryService* history_service) {
-  DCHECK(optimization_guide_decider);
+  DCHECK(optimization_guide_model_provider);
   DCHECK(history_service);
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   history_service_ = history_service;
   model_manager_ = std::make_unique<PageContentAnnotationsModelManager>(
-      optimization_guide_decider);
+      optimization_guide_model_provider);
 #endif
 }
 

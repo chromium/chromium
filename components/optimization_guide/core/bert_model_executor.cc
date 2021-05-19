@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/content/browser/bert_model_executor.h"
+#include "components/optimization_guide/core/bert_model_executor.h"
 
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/text/nlclassifier/bert_nl_classifier.h"
@@ -34,12 +34,12 @@ BertModelExecutor::BuildModelExecutionTask(base::MemoryMappedFile* model_file) {
 }
 
 BertModelExecutorHandle::BertModelExecutorHandle(
-    OptimizationGuideDecider* decider,
+    OptimizationGuideModelProvider* model_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     proto::OptimizationTarget optimization_target,
     const absl::optional<proto::Any>& model_metadata)
     : ModelHandler<std::vector<tflite::task::core::Category>,
-                   const std::string&>(decider,
+                   const std::string&>(model_provider,
                                        background_task_runner,
                                        std::make_unique<BertModelExecutor>(),
                                        optimization_target,

@@ -8,11 +8,11 @@
 #include <memory>
 #include <vector>
 
-#include "components/optimization_guide/content/browser/model_executor.h"
+#include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {
-class OptimizationGuideDecider;
+class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
 
 namespace segmentation_platform {
@@ -27,7 +27,7 @@ class SegmentationModelHandler
                                               const std::vector<float>&> {
  public:
   explicit SegmentationModelHandler(
-      optimization_guide::OptimizationGuideDecider* decider,
+      optimization_guide::OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       optimization_guide::proto::OptimizationTarget optimization_target);
   ~SegmentationModelHandler() override;

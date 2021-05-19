@@ -25,7 +25,7 @@ class HistoryService;
 
 namespace optimization_guide {
 
-class OptimizationGuideDecider;
+class OptimizationGuideModelProvider;
 class PageContentAnnotationsModelManager;
 
 // The information used by HistoryService to identify a visit to a URL.
@@ -38,7 +38,7 @@ struct HistoryVisit {
 class PageContentAnnotationsService : public KeyedService {
  public:
   explicit PageContentAnnotationsService(
-      OptimizationGuideDecider* optimization_guide_decider,
+      OptimizationGuideModelProvider* optimization_guide_model_provider,
       history::HistoryService* history_service);
   ~PageContentAnnotationsService() override;
   PageContentAnnotationsService(const PageContentAnnotationsService&) = delete;

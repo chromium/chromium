@@ -8,8 +8,8 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/content/browser/page_text_dump_result.h"
-#include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -37,9 +37,9 @@ class TestPageTextObserver : public PageTextObserver {
 class FakePageContentAnnotationsService : public PageContentAnnotationsService {
  public:
   explicit FakePageContentAnnotationsService(
-      OptimizationGuideDecider* optimization_guide_decider,
+      OptimizationGuideModelProvider* optimization_guide_model_provider,
       history::HistoryService* history_service)
-      : PageContentAnnotationsService(optimization_guide_decider,
+      : PageContentAnnotationsService(optimization_guide_model_provider,
                                       history_service) {}
   ~FakePageContentAnnotationsService() override = default;
 
@@ -62,12 +62,12 @@ class PageContentAnnotationsWebContentsHelperTest
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
 
-    optimization_guide_decider_ =
-        std::make_unique<TestOptimizationGuideDecider>();
+    optimization_guide_model_provider_ =
+        std::make_unique<TestOptimizationGuideModelProvider>();
     history_service_ = std::make_unique<history::HistoryService>();
     page_content_annotations_service_ =
         std::make_unique<FakePageContentAnnotationsService>(
-            optimization_guide_decider_.get(), history_service_.get());
+            optimization_guide_model_provider_.get(), history_service_.get());
 
     page_text_observer_ = new TestPageTextObserver(web_contents());
     web_contents()->SetUserData(TestPageTextObserver::UserDataKey(),
@@ -80,7 +80,7 @@ class PageContentAnnotationsWebContentsHelperTest
   void TearDown() override {
     page_text_observer_ = nullptr;
     page_content_annotations_service_.reset();
-    optimization_guide_decider_.reset();
+    optimization_guide_model_provider_.reset();
 
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -107,7 +107,8 @@ class PageContentAnnotationsWebContentsHelperTest
   }
 
  private:
-  std::unique_ptr<TestOptimizationGuideDecider> optimization_guide_decider_;
+  std::unique_ptr<TestOptimizationGuideModelProvider>
+      optimization_guide_model_provider_;
   std::unique_ptr<history::HistoryService> history_service_;
   std::unique_ptr<FakePageContentAnnotationsService>
       page_content_annotations_service_;

@@ -36,6 +36,7 @@ static_library("core") {
     "optimization_guide_enums.h",
     "optimization_guide_features.cc",
     "optimization_guide_features.h",
+    "optimization_guide_model_provider.h",
     "optimization_guide_permissions_util.cc",
     "optimization_guide_permissions_util.h",
     "optimization_guide_prefs.cc",
@@ -65,11 +66,29 @@ static_library("core") {
     "url_pattern_with_wildcards.cc",
     "url_pattern_with_wildcards.h",
   ]
+  if (build_with_tflite_lib) {
+    sources += [
+      "base_model_executor.h",
+      "base_model_executor_helpers.h",
+      "bert_model_executor.cc",
+      "bert_model_executor.h",
+      "model_executor.h",
+    ]
+  }
 
   public_deps = [
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//third_party/re2",
   ]
+  if (build_with_tflite_lib) {
+    public_deps += [
+      "//components/optimization_guide/core:machine_learning",
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite-support",
+      "//third_party/tflite-support:tflite-support-proto",
+    ]
+  }
 
   deps = [
     "//base",
@@ -110,6 +129,8 @@ static_library("test_support") {
     "proto_database_provider_test_base.h",
     "test_hints_component_creator.cc",
     "test_hints_component_creator.h",
+    "test_optimization_guide_model_provider.cc",
+    "test_optimization_guide_model_provider.h",
   ]
   deps = [
     ":core",
@@ -144,6 +165,12 @@ source_set("unit_tests") {
     "store_update_data_unittest.cc",
     "url_pattern_with_wildcards_unittest.cc",
   ]
+  if (build_with_tflite_lib) {
+    sources += [
+      "bert_model_executor_unittest.cc",
+      "model_executor_unittest.cc",
+    ]
+  }
 
   deps = [
     ":core",
@@ -164,4 +191,12 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url:url",
   ]
+  if (build_with_tflite_lib) {
+    deps += [
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite-support",
+      "//third_party/tflite-support:tflite-support-proto",
+    ]
+  }
 }

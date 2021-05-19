@@ -12,8 +12,8 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
-#include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/content/segmentation_model_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,8 +40,8 @@ class SegmentationModelExecutorTest : public testing::Test {
                            .AppendASCII("segmentation_platform")
                            .AppendASCII("adder.tflite");
 
-    optimization_guide_decider_ =
-        std::make_unique<optimization_guide::TestOptimizationGuideDecider>();
+    optimization_guide_model_provider_ = std::make_unique<
+        optimization_guide::TestOptimizationGuideModelProvider>();
   }
 
   void TearDown() override { ResetModelExecutor(); }
@@ -51,7 +51,7 @@ class SegmentationModelExecutorTest : public testing::Test {
       model_executor_handle_.reset();
 
     model_executor_handle_ = std::make_unique<SegmentationModelHandler>(
-        optimization_guide_decider_.get(),
+        optimization_guide_model_provider_.get(),
         task_environment_.GetMainThreadTaskRunner(), kOptimizationTarget);
   }
 
@@ -78,8 +78,8 @@ class SegmentationModelExecutorTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   base::FilePath model_file_path_;
-  std::unique_ptr<optimization_guide::TestOptimizationGuideDecider>
-      optimization_guide_decider_;
+  std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
+      optimization_guide_model_provider_;
 
   std::unique_ptr<SegmentationModelHandler> model_executor_handle_;
 };

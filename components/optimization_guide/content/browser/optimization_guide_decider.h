@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
-#include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -66,28 +65,6 @@ class OptimizationGuideDecider {
       content::NavigationHandle* navigation_handle,
       proto::OptimizationTarget optimization_target,
       OptimizationGuideTargetDecisionCallback callback) = 0;
-
-  // Adds an observer for updates to the model for |optimization_target|.
-  //
-  // It is assumed that any model retrieved this way will be passed to the
-  // Machine Learning Service for inference.
-  //
-  // It is also assumed that there will only be one observer per optimization
-  // target, so if multiple observers are registered, this will crash in debug
-  // builds and be a no-op in release builds.
-  virtual void AddObserverForOptimizationTargetModel(
-      proto::OptimizationTarget optimization_target,
-      const absl::optional<proto::Any>& model_metadata,
-      OptimizationTargetModelObserver* observer) = 0;
-
-  // Removes an observer for updates to the model for |optimization_target|.
-  //
-  // If |observer| is registered for multiple targets, |observer| must be
-  // removed for all targets that it is added for in order for it to be fully
-  // removed from receiving any calls.
-  virtual void RemoveObserverForOptimizationTargetModel(
-      proto::OptimizationTarget optimization_target,
-      OptimizationTargetModelObserver* observer) = 0;
 
   // Registers the optimization types that intend to be queried during the
   // session. It is expected for this to be called after the browser has been

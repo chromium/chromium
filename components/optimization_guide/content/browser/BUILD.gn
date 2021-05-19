@@ -21,11 +21,6 @@ static_library("browser") {
   ]
   if (build_with_tflite_lib) {
     sources += [
-      "base_model_executor.h",
-      "base_model_executor_helpers.h",
-      "bert_model_executor.cc",
-      "bert_model_executor.h",
-      "model_executor.h",
       "page_content_annotations_model_manager.cc",
       "page_content_annotations_model_manager.h",
     ]
@@ -73,15 +68,12 @@ source_set("unit_tests") {
     "page_text_observer_unittest.cc",
   ]
   if (build_with_tflite_lib) {
-    sources += [
-      "bert_model_executor_unittest.cc",
-      "model_executor_unittest.cc",
-      "page_content_annotations_model_manager_unittest.cc",
-    ]
+    sources += [ "page_content_annotations_model_manager_unittest.cc" ]
   }
   deps = [
     ":browser",
     ":test_support",
+    "//components/optimization_guide/core:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

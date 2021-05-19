@@ -16,7 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
-class OptimizationGuideDecider;
+class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
 
 namespace translate {
@@ -31,7 +31,7 @@ class TranslateModelService
   using GetModelCallback = base::OnceCallback<void(base::File)>;
 
   TranslateModelService(
-      optimization_guide::OptimizationGuideDecider* opt_guide,
+      optimization_guide::OptimizationGuideModelProvider* opt_guide,
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner);
   ~TranslateModelService() override;
 
@@ -54,7 +54,7 @@ class TranslateModelService
   // Optimization Guide Service that provides model files for this service.
   // Optimization Guide Service is a BrowserContextKeyedServiceFactory and
   // should not be used after Shutdown.
-  optimization_guide::OptimizationGuideDecider* opt_guide_;
+  optimization_guide::OptimizationGuideModelProvider* opt_guide_;
 
   // The file that contains the language detection model. Available when the
   // file path has been provided by the Optimization Guide and has been

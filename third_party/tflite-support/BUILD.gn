@@ -103,7 +103,6 @@ static_library("tflite-support") {
     ":metadata_schema",
     ":tflite-support-proto",
     "//base",
-    "//third_party/abseil-cpp:absl",
     "//third_party/flatbuffers",
     "//third_party/libyuv",
     "//third_party/libzip",
@@ -115,7 +114,10 @@ static_library("tflite-support") {
     "//third_party/utf",
   ]
 
-  public_deps = [ "//third_party/re2" ]
+  public_deps = [
+    "//third_party/abseil-cpp:absl",
+    "//third_party/re2",
+  ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
 

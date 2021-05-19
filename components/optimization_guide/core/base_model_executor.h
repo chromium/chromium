@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_BASE_MODEL_EXECUTOR_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_BASE_MODEL_EXECUTOR_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_BASE_MODEL_EXECUTOR_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_BASE_MODEL_EXECUTOR_H_
 
-#include "components/optimization_guide/content/browser/base_model_executor_helpers.h"
-#include "components/optimization_guide/content/browser/model_executor.h"
+#include "components/optimization_guide/core/base_model_executor_helpers.h"
+#include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
 
@@ -72,4 +72,4 @@ class BaseModelExecutor : public ModelExecutor<OutputType, InputTypes...>,
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_BASE_MODEL_EXECUTOR_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_BASE_MODEL_EXECUTOR_H_

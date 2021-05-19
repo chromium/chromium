@@ -48,12 +48,13 @@ source_set("content") {
     ]
 
     deps = [
+      "//base",
       "//third_party/tflite:tflite_public_headers",
       "//third_party/tflite-support",
     ]
 
     public_deps = [
-      "//components/optimization_guide/content/browser",
+      "//components/optimization_guide/core",
       "//components/optimization_guide/proto:optimization_guide_proto",
     ]
   }
@@ -74,8 +75,7 @@ source_set("content_unit_tests") {
       ":internal",
       "//base",
       "//base/test:test_support",
-      "//components/optimization_guide/content/browser:test_support",
-      "//content/test:test_support",
+      "//components/optimization_guide/core:test_support",
       "//testing/gmock",
       "//testing/gtest",
     ]

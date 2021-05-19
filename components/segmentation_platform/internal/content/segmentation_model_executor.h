@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "components/optimization_guide/content/browser/base_model_executor.h"
+#include "components/optimization_guide/core/base_model_executor.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 struct TfLiteTensor;

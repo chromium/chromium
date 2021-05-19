@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_MODEL_EXECUTOR_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_MODEL_EXECUTOR_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTOR_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTOR_H_
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
@@ -14,9 +14,9 @@
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -281,23 +281,23 @@ class ModelExecutor {
 template <class OutputType, class... InputTypes>
 class ModelHandler : public OptimizationTargetModelObserver {
  public:
-  ModelHandler(OptimizationGuideDecider* decider,
+  ModelHandler(OptimizationGuideModelProvider* model_provider,
                scoped_refptr<base::SequencedTaskRunner> background_task_runner,
                std::unique_ptr<ModelExecutor<OutputType, InputTypes...>>
                    background_executor,
                proto::OptimizationTarget optimization_target,
                const absl::optional<proto::Any>& model_metadata)
-      : decider_(decider),
+      : model_provider_(model_provider),
         optimization_target_(optimization_target),
         background_executor_(std::move(background_executor)),
         background_task_runner_(background_task_runner) {
-    DCHECK(decider_);
+    DCHECK(model_provider_);
     DCHECK(background_executor_);
     DCHECK_NE(optimization_target_,
               proto::OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN);
 
-    decider_->AddObserverForOptimizationTargetModel(optimization_target_,
-                                                    model_metadata, this);
+    model_provider_->AddObserverForOptimizationTargetModel(
+        optimization_target_, model_metadata, this);
     background_executor_->InitializeAndMoveToBackgroundThread(
         optimization_target_, background_task_runner_,
         base::SequencedTaskRunnerHandle::Get());
@@ -305,8 +305,8 @@ class ModelHandler : public OptimizationTargetModelObserver {
   ~ModelHandler() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    decider_->RemoveObserverForOptimizationTargetModel(optimization_target_,
-                                                       this);
+    model_provider_->RemoveObserverForOptimizationTargetModel(
+        optimization_target_, this);
 
     // |background_executor_|'s  WeakPtrs are used on the background thread, so
     // that is also where the class must be destroyed.
@@ -407,7 +407,8 @@ class ModelHandler : public OptimizationTargetModelObserver {
   }
 
   // Not owned. Guaranteed to outlive |this|.
-  OptimizationGuideDecider* decider_ GUARDED_BY_CONTEXT(sequence_checker_);
+  OptimizationGuideModelProvider* model_provider_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   const proto::OptimizationTarget optimization_target_;
 
@@ -433,4 +434,4 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_MODEL_EXECUTOR_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTOR_H_

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/content/browser/bert_model_executor.h"
+#include "components/optimization_guide/core/bert_model_executor.h"
 
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
-#include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
+#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
@@ -14,8 +14,8 @@ namespace optimization_guide {
 class BertModelExecutorTest : public testing::Test {
  public:
   void SetUp() override {
-    optimization_guide_decider_ =
-        std::make_unique<TestOptimizationGuideDecider>();
+    optimization_guide_model_provider_ =
+        std::make_unique<TestOptimizationGuideModelProvider>();
   }
 
   void TearDown() override {
@@ -25,7 +25,7 @@ class BertModelExecutorTest : public testing::Test {
 
   void CreateModelExecutor() {
     model_executor_handle_ = std::make_unique<BertModelExecutorHandle>(
-        optimization_guide_decider_.get(),
+        optimization_guide_model_provider_.get(),
         task_environment_.GetMainThreadTaskRunner(),
         proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
         /*model_metadata=*/absl::nullopt);
@@ -56,7 +56,8 @@ class BertModelExecutorTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
 
-  std::unique_ptr<TestOptimizationGuideDecider> optimization_guide_decider_;
+  std::unique_ptr<TestOptimizationGuideModelProvider>
+      optimization_guide_model_provider_;
   std::unique_ptr<BertModelExecutorHandle> model_executor_handle_;
 };
 

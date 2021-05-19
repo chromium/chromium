@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/content/browser/model_executor.h"
+#include "components/optimization_guide/core/model_executor.h"
 
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/optimization_guide/content/browser/base_model_executor.h"
-#include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
+#include "components/optimization_guide/core/base_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
@@ -41,10 +41,10 @@ class TestModelExecutorHandle
     : public ModelHandler<std::vector<float>, const std::vector<float>&> {
  public:
   explicit TestModelExecutorHandle(
-      OptimizationGuideDecider* decider,
+      OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner)
       : ModelHandler<std::vector<float>, const std::vector<float>&>(
-            decider,
+            model_provider,
             background_task_runner,
             std::make_unique<TestModelExecutor>(),
             proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
@@ -58,7 +58,7 @@ class TestModelExecutorHandle
   // absl::optional<proto::Any> supported_features_for_loaded_model();
 };
 
-class ModelObserverTracker : public TestOptimizationGuideDecider {
+class ModelObserverTracker : public TestOptimizationGuideModelProvider {
  public:
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget target,

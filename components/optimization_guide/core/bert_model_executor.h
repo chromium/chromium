@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_BERT_MODEL_EXECUTOR_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_BERT_MODEL_EXECUTOR_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_BERT_MODEL_EXECUTOR_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_BERT_MODEL_EXECUTOR_H_
 
-#include "components/optimization_guide/content/browser/model_executor.h"
+#include "components/optimization_guide/core/model_executor.h"
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/category.h"
 
 namespace optimization_guide {
@@ -19,7 +19,7 @@ class BertModelExecutorHandle
                           const std::string&> {
  public:
   BertModelExecutorHandle(
-      OptimizationGuideDecider* decider,
+      OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       proto::OptimizationTarget optimization_target,
       const absl::optional<proto::Any>& model_metadata);
@@ -51,4 +51,4 @@ class BertModelExecutor
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_BERT_MODEL_EXECUTOR_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_BERT_MODEL_EXECUTOR_H_
