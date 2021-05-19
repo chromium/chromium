@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace autofill {
@@ -54,10 +55,9 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   // Returns the data stored in the |profile_| corresponding to |type|.
   std::u16string GetProfileInfo(ServerFieldType type) const;
 
-  // Uses |AutofillProfileComparator::GetSettingsVisibleProfileDifferenceMap| to
-  // get profile difference map between |profile_| and |original_profile_|;
-  base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
-  GetProfileDiff() const;
+  // Returns the profile difference map between |profile_| and
+  // |original_profile_|.
+  std::vector<ProfileValueDifference> GetProfileDiff() const;
 
   // Calls |RunSaveAddressProfilePromptCallback| with the kEditAccepted|
   // decision.

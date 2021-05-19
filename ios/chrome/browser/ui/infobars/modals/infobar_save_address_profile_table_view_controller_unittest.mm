@@ -38,7 +38,7 @@ class InfobarSaveAddressProfileTableViewControllerTest
       kCurrentAddressProfileSavedPrefKey : @(false),
       kIsUpdateModalPrefKey : @(true),
       kProfileDataDiffKey : @{
-        @[ [NSNumber numberWithInt:AutofillUITypeProfileFullName] ] :
+        [NSNumber numberWithInt:AutofillUITypeNameFullWithHonorificPrefix] :
             @[ @"John Doe", @"John H. Doe" ]
       },
       kUpdateModalDescriptionKey : @"For John Doe, 345 Spear Street"

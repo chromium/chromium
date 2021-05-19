@@ -52,16 +52,15 @@ bool SaveAddressProfileModalRequestConfig::IsUpdateModal() const {
 }
 
 void SaveAddressProfileModalRequestConfig::StoreProfileDiff(
-    const base::flat_map<autofill::ServerFieldType,
-                         std::pair<std::u16string, std::u16string>>& diff_map) {
-  for (const auto& row : diff_map) {
+    const std::vector<autofill::ProfileValueDifference>& profile_diff) {
+  for (const auto& row : profile_diff) {
     [profile_diff_
         setObject:@[
-          base::SysUTF16ToNSString(row.second.first),
-          base::SysUTF16ToNSString(row.second.second)
+          base::SysUTF16ToNSString(row.first_value),
+          base::SysUTF16ToNSString(row.second_value)
         ]
            forKey:[NSNumber
-                      numberWithInt:AutofillUITypeFromAutofillType(row.first)]];
+                      numberWithInt:AutofillUITypeFromAutofillType(row.type)]];
   }
 }
 

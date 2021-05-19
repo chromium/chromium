@@ -9,7 +9,6 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/infobars/core/infobar.h"
@@ -99,10 +98,10 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetProfileInfo(
   return profile_.GetInfo(type, locale_);
 }
 
-base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
+std::vector<ProfileValueDifference>
 AutofillSaveUpdateAddressProfileDelegateIOS::GetProfileDiff() const {
-  return AutofillProfileComparator::GetSettingsVisibleProfileDifferenceMap(
-      *GetProfile(), *GetOriginalProfile(), locale_);
+  return GetProfileDifferenceForUi(*GetProfile(), *GetOriginalProfile(),
+                                   locale_);
 }
 
 bool AutofillSaveUpdateAddressProfileDelegateIOS::EditAccepted() {
