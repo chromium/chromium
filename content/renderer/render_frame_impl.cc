@@ -3770,6 +3770,9 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker;
 
+  recordreplay::Assert("RenderFrameImpl::CreateChildFrame #1 %s %s",
+                       name.Utf8().c_str(), frame_unique_name.c_str());
+
   // Now create the child frame in the browser via an asynchronous call.
   GetFrameHost()->CreateChildFrame(
       child_routing_id,
