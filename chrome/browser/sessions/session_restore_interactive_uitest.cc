@@ -124,16 +124,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
   Browser* restored = QuitBrowserAndRestore(browser(), 3);
   EXPECT_EQ(1, restored->tab_strip_model()->count());
 
-#if defined(OS_MAC)
-  // On macOS, minimized windows are neither active nor shown, to avoid causing
-  // space switches during session restore.
-  EXPECT_FALSE(restored->window()->IsActive());
-  EXPECT_FALSE(restored->window()->IsVisible());
-#else
   // Expect the window to be visible.
   // Prior to the fix for https://crbug.com/1018885, the window was active but
   // not visible.
   EXPECT_TRUE(restored->window()->IsActive());
   EXPECT_TRUE(restored->window()->IsVisible());
-#endif
 }

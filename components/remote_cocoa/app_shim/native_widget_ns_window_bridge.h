@@ -293,6 +293,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // Returns true if capture exists and is currently active.
   bool HasCapture();
 
+  // Returns true if window restoration data exists from session restore.
+  bool HasWindowRestorationData();
+
   // CocoaMouseCaptureDelegate:
   void PostCapturedEvent(NSEvent* event) override;
   void OnMouseCaptureLost() override;
@@ -383,7 +386,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   bool invalidate_shadow_on_frame_swap_ = false;
 
   // A blob representing the window's saved state, which is applied and cleared
-  // the first time it's shown.
+  // on the first call to SetVisibilityState().
   std::vector<uint8_t> pending_restoration_data_;
 
   mojo::AssociatedReceiver<remote_cocoa::mojom::NativeWidgetNSWindow>

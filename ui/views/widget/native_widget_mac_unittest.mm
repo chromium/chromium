@@ -46,6 +46,11 @@
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/window/dialog_delegate.h"
 
+namespace {
+// "{}" in base64encode, to create some dummy restoration data.
+const std::string kDummyWindowRestorationData = "e30=";
+}  // namespace
+
 // Donates an implementation of -[NSAnimation stopAnimation] which calls the
 // original implementation, then quits a nested run loop.
 @interface TestStopAnimationWaiter : NSObject
@@ -108,6 +113,10 @@ class BridgedNativeWidgetTestApi {
   NSAnimation* show_animation() {
     return base::mac::ObjCCastStrict<NSAnimation>(
         bridge_->show_animation_.get());
+  }
+
+  bool HasWindowRestorationData() {
+    return bridge_->HasWindowRestorationData();
   }
 
  private:
@@ -1172,6 +1181,55 @@ TEST_F(NativeWidgetMacTest, NativeWindowChildModalShowHide) {
     hide_waiter.WaitForMethod();
     EXPECT_TRUE(hide_waiter.method_called());
   }
+}
+
+// Tests that the first call into SetVisibilityState() restores the window state
+// for windows that start off miniaturized in the dock.
+TEST_F(NativeWidgetMacTest, ConfirmMinimizedWindowRestoration) {
+  Widget* widget = new Widget;
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.native_widget =
+      CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
+  // Start the window off in the dock.
+  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.workspace = kDummyWindowRestorationData;
+  widget->Init(std::move(params));
+
+  BridgedNativeWidgetTestApi test_api(
+      widget->GetNativeWindow().GetNativeNSWindow());
+
+  EXPECT_TRUE(test_api.HasWindowRestorationData());
+
+  // Show() ultimately invokes SetVisibilityState().
+  widget->Show();
+
+  EXPECT_FALSE(test_api.HasWindowRestorationData());
+
+  widget->CloseNow();
+}
+
+// Tests that the first call into SetVisibilityState() restores the window state
+// for windows that start off visible.
+TEST_F(NativeWidgetMacTest, ConfirmVisibleWindowRestoration) {
+  Widget* widget = new Widget;
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.native_widget =
+      CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
+  params.show_state = ui::SHOW_STATE_NORMAL;
+  params.workspace = kDummyWindowRestorationData;
+  widget->Init(std::move(params));
+
+  BridgedNativeWidgetTestApi test_api(
+      widget->GetNativeWindow().GetNativeNSWindow());
+
+  EXPECT_TRUE(test_api.HasWindowRestorationData());
+
+  // Show() ultimately invokes SetVisibilityState().
+  widget->Show();
+
+  EXPECT_FALSE(test_api.HasWindowRestorationData());
+
+  widget->CloseNow();
 }
 
 // Tests that calls to Hide() a Widget cancel any in-progress show animation,

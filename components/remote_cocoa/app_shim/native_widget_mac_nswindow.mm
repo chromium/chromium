@@ -354,11 +354,7 @@
     return;
   if (![self _isConsideredOpenForPersistentState])
     return;
-  // By the time state is restored, we don't want to miniaturize. Windows will
-  // be properly restored as miniaturized despite us not saving this.
-  // See https://crbug.com/1204517 for context/details.
-  if ([self isMiniaturized])
-    return;
+
   base::scoped_nsobject<NSMutableData> restorableStateData(
       [[NSMutableData alloc] init]);
   base::scoped_nsobject<NSKeyedArchiver> encoder([[NSKeyedArchiver alloc]

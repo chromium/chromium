@@ -654,6 +654,33 @@ void NativeWidgetNSWindowBridge::CloseWindowNow() {
 
 void NativeWidgetNSWindowBridge::SetVisibilityState(
     WindowVisibilityState new_state) {
+  // During session restore this method gets called from RestoreTabsToBrowser()
+  // with new_state = kShowAndActivateWindow. We consume restoration data on our
+  // first time through this method so we can use its existence as an
+  // indication that session restoration is underway. We'll use this later to
+  // decide whether or not to actually honor the WindowVisibilityState change
+  // request. This window may live in the dock, for example, in which case we
+  // don't really want to kShowAndActivateWindow. Even if the window is on the
+  // desktop we still won't want to kShowAndActivateWindow because doing so
+  // might trigger a transition to a different space (and we don't want to
+  // switch spaces on start-up). When session restore determines the Active
+  // window it will also call SetVisibilityState(), on that pass the window
+  // can/will be activated.
+  bool session_restore_in_progress = false;
+
+  // Restore Cocoa window state.
+  if (HasWindowRestorationData()) {
+    NSData* restore_ns_data =
+        [NSData dataWithBytes:pending_restoration_data_.data()
+                       length:pending_restoration_data_.size()];
+    base::scoped_nsobject<NSKeyedUnarchiver> decoder(
+        [[NSKeyedUnarchiver alloc] initForReadingWithData:restore_ns_data]);
+    [window_ restoreStateWithCoder:decoder];
+    pending_restoration_data_.clear();
+
+    session_restore_in_progress = true;
+  }
+
   // Ensure that:
   //  - A window with an invisible parent is not made visible.
   //  - A parent changing visibility updates child window visibility.
@@ -695,20 +722,11 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
       return;
   }
 
-  if (!pending_restoration_data_.empty()) {
-    NSData* restore_ns_data =
-        [NSData dataWithBytes:pending_restoration_data_.data()
-                       length:pending_restoration_data_.size()];
-    base::scoped_nsobject<NSKeyedUnarchiver> decoder(
-        [[NSKeyedUnarchiver alloc] initForReadingWithData:restore_ns_data]);
-    [window_ restoreStateWithCoder:decoder];
-    pending_restoration_data_.clear();
-
-    // When first showing a window with restoration data, don't activate it.
-    // This avoids switching spaces or un-miniaturizing it right away.
-    // Additional activations act normally.
-    if (new_state == WindowVisibilityState::kShowAndActivateWindow)
-      new_state = WindowVisibilityState::kShowInactive;
+  // Don't activate a window during session restore, to avoid switching spaces
+  // (or pulling it out of the dock) during startup.
+  if (session_restore_in_progress &&
+      new_state == WindowVisibilityState::kShowAndActivateWindow) {
+    new_state = WindowVisibilityState::kShowInactive;
   }
 
   if (IsWindowModalSheet()) {
@@ -778,6 +796,10 @@ void NativeWidgetNSWindowBridge::ReleaseCapture() {
 
 bool NativeWidgetNSWindowBridge::HasCapture() {
   return mouse_capture_ && mouse_capture_->IsActive();
+}
+
+bool NativeWidgetNSWindowBridge::HasWindowRestorationData() {
+  return !pending_restoration_data_.empty();
 }
 
 bool NativeWidgetNSWindowBridge::RunMoveLoop(const gfx::Vector2d& drag_offset) {

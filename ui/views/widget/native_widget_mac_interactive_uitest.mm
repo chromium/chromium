@@ -14,6 +14,7 @@
 #import "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/native_widget_factory.h"
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/widget_test.h"
 
@@ -246,6 +247,41 @@ TEST_F(NativeWidgetMacInteractiveUITest, ParentWindowTrafficLights) {
   child_widget->CloseNow();
   other_widget->CloseNow();
   parent_widget->CloseNow();
+}
+
+// Test activation of a window that has restoration data that was restored to
+// the dock. See crbug.com/1205683 .
+TEST_F(NativeWidgetMacInteractiveUITest,
+       DeminiaturizeWindowWithRestorationData) {
+  Widget* widget = new Widget;
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.native_widget =
+      CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
+  // Start the window off in the dock.
+  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  // "{}" in base64encode, to create some dummy restoration data.
+  const std::string kDummyWindowRestorationData = "e30=";
+  params.workspace = kDummyWindowRestorationData;
+  widget->Init(std::move(params));
+
+  NSWindow* window = widget->GetNativeWindow().GetNativeNSWindow();
+  EXPECT_TRUE([window isMiniaturized]);
+
+  // As part of the window restoration process,
+  // SessionRestoreImpl::ShowBrowser() -> BrowserView::Show() ->
+  // views::Widget::Show() -> views::NativeWidgetMac::Show() which calls
+  // SetVisibilityState(), the code path we want to test. Even though the method
+  // name is Show(), it "shows" the saved_show_state_ which in this case is
+  // WindowVisibilityState::kHideWindow.
+  widget->Show();
+  EXPECT_TRUE([window isMiniaturized]);
+
+  // Activate the window from the dock (i.e.
+  // SetVisibilityState(WindowVisibilityState::kShowAndActivateWindow)).
+  widget->Activate();
+  EXPECT_FALSE([window isMiniaturized]);
+
+  widget->CloseNow();
 }
 
 // Test that bubble widgets are dismissed on right mouse down.
