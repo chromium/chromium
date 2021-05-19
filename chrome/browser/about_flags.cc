@@ -7057,10 +7057,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(net::features::kSplitCacheByNetworkIsolationKey)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-scalable-status-area", flag_descriptions::kScalableStatusAreaName,
-     flag_descriptions::kScalableStatusAreaDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kScalableStatusArea)},
-
     {"enable-show-date-in-tray", flag_descriptions::kShowDateInTrayName,
      flag_descriptions::kShowDateInTrayDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kShowDateInTrayButton)},

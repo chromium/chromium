@@ -2320,11 +2320,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-scalable-status-area",
-    "owners": [ "leandre" ],
-    "expiry_milestone": 91
-  },
-  {
     "name": "enable-sharesheet",
     "owners": [ "chromeos-apps-foundation-team@google.com" ],
     "expiry_milestone": 92

@@ -4707,11 +4707,6 @@ const char kArcResizeLockDescription[] =
     "Enable compatibility mode for Android apps that are not optimized for "
     "large screens, and impose restrictions on resizing the apps";
 
-const char kScalableStatusAreaName[] = "Enable Scalable Status Area";
-const char kScalableStatusAreaDescription[] =
-    "Showing important notification icons in status area when the screen is "
-    "sufficiently large.";
-
 const char kScanAppMediaLinkName[] = "Show Media app link in Scan app";
 const char kScanAppMediaLinkDescription[] =
     "Enables showing a link in the Scan app to open scanned images in the Media"
