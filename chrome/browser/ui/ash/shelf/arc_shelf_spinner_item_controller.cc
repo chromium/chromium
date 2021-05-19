@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/shelf/arc_shelf_spinner_item_controller.h"
 
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
@@ -40,6 +41,14 @@ void ArcShelfSpinnerItemController::SetHost(
   observed_profile_ = controller->OwnerProfile();
   ArcAppListPrefs::Get(observed_profile_)->AddObserver(this);
 
+#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
+  auto* arc_task_handler =
+      chromeos::full_restore::FullRestoreArcTaskHandler::GetForProfile(
+          observed_profile_);
+  if (arc_task_handler && arc_task_handler->window_handler())
+    arc_handler_observation_.Observe(arc_task_handler->window_handler());
+#endif
+
   ShelfSpinnerItemController::SetHost(controller);
 }
 
@@ -74,4 +83,9 @@ void ArcShelfSpinnerItemController::OnArcPlayStoreEnabledChanged(bool enabled) {
     return;
   // If ARC was disabled, remove the deferred launch request.
   Close();
+}
+
+void ArcShelfSpinnerItemController::OnWindowCloseRequested(int window_id) {
+  if (window_info_ && window_info_->window_id == window_id)
+    Close();
 }
