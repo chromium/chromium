@@ -34,9 +34,13 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OfferSave(
     AutofillClient::SaveAddressProfilePromptOptions options,
     AutofillClient::AddressProfileSavePromptCallback
         address_profile_save_prompt_callback) {
-  // Don't show the bubble if it's already visible.
-  if (bubble_view())
+  // Don't show the bubble if it's already visible, and inform the backend.
+  if (bubble_view()) {
+    std::move(address_profile_save_prompt_callback)
+        .Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
+             profile);
     return;
+  }
   address_profile_ = profile;
   original_profile_ = base::OptionalFromPtr(original_profile);
   address_profile_save_prompt_callback_ =
