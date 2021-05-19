@@ -23,7 +23,6 @@ export class Manager {
     var copyAllPlayerButton = $('copy-all-player-button');
     var copyAllAudioButton = $('copy-all-audio-button');
     var hidePlayersButton = $('hide-players-button');
-    var devtoolsNoticeWindow = $('devtools-notice-window');
 
     // In tests we may not have these buttons.
     if (copyAllPlayerButton) {
@@ -41,9 +40,6 @@ export class Manager {
     }
     if (hidePlayersButton) {
       hidePlayersButton.onclick = this.hidePlayers_.bind(this);
-    }
-    if (devtoolsNoticeWindow) {
-      devtoolsNoticeWindow.onclick = this.hideNoticeWindow_;
     }
   }
 
@@ -128,10 +124,6 @@ export class Manager {
     objectForEach(this.players_, function(playerInfo, id) {
       this.removePlayer(id);
     }, this);
-  }
-
-  hideNoticeWindow_() {
-    this.style.display = 'none';
   }
 
   updatePlayerInfoNoRecord(id, timestamp, key, value) {
