@@ -94,7 +94,7 @@
 #error Please add support for your platform in build/build_config.h
 #endif
 // NOTE: Adding a new port? Please follow
-// https://chromium.googlesource.com/chromium/src/+/master/docs/new_port_policy.md
+// https://chromium.googlesource.com/chromium/src/+/main/docs/new_port_policy.md
 
 #if defined(OS_MAC) || defined(OS_IOS)
 #define OS_APPLE 1

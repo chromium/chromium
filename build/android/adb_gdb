@@ -986,7 +986,7 @@ EOF
   echo "GDB wrapper script: $SYM_GDB"
   echo "App executable: $SYM_EXE"
   echo "gdbinit: $SYM_INIT"
-  echo "Connect with vscode: https://chromium.googlesource.com/chromium/src/+/master/docs/vscode.md#Launch-Commands"
+  echo "Connect with vscode: https://chromium.googlesource.com/chromium/src/+/main/docs/vscode.md#Launch-Commands"
   echo "Showing gdbserver logs. Press Ctrl-C to disconnect."
   tail -f "$GDBSERVER_LOG"
 else

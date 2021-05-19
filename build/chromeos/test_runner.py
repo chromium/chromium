@@ -175,7 +175,7 @@ class RemoteTest(object):
     # Traps SIGTERM and kills all child processes of cros_run_test when it's
     # caught. This will allow us to capture logs from the device if a test hangs
     # and gets timeout-killed by swarming. See also:
-    # https://chromium.googlesource.com/infra/luci/luci-py/+/master/appengine/swarming/doc/Bot.md#graceful-termination_aka-the-sigterm-and-sigkill-dance
+    # https://chromium.googlesource.com/infra/luci/luci-py/+/main/appengine/swarming/doc/Bot.md#graceful-termination_aka-the-sigterm-and-sigkill-dance
     test_proc = None
 
     def _kill_child_procs(trapped_signal, _):
@@ -923,7 +923,7 @@ def main():
   tast_test_parser = subparsers.add_parser(
       'tast',
       help='Runs a device-side set of Tast tests. For more details, see: '
-      'https://chromium.googlesource.com/chromiumos/platform/tast/+/master/docs/running_tests.md'
+      'https://chromium.googlesource.com/chromiumos/platform/tast/+/main/docs/running_tests.md'
   )
   tast_test_parser.set_defaults(func=device_test)
   tast_test_parser.add_argument(

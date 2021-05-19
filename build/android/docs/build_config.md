@@ -163,6 +163,6 @@ build/android/gyp/write_build_config.py \
 python tools/md_browser/md_browser.py -d /tmp /tmp/format.md
 ```
 
-[build/android/gyp/]: https://chromium.googlesource.com/chromium/src/build/+/master/android/gyp/
+[build/android/gyp/]: https://chromium.googlesource.com/chromium/src/build/+/main/android/gyp/
 [gn_write_build_config]: https://cs.chromium.org/chromium/src/build/config/android/internal_rules.gni?q=write_build_config&sq=package:chromium
-[write_build_config_py]: https://chromium.googlesource.com/chromium/src/build/+/master/android/gyp/write_build_config.py
+[write_build_config_py]: https://chromium.googlesource.com/chromium/src/build/+/main/android/gyp/write_build_config.py

@@ -5,7 +5,7 @@
 # found in the LICENSE file.
 
 # Script to install everything needed to build chromium (well, ideally, anyway)
-# See https://chromium.googlesource.com/chromium/src/+/master/docs/linux/build_instructions.md
+# See https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md
 
 usage() {
   echo "Usage: $0 [--options]"

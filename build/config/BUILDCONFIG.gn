@@ -159,7 +159,7 @@ declare_args() {
   # When false, components will be linked statically.
   #
   # For more information see
-  # https://chromium.googlesource.com/chromium/src/+/master/docs/component_build.md
+  # https://chromium.googlesource.com/chromium/src/+/main/docs/component_build.md
   is_component_build = is_debug && current_os != "ios"
 }
 

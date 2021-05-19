@@ -11,7 +11,7 @@ projects, and so should be avoided.
 
 Changes to `//build` should be landed in the Chromium repo. They will then be
 replicated to the stand-alone [build repo](https://chromium.googlesource.com/chromium/src/build)
-by the [gsubtreed tool.](https://chromium.googlesource.com/infra/infra/+/master/infra/services/gsubtreed)
+by the [gsubtreed tool.](https://chromium.googlesource.com/infra/infra/+/main/infra/services/gsubtreed)
 Note: You can find all directories already  available through gsubtreed in the
 [list of all chromium repos](https://chromium.googlesource.com/).
 

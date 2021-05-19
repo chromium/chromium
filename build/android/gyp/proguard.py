@@ -518,7 +518,7 @@ out/Release/apks/YourApk.apk > dex.txt
           stderr += """
 You may need to update build configs to run FragmentActivityReplacer for
 additional targets. See
-https://chromium.googlesource.com/chromium/src.git/+/master/docs/ui/android/bytecode_rewriting.md.
+https://chromium.googlesource.com/chromium/src.git/+/main/docs/ui/android/bytecode_rewriting.md.
 """
       elif had_unfiltered_items:
         # Left only with empty headings. All indented items filtered out.

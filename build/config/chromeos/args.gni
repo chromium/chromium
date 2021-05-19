@@ -21,7 +21,7 @@ declare_args() {
   # linux-chromeos, so some have compile-time asserts that intentionally fail
   # when this build flag is set. Build and run the tests for linux-chromeos
   # instead.
-  # https://chromium.googlesource.com/chromium/src/+/master/docs/chromeos_build_instructions.md
-  # https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md
+  # https://chromium.googlesource.com/chromium/src/+/main/docs/chromeos_build_instructions.md
+  # https://chromium.googlesource.com/chromiumos/docs/+/main/simple_chrome_workflow.md
   is_chromeos_device = false
 }
