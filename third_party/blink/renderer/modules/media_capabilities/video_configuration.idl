@@ -17,4 +17,5 @@ dictionary VideoConfiguration {
     [RuntimeEnabled=MediaCapabilitiesDynamicRange] HdrMetadataType hdrMetadataType;
     [RuntimeEnabled=MediaCapabilitiesDynamicRange] ColorGamut colorGamut;
     [RuntimeEnabled=MediaCapabilitiesDynamicRange] TransferFunction transferFunction;
+    [RuntimeEnabled=MediaCapabilitiesWebRtc] DOMString scalabilityMode;
 };

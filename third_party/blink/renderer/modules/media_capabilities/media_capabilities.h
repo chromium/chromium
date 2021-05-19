@@ -67,6 +67,7 @@ class MODULES_EXPORT MediaCapabilities final
 
     Member<ScriptPromiseResolver> resolver;
     Member<MediaKeySystemAccess> key_system_access;
+    absl::optional<bool> is_supported;
     absl::optional<bool> is_bad_window_prediction_smooth;
     absl::optional<bool> is_nnr_prediction_smooth;
     absl::optional<bool> db_is_smooth;
@@ -139,6 +140,12 @@ class MODULES_EXPORT MediaCapabilities final
   // Resolves the callback with associated |callback_id| and removes it from the
   // |pending_callback_map_|.
   void ResolveCallbackIfReady(int callback_id);
+
+  void OnWebrtcDecodingInfoSupport(int callback_id,
+                                   bool is_supported,
+                                   bool is_power_efficient);
+
+  void ResolveWebrtcDecodingCallbackIfReady(int callback_id);
 
   // Creates a new (incremented) callback ID from |last_callback_id_| for
   // mapping in |pending_cb_map_|.

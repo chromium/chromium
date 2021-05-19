@@ -28,6 +28,7 @@ include_rules = [
     "+media/video/video_encode_accelerator.h",
     "+third_party/blink/renderer/platform/bindings/script_wrappable.h",
     "+third_party/blink/renderer/platform/heap",
+    "+third_party/blink/renderer/platform/network/parsed_content_type.h",
     "+third_party/blink/renderer/platform/platform_export.h",
     "+third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h",
     "+third_party/blink/renderer/platform/wtf",

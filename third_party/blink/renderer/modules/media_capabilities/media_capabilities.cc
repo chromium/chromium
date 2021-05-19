@@ -71,6 +71,8 @@
 #include "third_party/blink/renderer/platform/media_capabilities/web_media_configuration.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/peerconnection/transmission_encoding_info_handler.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_decoding_info_handler.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect.h"
@@ -222,7 +224,9 @@ bool IsValidFrameRate(double framerate) {
   return std::isfinite(framerate) && framerate > 0;
 }
 
-bool IsValidMimeType(const String& content_type, const String& prefix) {
+bool IsValidMimeType(const String& content_type,
+                     const String& prefix,
+                     bool is_webrtc) {
   ParsedContentType parsed_content_type(content_type);
 
   if (!parsed_content_type.IsValid())
@@ -231,9 +235,14 @@ bool IsValidMimeType(const String& content_type, const String& prefix) {
   // Valid ParsedContentType implies we have a mime type.
   DCHECK(parsed_content_type.MimeType());
   if (!parsed_content_type.MimeType().StartsWith(prefix) &&
-      !parsed_content_type.MimeType().StartsWith(kApplicationMimeTypePrefix)) {
+      (is_webrtc ||
+       !parsed_content_type.MimeType().StartsWith(kApplicationMimeTypePrefix)))
     return false;
-  }
+
+  // No requirement on parameters for RTP MIME types.
+  if (is_webrtc)
+    return true;
+
   const auto& parameters = parsed_content_type.GetParameters();
 
   if (parameters.ParameterCount() > 1)
@@ -251,6 +260,7 @@ bool IsValidMediaConfiguration(const MediaConfiguration* configuration) {
 
 bool IsValidMediaDecodingConfiguration(
     const MediaDecodingConfiguration* configuration,
+    bool is_webrtc,
     String* message) {
   if (!IsValidMediaConfiguration(configuration)) {
     *message =
@@ -260,6 +270,13 @@ bool IsValidMediaDecodingConfiguration(
   }
 
   if (configuration->hasKeySystemConfiguration()) {
+    if (is_webrtc) {
+      *message =
+          "The keySystemConfiguration object cannot be set for webrtc "
+          "MediaDecodingType.";
+      return false;
+    }
+
     if (configuration->keySystemConfiguration()->hasAudio() &&
         !configuration->hasAudio()) {
       *message =
@@ -280,10 +297,11 @@ bool IsValidMediaDecodingConfiguration(
   return true;
 }
 
-bool IsValidVideoConfiguration(const VideoConfiguration* configuration) {
+bool IsValidVideoConfiguration(const VideoConfiguration* configuration,
+                               bool is_webrtc) {
   DCHECK(configuration->hasContentType());
-
-  if (!IsValidMimeType(configuration->contentType(), kVideoMimeTypePrefix))
+  if (!IsValidMimeType(configuration->contentType(), kVideoMimeTypePrefix,
+                       is_webrtc))
     return false;
 
   DCHECK(configuration->hasFramerate());
@@ -293,10 +311,12 @@ bool IsValidVideoConfiguration(const VideoConfiguration* configuration) {
   return true;
 }
 
-bool IsValidAudioConfiguration(const AudioConfiguration* configuration) {
+bool IsValidAudioConfiguration(const AudioConfiguration* configuration,
+                               bool is_webrtc) {
   DCHECK(configuration->hasContentType());
 
-  if (!IsValidMimeType(configuration->contentType(), kAudioMimeTypePrefix))
+  if (!IsValidMimeType(configuration->contentType(), kAudioMimeTypePrefix,
+                       is_webrtc))
     return false;
 
   return true;
@@ -339,7 +359,6 @@ WebVideoConfiguration ToWebVideoConfiguration(
   ParsedContentType parsed_content_type(configuration->contentType());
   DCHECK(parsed_content_type.IsValid());
   DCHECK(!parsed_content_type.GetParameters().HasDuplicatedNames());
-
   web_configuration.mime_type = parsed_content_type.MimeType().LowerASCII();
   web_configuration.codec = parsed_content_type.ParameterValueForName(
       media_capabilities_names::kCodecs);
@@ -673,19 +692,29 @@ ScriptPromise MediaCapabilities::decodingInfo(
         WebFeature::kMediaCapabilitiesDecodingInfoWithKeySystemConfig);
   }
 
+  const bool is_webrtc = config->type() == "webrtc";
+  if (is_webrtc && !RuntimeEnabledFeatures::MediaCapabilitiesWebRtcEnabled()) {
+    exception_state.ThrowTypeError(
+        "The provided value 'webrtc' is not a valid enum value of type "
+        "MediaDecodingType.");
+    return ScriptPromise();
+  }
+
   String message;
-  if (!IsValidMediaDecodingConfiguration(config, &message)) {
+  if (!IsValidMediaDecodingConfiguration(config, is_webrtc, &message)) {
     exception_state.ThrowTypeError(message);
     return ScriptPromise();
   }
 
-  if (config->hasVideo() && !IsValidVideoConfiguration(config->video())) {
+  if (config->hasVideo() &&
+      !IsValidVideoConfiguration(config->video(), is_webrtc)) {
     exception_state.ThrowTypeError(
         "The video configuration dictionary is not valid.");
     return ScriptPromise();
   }
 
-  if (config->hasAudio() && !IsValidAudioConfiguration(config->audio())) {
+  if (config->hasAudio() &&
+      !IsValidAudioConfiguration(config->audio(), is_webrtc)) {
     exception_state.ThrowTypeError(
         "The audio configuration dictionary is not valid.");
     return ScriptPromise();
@@ -693,6 +722,50 @@ ScriptPromise MediaCapabilities::decodingInfo(
 
   // Validation errors should return above.
   DCHECK(message.IsEmpty());
+
+  if (is_webrtc) {
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+
+    // IMPORTANT: Acquire the promise before potentially synchronously resolving
+    // it in the code that follows. Otherwise the promise returned to JS will be
+    // undefined. See comment above Promise() in script_promise_resolver.h
+    ScriptPromise promise = resolver->Promise();
+
+    if (auto* handler = WebrtcDecodingInfoHandler::Instance()) {
+      const int callback_id = CreateCallbackId();
+      pending_cb_map_.insert(
+          callback_id,
+          MakeGarbageCollected<MediaCapabilities::PendingCallbackState>(
+              resolver, nullptr, request_time, absl::nullopt));
+
+      absl::optional<String> audio_mime_type =
+          config->hasAudio()
+              ? absl::make_optional(config->audio()->contentType())
+              : absl::nullopt;
+      absl::optional<String> video_mime_type =
+          config->hasVideo()
+              ? absl::make_optional(config->video()->contentType())
+              : absl::nullopt;
+      absl::optional<String> scalability_mode =
+          config->hasVideo() && config->video()->hasScalabilityMode()
+              ? absl::make_optional(config->video()->scalabilityMode())
+              : absl::nullopt;
+      handler->DecodingInfo(
+          audio_mime_type, video_mime_type, scalability_mode,
+          WTF::Bind(&MediaCapabilities::OnWebrtcDecodingInfoSupport,
+                    WrapPersistent(this), callback_id));
+
+      return promise;
+    }
+    // TODO(crbug.com/1187565): This should not happen unless we're out of
+    // memory or something similar. Add UMA metric to count how often it
+    // happens.
+    DCHECK(false);
+    DVLOG(2) << __func__ << " Could not get DecodingInfoHandler.";
+    MediaCapabilitiesDecodingInfo* info = CreateDecodingInfoWith(false);
+    resolver->Resolve(info);
+    return promise;
+  }
 
   String audio_mime_str;
   String audio_codec_str;
@@ -820,9 +893,9 @@ ScriptPromise MediaCapabilities::encodingInfo(
         "specified and needs at least one of them."));
     return promise;
   }
-
+  const bool is_webrtc = configuration->type() == "webrtc";
   if (configuration->hasVideo() &&
-      !IsValidVideoConfiguration(configuration->video())) {
+      !IsValidVideoConfiguration(configuration->video(), is_webrtc)) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(),
         "The video configuration dictionary is not valid."));
@@ -830,7 +903,7 @@ ScriptPromise MediaCapabilities::encodingInfo(
   }
 
   if (configuration->hasAudio() &&
-      !IsValidAudioConfiguration(configuration->audio())) {
+      !IsValidAudioConfiguration(configuration->audio(), is_webrtc)) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(),
         "The audio configuration dictionary is not valid."));
@@ -1324,6 +1397,42 @@ void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {
   pending_cb_map_.erase(callback_id);
 }
 
+void MediaCapabilities::ResolveWebrtcDecodingCallbackIfReady(int callback_id) {
+  DCHECK(pending_cb_map_.Contains(callback_id));
+  PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
+
+  if (!pending_cb->is_supported.has_value())
+    return;
+
+  // supported and gpu factories supported are set simultaneously.
+  DCHECK(pending_cb->is_gpu_factories_supported.has_value());
+
+  if (!pending_cb->db_is_smooth.has_value())
+    return;
+
+  if (!pending_cb->resolver->GetExecutionContext() ||
+      pending_cb->resolver->GetExecutionContext()->IsContextDestroyed()) {
+    // We're too late! Now that all the callbacks have provided state, its safe
+    // to erase the entry in the map.
+    pending_cb_map_.erase(callback_id);
+    return;
+  }
+
+  Persistent<MediaCapabilitiesDecodingInfo> info(
+      MediaCapabilitiesDecodingInfo::Create());
+  info->setSupported(*pending_cb->is_supported);
+  info->setPowerEfficient(*pending_cb->is_gpu_factories_supported);
+  info->setSmooth(*pending_cb->db_is_smooth);
+
+  const base::TimeDelta process_time =
+      base::TimeTicks::Now() - pending_cb->request_time;
+  UMA_HISTOGRAM_TIMES("Media.Capabilities.DecodingInfo.Time.Webrtc",
+                      process_time);
+
+  pending_cb->resolver->Resolve(std::move(info));
+  pending_cb_map_.erase(callback_id);
+}
+
 void MediaCapabilities::OnBadWindowPrediction(
     int callback_id,
     const absl::optional<::media::learning::TargetHistogram>& histogram) {
@@ -1393,6 +1502,22 @@ void MediaCapabilities::OnGpuFactoriesSupport(int callback_id,
   pending_cb->is_gpu_factories_supported = is_supported;
 
   ResolveCallbackIfReady(callback_id);
+}
+
+void MediaCapabilities::OnWebrtcDecodingInfoSupport(int callback_id,
+                                                    bool is_supported,
+                                                    bool is_power_efficient) {
+  DCHECK(pending_cb_map_.Contains(callback_id));
+  PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
+
+  pending_cb->is_supported = is_supported;
+  pending_cb->is_gpu_factories_supported = is_power_efficient;
+
+  // TODO(crbug.com/1187565): Add call in decodingInfo() to get smoothness score
+  // from database and remove this default assignment.
+  pending_cb->db_is_smooth = is_supported;
+
+  ResolveWebrtcDecodingCallbackIfReady(callback_id);
 }
 
 int MediaCapabilities::CreateCallbackId() {

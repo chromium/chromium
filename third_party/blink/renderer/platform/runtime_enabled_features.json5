@@ -1250,6 +1250,10 @@
       status: "test",
     },
     {
+      name: "MediaCapabilitiesWebRtc",
+      status: "experimental",
+    },
+    {
       name: "MediaCapture",
       status: {"Android": "stable"},
     },
