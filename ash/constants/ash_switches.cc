@@ -202,6 +202,12 @@ const char kDefaultWallpaperLarge[] = "default-wallpaper-large";
 // file).
 const char kDefaultWallpaperSmall[] = "default-wallpaper-small";
 
+// App ID to use for highlights app in demo mode.
+const char kDemoModeHighlightsApp[] = "demo-mode-highlights-extension";
+
+// App ID to use for screensaver app in demo mode.
+const char kDemoModeScreensaverApp[] = "demo-mode-screensaver-extension";
+
 // Time in seconds before a machine at OOBE is considered derelict.
 const char kDerelictDetectionTimeout[] = "derelict-detection-timeout";
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -19,7 +20,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
@@ -40,7 +40,6 @@
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -83,10 +82,6 @@ constexpr char kSplashScreensPath[] = "media/splash_screens";
 // Prefix for the private language tag used to indicate the device's country.
 constexpr char kDemoModeCountryPrivateLanguageTagPrefix[] = "x-dm-country-";
 
-// Prefix for the HWID for KRANE-ZDKS krane devices (based on kukuid board).
-// We only care about that specific variant of krane here.
-constexpr char kHwidKraneZdksPrefix[] = "KRANE-ZDKS";
-
 // Returns the list of apps normally pinned by Demo Mode policy that shouldn't
 // be pinned if the device is offline.
 std::vector<std::string> GetIgnorePinPolicyApps() {
@@ -114,18 +109,19 @@ void InstallDemoMedia(const base::FilePath& offline_resources_path,
     LOG(ERROR) << "Failed to install demo mode media.";
 }
 
-std::string GetBoardName() {
-  const std::vector<std::string> board =
-      base::SplitString(base::SysInfo::GetLsbReleaseBoard(), "-",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  return board[0];
+std::string GetSwitchOrDefault(const base::StringPiece& switch_string,
+                               const std::string& default_value) {
+  auto* const command_line = base::CommandLine::ForCurrentProcess();
+
+  if (command_line->HasSwitch(switch_string)) {
+    return command_line->GetSwitchValueASCII(switch_string);
+  }
+  return default_value;
 }
 
 std::string GetHighlightsAppId() {
-  std::string board = GetBoardName();
-  if (board == "atlas")
-    return extension_misc::kHighlightsAtlasAppId;
-  return extension_misc::kHighlightsAppId;
+  return GetSwitchOrDefault(switches::kDemoModeHighlightsApp,
+                            extension_misc::kHighlightsAppId);
 }
 
 // If the current locale is not the default one, ensure it is reverted to the
@@ -336,17 +332,8 @@ std::string DemoSession::GetAdditionalLanguageList() {
 
 // static
 std::string DemoSession::GetScreensaverAppId() {
-  std::string board = GetBoardName();
-  if (board == "atlas")
-    return extension_misc::kScreensaverAtlasAppId;
-  if (board == "kukui") {
-    std::string hwid;
-    chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-        chromeos::system::kHardwareClassKey, &hwid);
-    if (base::StartsWith(hwid, kHwidKraneZdksPrefix))
-      return extension_misc::kScreensaverKraneZdksAppId;
-  }
-  return extension_misc::kScreensaverAppId;
+  return GetSwitchOrDefault(switches::kDemoModeScreensaverApp,
+                            extension_misc::kScreensaverAppId);
 }
 
 // static
