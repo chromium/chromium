@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -353,10 +354,12 @@ void MobileSectionHeaderView::PerformAddExtraButtons(bool enabled) {
   int tooltip_message_id = IsCellularDeviceInhibited()
                                ? IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR
                                : IDS_ASH_STATUS_TRAY_ADD_CELLULAR_LABEL;
+  const gfx::VectorIcon& icon = base::i18n::IsRTL() ? kAddCellularNetworkRtlIcon
+                                                    : kAddCellularNetworkIcon;
   add_esim_button_ = new TopShortcutButton(
       base::BindRepeating(&MobileSectionHeaderView::AddCellularButtonPressed,
                           base::Unretained(this)),
-      vector_icons::kAddCellularNetworkIcon, tooltip_message_id);
+      icon, tooltip_message_id);
 
   add_esim_button_->SetEnabled(enabled && !IsCellularDeviceInhibited());
 

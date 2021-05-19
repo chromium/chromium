@@ -9,6 +9,8 @@ aggregate_vector_icons("ash_vector_icons") {
   icon_directory = "."
 
   sources = [
+    "add_cellular_network.icon",
+    "add_cellular_network_rtl.icon",
     "always_show_shelf.icon",
     "auto_hide.icon",
     "autoclick.icon",

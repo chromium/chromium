@@ -8,6 +8,7 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -183,7 +184,7 @@ void CellularSetupNotifier::ShowCellularSetupNotification() {
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&OnCellularSetupNotificationClicked)),
-          vector_icons::kAddCellularNetworkIcon,
+          kAddCellularNetworkIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
 
   message_center::MessageCenter* message_center =
