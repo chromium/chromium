@@ -33,7 +33,7 @@ class MF_INITIALIZER_EXPORT DXGIDeviceScopedHandle {
 };
 
 class MF_INITIALIZER_EXPORT DXGIDeviceManager
-    : public base::RefCounted<DXGIDeviceManager> {
+    : public base::RefCountedThreadSafe<DXGIDeviceManager> {
  public:
   DXGIDeviceManager(const DXGIDeviceManager&) = delete;
   DXGIDeviceManager& operator=(const DXGIDeviceManager&) = delete;
@@ -61,7 +61,7 @@ class MF_INITIALIZER_EXPORT DXGIDeviceManager
   Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> GetMFDXGIDeviceManager();
 
  protected:
-  friend class base::RefCounted<DXGIDeviceManager>;
+  friend class base::RefCountedThreadSafe<DXGIDeviceManager>;
   DXGIDeviceManager(
       Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> mf_dxgi_device_manager,
       UINT d3d_device_reset_token);
