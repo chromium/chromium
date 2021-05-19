@@ -6234,9 +6234,6 @@ crbug.com/1185676 [ Mac ] http/tests/devtools/tracing/timeline-js/timeline-js-li
 
 crbug.com/1185051 fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob-worker.html [ Pass Failure ]
 
-# Sheriff 2021-03-09
-crbug.com/1185121 fast/scroll-snap/animate-fling-to-snap-points-1.html [ Pass Failure ]
-
 # Sheriff 2021-03-11
 crbug.com/1186901 [ Linux ] http/tests/devtools/elements/styles-3/style-autocomplete.js [ Pass Failure ]
 
@@ -6311,6 +6308,7 @@ crbug.com/476553 virtual/scroll-unification/scrollbars/hidden-scrollbars-invisib
 crbug.com/476553 virtual/scroll-unification/fast/scrolling/overflow-scrollability.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-paragraph-end.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification/fast/events/drag-and-drop-autoscroll-mainframe.html [ Pass Failure Timeout Crash ]
+crbug.com/476553 virtual/scroll-unification/fast/scroll-snap/animate-fling-to-snap-points-1.html [ Pass Failure ]
 
 # Sheriff 2021-04-01
 crbug.com/1167679 accessibility/aom-focus-action.html [ Pass Failure Timeout Crash ]
