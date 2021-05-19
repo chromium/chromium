@@ -90,6 +90,9 @@ export async function runBidiCommandsProcessor(cdpClient, bidiClient, getCurrent
             case "Target.attachedToTarget":
                 Context.handleAttachedToTargetEvent(message);
                 return;
+            case "Target.targetInfoChanged":
+                Context.handleInfoChangedEvent(message);
+                return;
             case "Target.detachedFromTarget":
                 Context.handleDetachedFromTargetEvent(message);
                 return;

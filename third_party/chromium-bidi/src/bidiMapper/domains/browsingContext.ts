@@ -3,6 +3,7 @@ const logContext = log("context");
 
 export default class Context {
     private static _contexts: Map<string, Context> = new Map();
+    private static _sessionToTargets: Map<string, Context> = new Map();
 
     // Set from outside.
     static cdpClient: any;
@@ -12,9 +13,19 @@ export default class Context {
     static onContextDestroyed: (t: Context) => Promise<void>;
 
     private static _getOrCreateContext(contextId: string): Context {
-        if (!Context._contexts.has(contextId))
+        if (!Context._isKnownContext(contextId))
             Context._contexts.set(contextId, new Context(contextId));
+        return Context._getContext(contextId);
+    }
+
+    private static _getContext(contextId: string): Context {
+        if (!Context._isKnownContext(contextId))
+            throw new Error('context not found');
         return Context._contexts.get(contextId);
+    }
+
+    private static _isKnownContext(contextId: string): boolean {
+        return Context._contexts.has(contextId);
     }
 
     static handleAttachedToTargetEvent(eventData: any) {
@@ -26,20 +37,37 @@ export default class Context {
 
         const context = Context._getOrCreateContext(targetInfo.targetId);
         context._updateTargetInfo(targetInfo);
+        context._setSessionId(eventData.params.sessionId);
+
         Context.onContextCreated(context);
     }
 
-    static handleDetachedFromTargetEvent(eventData: any) {
-        logContext("detachedFromTarget event recevied", eventData);
+    static handleInfoChangedEvent(eventData: any) {
+        logContext("infoChangedEvent event recevied", eventData);
 
-        const target: TargetInfo = eventData.params.targetInfo;
-        if (!Context._isValidTarget(target))
+        const targetInfo: TargetInfo = eventData.params.targetInfo;
+        if (!Context._isValidTarget(targetInfo))
             return;
 
-        const context = Context._getOrCreateContext(target.targetId);
+        const context = Context._getOrCreateContext(targetInfo.targetId);
+        context._onInfoChangedEvent(targetInfo);
+    }
+
+    // { "method": "Target.detachedFromTarget", "params": { "sessionId": "7EFBFB2A4942A8989B3EADC561BC46E9", "targetId": "19416886405CBA4E03DBB59FA67FF4E8" } }
+    static async handleDetachedFromTargetEvent(eventData: any) {
+        logContext("detachedFromTarget event recevied", eventData);
+
+        const targetId = eventData.params.targetId;
+        if (!Context._isKnownContext(targetId))
+            return;
+
+        const context = Context._getOrCreateContext(targetId);
         Context.onContextDestroyed(context);
 
-        delete Context._contexts[context.contextId];
+        if (context._sessionId)
+            Context._sessionToTargets.delete(context._sessionId);
+
+        delete Context._contexts[context._contextId];
     }
 
     static async process_createContext(params: any): Promise<any> {
@@ -59,14 +87,32 @@ export default class Context {
     }
 
     private _targetInfo: TargetInfo;
-    private contextId: string;
+    private _contextId: string;
+    private _sessionId: string;
 
     constructor(contextId: string) {
         Context._contexts[contextId] = this;
     }
 
+    private _setSessionId(sessionId: string): void {
+        if (this._sessionId)
+            Context._sessionToTargets.delete(sessionId);
+
+        this._sessionId = sessionId;
+        Context._sessionToTargets.set(sessionId, this);
+
+    }
+
     private _updateTargetInfo(targetInfo: TargetInfo) {
         this._targetInfo = targetInfo;
+    }
+
+    private _onInfoChangedEvent(targetInfo: TargetInfo) {
+        this._updateTargetInfo(targetInfo);
+    }
+
+    getId(): string {
+        return this._contextId;
     }
 
     toBidi(): any {
