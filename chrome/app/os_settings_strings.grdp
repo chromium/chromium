@@ -175,10 +175,10 @@
     Couldn't update your Chromebook. Please try again later.
   </message>
   <message name="IDS_SETTINGS_UPGRADE_DOWNLOAD_ERROR" desc="Status label: Update check download error(ChromiumOS/ChromeOS)">
-    There was an issue downloading the update. Please try again later.
+    Couldn't download the update. Please try again later.
   </message>
   <message name="IDS_SETTINGS_UPGRADE_ADMINISTRATOR_ERROR" desc="Status label: Update blocked by policy (ChromiumOS/ChromeOS)">
-    This update is blocked by your administrator
+    Updates are blocked by your administrator
   </message>
   <message name="IDS_SETTINGS_UPGRADE_UP_TO_DATE" desc="Status label: Already up to date (ChromiumOS/ChromeOS)">
     Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is up to date
