@@ -3557,7 +3557,11 @@ bool AXNodeObject::CanAddLayoutChild(LayoutObject& child) {
 void AXNodeObject::AddLayoutChildren() {
   // Children are added this way only for pseudo-element subtrees.
   // See AXObject::ShouldUseLayoutObjectTraversalForChildren().
-  DCHECK(GetLayoutObject());
+  if (!GetLayoutObject()) {
+    DCHECK(GetNode());
+    DCHECK(GetNode()->IsPseudoElement());
+    return;  // Can't add children for hidden or display-locked pseudo elements.
+  }
   LayoutObject* child = GetLayoutObject()->SlowFirstChild();
   while (child) {
     if (CanAddLayoutChild(*child)) {

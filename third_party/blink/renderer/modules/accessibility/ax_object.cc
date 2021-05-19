@@ -4143,24 +4143,30 @@ AXObject* AXObject::ContainerWidget() const {
   return ancestor;
 }
 
-// Only use layout object traversal for pseudo elements and their descendants.
+// Determine which traversal approach is used to get children of an object.
 bool AXObject::ShouldUseLayoutObjectTraversalForChildren() const {
-  if (!GetLayoutObject())
-    return false;
+  // There are two types of traversal used to find AXObjects:
+  // 1. LayoutTreeBuilderTraversal, which takes FlatTreeTraversal and adds
+  // pseudo elements on top of that. This is the usual case. However, while this
+  // can add pseudo elements it cannot add important content descendants such as
+  // text and images. For this, LayoutObject traversal (#2) is required.
+  // 2. LayoutObject traversal, which just uses the children of a LayoutObject.
+
+  // Therefore, if the object is a pseudo element or pseudo element descendant,
+  // use LayoutObject traversal (#2) to find the children.
+  if (GetNode() && GetNode()->IsPseudoElement())
+    return true;
 
   // If no node, this is an anonymous layout object. The only way this can be
   // reached is inside a pseudo element subtree.
-  if (!GetNode()) {
+  if (!GetNode() && GetLayoutObject()) {
     DCHECK(GetLayoutObject()->IsAnonymous());
     DCHECK(AXObjectCacheImpl::IsRelevantPseudoElementDescendant(
         *GetLayoutObject()));
     return true;
   }
 
-  // The only other case for using layout builder traversal is for a pseudo
-  // element, such as ::before. Pseudo element child text and images are not
-  // visibited by LayoutBuilderTraversal.
-  return GetNode()->IsPseudoElement();
+  return false;
 }
 
 void AXObject::UpdateChildrenIfNecessary() {

@@ -94,6 +94,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_virtual_object.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -2098,8 +2099,10 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
         continue;
       }
 
+#if defined(AX_FAIL_FAST_BUILD)
       bool did_use_layout_object_traversal =
           object->ShouldUseLayoutObjectTraversalForChildren();
+#endif
 
       // Invalidate children on the first available non-detached parent that is
       // included in the tree. Sometimes a cached parent is detached because
@@ -2136,19 +2139,15 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
       AXObject* new_object = refresh(object);
       MarkAXObjectDirtyWithCleanLayout(new_object, false);
 
-      // Children might change because child traversal style changed.
-      if (new_object &&
-          new_object->ShouldUseLayoutObjectTraversalForChildren() !=
-              did_use_layout_object_traversal) {
-        // TODO(accessibility) Add test or remove code.
-        SANITIZER_CHECK(false)
-            << "This should no longer be possible, an object only uses layout "
-               "object traversal if it is the descendant of a pseudo element, "
-               "and that never changes: "
-            << new_object->ToString(true, true);
-        DCHECK(!HashTraits<AXID>::IsDeletedValue(ax_id));
-        pending_children_changed_ids.insert(ax_id);
-      }
+#if defined(AX_FAIL_FAST_BUILD)
+      SANITIZER_CHECK(!new_object ||
+                      new_object->ShouldUseLayoutObjectTraversalForChildren() ==
+                          did_use_layout_object_traversal)
+          << "This should no longer be possible, an object only uses layout "
+             "object traversal if it is part of a pseudo element subtree, "
+             "and that never changes: "
+          << new_object->ToString(true, true);
+#endif
     }
     // Update parents' children.
     for (AXID parent_id : pending_children_changed_ids) {

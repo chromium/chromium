@@ -1,0 +1,35 @@
+<!--
+@WAIT-FOR:done
+-->
+<html>
+<style>
+.auto {
+  content-visibility: auto;
+  height: 20000px;
+}
+#target {
+  position: absolute;
+  bottom: 0;
+}
+</style>
+<body class="@NO_CHILDREN_DUMP">
+<script>
+function fuzz() {
+  document.designMode = 'on';
+  document.execCommand("selectAll");
+  document.execCommand("insertunorderedlist");
+  document.title = 'done';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(fuzz, 200);
+}); 
+</script>
+<div class="auto"></div>
+<div class="auto">
+  <div id="target">target</div>
+</div>
+<script>
+  target.scrollIntoView();
+</script>
+</body>
