@@ -135,45 +135,45 @@
   .dotted-line {
     -webkit-mask: url(../images/background_svgs/streamer_line.svg);
     -webkit-mask-position: 3px 0;
-    -webkit-mask-size: 153px 6px;
+    -webkit-mask-size: 206px 12px;
     animation: dotted-line 1s infinite linear;
     background-color: var(--welcome-grey);
-    height: 6px;
+    height: 12px;
     left: 50%;
     top: 50%;
     transform-origin: center left;
   }
 
   @keyframes dotted-line {
-    to { -webkit-mask-position: 23px 0; }
+    to { -webkit-mask-position: 29px 0; }
   }
 
   #dotted-line-1 {
     left: 1136px;
     top: 378px;
     transform: rotate(194deg);
-    width: 106px;
+    width: 126px;
   }
 
   #dotted-line-2 {
     left: 1493px;
     top: 271px;
     transform: rotate(-50deg);
-    width: 126px;
+    width: 146px;
   }
 
   #dotted-line-3 {
     left: 1545px;
     top: 525px;
     transform: rotate(25deg);
-    width: 100px;
+    width: 120px;
   }
 
   #dotted-line-4 {
     left: 1219px;
     top: 626px;
     transform: rotate(128deg);
-    width: 113px;
+    width: 133px;
   }
 
   .circle {
@@ -183,14 +183,19 @@
     width: 64px;
   }
 
-  .connectagon {
+  .connectagon-container {
     --connectagon-shape-size: 64.77px;
-
     display: block;
     height: var(--connectagon-shape-size);
     left: 50%;
     position: absolute;
     top: 50%;
+  }
+
+  .connectagon {
+    height: 100%;
+    transform-origin: 50% 50%;
+    width: 100%;
   }
 
   .connectagon .circle {
@@ -238,15 +243,26 @@
   #yellow-connectagon {
     --connectagon-shape-color: var(--welcome-yellow);
     --connectagon-connector-color: var(--welcome-yellow-tinted);
-    animation: yellow-connectagon 4s alternate infinite linear;
+    animation: yellow-connectagon-translate 4s alternate infinite linear;
     left: 549px;
     top: 156px;
     transform: translate(-50%, -50%) rotate(51deg);
   }
 
-  @keyframes yellow-connectagon {
+  @keyframes yellow-connectagon-translate {
     to {
-      transform: translate(calc(-50% - 62px), calc(-50% - 36px)) rotate(411deg);
+      transform: translate(calc(-50% - 36px), calc(-50% - 62px)) rotate(51deg);
+    }
+  }
+
+  #yellow-connectagon .connectagon {
+    animation: yellow-connectagon-rotate 4s infinite linear;
+    transform: rotate(0deg);
+  }
+
+  @keyframes yellow-connectagon-rotate {
+    to {
+      transform: rotate(360deg);
     }
   }
 
@@ -272,35 +288,41 @@
     animation: blue-connectagon 4s alternate infinite linear;
     left: 2157px;
     top: 249px;
-    transform: translate(-50%, -50%) rotate(152deg);
+    transform: translate(-50%, -50%);
   }
 
   @keyframes blue-connectagon {
     50% {
-      transform: translate(calc(-50% + 10px), calc(-50% + 20px)) rotate(152deg);
+      transform: translate(calc(-50% + 10px), calc(-50% + 30px));
     }
-
     100% {
-      transform: translate(calc(-50%), calc(-50% + 40px)) rotate(152deg);
+      transform: translate(calc(-50%), calc(-50% + 60px));
     }
   }
 
   #green-connectagon {
     --connectagon-shape-color: var(--welcome-green);
     --connectagon-connector-color: var(--welcome-green-tinted);
-    animation: green-connectagon 6s alternate infinite linear;
+    animation: green-connectagon-translate 6s alternate infinite linear;
     left: 851px;
     top: 766px;
     transform: translate(-50%, -50%) rotate(139deg);
   }
 
-  @keyframes green-connectagon {
-    50% {
-      transform: translate(calc(-50% + 40px), calc(-50% + 10px)) rotate(499deg);
-    }
-
+  @keyframes green-connectagon-translate {
     100% {
       transform: translate(calc(-50% + 80px), calc(-50% + 20px)) rotate(139deg);
+    }
+  }
+
+  #green-connectagon .connectagon {
+    animation: green-connectagon-rotate 12s infinite linear;
+    transform: rotate(0deg);
+  }
+
+  @keyframes green-connectagon-rotate {
+    100% {
+      transform: rotate(-360deg);
     }
   }
 
@@ -359,7 +381,7 @@
     -webkit-mask: url(../images/background_svgs/password.svg);
     -webkit-mask-position: top left;
     -webkit-mask-size: 400px 400px;
-    animation: password-field-input 4s steps(1) infinite;
+    animation: password-field-input 2s steps(1) infinite;
     background-color: var(--welcome-green);
     left: 604px;
     top: 78px;
@@ -459,20 +481,26 @@
     <div class="shape dotted-line" id="dotted-line-4"></div>
 
     <!-- Connectagons. -->
-    <div class="connectagon" id="yellow-connectagon">
-      <div class="circle"></div>
-      <div class="square"></div>
-      <div class="hexagon"></div>
+    <div class="connectagon-container" id="yellow-connectagon">
+      <div class="connectagon">
+        <div class="circle"></div>
+        <div class="square"></div>
+        <div class="hexagon"></div>
+      </div>
     </div>
-    <div class="connectagon" id="blue-connectagon">
-      <div class="hexagon"></div>
-      <div class="square"></div>
-      <div class="hexagon"></div>
+    <div class="connectagon-container" id="blue-connectagon">
+      <div class="connectagon">
+        <div class="hexagon"></div>
+        <div class="square"></div>
+        <div class="hexagon"></div>
+      </div>
     </div>
-    <div class="connectagon" id="green-connectagon">
-      <div class="circle"></div>
-      <div class="square"></div>
-      <div class="circle"></div>
+    <div class="connectagon-container" id="green-connectagon">
+      <div class="connectagon">
+        <div class="circle"></div>
+        <div class="square"></div>
+        <div class="circle"></div>
+      </div>
     </div>
 
     <!-- Colored shapes. -->
