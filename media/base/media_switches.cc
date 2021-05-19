@@ -518,8 +518,16 @@ const base::Feature kExternalClearKeyForTesting{
     "ExternalClearKeyForTesting", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables the Live Caption feature.
-const base::Feature kLiveCaption{"LiveCaption",
-                                 base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kLiveCaption {
+  "LiveCaption",
+#if defined(OS_CHROMEOS)
+      // TODO(crbug.com/1209058): Remove this special case after it's merged
+      //                          into M91.
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 // Use the Speech On-Device API (SODA) to power the Live Caption feature instead
 // of the Cloud-based Open Speech API.
