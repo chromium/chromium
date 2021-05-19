@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_ONBOARDING_USER_ACTIVITY_COUNTER_H_
 
 #include "base/callback.h"
-#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/session_manager/core/session_manager.h"
@@ -62,9 +61,6 @@ class OnboardingUserActivityCounter
   const base::TickClock* tick_clock_;
   base::OneShotTimer timer_;
   base::OnceClosure closure_;
-  base::ScopedObservation<session_manager::SessionManager,
-                          session_manager::SessionManagerObserver>
-      session_observation_{this};
 };
 
 }  // namespace ash

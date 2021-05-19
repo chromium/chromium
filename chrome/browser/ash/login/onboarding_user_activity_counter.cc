@@ -63,7 +63,9 @@ OnboardingUserActivityCounter::OnboardingUserActivityCounter(
   }
 
   auto* session_manager = session_manager::SessionManager::Get();
-  session_observation_.Observe(session_manager);
+  // Can't use base::ScopedObservation because SessionManager might be destroyed
+  // before OnboardingUserActivityCounter.
+  session_manager->AddObserver(this);
   SetActiveState(GetActiveState());
 }
 
@@ -146,7 +148,9 @@ bool OnboardingUserActivityCounter::ShouldStart(PrefService* prefs) {
 }
 
 void OnboardingUserActivityCounter::StopObserving() {
-  session_observation_.Reset();
+  auto* session_manager = session_manager::SessionManager::Get();
+  if (session_manager)
+    session_manager->RemoveObserver(this);
 }
 
 void OnboardingUserActivityCounter::OnSessionStateChanged() {
