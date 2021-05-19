@@ -9,27 +9,10 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/network_diagnostics_routine.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/address_list.h"
-#include "net/log/net_log_with_source.h"
-#include "services/network/public/cpp/resolve_host_client_base.h"
-#include "services/network/public/mojom/host_resolver.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-class Profile;
-
-namespace net {
-class ClientSocketFactory;
-class TransportClientSocket;
-}  // namespace net
-
-namespace network {
-namespace mojom {
-class NetworkContext;
-}
-}  // namespace network
+#include "chrome/browser/chromeos/net/network_diagnostics/tls_prober.h"
+#include "net/base/host_port_pair.h"
 
 namespace chromeos {
 namespace network_diagnostics {
@@ -37,9 +20,26 @@ namespace network_diagnostics {
 // Tests whether a firewall is blocking HTTP port 80.
 class HttpFirewallRoutine : public NetworkDiagnosticsRoutine {
  public:
-  class HostResolver;
+  class Delegate {
+   public:
+    virtual ~Delegate() {}
+
+    // Creates an instance of TlsProber.
+    virtual std::unique_ptr<TlsProber> CreateAndExecuteTlsProber(
+        TlsProber::NetworkContextGetter network_context_getter,
+        net::HostPortPair host_port_pair,
+        bool negotiate_tls,
+        TlsProber::TlsProbeCompleteCallback callback) = 0;
+  };
+
   using HttpFirewallRoutineCallback =
       mojom::NetworkDiagnosticsRoutines::HttpFirewallCallback;
+  using TlsProberGetterCallback =
+      base::RepeatingCallback<std::unique_ptr<TlsProber>(
+          TlsProber::NetworkContextGetter network_context_getter,
+          net::HostPortPair host_port_pair,
+          bool negotiate_tls,
+          TlsProber::TlsProbeCompleteCallback callback)>;
 
   HttpFirewallRoutine();
   HttpFirewallRoutine(const HttpFirewallRoutine&) = delete;
@@ -54,46 +54,43 @@ class HttpFirewallRoutine : public NetworkDiagnosticsRoutine {
   // AnalyzeResultsAndExecuteCallback().
   void RunRoutine(HttpFirewallRoutineCallback callback);
 
-  // Processes the results of the DNS resolution done by |host_resolver_|.
-  void OnHostResolutionComplete(
-      int result,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<net::AddressList>& resolved_addresses);
-
-  void SetNetworkContextForTesting(
-      network::mojom::NetworkContext* network_context);
-  void SetProfileForTesting(Profile* profile);
-
-  void set_client_socket_factory_for_testing(
-      net::ClientSocketFactory* client_socket_factory) {
-    client_socket_factory_ = client_socket_factory;
+  void SetDelegateForTesting(std::unique_ptr<Delegate> delegate) {
+    delegate_ = std::move(delegate);
   }
-  net::ClientSocketFactory* client_socket_factory() {
-    return client_socket_factory_;
-  }
+
+  // Number of retry attempts.
+  static constexpr int kTotalNumRetries = 3;
 
  private:
-  void AttemptNextResolution();
-  void AttemptSocketConnections();
-  void Connect(int socket_index);
-  void OnSocketConnected(int socket_index, int result);
+  // Gets the next URL to probe.
+  void ProbeNextUrl();
 
-  // Unowned
-  net::ClientSocketFactory* client_socket_factory_ = nullptr;
-  int num_hostnames_to_query_;
-  std::vector<std::string> hostnames_to_query_;
-  static constexpr int kTotalNumRetries = 3;
-  int num_retries_ = kTotalNumRetries;
-  int socket_connection_failures_ = 0;
-  int num_tcp_connections_attempted_ = 0;
-  net::NetLogWithSource net_log_;
-  std::vector<std::unique_ptr<net::TransportClientSocket>> sockets_;
-  std::vector<net::AddressList> resolved_addresses_;
+  // Helper function to launch a TLS probe.
+  void AttemptProbe(const GURL& url);
+
+  // Callback invoked once probe is complete. |url| is only relevant in case
+  // of probe retries.
+  void OnProbeComplete(const GURL& url,
+                       int result,
+                       TlsProber::ProbeExitEnum probe_exit_enum);
+
+  // Returns the weak pointer to |this|.
+  base::WeakPtr<HttpFirewallRoutine> weak_ptr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+  std::unique_ptr<Delegate> delegate_;
+  std::vector<GURL> urls_to_query_;
+  int num_urls_to_query_ = 0;
+  int num_retries_ = 0;
+  int dns_resolution_failures_ = 0;
+  int tls_probe_failures_ = 0;
+  int num_no_dns_failure_tls_probes_attempted_ = 0;
+  std::unique_ptr<TlsProber> tls_prober_;
   std::vector<mojom::HttpFirewallProblem> problems_;
-  std::unique_ptr<HostResolver> host_resolver_;
   HttpFirewallRoutineCallback routine_completed_callback_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<HttpFirewallRoutine> weak_factory_{this};
 };
 
 }  // namespace network_diagnostics

@@ -7,17 +7,14 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "components/session_manager/core/session_manager.h"
+#include "chrome/browser/chromeos/net/network_diagnostics/fake_host_resolver.h"
+#include "chrome/browser/chromeos/net/network_diagnostics/fake_network_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/browser_task_environment.h"
-#include "net/socket/client_socket_factory.h"
-#include "net/socket/socket_test_util.h"
-#include "services/network/test/test_network_context.h"
+#include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace chromeos {
 namespace network_diagnostics {
@@ -25,171 +22,76 @@ namespace network_diagnostics {
 namespace {
 
 // The number of hosts the the routine tries to open socket connections to (if
-// DNS resolution is successful). Based on GetHostnamesToQuery() in
-// http_firewall_routine.cc.
+// DNS resolution is successful). Value equals the number of random hosts
+// + fixed hosts queried by HttpFirewallRoutine.
 const int kTotalHosts = 9;
-// Represents a fake port number of a fake ip address returned by the
-// FakeHostResolver.
-const int kFakePortNumber = 1234;
-const char kFakeTestProfile[] = "test";
 
-net::IPEndPoint FakeIPAddress() {
-  return net::IPEndPoint(net::IPAddress::IPv4Localhost(), kFakePortNumber);
-}
-
-class FakeHostResolver : public network::mojom::HostResolver {
+// Test implementation of TlsProber.
+class TestTlsProber final : public TlsProber {
  public:
-  struct DnsResult {
-    DnsResult(int32_t result,
-              net::ResolveErrorInfo resolve_error_info,
-              absl::optional<net::AddressList> resolved_addresses)
-        : result(result),
-          resolve_error_info(resolve_error_info),
-          resolved_addresses(resolved_addresses) {}
-
-    int result;
-    net::ResolveErrorInfo resolve_error_info;
-    absl::optional<net::AddressList> resolved_addresses;
-  };
-
-  FakeHostResolver(mojo::PendingReceiver<network::mojom::HostResolver> receiver,
-                   base::circular_deque<DnsResult*> fake_dns_results)
-      : receiver_(this, std::move(receiver)),
-        fake_dns_results_(std::move(fake_dns_results)) {}
-  ~FakeHostResolver() override {}
-
-  // network::mojom::HostResolver
-  void ResolveHost(const net::HostPortPair& host,
-                   const net::NetworkIsolationKey& network_isolation_key,
-                   network::mojom::ResolveHostParametersPtr optional_parameters,
-                   mojo::PendingRemote<network::mojom::ResolveHostClient>
-                       pending_response_client) override {
-    mojo::Remote<network::mojom::ResolveHostClient> response_client(
-        std::move(pending_response_client));
-    DnsResult* result = fake_dns_results_.front();
-    DCHECK(result);
-    fake_dns_results_.pop_front();
-    response_client->OnComplete(result->result, result->resolve_error_info,
-                                result->resolved_addresses);
+  TestTlsProber(TlsProber::TlsProbeCompleteCallback callback,
+                int result,
+                TlsProber::ProbeExitEnum probe_exit_enum) {
+    // Post an asynchronus task simulating a completed probe. This mimics the
+    // behavior of the production TlsProber constructor since the TestTlsProber
+    // instance will be complete before FinishProbe is invoked. In the
+    // production TlsProber, the constructor completes before DNS host
+    // resolution is invoked.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&TestTlsProber::FinishProbe, weak_factory_.GetWeakPtr(),
+                       std::move(callback), result, probe_exit_enum));
   }
-  void MdnsListen(
-      const net::HostPortPair& host,
-      net::DnsQueryType query_type,
-      mojo::PendingRemote<network::mojom::MdnsListenClient> response_client,
-      MdnsListenCallback callback) override {
-    NOTREACHED();
+
+  TestTlsProber(const TestTlsProber&) = delete;
+  TestTlsProber& operator=(const TestTlsProber&) = delete;
+  ~TestTlsProber() override = default;
+
+ private:
+  void FinishProbe(TlsProber::TlsProbeCompleteCallback callback,
+                   int result,
+                   TlsProber::ProbeExitEnum probe_exit_enum) {
+    std::move(callback).Run(result, probe_exit_enum);
+  }
+
+  base::WeakPtrFactory<TestTlsProber> weak_factory_{this};
+};
+
+struct TlsProberReturnValue {
+  net::Error result;
+  TlsProber::ProbeExitEnum probe_exit_enum;
+};
+
+class TestDelegate : public HttpFirewallRoutine::Delegate {
+ public:
+  explicit TestDelegate(
+      base::circular_deque<TlsProberReturnValue> fake_probe_results)
+      : fake_probe_results_(fake_probe_results) {}
+
+  // Delegate:
+  std::unique_ptr<TlsProber> CreateAndExecuteTlsProber(
+      TlsProber::NetworkContextGetter network_context_getter,
+      net::HostPortPair host_port_pair,
+      bool negotiate_tls,
+      TlsProber::TlsProbeCompleteCallback callback) override {
+    DCHECK(fake_probe_results_.size() > 0);
+
+    auto value = fake_probe_results_.front();
+    fake_probe_results_.pop_front();
+    auto test_tls_prober = std::make_unique<TestTlsProber>(
+        std::move(callback), value.result, value.probe_exit_enum);
+    return std::move(test_tls_prober);
   }
 
  private:
-  mojo::Receiver<network::mojom::HostResolver> receiver_;
-  // Use the list of fake dns results to fake different responses for multiple
-  // calls to the host_resolver's ResolveHost().
-  base::circular_deque<DnsResult*> fake_dns_results_;
-};
-
-class FakeNetworkContext : public network::TestNetworkContext {
- public:
-  FakeNetworkContext() = default;
-
-  explicit FakeNetworkContext(
-      base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results)
-      : fake_dns_results_(std::move(fake_dns_results)) {}
-
-  ~FakeNetworkContext() override {}
-
-  // network::TestNetworkContext:
-  void CreateHostResolver(
-      const absl::optional<net::DnsConfigOverrides>& config_overrides,
-      mojo::PendingReceiver<network::mojom::HostResolver> receiver) override {
-    ASSERT_FALSE(resolver_);
-    resolver_ = std::make_unique<FakeHostResolver>(
-        std::move(receiver), std::move(fake_dns_results_));
-  }
-
- private:
-  std::unique_ptr<FakeHostResolver> resolver_;
-  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results_;
-};
-
-class MockTCPSocket : public net::MockTCPClientSocket {
- public:
-  explicit MockTCPSocket(net::SocketDataProvider* socket_data_provider)
-      : net::MockTCPClientSocket(net::AddressList(),
-                                 nullptr,
-                                 socket_data_provider) {}
-  MockTCPSocket(const MockTCPSocket&) = delete;
-  MockTCPSocket& operator=(const MockTCPSocket&) = delete;
-
-  int Connect(net::CompletionOnceCallback callback) override {
-    return net::MockTCPClientSocket::Connect(std::move(callback));
-  }
-};
-
-class FakeClientSocketFactory : public net::ClientSocketFactory {
- public:
-  FakeClientSocketFactory(
-      base::circular_deque<net::SocketDataProvider*> fake_socket_data_providers)
-      : socket_data_providers_(fake_socket_data_providers) {}
-  FakeClientSocketFactory(const FakeClientSocketFactory&) = delete;
-  FakeClientSocketFactory& operator=(const FakeClientSocketFactory&) = delete;
-
-  std::unique_ptr<net::DatagramClientSocket> CreateDatagramClientSocket(
-      net::DatagramSocket::BindType bind_type,
-      net::NetLog* net_log,
-      const net::NetLogSource& source) override {
-    NOTIMPLEMENTED();
-    return nullptr;
-  }
-
-  std::unique_ptr<net::TransportClientSocket> CreateTransportClientSocket(
-      const net::AddressList& addresses,
-      std::unique_ptr<net::SocketPerformanceWatcher> socket_performance_watcher,
-      net::NetworkQualityEstimator* network_quality_estimator,
-      net::NetLog* net_log,
-      const net::NetLogSource& source) override {
-    net::SocketDataProvider* socket_data_provider =
-        socket_data_providers_.front();
-    socket_data_providers_.pop_front();
-    return std::make_unique<MockTCPSocket>(socket_data_provider);
-  }
-
-  std::unique_ptr<net::SSLClientSocket> CreateSSLClientSocket(
-      net::SSLClientContext* context,
-      std::unique_ptr<net::StreamSocket> stream_socket,
-      const net::HostPortPair& host_and_port,
-      const net::SSLConfig& ssl_config) override {
-    NOTIMPLEMENTED();
-    return nullptr;
-  }
-
-  std::unique_ptr<net::ProxyClientSocket> CreateProxyClientSocket(
-      std::unique_ptr<net::StreamSocket> stream_socket,
-      const std::string& user_agent,
-      const net::HostPortPair& endpoint,
-      const net::ProxyServer& proxy_server,
-      net::HttpAuthController* http_auth_controller,
-      bool tunnel,
-      bool using_spdy,
-      net::NextProto negotiated_protocol,
-      net::ProxyDelegate* proxy_delegate,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation) override {
-    NOTIMPLEMENTED();
-    return nullptr;
-  }
-
- private:
-  base::circular_deque<net::SocketDataProvider*> socket_data_providers_;
+  base::circular_deque<TlsProberReturnValue> fake_probe_results_;
 };
 
 }  // namespace
 
 class HttpFirewallRoutineTest : public ::testing::Test {
  public:
-  HttpFirewallRoutineTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    session_manager::SessionManager::Get()->SetSessionState(
-        session_manager::SessionState::LOGIN_PRIMARY);
-  }
+  HttpFirewallRoutineTest() = default;
   HttpFirewallRoutineTest(const HttpFirewallRoutineTest&) = delete;
   HttpFirewallRoutineTest& operator=(const HttpFirewallRoutineTest&) = delete;
 
@@ -213,231 +115,125 @@ class HttpFirewallRoutineTest : public ::testing::Test {
     run_loop_.Quit();
   }
 
-  void SetUpFakeProperties(
-      base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results,
-      base::circular_deque<net::SocketDataProvider*>
-          fake_socket_data_providers) {
-    ASSERT_TRUE(profile_manager_.SetUp());
-
-    fake_network_context_ =
-        std::make_unique<FakeNetworkContext>(std::move(fake_dns_results));
-    test_profile_ = profile_manager_.CreateTestingProfile(kFakeTestProfile);
-    fake_client_socket_factory_ = std::make_unique<FakeClientSocketFactory>(
-        std::move(fake_socket_data_providers));
-  }
-
-  void SetUpHttpFirewallRoutine() {
+  void SetUpRoutine(
+      base::circular_deque<TlsProberReturnValue> fake_probe_results) {
     http_firewall_routine_ = std::make_unique<HttpFirewallRoutine>();
-    http_firewall_routine_->SetNetworkContextForTesting(
-        fake_network_context_.get());
-    http_firewall_routine_->SetProfileForTesting(test_profile_);
-    http_firewall_routine_->set_client_socket_factory_for_testing(
-        fake_client_socket_factory_.get());
+    http_firewall_routine_->SetDelegateForTesting(
+        std::make_unique<TestDelegate>(std::move(fake_probe_results)));
   }
 
   // Sets up required properties (via fakes) and runs the test.
   //
   // Parameters:
-  // |fake_dns_results|: Represents the results of a one or more DNS
-  // resolutions.
-  // |fake_socket_data_providers|: Represents the socket data provider for one
-  // or more TCP sockets.
+  // |fake_probe_results|: Represents the results of TLS probes.
   // |expected_routine_verdict|: Represents the expected verdict
   // reported by this test.
   // |expected_problems|: Represents the expected problem
   // reported by this test.
   void SetUpAndRunRoutine(
-      base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results,
-      base::circular_deque<net::SocketDataProvider*> fake_socket_data_providers,
+      base::circular_deque<TlsProberReturnValue> fake_probe_results,
       mojom::RoutineVerdict expected_routine_verdict,
       const std::vector<mojom::HttpFirewallProblem>& expected_problems) {
-    SetUpFakeProperties(std::move(fake_dns_results),
-                        std::move(fake_socket_data_providers));
-    SetUpHttpFirewallRoutine();
+    SetUpRoutine(std::move(fake_probe_results));
     RunRoutine(expected_routine_verdict, expected_problems);
-  }
-
-  FakeClientSocketFactory* fake_client_socket_factory() {
-    return fake_client_socket_factory_.get();
   }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::RunLoop run_loop_;
-  session_manager::SessionManager session_manager_;
-  std::unique_ptr<FakeNetworkContext> fake_network_context_;
-  std::unique_ptr<FakeClientSocketFactory> fake_client_socket_factory_;
-  // Unowned
-  Profile* test_profile_;
-  TestingProfileManager profile_manager_;
   std::unique_ptr<HttpFirewallRoutine> http_firewall_routine_;
   base::WeakPtrFactory<HttpFirewallRoutineTest> weak_factory_{this};
 };
 
 TEST_F(HttpFirewallRoutineTest, TestDnsResolutionFailuresAboveThreshold) {
-  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results;
-  base::circular_deque<net::SocketDataProvider*> fake_socket_data_providers;
-  std::vector<std::unique_ptr<FakeHostResolver::DnsResult>> resolutions;
-  std::vector<std::unique_ptr<net::SocketDataProvider>> providers;
-
+  base::circular_deque<TlsProberReturnValue> fake_probe_results;
   // kTotalHosts = 9
   for (int i = 0; i < kTotalHosts; i++) {
-    std::unique_ptr<FakeHostResolver::DnsResult> resolution;
     if (i < 2) {
-      resolution = std::make_unique<FakeHostResolver::DnsResult>(
-          net::ERR_NAME_NOT_RESOLVED,
-          net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-          net::AddressList());
+      fake_probe_results.push_back(TlsProberReturnValue{
+          net::ERR_NAME_NOT_RESOLVED, TlsProber::ProbeExitEnum::kDnsFailure});
     } else {
       // Having seven successful resolutions out of nine puts us below the
-      // threshold needed to attempt socket connections.
-      resolution = std::make_unique<FakeHostResolver::DnsResult>(
-          net::OK, net::ResolveErrorInfo(net::OK),
-          net::AddressList(FakeIPAddress()));
+      // threshold needed to attempt TLS probes.
+      fake_probe_results.push_back(
+          TlsProberReturnValue{net::OK, TlsProber::ProbeExitEnum::kSuccess});
     }
-    fake_dns_results.push_back(resolution.get());
-    resolutions.emplace_back(std::move(resolution));
-
-    auto socket_data_provider = std::make_unique<net::SequencedSocketData>();
-    socket_data_provider->set_connect_data(
-        net::MockConnect(net::IoMode::ASYNC, net::ERR_FAILED));
-    fake_socket_data_providers.push_back(socket_data_provider.get());
-    providers.emplace_back(std::move(socket_data_provider));
   }
   SetUpAndRunRoutine(
-      std::move(fake_dns_results), std::move(fake_socket_data_providers),
-      mojom::RoutineVerdict::kProblem,
+      std::move(fake_probe_results), mojom::RoutineVerdict::kProblem,
       {mojom::HttpFirewallProblem::kDnsResolutionFailuresAboveThreshold});
 }
 
 TEST_F(HttpFirewallRoutineTest, TestFirewallDetection) {
-  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results;
-  base::circular_deque<net::SocketDataProvider*> fake_socket_data_providers;
-  std::vector<std::unique_ptr<FakeHostResolver::DnsResult>> resolutions;
-  std::vector<std::unique_ptr<net::SocketDataProvider>> providers;
+  base::circular_deque<TlsProberReturnValue> fake_probe_results;
   // kTotalHosts = 9
   for (int i = 0; i < kTotalHosts; i++) {
-    auto successful_resolution = std::make_unique<FakeHostResolver::DnsResult>(
-        net::OK, net::ResolveErrorInfo(net::OK),
-        net::AddressList(FakeIPAddress()));
-    fake_dns_results.push_back(successful_resolution.get());
-    resolutions.emplace_back(std::move(successful_resolution));
-
-    auto socket_data_provider = std::make_unique<net::SequencedSocketData>();
-    // Firewall detection requires all connect attempts to fail.
-    socket_data_provider->set_connect_data(
-        net::MockConnect(net::IoMode::ASYNC, net::ERR_FAILED));
-    fake_socket_data_providers.push_back(socket_data_provider.get());
-    providers.emplace_back(std::move(socket_data_provider));
+    fake_probe_results.push_back(TlsProberReturnValue{
+        net::ERR_FAILED, TlsProber::ProbeExitEnum::kTlsUpgradeFailure});
   }
-  SetUpAndRunRoutine(std::move(fake_dns_results),
-                     std::move(fake_socket_data_providers),
+  SetUpAndRunRoutine(std::move(fake_probe_results),
                      mojom::RoutineVerdict::kProblem,
                      {mojom::HttpFirewallProblem::kFirewallDetected});
 }
 
 TEST_F(HttpFirewallRoutineTest, TestPotentialFirewallDetection) {
-  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results;
-  base::circular_deque<net::SocketDataProvider*> fake_socket_data_providers;
-  std::vector<std::unique_ptr<FakeHostResolver::DnsResult>> resolutions;
-  std::vector<std::unique_ptr<net::SocketDataProvider>> providers;
+  base::circular_deque<TlsProberReturnValue> fake_probe_results;
   // kTotalHosts = 9
   for (int i = 0; i < kTotalHosts; i++) {
-    auto successful_resolution = std::make_unique<FakeHostResolver::DnsResult>(
-        net::OK, net::ResolveErrorInfo(net::OK),
-        net::AddressList(FakeIPAddress()));
-    fake_dns_results.push_back(successful_resolution.get());
-    resolutions.emplace_back(std::move(successful_resolution));
-
-    auto socket_data_provider = std::make_unique<net::SequencedSocketData>();
     if (i < 5) {
-      socket_data_provider->set_connect_data(
-          net::MockConnect(net::IoMode::ASYNC, net::OK));
+      fake_probe_results.push_back(
+          TlsProberReturnValue{net::OK, TlsProber::ProbeExitEnum::kSuccess});
     } else {
       // Having five connection failures and four successful connections signals
       // a potential firewall.
-      socket_data_provider->set_connect_data(
-          net::MockConnect(net::IoMode::ASYNC, net::ERR_FAILED));
+      fake_probe_results.push_back(TlsProberReturnValue{
+          net::ERR_FAILED, TlsProber::ProbeExitEnum::kTcpConnectionFailure});
     }
-    fake_socket_data_providers.push_back(socket_data_provider.get());
-    providers.emplace_back(std::move(socket_data_provider));
   }
-  SetUpAndRunRoutine(std::move(fake_dns_results),
-                     std::move(fake_socket_data_providers),
+  SetUpAndRunRoutine(std::move(fake_probe_results),
                      mojom::RoutineVerdict::kProblem,
                      {mojom::HttpFirewallProblem::kPotentialFirewall});
 }
 
 TEST_F(HttpFirewallRoutineTest, TestNoFirewallIssues) {
-  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results;
-  base::circular_deque<net::SocketDataProvider*> fake_socket_data_providers;
-  std::vector<std::unique_ptr<FakeHostResolver::DnsResult>> resolutions;
-  std::vector<std::unique_ptr<net::SocketDataProvider>> providers;
+  base::circular_deque<TlsProberReturnValue> fake_probe_results;
   // kTotalHosts = 9
   for (int i = 0; i < kTotalHosts; i++) {
-    auto successful_resolution = std::make_unique<FakeHostResolver::DnsResult>(
-        net::OK, net::ResolveErrorInfo(net::OK),
-        net::AddressList(FakeIPAddress()));
-    fake_dns_results.push_back(successful_resolution.get());
-    resolutions.emplace_back(std::move(successful_resolution));
-
-    auto socket_data_provider = std::make_unique<net::SequencedSocketData>();
     if (i < 8) {
-      socket_data_provider->set_connect_data(
-          net::MockConnect(net::IoMode::ASYNC, net::OK));
+      fake_probe_results.push_back(
+          TlsProberReturnValue{net::OK, TlsProber::ProbeExitEnum::kSuccess});
     } else {
       // Having one connection failure and eight successful connections puts us
       // above the required threshold.
-      socket_data_provider->set_connect_data(
-          net::MockConnect(net::IoMode::ASYNC, net::ERR_FAILED));
+      fake_probe_results.push_back(TlsProberReturnValue{
+          net::ERR_FAILED, TlsProber::ProbeExitEnum::kMojoDisconnectFailure});
     }
-    fake_socket_data_providers.push_back(socket_data_provider.get());
-    providers.emplace_back(std::move(socket_data_provider));
   }
-  SetUpAndRunRoutine(std::move(fake_dns_results),
-                     std::move(fake_socket_data_providers),
+  SetUpAndRunRoutine(std::move(fake_probe_results),
                      mojom::RoutineVerdict::kNoProblem, {});
 }
 
 TEST_F(HttpFirewallRoutineTest, TestContinousRetries) {
-  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results;
-  base::circular_deque<net::SocketDataProvider*> fake_socket_data_providers;
-  std::vector<std::unique_ptr<FakeHostResolver::DnsResult>> resolutions;
-  std::vector<std::unique_ptr<net::SocketDataProvider>> providers;
+  base::circular_deque<TlsProberReturnValue> fake_probe_results;
   // kTotalHosts = 9
   for (int i = 0; i < kTotalHosts; i++) {
-    auto successful_resolution = std::make_unique<FakeHostResolver::DnsResult>(
-        net::OK, net::ResolveErrorInfo(net::OK),
-        net::AddressList(FakeIPAddress()));
-    fake_dns_results.push_back(successful_resolution.get());
-    resolutions.emplace_back(std::move(successful_resolution));
-
-    auto socket_data_provider = std::make_unique<net::SequencedSocketData>();
     if (i < 8) {
-      socket_data_provider->set_connect_data(
-          net::MockConnect(net::IoMode::ASYNC, net::OK));
+      fake_probe_results.push_back(
+          TlsProberReturnValue{net::OK, TlsProber::ProbeExitEnum::kSuccess});
     } else {
       // Having one socket that continuously retries until failure and eight
       // sockets that make successful connections puts us above the required
       // threshold.
-      socket_data_provider->set_connect_data(
-          net::MockConnect(net::IoMode::ASYNC, net::ERR_TIMED_OUT));
+      for (int j = 0; j < HttpFirewallRoutine::kTotalNumRetries + 1; j++) {
+        fake_probe_results.push_back(TlsProberReturnValue{
+            net::ERR_TIMED_OUT,
+            TlsProber::ProbeExitEnum::kMojoDisconnectFailure});
+      }
     }
-    fake_socket_data_providers.push_back(socket_data_provider.get());
-    providers.emplace_back(std::move(socket_data_provider));
   }
-  SetUpAndRunRoutine(std::move(fake_dns_results),
-                     std::move(fake_socket_data_providers),
+  SetUpAndRunRoutine(std::move(fake_probe_results),
                      mojom::RoutineVerdict::kNoProblem, {});
 }
-
-// TODO(khegde): Eventually add unit tests that includes more scenarios with
-// retries. This is tough to mock out because each MockTCPClient is initialized
-// with a SocketDataProvider*, which cannot be modified during the lifetime of
-// the socket. SocketDataProvider* sets the MockConnection that fakes the result
-// of the socket's connection attempt. As a result, the same socket cannot be
-// used to fake a retry failure, followed by either a successful or unsuccessful
-// connection attempt.
 
 }  // namespace network_diagnostics
 }  // namespace chromeos
