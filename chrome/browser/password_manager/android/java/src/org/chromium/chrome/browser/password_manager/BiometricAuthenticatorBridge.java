@@ -42,6 +42,7 @@ class BiometricAuthenticatorBridge {
                     mContext.getResources().getString(
                             R.string.password_filling_reauth_prompt_title));
             promptBuilder.setDeviceCredentialAllowed(true);
+            promptBuilder.setConfirmationRequired(false);
             mBiometricPrompt = promptBuilder.build();
         }
     }
