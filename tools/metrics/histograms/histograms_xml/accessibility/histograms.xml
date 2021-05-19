@@ -276,6 +276,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.CrosDictation.Language" enum="CLD3LanguageCode"
+    expires_after="2021-11-20">
+  <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The language used for speech recognition in dictation on ChromeOS. This is
+    logged each time Dictation is toggled on.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CrosDictation.ToggleDictationMethod"
     enum="CrosDictationToggleDictationMethod" expires_after="2021-09-19">
   <owner>anastasi@google.com</owner>

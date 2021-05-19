@@ -6,6 +6,7 @@
 
 #include "ash/components/audio/sounds.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -96,6 +97,10 @@ bool Dictation::OnToggleDictation() {
   }
   has_committed_text_ = false;
   std::string language = GetUserLanguage(profile_);
+  // Log the language used with CLD3LanguageCode.
+  base::UmaHistogramSparse("Accessibility.CrosDictation.Language",
+                           base::HashMetricName(language));
+
   if (switches::IsExperimentalAccessibilityDictationOfflineEnabled() &&
       OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(language)) {
     // On-device recognition is behind a flag and then only available if
