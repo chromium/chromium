@@ -30,11 +30,14 @@ source_set("common") {
 
   deps = [
     "//base",
+    "//extensions/browser/api/messaging:native_messaging",
     "//google_apis",
     "//mojo/core/embedder",
     "//remoting/base:authorization",
+    "//remoting/base:base",
     "//remoting/host:common",
     "//remoting/host/native_messaging",
+    "//remoting/protocol:protocol",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
@@ -52,7 +55,11 @@ source_set("common") {
       "daemon_controller_delegate_mac.h",
       "daemon_controller_delegate_mac.mm",
     ]
-    deps += [ "//remoting/host/mac:permission_checking" ]
+    deps += [
+      "//remoting/host/mac:permission_checking",
+      "//remoting/resources:strings_grit",
+      "//ui/base:base",
+    ]
   }
 
   if (is_apple) {
@@ -64,6 +71,10 @@ source_set("common") {
       "daemon_controller_delegate_win.cc",
       "daemon_controller_delegate_win.h",
     ]
-    deps += [ "//remoting/host/win:remoting_lib_idl" ]
+    deps += [
+      "//remoting/host/win:elevated_native_messaging_host",
+      "//remoting/host/win:remoting_lib_idl",
+      "//remoting/host/win:security_descriptor",
+    ]
   }
 }

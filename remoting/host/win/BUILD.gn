@@ -83,6 +83,14 @@ windows_manifest("dpi_aware_uiaccess_require_admin_exe_manifest") {
   ]
 }
 
+source_set("security_descriptor") {
+  sources = [
+    "security_descriptor.cc",
+    "security_descriptor.h",
+  ]
+  deps = [ "//remoting/base" ]
+}
+
 source_set("win") {
   sources = [
     "audio_volume_filter_win.cc",
@@ -104,8 +112,6 @@ source_set("win") {
     "rdp_client.h",
     "rdp_client_window.cc",
     "rdp_client_window.h",
-    "security_descriptor.cc",
-    "security_descriptor.h",
     "session_action_executor.cc",
     "session_action_executor.h",
     "session_desktop_environment.cc",
@@ -136,6 +142,7 @@ source_set("win") {
 
   defines = [ "WEBRTC_CHROMIUM_BUILD" ]
 
+  public_deps = [ ":security_descriptor" ]
   deps = [
     "//base:i18n",
     "//components/policy/core/common",
@@ -164,8 +171,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "elevated_native_messaging_host.cc",
-    "elevated_native_messaging_host.h",
     "event_trace_data.cc",
     "event_trace_data.h",
     "event_trace_data_unittest.cc",
@@ -176,6 +181,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":elevated_native_messaging_host",
     "//ipc",
     "//remoting/host:common",
     "//remoting/host:test_support",
@@ -324,6 +330,17 @@ executable("remoting_me2me_host") {
   }
 }
 
+source_set("elevated_native_messaging_host") {
+  sources = [
+    "elevated_native_messaging_host.cc",
+    "elevated_native_messaging_host.h",
+  ]
+  deps = [
+    "//base",
+    "//remoting/host/native_messaging",
+  ]
+}
+
 shared_library("remoting_core") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
@@ -373,8 +390,6 @@ shared_library("remoting_core") {
     "chromoting_module.h",
     "core.cc",
     "core.h",
-    "elevated_native_messaging_host.cc",
-    "elevated_native_messaging_host.h",
     "etw_trace_consumer.cc",
     "etw_trace_controller.cc",
     "etw_trace_controller.h",
@@ -402,7 +417,7 @@ shared_library("remoting_core") {
     "unprivileged_process_delegate.h",
     "wts_session_process_delegate.h",
   ]
-
+  public_deps = [ ":elevated_native_messaging_host" ]
   deps = [
     ":messages",
     ":remoting_lib_idl",
