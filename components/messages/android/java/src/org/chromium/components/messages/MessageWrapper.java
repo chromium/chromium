@@ -109,6 +109,11 @@ public final class MessageWrapper {
     }
 
     @CalledByNative
+    void setDurationExtension(long extension) {
+        mMessageProperties.set(MessageBannerProperties.DISMISSAL_DURATION_EXTEND, extension);
+    }
+
+    @CalledByNative
     void clearNativePtr() {
         mNativeMessageWrapper = 0;
     }

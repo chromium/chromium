@@ -19,7 +19,7 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
     private final MessageQueueManager mMessageQueueManager = new MessageQueueManager();
     private final MessageContainer mMessageContainer;
     private final Supplier<Integer> mMessageMaxTranslationSupplier;
-    private final Supplier<Long> mAutodismissDurationMs;
+    private final MessageAutodismissDurationProvider mAutodismissDurationProvider;
     private final Callback<Animator> mAnimatorStartCallback;
 
     /**
@@ -27,18 +27,19 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
      * @param messageContainer A container view for displaying message banners.
      * @param messageMaxTranslation A {@link Supplier} that supplies the maximum translation Y value
      *         the message banner can have as a result of the animations or the gestures.
-     * @param autodismissDurationMs A {@link Supplier} providing autodismiss duration for message
-     *         banner.
+     * @param autodismissDurationProvider A {@link MessageAutodismissDurationProvider} providing
+     *         autodismiss duration for message banner.
      * @param animatorStartCallback The {@link Callback} that will be used by the message to
      *         delegate starting the animations to the {@link WindowAndroid}.
      */
     public MessageDispatcherImpl(MessageContainer messageContainer,
-            Supplier<Integer> messageMaxTranslation, Supplier<Long> autodismissDurationMs,
+            Supplier<Integer> messageMaxTranslation,
+            MessageAutodismissDurationProvider autodismissDurationProvider,
             Callback<Animator> animatorStartCallback) {
         mMessageContainer = messageContainer;
         mMessageMaxTranslationSupplier = messageMaxTranslation;
         mAnimatorStartCallback = animatorStartCallback;
-        mAutodismissDurationMs = autodismissDurationMs;
+        mAutodismissDurationProvider = autodismissDurationProvider;
     }
 
     @Override
@@ -46,7 +47,7 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
             @MessageScopeType int scopeType, boolean highPriority) {
         MessageStateHandler messageStateHandler = new SingleActionMessage(mMessageContainer,
                 messageProperties, this::dismissMessage, mMessageMaxTranslationSupplier,
-                mAutodismissDurationMs, mAnimatorStartCallback);
+                mAutodismissDurationProvider, mAnimatorStartCallback);
         ScopeKey scopeKey = new ScopeKey(scopeType, webContents);
         mMessageQueueManager.enqueueMessage(
                 messageStateHandler, messageProperties, scopeKey, highPriority);

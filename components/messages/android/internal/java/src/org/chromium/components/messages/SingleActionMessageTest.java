@@ -49,6 +49,18 @@ public class SingleActionMessageTest {
 
     private static Activity sActivity;
 
+    private class MockDurationProvider implements MessageAutodismissDurationProvider {
+        private long mDuration;
+        public MockDurationProvider(long duration) {
+            mDuration = duration;
+        }
+
+        @Override
+        public long get(long extension) {
+            return mDuration;
+        }
+    }
+
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock
@@ -75,8 +87,9 @@ public class SingleActionMessageTest {
     public void testAddAndRemoveSingleActionMessage() throws Exception {
         MessageContainer container = new MessageContainer(sActivity, null);
         PropertyModel model = createBasicSingleActionMessageModel();
-        SingleActionMessage message = new SingleActionMessage(
-                container, model, mEmptyDismissCallback, () -> 0, () -> 0L, mAnimatorStartCallback);
+        SingleActionMessage message =
+                new SingleActionMessage(container, model, mEmptyDismissCallback,
+                        () -> 0, new MockDurationProvider(0L), mAnimatorStartCallback);
         final MessageBannerCoordinator messageBanner = Mockito.mock(MessageBannerCoordinator.class);
         final MessageBannerView view = new MessageBannerView(sActivity, null);
         view.setId(R.id.message_banner);
@@ -105,9 +118,24 @@ public class SingleActionMessageTest {
         MessageContainer container = new MessageContainer(sActivity, null);
         PropertyModel model = createBasicSingleActionMessageModel();
         long duration = 42;
-        SingleActionMessage message = new SingleActionMessage(container, model,
-                mEmptyDismissCallback, () -> 0, () -> duration, mAnimatorStartCallback);
+        SingleActionMessage message =
+                new SingleActionMessage(container, model, mEmptyDismissCallback,
+                        () -> 0, new MockDurationProvider(duration), mAnimatorStartCallback);
         Assert.assertEquals("Autodismiss duration is not propagated correctly.", duration,
+                message.getAutoDismissDuration());
+    }
+
+    @Test
+    @MediumTest
+    public void testAutoDismissDurationExtended() {
+        MessageContainer container = new MessageContainer(sActivity, null);
+        PropertyModel model = createBasicSingleActionMessageModel();
+        model.set(MessageBannerProperties.DISMISSAL_DURATION_EXTEND, 1000);
+        long duration = 42;
+        SingleActionMessage message =
+                new SingleActionMessage(container, model, mEmptyDismissCallback,
+                        () -> 0, new MockDurationProvider(duration + 1000), mAnimatorStartCallback);
+        Assert.assertEquals("Autodismiss duration is not propagated correctly.", duration + 1000,
                 message.getAutoDismissDuration());
     }
 
@@ -117,16 +145,16 @@ public class SingleActionMessageTest {
         MessageContainer container = new MessageContainer(sActivity, null);
         PropertyModel m1 = createBasicSingleActionMessageModel();
         PropertyModel m2 = createBasicSingleActionMessageModel();
-        SingleActionMessage message1 = new SingleActionMessage(
-                container, m1, mEmptyDismissCallback, () -> 0, () -> 0L, mAnimatorStartCallback);
+        SingleActionMessage message1 = new SingleActionMessage(container, m1, mEmptyDismissCallback,
+                () -> 0, new MockDurationProvider(0L), mAnimatorStartCallback);
         final MessageBannerCoordinator messageBanner1 =
                 Mockito.mock(MessageBannerCoordinator.class);
         final MessageBannerView view1 = new MessageBannerView(sActivity, null);
         view1.setId(R.id.message_banner);
         message1.setMessageBannerForTesting(messageBanner1);
         message1.setViewForTesting(view1);
-        SingleActionMessage message2 = new SingleActionMessage(
-                container, m2, mEmptyDismissCallback, () -> 0, () -> 0L, mAnimatorStartCallback);
+        SingleActionMessage message2 = new SingleActionMessage(container, m2, mEmptyDismissCallback,
+                () -> 0, new MockDurationProvider(0L), mAnimatorStartCallback);
         final MessageBannerCoordinator messageBanner2 =
                 Mockito.mock(MessageBannerCoordinator.class);
         final MessageBannerView view2 = new MessageBannerView(sActivity, null);

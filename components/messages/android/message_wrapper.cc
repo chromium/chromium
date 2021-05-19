@@ -121,6 +121,12 @@ void MessageWrapper::SetSecondaryActionCallback(base::OnceClosure callback) {
   secondary_action_callback_ = std::move(callback);
 }
 
+void MessageWrapper::SetDurationExtension(long extension) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_MessageWrapper_setDurationExtension(env, java_message_wrapper_,
+                                           extension);
+}
+
 void MessageWrapper::HandleActionClick(JNIEnv* env) {
   if (!action_callback_.is_null())
     std::move(action_callback_).Run();

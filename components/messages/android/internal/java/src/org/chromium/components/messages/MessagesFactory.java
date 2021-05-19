@@ -20,14 +20,15 @@ public class MessagesFactory {
      *         to the MessageContainer. When messages are shown, they will be animated down the
      *         screen, starting at the negative |messageMaxTranslation| y translation to the resting
      *         position in the MessageContainer.
-     * @param autodismissDurationMs The {@link Supplier} providing autodismiss duration for message
-     *         banner.
+     * @param autodismissDurationMs The {@link MessageAutodismissDurationProvider} providing
+     *         autodismiss duration for message banner.
      * @param animatorStartCallback The {@link Callback} that will be used by the message to
      *         delegate starting the animations to the {@link WindowAndroid}.
      * @return The constructed ManagedMessageDispatcher.
      */
     public static ManagedMessageDispatcher createMessageDispatcher(MessageContainer container,
-            Supplier<Integer> messageMaxTranslation, Supplier<Long> autodismissDurationMs,
+            Supplier<Integer> messageMaxTranslation,
+            MessageAutodismissDurationProvider autodismissDurationMs,
             Callback<Animator> animatorStartCallback) {
         return new MessageDispatcherImpl(
                 container, messageMaxTranslation, autodismissDurationMs, animatorStartCallback);

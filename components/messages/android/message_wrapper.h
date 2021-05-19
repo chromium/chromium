@@ -52,6 +52,8 @@ class MessageWrapper {
 
   void SetSecondaryActionCallback(base::OnceClosure callback);
 
+  void SetDurationExtension(long extension);
+
   // Following methods forward calls from java to provided callbacks.
   void HandleActionClick(JNIEnv* env);
   void HandleSecondaryActionClick(JNIEnv* env);
