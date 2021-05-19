@@ -626,14 +626,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       << message_;
 }
 
-// Flaky on all platforms: https://crbug.com/1003661
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
-                       DISABLED_WebRequestExtraHeaders) {
-  CancelLoginDialog login_dialog_helper;
-
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestExtraHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(
       RunExtensionTest("webrequest", {.page_url = "test_extra_headers.html"}))
+      << message_;
+}
+
+// Flaky on all platforms: https://crbug.com/1003661
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       DISABLED_WebRequestExtraHeaders_Auth) {
+  CancelLoginDialog login_dialog_helper;
+
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("webrequest",
+                               {.page_url = "test_extra_headers_auth.html"}))
       << message_;
 }
 
