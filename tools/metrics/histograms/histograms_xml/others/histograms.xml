@@ -9326,6 +9326,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="MachineLearningService.TextSuggester.Suggest.Event"
+    enum="BooleanError" expires_after="2022-05-31">
+  <owner>curtismcmullan@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <summary>
+    The result of a text suggester request, which can be OK or ERROR.
+  </summary>
+</histogram>
+
 <histogram base="true" name="MachineLearningService.TotalMemoryDeltaKb"
     units="KB" expires_after="2021-07-01">
   <owner>amoylan@chromium.org</owner>
