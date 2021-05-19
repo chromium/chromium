@@ -4,12 +4,14 @@
 
 #include "fuchsia/engine/browser/accessibility_bridge.h"
 
-#include <algorithm>
-
 #include <lib/sys/cpp/component_context.h>
+#include <lib/sys/inspect/cpp/component.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 
+#include <algorithm>
+
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/process_context.h"
 #include "base/logging.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -24,6 +26,12 @@ constexpr size_t kMaxNodesPerUpdate = 16;
 
 // Error allowed for each edge when converting from gfx::RectF to gfx::Rect.
 constexpr float kRectConversionError = 0.5;
+
+// Inspect node/property names.
+constexpr char kSemanticTreesInspectNodeName[] = "trees";
+constexpr char kSemanticTreeContentsInspectPropertyName[] = "contents";
+constexpr char kParentTreeInspectPropertyName[] = "parent_tree";
+constexpr char kParentNodeInspectPropertyName[] = "parent_node";
 
 // Returns the id of the offset container for |node|, or the root node id if
 // |node| does not specify an offset container.
@@ -41,10 +49,12 @@ AccessibilityBridge::AccessibilityBridge(
     fuchsia::accessibility::semantics::SemanticsManager* semantics_manager,
     fuchsia::ui::views::ViewRef view_ref,
     content::WebContents* web_contents,
-    base::OnceCallback<void(zx_status_t)> on_error_callback)
+    base::OnceCallback<void(zx_status_t)> on_error_callback,
+    inspect::Node inspect_node)
     : binding_(this),
       web_contents_(web_contents),
-      on_error_callback_(std::move(on_error_callback)) {
+      on_error_callback_(std::move(on_error_callback)),
+      inspect_node_(std::move(inspect_node)) {
   DCHECK(web_contents_);
   Observe(web_contents_);
 
@@ -54,6 +64,44 @@ AccessibilityBridge::AccessibilityBridge(
     ZX_LOG(ERROR, status) << "SemanticTree disconnected";
     std::move(on_error_callback_).Run(ZX_ERR_INTERNAL);
   });
+}
+
+inspect::Inspector AccessibilityBridge::FillInspectData() {
+  DCHECK(enable_semantic_updates_);
+
+  inspect::Inspector inspector;
+
+  // Add a node for each AXTree of which the accessibility bridge is aware.
+  // The output for each tree has the following form:
+  //
+  // <tree id>:
+  //  contents: <string representation of tree contents>
+  //  parent_tree: <tree id of this tree's parent, if it has one>
+  //  parent_node: <node id of this tree's parent, if it has one>
+  for (const auto& ax_tree : ax_trees_) {
+    const ui::AXTree* ax_tree_ptr = ax_tree.second.get();
+
+    inspect::Node inspect_node =
+        inspector.GetRoot().CreateChild(ax_tree_ptr->GetAXTreeID().ToString());
+
+    inspect_node.CreateString(kSemanticTreeContentsInspectPropertyName,
+                              ax_tree_ptr->ToString(), &inspector);
+
+    auto tree_id_and_connection =
+        tree_connections_.find(ax_tree_ptr->GetAXTreeID());
+    if (tree_id_and_connection != tree_connections_.end()) {
+      const TreeConnection& connection = tree_id_and_connection->second;
+      inspect_node.CreateString(kParentTreeInspectPropertyName,
+                                connection.parent_tree_id.ToString(),
+                                &inspector);
+      inspect_node.CreateUint(kParentNodeInspectPropertyName,
+                              connection.parent_node_id, &inspector);
+    }
+
+    inspector.emplace(std::move(inspect_node));
+  }
+
+  return inspector;
 }
 
 AccessibilityBridge::~AccessibilityBridge() {
@@ -246,6 +294,10 @@ void AccessibilityBridge::OnSemanticsModeChanged(
     // The first call to AccessibilityEventReceived after this call will be
     // the entire semantic tree.
     web_contents_->EnableWebContentsOnlyAccessibilityMode();
+    // Set up inspect node for semantic trees.
+    inspect_node_tree_dump_ = inspect_node_.CreateLazyNode(
+        kSemanticTreesInspectNodeName,
+        [this]() { return fit::make_ok_promise(FillInspectData()); });
   } else {
     // The SemanticsManager will clear all state in this case, which is
     // mirrored here.
@@ -259,6 +311,7 @@ void AccessibilityBridge::OnSemanticsModeChanged(
     tree_connections_.clear();
     frame_id_to_tree_id_.clear();
     InterruptPendingActions();
+    inspect_node_tree_dump_ = inspect::LazyNode();
   }
 
   // Notify the SemanticsManager that this request was handled.

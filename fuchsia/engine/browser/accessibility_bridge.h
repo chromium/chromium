@@ -9,6 +9,7 @@
 #include <fuchsia/math/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
+#include <lib/inspect/cpp/vmo/types.h>
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
@@ -50,7 +51,8 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
       fuchsia::accessibility::semantics::SemanticsManager* semantics_manager,
       fuchsia::ui::views::ViewRef view_ref,
       content::WebContents* web_contents,
-      base::OnceCallback<void(zx_status_t)> on_error_callback);
+      base::OnceCallback<void(zx_status_t)> on_error_callback,
+      inspect::Node inspect_node);
   ~AccessibilityBridge() final;
 
   AccessibilityBridge(const AccessibilityBridge&) = delete;
@@ -88,6 +90,9 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
     // Whether the trees are connected.
     bool is_connected = false;
   };
+
+  // Populates inspect data with the AXTrees. Updates must be enabled.
+  inspect::Inspector FillInspectData();
 
   // Processes pending data and commits it to the Semantic Tree.
   void TryCommit();
@@ -232,6 +237,12 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
 
   // If set, the scale factor for this device for use in tests.
   absl::optional<float> device_scale_factor_override_for_test_;
+
+  // Inspect node for the accessibility bridge.
+  inspect::Node inspect_node_;
+
+  // Inspect node to store a dump of the semantic tree.
+  inspect::LazyNode inspect_node_tree_dump_;
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_ACCESSIBILITY_BRIDGE_H_

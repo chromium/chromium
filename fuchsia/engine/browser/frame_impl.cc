@@ -69,6 +69,9 @@ constexpr gfx::Size kHeadlessWindowSize = {1, 1};
 // Simulated screen bounds to use when testing the SemanticsManager.
 constexpr gfx::Size kSemanticsTestingWindowSize = {720, 640};
 
+// Name of the Inspect node that holds accessibility information.
+constexpr char kAccessibilityInspectNodeName[] = "accessibility";
+
 // A special value which matches all origins when specified in an origin list.
 constexpr char kWildcardOrigin[] = "*";
 
@@ -617,7 +620,8 @@ void FrameImpl::CreateViewWithViewRef(
       semantics_manager_for_test_ ? semantics_manager_for_test_
                                   : semantics_manager.get(),
       window_tree_host_->CreateViewRef(), web_contents_.get(),
-      base::BindOnce(&FrameImpl::OnAccessibilityError, base::Unretained(this)));
+      base::BindOnce(&FrameImpl::OnAccessibilityError, base::Unretained(this)),
+      inspect_node_.CreateChild(kAccessibilityInspectNodeName));
 }
 
 void FrameImpl::GetMediaPlayer(
@@ -830,7 +834,8 @@ void FrameImpl::EnableHeadlessRendering() {
         semantics_manager_for_test_, window_tree_host_->CreateViewRef(),
         web_contents_.get(),
         base::BindOnce(&FrameImpl::OnAccessibilityError,
-                       base::Unretained(this)));
+                       base::Unretained(this)),
+        inspect_node_.CreateChild(kAccessibilityInspectNodeName));
 
     // Set bounds for testing hit testing.
     bounds.set_size(kSemanticsTestingWindowSize);
