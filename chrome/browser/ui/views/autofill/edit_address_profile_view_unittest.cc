@@ -138,7 +138,7 @@ TEST_F(EditAddressProfileViewTest,
   EXPECT_CALL(
       *mock_controller(),
       OnUserDecision(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
+          AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
           AutofillProfileHasInfo(autofill::ServerFieldType::NAME_FULL,
                                  kNewFirstName)));
   dialog()->Accept();

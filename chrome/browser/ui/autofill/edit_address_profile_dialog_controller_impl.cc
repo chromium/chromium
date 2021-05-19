@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
+#include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -27,17 +28,16 @@ EditAddressProfileDialogControllerImpl::
 
 void EditAddressProfileDialogControllerImpl::OfferEdit(
     const AutofillProfile& profile,
-    bool is_update,
+    const AutofillProfile* original_profile,
     AutofillClient::AddressProfileSavePromptCallback
         address_profile_save_prompt_callback) {
   address_profile_to_edit_ = profile;
-  is_update_ = is_update;
+  original_profile_ = base::OptionalFromPtr(original_profile);
   address_profile_save_prompt_callback_ =
       std::move(address_profile_save_prompt_callback);
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  edit_dialog_ = browser->window()
-                     ->GetAutofillBubbleHandler()
-                     ->ShowEditAddressProfileDialog(web_contents(), this);
+  browser->window()->GetAutofillBubbleHandler()->ShowEditAddressProfileDialog(
+      web_contents(), this);
 }
 
 std::u16string EditAddressProfileDialogControllerImpl::GetWindowTitle() const {
@@ -47,8 +47,9 @@ std::u16string EditAddressProfileDialogControllerImpl::GetWindowTitle() const {
 std::u16string EditAddressProfileDialogControllerImpl::GetOkButtonLabel()
     const {
   return l10n_util::GetStringUTF16(
-      is_update_ ? IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_UPDATE
-                 : IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE);
+      original_profile_.has_value()
+          ? IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_UPDATE
+          : IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE);
 }
 
 const AutofillProfile&
@@ -59,17 +60,30 @@ EditAddressProfileDialogControllerImpl::GetProfileToEdit() const {
 void EditAddressProfileDialogControllerImpl::OnUserDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision,
     const AutofillProfile& profile_with_edits) {
-  edit_dialog_ = nullptr;
-  std::move(address_profile_save_prompt_callback_)
-      .Run(decision, profile_with_edits);
+  // If the user accepted the flow, save the changes directly.
+  if (decision ==
+      AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted) {
+    std::move(address_profile_save_prompt_callback_)
+        .Run(decision, profile_with_edits);
+    return;
+  }
+  // If the user hits "Cancel", reopen the previous prompt.
+  SaveUpdateAddressProfileBubbleControllerImpl::CreateForWebContents(
+      web_contents());
+  SaveUpdateAddressProfileBubbleControllerImpl* controller =
+      SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
+          web_contents());
+  controller->OfferSave(
+      address_profile_to_edit_, base::OptionalOrNullptr(original_profile_),
+      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
+      std::move(address_profile_save_prompt_callback_));
 }
 
 void EditAddressProfileDialogControllerImpl::OnDialogClosed() {
-  edit_dialog_ = nullptr;
   if (address_profile_save_prompt_callback_) {
-    std::move(address_profile_save_prompt_callback_)
-        .Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-             address_profile_to_edit_);
+    OnUserDecision(
+        AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
+        address_profile_to_edit_);
   }
 }
 

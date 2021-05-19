@@ -88,8 +88,7 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OnEditButtonClicked() {
   EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
   EditAddressProfileDialogControllerImpl* controller =
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
-  controller->OfferEdit(address_profile_,
-                        /*is_update=*/original_profile_.has_value(),
+  controller->OfferEdit(address_profile_, GetOriginalProfile(),
                         std::move(address_profile_save_prompt_callback_));
   HideBubble();
 }

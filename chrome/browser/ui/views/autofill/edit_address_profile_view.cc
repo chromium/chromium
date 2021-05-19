@@ -30,10 +30,10 @@ EditAddressProfileView::EditAddressProfileView(
 
   SetAcceptCallback(base::BindOnce(
       &EditAddressProfileView::OnUserDecision, base::Unretained(this),
-      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
+      AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted));
   SetCancelCallback(base::BindOnce(
       &EditAddressProfileView::OnUserDecision, base::Unretained(this),
-      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
+      AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   set_margins(ChromeLayoutProvider::Get()->GetInsetsMetric(

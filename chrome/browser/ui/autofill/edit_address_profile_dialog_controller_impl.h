@@ -13,8 +13,6 @@
 
 namespace autofill {
 
-class AutofillBubbleBase;
-
 // The controller functionality for EditAddressProfileView.
 class EditAddressProfileDialogControllerImpl
     : public EditAddressProfileDialogController,
@@ -29,11 +27,12 @@ class EditAddressProfileDialogControllerImpl
   ~EditAddressProfileDialogControllerImpl() override;
 
   // Sets up the controller and offers to edit the |profile| before saving it.
-  // |is_update| indicates whether this edit dialog was triggered from a save or
-  // update prompt. |address_profile_save_prompt_callback| will be invoked once
-  // the user makes a decision with respect to the offer-to-edit prompt.
+  // If `original_profile` is not nullptr, this indicates that this dialog is
+  // opened from an update prompt. The originating prompt (save or update) will
+  // be re-opened once the user makes a decision with respect to the
+  // offer-to-edit prompt.
   void OfferEdit(const AutofillProfile& profile,
-                 bool is_update,
+                 const AutofillProfile* original_profile,
                  AutofillClient::AddressProfileSavePromptCallback
                      address_profile_save_prompt_callback);
 
@@ -61,11 +60,10 @@ class EditAddressProfileDialogControllerImpl
   // before saving.
   AutofillProfile address_profile_to_edit_;
 
-  // Whether accepting this Edit dialog will result in saving a new address or
-  // updating an existing one.
-  bool is_update_ = false;
-
-  AutofillBubbleBase* edit_dialog_ = nullptr;
+  // If not nullptr, this dialog was opened from an update prompt. Contains the
+  // details of the address profile that will be updated if the user accepts
+  // that update prompt from which this edit dialog was opened..
+  absl::optional<AutofillProfile> original_profile_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
