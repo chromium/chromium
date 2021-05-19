@@ -10,9 +10,9 @@ This is a Node.js project, so install dependencies as usual:
 
 Then set the `CHROME_PATH` environment variable to a Chrome, Edge or Chromium binary to launch. For example, on macOS:
 
+    export CHROME_PATH="/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"
+    export CHROME_PATH="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
     export CHROME_PATH="example/path/to/Chromium.app/Contents/MacOS/Chromium"
-    export CHROME_PATH="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
-    export CHROME_PATH="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
 
 If it's a newly downloaded binary, first run it manually once to ensure the operating system trusts it.
 
