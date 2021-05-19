@@ -929,8 +929,6 @@ void BackgroundImageGeometry::Calculate(const LayoutBoxModelObject* container,
             : computed_x_position;
     SetNoRepeatX(fill_layer, unsnapped_box_offset.left + x_offset,
                  snapped_box_offset.left + snapped_x_offset);
-    if (OffsetInBackground(fill_layer).left > tile_size_.width)
-      unsnapped_dest_rect_ = snapped_dest_rect_ = PhysicalRect();
   }
 
   if (background_repeat_y == EFillRepeat::kRepeatFill) {
@@ -960,8 +958,6 @@ void BackgroundImageGeometry::Calculate(const LayoutBoxModelObject* container,
             : computed_y_position;
     SetNoRepeatY(fill_layer, unsnapped_box_offset.top + y_offset,
                  snapped_box_offset.top + snapped_y_offset);
-    if (OffsetInBackground(fill_layer).top > tile_size_.height)
-      unsnapped_dest_rect_ = snapped_dest_rect_ = PhysicalRect();
   }
 
   if (ShouldUseFixedAttachment(fill_layer))
