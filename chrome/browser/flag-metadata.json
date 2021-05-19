@@ -1723,12 +1723,12 @@
   {
     "name": "enable-experimental-accessibility-language-detection",
     "owners": [ "chrishall", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 98
   },
   {
     "name": "enable-experimental-accessibility-language-detection-dynamic",
     "owners": [ "chrishall", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 98
   },
   {
     "name": "enable-experimental-accessibility-switch-access-setup-guide",
