@@ -35,4 +35,14 @@ TEST_P(LayoutObjectFactoryTest, BR) {
     EXPECT_FALSE(layout_object.IsLayoutNGObject());
 }
 
+TEST_P(LayoutObjectFactoryTest, WordBreak) {
+  SetBodyInnerHTML("<wbr id=sample>");
+  const auto& layout_object = *GetLayoutObjectByElementId("sample");
+
+  if (LayoutNGEnabled())
+    EXPECT_TRUE(layout_object.IsLayoutNGObject());
+  else
+    EXPECT_FALSE(layout_object.IsLayoutNGObject());
+}
+
 }  // namespace blink
