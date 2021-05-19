@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/mac/scoped_nsobject.h"
+#include "base/strings/string_piece.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/printing_context.h"
@@ -93,6 +94,10 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextMac : public PrintingContext {
   // Sets resolution in PMPrintSettings.
   // Returns true if resolution is set.
   bool SetResolution(const gfx::Size& dpi_size);
+
+  // Sets key-value pair in PMPrintSettings.
+  // Returns true is the pair is set.
+  bool SetKeyValue(base::StringPiece key, base::StringPiece value);
 
   // The native print info object.
   base::scoped_nsobject<NSPrintInfo> print_info_;
