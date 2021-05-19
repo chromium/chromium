@@ -169,6 +169,43 @@ class ManagedStorageArea final : public gin::Wrappable<ManagedStorageArea> {
 
 gin::WrapperInfo ManagedStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
 
+class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
+ public:
+  SessionStorageArea(APIRequestHandler* request_handler,
+                     APIEventHandler* event_handler,
+                     const APITypeReferenceMap* type_refs,
+                     const BindingAccessChecker* access_checker)
+      : storage_area_(request_handler,
+                      event_handler,
+                      type_refs,
+                      "session",
+                      access_checker) {}
+  ~SessionStorageArea() override = default;
+
+  static gin::WrapperInfo kWrapperInfo;
+
+  gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
+      v8::Isolate* isolate) override {
+    return Wrappable<SessionStorageArea>::GetObjectTemplateBuilder(isolate)
+        .SetMethod("get", &SessionStorageArea::Get)
+        .SetMethod("set", &SessionStorageArea::Set)
+        .SetMethod("remove", &SessionStorageArea::Remove)
+        .SetMethod("clear", &SessionStorageArea::Clear)
+        .SetMethod("getBytesInUse", &SessionStorageArea::GetBytesInUse)
+        .SetProperty("onChanged", &SessionStorageArea::GetOnChangedEvent)
+        .SetValue("QUOTA_BYTES", api::storage::session::QUOTA_BYTES);
+  }
+
+ private:
+  DEFINE_STORAGE_AREA_HANDLERS()
+
+  StorageArea storage_area_;
+
+  DISALLOW_COPY_AND_ASSIGN(SessionStorageArea);
+};
+
+gin::WrapperInfo SessionStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
+
 #undef DEFINE_STORAGE_AREA_HANDLERS
 
 }  // namespace
@@ -204,6 +241,11 @@ v8::Local<v8::Object> StorageArea::CreateStorageArea(
     gin::Handle<SyncStorageArea> handle = gin::CreateHandle(
         isolate, new SyncStorageArea(request_handler, event_handler, type_refs,
                                      access_checker));
+    object = handle.ToV8().As<v8::Object>();
+  } else if (property_name == "session") {
+    gin::Handle<SessionStorageArea> handle = gin::CreateHandle(
+        isolate, new SessionStorageArea(request_handler, event_handler,
+                                        type_refs, access_checker));
     object = handle.ToV8().As<v8::Object>();
   } else {
     CHECK_EQ("managed", property_name);

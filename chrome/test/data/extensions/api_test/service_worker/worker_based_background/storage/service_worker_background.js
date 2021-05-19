@@ -97,6 +97,8 @@ var localKey = '_local_key';
 var localValue = 'this is a local value';
 var syncKey = '_sync_key';
 var syncValue = 'this is a sync value';
+var sessionKey = '_session_key';
+var sessionValue = 'this is a session value';
 
 chrome.test.runTests([
   function testLocalSet() {
@@ -140,5 +142,11 @@ chrome.test.runTests([
   },
   function testSyncOnStorageChanged() {
     testOnStorageChanged(chrome.storage.sync);
+  },
+  function testSessionSet() {
+    testSetStorage(chrome.storage.session, sessionKey, sessionValue);
+  },
+  function testSessionGet() {
+    testGetStorage(chrome.storage.session, sessionKey, sessionValue);
   },
 ]);

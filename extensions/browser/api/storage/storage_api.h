@@ -29,6 +29,10 @@ class SettingsFunction : public ExtensionFunction {
   // The StorageFrontend makes sure this is posted to the appropriate thread.
   virtual ResponseValue RunWithStorage(ValueStore* storage) = 0;
 
+  // Extension settings function implementations in `session` namespace should
+  // do their work here.
+  virtual ResponseValue RunInSession() = 0;
+
   // Convert the |result| of a read function to the appropriate response value.
   // - If the |result| succeeded this will return a response object argument.
   // - If the |result| failed will return an error object.
@@ -67,6 +71,7 @@ class StorageStorageAreaGetFunction : public SettingsFunction {
 
   // SettingsFunction:
   ResponseValue RunWithStorage(ValueStore* storage) override;
+  ResponseValue RunInSession() override;
 };
 
 class StorageStorageAreaSetFunction : public SettingsFunction {
@@ -78,6 +83,7 @@ class StorageStorageAreaSetFunction : public SettingsFunction {
 
   // SettingsFunction:
   ResponseValue RunWithStorage(ValueStore* storage) override;
+  ResponseValue RunInSession() override;
 
   // ExtensionFunction:
   void GetQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) const override;
@@ -92,6 +98,7 @@ class StorageStorageAreaRemoveFunction : public SettingsFunction {
 
   // SettingsFunction:
   ResponseValue RunWithStorage(ValueStore* storage) override;
+  ResponseValue RunInSession() override;
 
   // ExtensionFunction:
   void GetQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) const override;
@@ -106,6 +113,7 @@ class StorageStorageAreaClearFunction : public SettingsFunction {
 
   // SettingsFunction:
   ResponseValue RunWithStorage(ValueStore* storage) override;
+  ResponseValue RunInSession() override;
 
   // ExtensionFunction:
   void GetQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) const override;
@@ -120,6 +128,7 @@ class StorageStorageAreaGetBytesInUseFunction : public SettingsFunction {
 
   // SettingsFunction:
   ResponseValue RunWithStorage(ValueStore* storage) override;
+  ResponseValue RunInSession() override;
 };
 
 }  // namespace extensions

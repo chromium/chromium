@@ -231,6 +231,18 @@
         "$ref": "StorageArea",
         "description": "Items in the <code>managed</code> storage area are set by the domain administrator, and are read-only for the extension; trying to modify this namespace results in an error.",
         "value": [ "managed" ]
+      },
+      "session" : {
+        "$ref": "StorageArea",
+        "description": "Items in the <code>session</code> storage area are stored in-memory and will not be persisted to disk.",
+        "nodoc": true,
+        "value": ["session"],
+        "properties": {
+          "QUOTA_BYTES": {
+            "value": 1048576,
+            "description": "The maximum amount (in bytes) of data that can be stored in memory, as measured by estimating the dynamically allocated memory usage of every value and key. Updates that would cause this limit to be exceeded fail immediately and set $(ref:runtime.lastError)."
+          }
+        }
       }
     }
   }

@@ -556,6 +556,10 @@
     "dependencies": ["permission:storage"],
     "contexts": ["blessed_extension", "unblessed_extension", "content_script"]
   },
+  "storage.session": {
+    "channel": "canary"
+    // TODO(crbug.com/1185226): Restrict to Manifest V3.
+  },
   "system.cpu": {
     "dependencies": ["permission:system.cpu"],
     "contexts": ["blessed_extension"]

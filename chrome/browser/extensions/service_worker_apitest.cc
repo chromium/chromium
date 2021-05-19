@@ -42,6 +42,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/fake_gcm_driver_for_instance_id.h"
+#include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/console_message.h"
 #include "content/public/browser/navigation_controller.h"
@@ -68,6 +69,7 @@
 #include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/common/api/test.h"
 #include "extensions/common/extensions_client.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/value_builder.h"
@@ -289,6 +291,24 @@ class ServiceWorkerBasedBackgroundTest : public ServiceWorkerTest {
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerBasedBackgroundTest);
 };
 
+// A specialization of ExtensionSettingsApiTest that pretends it's running
+// on version_info::Channel::UNKNOWN.
+class ServiceWorkerBasedBackgroundTrunkTest
+    : public ServiceWorkerBasedBackgroundTest {
+ public:
+  ServiceWorkerBasedBackgroundTrunkTest() = default;
+  ~ServiceWorkerBasedBackgroundTrunkTest() override = default;
+  ServiceWorkerBasedBackgroundTrunkTest(
+      const ServiceWorkerBasedBackgroundTrunkTest& other) = delete;
+  ServiceWorkerBasedBackgroundTrunkTest& operator=(
+      const ServiceWorkerBasedBackgroundTrunkTest& other) = delete;
+
+ private:
+  // TODO(crbug.com/1185226): Remove unknown channel when chrome.storage.session
+  // is released in stable.
+  ScopedCurrentChannel current_channel_{version_info::Channel::UNKNOWN};
+};
+
 class ServiceWorkerBasedBackgroundTestWithNotification
     : public ServiceWorkerBasedBackgroundTest {
  public:
@@ -425,14 +445,22 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, RuntimeMisc) {
 }
 
 // Tests chrome.storage APIs.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, StorageSetAndGet) {
+// TODO(crbug.com/1185226): Change parent class to
+// `ServiceWorkerBasedBackgroundTest` when chrome.storage.session is released in
+// stable.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTrunkTest,
+                       StorageSetAndGet) {
   ASSERT_TRUE(
       RunExtensionTest("service_worker/worker_based_background/storage"))
       << message_;
 }
 
-// Tests chrome.storage.local and chrome.storage.local APIs.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, StorageNoPermissions) {
+// Tests chrome.storage APIs are only enabled with permission.
+// TODO(crbug.com/1185226): Change parent class to
+// `ServiceWorkerBasedBackgroundTest` when chrome.storage.session is released in
+// stable.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTrunkTest,
+                       StorageNoPermissions) {
   ASSERT_TRUE(RunExtensionTest(
       "service_worker/worker_based_background/storage_no_permissions"))
       << message_;

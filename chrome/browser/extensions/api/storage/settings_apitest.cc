@@ -33,15 +33,18 @@
 #include "components/sync/test/model/fake_sync_change_processor.h"
 #include "components/sync/test/model/sync_change_processor_wrapper_for_test.h"
 #include "components/sync/test/model/sync_error_factory_mock.h"
+#include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/value_store/settings_namespace.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/value_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace extensions {
@@ -228,7 +231,75 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, SimpleTest) {
+// A specialization of ExtensionSettingsApiTest that pretends it's running
+// on version_info::Channel::UNKNOWN.
+class ExtensionSettingsTrunkApiTest : public ExtensionSettingsApiTest {
+ public:
+  ExtensionSettingsTrunkApiTest() = default;
+  ~ExtensionSettingsTrunkApiTest() override = default;
+  ExtensionSettingsTrunkApiTest(const ExtensionSettingsTrunkApiTest& other) =
+      delete;
+  ExtensionSettingsTrunkApiTest& operator=(
+      const ExtensionSettingsTrunkApiTest& other) = delete;
+
+ private:
+  // TODO(crbug.com/1185226): Remove unknown channel when chrome.storage.session
+  // is released in stable.
+  ScopedCurrentChannel current_channel_{version_info::Channel::UNKNOWN};
+};
+
+// A specialization of ExtensionSettingsApiTest that pretends it's running
+// on version_info::Channel::DEV.
+class ExtensionSettingsDevApiTest : public ExtensionSettingsApiTest {
+ public:
+  ExtensionSettingsDevApiTest() = default;
+  ~ExtensionSettingsDevApiTest() override = default;
+  ExtensionSettingsDevApiTest(const ExtensionSettingsDevApiTest& other) =
+      delete;
+  ExtensionSettingsDevApiTest& operator=(
+      const ExtensionSettingsDevApiTest& other) = delete;
+
+ private:
+  // TODO(crbug.com/1185226): Remove dev channel when chrome.storage.session
+  // is released in stable.
+  ScopedCurrentChannel current_channel_{version_info::Channel::DEV};
+};
+
+// TODO(crbug.com/1185226): Remove test when chrome.storage.session
+// is released in stable.
+IN_PROC_BROWSER_TEST_F(ExtensionSettingsDevApiTest,
+                       SessionInUnsupportedChannel) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "Unsupported channel for session",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": { "service_worker": "worker.js" },
+           "permissions": ["storage"]
+         })";
+
+  constexpr char kWorker[] =
+      R"(chrome.test.runTests([
+          function unsupported() {
+            chrome.test.assertEq(undefined, chrome.storage.session);
+            chrome.test.assertTrue(!!chrome.storage.local);
+            chrome.test.succeed();
+          },
+        ]);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorker);
+
+  ResultCatcher catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+// TODO(crbug.com/1185226): Change parent class to `ExtensionSettingsApiTest`
+// when chrome.storage.session is released in stable.
+IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest, SimpleTest) {
   ASSERT_TRUE(RunExtensionTest("settings/simple_test")) << message_;
 }
 
@@ -236,32 +307,50 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, SimpleTest) {
 // Note that only split-mode incognito is tested, because spanning mode
 // incognito looks the same as normal mode when the only API activity comes
 // from background pages.
-IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, SplitModeIncognito) {
+// TODO(crbug.com/1185226): Change parent class to `ExtensionSettingsApiTest`
+// when chrome.storage.session is released in stable.
+IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest, SplitModeIncognito) {
   // We need 2 ResultCatchers because we'll be running the same test in both
   // regular and incognito mode.
-  ResultCatcher catcher, catcher_incognito;
+  ResultCatcher catcher;
+  ResultCatcher catcher_incognito;
   catcher.RestrictToBrowserContext(browser()->profile());
   catcher_incognito.RestrictToBrowserContext(
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
+  // Sync, local and managed follow the same storage flow (RunWithStorage),
+  // whereas session follows a separate flow (RunWithSession). For the purpose
+  // of this test we can just test sync and session.
+  StorageAreaNamespace storage_areas[2] = {StorageAreaNamespace::kSync,
+                                           StorageAreaNamespace::kSession};
   LoadAndReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertEmpty",
                             "assertEmpty", "split_incognito");
-  ReplyWhenSatisfied(StorageAreaNamespace::kSync, "noop", "setFoo");
-  ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertFoo", "assertFoo");
-  ReplyWhenSatisfied(StorageAreaNamespace::kSync, "clear", "noop");
-  ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertEmpty", "assertEmpty");
-  ReplyWhenSatisfied(StorageAreaNamespace::kSync, "setFoo", "noop");
-  ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertFoo", "assertFoo");
-  ReplyWhenSatisfied(StorageAreaNamespace::kSync, "noop", "removeFoo");
-  FinalReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertEmpty",
-                          "assertEmpty");
+  for (const StorageAreaNamespace& storage_area : storage_areas) {
+    ReplyWhenSatisfied(storage_area, "assertEmpty", "assertEmpty");
+    ReplyWhenSatisfied(storage_area, "noop", "setFoo");
+    // TODO(crbug.com/1185226): Move this condition accordingly as `session`
+    // SettingFunction's are implemented. Currently it skips the
+    // functions that `session` has not implemented yet. When all functions are
+    // implemented, FinalReplyWhenSatisfied() will be moved outside the loop.
+    if (storage_area == StorageAreaNamespace::kSession) {
+      FinalReplyWhenSatisfied(storage_area, "assertFoo", "assertFoo");
+      break;
+    }
+    ReplyWhenSatisfied(storage_area, "assertFoo", "assertFoo");
+    ReplyWhenSatisfied(storage_area, "clear", "noop");
+    ReplyWhenSatisfied(storage_area, "assertEmpty", "assertEmpty");
+    ReplyWhenSatisfied(storage_area, "setFoo", "noop");
+    ReplyWhenSatisfied(storage_area, "assertFoo", "assertFoo");
+    ReplyWhenSatisfied(storage_area, "noop", "removeFoo");
+    ReplyWhenSatisfied(storage_area, "assertEmpty", "assertEmpty");
+  }
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   EXPECT_TRUE(catcher_incognito.GetNextResult()) << catcher.message();
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
-    OnChangedNotificationsBetweenBackgroundPages) {
+                       OnChangedNotificationsBetweenBackgroundPages) {
   // We need 2 ResultCatchers because we'll be running the same test in both
   // regular and incognito mode.
   ResultCatcher catcher, catcher_incognito;
@@ -286,11 +375,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   EXPECT_TRUE(catcher_incognito.GetNextResult()) << catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
-    SyncAndLocalAreasAreSeparate) {
+// TODO(crbug.com/1185226): Change parent class to `ExtensionSettingsApiTest`
+// when chrome.storage.session is released in stable.
+IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest,
+                       SyncLocalAndSessionAreasAreSeparate) {
   // We need 2 ResultCatchers because we'll be running the same test in both
   // regular and incognito mode.
-  ResultCatcher catcher, catcher_incognito;
+  ResultCatcher catcher;
+  ResultCatcher catcher_incognito;
   catcher.RestrictToBrowserContext(browser()->profile());
   catcher_incognito.RestrictToBrowserContext(
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
@@ -307,6 +399,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
                      "assertEmpty");
   ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertNoNotifications",
                      "assertNoNotifications");
+  ReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertEmpty",
+                     "assertEmpty");
+  // TODO(crbug.com/1185226): Assert no notifications when onChangedEvent
+  // implemented for 'session'.
 
   ReplyWhenSatisfied(StorageAreaNamespace::kSync, "clearNotifications",
                      "clearNotifications");
@@ -318,9 +414,27 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertFoo", "assertFoo");
   ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertNoNotifications",
                      "assertNoNotifications");
+  ReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertEmpty",
+                     "assertEmpty");
+  // TODO(crbug.com/1185226): Assert no notifications when onChangedEvent
+  // implemented for 'session'.
 
   ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "clearNotifications",
                      "clearNotifications");
+
+  ReplyWhenSatisfied(StorageAreaNamespace::kSession, "setFoo", "noop");
+  ReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertFoo", "assertFoo");
+  // TODO(crbug.com/1185226): Assert add notification when onChangedEvent
+  // implemented for 'session'.
+  ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertFoo", "assertFoo");
+  ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertNoNotifications",
+                     "assertNoNotifications");
+  ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertFoo", "assertFoo");
+  ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertNoNotifications",
+                     "assertNoNotifications");
+
+  // TODO(crbug.com/1185226): Clear notifications when onChangedEvent
+  // implemented for 'session'.
 
   ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "noop", "removeFoo");
   ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertEmpty",
@@ -331,6 +445,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertFoo", "assertFoo");
   ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertNoNotifications",
                      "assertNoNotifications");
+  ReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertFoo", "assertFoo");
+  // TODO(crbug.com/1185226): Assert no notifications when onChangedEvent
+  // implemented for 'session'.
 
   ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "clearNotifications",
                      "clearNotifications");
@@ -339,10 +456,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertEmpty", "assertEmpty");
   ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertDeleteFooNotification",
                      "assertDeleteFooNotification");
+  ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertEmpty",
+                     "assertEmpty");
   ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertNoNotifications",
                      "assertNoNotifications");
-  FinalReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertEmpty",
-                          "assertEmpty");
+  FinalReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertFoo",
+                          "assertFoo");
+  // TODO(crbug.com/1185226): Assert no notifications when onChangedEvent
+  // implemented for 'session'.
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   EXPECT_TRUE(catcher_incognito.GetNextResult()) << catcher.message();
