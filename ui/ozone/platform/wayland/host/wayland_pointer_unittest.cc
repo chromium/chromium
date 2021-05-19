@@ -308,6 +308,7 @@ TEST_P(WaylandPointerTest, SetBitmapOnPointerFocus) {
   Mock::VerifyAndClearExpectations(pointer_);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_P(WaylandPointerTest, FlingVertical) {
   uint32_t serial = 0;
   uint32_t time = 1001;
@@ -539,6 +540,7 @@ TEST_P(WaylandPointerTest, FlingDiagonal) {
   EXPECT_GT(std::abs(scroll_event->x_offset_ordinal()),
             std::abs(scroll_event->y_offset_ordinal()));
 }
+#endif
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandPointerTest,

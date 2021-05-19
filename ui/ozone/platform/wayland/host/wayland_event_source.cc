@@ -217,10 +217,18 @@ void WaylandEventSource::OnPointerFrameEvent() {
 
   int flags = pointer_flags_ | keyboard_modifiers_;
 
+  static constexpr bool supports_trackpad_kinetic_scrolling =
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      true;
+#else
+      false;
+#endif
+
   // Dispatch Fling event if pointer.axis_stop is notified and the recent
   // pointer.axis events meets the criteria to start fling scroll.
   if (current_pointer_frame_.dx == 0 && current_pointer_frame_.dy == 0 &&
-      current_pointer_frame_.is_axis_stop) {
+      current_pointer_frame_.is_axis_stop &&
+      supports_trackpad_kinetic_scrolling) {
     gfx::Vector2dF initial_velocity = ComputeFlingVelocity();
     float vx = initial_velocity.x();
     float vy = initial_velocity.y();
