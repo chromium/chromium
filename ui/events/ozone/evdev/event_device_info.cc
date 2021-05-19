@@ -498,8 +498,7 @@ bool EventDeviceInfo::IsStylusButtonDevice() const {
 }
 
 bool EventDeviceInfo::IsMicrophoneMuteSwitchDevice() const {
-  return HasSwEvent(SW_MUTE_DEVICE) && device_type_ == INPUT_DEVICE_INTERNAL &&
-         name_ == "mic_mute_switch";
+  return HasSwEvent(SW_MUTE_DEVICE) && device_type_ == INPUT_DEVICE_INTERNAL;
 }
 
 bool IsInKeyboardBlockList(input_id input_id_) {
