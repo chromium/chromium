@@ -68,7 +68,13 @@ void FrameProcessingTimeEstimator::StartFrame() {
 
 void FrameProcessingTimeEstimator::FinishFrame(
     const WebrtcVideoEncoder::EncodedFrame& frame) {
-  DCHECK(!start_time_.is_null());
+  // TODO(crbug.com/1192865): Extract the start time from |frame| itself,
+  // instead of relying on the latest StartFrame() call matching this
+  // particular frame.
+  if (start_time_.is_null()) {
+    return;
+  }
+
   base::TimeTicks now = Now();
   if (frame_finish_ticks_.size() == kFrameFinishTicksCount) {
     frame_finish_ticks_.pop_front();

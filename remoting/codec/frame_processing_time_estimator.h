@@ -24,8 +24,8 @@ class FrameProcessingTimeEstimator {
   // calling FinishFrame() will deprecate last record.
   void StartFrame();
 
-  // Marks the finish of encoding a frame. FinishFrame() should only be called
-  // after a StartFrame() call.
+  // Marks the finish of encoding a frame. Ignored if there is no
+  // corresponding StartFrame() call.
   void FinishFrame(const WebrtcVideoEncoder::EncodedFrame& frame);
 
   // Sets the estimated network bandwidth. Negative |bandwidth_kbps| will be
