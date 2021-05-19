@@ -2,27 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/child/webthemeengine_impl_android.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_android.h"
 
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
-#include "content/child/webthemeengine_impl_conversions.h"
 #include "skia/ext/platform_canvas.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
 #include "ui/native_theme/native_theme.h"
 
-using blink::WebThemeEngine;
-
-namespace content {
+namespace blink {
 
 namespace {
-  const int kVersionLollipop = 5;
+const int kVersionLollipop = 5;
 
-  int getMajorVersion() {
-    int major, minor, bugfix;
-    base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
-    return major;
-  }
+int getMajorVersion() {
+  int major, minor, bugfix;
+  base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
+  return major;
 }
+}  // namespace
 
 static void GetNativeThemeExtraParams(
     WebThemeEngine::Part part,
@@ -166,22 +164,21 @@ void WebThemeEngineAndroid::Paint(
     blink::mojom::ColorScheme color_scheme,
     const absl::optional<SkColor>& accent_color) {
   ui::NativeTheme::ExtraParams native_theme_extra_params;
-  GetNativeThemeExtraParams(
-      part, state, extra_params, &native_theme_extra_params);
+  GetNativeThemeExtraParams(part, state, extra_params,
+                            &native_theme_extra_params);
   ui::NativeTheme::GetInstanceForWeb()->Paint(
       canvas, NativeThemePart(part), NativeThemeState(state), rect,
       native_theme_extra_params, NativeColorScheme(color_scheme), accent_color);
 }
 
-blink::ForcedColors WebThemeEngineAndroid::GetForcedColors() const {
+ForcedColors WebThemeEngineAndroid::GetForcedColors() const {
   return ui::NativeTheme::GetInstanceForWeb()->InForcedColorsMode()
-             ? blink::ForcedColors::kActive
-             : blink::ForcedColors::kNone;
+             ? ForcedColors::kActive
+             : ForcedColors::kNone;
 }
 
-void WebThemeEngineAndroid::SetForcedColors(
-    const blink::ForcedColors forced_colors) {
+void WebThemeEngineAndroid::SetForcedColors(const ForcedColors forced_colors) {
   ui::NativeTheme::GetInstanceForWeb()->set_forced_colors(
-      forced_colors == blink::ForcedColors::kActive);
+      forced_colors == ForcedColors::kActive);
 }
-}  // namespace content
+}  // namespace blink

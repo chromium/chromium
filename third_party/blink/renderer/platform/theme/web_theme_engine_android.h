@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_CHILD_WEBTHEMEENGINE_IMPL_ANDROID_H_
-#define CONTENT_CHILD_WEBTHEMEENGINE_IMPL_ANDROID_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_THEME_WEB_THEME_ENGINE_ANDROID_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_THEME_WEB_THEME_ENGINE_ANDROID_H_
 
 #include "third_party/blink/public/platform/web_theme_engine.h"
 
-namespace content {
+namespace blink {
 
 class WebThemeEngineAndroid : public blink::WebThemeEngine {
  public:
@@ -27,6 +27,6 @@ class WebThemeEngineAndroid : public blink::WebThemeEngine {
   void SetForcedColors(const blink::ForcedColors forced_colors) override;
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_CHILD_WEBTHEMEENGINE_IMPL_ANDROID_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_THEME_WEB_THEME_ENGINE_ANDROID_H_

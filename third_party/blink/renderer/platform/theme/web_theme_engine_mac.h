@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_CHILD_WEBTHEMEENGINE_IMPL_MAC_H_
-#define CONTENT_CHILD_WEBTHEMEENGINE_IMPL_MAC_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_THEME_WEB_THEME_ENGINE_MAC_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_THEME_WEB_THEME_ENGINE_MAC_H_
 
-#include "content/child/webthemeengine_impl_default.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_default.h"
 
-namespace content {
+namespace blink {
 
 class WebThemeEngineMac : public WebThemeEngineDefault {
  public:
   ~WebThemeEngineMac() override {}
 
   void Paint(cc::PaintCanvas* canvas,
-             blink::WebThemeEngine::Part part,
-             blink::WebThemeEngine::State state,
+             WebThemeEngine::Part part,
+             WebThemeEngine::State state,
              const gfx::Rect& rect,
-             const blink::WebThemeEngine::ExtraParams* extra_params,
-             blink::mojom::ColorScheme color_scheme,
+             const WebThemeEngine::ExtraParams* extra_params,
+             mojom::ColorScheme color_scheme,
              const absl::optional<SkColor>& accent_color) override;
 
   static bool IsScrollbarPart(WebThemeEngine::Part part);
@@ -28,9 +28,9 @@ class WebThemeEngineMac : public WebThemeEngineDefault {
       WebThemeEngine::State state,
       const gfx::Rect& rect,
       const WebThemeEngine::ExtraParams* extra_params,
-      blink::mojom::ColorScheme color_scheme);
+      mojom::ColorScheme color_scheme);
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_CHILD_WEBTHEMEENGINE_IMPL_MAC_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_THEME_WEB_THEME_ENGINE_MAC_H_

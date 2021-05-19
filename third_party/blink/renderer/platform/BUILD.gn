@@ -1427,6 +1427,10 @@ component("platform") {
     "text/writing_mode.cc",
     "text/writing_mode.h",
     "text/writing_mode_utils.h",
+    "theme/web_theme_engine_conversions.cc",
+    "theme/web_theme_engine_conversions.h",
+    "theme/web_theme_engine_helper.cc",
+    "theme/web_theme_engine_helper.h",
     "timer.cc",
     "timer.h",
     "transforms/affine_transform.cc",
@@ -1585,6 +1589,8 @@ component("platform") {
       "mac/web_core_ns_cell_extras.mm",
       "text/locale_mac.h",
       "text/locale_mac.mm",
+      "theme/web_theme_engine_mac.cc",
+      "theme/web_theme_engine_mac.h",
     ]
   }
 
@@ -1701,6 +1707,19 @@ component("platform") {
     "//ui/gfx/mojom",
     "//ui/native_theme",
   ]
+
+  if (is_android) {
+    deps += [ "//third_party/android_ndk:cpu_features" ]
+    sources += [
+      "theme/web_theme_engine_android.cc",
+      "theme/web_theme_engine_android.h",
+    ]
+  } else {
+    sources += [
+      "theme/web_theme_engine_default.cc",
+      "theme/web_theme_engine_default.h",
+    ]
+  }
 
   if (is_mac) {
     sources -= [
@@ -2144,6 +2163,7 @@ source_set("blink_platform_unittests_sources") {
     "text/text_run_test.cc",
     "text/unicode_utilities_test.cc",
     "text/writing_mode_utils_test.cc",
+    "theme/web_theme_engine_test.cc",
     "timer_test.cc",
     "transforms/affine_transform_test.cc",
     "transforms/rotation_test.cc",

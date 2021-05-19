@@ -160,8 +160,10 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
                         public blink::WebLocalFrameClient,
                         public blink::mojom::WidgetHost {
    public:
-    WebViewHelper(WebViewPlugin* plugin,
-                  const blink::web_pref::WebPreferences& preferences);
+    WebViewHelper(
+        WebViewPlugin* plugin,
+        const blink::web_pref::WebPreferences& parent_web_preferences,
+        const blink::RendererPreferences& parent_renderer_preferences);
     ~WebViewHelper() override;
 
     blink::WebView* web_view() { return web_view_; }

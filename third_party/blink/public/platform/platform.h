@@ -193,8 +193,8 @@ class BLINK_PLATFORM_EXPORT Platform {
   // May return null if sandbox support is not necessary
   virtual WebSandboxSupport* GetSandboxSupport() { return nullptr; }
 
-  // May return null on some platforms.
-  virtual WebThemeEngine* ThemeEngine() { return nullptr; }
+  // Returns a theme engine. Should be non-null.
+  virtual WebThemeEngine* ThemeEngine();
 
   // AppCache  ----------------------------------------------------------
 

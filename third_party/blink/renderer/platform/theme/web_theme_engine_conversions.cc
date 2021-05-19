@@ -2,51 +2,51 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/child/webthemeengine_impl_conversions.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
 
-namespace content {
+namespace blink {
 
 // TODO(https://crbug.com/988434): The mapping functions below are duplicated
 // inside Blink and in the Android implementation of WebThemeEngine. They should
 // be implemented in one place where dependencies between Blink and
 // ui::NativeTheme make sense.
-ui::NativeTheme::Part NativeThemePart(blink::WebThemeEngine::Part part) {
+ui::NativeTheme::Part NativeThemePart(WebThemeEngine::Part part) {
   switch (part) {
-    case blink::WebThemeEngine::kPartScrollbarDownArrow:
+    case WebThemeEngine::kPartScrollbarDownArrow:
       return ui::NativeTheme::kScrollbarDownArrow;
-    case blink::WebThemeEngine::kPartScrollbarLeftArrow:
+    case WebThemeEngine::kPartScrollbarLeftArrow:
       return ui::NativeTheme::kScrollbarLeftArrow;
-    case blink::WebThemeEngine::kPartScrollbarRightArrow:
+    case WebThemeEngine::kPartScrollbarRightArrow:
       return ui::NativeTheme::kScrollbarRightArrow;
-    case blink::WebThemeEngine::kPartScrollbarUpArrow:
+    case WebThemeEngine::kPartScrollbarUpArrow:
       return ui::NativeTheme::kScrollbarUpArrow;
-    case blink::WebThemeEngine::kPartScrollbarHorizontalThumb:
+    case WebThemeEngine::kPartScrollbarHorizontalThumb:
       return ui::NativeTheme::kScrollbarHorizontalThumb;
-    case blink::WebThemeEngine::kPartScrollbarVerticalThumb:
+    case WebThemeEngine::kPartScrollbarVerticalThumb:
       return ui::NativeTheme::kScrollbarVerticalThumb;
-    case blink::WebThemeEngine::kPartScrollbarHorizontalTrack:
+    case WebThemeEngine::kPartScrollbarHorizontalTrack:
       return ui::NativeTheme::kScrollbarHorizontalTrack;
-    case blink::WebThemeEngine::kPartScrollbarVerticalTrack:
+    case WebThemeEngine::kPartScrollbarVerticalTrack:
       return ui::NativeTheme::kScrollbarVerticalTrack;
-    case blink::WebThemeEngine::kPartScrollbarCorner:
+    case WebThemeEngine::kPartScrollbarCorner:
       return ui::NativeTheme::kScrollbarCorner;
-    case blink::WebThemeEngine::kPartCheckbox:
+    case WebThemeEngine::kPartCheckbox:
       return ui::NativeTheme::kCheckbox;
-    case blink::WebThemeEngine::kPartRadio:
+    case WebThemeEngine::kPartRadio:
       return ui::NativeTheme::kRadio;
-    case blink::WebThemeEngine::kPartButton:
+    case WebThemeEngine::kPartButton:
       return ui::NativeTheme::kPushButton;
-    case blink::WebThemeEngine::kPartTextField:
+    case WebThemeEngine::kPartTextField:
       return ui::NativeTheme::kTextField;
-    case blink::WebThemeEngine::kPartMenuList:
+    case WebThemeEngine::kPartMenuList:
       return ui::NativeTheme::kMenuList;
-    case blink::WebThemeEngine::kPartSliderTrack:
+    case WebThemeEngine::kPartSliderTrack:
       return ui::NativeTheme::kSliderTrack;
-    case blink::WebThemeEngine::kPartSliderThumb:
+    case WebThemeEngine::kPartSliderThumb:
       return ui::NativeTheme::kSliderThumb;
-    case blink::WebThemeEngine::kPartInnerSpinButton:
+    case WebThemeEngine::kPartInnerSpinButton:
       return ui::NativeTheme::kInnerSpinButton;
-    case blink::WebThemeEngine::kPartProgressBar:
+    case WebThemeEngine::kPartProgressBar:
       return ui::NativeTheme::kProgressBar;
     default:
       return ui::NativeTheme::kScrollbarDownArrow;
@@ -54,29 +54,26 @@ ui::NativeTheme::Part NativeThemePart(blink::WebThemeEngine::Part part) {
 }
 
 ui::NativeTheme::ScrollbarOverlayColorTheme
-NativeThemeScrollbarOverlayColorTheme(
-    blink::WebScrollbarOverlayColorTheme theme) {
+NativeThemeScrollbarOverlayColorTheme(WebScrollbarOverlayColorTheme theme) {
   switch (theme) {
-    case blink::WebScrollbarOverlayColorTheme::
-        kWebScrollbarOverlayColorThemeLight:
+    case WebScrollbarOverlayColorTheme::kWebScrollbarOverlayColorThemeLight:
       return ui::NativeTheme::ScrollbarOverlayColorThemeLight;
-    case blink::WebScrollbarOverlayColorTheme::
-        kWebScrollbarOverlayColorThemeDark:
+    case WebScrollbarOverlayColorTheme::kWebScrollbarOverlayColorThemeDark:
       return ui::NativeTheme::ScrollbarOverlayColorThemeDark;
     default:
       return ui::NativeTheme::ScrollbarOverlayColorThemeDark;
   }
 }
 
-ui::NativeTheme::State NativeThemeState(blink::WebThemeEngine::State state) {
+ui::NativeTheme::State NativeThemeState(WebThemeEngine::State state) {
   switch (state) {
-    case blink::WebThemeEngine::kStateDisabled:
+    case WebThemeEngine::kStateDisabled:
       return ui::NativeTheme::kDisabled;
-    case blink::WebThemeEngine::kStateHover:
+    case WebThemeEngine::kStateHover:
       return ui::NativeTheme::kHovered;
-    case blink::WebThemeEngine::kStateNormal:
+    case WebThemeEngine::kStateNormal:
       return ui::NativeTheme::kNormal;
-    case blink::WebThemeEngine::kStatePressed:
+    case WebThemeEngine::kStatePressed:
       return ui::NativeTheme::kPressed;
     default:
       return ui::NativeTheme::kDisabled;
@@ -84,38 +81,37 @@ ui::NativeTheme::State NativeThemeState(blink::WebThemeEngine::State state) {
 }
 
 ui::NativeTheme::ColorScheme NativeColorScheme(
-    blink::mojom::ColorScheme color_scheme) {
+    mojom::ColorScheme color_scheme) {
   switch (color_scheme) {
-    case blink::mojom::ColorScheme::kLight:
+    case mojom::ColorScheme::kLight:
       return ui::NativeTheme::ColorScheme::kLight;
-    case blink::mojom::ColorScheme::kDark:
+    case mojom::ColorScheme::kDark:
       return ui::NativeTheme::ColorScheme::kDark;
   }
 }
 
 ui::NativeTheme::SystemThemeColor NativeSystemThemeColor(
-    blink::WebThemeEngine::SystemThemeColor theme_color) {
+    WebThemeEngine::SystemThemeColor theme_color) {
   switch (theme_color) {
-    case blink::WebThemeEngine::SystemThemeColor::kButtonFace:
+    case WebThemeEngine::SystemThemeColor::kButtonFace:
       return ui::NativeTheme::SystemThemeColor::kButtonFace;
-    case blink::WebThemeEngine::SystemThemeColor::kButtonText:
+    case WebThemeEngine::SystemThemeColor::kButtonText:
       return ui::NativeTheme::SystemThemeColor::kButtonText;
-    case blink::WebThemeEngine::SystemThemeColor::kGrayText:
+    case WebThemeEngine::SystemThemeColor::kGrayText:
       return ui::NativeTheme::SystemThemeColor::kGrayText;
-    case blink::WebThemeEngine::SystemThemeColor::kHighlight:
+    case WebThemeEngine::SystemThemeColor::kHighlight:
       return ui::NativeTheme::SystemThemeColor::kHighlight;
-    case blink::WebThemeEngine::SystemThemeColor::kHighlightText:
+    case WebThemeEngine::SystemThemeColor::kHighlightText:
       return ui::NativeTheme::SystemThemeColor::kHighlightText;
-    case blink::WebThemeEngine::SystemThemeColor::kHotlight:
+    case WebThemeEngine::SystemThemeColor::kHotlight:
       return ui::NativeTheme::SystemThemeColor::kHotlight;
-    case blink::WebThemeEngine::SystemThemeColor::kWindow:
+    case WebThemeEngine::SystemThemeColor::kWindow:
       return ui::NativeTheme::SystemThemeColor::kWindow;
-    case blink::WebThemeEngine::SystemThemeColor::kWindowText:
+    case WebThemeEngine::SystemThemeColor::kWindowText:
       return ui::NativeTheme::SystemThemeColor::kWindowText;
     default:
       return ui::NativeTheme::SystemThemeColor::kNotSupported;
   }
 }
 
-
-}  // namespace content
+}  // namespace blink

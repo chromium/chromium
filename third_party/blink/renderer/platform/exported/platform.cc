@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/simple_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -177,6 +178,10 @@ class SimpleMainThread : public Thread {
 };
 
 }  // namespace
+
+WebThemeEngine* Platform::ThemeEngine() {
+  return WebThemeEngineHelper::GetNativeThemeEngine();
+}
 
 void Platform::InitializeBlink() {
   DCHECK(!did_initialize_blink_);

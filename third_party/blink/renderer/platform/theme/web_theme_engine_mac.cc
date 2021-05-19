@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/child/webthemeengine_impl_mac.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_mac.h"
 
-#include "content/child/webthemeengine_impl_conversions.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
 #include "ui/native_theme/native_theme.h"
 
-namespace content {
+namespace blink {
 
 void WebThemeEngineMac::Paint(cc::PaintCanvas* canvas,
                               WebThemeEngine::Part part,
                               WebThemeEngine::State state,
                               const gfx::Rect& rect,
                               const WebThemeEngine::ExtraParams* extra_params,
-                              blink::mojom::ColorScheme color_scheme,
+                              mojom::ColorScheme color_scheme,
                               const absl::optional<SkColor>& accent_color) {
   if (IsScrollbarPart(part)) {
     PaintMacScrollBarParts(canvas, part, state, rect, extra_params,
@@ -45,7 +45,7 @@ void WebThemeEngineMac::PaintMacScrollBarParts(
     WebThemeEngine::State state,
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
-    blink::mojom::ColorScheme color_scheme) {
+    mojom::ColorScheme color_scheme) {
   ui::NativeTheme::ExtraParams native_theme_extra_params;
   native_theme_extra_params.scrollbar_extra.is_hovering =
       extra_params->scrollbar_extra.is_hovering;
@@ -71,4 +71,4 @@ void WebThemeEngineMac::PaintMacScrollBarParts(
       native_theme_extra_params, NativeColorScheme(color_scheme));
 }
 
-}  // namespace content
+}  // namespace blink

@@ -167,6 +167,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_lifecycle_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
@@ -3143,9 +3144,7 @@ void WebViewImpl::UpdateRendererPreferences(
   for (auto& watcher : renderer_preference_watchers_)
     watcher->NotifyUpdate(renderer_preferences_);
 
-  // TODO(crbug.com/1102442): Remove once we no longer need to update theme
-  // preferences on Windows via content::WebThemeEngineDefault.
-  web_view_client_->DidUpdateRendererPreferences();
+  WebThemeEngineHelper::DidUpdateRendererPreferences(preferences);
   UpdateFontRenderingFromRendererPrefs();
 
   blink::SetCaretBlinkInterval(

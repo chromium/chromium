@@ -32,7 +32,6 @@ class CONTENT_EXPORT BlinkPlatformImpl : public blink::Platform {
   ~BlinkPlatformImpl() override;
 
   // blink::Platform implementation.
-  blink::WebThemeEngine* ThemeEngine() override;
   bool IsURLSupportedForAppCache(const blink::WebURL& url) override;
   bool IsURLSavableForSavableResource(const blink::WebURL& url) override;
   size_t MaxDecodedImageBytes() override;
@@ -60,7 +59,6 @@ class CONTENT_EXPORT BlinkPlatformImpl : public blink::Platform {
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner_;
   const scoped_refptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
       browser_interface_broker_proxy_;
-  std::unique_ptr<blink::WebThemeEngine> native_theme_engine_;
   webcrypto::WebCryptoImpl web_crypto_;
 };
 

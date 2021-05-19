@@ -53,8 +53,6 @@ target(link_target_type, "child") {
     "runtime_features.h",
     "scoped_child_process_reference.cc",
     "scoped_child_process_reference.h",
-    "webthemeengine_impl_conversions.cc",
-    "webthemeengine_impl_conversions.h",
   ]
 
   configs += [ "//build/config:precompiled_headers" ]
@@ -116,19 +114,6 @@ target(link_target_type, "child") {
     "//v8",
   ]
 
-  if (is_android) {
-    deps += [ "//third_party/android_ndk:cpu_features" ]
-    sources += [
-      "webthemeengine_impl_android.cc",
-      "webthemeengine_impl_android.h",
-    ]
-  } else {
-    sources += [
-      "webthemeengine_impl_default.cc",
-      "webthemeengine_impl_default.h",
-    ]
-  }
-
   if (is_linux || is_chromeos) {
     sources += [
       "child_process_sandbox_support_impl_linux.cc",
@@ -160,8 +145,6 @@ target(link_target_type, "child") {
     sources += [
       "child_process_sandbox_support_impl_mac.cc",
       "child_process_sandbox_support_impl_mac.h",
-      "webthemeengine_impl_mac.cc",
-      "webthemeengine_impl_mac.h",
     ]
   }
 

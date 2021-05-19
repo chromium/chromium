@@ -92,8 +92,6 @@ class WebViewClient {
 
   virtual void OnPageFrozenChanged(bool frozen) {}
 
-  virtual void DidUpdateRendererPreferences() {}
-
   // UI ------------------------------------------------------------------
 
   // Called when the View has changed size as a result of an auto-resize.

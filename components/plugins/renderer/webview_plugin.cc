@@ -60,7 +60,7 @@ WebViewPlugin::WebViewPlugin(WebView* web_view,
       focused_(false),
       is_painting_(false),
       is_resizing_(false),
-      web_view_helper_(this, preferences) {}
+      web_view_helper_(this, preferences, web_view->GetRendererPreferences()) {}
 
 // static
 WebViewPlugin* WebViewPlugin::Create(WebView* web_view,
@@ -258,8 +258,10 @@ void WebViewPlugin::DidFailLoading(const WebURLError& error) {
   error_ = std::make_unique<WebURLError>(error);
 }
 
-WebViewPlugin::WebViewHelper::WebViewHelper(WebViewPlugin* plugin,
-                                            const WebPreferences& preferences)
+WebViewPlugin::WebViewHelper::WebViewHelper(
+    WebViewPlugin* plugin,
+    const WebPreferences& parent_web_preferences,
+    const blink::RendererPreferences& parent_renderer_preferences)
     : plugin_(plugin),
       agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
@@ -275,11 +277,10 @@ WebViewPlugin::WebViewHelper::WebViewHelper(WebViewPlugin* plugin,
                       /*session_storage_namespace_id=*/base::EmptyString());
   // ApplyWebPreferences before making a WebLocalFrame so that the frame sees a
   // consistent view of our preferences.
-  blink::WebView::ApplyWebPreferences(preferences, web_view_);
+  blink::WebView::ApplyWebPreferences(parent_web_preferences, web_view_);
 
   // Turn off AcceptLoadDrops for this plugin webview.
-  blink::RendererPreferences renderer_preferences =
-      web_view_->GetRendererPreferences();
+  blink::RendererPreferences renderer_preferences = parent_renderer_preferences;
   renderer_preferences.can_accept_load_drops = false;
   web_view_->SetRendererPreferences(renderer_preferences);
 

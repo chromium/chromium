@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/child/webthemeengine_impl_default.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_default.h"
 
 #include "build/build_config.h"
-#include "content/child/webthemeengine_impl_conversions.h"
 #include "skia/ext/platform_canvas.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 
-using blink::WebScrollbarOverlayColorTheme;
-using blink::WebThemeEngine;
-using blink::mojom::ColorScheme;
+namespace blink {
 
-namespace content {
+using mojom::ColorScheme;
+
 namespace {
 
 #if defined(OS_WIN)
@@ -191,11 +190,11 @@ void WebThemeEngineDefault::Paint(
     WebThemeEngine::State state,
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
-    blink::mojom::ColorScheme color_scheme,
+    mojom::ColorScheme color_scheme,
     const absl::optional<SkColor>& accent_color) {
   ui::NativeTheme::ExtraParams native_theme_extra_params;
-  GetNativeThemeExtraParams(
-      part, state, extra_params, &native_theme_extra_params);
+  GetNativeThemeExtraParams(part, state, extra_params,
+                            &native_theme_extra_params);
   ui::NativeTheme::GetInstanceForWeb()->Paint(
       canvas, NativeThemePart(part), NativeThemeState(state), rect,
       native_theme_extra_params, NativeColorScheme(color_scheme), accent_color);
@@ -225,7 +224,7 @@ gfx::Rect WebThemeEngineDefault::NinePatchAperture(Part part) const {
 }
 
 absl::optional<SkColor> WebThemeEngineDefault::GetSystemColor(
-    blink::WebThemeEngine::SystemThemeColor system_theme_color) const {
+    WebThemeEngine::SystemThemeColor system_theme_color) const {
   return ui::NativeTheme::GetInstanceForWeb()->GetSystemThemeColor(
       NativeSystemThemeColor(system_theme_color));
 }
@@ -244,16 +243,15 @@ void WebThemeEngineDefault::cacheScrollBarMetrics(
 }
 #endif
 
-blink::ForcedColors WebThemeEngineDefault::GetForcedColors() const {
+ForcedColors WebThemeEngineDefault::GetForcedColors() const {
   return ui::NativeTheme::GetInstanceForWeb()->InForcedColorsMode()
-             ? blink::ForcedColors::kActive
-             : blink::ForcedColors::kNone;
+             ? ForcedColors::kActive
+             : ForcedColors::kNone;
 }
 
-void WebThemeEngineDefault::SetForcedColors(
-    const blink::ForcedColors forced_colors) {
+void WebThemeEngineDefault::SetForcedColors(const ForcedColors forced_colors) {
   ui::NativeTheme::GetInstanceForWeb()->set_forced_colors(
-      forced_colors == blink::ForcedColors::kActive);
+      forced_colors == ForcedColors::kActive);
 }
 
-}  // namespace content
+}  // namespace blink
