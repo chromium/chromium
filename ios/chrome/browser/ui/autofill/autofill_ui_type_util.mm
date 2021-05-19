@@ -52,6 +52,8 @@ AutofillUIType AutofillUITypeFromAutofillType(autofill::ServerFieldType type) {
       return AutofillUITypeProfileEmailAddress;
     case autofill::NAME_FULL_WITH_HONORIFIC_PREFIX:
       return AutofillUITypeNameFullWithHonorificPrefix;
+    case autofill::ADDRESS_HOME_ADDRESS:
+      return AutofillUITypeAddressHomeAddress;
     default:
       NOTREACHED();
       return AutofillUITypeUnknown;
@@ -100,6 +102,8 @@ autofill::ServerFieldType AutofillTypeFromAutofillUIType(AutofillUIType type) {
       return autofill::EMAIL_ADDRESS;
     case AutofillUITypeNameFullWithHonorificPrefix:
       return autofill::NAME_FULL_WITH_HONORIFIC_PREFIX;
+    case AutofillUITypeAddressHomeAddress:
+      return autofill::ADDRESS_HOME_ADDRESS;
     case AutofillUITypeCreditCardExpDate:
     case AutofillUITypeCreditCardBillingAddress:
     case AutofillUITypeCreditCardSaveToChrome:
