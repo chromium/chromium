@@ -468,6 +468,9 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   RecordCookieSameSiteAttributeValueHistogram(samesite_string,
                                               parsed_cookie.IsSameParty());
 
+  UMA_HISTOGRAM_BOOLEAN("Cookie.ControlCharacterTruncation",
+                        parsed_cookie.HasTruncatedNameOrValue());
+
   return cc;
 }
 
