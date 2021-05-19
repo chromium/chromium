@@ -9,7 +9,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feature_usage {
@@ -26,10 +25,9 @@ class FeatureUsageMetricsTest : public ::testing::Test,
                                 public FeatureUsageMetrics::Delegate {
  public:
   FeatureUsageMetricsTest() {
-    FeatureUsageMetrics::RegisterPref(prefs_.registry(), kTestFeature);
     ResetHistogramTester();
     feature_usage_metrics_ = std::make_unique<FeatureUsageMetrics>(
-        kTestFeature, &prefs_, this, env_.GetMockTickClock());
+        kTestFeature, this, env_.GetMockTickClock());
   }
 
   // FeatureUsageMetrics::Delegate:
@@ -49,7 +47,6 @@ class FeatureUsageMetricsTest : public ::testing::Test,
 
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
-  TestingPrefServiceSimple prefs_;
   std::unique_ptr<FeatureUsageMetrics> feature_usage_metrics_;
 };
 
@@ -68,13 +65,43 @@ TEST_F(FeatureUsageMetricsTest, RecordUsageWithFailure) {
 }
 
 TEST_F(FeatureUsageMetricsTest, RecordUsetime) {
-  const base::TimeDelta kUsetime = base::TimeDelta::FromSeconds(10);
-  feature_usage_metrics_->RecordUsetime(kUsetime);
-  histogram_tester_->ExpectTimeBucketCount(kTestUsetimeMetric, kUsetime, 1);
+  const base::TimeDelta use_time = base::TimeDelta::FromSeconds(10);
+  feature_usage_metrics_->RecordUsage(/*success=*/true);
+  feature_usage_metrics_->StartUsage();
+  env_.FastForwardBy(use_time);
+  feature_usage_metrics_->StopUsage();
+  histogram_tester_->ExpectUniqueTimeSample(kTestUsetimeMetric, use_time, 1);
 }
 
-TEST_F(FeatureUsageMetricsTest, DailyMetricsTest) {
-  // Initial metrics should be reported on IntervalType::FIRST_RUN.
+TEST_F(FeatureUsageMetricsTest, RecordLongUsetime) {
+  size_t repeated_periods = 4;
+  const base::TimeDelta extra_small_use_time = base::TimeDelta::FromMinutes(3);
+  const base::TimeDelta use_time =
+      FeatureUsageMetrics::kRepeatedInterval * repeated_periods +
+      extra_small_use_time;
+
+  feature_usage_metrics_->RecordUsage(/*success=*/true);
+  feature_usage_metrics_->StartUsage();
+  env_.FastForwardBy(use_time);
+  feature_usage_metrics_->StopUsage();
+  histogram_tester_->ExpectTimeBucketCount(
+      kTestUsetimeMetric, FeatureUsageMetrics::kRepeatedInterval,
+      repeated_periods);
+  histogram_tester_->ExpectTimeBucketCount(kTestUsetimeMetric,
+                                           extra_small_use_time, 1);
+}
+
+TEST_F(FeatureUsageMetricsTest, PeriodicMetricsTest) {
+  // Periodic metrics are not reported on creation.
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEligible), 0);
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEnabled), 0);
+
+  ResetHistogramTester();
+  // Trigger initial periodic metrics report.
+  env_.FastForwardBy(FeatureUsageMetrics::kInitialInterval);
+
   histogram_tester_->ExpectBucketCount(
       kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEligible), 1);
   histogram_tester_->ExpectBucketCount(
@@ -82,8 +109,8 @@ TEST_F(FeatureUsageMetricsTest, DailyMetricsTest) {
 
   ResetHistogramTester();
   is_enabled_ = false;
-  // Trigger IntervalType::DAY_ELAPSED event.
-  env_.FastForwardBy(base::TimeDelta::FromHours(24));
+  // Trigger repeated periodic metrics report.
+  env_.FastForwardBy(FeatureUsageMetrics::kRepeatedInterval);
   histogram_tester_->ExpectBucketCount(
       kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEligible), 1);
   histogram_tester_->ExpectBucketCount(
@@ -91,8 +118,8 @@ TEST_F(FeatureUsageMetricsTest, DailyMetricsTest) {
 
   ResetHistogramTester();
   is_eligible_ = false;
-  // Trigger IntervalType::DAY_ELAPSED event.
-  env_.FastForwardBy(base::TimeDelta::FromHours(24));
+  // Trigger repeated periodic metrics report.
+  env_.FastForwardBy(FeatureUsageMetrics::kRepeatedInterval);
   histogram_tester_->ExpectBucketCount(
       kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEligible), 0);
   histogram_tester_->ExpectBucketCount(

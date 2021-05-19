@@ -54,8 +54,6 @@ class FingerprintMetricsReporter : public device::mojom::FingerprintObserver {
 // static
 void FingerprintStorage::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kQuickUnlockFingerprintRecord, 0);
-  feature_usage::FeatureUsageMetrics::RegisterPref(registry,
-                                                   kFingerprintUMAFeatureName);
 }
 
 FingerprintStorage::FingerprintStorage(Profile* profile) : profile_(profile) {
@@ -76,7 +74,7 @@ FingerprintStorage::FingerprintStorage(Profile* profile) : profile_(profile) {
   fp_service_->AddFingerprintObserver(metrics_reporter_->GetRemote());
   feature_usage_metrics_service_ =
       std::make_unique<feature_usage::FeatureUsageMetrics>(
-          kFingerprintUMAFeatureName, profile_->GetPrefs(), this);
+          kFingerprintUMAFeatureName, this);
 }
 
 FingerprintStorage::~FingerprintStorage() {}

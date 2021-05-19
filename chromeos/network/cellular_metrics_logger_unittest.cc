@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/cellular_esim_profile.h"
@@ -18,7 +19,6 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
-#include "components/prefs/testing_pref_service.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -75,7 +75,6 @@ class CellularMetricsLoggerTest : public testing::Test {
   void SetUp() override {
     ResetHistogramTester();
     LoginState::Initialize();
-    CellularMetricsLogger::RegisterLocalStatePrefs(prefs_.registry());
 
     cellular_inhibitor_ = std::make_unique<CellularInhibitor>();
     cellular_esim_profile_handler_ =
@@ -91,14 +90,16 @@ class CellularMetricsLoggerTest : public testing::Test {
   }
 
   void SetUpMetricsLogger() {
-    cellular_metrics_logger_ = std::make_unique<CellularMetricsLogger>();
+    cellular_metrics_logger_.reset(
+        new CellularMetricsLogger(task_environment_.GetMockTickClock()));
     cellular_metrics_logger_->Init(
         network_state_test_helper_.network_state_handler(),
         /* network_connection_handler */ nullptr,
         cellular_esim_profile_handler_.get());
 
     histogram_tester_->ExpectTotalCount(kESimFeatureUsageMetric, 0);
-    cellular_metrics_logger_->SetDevicePrefs(&prefs_);
+    task_environment_.FastForwardBy(
+        feature_usage::FeatureUsageMetrics::kInitialInterval);
     histogram_tester_->ExpectBucketCount(
         kESimFeatureUsageMetric,
         static_cast<int>(feature_usage::FeatureUsageMetrics::Event::kEligible),
@@ -202,7 +203,6 @@ class CellularMetricsLoggerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  TestingPrefServiceSimple prefs_;
   NetworkStateTestHelper network_state_test_helper_{
       false /* use_default_devices_and_services */};
   std::unique_ptr<CellularInhibitor> cellular_inhibitor_;

@@ -16,8 +16,9 @@
 #include "chromeos/network/network_state_handler_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class PrefService;
-class PrefRegistrySimple;
+namespace base {
+class TickClock;
+}
 
 namespace chromeos {
 
@@ -77,10 +78,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
       const SimPinOperation& pin_operation,
       const absl::optional<std::string>& shill_error_name = absl::nullopt);
 
-  // Registers device preferences used by this class in the provided
-  // |registry|.
-  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
-
   CellularMetricsLogger();
   ~CellularMetricsLogger() override;
 
@@ -102,8 +99,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   void ConnectFailed(const std::string& service_path,
                      const std::string& error_name) override;
   void DisconnectRequested(const std::string& service_path) override;
-
-  void SetDevicePrefs(PrefService* device_prefs);
 
  private:
   friend class CellularMetricsLoggerTest;
@@ -131,6 +126,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, EnterPin);
   FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, UnblockPin);
   FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, ChangePin);
+
+  // Custom `tick_clock` could be used for tests.
+  explicit CellularMetricsLogger(const base::TickClock* tick_clock);
 
   // The amount of time after cellular device is added to device list,
   // after which cellular device is considered initialized.

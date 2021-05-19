@@ -33,7 +33,6 @@ NetworkTestHelper::NetworkTestHelper()
   PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
   ::onc::RegisterProfilePrefs(user_prefs_.registry());
   ::onc::RegisterPrefs(local_state_.registry());
-  CellularMetricsLogger::RegisterLocalStatePrefs(local_state_.registry());
   CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
       local_state_.registry());
   NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());

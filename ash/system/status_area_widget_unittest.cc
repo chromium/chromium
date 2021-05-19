@@ -267,8 +267,6 @@ class UnifiedStatusAreaWidgetTest : public AshTestBase {
   void SetUp() override {
     // Initializing NetworkHandler before ash is more like production.
     AshTestBase::SetUp();
-    chromeos::CellularMetricsLogger::RegisterLocalStatePrefs(
-        local_state_.registry());
     chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
         local_state_.registry());
     chromeos::NetworkMetadataStore::RegisterPrefs(profile_prefs_.registry());

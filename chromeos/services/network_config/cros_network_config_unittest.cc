@@ -96,7 +96,6 @@ class CrosNetworkConfigTest : public testing::Test {
     ::onc::RegisterPrefs(local_state_.registry());
     NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
     NetworkMetadataStore::RegisterPrefs(local_state_.registry());
-    CellularMetricsLogger::RegisterLocalStatePrefs(local_state_.registry());
     CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
         local_state_.registry());
     NetworkHandler::Get()->InitializePrefServices(&user_prefs_, &local_state_);

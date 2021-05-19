@@ -4,9 +4,13 @@
 
 #include "chromeos/network/cellular_metrics_logger.h"
 
+#include <memory>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/tick_clock.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/network/cellular_esim_profile.h"
@@ -130,12 +134,6 @@ void CellularMetricsLogger::RecordSimPinOperationResult(
   }
 }
 
-// static
-void CellularMetricsLogger::RegisterLocalStatePrefs(
-    PrefRegistrySimple* registry) {
-  feature_usage::FeatureUsageMetrics::RegisterPref(registry,
-                                                   kESimUMAFeatureName);
-}
 
 // static
 void CellularMetricsLogger::LogCellularUserInitiatedConnectionSuccessHistogram(
@@ -247,11 +245,11 @@ CellularMetricsLogger::ShillErrorToConnectResult(
 class ESimFeatureUsageMetrics
     : public feature_usage::FeatureUsageMetrics::Delegate {
  public:
-  explicit ESimFeatureUsageMetrics(PrefService* device_prefs) {
-    DCHECK(device_prefs);
+  explicit ESimFeatureUsageMetrics(const base::TickClock* tick_clock) {
+    DCHECK(tick_clock);
     feature_usage_metrics_ =
         std::make_unique<feature_usage::FeatureUsageMetrics>(
-            kESimUMAFeatureName, device_prefs, this);
+            kESimUMAFeatureName, this, tick_clock);
   }
 
   ~ESimFeatureUsageMetrics() override = default;
@@ -279,10 +277,8 @@ class ESimFeatureUsageMetrics
     feature_usage_metrics_->RecordUsage(success);
   }
 
-  // Should be called after an ESim network is disconnected from.
-  void RecordUsetime(base::TimeDelta usetime) const {
-    feature_usage_metrics_->RecordUsetime(usetime);
-  }
+  void StartUsage() { feature_usage_metrics_->StartUsage(); }
+  void StopUsage() { feature_usage_metrics_->StopUsage(); }
 
  private:
   std::unique_ptr<feature_usage::FeatureUsageMetrics> feature_usage_metrics_;
@@ -297,15 +293,12 @@ void CellularMetricsLogger::LogCellularAllConnectionSuccessHistogram(
   } else {
     base::UmaHistogramEnumeration(kESimAllConnectionResultHistogram,
                                   start_connect_result);
-
-    // |esim_feature_usage_metrics_| may not have been created yet.
-    if (!esim_feature_usage_metrics_.get())
-      return;
-
-    // All initiated connects should be logged as feature usage.
-    esim_feature_usage_metrics_->RecordUsage(
-        start_connect_result ==
-        CellularMetricsLogger::ShillConnectResult::kSuccess);
+    // If there is a failure to connect, log a failed usage attempt to
+    // FeatureUsageMetrics.
+    if (start_connect_result !=
+        CellularMetricsLogger::ShillConnectResult::kSuccess) {
+      esim_feature_usage_metrics_->RecordUsage(/*success=*/false);
+    }
   }
 }
 
@@ -323,7 +316,8 @@ CellularMetricsLogger::ConnectionInfo::ConnectionInfo(
 
 CellularMetricsLogger::ConnectionInfo::~ConnectionInfo() = default;
 
-CellularMetricsLogger::CellularMetricsLogger() = default;
+CellularMetricsLogger::CellularMetricsLogger()
+    : CellularMetricsLogger(base::DefaultTickClock::GetInstance()) {}
 
 CellularMetricsLogger::~CellularMetricsLogger() {
   if (network_state_handler_)
@@ -455,13 +449,6 @@ void CellularMetricsLogger::NetworkConnectionStateChanged(
   CheckForConnectionStateMetric(network);
 }
 
-void CellularMetricsLogger::SetDevicePrefs(PrefService* device_prefs) {
-  if (!device_prefs)
-    return;
-  esim_feature_usage_metrics_ =
-      std::make_unique<ESimFeatureUsageMetrics>(device_prefs);
-}
-
 void CellularMetricsLogger::CheckForTimeToConnectedMetric(
     const NetworkState* network) {
   if (network->activation_state() != shill::kActivationStateActivated)
@@ -538,6 +525,10 @@ void CellularMetricsLogger::DisconnectRequested(
   connection_info->last_disconnect_request_time = base::TimeTicks::Now();
   connection_info->disconnect_requested = true;
 }
+
+CellularMetricsLogger::CellularMetricsLogger(const base::TickClock* tick_clock)
+    : esim_feature_usage_metrics_(
+          std::make_unique<ESimFeatureUsageMetrics>(tick_clock)) {}
 
 const NetworkState* CellularMetricsLogger::GetCellularNetwork(
     const std::string& service_path) {
@@ -795,9 +786,13 @@ void CellularMetricsLogger::CheckForCellularUsageMetrics() {
 
         UMA_HISTOGRAM_LONG_TIMES("Network.Cellular.ESim.Usage.Duration",
                                  usage_duration);
-        if (esim_feature_usage_metrics_.get())
-          esim_feature_usage_metrics_->RecordUsetime(usage_duration);
+        esim_feature_usage_metrics_->StopUsage();
       }
+      if (usage != CellularUsage::kNotConnected)
+        esim_feature_usage_metrics_->RecordUsage(/*success=*/true);
+
+      if (usage == CellularUsage::kConnectedAndOnlyNetwork)
+        esim_feature_usage_metrics_->StartUsage();
     }
 
     esim_usage_elapsed_timer_ = base::ElapsedTimer();

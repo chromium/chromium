@@ -7,24 +7,19 @@
 
 #include <memory>
 
-#include "base/observer_list.h"
+#include "base/dcheck_is_on.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
-
-class PrefRegistrySimple;
-class PrefService;
-
-namespace metrics {
-class DailyEvent;
-}
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_usage {
 
 // Helper class to unify tracking features usage by users.
 // It provides unified naming for the tracked events. Which reduces effort on
 // the data analytics side to incorporate a new feature.
-// This class also provides a way to report daily if the device is eligible for
-// the feature and whether user has it enabled.
+// This class also provides a way to report periodically if the device is
+// eligible for the feature and whether user has it enabled.
 class FeatureUsageMetrics {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
@@ -37,8 +32,8 @@ class FeatureUsageMetrics {
     kMaxValue = kUsedWithFailure,
   };
 
-  // Consumers should implement this interface to report daily if the feature
-  // is eligible on the device and enabled.
+  // Consumers should implement this interface to report periodically if the
+  // feature is eligible on the device and enabled.
   class Delegate {
    public:
     // Whether the device is capable of running the feature.
@@ -51,13 +46,16 @@ class FeatureUsageMetrics {
     virtual ~Delegate() = default;
   };
 
-  // `feature_name` and `pref_service` must correspond to the `RegisterPref`
-  // call.
+  static const base::TimeDelta kInitialInterval;
+  static const base::TimeDelta kRepeatedInterval;
+
+  // `feature_name` must correspond to the entry of `FeaturesLoggingUsageEvents`
+  // and should never change.
   FeatureUsageMetrics(const std::string& feature_name,
-                      PrefService* pref_service,
                       Delegate* delegate);
+  // Custom `tick_clock` could be passed for testing purposes. Must not be
+  // nullptr.
   FeatureUsageMetrics(const std::string& feature_name,
-                      PrefService* pref_service,
                       Delegate* delegate,
                       const base::TickClock* tick_clock);
   FeatureUsageMetrics(const FeatureUsageMetrics&) = delete;
@@ -68,25 +66,31 @@ class FeatureUsageMetrics {
   // indicates whether the usage was successful. For example if user touches the
   // fingerprint sensor and the finger was not recognized `RecordUsage` should
   // be called with `false`.
-  void RecordUsage(bool success) const;
+  void RecordUsage(bool success);
 
-  // `RecordUsetime` should be called with the duration of time that the
-  // feature is used. All |usetime|s of the feature will be aggregated together.
-  void RecordUsetime(base::TimeDelta usetime) const;
-
-  static void RegisterPref(PrefRegistrySimple* registry,
-                           const std::string& feature_name);
+  // Use `StartUsage` and `StopUsage` to record feature usage time.
+  // See ./README.md#Recording-usage-time for more details.
+  void StartUsage();
+  void StopUsage();
 
  private:
-  void ReportDailyMetrics() const;
+  void SetupTimer(base::TimeDelta delta);
+  void MaybeReportPeriodicMetrics();
+
+  void RecordUsetime(base::TimeDelta usetime) const;
 
   const std::string histogram_name_;
-  const std::string pref_name_;
   const Delegate* const delegate_;
-  std::unique_ptr<metrics::DailyEvent> daily_event_;
 
-  // Instructs |daily_event_| to check if a day has passed.
-  std::unique_ptr<base::RepeatingTimer> timer_;
+  base::TimeTicks last_time_enabled_reported_;
+
+  const base::TickClock* const tick_clock_;
+  base::TimeTicks start_usage_;
+  std::unique_ptr<base::OneShotTimer> timer_;
+
+#if DCHECK_IS_ON()
+  absl::optional<bool> last_record_usage_outcome_;
+#endif
 };
 
 }  // namespace feature_usage

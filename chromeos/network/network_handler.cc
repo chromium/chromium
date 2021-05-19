@@ -157,7 +157,6 @@ void NetworkHandler::InitializePrefServices(
     PrefService* device_prefs) {
   if (features::IsCellularActivationUiEnabled()) {
     cellular_esim_profile_handler_->SetDevicePrefs(device_prefs);
-    cellular_metrics_logger_->SetDevicePrefs(device_prefs);
   }
   ui_proxy_config_service_.reset(new UIProxyConfigService(
       logged_in_profile_prefs, device_prefs, network_state_handler_.get(),
@@ -173,7 +172,6 @@ void NetworkHandler::InitializePrefServices(
 void NetworkHandler::ShutdownPrefServices() {
   if (features::IsCellularActivationUiEnabled()) {
     cellular_esim_profile_handler_->SetDevicePrefs(nullptr);
-    cellular_metrics_logger_->SetDevicePrefs(nullptr);
   }
   ui_proxy_config_service_.reset();
   network_metadata_store_.reset();

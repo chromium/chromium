@@ -4,98 +4,80 @@
 
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
 
+#include "base/bind.h"
 #include "base/callback.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/metrics/daily_event.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 
 namespace feature_usage {
 
 namespace {
 
-// Interval for asking metrics::DailyEvent to check whether a day has passed.
-constexpr base::TimeDelta kCheckDailyEventInternal =
-    base::TimeDelta::FromMinutes(30);
-
-constexpr char kDailySamplePrefPrefix[] = "feature_usage.daily_sample.";
 constexpr char kFeatureUsageMetricPrefix[] = "ChromeOS.FeatureUsage.";
 constexpr char kFeatureUsetimeMetricPostfix[] = ".Usetime";
-
-std::string FeatureToPref(const std::string& feature_name) {
-  return kDailySamplePrefPrefix + feature_name;
-}
 
 std::string FeatureToHistogram(const std::string& feature_name) {
   return kFeatureUsageMetricPrefix + feature_name;
 }
 
-// `DailyEventObserver` implements `metrics::DailyEvent::Observer`. It runs
-// `callback_` on the first usage and when the day has passed.
-class DailyEventObserver : public metrics::DailyEvent::Observer {
- public:
-  explicit DailyEventObserver(base::RepeatingClosure callback)
-      : callback_(std::move(callback)) {
-    DCHECK(callback_);
-  }
-
-  DailyEventObserver(const DailyEventObserver&) = delete;
-  DailyEventObserver& operator=(const DailyEventObserver&) = delete;
-  ~DailyEventObserver() override = default;
-
-  // metrics::DailyEvent::Observer:
-  void OnDailyEvent(metrics::DailyEvent::IntervalType type) final {
-    if (type == metrics::DailyEvent::IntervalType::DAY_ELAPSED ||
-        type == metrics::DailyEvent::IntervalType::FIRST_RUN) {
-      callback_.Run();
-    }
-  }
-
- private:
-  base::RepeatingClosure callback_;
-};
-
 }  // namespace
 
-FeatureUsageMetrics::FeatureUsageMetrics(const std::string& feature_name,
-                                         PrefService* pref_service,
-                                         Delegate* const delegate)
-    : FeatureUsageMetrics(feature_name, pref_service, delegate, nullptr) {}
+// First time periodic metrics are reported after 'kInitialInterval` time.
+constexpr base::TimeDelta FeatureUsageMetrics::kInitialInterval =
+    base::TimeDelta::FromMinutes(1);
+
+// Consecutive reports run every `kRepeatedInterval`
+constexpr base::TimeDelta FeatureUsageMetrics::kRepeatedInterval =
+    base::TimeDelta::FromMinutes(30);
 
 FeatureUsageMetrics::FeatureUsageMetrics(const std::string& feature_name,
-                                         PrefService* pref_service,
+                                         Delegate* const delegate)
+    : FeatureUsageMetrics(feature_name,
+                          delegate,
+                          base::DefaultTickClock::GetInstance()) {}
+
+FeatureUsageMetrics::FeatureUsageMetrics(const std::string& feature_name,
                                          Delegate* const delegate,
                                          const base::TickClock* tick_clock)
     : histogram_name_(FeatureToHistogram(feature_name)),
-      pref_name_(FeatureToPref(feature_name)),
       delegate_(delegate),
-      timer_(tick_clock ? std::make_unique<base::RepeatingTimer>(tick_clock)
-                        : std::make_unique<base::RepeatingTimer>()) {
+      tick_clock_(tick_clock),
+      timer_(std::make_unique<base::OneShotTimer>(tick_clock)) {
   DCHECK(delegate_);
 
-  daily_event_ = std::make_unique<metrics::DailyEvent>(
-      pref_service, pref_name_.c_str(), /*histogram_name=*/std::string());
-
-  auto observer = std::make_unique<DailyEventObserver>(base::BindRepeating(
-      // base::Unretained is safe because `this` owns `daily_event_` which owns
-      // the `observer`.
-      &FeatureUsageMetrics::ReportDailyMetrics, base::Unretained(this)));
-
-  daily_event_->AddObserver(std::move(observer));
-  daily_event_->CheckInterval();
-  timer_->Start(FROM_HERE, kCheckDailyEventInternal, daily_event_.get(),
-                &metrics::DailyEvent::CheckInterval);
+  // Schedule the first run some time in the future to not overload startup
+  // flow.
+  SetupTimer(kInitialInterval);
 }
 
-FeatureUsageMetrics::~FeatureUsageMetrics() = default;
-
-// static
-void FeatureUsageMetrics::RegisterPref(PrefRegistrySimple* registry,
-                                       const std::string& feature_name) {
-  metrics::DailyEvent::RegisterPref(registry, FeatureToPref(feature_name));
+void FeatureUsageMetrics::SetupTimer(base::TimeDelta delta) {
+  timer_->Start(FROM_HERE, delta,
+                base::BindOnce(&FeatureUsageMetrics::MaybeReportPeriodicMetrics,
+                               base::Unretained(this)));
 }
 
-void FeatureUsageMetrics::RecordUsage(bool success) const {
+FeatureUsageMetrics::~FeatureUsageMetrics() {
+  if (!start_usage_.is_null())
+    StopUsage();
+}
+
+void FeatureUsageMetrics::RecordUsage(bool success) {
+  DCHECK(delegate_->IsEligible());
+  // TODO(https://crbug.com/1208743) Remove this case when unit tests are fixed.
+  if (histogram_name_ != "ChromeOS.FeatureUsage.ESim") {
+    DCHECK(delegate_->IsEnabled());
+  }
+  DCHECK(start_usage_.is_null());
+#if DCHECK_IS_ON()
+  last_record_usage_outcome_ = success;
+#endif
+  MaybeReportPeriodicMetrics();
+
   Event e = success ? Event::kUsedWithSuccess : Event::kUsedWithFailure;
   base::UmaHistogramEnumeration(histogram_name_, e);
 }
@@ -105,13 +87,64 @@ void FeatureUsageMetrics::RecordUsetime(base::TimeDelta usetime) const {
                                  usetime);
 }
 
-void FeatureUsageMetrics::ReportDailyMetrics() const {
-  if (delegate_->IsEligible())
+void FeatureUsageMetrics::StartUsage() {
+  DCHECK(start_usage_.is_null());
+#if DCHECK_IS_ON()
+  DCHECK(last_record_usage_outcome_.value_or(false))
+      << "Start usage must be preceded by RecordUsage(true)";
+  last_record_usage_outcome_.reset();
+#endif
+  start_usage_ = tick_clock_->NowTicks();
+}
+
+void FeatureUsageMetrics::StopUsage() {
+  DCHECK(!start_usage_.is_null());
+#if DCHECK_IS_ON()
+  DCHECK(!last_record_usage_outcome_.has_value())
+      << "There must be no RecordUsage calls between Start and StopUsage";
+#endif
+  const base::TimeDelta use_time = tick_clock_->NowTicks() - start_usage_;
+  RecordUsetime(use_time);
+  start_usage_ = base::TimeTicks();
+}
+
+void FeatureUsageMetrics::MaybeReportPeriodicMetrics() {
+  if (!last_time_enabled_reported_.is_null()) {
+    const base::TimeDelta time_left =
+        kRepeatedInterval -
+        (tick_clock_->NowTicks() - last_time_enabled_reported_);
+    // Do not report periodic metrics more often than once per
+    // `kRepeatedInterval`.
+    if (time_left > base::TimeDelta()) {
+      // This could only happen when `RecordUsage` is called. In that case
+      // `IsEnabled` must be true. And because `last_time_enabled_reported_` is
+      // not null - `IsEnabled` was already reported recently.
+      SetupTimer(time_left);
+      return;
+    }
+  }
+
+  bool is_eligible = delegate_->IsEligible();
+  bool is_enabled = delegate_->IsEnabled();
+  DCHECK(!is_enabled || is_eligible);
+
+  if (is_eligible)
     base::UmaHistogramEnumeration(histogram_name_, Event::kEligible);
-  if (delegate_->IsEnabled()) {
-    DCHECK(delegate_->IsEligible());
+
+  if (is_enabled) {
+    last_time_enabled_reported_ = tick_clock_->NowTicks();
     base::UmaHistogramEnumeration(histogram_name_, Event::kEnabled);
   }
+
+  if (!start_usage_.is_null()) {
+    DCHECK(is_eligible);
+    DCHECK(is_enabled);
+    base::TimeDelta use_time = tick_clock_->NowTicks() - start_usage_;
+    RecordUsetime(use_time);
+    start_usage_ = tick_clock_->NowTicks();
+  }
+
+  SetupTimer(kRepeatedInterval);
 }
 
 }  // namespace feature_usage

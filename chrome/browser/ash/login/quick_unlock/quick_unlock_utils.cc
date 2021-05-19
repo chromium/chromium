@@ -153,6 +153,9 @@ FingerprintLocation GetFingerprintLocation() {
 }
 
 bool IsFingerprintSupported() {
+  if (enable_for_testing_)
+    return true;
+
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   return base::FeatureList::IsEnabled(::features::kQuickUnlockFingerprint) &&

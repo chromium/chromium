@@ -417,8 +417,6 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
         base::Value("third_party_provider_extension_id"));
     profile_test()->AddService(kUser1ProfilePath, "stub_vpn2");
 
-    chromeos::CellularMetricsLogger::RegisterLocalStatePrefs(
-        local_state_.registry());
     chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
         local_state_.registry());
     PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());

@@ -22,8 +22,8 @@ The following events are reported by the component (for details see
 * Failed attempt to use the feature.
 * Record the usage time of the feature.
 
-The first two are reported once per day. To correctly track 1-, 7-, 28-days
-users. The feature usage component encapsulates this logic.
+The first two are reported periodically every 30 minutes. To correctly track 1-,
+7-, 28-days users. The feature usage component encapsulates this logic.
 
 For more details see original [CL](https://crrev.com/c/2596263)
 
@@ -35,7 +35,6 @@ You need to do the following things to integrate your feature, all described in
 detail below.
 
 *   [Append your feature to the usage logging features list](#Appending-your-feature)
-*   [Register your feature with a pref service](#Registering-with-pref-service)
 *   [Create a component object](#Creating-component-object) and pass the
     delegate inside.
 *   [Record feature usage](#Recording-feature-usage)
@@ -54,23 +53,10 @@ name="FeaturesLoggingUsageEvents">`
   </variant>
 ```
 
-### Registering with pref service
-
-You could use any pref service that is suitable for you. Prefs are required to
-store last daily event timestamp.
-
-```c++
-FeatureUsageMetrics::RegisterPref(registry, "YourFeature");
-```
-
 ### Creating component object
-`FeatureUsageMetrics` object requires a prefs object which must correspond to the
-pref registry used in the previous step.
-
-You also need to implement `FeatureUsageMetrics::Delegate` and pass it to the
-`FeatureUsageMetrics`. Delegate is called to report daily events (eligible,
-enabled). Note that if an object of this type is destroyed and created in the
-same day, metrics eligibility and enablement will only be reported once.
+You need to implement `FeatureUsageMetrics::Delegate` and pass it to the
+`FeatureUsageMetrics`. Delegate is called to report periodic events (eligible,
+enabled).
 
 ```c++
 class MyDelegate : public FeatureUsageMetrics::Delegate {
@@ -87,10 +73,11 @@ class MyDelegate : public FeatureUsageMetrics::Delegate {
 
 ```c++
 feature_usage_metrics_ = std::make_unique<FeatureUsageMetrics>(
-        "YourFeature", prefs, my_delegate);
+        "YourFeature", my_delegate);
 ```
 
-`Prefs` and `MyDelegate` objects must outlive the `FeatureUsageMetrics` object.
+`YourFeature` must correspond to the histogram and never change. `MyDelegate`
+object must outlive the `FeatureUsageMetrics` object.
 
 ### Recording feature usage
 Call `feature_usage_metrics_->RecordUsage(bool success);` on every usage
@@ -98,8 +85,39 @@ attempt. Success indicates whether or not the attempt to use was successful.
 Your feature might not have failed attempts. In that case always call with
 `success=true`.
 
-Call `feature_usage_metrics_->RecordUsetime(base::TimeDelta usetime);` with
-however long the user spends using the feature, if applicable.
+`MyDelegate::IsEligible` and `MyDelegate::IsEnabled` functions must return
+`true` when `RecordUsage` is called.
+
+#### Recording usage time
+If your feature has a notion of time usage use
+`feature_usage_metrics_->StartUsage();` and
+`feature_usage_metrics_->StopUsage();` to record feature usage time.
+
+* There should be no consecutive `StartUsage` calls without `StopUsage` call
+in-between.
+* After `StartUsage` is called the usage time is reported periodically together
+with `IsEligible` and `IsEnabled`.
+* If `StartUsage` is not followed by `StopUsage` the remaining usage time is
+recorded at the object shutdown.
+* `StartUsage` must be preceded by exactly one `RecordUsage(true)`. There should
+be no `RecordUsage` calls in-between `StartUsage` and `StopUsage` calls.
+
+Example:
+```c++
+// feature_usage_metrics_->StartUsage(); should be preceded by RecordUsage(true)
+feature_usage_metrics_->RecordUsage(false);
+// feature_usage_metrics_->StartUsage(); should be preceded by RecordUsage(true)
+feature_usage_metrics_->RecordUsage(true);
+feature_usage_metrics_->StartUsage();
+feature_usage_metrics_->StopUsage();
+// feature_usage_metrics_->StartUsage(); should be preceded by RecordUsage(true)
+feature_usage_metrics_->RecordUsage(true);
+feature_usage_metrics_->RecordUsage(true);
+// feature_usage_metrics_->StartUsage(); should be preceded by exactly one RecordUsage(true)
+....
+feature_usage_metrics_->StartUsage();
+feature_usage_metrics_->reset(); // Usage time is recorded similar to StopUsage
+```
 
 ### Testing
 Use `base::HistogramTester` to verify attempt events are reported.
@@ -119,5 +137,5 @@ histogram_tester.ExpectBucketCount(
 // Emulate the amount of time |usetime| (base::TimeDelta) using the feature.
 histogram_tester_->ExpectTimeBucketCount(
   "ChromeOS.FeatureUsage.YouFeature.Usetime", usetime, 1);
-
 ```
+

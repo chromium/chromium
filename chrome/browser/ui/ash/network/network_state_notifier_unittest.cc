@@ -82,7 +82,6 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
-    CellularMetricsLogger::RegisterLocalStatePrefs(local_state_.registry());
     CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
         local_state_.registry());
     NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
