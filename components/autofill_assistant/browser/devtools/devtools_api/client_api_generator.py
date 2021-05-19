@@ -435,7 +435,7 @@ def InitializeDomainDependencies(json_api):
 
     if not isinstance(json, dict):
       return
-    for value in json.itervalues():
+    for value in json.values():
       GetDomainDepsFromRefs(domain_name, value)
 
     if '$ref' in json:
