@@ -72,7 +72,7 @@ if (is_chromeos_device) {
     ]
   }
 
-  lacros_tast_tests("lacros_all_tast_tests") {
+  lacros_tast_tests("lacros_fyi_tast_tests") {
     # The following expression filters out all non-critical tests. See the link
     # below for more details:
     # https://chromium.googlesource.com/chromiumos/platform/tast/+/main/docs/test_attributes.md

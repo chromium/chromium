@@ -1209,7 +1209,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "lacros_all_tast_tests_eve",
+        "name": "lacros_fyi_tast_tests_eve",
         "resultdb": {
           "enable": true
         },
@@ -1225,8 +1225,8 @@
           "idempotent": false,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test": "lacros_fyi_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
         "trigger_script": {
           "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
         }

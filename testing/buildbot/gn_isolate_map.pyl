@@ -1124,13 +1124,6 @@
     "label": "//ash/keyboard/ui:keyboard_unittests",
     "type": "windowed_test_launcher",
   },
-  "lacros_all_tast_tests": {
-    "label": "//chromeos/lacros:lacros_all_tast_tests",
-    "type": "generated_script",
-    "args": [
-      "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-  },
   "lacros_chrome_browsertests": {
     "label": "//chrome/test:lacros_chrome_browsertests",
     "type": "windowed_test_launcher",
@@ -1138,6 +1131,13 @@
   "lacros_chrome_unittests": {
     "label": "//chrome/test:lacros_chrome_unittests",
     "type": "console_test_launcher",
+  },
+  "lacros_fyi_tast_tests": {
+    "label": "//chromeos/lacros:lacros_fyi_tast_tests",
+    "type": "generated_script",
+    "args": [
+      "--logs-dir=${ISOLATED_OUTDIR}",
+    ],
   },
   "lacros_smoke_tast_tests": {
     "label": "//chromeos/lacros:lacros_smoke_tast_tests",
