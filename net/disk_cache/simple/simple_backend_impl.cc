@@ -137,13 +137,11 @@ void RunOperationAndCallback(
   if (!backend)
     return;
 
-  base::RepeatingCallback<void(int)> copyable_callback;
-  if (operation_callback)
-    copyable_callback =
-        base::AdaptCallbackForRepeating(std::move(operation_callback));
-  const int operation_result = std::move(operation).Run(copyable_callback);
-  if (operation_result != net::ERR_IO_PENDING && copyable_callback)
-    copyable_callback.Run(operation_result);
+  auto split_callback = base::SplitOnceCallback(std::move(operation_callback));
+  const int operation_result =
+      std::move(operation).Run(std::move(split_callback.first));
+  if (operation_result != net::ERR_IO_PENDING && split_callback.second)
+    std::move(split_callback.second).Run(operation_result);
 }
 
 // Same but for things that work with EntryResult.
@@ -154,13 +152,13 @@ void RunEntryResultOperationAndCallback(
   if (!backend)
     return;
 
-  base::RepeatingCallback<void(EntryResult)> copyable_callback;
-  if (operation_callback)
-    copyable_callback =
-        base::AdaptCallbackForRepeating(std::move(operation_callback));
-  EntryResult operation_result = std::move(operation).Run(copyable_callback);
-  if (operation_result.net_error() != net::ERR_IO_PENDING && copyable_callback)
-    copyable_callback.Run(std::move(operation_result));
+  auto split_callback = base::SplitOnceCallback(std::move(operation_callback));
+  EntryResult operation_result =
+      std::move(operation).Run(std::move(split_callback.first));
+  if (operation_result.net_error() != net::ERR_IO_PENDING &&
+      split_callback.second) {
+    std::move(split_callback.second).Run(std::move(operation_result));
+  }
 }
 
 void RecordIndexLoad(net::CacheType cache_type,
@@ -592,27 +590,26 @@ class SimpleBackendImpl::SimpleIterator final : public Iterator {
     if (!hashes_to_enumerate_)
       hashes_to_enumerate_ = backend_->index()->GetAllHashes();
 
-    auto copyable_callback =
-        base::AdaptCallbackForRepeating(std::move(callback));
-
     while (!hashes_to_enumerate_->empty()) {
       uint64_t entry_hash = hashes_to_enumerate_->back();
       hashes_to_enumerate_->pop_back();
       if (backend_->index()->Has(entry_hash)) {
-        EntryResultCallback continue_iteration =
-            base::BindOnce(&SimpleIterator::CheckIterationReturnValue,
-                           weak_factory_.GetWeakPtr(), copyable_callback);
+        auto split_callback = base::SplitOnceCallback(std::move(callback));
+        callback = std::move(split_callback.first);
+        EntryResultCallback continue_iteration = base::BindOnce(
+            &SimpleIterator::CheckIterationReturnValue,
+            weak_factory_.GetWeakPtr(), std::move(split_callback.second));
         EntryResult open_result = backend_->OpenEntryFromHash(
             entry_hash, std::move(continue_iteration));
         if (open_result.net_error() == net::ERR_IO_PENDING)
           return;
         if (open_result.net_error() != net::ERR_FAILED) {
-          copyable_callback.Run(std::move(open_result));
+          std::move(callback).Run(std::move(open_result));
           return;
         }
       }
     }
-    copyable_callback.Run(EntryResult::MakeError(net::ERR_FAILED));
+    std::move(callback).Run(EntryResult::MakeError(net::ERR_FAILED));
   }
 
   void CheckIterationReturnValue(EntryResultCallback callback,

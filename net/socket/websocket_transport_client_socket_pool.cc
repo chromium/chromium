@@ -423,24 +423,21 @@ void WebSocketTransportClientSocketPool::ActivateStalledRequest() {
     stalled_request_queue_.pop_front();
     stalled_request_map_.erase(request.handle);
 
-    // Wrap request.callback into a copyable (repeating) callback so that it can
-    // be passed to RequestSocket() and yet called if RequestSocket() returns
-    // synchronously.
-    auto copyable_callback =
-        base::AdaptCallbackForRepeating(std::move(request.callback));
+    auto split_callback = base::SplitOnceCallback(std::move(request.callback));
 
     int rv = RequestSocket(
         request.group_id, request.params, request.proxy_annotation_tag,
         request.priority, SocketTag(),
         // Stalled requests can't have |respect_limits|
         // DISABLED.
-        RespectLimits::ENABLED, request.handle, copyable_callback,
+        RespectLimits::ENABLED, request.handle, std::move(split_callback.first),
         request.proxy_auth_callback, request.net_log);
 
     // ActivateStalledRequest() never returns synchronously, so it is never
     // called re-entrantly.
     if (rv != ERR_IO_PENDING)
-      InvokeUserCallbackLater(request.handle, copyable_callback, rv);
+      InvokeUserCallbackLater(request.handle, std::move(split_callback.second),
+                              rv);
   }
 }
 

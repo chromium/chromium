@@ -436,13 +436,10 @@ disk_cache::EntryResult MockDiskCache::OpenOrCreateEntry(
     net::RequestPriority request_priority,
     EntryResultCallback callback) {
   DCHECK(!callback.is_null());
-  base::RepeatingCallback<void(EntryResult)> copyable_callback;
-  if (callback)
-    copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
 
   if (force_fail_callback_later_) {
     CallbackLater(base::BindOnce(
-        copyable_callback,
+        std::move(callback),
         EntryResult::MakeError(ERR_CACHE_OPEN_OR_CREATE_FAILURE)));
     return EntryResult::MakeError(ERR_IO_PENDING);
   }
@@ -453,12 +450,13 @@ disk_cache::EntryResult MockDiskCache::OpenOrCreateEntry(
   EntryResult result;
 
   // First try opening the entry.
-  result = OpenEntry(key, request_priority, copyable_callback);
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  result = OpenEntry(key, request_priority, std::move(split_callback.first));
   if (result.net_error() == OK || result.net_error() == ERR_IO_PENDING)
     return result;
 
   // Unable to open, try creating the entry.
-  result = CreateEntry(key, request_priority, copyable_callback);
+  result = CreateEntry(key, request_priority, std::move(split_callback.second));
   if (result.net_error() == OK || result.net_error() == ERR_IO_PENDING)
     return result;
 

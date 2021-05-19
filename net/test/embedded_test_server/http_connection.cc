@@ -54,14 +54,15 @@ bool HttpConnection::ConsumeData(int size) {
 
 void HttpConnection::SendInternal(base::OnceClosure callback,
                                   scoped_refptr<DrainableIOBuffer> buf) {
-  base::RepeatingClosure repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
   while (buf->BytesRemaining() > 0) {
-    int rv = socket_->Write(
-        buf.get(), buf->BytesRemaining(),
-        base::BindOnce(&HttpConnection::OnSendInternalDone,
-                       base::Unretained(this), repeating_callback, buf),
-        TRAFFIC_ANNOTATION_FOR_TESTS);
+    auto split_callback = base::SplitOnceCallback(std::move(callback));
+    callback = std::move(split_callback.first);
+    int rv =
+        socket_->Write(buf.get(), buf->BytesRemaining(),
+                       base::BindOnce(&HttpConnection::OnSendInternalDone,
+                                      base::Unretained(this),
+                                      std::move(split_callback.second), buf),
+                       TRAFFIC_ANNOTATION_FOR_TESTS);
     if (rv == ERR_IO_PENDING)
       return;
 
@@ -72,7 +73,7 @@ void HttpConnection::SendInternal(base::OnceClosure callback,
 
   // The HttpConnection will be deleted by the callback since we only need to
   // serve a single request.
-  repeating_callback.Run();
+  std::move(callback).Run();
 }
 
 void HttpConnection::OnSendInternalDone(base::OnceClosure callback,
