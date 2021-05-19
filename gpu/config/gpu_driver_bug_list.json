@@ -3415,9 +3415,7 @@
       "vendor_id": "0x8086",
       "intel_gpu_series": [
         "geminilake",
-        "kabylake",
-        "whiskeylake",
-        "cometlake"
+        "kabylake"
       ],
       "features": [
         "disable_accelerated_vp8_encode"
