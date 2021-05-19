@@ -24,11 +24,22 @@
             android:focusable="false"
             android:background="@null" />
 
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/icon"
+            android:layout_width="@dimen/radio_button_with_description_icon_size"
+            android:layout_height="@dimen/radio_button_with_description_icon_size"
+            android:layout_marginEnd="16dp"
+            android:layout_toEndOf="@id/radio_button"
+            android:layout_centerVertical="true"
+            android:scaleType="fitCenter"
+            android:tint="@color/default_icon_color"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/radio_button"
+            android:layout_toEndOf="@id/icon"
             android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
         <!-- This TextView is hidden if it has no text, so the initial visibility should be "gone". -->

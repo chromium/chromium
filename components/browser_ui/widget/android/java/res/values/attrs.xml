@@ -53,6 +53,7 @@
     <declare-styleable name="RadioButtonWithDescription">
         <attr name="primaryText" format="string" />
         <attr name="descriptionText" format="string" />
+        <attr name="iconSrc" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="RadioButtonWithEditText">

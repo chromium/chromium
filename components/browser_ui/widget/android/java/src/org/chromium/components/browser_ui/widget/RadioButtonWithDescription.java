@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -19,6 +20,9 @@ import android.view.ViewStub;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import org.chromium.ui.UiUtils;
+import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.List;
 
@@ -48,6 +52,7 @@ import java.util.List;
  *      android:id="@+id/system_default"
  *      android:layout_width="match_parent"
  *      android:layout_height="wrap_content"
+ *      app:iconSrc="@drawable/ic_foo"    <-- optional -->
  *      app:primaryText="@string/feature_foo_option_one"
  *      app:descriptionText="@string/feature_foo_option_one_description" />
  * } </pre>
@@ -66,6 +71,7 @@ public class RadioButtonWithDescription extends RelativeLayout implements OnClic
     }
 
     private RadioButton mRadioButton;
+    private ChromeImageView mIcon;
     private TextView mPrimary;
     private TextView mDescription;
 
@@ -133,6 +139,7 @@ public class RadioButtonWithDescription extends RelativeLayout implements OnClic
      */
     protected void setViewsInternal() {
         mRadioButton = getRadioButtonView();
+        mIcon = getIcon();
         mPrimary = getPrimaryTextView();
         mDescription = getDescriptionTextView();
 
@@ -156,6 +163,13 @@ public class RadioButtonWithDescription extends RelativeLayout implements OnClic
      */
     protected RadioButton getRadioButtonView() {
         return (RadioButton) findViewById(R.id.radio_button);
+    }
+
+    /**
+     * @return ChromeImageView inside this {@link RadioButtonWithDescription}.
+     */
+    protected ChromeImageView getIcon() {
+        return (ChromeImageView) findViewById(R.id.icon);
     }
 
     /**
@@ -187,6 +201,14 @@ public class RadioButtonWithDescription extends RelativeLayout implements OnClic
     protected void applyAttributes(AttributeSet attrs) {
         TypedArray a = getContext().getTheme().obtainStyledAttributes(
                 attrs, R.styleable.RadioButtonWithDescription, 0, 0);
+
+        Drawable iconDrawable = UiUtils.getDrawable(
+                getContext(), a, R.styleable.RadioButtonWithDescription_iconSrc);
+
+        if (iconDrawable != null) {
+            mIcon.setImageDrawable(iconDrawable);
+            mIcon.setVisibility(View.VISIBLE);
+        }
 
         String primaryText = a.getString(R.styleable.RadioButtonWithDescription_primaryText);
         if (primaryText != null) mPrimary.setText(primaryText);

@@ -270,6 +270,7 @@ android_library("javatests") {
     "java/src/org/chromium/components/browser_ui/widget/RadioButtonWithDescriptionAndAuxButtonTest.java",
     "java/src/org/chromium/components/browser_ui/widget/RadioButtonWithDescriptionLayoutTest.java",
     "java/src/org/chromium/components/browser_ui/widget/RadioButtonWithEditTextTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/RadioButtonWithIconRenderTest.java",
     "java/src/org/chromium/components/browser_ui/widget/RoundedIconGeneratorTest.java",
     "java/src/org/chromium/components/browser_ui/widget/WrappingLayoutTest.java",
     "java/src/org/chromium/components/browser_ui/widget/highlight/ViewHighlighterTest.java",
@@ -320,6 +321,7 @@ android_resources("java_test_resources") {
     "test/java/res/layout/radio_button_with_description_and_aux_button_test.xml",
     "test/java/res/layout/radio_button_with_description_layout_test.xml",
     "test/java/res/layout/radio_button_with_edit_text_test.xml",
+    "test/java/res/layout/radio_button_with_icon_render_test.xml",
     "test/java/res/values/strings.xml",
   ]
   deps = [
