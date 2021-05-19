@@ -349,8 +349,7 @@ struct DowncastTraits<BoxReflectFilterOperation> {
 
 class CORE_EXPORT ConvolveMatrixFilterOperation : public FilterOperation {
  public:
-  ConvolveMatrixFilterOperation(Filter* filter,
-                                const IntSize& kernel_size,
+  ConvolveMatrixFilterOperation(const IntSize& kernel_size,
                                 float divisor,
                                 float bias,
                                 const IntPoint& target_offset,
