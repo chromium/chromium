@@ -268,6 +268,8 @@ void ResourceLoadObserverForFrame::DidFailLoading(
   probe::DidFailLoading(GetProbe(), identifier, document_loader_, error,
                         frame->GetDevToolsFrameToken());
 
+  RecordAddressSpaceFeature(FetchType::kSubresource, frame, error);
+
   // Notification to FrameConsole should come AFTER InspectorInstrumentation
   // call, DevTools front-end relies on this.
   if (!is_internal_request) {

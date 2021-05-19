@@ -378,10 +378,10 @@ class PrivateNetworkAccessWithFeatureEnabledBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
-// This test verifies that private network requests that are blocked do not
-// result in a WebFeature being use-counted.
+// This test verifies that private network requests that are blocked result in
+// a WebFeature being use-counted.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
-                       DoesNotRecordAddressSpaceFeatureForBlockedRequests) {
+                       RecordsAddressSpaceFeatureForBlockedRequests) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
 
@@ -392,7 +392,10 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
   )"));
   EXPECT_TRUE(NavigateAndFlushHistograms());
 
-  EXPECT_THAT(GetAddressSpaceFeatureBucketCounts(histogram_tester), IsEmpty());
+  EXPECT_THAT(
+      GetAddressSpaceFeatureBucketCounts(histogram_tester),
+      ElementsAre(Pair(
+          WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal, 1)));
 }
 
 // This test verifies that the chrome-untrusted:// scheme is considered local

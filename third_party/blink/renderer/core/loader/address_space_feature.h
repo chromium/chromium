@@ -39,6 +39,7 @@
 namespace blink {
 
 class LocalFrame;
+class ResourceError;
 class ResourceResponse;
 
 // Describes a type of fetch for the purposes of categorizing feature use.
@@ -76,6 +77,13 @@ absl::optional<mojom::blink::WebFeature> CORE_EXPORT AddressSpaceFeature(
 void RecordAddressSpaceFeature(FetchType fetch_type,
                                LocalFrame* client_frame,
                                const ResourceResponse& response);
+
+// Same as above, for cases where the fetch failed.
+// Does nothing if the fetch failed due to an error other than a failed Private
+// Network Access check.
+void RecordAddressSpaceFeature(FetchType fetch_type,
+                               LocalFrame* client_frame,
+                               const ResourceError& error);
 
 }  // namespace blink
 
