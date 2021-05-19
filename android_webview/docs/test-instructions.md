@@ -163,6 +163,42 @@ $ out/Default/bin/run_webview_instrumentation_test_apk \ # Any test runner
     -f=AwContentsTest#testClearCacheInQuickSuccession
 ```
 
+#### Debugging hangs in instrumentation tests
+
+If an instrumentation test is hanging, it's possible to get a callstack from the
+browser process. This requires running on a device with root.
+
+It's not possible to get a callstack from the renderer because the sandbox will
+prevent the trace file from being written. A workaround if you want to see the
+renderer threads is to run in single-process mode by adding
+`@OnlyRunIn(SINGLE_PROCESS)` above the test.
+
+##### conventions
+
+| Label     |                                                                |
+|-----------|----------------------------------------------------------------|
+|  (shell)  | in your workstation's shell                                    |
+|  (phone)  | inside the phone's shell which you entered through `adb shell` |
+
+```sh
+# Find the pid
+$ (shell) adb root
+$ (shell) adb shell
+
+# Get the main WebView Shell pid, e.g. org.chromium.android_webview.shell and
+# not org.chromium.android_webview.shell:sandboxed_process0
+$ (phone) ps -A | grep org.chromium.android_webview.shell
+# Generate a callstack (this won't kill the process)
+$ (phone) kill -3 pid
+# Look for the latest trace
+$ (phone) ls /data/anr/ -l
+# Copy the trace locally
+$ (shell) adb pull /data/anr/trace_01 /tmp/t1
+# Generate a callstack. Run this from the source directory.
+$ (shell) third_party/android_platform/development/scripts/stack --output-directory=out/Release /tmp/t1
+```
+
+
 ## External tests
 
 As WebView is an Android system component, we have some tests defined outside of
