@@ -731,8 +731,14 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   // Ensure that label is visible with correct text for visible feed.
   [self testNTPInitialPositionAndContent:collectionView];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   chrome_test_util::DiscoverHeaderLabel(),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(kNTPCollectionViewIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
   UILabel* discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
   GREYAssertTrue(
       [discoverHeaderLabel.text isEqualToString:labelTextForVisibleFeed],
@@ -747,7 +753,12 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   // Ensure that label is visible with correct text for hidden feed.
   [self testNTPInitialPositionAndContent:collectionView];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   chrome_test_util::DiscoverHeaderLabel(),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(kNTPCollectionViewIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
   GREYAssertTrue(
@@ -761,7 +772,12 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   // Ensure that label is visible with correct text for feed being made visible.
   [self testNTPInitialPositionAndContent:collectionView];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   chrome_test_util::DiscoverHeaderLabel(),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(kNTPCollectionViewIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
   GREYAssertTrue(
@@ -776,7 +792,12 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   // Ensure that label is visible with correct text for enabled feed.
   [self testNTPInitialPositionAndContent:collectionView];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   chrome_test_util::DiscoverHeaderLabel(),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(kNTPCollectionViewIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   UILabel* discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
   GREYAssertTrue(
@@ -792,7 +813,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   // Ensure that label is no longer visible.
   [self testNTPInitialPositionAndContent:collectionView];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:grey_nil()];
 
   // Re-enable feed.
   [ChromeEarlGreyAppInterface
@@ -801,7 +822,12 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   // Ensure that label is once again visible.
   [self testNTPInitialPositionAndContent:collectionView];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   chrome_test_util::DiscoverHeaderLabel(),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(kNTPCollectionViewIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
   GREYAssertTrue(
