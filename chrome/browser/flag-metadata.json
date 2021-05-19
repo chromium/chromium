@@ -4213,6 +4213,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "playback-speed-button",
+    "owners": [ "steimel", "media-dev" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "pluginvm-fullscreen",
     "owners": [ "joelhockey" ],
     "expiry_milestone": 96

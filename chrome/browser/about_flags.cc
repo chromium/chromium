@@ -7231,6 +7231,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kWebUIDownloadShelf)},
 #endif  // defined(TOOLKIT_VIEWS)
 
+    {"playback-speed-button", flag_descriptions::kPlaybackSpeedButtonName,
+     flag_descriptions::kPlaybackSpeedButtonDescription, kOsAll,
+     FEATURE_VALUE_TYPE(media::kPlaybackSpeedButton)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
