@@ -71,9 +71,6 @@ class FakeFidoDiscovery : public FidoDeviceDiscovery,
   // Simulates the discovery actually starting.
   void SimulateStarted(bool success);
 
-  // Combines WaitForCallToStart + SimulateStarted(true).
-  void WaitForCallToStartAndSimulateSuccess();
-
   // Tests are to directly call Add/RemoveDevice to simulate adding/removing
   // devices. Observers are automatically notified.
   using FidoDeviceDiscovery::AddDevice;
@@ -103,12 +100,14 @@ class FakeFidoDiscoveryFactory : public device::FidoDiscoveryFactory {
   //
   // It is an error not to call the relevant method prior to a call to
   // FidoDeviceDiscovery::Create with the respective transport.
-  FakeFidoDiscovery* ForgeNextHidDiscovery(StartMode mode = StartMode::kManual);
-  FakeFidoDiscovery* ForgeNextNfcDiscovery(StartMode mode = StartMode::kManual);
+  FakeFidoDiscovery* ForgeNextHidDiscovery(
+      StartMode mode = StartMode::kAutomatic);
+  FakeFidoDiscovery* ForgeNextNfcDiscovery(
+      StartMode mode = StartMode::kAutomatic);
   FakeFidoDiscovery* ForgeNextCableDiscovery(
-      StartMode mode = StartMode::kManual);
+      StartMode mode = StartMode::kAutomatic);
   FakeFidoDiscovery* ForgeNextPlatformDiscovery(
-      StartMode mode = StartMode::kManual);
+      StartMode mode = StartMode::kAutomatic);
 
   // device::FidoDiscoveryFactory:
   std::vector<std::unique_ptr<FidoDiscoveryBase>> Create(
