@@ -52,7 +52,7 @@ def RunCheckstyle(input_api, output_api, style_file, files_to_skip=None):
                             'com.puppycrawl.tools.checkstyle.Main', '-c',
                             style_file, '-f', 'xml'] + java_files,
                             stdout=subprocess.PIPE)
-  stdout, _ = check.communicate()
+  stdout = check.communicate()[0].decode('utf-8')
 
   result_errors = []
   result_warnings = []

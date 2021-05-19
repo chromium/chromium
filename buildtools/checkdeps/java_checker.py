@@ -81,6 +81,9 @@ class JavaChecker(object):
       # Skip unwanted subdirectories. TODO(husky): it would be better to do
       # this via the skip_child_includes flag in DEPS files. Maybe hoist this
       # prescan logic into checkdeps.py itself?
+      root = root.decode('utf-8')
+      dirs = [d.decode('utf-8') for d in dirs]
+      files = [f.decode('utf-8') for f in files]
       dirs[:] = [d for d in dirs if not self._IgnoreDir(d)]
       for f in files:
         if f.endswith('.java'):
