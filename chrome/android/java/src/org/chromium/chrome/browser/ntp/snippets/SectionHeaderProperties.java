@@ -13,10 +13,6 @@ public class SectionHeaderProperties {
     /** The header text to be shown. */
     public static final PropertyModel.WritableObjectPropertyKey<String> HEADER_TEXT_KEY =
             new PropertyModel.WritableObjectPropertyKey<>();
-    /** The accessibility text for the header. */
-    public static final PropertyModel
-            .WritableObjectPropertyKey<String> HEADER_ACCESSIBILITY_TEXT_KEY =
-            new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableBooleanPropertyKey UNREAD_CONTENT_KEY =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<Runnable> ON_SELECT_CALLBACK_KEY =
@@ -24,8 +20,7 @@ public class SectionHeaderProperties {
 
     public static PropertyModel createSectionHeader(String headerText) {
         return new PropertyModel
-                .Builder(ON_SELECT_CALLBACK_KEY, HEADER_TEXT_KEY, HEADER_ACCESSIBILITY_TEXT_KEY,
-                        UNREAD_CONTENT_KEY)
+                .Builder(ON_SELECT_CALLBACK_KEY, HEADER_TEXT_KEY, UNREAD_CONTENT_KEY)
                 .with(HEADER_TEXT_KEY, headerText)
                 .with(UNREAD_CONTENT_KEY, false)
                 .build();

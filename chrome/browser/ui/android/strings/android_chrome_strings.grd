@@ -2881,8 +2881,8 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       </message>
       <message name="IDS_NTP_FOR_YOU" desc="Title in the feed header for interest-based feed.">For you</message>
       <message name="IDS_NTP_FOLLOWING" desc="Title in the feed header for user-customized following feed.">Following</message>
-      <message name="IDS_ACCESSIBILITY_NTP_FOLLOWING_UNREAD_CONTENT" desc="Content description for the feed header for user-customized following feed, when unread content is available.">
-      Following, unread stories ready
+      <message name="IDS_ACCESSIBILITY_NTP_FOLLOWING_UNREAD_CONTENT" desc="Content description for the feed header blue dot for user-customized following feed, which indicates that unread content is available.">
+      Unread stories ready
       </message>
       <message name="IDS_NTP_FEED_MENU_IPH" desc="In-product help that points at the menu icon for the news feed on Chrome's new tab page. This string instructs the user to open the menu for settings that let them control the content that appears on the feed.">
         Control your stories and activity here

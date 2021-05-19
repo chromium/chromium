@@ -10,10 +10,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,7 +18,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -46,6 +42,7 @@ import org.chromium.ui.widget.ViewRectProvider;
  * manage the feed.
  */
 public class SectionHeaderView extends LinearLayout {
+    private static final String TAG = "SectionHeaderView";
     private static final int ANIMATION_DURATION_MS = 200;
 
     /** OnTabSelectedListener that delegates calls to the SectionHeadSelectedListener. */
@@ -165,34 +162,26 @@ public class SectionHeaderView extends LinearLayout {
      * Does nothing if index is invalid. Make sure to call addTab() beforehand.
      *
      * @param text Text to set the tab to.
-     * @param accessibilityText The optional content description for the header.
      * @param hasUnreadContent Whether there is unread content.
      * @param index Index of the tab to set.
      */
-    void setHeaderAt(
-            String text, @Nullable String accessibilityText, boolean hasUnreadContent, int index) {
+    void setHeaderAt(String text, boolean hasUnreadContent, int index) {
         TabLayout.Tab tab = getTabAt(index);
         if (tab != null) {
             tab.setText(text);
-            tab.setContentDescription(accessibilityText);
             TextView textView = (TextView) tab.getCustomView().findViewById(android.R.id.text1);
-            textView.setCompoundDrawablesWithIntrinsicBounds(
-                    null, null, hasUnreadContent ? makeUnreadContentIndicator() : null, null);
+            ImageView badgeView = tab.getCustomView().findViewById(R.id.badge);
+            if (hasUnreadContent) {
+                badgeView.setVisibility(View.VISIBLE);
+            } else {
+                badgeView.setVisibility(View.GONE);
+            }
         }
     }
 
     @Nullable
     private TabLayout.Tab getTabAt(int index) {
         return mTabLayout != null ? mTabLayout.getTabAt(index) : null;
-    }
-
-    private Drawable makeUnreadContentIndicator() {
-        // Use insets to shift the shape up.
-        final int fiveDpInPx = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
-        return new InsetDrawable(ResourcesCompat.getDrawable(getResources(),
-                                         R.drawable.new_tab_section_header_content_circle, null),
-                0, -fiveDpInPx, 0, fiveDpInPx);
     }
 
     /**

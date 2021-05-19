@@ -484,8 +484,6 @@ public class FeedSurfaceMediator
         // hasUnreadContent() changes.
         Callback<Boolean> callback = hasUnreadContent -> {
             headerModel.set(SectionHeaderProperties.UNREAD_CONTENT_KEY, hasUnreadContent);
-            headerModel.set(SectionHeaderProperties.HEADER_ACCESSIBILITY_TEXT_KEY,
-                    hasUnreadContent ? accessibilityTextUnreadContent : null);
         };
         callback.onResult(stream.hasUnreadContent().addObserver(callback));
 

@@ -3,12 +3,33 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/text1"
-    android:gravity="center"
-    android:maxLines="2"
-    android:layout_width="wrap_content"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:drawablePadding="2dp"
-    android:textAppearance="@style/TextAppearance.Button.Text.Blue"
-    />
+    tools:ignore="UseCompoundDrawables"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:focusable="true" >
+
+    <TextView
+        android:id="@android:id/text1"
+        android:layout_gravity="center_horizontal"
+        android:maxLines="2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Button.Text.Blue"
+        />
+
+    <ImageView
+        android:id="@+id/badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/accessibility_ntp_following_unread_content"
+        android:src="@drawable/new_tab_section_header_content_circle"
+        android:paddingStart="2dp"
+        android:layout_gravity="top|end"
+        android:visibility="gone"
+        />
+
+</FrameLayout>
