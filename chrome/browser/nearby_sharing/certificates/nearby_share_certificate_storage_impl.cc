@@ -225,7 +225,7 @@ void NearbyShareCertificateStorageImpl::Initialize() {
                       << num_initialize_attempts_;
       db_->Init(base::BindOnce(
           &NearbyShareCertificateStorageImpl::OnDatabaseInitialized,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
       break;
     case InitStatus::kInitialized:
       NOTREACHED();
@@ -244,9 +244,13 @@ void NearbyShareCertificateStorageImpl::DestroyAndReinitialize() {
 }
 
 void NearbyShareCertificateStorageImpl::OnDatabaseInitialized(
+    base::TimeTicks initialize_start_time,
     leveldb_proto::Enums::InitStatus status) {
   switch (status) {
     case leveldb_proto::Enums::InitStatus::kOK:
+      base::UmaHistogramLongTimes(
+          "Nearby.Share.Certificates.Storage.InitializeSuccessDuration",
+          base::TimeTicks::Now() - initialize_start_time);
       FinishInitialization(true);
       break;
     case leveldb_proto::Enums::InitStatus::kError:

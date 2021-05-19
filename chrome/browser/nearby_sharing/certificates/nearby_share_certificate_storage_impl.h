@@ -89,7 +89,8 @@ class NearbyShareCertificateStorageImpl : public NearbyShareCertificateStorage {
   enum class InitStatus { kUninitialized, kInitialized, kFailed };
 
   void Initialize();
-  void OnDatabaseInitialized(leveldb_proto::Enums::InitStatus status);
+  void OnDatabaseInitialized(base::TimeTicks initialize_start_time,
+                             leveldb_proto::Enums::InitStatus status);
   void FinishInitialization(bool success);
 
   void OnDatabaseDestroyedReinitialize(bool success);
