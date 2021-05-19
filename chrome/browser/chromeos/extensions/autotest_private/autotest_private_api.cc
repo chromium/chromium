@@ -173,6 +173,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_list.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -953,13 +954,13 @@ class EventGenerator {
   ~EventGenerator() = default;
 
   void ScheduleMouseEvent(ui::EventType type,
-                          gfx::PointF location_in_host,
+                          gfx::PointF location_in_screen,
                           int flags) {
     if (flags == 0 &&
         (type == ui::ET_MOUSE_PRESSED || type == ui::ET_MOUSE_RELEASED)) {
       LOG(ERROR) << "No flags specified for mouse button changes";
     }
-    tasks_.push_back(Task(type, location_in_host, flags));
+    tasks_.push_back(Task(type, location_in_screen, flags));
   }
 
   void Run() {
@@ -977,12 +978,12 @@ class EventGenerator {
     };
 
     const ui::EventType type;
-    const gfx::PointF location_in_host;
+    const gfx::PointF location_in_screen;
     const int flags;
     Status status = kNotScheduled;
 
-    Task(ui::EventType type, gfx::PointF location_in_host, int flags)
-        : type(type), location_in_host(location_in_host), flags(flags) {}
+    Task(ui::EventType type, gfx::PointF location_in_screen, int flags)
+        : type(type), location_in_screen(location_in_screen), flags(flags) {}
   };
 
   void SendEvent() {
@@ -1017,14 +1018,32 @@ class EventGenerator {
         }
         break;
       }
-      case ui::ET_MOUSE_MOVED:
-      case ui::ET_MOUSE_DRAGGED:
+      case ui::ET_MOUSE_MOVED: {
+        display::Display display =
+            display::Screen::GetScreen()->GetDisplayNearestPoint(
+                gfx::ToFlooredPoint((task->location_in_screen)));
+        auto* root_window = ash::Shell::GetRootWindowForDisplayId(display.id());
+        if (!root_window->GetBoundsInScreen().Contains(
+                gfx::ToFlooredPoint(task->location_in_screen))) {
+          // Not in any of the display. Does nothing and schedules a new task.
+          OnFinishedProcessingEvent();
+          return;
+        }
+        gfx::PointF location_in_host(task->location_in_screen);
+        wm::ConvertPointFromScreen(root_window, &location_in_host);
+        ConvertPointToHost(root_window, &location_in_host);
+        if (root_window->GetHost() != host_) {
+          // Switching to the new display.
+          host_ = root_window->GetHost();
+          host_->MoveCursorToLocationInPixels(
+              gfx::ToFlooredPoint(location_in_host));
+        }
         // The location should be offset by the origin of the root-window since
         // ui::SystemInputInjector expects so.
         input_injector_->MoveCursorTo(
-            task->location_in_host +
-            host_->GetBoundsInPixels().OffsetFromOrigin());
+            location_in_host + host_->GetBoundsInPixels().OffsetFromOrigin());
         break;
+      }
       default:
         NOTREACHED();
     }
@@ -4469,38 +4488,30 @@ ExtensionFunction::ResponseAction AutotestPrivateMouseMoveFunction::Run() {
   if (!root_window)
     return RespondNow(Error("Failed to find the root window"));
 
-  const gfx::PointF location_in_root(params->location.x, params->location.y);
-  gfx::PointF location_in_screen = location_in_root;
-  wm::ConvertPointToScreen(root_window, &location_in_screen);
+  gfx::Point location_in_screen(params->location.x, params->location.y);
   auto* env = aura::Env::GetInstance();
   const gfx::Point last_mouse_location(env->last_mouse_location());
-  if (last_mouse_location == gfx::ToFlooredPoint(location_in_screen))
+  if (last_mouse_location == location_in_screen)
     return RespondNow(NoArguments());
-
-  gfx::PointF location_in_host = location_in_root;
-  ConvertPointToHost(root_window, &location_in_host);
 
   event_generator_ = std::make_unique<EventGenerator>(
       root_window->GetHost(),
       base::BindOnce(&AutotestPrivateMouseMoveFunction::Respond, this,
                      NoArguments()));
-  gfx::PointF start_in_host(last_mouse_location.x(), last_mouse_location.y());
-  wm::ConvertPointFromScreen(root_window, &start_in_host);
-  ConvertPointToHost(root_window, &start_in_host);
 
   int64_t steps = std::max(
       base::ClampFloor<int64_t>(params->duration_in_ms /
                                 event_generator_->interval().InMillisecondsF()),
       static_cast<int64_t>(1));
   int flags = env->mouse_button_flags();
-  ui::EventType type = (flags == 0) ? ui::ET_MOUSE_MOVED : ui::ET_MOUSE_DRAGGED;
   for (int64_t i = 1; i <= steps; ++i) {
     double progress = static_cast<double>(i) / static_cast<double>(steps);
-    gfx::PointF point(gfx::Tween::FloatValueBetween(progress, start_in_host.x(),
-                                                    location_in_host.x()),
-                      gfx::Tween::FloatValueBetween(progress, start_in_host.y(),
-                                                    location_in_host.y()));
-    event_generator_->ScheduleMouseEvent(type, point, flags);
+    gfx::PointF point(
+        gfx::Tween::FloatValueBetween(progress, last_mouse_location.x(),
+                                      location_in_screen.x()),
+        gfx::Tween::FloatValueBetween(progress, last_mouse_location.y(),
+                                      location_in_screen.y()));
+    event_generator_->ScheduleMouseEvent(ui::ET_MOUSE_MOVED, point, flags);
   }
   event_generator_->Run();
   return RespondLater();

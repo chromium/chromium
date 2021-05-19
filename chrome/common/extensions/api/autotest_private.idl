@@ -1036,8 +1036,8 @@ namespace autotestPrivate {
 
     // Create mouse events to move a mouse cursor to the location. This can
     // cause a dragging if a button is pressed. It starts from the last mouse
-    // location. It does not support the move or drag across display boundaries.
-    // |location|: the target location (in display's coordinate).
+    // location.
+    // |location|: the target location (in screen coordinate).
     // |duration_in_ms|: the duration (in milliseconds) for the mouse movement.
     //    The mouse will move linearly. 0 means moving immediately.
     // |callback|: called after the mouse move finishes.
