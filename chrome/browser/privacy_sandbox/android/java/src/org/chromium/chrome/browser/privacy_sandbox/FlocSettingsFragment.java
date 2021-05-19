@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.ui.widget.ButtonCompat;
 
 /**
  * Settings fragment for FLoC settings as part of Privacy Sandbox.
@@ -22,6 +23,8 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat {
     public static final String FLOC_STATUS = "floc_status";
     public static final String FLOC_GROUP = "floc_group";
     public static final String FLOC_UPDATE = "floc_update";
+
+    private ButtonCompat mResetButton;
 
     /**
      * Initializes all the objects related to the preferences page.
@@ -43,11 +46,18 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat {
         // Add a button to the bottom of the preferences view.
         LinearLayout buttonView =
                 (LinearLayout) inflater.inflate(R.layout.floc_button, view, false);
+        mResetButton = (ButtonCompat) buttonView.findViewById(R.id.floc_reset_button);
         view.addView(buttonView);
+        updateInformation();
         return view;
     }
 
     private void updateInformation() {
+        // At the time this method is invoked, the reset button might not be defined yet.
+        if (mResetButton != null) {
+            mResetButton.setEnabled(PrivacySandboxBridge.isFlocIdResettable());
+        }
+
         findPreference(FLOC_STATUS)
                 .setSummary(getContext().getString(R.string.privacy_sandbox_floc_status_title)
                         + "\n" + PrivacySandboxBridge.getFlocStatusString());

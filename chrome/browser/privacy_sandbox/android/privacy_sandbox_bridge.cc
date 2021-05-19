@@ -46,6 +46,12 @@ static jboolean JNI_PrivacySandboxBridge_IsFlocEnabled(JNIEnv* env) {
       ->IsFlocAllowed();
 }
 
+static jboolean JNI_PrivacySandboxBridge_IsFlocIdResettable(JNIEnv* env) {
+  return PrivacySandboxSettingsFactory::GetForProfile(
+             ProfileManager::GetActiveUserProfile())
+      ->IsFlocIdResettable();
+}
+
 static ScopedJavaLocalRef<jstring> JNI_PrivacySandboxBridge_GetFlocStatusString(
     JNIEnv* env) {
   return ConvertUTF16ToJavaString(env,
