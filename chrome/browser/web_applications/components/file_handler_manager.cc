@@ -127,7 +127,13 @@ void FileHandlerManager::DisableAndUnregisterOsFileHandlers(
   // |DeleteSharedAppShims| is called in
   // |OsIntegrationManager::UninstallOsHooks|, file handlers are also
   // unregistered.
-#if !defined(OS_MAC)
+#if defined(OS_MAC)
+  // When updating file handlers, |callback| here triggers the registering of
+  // the new file handlers. It is therefore important that |callback| not be
+  // dropped on the floor.
+  // https://crbug.com/1201993
+  std::move(callback).Run(true);
+#else
   UnregisterFileHandlersWithOs(app_id, profile(), std::move(info),
                                std::move(callback));
 #endif
