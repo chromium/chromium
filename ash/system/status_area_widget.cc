@@ -16,7 +16,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
-#include "ash/system/accessibility/select_to_speak_tray.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/media/media_tray.h"

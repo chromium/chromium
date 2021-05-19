@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_CONSTANTS_H_
-#define ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_CONSTANTS_H_
+#ifndef ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SELECT_TO_SPEAK_CONSTANTS_H_
+#define ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SELECT_TO_SPEAK_CONSTANTS_H_
 
 namespace ash {
 
@@ -28,4 +28,4 @@ const char kSelectToSpeakSpeedBubbleWindowName[] = "SelectToSpeakSpeedBubble";
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_CONSTANTS_H_
+#endif  // ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SELECT_TO_SPEAK_CONSTANTS_H_

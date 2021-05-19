@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SPEED_BUBBLE_CONTROLLER_H_
-#define ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SPEED_BUBBLE_CONTROLLER_H_
+#ifndef ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SELECT_TO_SPEAK_SPEED_BUBBLE_CONTROLLER_H_
+#define ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SELECT_TO_SPEAK_SPEED_BUBBLE_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/accessibility/select_to_speak_speed_view.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_speed_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/view_click_listener.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -61,4 +61,4 @@ class ASH_EXPORT SelectToSpeakSpeedBubbleController
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SPEED_BUBBLE_CONTROLLER_H_
+#endif  // ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SELECT_TO_SPEAK_SPEED_BUBBLE_CONTROLLER_H_

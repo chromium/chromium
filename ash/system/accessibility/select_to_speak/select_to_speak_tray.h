@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_TRAY_H_
-#define ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_TRAY_H_
+#ifndef ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SELECT_TO_SPEAK_TRAY_H_
+#define ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SELECT_TO_SPEAK_TRAY_H_
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
@@ -67,4 +67,4 @@ class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_TRAY_H_
+#endif  // ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SELECT_TO_SPEAK_TRAY_H_

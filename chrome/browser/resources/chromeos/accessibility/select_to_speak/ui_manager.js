@@ -14,17 +14,18 @@ const RoleType = chrome.automation.RoleType;
 const SelectToSpeakPanelAction =
     chrome.accessibilityPrivate.SelectToSpeakPanelAction;
 
-// This must be the same as in ash/system/accessibility/select_to_speak_tray.cc:
+// This must be the same as in
+// ash/system/accessibility/select_to_speak/select_to_speak_tray.cc:
 // ash::kSelectToSpeakTrayClassName.
 export const SELECT_TO_SPEAK_TRAY_CLASS_NAME =
     'tray/TrayBackgroundView/SelectToSpeakTray';
 
 // This must match the name of view class that implements the menu view:
-// ash/system/accessibility/select_to_speak_menu_view.h
+// ash/system/accessibility/select_to_speak/select_to_speak_menu_view.h
 const SELECT_TO_SPEAK_MENU_CLASS_NAME = 'SelectToSpeakMenuView';
 
 // This must match the name of view class that implements the speed view:
-// ash/system/accessibility/select_to_speak_speed_view.h
+// ash/system/accessibility/select_to_speak/select_to_speak_speed_view.h
 const SELECT_TO_SPEAK_SPEED_CLASS_NAME = 'SelectToSpeakSpeedView';
 
 // This must match the name of view class that implements the bubble views:

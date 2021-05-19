@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/accessibility/select_to_speak_tray.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"

@@ -18,7 +18,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
-#include "ash/system/accessibility/select_to_speak_tray.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/virtual_keyboard_model.h"

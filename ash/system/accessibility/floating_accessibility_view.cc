@@ -15,7 +15,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/accessibility/floating_menu_button.h"
-#include "ash/system/accessibility/select_to_speak_tray.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
 #include "base/bind.h"

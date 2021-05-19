@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SPEED_VIEW_H_
-#define ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SPEED_VIEW_H_
+#ifndef ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SELECT_TO_SPEAK_SPEED_VIEW_H_
+#define ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SELECT_TO_SPEAK_SPEED_VIEW_H_
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/view_click_listener.h"
@@ -64,4 +64,4 @@ END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(/* no export */, ash::SelectToSpeakSpeedView)
 
-#endif  // ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SPEED_VIEW_H_
+#endif  // ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SELECT_TO_SPEAK_SPEED_VIEW_H_

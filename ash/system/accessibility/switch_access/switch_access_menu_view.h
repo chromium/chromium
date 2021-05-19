@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_ACCESSIBILITY_SWITCH_ACCESS_MENU_VIEW_H_
-#define ASH_SYSTEM_ACCESSIBILITY_SWITCH_ACCESS_MENU_VIEW_H_
+#ifndef ASH_SYSTEM_ACCESSIBILITY_SWITCH_ACCESS_SWITCH_ACCESS_MENU_VIEW_H_
+#define ASH_SYSTEM_ACCESSIBILITY_SWITCH_ACCESS_SWITCH_ACCESS_MENU_VIEW_H_
 
 #include <vector>
 
@@ -34,4 +34,4 @@ class SwitchAccessMenuView : public views::View {
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_ACCESSIBILITY_SWITCH_ACCESS_MENU_VIEW_H_
+#endif  // ASH_SYSTEM_ACCESSIBILITY_SWITCH_ACCESS_SWITCH_ACCESS_MENU_VIEW_H_

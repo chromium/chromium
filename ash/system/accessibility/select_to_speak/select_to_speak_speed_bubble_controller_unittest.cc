@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/accessibility/select_to_speak_speed_bubble_controller.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_speed_bubble_controller.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
@@ -10,9 +10,9 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/accessibility/floating_menu_button.h"
-#include "ash/system/accessibility/select_to_speak_menu_bubble_controller.h"
-#include "ash/system/accessibility/select_to_speak_menu_view.h"
-#include "ash/system/accessibility/select_to_speak_speed_view.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_menu_bubble_controller.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_menu_view.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_speed_view.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/accessibility/switch_access_back_button_bubble_controller.h"
+#include "ash/system/accessibility/switch_access/switch_access_back_button_bubble_controller.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/accessibility/switch_access_back_button_bubble_controller.h"
-#include "ash/system/accessibility/switch_access_back_button_view.h"
-#include "ash/system/accessibility/switch_access_menu_bubble_controller.h"
+#include "ash/system/accessibility/switch_access/switch_access_back_button_bubble_controller.h"
+#include "ash/system/accessibility/switch_access/switch_access_back_button_view.h"
+#include "ash/system/accessibility/switch_access/switch_access_menu_bubble_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"

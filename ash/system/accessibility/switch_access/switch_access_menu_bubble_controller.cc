@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/accessibility/switch_access_menu_bubble_controller.h"
+#include "ash/system/accessibility/switch_access/switch_access_menu_bubble_controller.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
-#include "ash/system/accessibility/switch_access_back_button_bubble_controller.h"
-#include "ash/system/accessibility/switch_access_menu_view.h"
+#include "ash/system/accessibility/switch_access/switch_access_back_button_bubble_controller.h"
+#include "ash/system/accessibility/switch_access/switch_access_menu_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_view.h"

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/accessibility/select_to_speak_menu_view.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_menu_view.h"
 
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/accessibility/floating_menu_button.h"
-#include "ash/system/accessibility/select_to_speak_constants.h"
-#include "ash/system/accessibility/select_to_speak_metrics_utils.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_constants.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_metrics_utils.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "base/i18n/rtl.h"

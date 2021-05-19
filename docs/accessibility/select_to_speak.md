@@ -47,7 +47,7 @@ chrome/browser/resources/chromeos/accessibility/select_to_speak/
 
 - An event handler, ash/events/select_to_speak_event_handler.h
 
-- The status tray button, ash/system/accessibility/select_to_speak_tray.h
+- The status tray button, ash/system/accessibility/select_to_speak/select_to_speak_tray.h
 
 - Floating panel, system/accessibility/select_to_speak_menu_bubble_controller.h
 
@@ -202,7 +202,7 @@ and deactivating STS.
 #### Floating control panel
 
 The panel is implemented as a native ASH component
-[select_to_speak_menu_bubble_controller.h](https://source.chromium.org/chromium/chromium/src/+/master:ash/system/accessibility/select_to_speak_menu_bubble_controller.h).
+[select_to_speak_menu_bubble_controller.h](https://source.chromium.org/chromium/chromium/src/+/main:ash/system/accessibility/select_to_speak/select_to_speak_menu_bubble_controller.h).
 Similar to focus rings, the STS component extension communicates with the panel
 via the `chrome.accessibilityPrivate` API. The
 `chrome.accessibilityPrivate.updateSelectToSpeakPanel` API controls the
@@ -262,7 +262,7 @@ Resuming TTS behaves differently depending on the context:
 
 Users can navigate to adjacent paragraphs from the current block parent when
 Select-to-speak is active. A 'paragraph' is any block element as defined by
-[ParagraphUtils.isBlock](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/resources/chromeos/accessibility/select_to_speak/paragraph_utils.js)
+[ParagraphUtils.isBlock](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/chromeos/accessibility/select_to_speak/paragraph_utils.js)
 and the navigation occurs in DOM-order.
 
 #### Sentence navigation
@@ -270,7 +270,7 @@ and the navigation occurs in DOM-order.
 Paragraphs are split into sentences based on the `sentenceStarts` property of
 an AutomationNode. Users can skip to previous and next sentences using similar
 technique as pause/resume (`stop` then `speak` with trimmed text). See
-[sentence_utils.js](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/resources/chromeos/accessibility/select_to_speak/sentence_utils.js)
+[sentence_utils.js](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/chromeos/accessibility/select_to_speak/sentence_utils.js)
 for logic on breaking node groups into sentences.
 
 #### Reading speed

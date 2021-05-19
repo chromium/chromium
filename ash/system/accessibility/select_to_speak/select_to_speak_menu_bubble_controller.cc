@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/accessibility/select_to_speak_menu_bubble_controller.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_menu_bubble_controller.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/accessibility/floating_menu_utils.h"
-#include "ash/system/accessibility/select_to_speak_constants.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_constants.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_view.h"

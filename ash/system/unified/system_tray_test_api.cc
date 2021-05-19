@@ -8,7 +8,7 @@
 
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
-#include "ash/system/accessibility/select_to_speak_tray.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/time_tray_item_view.h"
 #include "ash/system/time/time_view.h"

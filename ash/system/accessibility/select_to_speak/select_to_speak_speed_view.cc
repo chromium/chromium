@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/accessibility/select_to_speak_speed_view.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_speed_view.h"
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/accessibility/select_to_speak_constants.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_constants.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/accessibility/switch_access_menu_view.h"
+#include "ash/system/accessibility/switch_access/switch_access_menu_view.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/accessibility/switch_access_menu_button.h"
+#include "ash/system/accessibility/switch_access/switch_access_menu_button.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"

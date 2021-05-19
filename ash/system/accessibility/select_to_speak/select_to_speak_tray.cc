@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/accessibility/select_to_speak_tray.h"
+#include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -31,7 +31,6 @@ const char kSelectToSpeakTrayClassName[] =
 
 SelectToSpeakTray::SelectToSpeakTray(Shelf* shelf)
     : TrayBackgroundView(shelf), icon_(new views::ImageView()) {
-
   UpdateIconsForSession();
   icon_->SetImage(inactive_image_);
   const int vertical_padding = (kTrayItemSize - inactive_image_.height()) / 2;
