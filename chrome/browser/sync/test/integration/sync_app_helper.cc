@@ -126,12 +126,11 @@ AppStateMap GetAppStates(Profile* profile) {
           ->extension_service()
           ->pending_extension_manager();
 
-  std::list<std::string> pending_crx_ids;
-  pending_extension_manager->GetPendingIdsForUpdateCheck(&pending_crx_ids);
+  std::list<std::string> pending_crx_ids =
+      pending_extension_manager->GetPendingIdsForUpdateCheck();
 
-  for (std::list<std::string>::const_iterator id = pending_crx_ids.begin();
-       id != pending_crx_ids.end(); ++id) {
-    LoadApp(profile, *id, &(app_state_map[*id]));
+  for (const auto& id : pending_crx_ids) {
+    LoadApp(profile, id, &(app_state_map[id]));
   }
 
   return app_state_map;

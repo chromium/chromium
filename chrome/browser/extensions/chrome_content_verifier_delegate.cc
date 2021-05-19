@@ -245,18 +245,19 @@ void ChromeContentVerifierDelegate::VerifyFailed(
   }
 
   if (info.should_repair) {
-    if (pending_manager->IsPolicyReinstallForCorruptionExpected(extension_id))
+    if (pending_manager->IsReinstallForCorruptionExpected(extension_id))
       return;
     SYSLOG(WARNING) << "Corruption detected in policy extension "
                     << extension_id
                     << " installed at: " << extension->path().value()
                     << ", from webstore: " << info.is_from_webstore;
-    pending_manager->ExpectPolicyReinstallForCorruption(
-        extension_id, info.is_from_webstore
-                          ? PendingExtensionManager::PolicyReinstallReason::
-                                CORRUPTION_DETECTED_WEBSTORE
-                          : PendingExtensionManager::PolicyReinstallReason::
-                                CORRUPTION_DETECTED_NON_WEBSTORE);
+    pending_manager->ExpectReinstallForCorruption(
+        extension_id,
+        info.is_from_webstore ? PendingExtensionManager::PolicyReinstallReason::
+                                    CORRUPTION_DETECTED_WEBSTORE
+                              : PendingExtensionManager::PolicyReinstallReason::
+                                    CORRUPTION_DETECTED_NON_WEBSTORE,
+        extension->location());
     service->DisableExtension(extension_id, disable_reason::DISABLE_CORRUPTED);
     // Attempt to reinstall.
     policy_extension_reinstaller_->NotifyExtensionDisabledDueToCorruption();

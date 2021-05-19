@@ -1838,8 +1838,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 
   // Step 4: Check that we are going to reinstall the extension and wait for
   // extension reinstall.
-  EXPECT_TRUE(service->pending_extension_manager()
-                  ->IsPolicyReinstallForCorruptionExpected(kGoodCrxId));
+  EXPECT_TRUE(
+      service->pending_extension_manager()->IsReinstallForCorruptionExpected(
+          kGoodCrxId));
   registry_observer.WaitForExtensionWillBeInstalled();
 
   // Extension was reloaded, old extension object is invalid.
@@ -1921,8 +1922,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Step 4: Check that we are going to reinstall the extension and wait for
   // extension reinstall.
-  EXPECT_TRUE(service->pending_extension_manager()
-                  ->IsPolicyReinstallForCorruptionExpected(kGoodCrxId));
+  EXPECT_TRUE(
+      service->pending_extension_manager()->IsReinstallForCorruptionExpected(
+          kGoodCrxId));
   observer.WaitForExtensionWillBeInstalled();
 
   // Extension was reloaded, old extension object is invalid.
@@ -1996,8 +1998,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 
   // Step 4: Check that we are not going to reinstall the extension, but we have
   // detected a corruption.
-  EXPECT_FALSE(service->pending_extension_manager()
-                   ->IsPolicyReinstallForCorruptionExpected(kGoodCrxId));
+  EXPECT_FALSE(
+      service->pending_extension_manager()->IsReinstallForCorruptionExpected(
+          kGoodCrxId));
   histogram_tester.ExpectUniqueSample(
       "Extensions.CorruptPolicyExtensionDetected3",
       extensions::PendingExtensionManager::PolicyReinstallReason::

@@ -238,7 +238,7 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
     // priority than |info.download_location|, and we aren't doing a
     // reinstall of a corrupt policy force-installed extension.
     ManifestLocation current = extension->location();
-    if (!pending_extension_manager_.IsPolicyReinstallForCorruptionExpected(
+    if (!pending_extension_manager_.IsReinstallForCorruptionExpected(
             info.extension_id) &&
         current == Manifest::GetHigherPriorityLocation(
                        current, info.download_location)) {
@@ -291,7 +291,7 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
       // set of extensions. If the extension is corrupted, it should be
       // reinstalled, thus it should be added to the pending extensions for
       // installation.
-      if (!pending_extension_manager_.IsPolicyReinstallForCorruptionExpected(
+      if (!pending_extension_manager_.IsReinstallForCorruptionExpected(
               info.extension_id)) {
         return false;
       }
@@ -509,6 +509,12 @@ void ExtensionService::Init() {
 
   // Must be called after extensions are loaded.
   allowlist_.Init();
+
+  // Check for updates especially for corrupted user installed extension from
+  // the webstore. This will do nothing if an extension update check was
+  // triggered before and is still running.
+  if (pending_extension_manager_.HasAnyReinstallForCorruption())
+    CheckForUpdatesSoon();
 }
 
 void ExtensionService::EnabledReloadableExtensions() {
@@ -1629,6 +1635,9 @@ void ExtensionService::OnExtensionInstalled(
     }
 
     install_parameter = pending_extension_info->install_parameter();
+    pending_extension_manager()->Remove(id);
+  } else if (pending_extension_manager()->IsReinstallForCorruptionExpected(
+                 extension->id())) {
     pending_extension_manager()->Remove(id);
   } else {
     // We explicitly want to re-enable an uninstalled external

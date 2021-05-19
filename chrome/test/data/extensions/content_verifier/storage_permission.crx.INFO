@@ -1,0 +1,5 @@
+Information about storage_permission.crx:
+
+A fake test extension.
+extension_id: lpibhlnkgcbcgdjlaacppnkmmlfpapij
+The extension has a storage permission and a background.js script.

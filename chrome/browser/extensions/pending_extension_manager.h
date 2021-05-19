@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/pending_extension_info.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 
 class GURL;
@@ -120,18 +121,24 @@ class PendingExtensionManager {
   // See https://crbug.com/958794#c22 for details.
   void RecordPolicyReinstallReason(PolicyReinstallReason reason_for_uma);
 
+  void RecordExtensionReinstallManifestLocation(
+      mojom::ManifestLocation manifest_location_for_uma);
+
   // Notifies the manager that we are reinstalling the policy force-installed
   // extension with |id| because we detected corruption in the current copy.
-  // |reason| indicates origin and details of the requires, and is used for
-  // statistics purposes (sent to UMA).
-  void ExpectPolicyReinstallForCorruption(const ExtensionId& id,
-                                          PolicyReinstallReason reason_for_uma);
+  // |reason_for_uma| indicates origin and details of the requires, and is used
+  // for statistics purposes (sent to UMA). |manifest_location_for_uma| the
+  // manifest location, and is used for statistics purposes (sent to UMA)
+  void ExpectReinstallForCorruption(
+      const ExtensionId& id,
+      absl::optional<PolicyReinstallReason> reason_for_uma,
+      mojom::ManifestLocation manifest_location_for_uma);
 
   // Are we expecting a reinstall of the extension with |id| due to corruption?
-  bool IsPolicyReinstallForCorruptionExpected(const ExtensionId& id) const;
+  bool IsReinstallForCorruptionExpected(const ExtensionId& id) const;
 
-  // Whether or not there are any corrupted policy extensions.
-  bool HasAnyPolicyReinstallForCorruption() const;
+  // Whether or not there are any corrupted extensions.
+  bool HasAnyReinstallForCorruption() const;
 
   // Adds an extension in a pending state; the extension with the
   // given info will be installed on the next auto-update cycle.
@@ -174,9 +181,9 @@ class PendingExtensionManager {
 
   // Get the list of pending IDs that should be installed from an update URL.
   // Pending extensions that will be installed from local files will not be
-  // included in the set.
-  void GetPendingIdsForUpdateCheck(
-      std::list<std::string>* out_ids_for_update_check) const;
+  // included in the set. This includes corrupted user installed that should be
+  // repaired.
+  std::list<std::string> GetPendingIdsForUpdateCheck() const;
 
  private:
   typedef std::list<PendingExtensionInfo> PendingExtensionList;
@@ -205,9 +212,9 @@ class PendingExtensionManager {
 
   PendingExtensionList pending_extension_list_;
 
-  // A set of policy force-installed extension ids that are being reinstalled
-  // due to corruption, mapped to the time we detected the corruption.
-  std::map<ExtensionId, base::TimeTicks> expected_policy_reinstalls_;
+  // A set of extension ids that are being reinstalled due to corruption, mapped
+  // to the time we detected the corruption.
+  std::map<ExtensionId, base::TimeTicks> expected_reinstalls_;
 
   FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest,
                            UpdatePendingExtensionAlreadyInstalled);

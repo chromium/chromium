@@ -1074,9 +1074,8 @@ class ExtensionUpdaterTest : public testing::Test {
         CreateManifestFetchData(GURL("http://localhost/foo")));
     UpdateManifestResults updates;
 
-    std::list<std::string> ids_for_update_check;
-    pending_extension_manager->GetPendingIdsForUpdateCheck(
-        &ids_for_update_check);
+    std::list<std::string> ids_for_update_check =
+        pending_extension_manager->GetPendingIdsForUpdateCheck();
 
     for (const std::string& id : ids_for_update_check) {
       fetch_data->AddExtension(id, "1.0.0.0", &kNeverPingedData,

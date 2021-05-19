@@ -367,24 +367,45 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
   const PendingExtensionManager* pending_extension_manager =
       service_->pending_extension_manager();
 
-  std::list<ExtensionId> pending_ids;
   ExtensionUpdateCheckParams update_check_params;
 
   if (params.ids.empty()) {
+    std::list<ExtensionId> pending_ids =
+        pending_extension_manager->GetPendingIdsForUpdateCheck();
     // If no extension ids are specified, check for updates for all extensions.
-    pending_extension_manager->GetPendingIdsForUpdateCheck(&pending_ids);
 
     for (const ExtensionId& pending_id : pending_ids) {
       const PendingExtensionInfo* info =
           pending_extension_manager->GetById(pending_id);
-      if (!Manifest::IsAutoUpdateableLocation(info->install_source())) {
+
+      const bool is_corrupt_reinstall =
+          pending_extension_manager->IsReinstallForCorruptionExpected(
+              pending_id);
+
+      // Extensions from the webstore that are corrupted do not have
+      // PendingExtensionInfo but are still available in the extension registry.
+      // They should be disabled because they are corrupted and require to be
+      // repaired.
+      if (!info) {
+        const Extension* extension = registry_->GetExtensionById(
+            pending_id, extensions::ExtensionRegistry::EVERYTHING);
+
+        // It is possible that the user deletes the extension between the time
+        // it was detected as corrupted and now. In that case, `extension` will
+        // be null and we should just skip it.
+        if (!extension)
+          continue;
+        // Policy installed extensions are not necessarily from the webstore,
+        // but should have an `info` and never hit this path.
+        DCHECK(extension->from_webstore()) << "Extension with id " << pending_id
+                                           << " is not from the webstore";
+        DCHECK(is_corrupt_reinstall) << "Extension with id " << pending_id
+                                     << " is not a corrupt reinstall";
+        update_check_params.update_info[pending_id] = ExtensionUpdateData();
+      } else if (!Manifest::IsAutoUpdateableLocation(info->install_source())) {
         VLOG(2) << "Extension " << pending_id << " is not auto updateable";
         continue;
       }
-
-      const bool is_corrupt_reinstall =
-          pending_extension_manager->IsPolicyReinstallForCorruptionExpected(
-              pending_id);
       // We have to mark high-priority extensions (such as policy-forced
       // extensions or external component extensions) with foreground fetch
       // priority; otherwise their installation may be throttled by bandwidth
@@ -395,7 +416,8 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
       if (CanUseUpdateService(pending_id)) {
         update_check_params.update_info[pending_id].is_corrupt_reinstall =
             is_corrupt_reinstall;
-      } else if (downloader_->AddPendingExtension(
+      } else if (info &&
+                 downloader_->AddPendingExtension(
                      pending_id, info->update_url(), info->install_source(),
                      is_corrupt_reinstall, request_id,
                      is_high_priority_extension_pending

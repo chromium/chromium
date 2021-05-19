@@ -187,8 +187,8 @@ void SyncExtensionHelper::InstallExtensionsPendingForSync(Profile* profile) {
           ->extension_service()
           ->pending_extension_manager();
 
-  std::list<std::string> pending_crx_ids;
-  pending_extension_manager->GetPendingIdsForUpdateCheck(&pending_crx_ids);
+  std::list<std::string> pending_crx_ids =
+      pending_extension_manager->GetPendingIdsForUpdateCheck();
 
   std::list<std::string>::const_iterator iter;
   const extensions::PendingExtensionInfo* info = nullptr;
@@ -244,8 +244,8 @@ SyncExtensionHelper::ExtensionStateMap
   const extensions::PendingExtensionManager* pending_extension_manager =
       extension_service->pending_extension_manager();
 
-  std::list<std::string> pending_crx_ids;
-  pending_extension_manager->GetPendingIdsForUpdateCheck(&pending_crx_ids);
+  std::list<std::string> pending_crx_ids =
+      pending_extension_manager->GetPendingIdsForUpdateCheck();
 
   for (const std::string& id : pending_crx_ids) {
     ExtensionState& extension_state = extension_state_map[id];

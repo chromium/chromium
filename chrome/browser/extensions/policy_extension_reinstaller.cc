@@ -66,7 +66,7 @@ void PolicyExtensionReinstaller::Fire() {
   PendingExtensionManager* pending_manager =
       service->pending_extension_manager();
   // If there's nothing to repair, then bail out.
-  if (!pending_manager->HasAnyPolicyReinstallForCorruption())
+  if (!pending_manager->HasAnyReinstallForCorruption())
     return;
 
   service->CheckForExternalUpdates();

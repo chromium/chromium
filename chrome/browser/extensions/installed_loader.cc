@@ -48,6 +48,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
 
@@ -228,19 +229,27 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
         extension_prefs_->SetExtensionEnabled(extension->id());
     }
 
-    if ((disable_reasons & disable_reason::DISABLE_CORRUPTED) &&
-        policy->MustRemainEnabled(extension.get(), nullptr)) {
-      // This extension must have been disabled due to corruption on a
-      // previous run of chrome, and for some reason we weren't successful in
-      // auto-reinstalling it. So we want to notify the
-      // PendingExtensionManager that we'd still like to keep attempt to
-      // re-download and reinstall it whenever the ExtensionService checks for
-      // external updates.
+    if ((disable_reasons & disable_reason::DISABLE_CORRUPTED)) {
       PendingExtensionManager* pending_manager =
           extension_service_->pending_extension_manager();
-      pending_manager->ExpectPolicyReinstallForCorruption(
-          extension->id(), PendingExtensionManager::PolicyReinstallReason::
-                               CORRUPTION_DETECTED_IN_PRIOR_SESSION);
+      if (policy->MustRemainEnabled(extension.get(), nullptr)) {
+        // This extension must have been disabled due to corruption on a
+        // previous run of chrome, and for some reason we weren't successful in
+        // auto-reinstalling it. So we want to notify the
+        // PendingExtensionManager that we'd still like to keep attempt to
+        // re-download and reinstall it whenever the ExtensionService checks for
+        // external updates.
+        pending_manager->ExpectReinstallForCorruption(
+            extension->id(),
+            PendingExtensionManager::PolicyReinstallReason::
+                CORRUPTION_DETECTED_IN_PRIOR_SESSION,
+            extension->location());
+      } else if (extension->from_webstore()) {
+        // Non-policy extensions are repaired on startup. Add any corrupted
+        // user-installed extensions to the PendingExtensionManager as well.
+        pending_manager->ExpectReinstallForCorruption(
+            extension->id(), absl::nullopt, extension->location());
+      }
     }
   } else {
     // Extension is enabled. Check management policy to verify if it should

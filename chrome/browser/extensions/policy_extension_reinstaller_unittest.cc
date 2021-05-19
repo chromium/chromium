@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/test/base/testing_profile.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace extensions {
 
@@ -58,9 +59,11 @@ using PolicyExtensionReinstallerUnittest = ExtensionServiceTestBase;
 // Tests that a single extension corruption will keep retrying reinstallation.
 TEST_F(PolicyExtensionReinstallerUnittest, Retry) {
   InitializeEmptyExtensionService();
-  service()->pending_extension_manager()->ExpectPolicyReinstallForCorruption(
-      kDummyExtensionId, PendingExtensionManager::PolicyReinstallReason::
-                             CORRUPTION_DETECTED_WEBSTORE);
+  service()->pending_extension_manager()->ExpectReinstallForCorruption(
+      kDummyExtensionId,
+      PendingExtensionManager::PolicyReinstallReason::
+          CORRUPTION_DETECTED_WEBSTORE,
+      mojom::ManifestLocation::kInternal);
 
   PolicyExtensionReinstaller reinstaller(profile_.get());
   TestReinstallerTracker tracker;
@@ -77,9 +80,11 @@ TEST_F(PolicyExtensionReinstallerUnittest, Retry) {
 // CheckForExternalUpdates() when one is already in-flight through PostTask.
 TEST_F(PolicyExtensionReinstallerUnittest, DoNotScheduleWhenAlreadyInflight) {
   InitializeEmptyExtensionService();
-  service()->pending_extension_manager()->ExpectPolicyReinstallForCorruption(
-      kDummyExtensionId, PendingExtensionManager::PolicyReinstallReason::
-                             CORRUPTION_DETECTED_WEBSTORE);
+  service()->pending_extension_manager()->ExpectReinstallForCorruption(
+      kDummyExtensionId,
+      PendingExtensionManager::PolicyReinstallReason::
+          CORRUPTION_DETECTED_WEBSTORE,
+      mojom::ManifestLocation::kInternal);
 
   PolicyExtensionReinstaller reinstaller(profile_.get());
   TestReinstallerTracker tracker;
