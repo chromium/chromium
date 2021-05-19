@@ -266,12 +266,12 @@ void NGSVGTextLayoutAttributesBuilder::Build(
       // false, unset resolve_x[index].
       if (in_text_path && !horizontal)
         data.x = SVGCharacterData::EmptyValue();
-      // Not in the specification; Set X/Y of the first character in a
+      // Not in the specification; Set X of the first character in a
       // <textPath> to 0 in order to:
-      //   - Reset dx/dy in AdjustPositionsDxDy().
+      //   - Reset dx in AdjustPositionsDxDy().
       //   - Anchor at 0 in ApplyAnchoring().
       // https://github.com/w3c/svgwg/issues/274
-      if (first_char_in_text_path && !data.HasX())
+      if (first_char_in_text_path && horizontal && !data.HasX())
         data.x = 0.0f;
 
       // 1.6.1.4. If i < length of y, then set resolve_y[index + j] to y[i].
@@ -281,22 +281,28 @@ void NGSVGTextLayoutAttributesBuilder::Build(
       // true, unset resolve_y[index].
       if (in_text_path && horizontal)
         data.y = SVGCharacterData::EmptyValue();
-      // Not in the specification; Set X/Y of the first character in a
+      // Not in the specification; Set Y of the first character in a
       // <textPath> to 0 in order to:
-      //   - Reset dx/dy in AdjustPositionsDxDy().
+      //   - Reset dy in AdjustPositionsDxDy().
       //   - Anchor at 0 in ApplyAnchoring().
       // https://github.com/w3c/svgwg/issues/274
-      if (first_char_in_text_path && !data.HasY())
+      if (first_char_in_text_path && !horizontal && !data.HasY())
         data.y = 0.0f;
 
       first_char_in_text_path = false;
 
+      // Not in the specification; The following code sets the initial inline
+      // offset of 'current text position' to 0.
+      // See NGInlineLayoutAlgorithm::CreateLine() for the initial block offset.
       if (is_first_char) {
         is_first_char = false;
-        if (!data.HasX())
-          data.x = 0.0f;
-        if (!data.HasY())
-          data.y = 0.0f;
+        if (horizontal) {
+          if (!data.HasX())
+            data.x = 0.0f;
+        } else {
+          if (!data.HasY())
+            data.y = 0.0f;
+        }
       }
 
       // 1.6.1.6. If i < length of dx, then set resolve_dx[index + j] to dx[i].

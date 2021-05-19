@@ -47,6 +47,7 @@ class NGSVGTextLayoutAlgorithm {
 
   float ScalingFactorAt(const NGFragmentItemsBuilder::ItemWithOffsetList& items,
                         wtf_size_t addressable_index) const;
+  bool IsFirstCharacterInTextPath(wtf_size_t index) const;
 
   NGInlineNode inline_node_;
 

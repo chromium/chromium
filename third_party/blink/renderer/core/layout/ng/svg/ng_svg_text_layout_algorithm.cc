@@ -223,20 +223,18 @@ void NGSVGTextLayoutAlgorithm::SetFlags(
     // CSS_positions[i] to the position of the corresponding typographic
     // character as determined by the CSS renderer.
     const NGFragmentItem& item = *items[info.item_index];
-    PhysicalOffset offset = item.OffsetInContainerFragment();
-    const auto* layout_svg_inline =
-        To<LayoutSVGInlineText>(item.GetLayoutObject());
-    const auto font_baseline = item.Style().GetFontBaseline();
-    const auto& font_metrics =
-        layout_svg_inline->ScaledFont().PrimaryFont()->GetFontMetrics();
-    float x = offset.left;
-    float y = offset.top;
-    if (horizontal_) {
-      y += font_metrics.FixedAscent(font_baseline);
-    } else {
-      x += font_metrics.FixedDescent(font_baseline);
-    }
-    css_positions_.push_back(FloatPoint(x, y));
+    const LogicalOffset logical_offset = items[info.item_index].offset;
+    const auto& font_metrics = To<LayoutSVGInlineText>(item.GetLayoutObject())
+                                   ->ScaledFont()
+                                   .PrimaryFont()
+                                   ->GetFontMetrics();
+    FloatPoint offset(
+        logical_offset.inline_offset,
+        logical_offset.block_offset +
+            font_metrics.FixedAscent(item.Style().GetFontBaseline()));
+    if (!horizontal_)
+      offset = offset.TransposedPoint();
+    css_positions_.push_back(offset);
 
     info.inline_size = horizontal_ ? item.Size().width : item.Size().height;
     result_.push_back(info);
@@ -274,6 +272,14 @@ void NGSVGTextLayoutAlgorithm::AdjustPositionsDxDy(
       shift.SetX(0.0f);
     if (resolve.HasY())
       shift.SetY(0.0f);
+
+    // If this character is the first one in a <textPath>, reset both of x
+    // and y.
+    if (IsFirstCharacterInTextPath(i)) {
+      shift.SetX(0.0f);
+      shift.SetY(0.0f);
+    }
+
     // 2.1. If resolve_x[i] is unspecified, set it to 0. If resolve_y[i] is
     // unspecified, set it to 0.
     // https://github.com/w3c/svgwg/issues/271
@@ -547,6 +553,16 @@ void NGSVGTextLayoutAlgorithm::AdjustPositionsXY(
     // https://github.com/w3c/svgwg/issues/845
     if (resolve.HasY())
       shift.SetY(resolve.y * scaling_factor - css_positions_[i].Y());
+
+    // If this character is the first one in a <textPath>, reset the
+    // block-direction shift.
+    if (IsFirstCharacterInTextPath(i)) {
+      if (horizontal_)
+        shift.SetY(0.0f);
+      else
+        shift.SetX(0.0f);
+    }
+
     // 3.3. Let result.x[index] = result.x[index] + shift.x and
     // result.y[index] = result.y[index] + shift.y.
     result_[i].x = *result_[i].x + shift.X();
@@ -885,6 +901,20 @@ float NGSVGTextLayoutAlgorithm::ScalingFactorAt(
   return To<LayoutSVGInlineText>(
              items[result_[addressable_index].item_index]->GetLayoutObject())
       ->ScalingFactor();
+}
+
+bool NGSVGTextLayoutAlgorithm::IsFirstCharacterInTextPath(
+    wtf_size_t index) const {
+  if (!result_[index].anchored_chunk)
+    return false;
+  // This implementation is O(N) where N is the number of <textPath>s in
+  // a <text>. If this function is a performance bottleneck, we should add
+  // |first_in_text_path| flag to NGSVGCharacterData.
+  const auto& text_path_ranges = inline_node_.SVGTextPathRangeList();
+  return std::find_if(text_path_ranges.begin(), text_path_ranges.end(),
+                      [index](const auto& range) {
+                        return range.start_index == index;
+                      }) != text_path_ranges.end();
 }
 
 }  // namespace blink

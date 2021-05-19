@@ -417,7 +417,12 @@ void NGInlineLayoutAlgorithm::CreateLine(
   // Up until this point, children are placed so that the dominant baseline is
   // at 0. Move them to the final baseline position, and set the logical top of
   // the line box to the line top.
-  line_box->MoveInBlockDirection(line_box_metrics.ascent);
+  //
+  // For SVG <text>, the block offset of the initial 'current text position'
+  // should be 0. As for the inline offset, see
+  // NGSVGTextLayoutAttributesBuilder::Build().
+  if (!Node().IsSVGText())
+    line_box->MoveInBlockDirection(line_box_metrics.ascent);
 
   LayoutUnit block_offset = line_info->BfcOffset().block_offset;
   if (Node().HasRuby()) {
