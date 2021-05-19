@@ -252,6 +252,12 @@ MaxDirectMapped() {
   // PartitionRoot::GetDirectMapReservedSize.
   return (1UL << 31) - kSuperPageSize;
 }
+
+// Max alignment supported by AlignedAllocFlags().
+// kSuperPageSize alignment can't be easily supported, because each super page
+// starts with guard pages & metadata.
+static const size_t kMaxSupportedAlignment = kSuperPageSize / 2;
+
 static const size_t kBitsPerSizeT = sizeof(void*) * CHAR_BIT;
 
 // Constant for the memory reclaim logic.

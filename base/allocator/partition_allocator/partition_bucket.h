@@ -61,6 +61,7 @@ struct PartitionBucket {
   BASE_EXPORT NOINLINE void* SlowPathAlloc(PartitionRoot<thread_safe>* root,
                                            int flags,
                                            size_t raw_size,
+                                           size_t slot_span_alignment,
                                            bool* is_already_zeroed)
       EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
@@ -148,7 +149,8 @@ struct PartitionBucket {
   // Returns nullptr on error.
   ALWAYS_INLINE SlotSpanMetadata<thread_safe>* AllocNewSlotSpan(
       PartitionRoot<thread_safe>* root,
-      int flags) EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
+      int flags,
+      size_t slot_span_alignment) EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   // Allocates a new super page from the current extent. All slot-spans will be
   // in the decommitted state. Returns nullptr on error.

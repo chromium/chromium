@@ -10,6 +10,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
@@ -376,8 +377,9 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   auto* bucket =
       root->buckets +
       PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(raw_size);
-  void* buffer = root->RawAlloc(bucket, PartitionAllocZeroFill, raw_size,
-                                &usable_size, &already_zeroed);
+  void* buffer =
+      root->RawAlloc(bucket, PartitionAllocZeroFill, raw_size,
+                     PartitionPageSize(), &usable_size, &already_zeroed);
   ThreadCache* tcache = new (buffer) ThreadCache(root);
 
   // This may allocate.
@@ -503,8 +505,8 @@ void ThreadCache::FillBucket(size_t bucket_index) {
     void* ptr = root_->AllocFromBucket(
         &root_->buckets[bucket_index],
         PartitionAllocFastPathOrReturnNull | PartitionAllocReturnNull,
-        root_->buckets[bucket_index].slot_size /* raw_size */, &usable_size,
-        &is_already_zeroed);
+        root_->buckets[bucket_index].slot_size /* raw_size */,
+        PartitionPageSize(), &usable_size, &is_already_zeroed);
 
     // Either the previous allocation would require a slow path allocation, or
     // the central allocator is out of memory. If the bucket was filled with

@@ -300,6 +300,16 @@ struct BASE_EXPORT PartitionRoot {
   ALWAYS_INLINE void* AllocFlags(int flags,
                                  size_t requested_size,
                                  const char* type_name);
+  // Same as |AllocFlags()|, but allows specifying |slot_span_alignment|. It has
+  // to be a multiple of partition page size, greater than 0 and no greater than
+  // kMaxSupportedAlignment. If it equals exactly 1 partition page, no special
+  // action is taken as PartitoinAlloc naturally guarantees this alignment,
+  // otherwise a sub-optimial allocation strategy is used to guarantee the
+  // higher-order alignment.
+  ALWAYS_INLINE void* AllocFlagsInternal(int flags,
+                                         size_t requested_size,
+                                         size_t slot_span_alignment,
+                                         const char* type_name);
   // Same as |AllocFlags()|, but bypasses the allocator hooks.
   //
   // This is separate from AllocFlags() because other callers of AllocFlags()
@@ -309,7 +319,9 @@ struct BASE_EXPORT PartitionRoot {
   // taking the extra branch in the non-malloc() case doesn't hurt. In addition,
   // for the malloc() case, the compiler correctly removes the branch, since
   // this is marked |ALWAYS_INLINE|.
-  ALWAYS_INLINE void* AllocFlagsNoHooks(int flags, size_t requested_size);
+  ALWAYS_INLINE void* AllocFlagsNoHooks(int flags,
+                                        size_t requested_size,
+                                        size_t slot_span_alignment);
 
   ALWAYS_INLINE void* Realloc(void* ptr, size_t newize, const char* type_name);
   // Overload that may return nullptr if reallocation isn't possible. In this
@@ -562,11 +574,13 @@ struct BASE_EXPORT PartitionRoot {
   ALWAYS_INLINE void* RawAlloc(Bucket* bucket,
                                int flags,
                                size_t raw_size,
+                               size_t slot_span_alignment,
                                size_t* usable_size,
                                bool* is_already_zeroed);
   ALWAYS_INLINE void* AllocFromBucket(Bucket* bucket,
                                       int flags,
                                       size_t raw_size,
+                                      size_t slot_span_alignment,
                                       size_t* usable_size,
                                       bool* is_already_zeroed)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -893,15 +907,22 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
     Bucket* bucket,
     int flags,
     size_t raw_size,
+    size_t slot_span_alignment,
     size_t* usable_size,
     bool* is_already_zeroed) {
+  PA_DCHECK(slot_span_alignment &&
+            !(slot_span_alignment & PartitionPageOffsetMask()));
   SlotSpan* slot_span = bucket->active_slot_spans_head;
   // Check that this slot span is neither full nor freed.
   PA_DCHECK(slot_span);
   PA_DCHECK(slot_span->num_allocated_slots >= 0);
 
   void* slot_start = slot_span->freelist_head;
-  if (LIKELY(slot_start)) {
+  // Use the fast path when a slot is readily available on the free list of the
+  // first active slot span. However, fall back to the slow path if a
+  // higher-order alignment is requested, because an inner slot of an existing
+  // slot span is unlikely to satisfy it.
+  if (LIKELY(slot_span_alignment <= PartitionPageSize() && slot_start)) {
     *is_already_zeroed = false;
     // This is a fast path, so avoid calling GetUsableSize() on Release builds
     // as it is more costly. Copy its small bucket path instead.
@@ -923,8 +944,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
 
     PA_DCHECK(slot_span->bucket == bucket);
   } else {
-    slot_start =
-        bucket->SlowPathAlloc(this, flags, raw_size, is_already_zeroed);
+    slot_start = bucket->SlowPathAlloc(this, flags, raw_size,
+                                       slot_span_alignment, is_already_zeroed);
     // TODO(palmer): See if we can afford to make this a CHECK.
     PA_DCHECK(!slot_start ||
               IsValidSlotSpan(SlotSpan::FromSlotStartPtr(slot_start)));
@@ -1276,6 +1297,19 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlags(
     int flags,
     size_t requested_size,
     const char* type_name) {
+  return AllocFlagsInternal(flags, requested_size, PartitionPageSize(),
+                            type_name);
+}
+
+template <bool thread_safe>
+ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsInternal(
+    int flags,
+    size_t requested_size,
+    size_t slot_span_alignment,
+    const char* type_name) {
+  PA_DCHECK(slot_span_alignment &&
+            !(slot_span_alignment & PartitionPageOffsetMask()));
+
   PA_DCHECK(flags < PartitionAllocLastFlag << 1);
   PA_DCHECK((flags & PartitionAllocNoHooks) == 0);  // Internal only.
   PA_DCHECK(initialized);
@@ -1299,7 +1333,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlags(
     }
   }
 
-  ret = AllocFlagsNoHooks(flags, requested_size);
+  ret = AllocFlagsNoHooks(flags, requested_size, slot_span_alignment);
 
   if (UNLIKELY(hooks_enabled)) {
     PartitionAllocHooks::AllocationObserverHookIfEnabled(ret, requested_size,
@@ -1313,7 +1347,11 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlags(
 template <bool thread_safe>
 ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
     int flags,
-    size_t requested_size) {
+    size_t requested_size,
+    size_t slot_span_alignment) {
+  PA_DCHECK(slot_span_alignment &&
+            !(slot_span_alignment & PartitionPageOffsetMask()));
+
   // The thread cache is added "in the middle" of the main allocator, that is:
   // - After all the cookie/ref-count management
   // - Before the "raw" allocator.
@@ -1341,9 +1379,13 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   // !thread_safe => !with_thread_cache, but adding the condition allows the
   // compiler to statically remove this branch for the thread-unsafe variant.
   //
+  // Don't use thread cache if higher order alignment is requested, because the
+  // thread cache will not be able to satisfy it.
+  //
   // LIKELY: performance-sensitive partitions are either thread-unsafe or use
   // the thread cache.
-  if (thread_safe && LIKELY(with_thread_cache)) {
+  if (thread_safe &&
+      LIKELY(with_thread_cache && slot_span_alignment <= PartitionPageSize())) {
     auto* tcache = internal::ThreadCache::Get();
     // LIKELY: Typically always true, except for the very first allocation of
     // this thread.
@@ -1374,12 +1416,14 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
       PA_DCHECK(!slot_span->bucket->is_direct_mapped());
 #endif
     } else {
-      slot_start = RawAlloc(buckets + bucket_index, flags, raw_size,
-                            &usable_size, &is_already_zeroed);
+      slot_start =
+          RawAlloc(buckets + bucket_index, flags, raw_size, slot_span_alignment,
+                   &usable_size, &is_already_zeroed);
     }
   } else {
-    slot_start = RawAlloc(buckets + bucket_index, flags, raw_size, &usable_size,
-                          &is_already_zeroed);
+    slot_start =
+        RawAlloc(buckets + bucket_index, flags, raw_size, slot_span_alignment,
+                 &usable_size, &is_already_zeroed);
   }
 
   if (UNLIKELY(!slot_start))
@@ -1483,11 +1527,12 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::RawAlloc(
     Bucket* bucket,
     int flags,
     size_t raw_size,
+    size_t slot_span_alignment,
     size_t* usable_size,
     bool* is_already_zeroed) {
   internal::ScopedGuard<thread_safe> guard{lock_};
-  return AllocFromBucket(bucket, flags, raw_size, usable_size,
-                         is_already_zeroed);
+  return AllocFromBucket(bucket, flags, raw_size, slot_span_alignment,
+                         usable_size, is_already_zeroed);
 }
 
 template <bool thread_safe>
@@ -1496,12 +1541,23 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocFlags(
     size_t alignment,
     size_t requested_size) {
   // Aligned allocation support relies on the natural alignment guarantees of
-  // PartitionAlloc. Specifically, it relies on the fact that slot spans are
-  // partition-page aligned, and slots within are aligned to slot size, from
-  // the beginning of the span. As a conseqneuce, allocations of sizes that are
-  // a power of two, up to partition page size, will always be aligned to its
-  // size. The code below adjusts the request size to be a power of two.
-  // TODO(bartekn): Handle requests larger than partition page.
+  // PartitionAlloc. Specifically, it relies on the fact that slots within a
+  // slot span are aligned to slot size, from the beginning of the span.
+  //
+  // For alignments <=PartitionPageSize(), the code below adjusts the request
+  // size to be a power of two, no less than alignment. Since slot spans are
+  // aligned to PartitionPageSize(), which is also a power of two, this will
+  // automatically guarantee alignment on the adjusted size boundary, thanks to
+  // the natural alignment described above.
+  //
+  // For alignments >PartitionPageSize(), we need to pass the request down the
+  // stack to only give us a slot span aligned to this more restrictive
+  // boundary. In the current implementation, this code path will always
+  // allocate a new slot span and hand us the first slot, so no need to adjust
+  // the request size. As a consequence, allocating many small objects with
+  // such a high alignment can cause a non-negligable fragmentation,
+  // particularly if these allocations are back to back.
+  // TODO(bartekn): We should check that this is not causing issues in practice.
   //
   // Extras before the allocation are forbidden as they shift the returned
   // allocation from the beginning of the slot, thus messing up alignment.
@@ -1511,40 +1567,51 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocFlags(
   PA_DCHECK(!extras_offset);
   // This is mandated by |posix_memalign()|, so should never fire.
   PA_CHECK(base::bits::IsPowerOfTwo(alignment));
-
+  // Catch unsupported alignment requests early.
+  PA_CHECK(alignment <= kMaxSupportedAlignment);
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
-  // Handle cases such as size = 16, alignment = 64.
-  // Wastes memory when a large alignment is requested with a small size, but
-  // this is hard to avoid, and should not be too common.
-  if (UNLIKELY(raw_size < alignment)) {
-    raw_size = alignment;
-  } else {
-    // PartitionAlloc only guarantees alignment for power-of-two sized
-    // allocations. To make sure this applies here, round up the allocation
-    // size.
-    raw_size = static_cast<size_t>(1)
-               << (sizeof(size_t) * 8 -
-                   base::bits::CountLeadingZeroBits(raw_size - 1));
-  }
-  PA_DCHECK(base::bits::IsPowerOfTwo(raw_size));
-  // Adjust back, because AllocFlagsNoHooks/Alloc will adjust it again.
-  size_t adjusted_size = AdjustSizeForExtrasSubtract(raw_size);
+  // TODO(bartekn): Support direct map. Until then, catch unsupported requests.
+  PA_CHECK(alignment <= PartitionPageSize() || raw_size <= kMaxBucketed);
 
-  // Overflow check. adjusted_size must be larger or equal to requested_size.
-  if (UNLIKELY(adjusted_size < requested_size)) {
-    if (flags & PartitionAllocReturnNull)
-      return nullptr;
-    // OutOfMemoryDeathTest.AlignedAlloc requires
-    // base::TerminateBecauseOutOfMemory (invoked by
-    // PartitionExcessiveAllocationSize).
-    internal::PartitionExcessiveAllocationSize(requested_size);
-    // internal::PartitionExcessiveAllocationSize(size) causes OOM_CRASH.
-    NOTREACHED();
+  size_t adjusted_size = requested_size;
+  if (alignment <= PartitionPageSize()) {
+    // Handle cases such as size = 16, alignment = 64.
+    // Wastes memory when a large alignment is requested with a small size, but
+    // this is hard to avoid, and should not be too common.
+    if (UNLIKELY(raw_size < alignment)) {
+      raw_size = alignment;
+    } else {
+      // PartitionAlloc only guarantees alignment for power-of-two sized
+      // allocations. To make sure this applies here, round up the allocation
+      // size.
+      raw_size = static_cast<size_t>(1)
+                 << (sizeof(size_t) * 8 -
+                     base::bits::CountLeadingZeroBits(raw_size - 1));
+    }
+    PA_DCHECK(base::bits::IsPowerOfTwo(raw_size));
+    // Adjust back, because AllocFlagsNoHooks/Alloc will adjust it again.
+    adjusted_size = AdjustSizeForExtrasSubtract(raw_size);
+
+    // Overflow check. adjusted_size must be larger or equal to requested_size.
+    if (UNLIKELY(adjusted_size < requested_size)) {
+      if (flags & PartitionAllocReturnNull)
+        return nullptr;
+      // OutOfMemoryDeathTest.AlignedAlloc requires
+      // base::TerminateBecauseOutOfMemory (invoked by
+      // PartitionExcessiveAllocationSize).
+      internal::PartitionExcessiveAllocationSize(requested_size);
+      // internal::PartitionExcessiveAllocationSize(size) causes OOM_CRASH.
+      NOTREACHED();
+    }
   }
 
+  // Slot spans are naturally aligned on partition page size, but make sure you
+  // don't pass anything less, because it'll mess up callee's calculations.
+  size_t slot_span_alignment = std::max(alignment, PartitionPageSize());
   bool no_hooks = flags & PartitionAllocNoHooks;
   void* ptr =
-      no_hooks ? AllocFlagsNoHooks(0, adjusted_size) : Alloc(adjusted_size, "");
+      no_hooks ? AllocFlagsNoHooks(0, adjusted_size, slot_span_alignment)
+               : AllocFlagsInternal(0, adjusted_size, slot_span_alignment, "");
 
   // |alignment| is a power of two, but the compiler doesn't necessarily know
   // that. A regular % operation is very slow, make sure to use the equivalent,

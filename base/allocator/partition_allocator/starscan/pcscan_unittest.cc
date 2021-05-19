@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
@@ -44,10 +45,10 @@ class PCScanTest : public testing::Test {
     // Previous test runs within the same process decommit GigaCage, therefore
     // we need to make sure that the card table is recommitted for each run.
     PCScan::ReinitForTesting();
-    allocator_.init({PartitionOptions::AlignedAlloc::kDisallowed,
+    allocator_.init({PartitionOptions::AlignedAlloc::kAllowed,
                      PartitionOptions::ThreadCache::kDisabled,
                      PartitionOptions::Quarantine::kAllowed,
-                     PartitionOptions::Cookies::kAllowed,
+                     PartitionOptions::Cookies::kDisallowed,
                      PartitionOptions::RefCount::kDisallowed});
     PCScan::RegisterScannableRoot(allocator_.root());
   }
@@ -110,7 +111,7 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
   void* first = nullptr;
   void* last = nullptr;
   for (size_t i = 0; i < num_slots; ++i) {
-    void* ptr = root.AllocFlagsNoHooks(0, object_size);
+    void* ptr = root.AllocFlagsNoHooks(0, object_size, PartitionPageSize());
     EXPECT_TRUE(ptr);
     if (i == 0)
       first = root.AdjustPointerForExtrasSubtract(ptr);
@@ -148,12 +149,18 @@ struct ListBase {
   ListBase* next = nullptr;
 };
 
-template <size_t Size>
+template <size_t Size, size_t Alignment = 0>
 struct List final : ListBase {
   char buffer[Size];
 
   static List* Create(ThreadSafePartitionRoot& root, ListBase* next = nullptr) {
-    auto* list = static_cast<List*>(root.Alloc(sizeof(List), nullptr));
+    List* list;
+    if (Alignment) {
+      list = static_cast<List*>(
+          root.AlignedAllocFlags(0, Alignment, sizeof(List)));
+    } else {
+      list = static_cast<List*>(root.Alloc(sizeof(List), nullptr));
+    }
     list->next = next;
     return list;
   }
@@ -255,6 +262,52 @@ TEST_F(PCScanTest, DanglingReferenceDifferentBuckets) {
   TestDanglingReference(*this, source, value);
 }
 
+TEST_F(PCScanTest, DanglingReferenceDifferentBucketsAligned) {
+  // Choose a high alignment that almost certainly will cause a gap between slot
+  // spans. But make it less than kMaxSupportedAlignment, or else two
+  // allocations will end up on different super pages.
+  constexpr size_t alignment = kMaxSupportedAlignment / 2;
+  using SourceList = List<8, alignment>;
+  using ValueList = List<128, alignment>;
+
+  // Create two objects, where |source| references |value|.
+  auto* value = ValueList::Create(root(), nullptr);
+  auto* source = SourceList::Create(root(), value);
+
+  // Double check the setup -- make sure that exactly two slot spans were
+  // allocated, within the same super page, with a gap in between.
+  {
+    auto* value_root = ThreadSafePartitionRoot::FromPointerInNormalBuckets(
+        reinterpret_cast<char*>(value));
+    ScopedGuard<ThreadSafe> guard{value_root->lock_};
+
+    auto super_page = reinterpret_cast<uintptr_t>(value) & kSuperPageBaseMask;
+    ASSERT_EQ(super_page,
+              reinterpret_cast<uintptr_t>(source) & kSuperPageBaseMask);
+    size_t i = 0;
+    void* first_slot_span_end = nullptr;
+    void* second_slot_span_start = nullptr;
+    auto visited = IterateSlotSpans<ThreadSafe>(
+        reinterpret_cast<char*>(super_page), true,
+        [&](SlotSpan* slot_span) -> bool {
+          if (i == 0) {
+            first_slot_span_end = reinterpret_cast<char*>(
+                                      SlotSpan::ToSlotSpanStartPtr(slot_span)) +
+                                  slot_span->bucket->get_pages_per_slot_span() *
+                                      PartitionPageSize();
+          } else {
+            second_slot_span_start = SlotSpan::ToSlotSpanStartPtr(slot_span);
+          }
+          ++i;
+          return true;
+        });
+    ASSERT_EQ(visited, 2u);
+    ASSERT_GT(second_slot_span_start, first_slot_span_end);
+  }
+
+  TestDanglingReference(*this, source, value);
+}
+
 TEST_F(PCScanTest, DanglingReferenceSameSlotSpanButDifferentPages) {
   using SourceList = List<8>;
   using ValueList = SourceList;
@@ -291,7 +344,8 @@ TEST_F(PCScanTest, DanglingReferenceFromFullPage) {
   void* source_addr = full_slot_span.first;
   // This allocation must go through the slow path and call SetNewActivePage(),
   // which will flush the full page from the active page list.
-  void* value_addr = root().AllocFlagsNoHooks(0, sizeof(ValueList));
+  void* value_addr =
+      root().AllocFlagsNoHooks(0, sizeof(ValueList), PartitionPageSize());
 
   // Assert that the first and the last objects are in different slot spans but
   // in the same bucket.

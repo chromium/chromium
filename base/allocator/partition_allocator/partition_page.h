@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_PAGE_H_
 
 #include <string.h>
+#include <cstdint>
 #include <limits>
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
@@ -231,7 +232,7 @@ struct SubsequentPageMetadata {
 // information.
 template <bool thread_safe>
 struct PartitionPage {
-  // "Pack" the union so that slot_span_metadata_offset still fits within
+  // "Pack" the union so that common page metadata still fits within
   // kPageMetadataSize. (SlotSpanMetadata is also "packed".)
   union __attribute__((packed)) {
     SlotSpanMetadata<thread_safe> slot_span_metadata;
@@ -243,12 +244,26 @@ struct PartitionPage {
     // - below kPageMetadataSize
     //
     // This makes sure that this is respected no matter the architecture.
-    char optional_padding[kPageMetadataSize - sizeof(uint16_t)];
+    char optional_padding[kPageMetadataSize - sizeof(uint8_t) - sizeof(bool)];
   };
 
   // The first PartitionPage of the slot span holds its metadata. This offset
   // tells how many pages in from that first page we are.
-  uint16_t slot_span_metadata_offset;
+  // 6 bits is enough to represent all possible offsets, given that the smallest
+  // partition page is 16kiB and normal buckets won't exceed 1MiB.
+  static constexpr uint16_t kMaxSlotSpanMetadataBits = 6;
+  static constexpr uint16_t kMaxSlotSpanMetadataOffset =
+      (1 << kMaxSlotSpanMetadataBits) - 1;
+  uint8_t slot_span_metadata_offset;
+
+  // |is_valid| tells whether the page is part of a slot span. If |false|,
+  // |has_valid_span_after_this| tells whether it's an unused region in between
+  // slot spans within the super page.
+  // Note, |is_valid| has been added for clarity, but if we ever need to save
+  // this bit, it can be inferred from:
+  //   |!slot_span_metadata_offset && slot_span_metadata->bucket|.
+  bool is_valid : 1;
+  bool has_valid_span_after_this : 1;
 
   ALWAYS_INLINE static PartitionPage* FromPtr(void* slot_start);
 
@@ -389,6 +404,7 @@ ALWAYS_INLINE char* GetSlotStartInSuperPage(char* maybe_inner_ptr) {
 template <bool thread_safe>
 ALWAYS_INLINE void* PartitionPage<thread_safe>::ToSlotSpanStartPtr(
     const PartitionPage* page) {
+  PA_DCHECK(page->is_valid);
   PA_DCHECK(!page->slot_span_metadata_offset);
   return SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(
       &page->slot_span_metadata);
@@ -469,10 +485,12 @@ ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 SlotSpanMetadata<thread_safe>::FromSlotInnerPtr(void* ptr) {
   // TODO(bartekn): Add a "is in normal buckets" DCHECK.
   auto* page = PartitionPage<thread_safe>::FromPtr(ptr);
+  PA_DCHECK(page->is_valid);
   // Partition pages in the same slot span share the same slot span metadata
   // object (located in the first PartitionPage object of that span). Adjust
   // for that.
   page -= page->slot_span_metadata_offset;
+  PA_DCHECK(page->is_valid);
   PA_DCHECK(!page->slot_span_metadata_offset);
   return &page->slot_span_metadata;
 }
@@ -630,21 +648,38 @@ size_t IterateSlotSpans(char* super_page_base,
 #endif
 
   using Page = PartitionPage<thread_safe>;
+  using SlotSpan = SlotSpanMetadata<thread_safe>;
   auto* const first_page =
       Page::FromPtr(SuperPagePayloadBegin(super_page_base, with_quarantine));
   auto* const last_page =
       Page::FromPtr(SuperPagePayloadEnd(super_page_base) - PartitionPageSize());
   size_t visited = 0;
   Page* page;
-  for (page = first_page; page <= last_page && page->slot_span_metadata.bucket;
-       page += page->slot_span_metadata.bucket->get_pages_per_slot_span()) {
+  SlotSpan* slot_span;
+  for (page = first_page; page <= last_page;) {
     PA_DCHECK(!page->slot_span_metadata_offset);  // Ensure slot span beginning.
-    auto* slot_span = &page->slot_span_metadata;
+    if (!page->is_valid) {
+      if (page->has_valid_span_after_this) {
+        // The page doesn't represent a valid slot span, but there is another
+        // one somewhere after this. Keep iterating to find it.
+        ++page;
+        continue;
+      }
+      // There are currently no valid spans from here on. No need to iterate
+      // the rest of the super page.
+      break;
+    }
+    slot_span = &page->slot_span_metadata;
     if (callback(slot_span))
       ++visited;
+    page += slot_span->bucket->get_pages_per_slot_span();
   }
   // Each super page must have at least one valid slot span.
   PA_DCHECK(page > first_page);
+  // Just a quick check that the search ended at a valid slot span and there
+  // was no unnecessary iteration over gaps afterwards.
+  PA_DCHECK(page == reinterpret_cast<Page*>(slot_span) +
+                        slot_span->bucket->get_pages_per_slot_span());
   return visited;
 }
 

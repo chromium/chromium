@@ -156,6 +156,8 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     PA_DCHECK(PartitionPage<thread_safe>::FromPtr(slot) == &metadata->page);
 
     page = &metadata->page;
+    page->is_valid = true;
+    PA_DCHECK(!page->has_valid_span_after_this);
     PA_DCHECK(!page->slot_span_metadata_offset);
     PA_DCHECK(!page->slot_span_metadata.next_slot_span);
     PA_DCHECK(!page->slot_span_metadata.num_allocated_slots);
@@ -276,7 +278,8 @@ NOINLINE void PartitionBucket<thread_safe>::OnFull() {
 template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
-                                               int flags) {
+                                               int flags,
+                                               size_t slot_span_alignment) {
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(root->next_partition_page) %
               PartitionPageSize()));
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(root->next_partition_page_end) %
@@ -289,25 +292,39 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
   PA_DCHECK(slot_span_committed_size % SystemPageSize() == 0);
   PA_DCHECK(slot_span_committed_size <= slot_span_reserved_size);
 
-  size_t num_partition_pages_left =
-      (root->next_partition_page_end - root->next_partition_page) >>
-      PartitionPageShift();
-  if (UNLIKELY(num_partition_pages_left < num_partition_pages)) {
+  auto adjusted_next_partition_page =
+      bits::AlignUp(root->next_partition_page, slot_span_alignment);
+  if (UNLIKELY(adjusted_next_partition_page + slot_span_reserved_size >
+               root->next_partition_page_end)) {
     // In this case, we can no longer hand out pages from the current super page
     // allocation. Get a new super page.
     if (!AllocNewSuperPage(root)) {
       return nullptr;
     }
+    // AllocNewSuperPage() updates root->next_partition_page, re-query.
+    adjusted_next_partition_page =
+        bits::AlignUp(root->next_partition_page, slot_span_alignment);
+    PA_CHECK(adjusted_next_partition_page + slot_span_reserved_size <=
+             root->next_partition_page_end);
   }
 
-  void* slot_span_start = root->next_partition_page;
-  root->next_partition_page += slot_span_reserved_size;
+  auto* gap_start_page =
+      PartitionPage<thread_safe>::FromPtr(root->next_partition_page);
+  auto* gap_end_page =
+      PartitionPage<thread_safe>::FromPtr(adjusted_next_partition_page);
+  for (auto* page = gap_start_page; page < gap_end_page; ++page) {
+    PA_DCHECK(!page->is_valid);
+    page->has_valid_span_after_this = 1;
+  }
+  root->next_partition_page =
+      adjusted_next_partition_page + slot_span_reserved_size;
 
-  // Call FromSlotInnerPtr instead of FromSlotStartPtr, because the slot_span's
-  // bucket isn't set up yet to properly assert the slot start.
-  auto* slot_span =
-      SlotSpanMetadata<thread_safe>::FromSlotInnerPtr(slot_span_start);
+  void* slot_span_start = adjusted_next_partition_page;
+  auto* slot_span = &gap_end_page->slot_span_metadata;
   InitializeSlotSpan(slot_span);
+  // Now that slot span is initialized, it's safe to call FromSlotStartPtr.
+  PA_DCHECK(slot_span ==
+            SlotSpanMetadata<thread_safe>::FromSlotStartPtr(slot_span_start));
 
   // System pages in the super page come in a decommited state. Commit them
   // before vending them back.
@@ -480,9 +497,10 @@ ALWAYS_INLINE void PartitionBucket<thread_safe>::InitializeSlotSpan(
 
   uint16_t num_partition_pages = get_pages_per_slot_span();
   auto* page = reinterpret_cast<PartitionPage<thread_safe>*>(slot_span);
-  for (uint16_t i = 1; i < num_partition_pages; ++i) {
-    auto* secondary_page = page + i;
-    secondary_page->slot_span_metadata_offset = i;
+  for (uint16_t i = 0; i < num_partition_pages; ++i, ++page) {
+    PA_DCHECK(i <= PartitionPage<thread_safe>::kMaxSlotSpanMetadataOffset);
+    page->slot_span_metadata_offset = i;
+    page->is_valid = true;
   }
 }
 
@@ -630,9 +648,17 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     PartitionRoot<thread_safe>* root,
     int flags,
     size_t raw_size,
+    size_t slot_span_alignment,
     bool* is_already_zeroed) {
-  // The slow path is called when the freelist is empty.
-  PA_DCHECK(!active_slot_spans_head->freelist_head);
+  PA_DCHECK(slot_span_alignment &&
+            !(slot_span_alignment & PartitionPageOffsetMask()));
+
+  // The slow path is called when the freelist is empty. The only exception is
+  // when a higher-order alignment is requested, in which case the freelist
+  // logic is bypassed and we go directly for slot span allocation.
+  bool allocate_aligned_slot_span = slot_span_alignment > PartitionPageSize();
+  PA_DCHECK(!active_slot_spans_head->freelist_head ||
+            allocate_aligned_slot_span);
 
   SlotSpanMetadata<thread_safe>* new_slot_span = nullptr;
   // |new_slot_span->bucket| will always be |this|, except when |this| is the
@@ -656,6 +682,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     PA_DCHECK(this == &root->sentinel_bucket);
     PA_DCHECK(active_slot_spans_head ==
               SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
+    PA_DCHECK(!allocate_aligned_slot_span);  // not supported for direct map
 
     // No fast path for direct-mapped allocations.
     if (flags & PartitionAllocFastPathOrReturnNull)
@@ -666,12 +693,13 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       new_bucket = new_slot_span->bucket;
     // Memory from PageAllocator is always zeroed.
     *is_already_zeroed = true;
-  } else if (LIKELY(SetNewActiveSlotSpan())) {
+  } else if (LIKELY(!allocate_aligned_slot_span && SetNewActiveSlotSpan())) {
     // First, did we find an active slot span in the active list?
     new_slot_span = active_slot_spans_head;
     PA_DCHECK(new_slot_span->is_active());
-  } else if (LIKELY(empty_slot_spans_head != nullptr) ||
-             LIKELY(decommitted_slot_spans_head != nullptr)) {
+  } else if (LIKELY(!allocate_aligned_slot_span &&
+                    (empty_slot_spans_head != nullptr ||
+                     decommitted_slot_spans_head != nullptr))) {
     // Second, look in our lists of empty and decommitted slot spans.
     // Check empty slot spans first, which are preferred, but beware that an
     // empty slot span might have been decommitted.
@@ -729,7 +757,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     // Third. If we get here, we need a brand new slot span.
     // TODO(bartekn): For single-slot slot spans, we can use rounded raw_size
     // as slot_span_committed_size.
-    new_slot_span = AllocNewSlotSpan(root, flags);
+    new_slot_span = AllocNewSlotSpan(root, flags, slot_span_alignment);
     // New memory from PageAllocator is always zeroed.
     *is_already_zeroed = true;
   }
