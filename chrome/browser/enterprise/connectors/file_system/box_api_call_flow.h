@@ -157,32 +157,38 @@ class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
                              const network::mojom::URLResponseHead* head,
                              std::unique_ptr<std::string> body) override;
 
+  void SetFileReadForTesting(std::string content, std::string mime_type);
+
  private:
+  struct FileRead {
+    std::string content;
+    std::string mime;
+  };
   // Post a task to ThreadPool to read the local file, forward the
   // parameters from Start() into OnFileRead(), which is the callback that then
   // kicks off OAuth2CallFlow::Start() after file content is read.
   void PostReadFileTask(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& access_token);
-
-  // Helper functions to read and delete the local file.
-  // Task posted to ThreadPool to read the local file. Return type is
-  // absl::optional in case file is read successfully but the file content is
-  // really empty.
-  static absl::optional<std::string> ReadFile(const base::FilePath& path);
   // Callback attached in PostReadFileTask(). Take in read file content and
   // kick off OAuth2CallFlow::Start().
   void OnFileRead(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& access_token,
-      absl::optional<std::string> content);
+      absl::optional<FileRead> file_read);
+
+  // Task posted to ThreadPool to read the local file. Return type is
+  // base::Optional in case file is read successfully but the file content is
+  // really empty.
+  static absl::optional<FileRead> ReadFile(
+      const base::FilePath& path,
+      const base::FilePath& target_file_name);
 
   const std::string folder_id_;
   const base::FilePath target_file_name_;
   const base::FilePath local_file_path_;
-  const std::string file_mime_type_;
   const std::string multipart_boundary_;
-  std::string file_content_;
+  FileRead file_read_;
 
   // Callback from the uploader to report success.
   TaskCallback callback_;

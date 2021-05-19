@@ -397,7 +397,6 @@ BoxWholeFileUploadApiCallFlow::BoxWholeFileUploadApiCallFlow(
     : folder_id_(folder_id),
       target_file_name_(target_file_name),
       local_file_path_(local_file_path),
-      file_mime_type_(GetMimeType(target_file_name)),
       multipart_boundary_(net::GenerateMimeMultipartBoundary()),
       callback_(std::move(callback)) {}
 
@@ -406,12 +405,6 @@ BoxWholeFileUploadApiCallFlow::~BoxWholeFileUploadApiCallFlow() = default;
 void BoxWholeFileUploadApiCallFlow::Start(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& access_token) {
-  // Ensure that file extension was valid and file type was obtained.
-  if (file_mime_type_.empty()) {
-    DLOG(ERROR) << "Couldn't obtain proper file type for " << target_file_name_;
-    std::move(callback_).Run(false, 0, GURL());
-  }
-
   // Forward the arguments via PostReadFileTask() then OnFileRead() into
   // OAuth2CallFlow::Start().
   PostReadFileTask(url_loader_factory, access_token);
@@ -421,7 +414,7 @@ void BoxWholeFileUploadApiCallFlow::PostReadFileTask(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& access_token) {
   auto read_file_task = base::BindOnce(&BoxWholeFileUploadApiCallFlow::ReadFile,
-                                       local_file_path_);
+                                       local_file_path_, target_file_name_);
   auto read_file_reply = base::BindOnce(
       &BoxWholeFileUploadApiCallFlow::OnFileRead, weak_factory_.GetWeakPtr(),
       url_loader_factory, access_token);
@@ -431,27 +424,35 @@ void BoxWholeFileUploadApiCallFlow::PostReadFileTask(
       std::move(read_file_task), std::move(read_file_reply));
 }
 
-absl::optional<std::string> BoxWholeFileUploadApiCallFlow::ReadFile(
-    const base::FilePath& path) {
-  std::string content;
-  return base::ReadFileToStringWithMaxSize(path, &content,
-                                           kWholeFileUploadMaxSize)
-             ? absl::optional<std::string>(std::move(content))
-             : absl::nullopt;
+// static
+absl::optional<BoxWholeFileUploadApiCallFlow::FileRead>
+BoxWholeFileUploadApiCallFlow::ReadFile(
+    const base::FilePath& path,
+    const base::FilePath& target_file_name) {
+  FileRead file_read;
+  file_read.mime = GetMimeType(target_file_name);
+  if (file_read.mime.empty() ||  // Ensure that file extension was valid.
+      !base::ReadFileToStringWithMaxSize(path, &file_read.content,
+                                         kWholeFileUploadMaxSize)) {
+    DLOG(ERROR) << "File " << path << " with target name " << target_file_name;
+    return absl::nullopt;
+  }
+  DCHECK_LE(file_read.content.size(), kWholeFileUploadMaxSize);
+  return absl::optional<FileRead>(std::move(file_read));
 }
 
 void BoxWholeFileUploadApiCallFlow::OnFileRead(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& access_token,
-    absl::optional<std::string> file_read) {
+    absl::optional<FileRead> file_read) {
   if (!file_read) {
     DLOG(ERROR) << "[BoxApiCallFlow] WholeFileUpload read file failed";
     // TODO(https://crbug.com/1165972): error handling
     std::move(callback_).Run(false, 0, GURL());
     return;
   }
-  DCHECK_LE(file_read->size(), kWholeFileUploadMaxSize);
-  file_content_ = std::move(*file_read);
+  DCHECK_LE(file_read->content.size(), kWholeFileUploadMaxSize);
+  file_read_ = std::move(*file_read);
 
   // Continue to the original call flow after file has been read.
   OAuth2ApiCallFlow::Start(url_loader_factory, access_token);
@@ -464,7 +465,7 @@ GURL BoxWholeFileUploadApiCallFlow::CreateApiCallUrl() {
 std::string BoxWholeFileUploadApiCallFlow::CreateApiCallBody() {
   CHECK(!folder_id_.empty());
   CHECK(!target_file_name_.empty());
-  CHECK(!file_mime_type_.empty());
+  CHECK(!file_read_.mime.empty()) << target_file_name_;
   CHECK(!multipart_boundary_.empty());
 
   base::Value attr(base::Value::Type::DICTIONARY);
@@ -479,8 +480,8 @@ std::string BoxWholeFileUploadApiCallFlow::CreateApiCallBody() {
                                   "application/json", &body);
 
   net::AddMultipartValueForUploadWithFileName(
-      "file", target_file_name_.MaybeAsASCII(), file_content_,
-      multipart_boundary_, file_mime_type_, &body);
+      "file", target_file_name_.MaybeAsASCII(), file_read_.content,
+      multipart_boundary_, file_read_.mime, &body);
   net::AddMultipartFinalDelimiterForUpload(multipart_boundary_, &body);
 
   return body;
@@ -514,6 +515,13 @@ void BoxWholeFileUploadApiCallFlow::ProcessApiCallFailure(
   LOG_API_FAIL(ERROR, "WholeFileUpload", net_error, head->headers, body);
   auto response_code = head->headers->response_code();
   std::move(callback_).Run(false, response_code, GURL());
+}
+
+void BoxWholeFileUploadApiCallFlow::SetFileReadForTesting(
+    std::string content,
+    std::string mime_type) {
+  file_read_.content = std::move(content);
+  file_read_.mime = std::move(mime_type);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

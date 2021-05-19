@@ -17,7 +17,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_test_helper.h"
-#include "net/base/mime_util.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -338,6 +337,7 @@ class BoxWholeFileUploadApiCallFlowForTest
   using BoxWholeFileUploadApiCallFlow::IsExpectedSuccessCode;
   using BoxWholeFileUploadApiCallFlow::ProcessApiCallFailure;
   using BoxWholeFileUploadApiCallFlow::ProcessApiCallSuccess;
+  using BoxWholeFileUploadApiCallFlow::SetFileReadForTesting;
 };
 
 class BoxWholeFileUploadApiCallFlowTest
@@ -361,10 +361,43 @@ class BoxWholeFileUploadApiCallFlowTest
       std::move(quit_closure_).Run();
   }
 
-  std::string folder_id_{"13579"};
+  std::string MakeExpectedBody() {
+    // Body format for multipart/form-data reference:
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
+    // Request body fields reference:
+    // https://developer.box.com/reference/post-files-content/
+    std::string content_type = flow_->CreateApiCallBodyContentType();
+    std::string expected_type("multipart/form-data; boundary=");
+
+    std::string multipart_boundary =
+        "--" + content_type.substr(expected_type.size());
+    std::string expected_body(multipart_boundary + "\r\n");
+    expected_body +=
+        "Content-Disposition: form-data; name=\"attributes\"\r\n"
+        "Content-Type: application/json\r\n\r\n"
+        "{\"name\":\"";
+    expected_body +=
+        file_name_.AsUTF8Unsafe() +  // AsUTF8Unsafe() to compile on Windows
+        "\","
+        "\"parent\":{\"id\":\"" +
+        folder_id_ + "\"}}\r\n";
+    expected_body += multipart_boundary + "\r\n";
+    expected_body +=
+        "Content-Disposition: form-data; name=\"file\"; filename=\"";
+    expected_body +=
+        file_name_.AsUTF8Unsafe() +  // AsUTF8Unsafe() to compile on Windows
+        "\"\r\nContent-Type: " + mime_type_ + "\r\n\r\n";
+    expected_body += file_content_ + "\r\n";
+    expected_body += multipart_boundary + "--\r\n";
+    return expected_body;
+  }
+
+  base::FilePath file_path_;
+  const std::string folder_id_{"13579"};
+  const std::string mime_type_{"text/plain"};
   const base::FilePath file_name_{
       FILE_PATH_LITERAL("box_whole_file_upload_test.txt")};
-  base::FilePath file_path_;
+  const std::string file_content_{"<TestContent>~~~123456789~~~</TestContent>"};
 
   GURL file_url_;
 
@@ -385,32 +418,8 @@ TEST_F(BoxWholeFileUploadApiCallFlowTest, CreateApiCallBodyAndContentType) {
   std::string expected_type("multipart/form-data; boundary=");
   ASSERT_EQ(content_type.substr(0, expected_type.size()), expected_type);
 
-  // Body format for multipart/form-data reference:
-  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
-  // Request body fields reference:
-  // https://developer.box.com/reference/post-files-content/
-  std::string multipart_boundary =
-      "--" + content_type.substr(expected_type.size());
-  std::string expected_body(multipart_boundary + "\r\n");
-  std::string mime_type;
-  net::GetMimeTypeFromExtension(FILE_PATH_LITERAL("txt"), &mime_type);
-  expected_body +=
-      "Content-Disposition: form-data; name=\"attributes\"\r\n"
-      "Content-Type: application/json\r\n\r\n"
-      "{\"name\":\"";
-  expected_body +=
-      file_name_.AsUTF8Unsafe() +  // AsUTF8Unsafe() to compile on Windows
-      "\","
-      "\"parent\":{\"id\":\"" +
-      folder_id_ + "\"}}\r\n";
-  expected_body += multipart_boundary + "\r\n";
-  expected_body += "Content-Disposition: form-data; name=\"file\"; filename=\"";
-  expected_body +=
-      file_name_.AsUTF8Unsafe() +  // AsUTF8Unsafe() to compile on Windows
-      "\"\r\nContent-Type: " + mime_type + "\r\n\r\n\r\n";
-  expected_body += multipart_boundary + "--\r\n";
-  std::string body = flow_->CreateApiCallBody();
-  ASSERT_EQ(body, expected_body);
+  flow_->SetFileReadForTesting(file_content_, mime_type_);
+  ASSERT_EQ(flow_->CreateApiCallBody(), MakeExpectedBody());
 }
 
 TEST_F(BoxWholeFileUploadApiCallFlowTest, IsExpectedSuccessCode) {
@@ -514,17 +523,29 @@ class BoxWholeFileUploadApiCallFlowFileReadTest
   BoxWholeFileUploadApiCallFlowFileReadTest()
       : url_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {}
+                &test_url_loader_factory_)) {
+    test_url_loader_factory_.SetInterceptor(base::BindRepeating(
+        &BoxWholeFileUploadApiCallFlowFileReadTest::VerifyRequest,
+        base::Unretained(this)));
+  }
 
  protected:
+  void VerifyRequest(const network::ResourceRequest& request) {
+    ASSERT_EQ(request.url, kFileSystemBoxDirectUploadUrl);
+    // Check that file was read and formatted into request body string properly,
+    // without going down the rabbit hole of request.request_body->elements()->
+    // front().As<network::DataElementBytes>().AsStringPiece().
+    ASSERT_EQ(flow_->CreateApiCallBody(), MakeExpectedBody());
+    ++request_sent_count_;
+  }
+
+  size_t request_sent_count_ = 0;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> url_factory_;
 };
 
 TEST_F(BoxWholeFileUploadApiCallFlowFileReadTest, GoodUpload) {
-  ASSERT_TRUE(
-      base::WriteFile(file_path_, "BoxWholeFileUploadApiCallFlowFileReadTest"))
-      << file_path_;
+  ASSERT_TRUE(base::WriteFile(file_path_, file_content_)) << file_path_;
 
   test_url_loader_factory_.AddResponse(kFileSystemBoxDirectUploadUrl,
                                        std::string(), net::HTTP_CREATED);
@@ -532,9 +553,10 @@ TEST_F(BoxWholeFileUploadApiCallFlowFileReadTest, GoodUpload) {
 
   base::RunLoop run_loop;
   quit_closure_ = run_loop.QuitClosure();
-  flow_->Start(url_factory_, "dummytoken");
+  flow_->Start(url_factory_, "test_token");
   run_loop.Run();
 
+  ASSERT_EQ(request_sent_count_, 1U);
   ASSERT_EQ(response_code_, net::HTTP_CREATED);
   ASSERT_TRUE(processed_success_) << "Failed with file " << file_path_;
   ASSERT_TRUE(base::PathExists(file_path_))
@@ -548,11 +570,12 @@ TEST_F(BoxWholeFileUploadApiCallFlowFileReadTest, NoFile) {
 
   base::RunLoop run_loop;
   quit_closure_ = run_loop.QuitClosure();
-  flow_->Start(url_factory_, "dummytoken");
+  flow_->Start(url_factory_, "test_token");
   run_loop.Run();
 
-  // There should be no HTTP response code, because it should already fail when
-  // reading file, before making any actual API calls.
+  // Because file read already failed before any actual API calls are made,
+  // there should be no API calls made, and therefore no HTTP response code.
+  ASSERT_EQ(request_sent_count_, 0U);
   ASSERT_EQ(response_code_, 0);
   ASSERT_FALSE(processed_success_);
 }
