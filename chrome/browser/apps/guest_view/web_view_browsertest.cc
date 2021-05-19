@@ -4791,13 +4791,11 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWebViewTest,
 
   // The webview "simple" page is a first navigation to a raw data url. It is
   // currently considered public (internally
-  // network::mojom::IPAddressSpace::kUnknown). It should not be able to fetch a
-  // local page. This test might have to be modified if the classification of
-  // data URL changes in the future.
-  EXPECT_EQ(
-      false,
-      content::EvalJs(
-          guest, content::JsReplace(
-                     "fetch($1).then(response => true).catch(error => false)",
-                     fetch_url)));
+  // `network::mojom::IPAddressSpace::kUnknown`).
+  // For now, unknown -> local is not blocked, so this fetch succeeds. See also
+  // https://crbug.com/1178814.
+  EXPECT_EQ(true, content::EvalJs(guest,
+                                  content::JsReplace(
+                                      "fetch($1).then(response => response.ok)",
+                                      fetch_url)));
 }

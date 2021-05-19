@@ -150,8 +150,6 @@ const FeatureEntry* FindFeatureEntry(const FeatureKey& key) {
 
 // The list of features which should be reported as deprecated.
 constexpr Feature kDeprecatedFeatures[] = {
-    Feature::kAddressSpaceUnknownNonSecureContextEmbeddedPrivate,
-    Feature::kAddressSpaceUnknownNonSecureContextEmbeddedLocal,
     Feature::kAddressSpacePublicNonSecureContextEmbeddedPrivate,
     Feature::kAddressSpacePublicNonSecureContextEmbeddedLocal,
     Feature::kAddressSpacePrivateNonSecureContextEmbeddedLocal,

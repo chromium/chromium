@@ -2502,14 +2502,23 @@ void RenderFrameHostImpl::InitializePrivateNetworkRequestPolicy() {
     return;
   }
 
+  const PolicyContainerPolicies& policies = policy_container_host_->policies();
+
   // For now, we always allow private network requests from secure contexts;
   // depending on a feature flag, we show a warning in DevTools.
-  if (policy_container_host_->policies().is_web_secure_context) {
+  if (policies.is_web_secure_context) {
     private_network_request_policy_ =
         base::FeatureList::IsEnabled(
             features::kWarnAboutSecurePrivateNetworkRequests)
             ? network::mojom::PrivateNetworkRequestPolicy::kWarn
             : network::mojom::PrivateNetworkRequestPolicy::kAllow;
+    return;
+  }
+
+  // Requests from non-secure contexts in the unknown address space are allowed.
+  if (policies.ip_address_space == network::mojom::IPAddressSpace::kUnknown) {
+    private_network_request_policy_ =
+        network::mojom::PrivateNetworkRequestPolicy::kAllow;
     return;
   }
 
