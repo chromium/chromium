@@ -30,7 +30,4 @@ declare_args() {
 # is_chromeos_{ash,lacros} should be set true only for builds with target
 # toolchains.
 is_chromeos_ash = is_chromeos && !chromeos_is_browser_only
-
-# TODO(crbug.com/1052397): Remove is_linux once lacros-chrome switches
-# to target_os=chromeos
-is_chromeos_lacros = (is_chromeos || is_linux) && chromeos_is_browser_only
+is_chromeos_lacros = is_chromeos && chromeos_is_browser_only
