@@ -5128,11 +5128,15 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
     return;
   }
 
-  // Requests initiated from secure contexts are not yet affected.
+  // Requests initiated from secure contexts are never blocked; depending
+  // on a feature flag, we show a warning in DevTools.
   if (policy_container_navigation_bundle_->FinalPolicies()
           .is_web_secure_context) {
     private_network_request_policy_ =
-        network::mojom::PrivateNetworkRequestPolicy::kAllow;
+        base::FeatureList::IsEnabled(
+            features::kWarnAboutSecurePrivateNetworkRequests)
+            ? network::mojom::PrivateNetworkRequestPolicy::kWarn
+            : network::mojom::PrivateNetworkRequestPolicy::kAllow;
     return;
   }
 

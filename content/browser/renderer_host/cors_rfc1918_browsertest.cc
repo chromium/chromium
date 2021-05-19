@@ -300,7 +300,8 @@ class CorsRfc1918BrowserTest : public CorsRfc1918BrowserTestBase {
  public:
   CorsRfc1918BrowserTest()
       : CorsRfc1918BrowserTestBase(
-            {features::kBlockInsecurePrivateNetworkRequests}) {}
+            {features::kBlockInsecurePrivateNetworkRequests,
+             features::kWarnAboutSecurePrivateNetworkRequests}) {}
 };
 
 // Test with insecure private network requests blocked, including navigations.
@@ -310,6 +311,7 @@ class CorsRfc1918BrowserTestBlockNavigations
   CorsRfc1918BrowserTestBlockNavigations()
       : CorsRfc1918BrowserTestBase({
             features::kBlockInsecurePrivateNetworkRequests,
+            features::kWarnAboutSecurePrivateNetworkRequests,
             features::kBlockInsecurePrivateNetworkRequestsForNavigations,
         }) {}
 };
@@ -2289,7 +2291,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
   EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+            network::mojom::PrivateNetworkRequestPolicy::kWarn);
 }
 
 // This test verifies that when the right feature is enabled but the content

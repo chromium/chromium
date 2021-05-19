@@ -2527,10 +2527,14 @@ void RenderFrameHostImpl::InitializePrivateNetworkRequestPolicy() {
     return;
   }
 
-  // For now, we always allow private network requests from secure contexts.
+  // For now, we always allow private network requests from secure contexts;
+  // depending on a feature flag, we show a warning in DevTools.
   if (policy_container_host_->policies().is_web_secure_context) {
     private_network_request_policy_ =
-        network::mojom::PrivateNetworkRequestPolicy::kAllow;
+        base::FeatureList::IsEnabled(
+            features::kWarnAboutSecurePrivateNetworkRequests)
+            ? network::mojom::PrivateNetworkRequestPolicy::kWarn
+            : network::mojom::PrivateNetworkRequestPolicy::kAllow;
     return;
   }
 
