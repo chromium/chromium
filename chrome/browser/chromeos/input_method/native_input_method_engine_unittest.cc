@@ -13,7 +13,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/services/ime/mock_input_channel.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
-#include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
@@ -120,10 +119,6 @@ class NativeInputMethodEngineTest : public ::testing::Test {
     // Needed by NativeInputMethodEngine for the virtual keyboard.
     keyboard_controller_client_test_helper_ =
         ChromeKeyboardControllerClientTestHelper::InitializeWithFake();
-
-    machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
-        &fake_service_connection_);
-    machine_learning::ServiceConnection::GetInstance()->Initialize();
   }
 
  private:
@@ -131,7 +126,6 @@ class NativeInputMethodEngineTest : public ::testing::Test {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       keyboard_controller_client_test_helper_;
-  machine_learning::FakeServiceConnectionImpl fake_service_connection_;
 };
 
 TEST_F(NativeInputMethodEngineTest, DoesNotLaunchImeServiceIfAutocorrectIsOff) {
@@ -385,10 +379,6 @@ class NativeInputMethodEngineWithRenderViewHostTest
     // Needed by NativeInputMethodEngine for the virtual keyboard.
     keyboard_controller_client_test_helper_ =
         ChromeKeyboardControllerClientTestHelper::InitializeWithFake();
-
-    machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
-        &fake_service_connection_);
-    machine_learning::ServiceConnection::GetInstance()->Initialize();
   }
 
   std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
@@ -399,7 +389,6 @@ class NativeInputMethodEngineWithRenderViewHostTest
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       keyboard_controller_client_test_helper_;
-  machine_learning::FakeServiceConnectionImpl fake_service_connection_;
 };
 
 TEST_F(NativeInputMethodEngineWithRenderViewHostTest, RecordUkmAddsUkmEntry) {

@@ -19,10 +19,7 @@ constexpr base::TimeDelta kCheckDelay = base::TimeDelta::FromMilliseconds(500);
 
 }  // namespace
 
-GrammarManager::GrammarManager(
-    Profile* profile,
-    std::unique_ptr<GrammarServiceClient> grammar_client)
-    : profile_(profile), grammar_client_(std::move(grammar_client)) {}
+GrammarManager::GrammarManager() {}
 
 GrammarManager::~GrammarManager() = default;
 
@@ -62,31 +59,8 @@ void GrammarManager::Check(const std::u16string& text) {
     return;
   }
 
-  ui::IMEInputContextHandlerInterface* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context)
-    return;
-
-  input_context->ClearGrammarFragments(gfx::Range(0, text.size()));
-
-  grammar_client_->RequestTextCheck(
-      profile_, text,
-      base::BindOnce(&GrammarManager::OnGrammarCheckDone,
-                     base::Unretained(this), text));
-}
-
-void GrammarManager::OnGrammarCheckDone(
-    const std::u16string& text,
-    bool success,
-    const std::vector<ui::GrammarFragment>& results) const {
-  if (!success || text != last_text_ || results.empty())
-    return;
-  ui::IMEInputContextHandlerInterface* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context)
-    return;
-
-  input_context->AddGrammarFragments(results);
+  // TODO(crbug/1132699): implement this method.
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 }  // namespace chromeos
