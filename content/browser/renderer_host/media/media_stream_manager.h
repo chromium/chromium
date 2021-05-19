@@ -42,11 +42,13 @@
 #include "base/task/current_thread.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "content/browser/media/capture_handle_manager.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/media_devices_manager.h"
 #include "content/browser/renderer_host/media/media_stream_provider.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_request_state.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/permission_controller.h"
@@ -115,6 +117,10 @@ class CONTENT_EXPORT MediaStreamManager
       const std::string& label,
       const blink::MediaStreamDevice& device,
       const blink::mojom::MediaStreamStateChange new_state)>;
+
+  using DeviceCaptureHandleChangeCallback =
+      base::RepeatingCallback<void(const std::string& label,
+                                   const blink::MediaStreamDevice& device)>;
 
   // Callback for testing.
   using GenerateStreamTestCallback =
@@ -199,7 +205,8 @@ class CONTENT_EXPORT MediaStreamManager
       GenerateStreamCallback generate_stream_cb,
       DeviceStoppedCallback device_stopped_cb,
       DeviceChangedCallback device_changed_cb,
-      DeviceRequestStateChangeCallback device_request_state_change_cb);
+      DeviceRequestStateChangeCallback device_request_state_change_cb,
+      DeviceCaptureHandleChangeCallback device_capture_handle_change_cb);
 
   // Cancel an open request identified by |page_request_id| for the given frame.
   // Must be called on the IO thread.
@@ -594,6 +601,28 @@ class CONTENT_EXPORT MediaStreamManager
                                  int page_request_id,
                                  blink::mojom::PermissionStatus status);
 
+  // Start tracking capture-handle changes for tab-capture.
+  void MaybeStartTrackingCaptureHandleConfig(
+      const std::string& label,
+      const blink::MediaStreamDevice& captured_device,
+      GlobalFrameRoutingId capturer);
+
+  // Stop tracking capture-handle changes for tab-capture.
+  void MaybeStopTrackingCaptureHandleConfig(
+      const std::string& label,
+      const blink::MediaStreamDevice& captured_device);
+
+  // When device changes, update which tabs' capture-handles are tracked.
+  void MaybeUpdateTrackedCaptureHandleConfigs(
+      const std::string& label,
+      const blink::MediaStreamDevices& new_devices,
+      GlobalFrameRoutingId capturer);
+
+  // Receive a new capture-handle from the CaptureHandleManager.
+  void OnCaptureHandleChange(const std::string& label,
+                             blink::mojom::MediaStreamType type,
+                             media::mojom::CaptureHandlePtr capture_handle);
+
   media::AudioSystem* const audio_system_;  // not owned
   scoped_refptr<AudioInputDeviceManager> audio_input_device_manager_;
   scoped_refptr<VideoCaptureManager> video_capture_manager_;
@@ -611,6 +640,11 @@ class CONTENT_EXPORT MediaStreamManager
 
   base::RepeatingCallback<std::unique_ptr<FakeMediaStreamUIProxy>(void)>
       fake_ui_factory_;
+
+  // Observes changes of captured tabs' CaptureHandleConfig and reports
+  // this changes back to their capturers. This object lives on the UI thread
+  // and must be accessed on it and torn down from it.
+  CaptureHandleManager capture_handle_manager_;
 
   // Maps render process hosts to log callbacks. Used on the IO thread.
   std::map<int, base::RepeatingCallback<void(const std::string&)>>

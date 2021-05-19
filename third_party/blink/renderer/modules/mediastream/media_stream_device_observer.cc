@@ -140,6 +140,16 @@ void MediaStreamDeviceObserver::OnDeviceRequestStateChange(
     stream->on_device_request_state_change_cb.Run(device, new_state);
 }
 
+void MediaStreamDeviceObserver::OnDeviceCaptureHandleChange(
+    const String& label,
+    const MediaStreamDevice& device) {
+  DVLOG(1) << __func__ << " label=" << label << " device_id=" << device.id;
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // TODO(crbug.com/1200910): Handle this message by (1) returning the correct
+  // value from getSettings() and (2) firing capture-handle-changed event
+  // if necessary.
+}
+
 void MediaStreamDeviceObserver::BindMediaStreamDeviceObserverReceiver(
     mojo::PendingReceiver<mojom::blink::MediaStreamDeviceObserver> receiver) {
   receiver_.reset();

@@ -86,6 +86,8 @@ class MODULES_EXPORT MediaStreamDeviceObserver
       const String& label,
       const MediaStreamDevice& device,
       const mojom::blink::MediaStreamStateChange new_state) override;
+  void OnDeviceCaptureHandleChange(const String& label,
+                                   const MediaStreamDevice& device) override;
 
   void BindMediaStreamDeviceObserverReceiver(
       mojo::PendingReceiver<mojom::blink::MediaStreamDeviceObserver> receiver);
