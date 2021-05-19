@@ -67,7 +67,7 @@ def get_bundle_id(app_path):
       '-c',
       'Print:CFBundleIdentifier',
       os.path.join(app_path, 'Info.plist'),
-  ]).rstrip()
+  ]).rstrip().decode("utf-8")
 
 
 class GTestsApp(object):

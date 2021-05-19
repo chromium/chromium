@@ -50,7 +50,7 @@ def parse_passed_tests_for_interrupted_run(output):
   passed_test_regex = re.compile(r'Test [Cc]ase \'\-\[(.+?)\s(.+?)\]\' passed')
 
   for test_line in output:
-    m_test = passed_test_regex.search(test_line)
+    m_test = passed_test_regex.search(test_line.decode("utf-8"))
     if m_test:
       passed_tests.append('%s/%s' % (m_test.group(1), m_test.group(2)))
   LOGGER.info('%d passed tests for interrupted build.' % len(passed_tests))
