@@ -336,8 +336,7 @@ int MoveTabToWindow(ExtensionFunction* function,
 
   TabStripModel* target_tab_strip =
       ExtensionTabUtil::GetEditableTabStripModel(target_browser);
-  if (!target_tab_strip)
-    return -1;
+  DCHECK(target_tab_strip);
 
   // Clamp move location to the last position.
   // This is ">" because it can append to a new index position.
@@ -1646,8 +1645,7 @@ bool TabsMoveFunction::MoveTab(int tab_id,
     if (has_callback()) {
       TabStripModel* tab_strip_model =
           ExtensionTabUtil::GetEditableTabStripModel(target_browser);
-      if (!tab_strip_model)
-        return false;
+      DCHECK(tab_strip_model);
       content::WebContents* web_contents =
           tab_strip_model->GetWebContentsAt(inserted_index);
 
@@ -2010,8 +2008,10 @@ WebContents* TabsCaptureVisibleTabFunction::GetWebContentsForID(
 
   TabStripModel* tab_strip_model =
       ExtensionTabUtil::GetEditableTabStripModel(browser);
-  if (!tab_strip_model)
+  if (!tab_strip_model) {
+    *error = tabs_constants::kTabStripNotEditableError;
     return nullptr;
+  }
   WebContents* contents = tab_strip_model->GetActiveWebContents();
   if (!contents) {
     *error = "No active web contents to capture";
