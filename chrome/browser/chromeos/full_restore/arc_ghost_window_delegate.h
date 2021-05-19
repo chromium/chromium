@@ -63,6 +63,7 @@ class ArcGhostWindowDelegate
   chromeos::WindowStateType window_state_;
   exo::ClientControlledShellSurface* shell_surface_;
 
+  ArcWindowHandler* arc_handler_;
   base::ScopedObservation<chromeos::full_restore::ArcWindowHandler,
                           chromeos::full_restore::ArcWindowHandler::Observer>
       observation_{this};

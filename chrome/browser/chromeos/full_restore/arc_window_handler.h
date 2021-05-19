@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "components/arc/mojom/app.mojom-forward.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/wm_helper.h"
 
@@ -23,6 +24,8 @@ class ArcWindowHandler {
   // Map from window_session_id to exo::ClientControlledShellSurface.
   using ShellSurfaceMap =
       std::map<int, std::unique_ptr<exo::ClientControlledShellSurface>>;
+  // Map from window_session_id to arc::mojom::WindowInfoPtr.
+  using WindowInfoMap = std::map<int, arc::mojom::WindowInfoPtr>;
 
   // This class populates the exo::ShellSurfaceBase to PropertyHandler by
   // the corresponding window session id.
@@ -73,9 +76,21 @@ class ArcWindowHandler {
 
   void OnAppInstanceConnected();
 
+  void OnWindowInfoUpdated(int window_id,
+                           int state,
+                           int64_t display_id,
+                           gfx::Rect bounds);
+
  private:
+  bool is_app_instance_connected_ = false;
+
   // Map window session id to ClientControlledShellSurface.
   ShellSurfaceMap session_id_to_shell_surface_;
+
+  // Map window session id to pending window info. Before ARC app instance
+  // connection establish, all of window info update will be saved here as
+  // pending update info.
+  WindowInfoMap session_id_to_pending_window_info_;
 
   base::ObserverList<Observer> observer_list_;
 

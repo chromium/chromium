@@ -6,6 +6,7 @@
 
 #include "chrome/browser/chromeos/full_restore/arc_ghost_window_shell_surface.h"
 #include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wm_helper.h"
 #include "components/full_restore/app_restore_data.h"
@@ -64,6 +65,7 @@ void ArcWindowHandler::CloseWindow(int session_id) {
 
   for (auto& observer : observer_list_)
     observer.OnWindowCloseRequested(session_id);
+
   session_id_to_shell_surface_.erase(it);
 }
 
@@ -78,10 +80,35 @@ bool ArcWindowHandler::HasObserver(Observer* observer) {
 }
 
 void ArcWindowHandler::OnAppInstanceConnected() {
-  // TODO(sstan): Send existed ghost window info to ARC once ghost window
-  // has been introduced.
+  is_app_instance_connected_ = true;
+
+  // Send all pending window info updates to ARC.
+  for (auto& window_info_pr : session_id_to_pending_window_info_) {
+    arc::UpdateWindowInfo(std::move(window_info_pr.second));
+  }
+  session_id_to_pending_window_info_.clear();
+
   for (auto& observer : observer_list_)
     observer.OnAppInstanceConnected();
+}
+
+void ArcWindowHandler::OnWindowInfoUpdated(int window_id,
+                                           int state,
+                                           int64_t display_id,
+                                           gfx::Rect bounds) {
+  auto window_info = arc::mojom::WindowInfo::New();
+  window_info->window_id = window_id;
+  window_info->display_id = display_id;
+  window_info->bounds = gfx::Rect(bounds);
+  window_info->state = state;
+
+  if (is_app_instance_connected_) {
+    arc::UpdateWindowInfo(std::move(window_info));
+    return;
+  }
+
+  session_id_to_pending_window_info_[window_info->window_id] =
+      std::move(window_info);
 }
 
 }  // namespace full_restore

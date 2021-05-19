@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/full_restore/arc_ghost_window_delegate.h"
 
 #include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -26,8 +25,11 @@ ArcGhostWindowDelegate::ArcGhostWindowDelegate(
       bounds_(gfx::Rect(bounds)),
       pending_close_(false),
       window_state_(chromeos::WindowStateType::kDefault),
-      shell_surface_(shell_surface) {
+      shell_surface_(shell_surface),
+      arc_handler_(handler) {
   DCHECK(shell_surface);
+  DCHECK(handler);
+
   observation_.Observe(handler);
   SetDisplayId(display_id);
 }
@@ -161,12 +163,9 @@ bool ArcGhostWindowDelegate::SetDisplayId(int64_t display_id) {
 }
 
 void ArcGhostWindowDelegate::UpdateWindowInfoToArc() {
-  auto window_info = arc::mojom::WindowInfo::New();
-  window_info->window_id = window_id_;
-  window_info->display_id = display_id_;
-  window_info->bounds = gfx::ScaleToRoundedRect(bounds_, scale_factor_);
-  window_info->state = pending_close_ ? kNullWindowState : (int)window_state_;
-  arc::UpdateWindowInfo(std::move(window_info));
+  arc_handler_->OnWindowInfoUpdated(
+      window_id_, pending_close_ ? kNullWindowState : (int)window_state_,
+      display_id_, gfx::ScaleToRoundedRect(bounds_, scale_factor_));
 }
 
 }  // namespace full_restore
