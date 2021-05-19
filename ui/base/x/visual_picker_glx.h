@@ -54,8 +54,8 @@ class COMPONENT_EXPORT(UI_BASE_X) VisualPickerGlx {
 
   x11::Connection* const connection_;
 
-  x11::VisualId system_visual_;
-  x11::VisualId rgba_visual_;
+  x11::VisualId system_visual_{};
+  x11::VisualId rgba_visual_{};
 
   std::unique_ptr<base::flat_map<gfx::BufferFormat, x11::Glx::FbConfig>>
       config_map_;
