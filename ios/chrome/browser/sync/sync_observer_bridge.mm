@@ -13,10 +13,10 @@
 
 SyncObserverBridge::SyncObserverBridge(id<SyncObserverModelBridge> delegate,
                                        syncer::SyncService* sync_service)
-    : delegate_(delegate), scoped_observer_(this) {
+    : delegate_(delegate) {
   DCHECK(delegate);
   if (sync_service)
-    scoped_observer_.Add(sync_service);
+    scoped_observation_.Observe(sync_service);
 }
 
 SyncObserverBridge::~SyncObserverBridge() {

@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 
@@ -34,8 +34,8 @@ class SyncObserverBridge : public syncer::SyncServiceObserver {
 
  private:
   __weak id<SyncObserverModelBridge> delegate_ = nil;
-  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
-      scoped_observer_;
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      scoped_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SyncObserverBridge);
 };
