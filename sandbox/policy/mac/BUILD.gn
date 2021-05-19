@@ -9,6 +9,7 @@ sb_files = [
   "cdm.sb",
   "common.sb",
   "gpu.sb",
+  "mirroring.sb",
   "nacl_loader.sb",
   "network.sb",
   "ppapi.sb",

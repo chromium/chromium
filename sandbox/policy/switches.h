@@ -47,6 +47,10 @@ SANDBOX_POLICY_EXPORT extern const char kIconReaderSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kMediaFoundationCdmSandbox[];
 #endif  // OS_WIN
 
+#if defined(OS_MAC)
+SANDBOX_POLICY_EXPORT extern const char kMirroringSandbox[];
+#endif  // OS_MAC
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 SANDBOX_POLICY_EXPORT extern const char kImeSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kTtsSandbox[];

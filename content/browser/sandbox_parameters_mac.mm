@@ -191,11 +191,6 @@ void SetupPPAPISandboxParameters(sandbox::SeatbeltExecClient* client) {
 }
 #endif
 
-void SetupUtilitySandboxParameters(sandbox::SeatbeltExecClient* client,
-                                   const base::CommandLine& command_line) {
-  SetupCommonSandboxParameters(client);
-}
-
 void SetupGpuSandboxParameters(sandbox::SeatbeltExecClient* client,
                                const base::CommandLine& command_line) {
   SetupCommonSandboxParameters(client);
@@ -214,10 +209,12 @@ void SetupSandboxParameters(sandbox::policy::SandboxType sandbox_type,
   switch (sandbox_type) {
     case sandbox::policy::SandboxType::kAudio:
     case sandbox::policy::SandboxType::kCdm:
+    case sandbox::policy::SandboxType::kMirroring:
     case sandbox::policy::SandboxType::kNaClLoader:
     case sandbox::policy::SandboxType::kPrintBackend:
     case sandbox::policy::SandboxType::kPrintCompositor:
     case sandbox::policy::SandboxType::kRenderer:
+    case sandbox::policy::SandboxType::kUtility:
       SetupCommonSandboxParameters(client);
       break;
     case sandbox::policy::SandboxType::kGpu: {
@@ -231,9 +228,6 @@ void SetupSandboxParameters(sandbox::policy::SandboxType sandbox_type,
 #if BUILDFLAG(ENABLE_PLUGINS)
       SetupPPAPISandboxParameters(client);
 #endif
-      break;
-    case sandbox::policy::SandboxType::kUtility:
-      SetupUtilitySandboxParameters(client, command_line);
       break;
     case sandbox::policy::SandboxType::kNoSandbox:
     case sandbox::policy::SandboxType::kVideoCapture:

@@ -20,6 +20,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/service_sandbox_type.h"
 #include "components/mirroring/browser/single_client_video_capture_host.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/session_observer.mojom.h"

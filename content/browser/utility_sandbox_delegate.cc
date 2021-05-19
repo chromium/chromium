@@ -45,6 +45,9 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::policy::SandboxType::kIconReader ||
       sandbox_type_ == sandbox::policy::SandboxType::kMediaFoundationCdm ||
 #endif
+#if defined(OS_MAC)
+      sandbox_type_ == sandbox::policy::SandboxType::kMirroring ||
+#endif
       sandbox_type_ == sandbox::policy::SandboxType::kUtility ||
       sandbox_type_ == sandbox::policy::SandboxType::kNetwork ||
       sandbox_type_ == sandbox::policy::SandboxType::kCdm ||

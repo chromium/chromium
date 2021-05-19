@@ -76,6 +76,9 @@ enum class SandboxType {
 #if defined(OS_MAC)
   // The NaCl loader process.
   kNaClLoader,
+
+  // The mirroring service needs IOSurface access on macOS.
+  kMirroring,
 #endif  // defined(OS_MAC)
 
 #if BUILDFLAG(ENABLE_PRINTING)

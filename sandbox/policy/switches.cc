@@ -46,6 +46,10 @@ const char kIconReaderSandbox[] = "icon_reader";
 const char kMediaFoundationCdmSandbox[] = "mf_cdm";
 #endif  // OS_WIN
 
+#if defined(OS_MAC)
+const char kMirroringSandbox[] = "mirroring";
+#endif  // OS_MAC
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kImeSandbox[] = "ime";
 const char kTtsSandbox[] = "tts";

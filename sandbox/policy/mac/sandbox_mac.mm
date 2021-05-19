@@ -16,6 +16,7 @@
 #include "sandbox/policy/mac/cdm.sb.h"
 #include "sandbox/policy/mac/common.sb.h"
 #include "sandbox/policy/mac/gpu.sb.h"
+#include "sandbox/policy/mac/mirroring.sb.h"
 #include "sandbox/policy/mac/nacl_loader.sb.h"
 #include "sandbox/policy/mac/network.sb.h"
 #include "sandbox/policy/mac/ppapi.sb.h"
@@ -56,6 +57,9 @@ std::string GetSandboxProfile(SandboxType sandbox_type) {
       break;
     case SandboxType::kGpu:
       profile += kSeatbeltPolicyString_gpu;
+      break;
+    case SandboxType::kMirroring:
+      profile += kSeatbeltPolicyString_mirroring;
       break;
     case SandboxType::kNaClLoader:
       profile += kSeatbeltPolicyString_nacl_loader;

@@ -53,6 +53,7 @@ bool IsUnsandboxedSandboxType(SandboxType sandbox_type) {
 #endif
     case SandboxType::kPrintCompositor:
 #if defined(OS_MAC)
+    case SandboxType::kMirroring:
     case SandboxType::kNaClLoader:
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -133,6 +134,9 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case SandboxType::kLibassistant:
 #endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_MAC)
+    case SandboxType::kMirroring:
+#endif  // defined(OS_MAC)
 #if !defined(OS_MAC)
     case SandboxType::kService:
 #endif
@@ -258,6 +262,10 @@ std::string StringFromUtilitySandboxType(SandboxType sandbox_type) {
     case SandboxType::kMediaFoundationCdm:
       return switches::kMediaFoundationCdmSandbox;
 #endif  // defined(OS_WIN)
+#if defined(OS_MAC)
+    case SandboxType::kMirroring:
+      return switches::kMirroringSandbox;
+#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case SandboxType::kIme:
       return switches::kImeSandbox;
@@ -318,6 +326,10 @@ SandboxType UtilitySandboxTypeFromString(const std::string& sandbox_string) {
     return SandboxType::kIconReader;
   if (sandbox_string == switches::kMediaFoundationCdmSandbox)
     return SandboxType::kMediaFoundationCdm;
+#endif
+#if defined(OS_MAC)
+  if (sandbox_string == switches::kMirroringSandbox)
+    return SandboxType::kMirroring;
 #endif
   if (sandbox_string == switches::kAudioSandbox)
     return SandboxType::kAudio;

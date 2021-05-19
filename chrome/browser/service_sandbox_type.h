@@ -97,6 +97,20 @@ content::GetServiceSandboxType<media::mojom::SpeechRecognitionService>() {
 }
 #endif  // !defined(OS_ANDROID)
 
+// mirroring::mojom::MirroringService
+#if defined(OS_MAC)
+namespace mirroring {
+namespace mojom {
+class MirroringService;
+}
+}  // namespace mirroring
+template <>
+inline sandbox::policy::SandboxType
+content::GetServiceSandboxType<mirroring::mojom::MirroringService>() {
+  return sandbox::policy::SandboxType::kMirroring;
+}
+#endif  // OS_MAC
+
 // printing::mojom::PrintingService
 #if defined(OS_WIN)
 namespace printing {
