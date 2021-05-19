@@ -7,6 +7,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "components/arc/arc_util.h"
 #include "components/exo/wm_helper.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -63,6 +64,10 @@ apps::mojom::WindowInfoPtr HandleArcWindowInfo(
 
   ScaleToRoundedRect(window_info->bounds.get(), scale_factor.value());
   return window_info;
+}
+
+bool IsValidThemeColor(uint32_t theme_color) {
+  return SkColorGetA(theme_color) == SK_AlphaOPAQUE;
 }
 
 }  // namespace full_restore

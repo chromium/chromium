@@ -27,6 +27,10 @@ bool IsArcGhostWindowEnabled();
 apps::mojom::WindowInfoPtr HandleArcWindowInfo(
     apps::mojom::WindowInfoPtr window_info);
 
+// Returns true if it is a valid theme color. In Android, any transparent color
+// cannot be a topic color.
+bool IsValidThemeColor(uint32_t theme_color);
+
 }  // namespace full_restore
 }  // namespace chromeos
 

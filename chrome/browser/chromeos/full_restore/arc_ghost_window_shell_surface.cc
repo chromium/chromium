@@ -36,7 +36,11 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
   absl::optional<double> scale_factor = GetDisplayScaleFactor(display_id);
   DCHECK(scale_factor.has_value());
 
-  uint32_t theme_color = color.has_value() ? color.value() : SK_ColorWHITE;
+  // TODO(sstan): Fallback to system default color or other topic color, if
+  // the task hasn't valid theme color.
+  uint32_t theme_color = color.has_value() && IsValidThemeColor(color.value())
+                             ? color.value()
+                             : SK_ColorWHITE;
 
   // TODO(sstan): Handle the desk container from full_restore data.
   int container = ash::desks_util::GetActiveDeskContainerId();
