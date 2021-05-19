@@ -144,7 +144,7 @@ void SupervisedUserSettingsService::PushItemToSync(
   if (sync_processor_) {
     base::RecordAction(UserMetricsAction("ManagedUsers_UploadItem_Syncing"));
     dict = GetDictionaryAndSplitKey(&key_suffix);
-    DCHECK(GetQueuedItems()->empty());
+    DCHECK(GetQueuedItems()->DictEmpty());
     SyncChangeList change_list;
     SyncData data = CreateSyncDataForSetting(key, *value);
     SyncChange::SyncChangeType change_type =
