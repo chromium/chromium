@@ -232,13 +232,9 @@ std::u16string PrivacySandboxSettings::GetFlocIdForDisplay() const {
 
   const bool floc_feature_enabled = base::FeatureList::IsEnabled(
       blink::features::kInterestCohortAPIOriginTrial);
-  if (!IsFlocAllowed() || !floc_feature_enabled)
-    return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID);
-
-  // If FLoC is allowed, but the ID is invalid, a new ID must be being computed.
   auto floc_id = federated_learning::FlocId::ReadFromPrefs(pref_service_);
-  if (!floc_id.IsValid())
-    return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_IN_PROGRESS);
+  if (!IsFlocAllowed() || !floc_feature_enabled || !floc_id.IsValid())
+    return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID);
 
   return base::NumberToString16(floc_id.ToUint64());
 }

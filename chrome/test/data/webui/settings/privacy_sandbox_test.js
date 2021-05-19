@@ -106,8 +106,12 @@ suite('PrivacySandbox_PrivacySandboxSettings2Disabled', function() {
     return testHatsBrowserProxy.whenCalled('tryShowPrivacySandboxSurvey');
   });
 
-  test('flocCardVisibility', function() {
+  test('phase2Visibility', function() {
+    assertTrue(isChildVisible(page, '#learnMoreButton'));
+    assertTrue(isChildVisible(page, '#pageHeader'));
+    assertTrue(isChildVisible(page, '#phase1SettingExplanation'));
     assertFalse(isChildVisible(page, '#flocCard'));
+    assertFalse(isChildVisible(page, '#phase2SettingExplanation'));
   });
 });
 
@@ -198,5 +202,13 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
     setDefaultFlocID();
     page.set('prefs.generated.floc_enabled.value', false);
     await testPrivacySandboxBrowserProxy.whenCalled('getFlocId');
+  });
+
+  test('phase2Visibility', function() {
+    assertFalse(isChildVisible(page, '#learnMoreButton'));
+    assertFalse(isChildVisible(page, '#pageHeader'));
+    assertFalse(isChildVisible(page, '#phase1SettingExplanation'));
+    assertTrue(isChildVisible(page, '#flocCard'));
+    assertTrue(isChildVisible(page, '#phase2SettingExplanation'));
   });
 });

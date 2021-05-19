@@ -1476,6 +1476,8 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
          IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION2},
         {"privacySandboxPageExplanation3",
          IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION3},
+        {"privacySandboxPageExplanation2Phase2",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION2_PHASE2},
         {"privacySandboxPageSettingTitle",
          IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_TITLE},
         {"privacySandboxPageSettingExplanation1",
@@ -1484,12 +1486,16 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
          IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION2},
         {"privacySandboxPageSettingExplanation3",
          IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION3},
+        {"privacySandboxPageSettingExplanation1Phase2",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION1_PHASE2},
+        {"privacySandboxPageSettingExplanation2Phase2",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION2_PHASE2},
+        {"privacySandboxPageSettingExplanation3Phase2",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION3_PHASE2},
         {"privacySandboxPageDetails",
          IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_DETAILS},
         {"privacySandboxPageFlocHeading",
          IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_HEADING},
-        {"privacySandboxPageFlocExplanation",
-         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_EXPLANATION},
         {"privacySandboxPageFlocStatus",
          IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_STATUS},
         {"privacySandboxPageFlocCohort",
@@ -1510,6 +1516,19 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
         l10n_util::GetStringFUTF16(
             IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION4,
             base::ASCIIToUTF16(features::kPrivacySandboxSettingsURL.Get())));
+
+    html_source->AddString(
+        "privacySandboxPageExplanation1Phase2",
+        l10n_util::GetStringFUTF16(
+            IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION1_PHASE2,
+            base::ASCIIToUTF16(features::kPrivacySandboxSettingsURL.Get())));
+
+    html_source->AddString(
+        "privacySandboxPageFlocExplanation",
+        l10n_util::GetStringFUTF16(
+            IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_EXPLANATION,
+            base::ASCIIToUTF16(
+                features::kPrivacySandboxSettings2FlocURL.Get())));
 
     // The FLoC compute frequency string is constant through the life of the
     // profile, and so the relevant string can be injected here, rather than

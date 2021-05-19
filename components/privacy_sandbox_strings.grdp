@@ -3,13 +3,10 @@
   <message name="IDS_PRIVACY_SANDBOX_FLOC_INVALID" desc="A message shown in place of the user's FLoC ID if the ID is invalid and will not be recomputed">
     None
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_FLOC_IN_PROGRESS" desc="A message shown in place of the user's FLoC ID if the ID is currently being calculated">
-    Calculating...
-  </message>
   <message name="IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE" desc="Description of how long until the user's FLoC ID is recomputed, in days.">
     {NUM_DAYS, plural,
-     =0 {In less than 1 day}
-     =1 {In 1 day}
+     =0 {In less than a day}
+     =1 {In a day}
      other {In {NUM_DAYS} days}}
   </message>
   <message name="IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE_INVALID" desc="A message shown in place of when the user's FLoC ID will be next computed if the user's ID will not be recomputed for any reason, such as having FLoC disabled">
@@ -17,9 +14,9 @@
   </message>
   <message name="IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION" desc="Description of what happens when a user chooses to reset their Federated Learning of Cohorts (FLoC) identifier">
     {NUM_DAYS, plural,
-     =0 {When you reset ID, your current ID will become invalid and a new one will be issued in less than 1 day}
-     =1 {When you reset ID, your current ID will become invalid and a new one will be issued in 1 day}
-     other {When you reset ID, your current ID will become invalid and a new one will be issued in {NUM_DAYS} days}}
+     =0 {You can reset your group at any time. It takes less than a day to join a new group.}
+     =1 {You can reset your group at any time. It takes a day to join a new group.}
+     other {You can reset your group at any time. It takes {NUM_DAYS} days to join a new group.}}
   </message>
   <message name="IDS_PRIVACY_SANDBOX_FLOC_STATUS_ACTIVE" desc="Description of the user's FLoC status when they have the FLoC setting enabled, and the Origin Trial feature enabled, and so FLoC is fully active.">
     Trial is active

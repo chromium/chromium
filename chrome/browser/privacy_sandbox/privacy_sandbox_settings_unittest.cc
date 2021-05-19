@@ -909,14 +909,8 @@ TEST_F(PrivacySandboxSettingsTest, GetFlocIdForDisplay) {
   EXPECT_EQ(std::u16string(u"123456"),
             privacy_sandbox_settings()->GetFlocIdForDisplay());
 
-  // An invalid FLoC id while FLoc is enabled should be interpreted as being
-  // calculated.
-  floc_id.InvalidateIdAndSaveToPrefs(profile()->GetTestingPrefService());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_IN_PROGRESS),
-            privacy_sandbox_settings()->GetFlocIdForDisplay());
-
   // If the FLoC preference, the Sandbox Preference, or the feature is disabled,
-  // the invalid string should be returned.
+  // or the FLoC ID is invalid, the invalid string should be returned.
   feature_list()->Reset();
   feature_list()->InitWithFeatures(
       {}, {blink::features::kInterestCohortAPIOriginTrial});
@@ -935,6 +929,10 @@ TEST_F(PrivacySandboxSettingsTest, GetFlocIdForDisplay) {
       prefs::kPrivacySandboxApisEnabled, true);
   profile()->GetTestingPrefService()->SetBoolean(
       prefs::kPrivacySandboxFlocEnabled, false);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID),
+            privacy_sandbox_settings()->GetFlocIdForDisplay());
+
+  floc_id.InvalidateIdAndSaveToPrefs(profile()->GetTestingPrefService());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID),
             privacy_sandbox_settings()->GetFlocIdForDisplay());
 }

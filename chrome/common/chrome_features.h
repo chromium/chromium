@@ -116,6 +116,8 @@ extern const base::FeatureParam<std::string> kPrivacySandboxSettingsURL;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPrivacySandboxSettings2;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string> kPrivacySandboxSettings2FlocURL;
 
 #if defined(OS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)

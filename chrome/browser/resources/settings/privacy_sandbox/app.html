@@ -83,38 +83,67 @@
     <img class="banner" alt=""
         src="chrome://settings/images/privacy_sandbox_banner.svg">
   </picture>
-  <div>
-    <h2 class="section-header" tabindex="-1">
-      $i18n{privacySandboxPageHeading}
-    </h2>
-  </div>
-  <p>$i18n{privacySandboxPageExplanation1}</p>
-  <p>$i18n{privacySandboxPageExplanation2}</p>
-  <p>$i18n{privacySandboxPageExplanation3}</p>
-  <p>$i18nRaw{privacySandboxPageExplanation4}</p>
+  <template is="dom-if" if="[[!privacySandboxSettings2Enabled_]]">
+    <div>
+      <h2 id="pageHeader" class="section-header" tabindex="-1">
+        $i18n{privacySandboxPageHeading}
+      </h2>
+    </div>
+    <p>$i18n{privacySandboxPageExplanation1}</p>
+    <p>$i18n{privacySandboxPageExplanation2}</p>
+    <p>$i18n{privacySandboxPageExplanation3}</p>
+    <p>$i18nRaw{privacySandboxPageExplanation4}</p>
+  </template>
+  <template is="dom-if" if="[[privacySandboxSettings2Enabled_]]">
+    <p>$i18nRaw{privacySandboxPageExplanation1Phase2}</p>
+    <p>$i18n{privacySandboxPageExplanation2Phase2}</p>
+  </template>
   <div class="card">
     <settings-toggle-button id="apiToggleButton" class="hr"
         pref="{{prefs.privacy_sandbox.apis_enabled}}"
         label="$i18n{privacySandboxPageSettingTitle}"
         on-change="onApiToggleButtonChange_">
     </settings-toggle-button>
-    <div class="cr-row continuation">
-      <div class="secondary">$i18n{privacySandboxPageSettingExplanation1}</div>
-    </div>
-    <div class="cr-row continuation">
-      <div class="secondary">
-        <ul>
-          <li><span>$i18n{privacySandboxPageSettingExplanation2}</span></li>
-          <li><span>$i18n{privacySandboxPageSettingExplanation3}</span></li>
-        </ul>
+    <template is="dom-if" if="[[!privacySandboxSettings2Enabled_]]">
+      <div id="phase1SettingExplanation" class="cr-row continuation">
+        <div class="secondary">
+          $i18n{privacySandboxPageSettingExplanation1}
+        </div>
       </div>
-    </div>
-    <div class="cr-row continuation box-last">
-      <cr-button class="cr-button" id="learnMoreButton" role="button"
-          tabindex="0" on-click="onLearnMoreButtonClick_">
-        $i18n{privacySandboxPageDetails}
-      </cr-button>
-    </div>
+      <div class="cr-row continuation">
+        <div class="secondary">
+          <ul>
+            <li><span>$i18n{privacySandboxPageSettingExplanation2}</span></li>
+            <li><span>$i18n{privacySandboxPageSettingExplanation3}</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="cr-row continuation box-last">
+        <cr-button class="cr-button" id="learnMoreButton" role="button"
+            tabindex="0" on-click="onLearnMoreButtonClick_">
+          $i18n{privacySandboxPageDetails}
+        </cr-button>
+      </div>
+    </template>
+    <template is="dom-if" if="[[privacySandboxSettings2Enabled_]]">
+      <div id="phase2SettingExplanation" class="cr-row continuation">
+        <div class="secondary">
+          $i18n{privacySandboxPageSettingExplanation1Phase2}
+        </div>
+      </div>
+      <div class="cr-row continuation">
+        <div class="secondary">
+          <ul>
+            <li>
+              <span>$i18n{privacySandboxPageSettingExplanation2Phase2}</span>
+            </li>
+            <li>
+              <span>$i18n{privacySandboxPageSettingExplanation3Phase2}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </template>
   </div>
   <template is="dom-if" if="[[privacySandboxSettings2Enabled_]]">
     <div id="flocCard" class="card">
@@ -128,7 +157,7 @@
           label="$i18n{privacySandboxPageFlocHeading}">
       </settings-toggle-button>
       <div class="cr-row continuation">
-        <div class="secondary">$i18n{privacySandboxPageFlocExplanation}</div>
+        <div class="secondary">$i18nRaw{privacySandboxPageFlocExplanation}</div>
       </div>
       <div class="cr-row continuation">
         <div class="label-wrapper">
