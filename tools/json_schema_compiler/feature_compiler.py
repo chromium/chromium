@@ -379,8 +379,8 @@ def DoesNotHaveAllowlistForHostedApps(value):
   # what the allowlist looks like) to a python list of strings.
   def cpp_list_to_list(cpp_list):
     assert type(cpp_list) is str
-    assert cpp_list[0] is '{'
-    assert cpp_list[-1] is '}'
+    assert cpp_list[0] == '{'
+    assert cpp_list[-1] == '}'
     new_list = json.loads('[%s]' % cpp_list[1:-1])
     assert type(new_list) is list
     return new_list
