@@ -313,9 +313,14 @@ TEST_F(UserModelTest, SetCreditCards) {
   autofill::CreditCard credit_card_a(base::GenerateGUID(), kFakeUrl);
   autofill::test::SetCreditCardInfo(&credit_card_a, "Marion Mitchell",
                                     "4111 1111 1111 1111", "01", "2050", "");
+  AutofillCreditCardProto credit_card_a_proto;
+  credit_card_a_proto.set_guid(credit_card_a.guid());
   autofill::CreditCard credit_card_b(base::GenerateGUID(), kFakeUrl);
   autofill::test::SetCreditCardInfo(&credit_card_b, "John Doe",
                                     "4111 1111 1111 1111", "01", "2050", "");
+  AutofillCreditCardProto credit_card_b_proto;
+  credit_card_b_proto.set_guid(credit_card_b.guid());
+
   auto credit_cards =
       std::make_unique<std::vector<std::unique_ptr<autofill::CreditCard>>>();
   credit_cards->emplace_back(
@@ -323,12 +328,10 @@ TEST_F(UserModelTest, SetCreditCards) {
   credit_cards->emplace_back(
       std::make_unique<autofill::CreditCard>(credit_card_b));
   model_.SetAutofillCreditCards(std::move(credit_cards));
-  EXPECT_THAT(
-      model_.GetCreditCard(credit_card_a.guid())->Compare(credit_card_a),
-      Eq(0));
-  EXPECT_THAT(
-      model_.GetCreditCard(credit_card_b.guid())->Compare(credit_card_b),
-      Eq(0));
+  EXPECT_THAT(model_.GetCreditCard(credit_card_a_proto)->Compare(credit_card_a),
+              Eq(0));
+  EXPECT_THAT(model_.GetCreditCard(credit_card_b_proto)->Compare(credit_card_b),
+              Eq(0));
 }
 
 TEST_F(UserModelTest, SetProfiles) {
@@ -403,6 +406,20 @@ TEST_F(UserModelTest, GetProfileByProfileName) {
   AutofillProfileProto profile_proto;
   profile_proto.set_selected_profile_name("contact");
   EXPECT_THAT(model_.GetProfile(profile_proto)->Compare(profile), Eq(0));
+}
+
+TEST_F(UserModelTest, GetSelectedCardWithProto) {
+  autofill::CreditCard credit_card(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetCreditCardInfo(&credit_card, "Marion Mitchell",
+                                    "4111 1111 1111 1111", "01", "2050", "");
+  UserData user_data;
+  model_.SetSelectedCreditCard(
+      std::make_unique<autofill::CreditCard>(credit_card), &user_data);
+  AutofillCreditCardProto credit_card_proto;
+  EXPECT_THAT(model_.GetCreditCard(credit_card_proto), IsNull());
+  credit_card_proto.mutable_selected_credit_card();
+  EXPECT_THAT(model_.GetCreditCard(credit_card_proto)->Compare(credit_card),
+              Eq(0));
 }
 
 TEST_F(UserModelTest, SetSelectedCreditCard) {

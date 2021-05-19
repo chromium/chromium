@@ -163,7 +163,16 @@ bool operator<(const DateProto& value_a, const DateProto& value_b) {
 
 bool operator==(const AutofillCreditCardProto& value_a,
                 const AutofillCreditCardProto& value_b) {
-  return value_a.guid() == value_b.guid();
+  if (value_a.identifier_case() != value_b.identifier_case())
+    return false;
+
+  switch (value_a.identifier_case()) {
+    case AutofillCreditCardProto::kGuid:
+      return value_a.guid() == value_b.guid();
+    case AutofillCreditCardProto::kSelectedCreditCard:
+    case AutofillCreditCardProto::IDENTIFIER_NOT_SET:
+      return true;
+  }
 }
 
 bool operator==(const AutofillProfileProto& value_a,
@@ -232,7 +241,16 @@ std::ostream& operator<<(std::ostream& out, const DateProto& value) {
 
 std::ostream& operator<<(std::ostream& out,
                          const AutofillCreditCardProto& value) {
-  out << value.guid();
+  switch (value.identifier_case()) {
+    case AutofillCreditCardProto::kGuid:
+      out << "guid:" << value.guid();
+      break;
+    case AutofillCreditCardProto::kSelectedCreditCard:
+      out << "selected credit card";
+      break;
+    case AutofillCreditCardProto::IDENTIFIER_NOT_SET:
+      break;
+  }
   return out;
 }
 

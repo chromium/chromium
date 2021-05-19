@@ -161,7 +161,7 @@ bool ValueToString(UserModel* user_model,
           return false;
         }
         auto* credit_card =
-            user_model->GetCreditCard(value->credit_cards().values(i).guid());
+            user_model->GetCreditCard(value->credit_cards().values(i));
         if (!credit_card) {
           DVLOG(2) << "Error evaluating " << __func__
                    << ": credit card not found";
@@ -350,7 +350,7 @@ bool CreateCreditCardResponse(UserModel* user_model,
   }
 
   auto* credit_card =
-      user_model->GetCreditCard(value->credit_cards().values(0).guid());
+      user_model->GetCreditCard(value->credit_cards().values(0));
   if (!credit_card) {
     DVLOG(2) << "Error evaluating " << __func__ << ": card not found for guid "
              << value->credit_cards().values(0).guid();

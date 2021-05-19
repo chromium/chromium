@@ -73,9 +73,9 @@ void UseCreditCardAction::InternalProcessAction(
               << *credit_card_value;
     }
     auto* credit_card = delegate_->GetUserModel()->GetCreditCard(
-        credit_card_value->credit_cards().values(0).guid());
+        credit_card_value->credit_cards().values(0));
     if (credit_card == nullptr) {
-      VLOG(1) << "UseCreditCard failed: card not found for guid "
+      VLOG(1) << "UseCreditCard failed: card not found for: "
               << *credit_card_value;
       EndAction(ClientStatus(PRECONDITION_FAILED));
       return;

@@ -83,6 +83,10 @@ message LoginOptionList {
   repeated LoginOptionProto values = 1;
 }
 
+// Can be used to indicate the presence of a field, without the ambiguity that
+// a boolean field would have.
+message Empty {}
+
 // Next: 29
 enum ProcessedActionStatusProto {
   UNKNOWN_ACTION_STATUS = 0;
@@ -361,8 +365,13 @@ message DateTimeProto {
 }
 
 message AutofillCreditCardProto {
-  // The GUID of the card.
-  optional string guid = 1;
+  oneof identifier {
+    // The GUID of the card.
+    string guid = 1;
+    // The currently selected credit card. Only works if a card was selected in
+    // a previous |CollectUserData| action.
+    Empty selected_credit_card = 2;
+  }
 }
 
 message CreditCardResponseProto {
@@ -373,7 +382,8 @@ message AutofillProfileProto {
   oneof identifier {
     // The GUID of the profile.
     string guid = 1;
-    // The selected profile for the given profile name.
+    // The selected profile for the given profile name. Only works if a profile
+    // was selected in a previous |CollectUserData| action.
     string selected_profile_name = 2;
   }
 }

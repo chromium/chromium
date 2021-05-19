@@ -537,10 +537,6 @@ message ActionsResponseProto {
   reserved 1, 6 to 10;
 }
 
-// Can be used to indicate the presence of a field, without the ambiguity that
-// a boolean field would have.
-message Empty {}
-
 // RPC request to fetch the available trigger scripts for a particular domain.
 message GetTriggerScriptsRequestProto {
   // The exact url for which to fetch the trigger scripts.

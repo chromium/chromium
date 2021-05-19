@@ -206,12 +206,20 @@ void UserModel::SetSelectedAutofillProfile(
 }
 
 const autofill::CreditCard* UserModel::GetCreditCard(
-    const std::string& guid) const {
-  auto it = credit_cards_.find(guid);
-  if (it == credit_cards_.end()) {
-    return nullptr;
+    const AutofillCreditCardProto& proto) const {
+  switch (proto.identifier_case()) {
+    case AutofillCreditCardProto::kGuid: {
+      auto it = credit_cards_.find(proto.guid());
+      if (it == credit_cards_.end()) {
+        return nullptr;
+      }
+      return it->second.get();
+    }
+    case AutofillCreditCardProto::kSelectedCreditCard:
+      return GetSelectedCreditCard();
+    case AutofillCreditCardProto::IDENTIFIER_NOT_SET:
+      return nullptr;
   }
-  return it->second.get();
 }
 
 const autofill::CreditCard* UserModel::GetSelectedCreditCard() const {

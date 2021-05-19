@@ -341,6 +341,8 @@ TEST_F(ShowGenericUiActionTest, RequestCreditCards) {
   autofill::test::SetCreditCardInfo(&credit_card_a, "Marion Mitchell",
                                     "4111 1111 1111 1111", "01", "2050",
                                     profile_a.guid());
+  AutofillCreditCardProto credit_card_a_proto;
+  credit_card_a_proto.set_guid(credit_card_a.guid());
   ON_CALL(mock_personal_data_manager_, GetCreditCards)
       .WillByDefault(
           Return(std::vector<autofill::CreditCard*>({&credit_card_a})));
@@ -350,7 +352,7 @@ TEST_F(ShowGenericUiActionTest, RequestCreditCards) {
   auto action = Run();
 
   EXPECT_THAT(
-      user_model_.GetCreditCard(credit_card_a.guid())->Compare(credit_card_a),
+      user_model_.GetCreditCard(credit_card_a_proto)->Compare(credit_card_a),
       Eq(0));
   ValueProto expected_value;
   expected_value.set_is_client_side_only(true);
@@ -368,15 +370,17 @@ TEST_F(ShowGenericUiActionTest, RequestCreditCards) {
   autofill::test::SetCreditCardInfo(&credit_card_b, "John Doe",
                                     "4111 1111 1111 1111", "01", "2050",
                                     profile_b.guid());
+  AutofillCreditCardProto credit_card_b_proto;
+  credit_card_b_proto.set_guid(credit_card_b.guid());
   ON_CALL(mock_personal_data_manager_, GetCreditCards)
       .WillByDefault(Return(std::vector<autofill::CreditCard*>(
           {&credit_card_a, &credit_card_b})));
   mock_personal_data_manager_.NotifyPersonalDataObserver();
   EXPECT_THAT(
-      user_model_.GetCreditCard(credit_card_a.guid())->Compare(credit_card_a),
+      user_model_.GetCreditCard(credit_card_a_proto)->Compare(credit_card_a),
       Eq(0));
   EXPECT_THAT(
-      user_model_.GetCreditCard(credit_card_b.guid())->Compare(credit_card_b),
+      user_model_.GetCreditCard(credit_card_b_proto)->Compare(credit_card_b),
       Eq(0));
   expected_value.mutable_credit_cards()->add_values()->set_guid(
       credit_card_b.guid());
@@ -389,9 +393,9 @@ TEST_F(ShowGenericUiActionTest, RequestCreditCards) {
       .WillByDefault(
           Return(std::vector<autofill::CreditCard*>({&credit_card_b})));
   mock_personal_data_manager_.NotifyPersonalDataObserver();
-  EXPECT_EQ(user_model_.GetCreditCard(credit_card_a.guid()), nullptr);
+  EXPECT_EQ(user_model_.GetCreditCard(credit_card_a_proto), nullptr);
   EXPECT_THAT(
-      user_model_.GetCreditCard(credit_card_b.guid())->Compare(credit_card_b),
+      user_model_.GetCreditCard(credit_card_b_proto)->Compare(credit_card_b),
       Eq(0));
   expected_value.Clear();
   expected_value.set_is_client_side_only(true);
@@ -407,9 +411,9 @@ TEST_F(ShowGenericUiActionTest, RequestCreditCards) {
       .WillByDefault(Return(std::vector<autofill::CreditCard*>(
           {&credit_card_a, &credit_card_b})));
   mock_personal_data_manager_.NotifyPersonalDataObserver();
-  EXPECT_EQ(user_model_.GetCreditCard(credit_card_a.guid()), nullptr);
+  EXPECT_EQ(user_model_.GetCreditCard(credit_card_a_proto), nullptr);
   EXPECT_THAT(
-      user_model_.GetCreditCard(credit_card_b.guid())->Compare(credit_card_b),
+      user_model_.GetCreditCard(credit_card_b_proto)->Compare(credit_card_b),
       Eq(0));
   expected_value.Clear();
   expected_value.set_is_client_side_only(true);

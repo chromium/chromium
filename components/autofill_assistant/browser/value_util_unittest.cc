@@ -427,5 +427,31 @@ TEST_F(ValueUtilTest, TestEqualOperatorForAutofillProfile) {
   EXPECT_FALSE(profile_a == profile_b);
 }
 
+TEST_F(ValueUtilTest, TestEqualOperatorForAutofillCreditCard) {
+  AutofillCreditCardProto credit_card_a;
+  AutofillCreditCardProto credit_card_b;
+  EXPECT_TRUE(credit_card_a == credit_card_b);
+
+  credit_card_a.set_guid("guid_a");
+  EXPECT_FALSE(credit_card_a == credit_card_b);
+
+  credit_card_b.set_guid("guid_b");
+  EXPECT_FALSE(credit_card_a == credit_card_b);
+
+  credit_card_b.set_guid("guid_a");
+  EXPECT_TRUE(credit_card_a == credit_card_b);
+
+  credit_card_a.clear_guid();
+  credit_card_a.mutable_selected_credit_card();
+  EXPECT_FALSE(credit_card_a == credit_card_b);
+
+  credit_card_b.clear_guid();
+  credit_card_b.mutable_selected_credit_card();
+  EXPECT_TRUE(credit_card_a == credit_card_b);
+
+  credit_card_a.clear_selected_credit_card();
+  EXPECT_FALSE(credit_card_a == credit_card_b);
+}
+
 }  // namespace value_util
 }  // namespace autofill_assistant

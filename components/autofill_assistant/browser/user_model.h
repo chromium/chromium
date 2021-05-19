@@ -103,8 +103,10 @@ class UserModel {
 
   void SetCurrentURL(GURL current_url);
 
-  // Returns the credit card with |guid| or nullptr if there is no such card.
-  const autofill::CreditCard* GetCreditCard(const std::string& guid) const;
+  // Returns the credit card specified by |proto| or nullptr if there is no such
+  // card.
+  const autofill::CreditCard* GetCreditCard(
+      const AutofillCreditCardProto& proto) const;
 
   // Returns the selected credit card or nullptr if no card has been selected.
   const autofill::CreditCard* GetSelectedCreditCard() const;
