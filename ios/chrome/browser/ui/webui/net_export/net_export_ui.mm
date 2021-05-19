@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/grit/dev_ui_components_resources.h"
@@ -81,9 +81,9 @@ class NetExportMessageHandler
   // This is owned by the ApplicationContext.
   net_log::NetExportFileWriter* file_writer_;
 
-  ScopedObserver<net_log::NetExportFileWriter,
-                 net_log::NetExportFileWriter::StateObserver>
-      state_observer_manager_;
+  base::ScopedObservation<net_log::NetExportFileWriter,
+                          net_log::NetExportFileWriter::StateObserver>
+      state_observation_manager_{this};
 
   base::WeakPtrFactory<NetExportMessageHandler> weak_ptr_factory_;
 
@@ -92,7 +92,6 @@ class NetExportMessageHandler
 
 NetExportMessageHandler::NetExportMessageHandler()
     : file_writer_(GetApplicationContext()->GetNetExportFileWriter()),
-      state_observer_manager_(this),
       weak_ptr_factory_(this) {
   file_writer_->Initialize();
 }
@@ -125,8 +124,8 @@ void NetExportMessageHandler::RegisterMessages() {
 void NetExportMessageHandler::OnEnableNotifyUIWithState(
     const base::ListValue* list) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  if (!state_observer_manager_.IsObservingSources()) {
-    state_observer_manager_.Add(file_writer_);
+  if (!state_observation_manager_.IsObserving()) {
+    state_observation_manager_.Observe(file_writer_);
   }
   NotifyUIWithState(file_writer_->GetState());
 }
