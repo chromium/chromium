@@ -431,6 +431,10 @@ crbug.com/844311 [ mac no-swiftshader-gl ] conformance/glsl/misc/fragcolor-fragd
 # Mac AMD failures
 crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/929009 [ mac amd ] conformance/glsl/misc/shader-with-non-reserved-words.html [ RetryOnFailure ]
+crbug.com/1203167 [ mac amd angle-disabled ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
+crbug.com/1203167 [ mac amd angle-opengl ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
+crbug.com/1203167 [ mac amd angle-metal ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
+
 
 # TODO(kbr): uncomment the following expectation after test has
 # been made more robust.
@@ -616,6 +620,7 @@ crbug.com/1056830 [ android android-nexus-5x ] conformance/extensions/webgl-comp
 crbug.com/1099148 [ android android-nexus-5x ] deqp/data/gles2/shaders/swizzles.html [ Skip ]
 crbug.com/1122644 [ android android-nexus-5x ] conformance/textures/misc/texture-upload-size.html [ Skip ]
 crbug.com/1163306 [ android android-nexus-5x ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
+crbug.com/1203167 [ android android-nexus-5x ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 
 # Nexus 6 (Adreno 420)
 crbug.com/499555 [ android android-nexus-6 ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
