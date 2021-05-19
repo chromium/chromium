@@ -204,7 +204,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientDownload.MalwareDeepScanResult.{trigger}"
-    enum="SBClientDownloadCheckResult" expires_after="2021-04-28">
+    enum="SBClientDownloadCheckResult" expires_after="2022-04-28">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -212,6 +212,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     uploaded for scanning. This is logged only for succesful scans. The overall
     rate of successful scans is logged in
     SafeBrowsingBinaryUploadRequest.MalwareResult.
+
+    Warning: this histogram was expired from 2021-04-29 to 2021-05-19; data may
+    be missing.
   </summary>
   <token key="trigger">
     <variant name="AdvancedProtectionPrompt"
