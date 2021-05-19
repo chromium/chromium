@@ -1,11 +1,12 @@
-import { cdp_log as log } from "./log.js";
+import { log } from "./log";
+const logCdp = log("cdp");
 
 export function createCdpClient(cdpBinding) {
     const commandCallbacks = [];
     const messageHandlers = [];
 
     const _onCdpMessage = function (messageStr) {
-        log("received < " + messageStr);
+        logCdp("received < " + messageStr);
 
         const message = JSON.parse(messageStr);
 
@@ -25,7 +26,7 @@ export function createCdpClient(cdpBinding) {
             cdpCommand.id = id;
 
             const cdpCommandStr = JSON.stringify(cdpCommand);
-            log("sent > " + cdpCommandStr);
+            logCdp("sent > " + cdpCommandStr);
             cdpBinding.send(cdpCommandStr);
             return new Promise(resolve => {
                 commandCallbacks[id] = resolve;

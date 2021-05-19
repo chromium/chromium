@@ -1,11 +1,12 @@
-import { bidi_log as log } from "./log.js";
+import { log } from "./log";
+const logBidi = log("bidi");
 
 export function createBidiClient(sendBidiResponse) {
     const messageHandlers = [];
 
     function _sendBidiMessage(message) {
         const messageStr = JSON.stringify(message);
-        log("sent > " + messageStr);
+        logBidi("sent > " + messageStr);
         sendBidiResponse(messageStr);
     }
 
@@ -82,7 +83,7 @@ export function createBidiClient(sendBidiResponse) {
     return {
         // Called via `Runtime.evaluate` from the bidi server side.
         onBidiMessageReceived: async function (messageStr) {
-            log("received < " + messageStr);
+            logBidi("received < " + messageStr);
 
             let commandData;
             try {

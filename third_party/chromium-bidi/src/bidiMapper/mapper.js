@@ -1,7 +1,8 @@
 import { createCdpClient } from "./cdpClient.js";
-import {runBidiCommandsProcessor} from "./bidiCommandsProcessor.js";
+import { runBidiCommandsProcessor } from "./bidiCommandsProcessor.js";
 import { createBidiClient } from "./bidiClient.js";
-import { log } from "./log.js";
+import { log } from "./log";
+const logSystem = log("system");
 
 
 // `currentTargetId` is set by `setCurrentTargetId` + `Runtime.evaluate`.
@@ -12,7 +13,7 @@ const cdpBinding = window.cdp;
 const sendBidiResponse = window.sendBidiResponse;
 // Needed to filter out info related to BiDi target.
 window.setCurrentTargetId = function (targetId) {
-    log("current target ID: " + targetId);
+    logSystem("current target ID: " + targetId);
     currentTargetId = targetId;
 }
 
@@ -25,13 +26,7 @@ const cdpClient = createCdpClient(cdpBinding);
 const bidiClient = createBidiClient(sendBidiResponse);
 
 const runBidiMapper = async function () {
-    window.document.documentElement.innerHTML = `<h1>Bidi mapper runs here!</h1><h2>Don't close.</h2>
-    <h3>BiDi:</h3>
-    <pre id='bidi_log'></pre>
-    <h3>CDP:</h3>
-    <pre id='cdp_log'></pre>
-    <h3>System:</h3>
-    <pre id='system_log'></pre>`;
+    window.document.documentElement.innerHTML = `<h1>Bidi mapper runs here!</h1><h2>Don't close.</h2>`;
 
     window.document.title = "BiDi Mapper";
 
@@ -39,8 +34,7 @@ const runBidiMapper = async function () {
 
     await cdpClient.sendCdpCommand({ "method": "Target.setDiscoverTargets", "params": { "discover": true } });
 
-    console.log("launched");
-    log("launched");
+    logSystem("launched");
     bidiClient.sendBidiMessage("launched");
 };
 

@@ -24,6 +24,7 @@
     "ws": "^7.4.5"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^8.2.1",
     "@types/ws": "^7.4.4"
   }
 }
