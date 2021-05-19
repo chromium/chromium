@@ -28,6 +28,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/browser.h"
@@ -54,6 +55,9 @@ namespace {
 
 const char kUptime[] = "uptime";
 const char kDisk[] = "disk";
+
+// The pointer to this object is used as a perfetto async event id.
+static const char kBootTimes[] = "BootTimes";
 
 RenderWidgetHost* GetRenderWidgetHost(NavigationController* tab) {
   WebContents* web_contents = tab->GetWebContents();
@@ -292,6 +296,16 @@ void BootTimesRecorder::WriteTimes(const std::string base_name,
   std::string output =
       base::StringPrintf("%s: %.2f", uma_name.c_str(), total.InSecondsF());
   base::Time prev = first;
+  // Convert base::Time to base::TimeTicks for tracing.
+  auto time2timeticks = [](const base::Time& ts) {
+    return base::TimeTicks::Now() - (base::Time::Now() - ts);
+  };
+  // Send first event to name the track:
+  // "In Chrome, we usually don't bother setting explicit track names. If none
+  // is provided, the track is named after the first event on the track."
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      "startup", kBootTimes, TRACE_ID_LOCAL(kBootTimes), time2timeticks(prev));
+
   for (unsigned int i = 0; i < login_times.size(); ++i) {
     TimeMarker tm = login_times[i];
     base::TimeDelta since_first = tm.time() - first;
@@ -316,9 +330,17 @@ void BootTimesRecorder::WriteTimes(const std::string base_name,
             since_first.InSecondsF(),
             since_prev.InSecondsF(),
             name.data());
+    TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+        "startup", name.c_str(), TRACE_ID_LOCAL(kBootTimes),
+        time2timeticks(prev));
+    TRACE_EVENT_COPY_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+        "startup", name.c_str(), TRACE_ID_LOCAL(kBootTimes),
+        time2timeticks(tm.time()));
     prev = tm.time();
   }
   output += '\n';
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "startup", kBootTimes, TRACE_ID_LOCAL(kBootTimes), time2timeticks(prev));
 
   base::WriteFile(log_path.Append(base_name), output.data(), output.size());
 }
