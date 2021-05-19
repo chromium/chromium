@@ -58,7 +58,7 @@ WebUIMainFrameObserver::~WebUIMainFrameObserver() = default;
 void WebUIMainFrameObserver::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   // Only disallow JavaScript on cross-document navigations in the main frame.
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted() ||
       navigation_handle->IsSameDocument()) {
     return;

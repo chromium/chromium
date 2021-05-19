@@ -69,6 +69,12 @@ WebUIImpl::WebUIImpl(WebContentsImpl* contents, RenderFrameHostImpl* frame_host)
       web_contents_(contents),
       web_contents_observer_(new WebUIMainFrameObserver(this, contents)) {
   DCHECK(contents);
+
+  // Assert that we can only open webui for the active or speculative pages.
+  DCHECK(frame_host->lifecycle_state() ==
+             RenderFrameHostImpl::LifecycleStateImpl::kActive ||
+         frame_host->lifecycle_state() ==
+             RenderFrameHostImpl::LifecycleStateImpl::kSpeculative);
 }
 
 WebUIImpl::~WebUIImpl() {

@@ -8,6 +8,7 @@
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webui/url_data_manager_backend.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -69,6 +70,14 @@ void PrerenderProcessor::Start(
   // after the PrerenderProcessor was created.
   if (initiator_render_frame_host_.GetLastCommittedOrigin() !=
       initiator_origin_) {
+    return;
+  }
+
+  // Report bad message if asked to prerender webUI.
+  std::string scheme = attributes->url.scheme();
+  const auto& webui_schemes = URLDataManagerBackend::GetWebUISchemes();
+  if (base::Contains(webui_schemes, scheme)) {
+    mojo::ReportBadMessage("PP_WEBUI");
     return;
   }
 
