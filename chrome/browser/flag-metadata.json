@@ -5008,8 +5008,8 @@
   },
   {
     "name": "touch-selection-strategy",
-    "owners": [ "omrilio" ],
-    "expiry_milestone": 80
+    "owners": [ "dovizu@google.com" ],
+    "expiry_milestone": 99
   },
   {
     "name": "trace-upload-url",
