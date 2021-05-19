@@ -481,6 +481,9 @@ class CORE_EXPORT NGFragmentItem {
   void RecalcInkOverflow(const NGInlineCursor& cursor,
                          PhysicalRect* self_and_contents_rect_out);
 
+  AffineTransform BuildSVGTransformForTextPath() const;
+  AffineTransform BuildSVGTransformForLengthAdjust() const;
+
   const LayoutObject* layout_object_;
 
   // TODO(kojii): We can make them sub-classes if we need to make the vector of
