@@ -457,12 +457,20 @@ apps::mojom::OptionalBool IsResizeLocked(ArcAppListPrefs* prefs,
   if (!arc_service_manager) {
     return apps::mojom::OptionalBool::kUnknown;
   }
+
+  // If we don't have the connection (e.g. for non-supported Android versions),
+  // returns unknown.
+  auto* compatibility_mode =
+      arc_service_manager->arc_bridge_service()->compatibility_mode();
+  if (!compatibility_mode->IsConnected()) {
+    return apps::mojom::OptionalBool::kUnknown;
+  }
+
   // Check if |SetResizeLockState| is available to see if Android is ready to
   // be synchronized. Otherwise we need to hide the corresponding setting by
   // returning unknown.
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_service_manager->arc_bridge_service()->compatibility_mode(),
-      SetResizeLockState);
+  auto* instance =
+      ARC_GET_INSTANCE_FOR_METHOD(compatibility_mode, SetResizeLockState);
   if (!instance) {
     return apps::mojom::OptionalBool::kUnknown;
   }

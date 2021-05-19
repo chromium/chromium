@@ -1056,9 +1056,12 @@ void ArcAppListPrefs::SetResizeLockState(const std::string& app_id,
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   if (!arc_service_manager)
     return;
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_service_manager->arc_bridge_service()->compatibility_mode(),
-      SetResizeLockState);
+  auto* compatibility_mode =
+      arc_service_manager->arc_bridge_service()->compatibility_mode();
+  if (!compatibility_mode->IsConnected())
+    return;
+  auto* instance =
+      ARC_GET_INSTANCE_FOR_METHOD(compatibility_mode, SetResizeLockState);
   if (!instance)
     return;
 
