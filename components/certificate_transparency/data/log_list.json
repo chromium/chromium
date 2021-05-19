@@ -608,6 +608,22 @@
       ],
       "logs": [
         {
+          "description": "Trust Asia CT2021",
+          "log_id": "qNxS9j1rJCXlMeN89ORKcU8UKiCAOw0E0uLuBmR5SiM=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAESdAfC+h1SZNsSARs188n/dCiNYjGSgkT7avLYe1mmXJzzHhsmxmAorHtOzhDkFgaCSCrUPrXdunK946eyIeSmA==",
+          "url": "https://ct2021.trustasia.com/log2021/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2021-05-11T07:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2021-01-01T00:00:00Z",
+            "end_exclusive": "2022-01-01T00:00:00Z"
+          }
+        },
+        {
           "description": "Trust Asia Log2021",
           "log_id": "Z422Wz50Q7bzo3DV4TqxtDvgoNNR98p0IlDHxvpRqIo=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEjwlzYzssDEG4DpPoOS73Ewsdohc0MzaohzRmUz9dih7Z8SHyyviKmnQL1KKfY6VGFnt0ulbVupzGXSaYUAoupA==",
