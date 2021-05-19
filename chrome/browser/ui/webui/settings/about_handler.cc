@@ -417,7 +417,7 @@ void AboutHandler::PromoteUpdater(const base::ListValue* args) {
 #endif
 
 void AboutHandler::HandleOpenFeedbackDialog(const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   chrome::OpenFeedbackDialog(browser,
@@ -425,7 +425,7 @@ void AboutHandler::HandleOpenFeedbackDialog(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleOpenHelpPage(const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   chrome::ShowHelp(browser, chrome::HELP_SOURCE_WEBUI);
@@ -433,7 +433,7 @@ void AboutHandler::HandleOpenHelpPage(const base::ListValue* args) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void AboutHandler::HandleOpenDiagnostics(const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   chrome::ShowDiagnosticsApp(profile_);
 }
 
@@ -451,7 +451,7 @@ void AboutHandler::HandleCheckInternetConnection(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleLaunchReleaseNotes(const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   // We can always show the release notes since the Help app caches it, or can
   // show an appropriate error state (e.g. No internet connection).
   base::RecordAction(base::UserMetricsAction("ReleaseNotes.LaunchedAboutPage"));
@@ -460,7 +460,7 @@ void AboutHandler::HandleLaunchReleaseNotes(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleOpenOsHelpPage(const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   chrome::ShowHelp(browser, chrome::HELP_SOURCE_WEBUI_CHROME_OS);
