@@ -327,7 +327,7 @@ WebEngineDevToolsController::CreateFromCommandLine(
   if (command_line.HasSwitch(switches::kRemoteDebuggingPort)) {
     // Set up DevTools to listen on all network routes on the command-line
     // provided port.
-    base::StringPiece command_line_port_value =
+    std::string command_line_port_value =
         command_line.GetSwitchValueASCII(switches::kRemoteDebuggingPort);
     int parsed_port = 0;
 
