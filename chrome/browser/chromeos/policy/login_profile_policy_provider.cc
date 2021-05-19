@@ -249,7 +249,7 @@ void LoginProfilePolicyProvider::UpdateFromDevicePolicy() {
 
     // |policy_value| is expected to be a valid value for the
     // PowerManagementIdleSettings policy now.
-    if (!policy_value->empty()) {
+    if (!policy_value->DictEmpty()) {
       ApplyValueAsMandatoryPolicy(policy_value.get(),
                                   key::kPowerManagementIdleSettings,
                                   &user_policy_map);

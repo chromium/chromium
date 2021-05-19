@@ -562,7 +562,7 @@ TEST_F(ChildStatusCollectorTest, ReportingActivityTimesIdleTransitions) {
 
 TEST_F(ChildStatusCollectorTest, ActivityKeptInPref) {
   EXPECT_TRUE(
-      pref_service()->GetDictionary(prefs::kUserActivityTimes)->empty());
+      pref_service()->GetDictionary(prefs::kUserActivityTimes)->DictEmpty());
   task_environment_.AdvanceClock(kHour);
 
   DeviceStateTransitions test_states[] = {
@@ -579,7 +579,7 @@ TEST_F(ChildStatusCollectorTest, ActivityKeptInPref) {
   SimulateStateChanges(test_states,
                        sizeof(test_states) / sizeof(DeviceStateTransitions));
   EXPECT_FALSE(
-      pref_service()->GetDictionary(prefs::kUserActivityTimes)->empty());
+      pref_service()->GetDictionary(prefs::kUserActivityTimes)->DictEmpty());
 
   // Process the list a second time after restarting the collector. It should be
   // able to count the active periods found by the original collector, because
@@ -630,7 +630,7 @@ TEST_F(ChildStatusCollectorTest, BeforeDayStart) {
                       TimeDelta::FromHours(4);
   FastForwardTo(initial_time);
   EXPECT_TRUE(
-      pref_service()->GetDictionary(prefs::kUserActivityTimes)->empty());
+      pref_service()->GetDictionary(prefs::kUserActivityTimes)->DictEmpty());
 
   DeviceStateTransitions test_states[] = {
       DeviceStateTransitions::kEnterSessionActive,

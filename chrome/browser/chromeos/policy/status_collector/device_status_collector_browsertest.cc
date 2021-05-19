@@ -1270,8 +1270,8 @@ TEST_F(DeviceStatusCollectorTest, StateKeptInPref) {
 }
 
 TEST_F(DeviceStatusCollectorTest, ActivityNotWrittenToProfilePref) {
-  EXPECT_TRUE(
-      profile_pref_service_.GetDictionary(prefs::kUserActivityTimes)->empty());
+  EXPECT_TRUE(profile_pref_service_.GetDictionary(prefs::kUserActivityTimes)
+                  ->DictEmpty());
 
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
@@ -1284,8 +1284,8 @@ TEST_F(DeviceStatusCollectorTest, ActivityNotWrittenToProfilePref) {
 
   // Nothing should be written to profile pref service, because it is only used
   // for consumer reporting.
-  EXPECT_TRUE(
-      profile_pref_service_.GetDictionary(prefs::kUserActivityTimes)->empty());
+  EXPECT_TRUE(profile_pref_service_.GetDictionary(prefs::kUserActivityTimes)
+                  ->DictEmpty());
 }
 
 TEST_F(DeviceStatusCollectorTest, MaxStoredPeriods) {
