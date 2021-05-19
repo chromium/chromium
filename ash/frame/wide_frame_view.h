@@ -6,6 +6,7 @@
 #define ASH_FRAME_WIDE_FRAME_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/frame/frame_context_menu_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
@@ -38,7 +39,8 @@ class ASH_EXPORT WideFrameView
     : public views::WidgetDelegateView,
       public aura::WindowObserver,
       public display::DisplayObserver,
-      public chromeos::ImmersiveFullscreenControllerDelegate {
+      public chromeos::ImmersiveFullscreenControllerDelegate,
+      public FrameContextMenuController::Delegate {
  public:
   explicit WideFrameView(views::Widget* target);
   ~WideFrameView() override;
@@ -75,6 +77,10 @@ class ASH_EXPORT WideFrameView
   void SetVisibleFraction(double visible_fraction) override;
   std::vector<gfx::Rect> GetVisibleBoundsInScreen() const override;
 
+  // FrameContextMenuController::Delegate:
+  bool ShouldShowContextMenu(views::View* source,
+                             const gfx::Point& screen_coords_point) override;
+
   HeaderView* GetTargetHeaderView();
 
   // The target widget this frame will control.
@@ -83,6 +89,8 @@ class ASH_EXPORT WideFrameView
   std::unique_ptr<views::Widget> widget_;
 
   HeaderView* header_view_ = nullptr;
+
+  std::unique_ptr<FrameContextMenuController> frame_context_menu_controller_;
 
   // Called when |target_|'s "paint as active" state has changed.
   void PaintAsActiveChanged();

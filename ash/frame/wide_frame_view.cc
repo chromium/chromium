@@ -85,7 +85,10 @@ void WideFrameView::SetCaptionButtonModel(
   header_view_->UpdateCaptionButtons();
 }
 
-WideFrameView::WideFrameView(views::Widget* target) : target_(target) {
+WideFrameView::WideFrameView(views::Widget* target)
+    : target_(target),
+      frame_context_menu_controller_(
+          std::make_unique<FrameContextMenuController>(target_, this)) {
   // WideFrameView is owned by its client, not by Views.
   SetOwnedByWidget(false);
   display::Screen::GetScreen()->AddObserver(this);
@@ -97,6 +100,8 @@ WideFrameView::WideFrameView(views::Widget* target) : target_(target) {
   header_view_ = new HeaderView(target, /*frame view=*/nullptr);
   AddChildView(header_view_);
   GetTargetHeaderView()->SetShouldPaintHeader(false);
+  header_view_->set_context_menu_controller(
+      frame_context_menu_controller_.get());
 
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
@@ -219,6 +224,16 @@ void WideFrameView::SetVisibleFraction(double visible_fraction) {
 
 std::vector<gfx::Rect> WideFrameView::GetVisibleBoundsInScreen() const {
   return header_view_->GetVisibleBoundsInScreen();
+}
+
+bool WideFrameView::ShouldShowContextMenu(
+    View* source,
+    const gfx::Point& screen_coords_point) {
+  gfx::Point point_in_header_coords(screen_coords_point);
+  views::View::ConvertPointToTarget(this, header_view_,
+                                    &point_in_header_coords);
+  return header_view_->HitTestRect(
+      gfx::Rect(point_in_header_coords, gfx::Size(1, 1)));
 }
 
 HeaderView* WideFrameView::GetTargetHeaderView() {

@@ -220,7 +220,9 @@ END_METADATA
 NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
     : frame_(frame),
       header_view_(new HeaderView(frame, this)),
-      overlay_view_(new OverlayView(header_view_)) {
+      overlay_view_(new OverlayView(header_view_)),
+      frame_context_menu_controller_(
+          std::make_unique<FrameContextMenuController>(frame, this)) {
   DCHECK(frame_);
 
   header_view_->set_immersive_mode_changed_callback(base::BindRepeating(
@@ -250,7 +252,8 @@ NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
 
   frame_window->SetProperty(kNonClientFrameViewAshKey, this);
 
-  header_view_->set_context_menu_controller(this);
+  header_view_->set_context_menu_controller(
+      frame_context_menu_controller_.get());
 }
 
 NonClientFrameViewAsh::~NonClientFrameViewAsh() = default;
@@ -365,47 +368,24 @@ gfx::Size NonClientFrameViewAsh::GetMaximumSize() const {
   return gfx::Size(width, height);
 }
 
-void NonClientFrameViewAsh::ShowContextMenuForViewImpl(
-    View* source,
-    const gfx::Point& point,
-    ui::MenuSourceType source_type) {
-  if (!MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu())
-    return;
-
+bool NonClientFrameViewAsh::ShouldShowContextMenu(
+    views::View* source,
+    const gfx::Point& screen_coords_point) {
   if (header_view_->in_immersive_mode()) {
     // If the `header_view_` is in immersive mode, then a `NonClientHitTest`
     // will return HTCLIENT so manually check whether `point` lies inside
     // `header_view_`.
-    gfx::Point point_in_header_coords(point);
+    gfx::Point point_in_header_coords(screen_coords_point);
     views::View::ConvertPointToTarget(this, header_view_,
                                       &point_in_header_coords);
-    if (!header_view_->HitTestRect(
-            gfx::Rect(point_in_header_coords, gfx::Size(1, 1)))) {
-      return;
-    }
-  } else {
-    // Only show the context menu if `point` is in the caption area.
-    gfx::Point point_in_view_coords(point);
-    views::View::ConvertPointFromScreen(this, &point_in_view_coords);
-    if (NonClientHitTest(point_in_view_coords) != HTCAPTION)
-      return;
+    return header_view_->HitTestRect(
+        gfx::Rect(point_in_header_coords, gfx::Size(1, 1)));
   }
 
-  auto* widget = GetWidget();
-  if (!move_to_desks_menu_model_) {
-    move_to_desks_menu_model_ =
-        std::make_unique<chromeos::MoveToDesksMenuModel>(
-            std::make_unique<MoveToDesksMenuDelegate>(widget),
-            /*add_title=*/true);
-  }
-
-  // Recreate the `menu_runner_` so the checked label of
-  // `move_to_desks_menu_model_` will be updated.
-  menu_runner_ = std::make_unique<views::MenuRunner>(
-      move_to_desks_menu_model_.get(), views::MenuRunner::CONTEXT_MENU);
-  menu_runner_->RunMenuAt(widget, /*button_controller=*/nullptr,
-                          gfx::Rect(point, gfx::Size()),
-                          views::MenuAnchorPosition::kTopLeft, source_type);
+  // Only show the context menu if `screen_coords_point` is in the caption area.
+  gfx::Point point_in_view_coords(screen_coords_point);
+  views::View::ConvertPointFromScreen(this, &point_in_view_coords);
+  return NonClientHitTest(point_in_view_coords) == HTCAPTION;
 }
 
 void NonClientFrameViewAsh::SetShouldPaintHeader(bool paint) {

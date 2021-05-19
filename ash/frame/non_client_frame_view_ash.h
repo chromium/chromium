@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/frame/frame_context_menu_controller.h"
 #include "ash/frame/header_view.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/macros.h"
@@ -15,19 +16,16 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/context_menu_controller.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
 namespace chromeos {
 class FrameCaptionButtonContainerView;
 class ImmersiveFullscreenController;
-class MoveToDesksMenuModel;
 }
 
 namespace views {
 class Widget;
-class MenuRunner;
 }
 
 namespace ash {
@@ -40,8 +38,9 @@ class NonClientFrameViewAshImmersiveHelper;
 // The window header overlay slides onscreen when the user hovers the mouse at
 // the top of the screen. See also views::CustomFrameView and
 // BrowserNonClientFrameViewAsh.
-class ASH_EXPORT NonClientFrameViewAsh : public views::NonClientFrameView,
-                                         public views::ContextMenuController {
+class ASH_EXPORT NonClientFrameViewAsh
+    : public views::NonClientFrameView,
+      public FrameContextMenuController::Delegate {
  public:
   METADATA_HEADER(NonClientFrameViewAsh);
 
@@ -95,10 +94,9 @@ class ASH_EXPORT NonClientFrameViewAsh : public views::NonClientFrameView,
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
 
-  // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  // FrameContextMenuController::Delegate:
+  bool ShouldShowContextMenu(views::View* source,
+                             const gfx::Point& screen_coords_point) override;
 
   // If |paint| is false, we should not paint the header. Used for overview mode
   // with OnOverviewModeStarting() and OnOverviewModeEnded() to hide/show the
@@ -156,8 +154,7 @@ class ASH_EXPORT NonClientFrameViewAsh : public views::NonClientFrameView,
 
   std::unique_ptr<NonClientFrameViewAshImmersiveHelper> immersive_helper_;
 
-  std::unique_ptr<chromeos::MoveToDesksMenuModel> move_to_desks_menu_model_;
-  std::unique_ptr<views::MenuRunner> menu_runner_;
+  std::unique_ptr<FrameContextMenuController> frame_context_menu_controller_;
 
   base::CallbackListSubscription paint_as_active_subscription_ =
       frame_->RegisterPaintAsActiveChangedCallback(
