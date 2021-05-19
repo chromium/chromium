@@ -288,37 +288,38 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return LayoutObjectFactory::CreateBlockFlow(*element, style, legacy);
     case EDisplay::kTable:
     case EDisplay::kInlineTable:
-      return LayoutObjectFactory::CreateTable(*element, legacy);
+      return LayoutObjectFactory::CreateTable(*element, style, legacy);
     case EDisplay::kTableRowGroup:
     case EDisplay::kTableHeaderGroup:
     case EDisplay::kTableFooterGroup:
-      return LayoutObjectFactory::CreateTableSection(*element, legacy);
+      return LayoutObjectFactory::CreateTableSection(*element, style, legacy);
     case EDisplay::kTableRow:
-      return LayoutObjectFactory::CreateTableRow(*element, legacy);
+      return LayoutObjectFactory::CreateTableRow(*element, style, legacy);
     case EDisplay::kTableColumnGroup:
     case EDisplay::kTableColumn:
-      return LayoutObjectFactory::CreateTableColumn(*element, legacy);
+      return LayoutObjectFactory::CreateTableColumn(*element, style, legacy);
     case EDisplay::kTableCell:
-      return LayoutObjectFactory::CreateTableCell(*element, legacy);
+      return LayoutObjectFactory::CreateTableCell(*element, style, legacy);
     case EDisplay::kTableCaption:
-      return LayoutObjectFactory::CreateTableCaption(*element, legacy);
+      return LayoutObjectFactory::CreateTableCaption(*element, style, legacy);
     case EDisplay::kWebkitBox:
     case EDisplay::kWebkitInlineBox:
       if (style.IsDeprecatedWebkitBoxWithVerticalLineClamp()) {
-        return LayoutObjectFactory::CreateBlockForLineClamp(*element, legacy);
+        return LayoutObjectFactory::CreateBlockForLineClamp(*element, style,
+                                                            legacy);
       }
-      return LayoutObjectFactory::CreateFlexibleBox(*element, legacy);
+      return LayoutObjectFactory::CreateFlexibleBox(*element, style, legacy);
     case EDisplay::kFlex:
     case EDisplay::kInlineFlex:
       UseCounter::Count(element->GetDocument(), WebFeature::kCSSFlexibleBox);
-      return LayoutObjectFactory::CreateFlexibleBox(*element, legacy);
+      return LayoutObjectFactory::CreateFlexibleBox(*element, style, legacy);
     case EDisplay::kGrid:
     case EDisplay::kInlineGrid:
       UseCounter::Count(element->GetDocument(), WebFeature::kCSSGridLayout);
-      return LayoutObjectFactory::CreateGrid(*element, legacy);
+      return LayoutObjectFactory::CreateGrid(*element, style, legacy);
     case EDisplay::kMath:
     case EDisplay::kBlockMath:
-      return LayoutObjectFactory::CreateMath(*element, legacy);
+      return LayoutObjectFactory::CreateMath(*element, style, legacy);
     case EDisplay::kLayoutCustom:
     case EDisplay::kInlineLayoutCustom:
       DCHECK(RuntimeEnabledFeatures::LayoutNGEnabled());

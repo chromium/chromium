@@ -1227,7 +1227,7 @@ LayoutTableCell* LayoutTableCell::CreateAnonymous(
     scoped_refptr<ComputedStyle> style,
     LegacyLayout legacy) {
   LayoutBlockFlow* layout_object =
-      LayoutObjectFactory::CreateTableCell(*document, legacy);
+      LayoutObjectFactory::CreateTableCell(*document, *style, legacy);
   layout_object->SetDocumentForAnonymous(document);
   layout_object->SetStyle(std::move(style));
   return To<LayoutTableCell>(layout_object);

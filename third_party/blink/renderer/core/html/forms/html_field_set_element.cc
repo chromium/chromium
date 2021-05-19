@@ -121,7 +121,7 @@ const AtomicString& HTMLFieldSetElement::FormControlType() const {
 LayoutObject* HTMLFieldSetElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  return LayoutObjectFactory::CreateFieldset(*this, legacy);
+  return LayoutObjectFactory::CreateFieldset(*this, style, legacy);
 }
 
 LayoutBox* HTMLFieldSetElement::GetLayoutBoxForScrolling() const {

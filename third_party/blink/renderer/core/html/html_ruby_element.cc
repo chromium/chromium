@@ -20,7 +20,7 @@ LayoutObject* HTMLRubyElement::CreateLayoutObject(const ComputedStyle& style,
     return new LayoutRubyAsInline(this);
   if (style.Display() == EDisplay::kBlock) {
     UseCounter::Count(GetDocument(), WebFeature::kRubyElementWithDisplayBlock);
-    return LayoutObjectFactory::CreateRubyAsBlock(this, legacy);
+    return LayoutObjectFactory::CreateRubyAsBlock(this, style, legacy);
   }
   return LayoutObject::CreateObject(this, style, legacy);
 }

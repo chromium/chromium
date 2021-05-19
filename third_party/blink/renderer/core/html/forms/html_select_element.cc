@@ -406,7 +406,7 @@ LayoutObject* HTMLSelectElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy_layout) {
   if (UsesMenuList())
-    return LayoutObjectFactory::CreateFlexibleBox(*this, legacy_layout);
+    return LayoutObjectFactory::CreateFlexibleBox(*this, style, legacy_layout);
   return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy_layout);
 }
 

@@ -131,7 +131,8 @@ bool TextControlInnerEditorElement::TypeShouldForceLegacyLayout() const {
 LayoutObject* TextControlInnerEditorElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  return LayoutObjectFactory::CreateTextControlInnerEditor(*this, legacy);
+  return LayoutObjectFactory::CreateTextControlInnerEditor(*this, style,
+                                                           legacy);
 }
 
 scoped_refptr<ComputedStyle>
