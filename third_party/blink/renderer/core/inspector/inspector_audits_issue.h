@@ -94,6 +94,10 @@ class CORE_EXPORT AuditsIssue {
       const absl::optional<String>& request_id = absl::nullopt,
       const absl::optional<String>& invalid_parameter = absl::nullopt);
 
+  static void ReportNavigatorUserAgentAccess(
+      ExecutionContext* execution_context,
+      WTF::String url);
+
  private:
   explicit AuditsIssue(std::unique_ptr<protocol::Audits::InspectorIssue> issue);
 

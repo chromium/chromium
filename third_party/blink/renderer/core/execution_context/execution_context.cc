@@ -254,6 +254,13 @@ void ExecutionContext::FileSharedArrayBufferCreationIssue() {
   AddInspectorIssue(std::move(issue));
 }
 
+void ExecutionContext::ReportNavigatorUserAgentAccess() {
+  if (has_filed_navigator_user_agent_issue_)
+    return;
+  has_filed_navigator_user_agent_issue_ = true;
+  AuditsIssue::ReportNavigatorUserAgentAccess(this, Url().GetString());
+}
+
 void ExecutionContext::AddConsoleMessageImpl(mojom::ConsoleMessageSource source,
                                              mojom::ConsoleMessageLevel level,
                                              const String& message,

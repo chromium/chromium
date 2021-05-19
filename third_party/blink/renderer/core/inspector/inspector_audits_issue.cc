@@ -182,4 +182,28 @@ void AuditsIssue::ReportAttributionIssue(
   reporting_execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
 
+void AuditsIssue::ReportNavigatorUserAgentAccess(
+    ExecutionContext* execution_context,
+    String url) {
+  auto navigator_user_agent_details =
+      protocol::Audits::NavigatorUserAgentIssueDetails::create()
+          .setUrl(url)
+          .build();
+  auto location = SourceLocation::Capture(execution_context);
+  if (location) {
+    navigator_user_agent_details->setLocation(
+        CreateProtocolLocation(*location));
+  }
+  auto details = protocol::Audits::InspectorIssueDetails::create()
+                     .setNavigatorUserAgentIssueDetails(
+                         std::move(navigator_user_agent_details))
+                     .build();
+  auto issue =
+      protocol::Audits::InspectorIssue::create()
+          .setCode(
+              protocol::Audits::InspectorIssueCodeEnum::NavigatorUserAgentIssue)
+          .setDetails(std::move(details))
+          .build();
+  execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
+}
 }  // namespace blink

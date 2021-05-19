@@ -746,6 +746,11 @@ experimental domain Audits
       Page.FrameId frameId
       Network.LoaderId loaderId
 
+  type NavigatorUserAgentIssueDetails extends object
+    properties
+      string url
+      optional SourceCodeLocation location
+
   # A unique identifier for the type of issue. Each type may use one of the
   # optional fields in InspectorIssueDetails to convey more specific
   # information about the kind of issue.
@@ -762,6 +767,7 @@ experimental domain Audits
       CorsIssue
       AttributionReportingIssue
       QuirksModeIssue
+      NavigatorUserAgentIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -779,6 +785,7 @@ experimental domain Audits
       optional CorsIssueDetails corsIssueDetails
       optional AttributionReportingIssueDetails attributionReportingIssueDetails
       optional QuirksModeIssueDetails quirksModeIssueDetails
+      optional NavigatorUserAgentIssueDetails navigatorUserAgentIssueDetails
 
   # An inspector issue reported from the back-end.
   type InspectorIssue extends object

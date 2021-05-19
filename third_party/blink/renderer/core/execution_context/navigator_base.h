@@ -27,6 +27,8 @@
 #include "third_party/blink/renderer/core/frame/navigator_language.h"
 #include "third_party/blink/renderer/core/frame/navigator_on_line.h"
 #include "third_party/blink/renderer/core/frame/navigator_ua.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
+#include "third_party/blink/renderer/core/inspector/protocol/Audits.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -51,8 +53,11 @@ class NavigatorBase : public ScriptWrappable,
 
   // NavigatorID override
   String userAgent() const override {
-    return GetExecutionContext() ? GetExecutionContext()->UserAgent()
-                                 : String();
+    if (!GetExecutionContext())
+      return String();
+
+    GetExecutionContext()->ReportNavigatorUserAgentAccess();
+    return GetExecutionContext()->UserAgent();
   }
 
   void Trace(Visitor* visitor) const override {

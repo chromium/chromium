@@ -59,6 +59,9 @@ String NavigatorID::appVersion() {
 }
 
 String NavigatorID::platform() const {
+  // Call userAgent() so the usage can be reported
+  userAgent();
+
   // If the User-Agent string is frozen, platform should be a value
   // matching the frozen string per https://github.com/WICG/ua-client-hints. See
   // content::frozen_user_agent_strings.
