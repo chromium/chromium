@@ -2871,12 +2871,12 @@ String NetworkHandler::BuildPrivateNetworkRequestPolicy(
   switch (policy) {
     case network::mojom::PrivateNetworkRequestPolicy::kAllow:
       return protocol::Network::PrivateNetworkRequestPolicyEnum::Allow;
-    case network::mojom::PrivateNetworkRequestPolicy::
-        kBlockFromInsecureToMorePrivate:
+    case network::mojom::PrivateNetworkRequestPolicy::kBlock:
+      // TODO(https://crbug.com/1141824): Fix this.
       return protocol::Network::PrivateNetworkRequestPolicyEnum::
           BlockFromInsecureToMorePrivate;
-    case network::mojom::PrivateNetworkRequestPolicy::
-        kWarnFromInsecureToMorePrivate:
+    case network::mojom::PrivateNetworkRequestPolicy::kWarn:
+      // TODO(https://crbug.com/1141824): Fix this.
       return protocol::Network::PrivateNetworkRequestPolicyEnum::
           WarnFromInsecureToMorePrivate;
   }

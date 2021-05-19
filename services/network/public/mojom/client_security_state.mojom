@@ -9,21 +9,26 @@ import "services/network/public/mojom/ip_address_space.mojom";
 
 // How to treat private network requests.
 //
-// Private network requests are any requests to a resource served by a
-// non-public IP address.
+// Private network requests are requests from a less-private IP address space
+// to a more-private IP address space. Concretely:
 //
-// See the CORS-RFC1918 spec for details: https://wicg.github.io/cors-rfc1918.
+//  - unknown to private
+//  - unknown to local
+//  - public to private
+//  - public to local
+//  - private to local
+//
+// See the definition in the Private Network Access specification:
+// https://wicg.github.io/private-network-access/#ip-address-space
 enum PrivateNetworkRequestPolicy {
-  // Allow all requests.
+  // Allow the requests.
   kAllow,
 
-  // Forbid requests to more-private address spaces than that of the initiator,
-  // when the initiator is not in a secure context.
-  kBlockFromInsecureToMorePrivate,
+  // Allow the requests, and display a warning in DevTools.
+  kWarn,
 
-  // Warn about requests to more-private address spaces than that of the
-  // initiator when the initiator is not in a secure context.
-  kWarnFromInsecureToMorePrivate,
+  // Block the requests with a CORS error.
+  kBlock,
 };
 
 struct ClientSecurityState {

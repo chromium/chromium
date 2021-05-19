@@ -1731,8 +1731,7 @@ class CONTENT_EXPORT NavigationRequest
   // https://crbug.com/1154729
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
-      network::mojom::PrivateNetworkRequestPolicy::
-          kWarnFromInsecureToMorePrivate;
+      network::mojom::PrivateNetworkRequestPolicy::kWarn;
 
   // Messages to be printed on the console in the target RenderFrameHost of this
   // NavigationRequest.

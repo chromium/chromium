@@ -1247,12 +1247,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   }
 
   InitializePolicyContainerHost(renderer_initiated_creation_of_main_frame);
-
-  if (!base::FeatureList::IsEnabled(
-          features::kBlockInsecurePrivateNetworkRequests)) {
-    private_network_request_policy_ = network::mojom::
-        PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate;
-  }
+  InitializePrivateNetworkRequestPolicy();
 
   unload_event_monitor_timeout_ =
       std::make_unique<TimeoutMonitor>(base::BindRepeating(
@@ -2523,6 +2518,29 @@ void RenderFrameHostImpl::SetPolicyContainerHost(
     scoped_refptr<PolicyContainerHost> policy_container_host) {
   policy_container_host_ = std::move(policy_container_host);
   policy_container_host_->AssociateWithFrameToken(GetFrameToken());
+}
+
+void RenderFrameHostImpl::InitializePrivateNetworkRequestPolicy() {
+  if (!policy_container_host_) {
+    // Only speculative RFHs may lack a policy container.
+    DCHECK_EQ(lifecycle_state_, LifecycleStateImpl::kSpeculative);
+    return;
+  }
+
+  // For now, we always allow private network requests from secure contexts.
+  if (policy_container_host_->policies().is_web_secure_context) {
+    private_network_request_policy_ =
+        network::mojom::PrivateNetworkRequestPolicy::kAllow;
+    return;
+  }
+
+  // Insecure private network request handling depends on a feature flag. Even
+  // if blocking is disabled, we warn developers when we notice such requests.
+  private_network_request_policy_ =
+      base::FeatureList::IsEnabled(
+          features::kBlockInsecurePrivateNetworkRequests)
+          ? network::mojom::PrivateNetworkRequestPolicy::kBlock
+          : network::mojom::PrivateNetworkRequestPolicy::kWarn;
 }
 
 void RenderFrameHostImpl::RenderProcessExited(
@@ -9075,8 +9093,7 @@ RenderFrameHostImpl::BuildClientSecurityState() const {
         std::move(coep),
         /*is_web_secure_context=*/false,
         network::mojom::IPAddressSpace::kUnknown,
-        network::mojom::PrivateNetworkRequestPolicy::
-            kBlockFromInsecureToMorePrivate);
+        network::mojom::PrivateNetworkRequestPolicy::kBlock);
   }
 
   auto client_security_state = network::mojom::ClientSecurityState::New();

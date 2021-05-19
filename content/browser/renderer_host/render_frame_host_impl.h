@@ -2897,6 +2897,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetPolicyContainerHost(
       scoped_refptr<PolicyContainerHost> policy_container_host);
 
+  // Initializes |private_network_request_policy_|. Constructor helper.
+  void InitializePrivateNetworkRequestPolicy();
+
   // Returns true if this frame requires a proxy to talk to its parent.
   // Note: Using a proxy to talk to a parent does not imply that the parent
   // is in a different process.
@@ -2987,8 +2990,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // TODO(https://crbug.com/888079): Simplify the above comment when the
   // behavior it explains is fixed.
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
-      network::mojom::PrivateNetworkRequestPolicy::
-          kBlockFromInsecureToMorePrivate;
+      network::mojom::PrivateNetworkRequestPolicy::kBlock;
 
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
 

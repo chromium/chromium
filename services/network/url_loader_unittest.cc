@@ -466,7 +466,7 @@ mojom::ClientSecurityStatePtr NewSecurityState() {
   auto result = mojom::ClientSecurityState::New();
   result->is_web_secure_context = false;
   result->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kBlockFromInsecureToMorePrivate;
+      mojom::PrivateNetworkRequestPolicy::kBlock;
   result->ip_address_space = mojom::IPAddressSpace::kUnknown;
   return result;
 }
@@ -1078,175 +1078,9 @@ TEST_F(URLLoaderTest, MissingClientSecurityStateIsOk) {
   EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
 }
 
-// These tests verify that requests from an secure page to an IP in the
-// "local" address space are never blocked.
-
-TEST_F(URLLoaderTest, SecureUnknownToLocalIsOk) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->is_web_secure_context = true;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kUnknown;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
-}
-
-TEST_F(URLLoaderTest, SecureUnknownToLocalIsOkPolicyIsWarn) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->is_web_secure_context = true;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kUnknown;
-  client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
-}
-
-TEST_F(URLLoaderTest, SecurePublicToLocalIsOk) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->is_web_secure_context = true;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
-}
-
-TEST_F(URLLoaderTest, SecurePublicToLocalIsOkPolicyIsWarn) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->is_web_secure_context = true;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
-  client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
-}
-
-TEST_F(URLLoaderTest, SecurePrivateToLocalIsBlocked) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->is_web_secure_context = true;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kPrivate;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
-}
-
-TEST_F(URLLoaderTest, SecurePrivateToLocalIsBlockedPolicyIsWarn) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->is_web_secure_context = true;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kPrivate;
-  client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
-}
-
-TEST_F(URLLoaderTest, SecureLocalToLocalIsOk) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->is_web_secure_context = true;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
-}
-
-TEST_F(URLLoaderTest, SecureLocalToLocalIsOkPolicyIsWarn) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->is_web_secure_context = true;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
-  client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
-}
-
-// These tests verify that requests from any page to an IP in the "local"
-// address space are never blocked when the request policy is kAllow.
-
-TEST_F(URLLoaderTest, PolicyIsAllowUnknownToLocalIsOk) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kAllow;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kUnknown;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
-}
-
-TEST_F(URLLoaderTest, PolicyIsWarnUnknownToLocalIsOk) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kUnknown;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
-}
-
-TEST_F(URLLoaderTest, PolicyIsAllowPublicToLocalIsOk) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kAllow;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
-}
-
-TEST_F(URLLoaderTest, PolicyIsWarnPublicToLocalIsOk) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
-}
-
-TEST_F(URLLoaderTest, PolicyIsAllowPrivateToLocalIsBlocked) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kAllow;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kPrivate;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
-}
-
-TEST_F(URLLoaderTest, PolicyIsWarnPrivateToLocalIsBlocked) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kPrivate;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
-}
-
-TEST_F(URLLoaderTest, PolicyIsAllowLocalToLocalIsOk) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kAllow;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
-}
-
-TEST_F(URLLoaderTest, PolicyIsWarnLocalToLocalIsOk) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
-}
-
-// These tests verify that requests from an insecure page to an IP in the
-// "local" address space are blocked unless the page came from the same address
-// space. In practice, the local address space contains only localhost.
+// These tests verify that requests from both secure and non-secure contexts to
+// an IP in the `kLocal` address space are only blocked when the policy is
+// `kBlock` and the initiator's address space is not `kLocal`.
 //
 // NOTE: These tests exercise the same codepath as
 // URLLoaderFakeTransportInfoTest below, except they use real URLRequestJob and
@@ -1254,9 +1088,9 @@ TEST_F(URLLoaderTest, PolicyIsWarnLocalToLocalIsOk) {
 // the whole stack. OTOH, using an embedded test server prevents us from mocking
 // out the endpoint IP address.
 
-TEST_F(URLLoaderTest, InsecureRequestToLocalResource) {
+TEST_F(URLLoaderTest, SecureUnknownToLocalBlock) {
   auto client_security_state = NewSecurityState();
-  client_security_state->is_web_secure_context = false;
+  client_security_state->is_web_secure_context = true;
   client_security_state->ip_address_space = mojom::IPAddressSpace::kUnknown;
   set_factory_client_security_state(std::move(client_security_state));
 
@@ -1266,9 +1100,62 @@ TEST_F(URLLoaderTest, InsecureRequestToLocalResource) {
               Optional(CorsErrorStatus(mojom::IPAddressSpace::kLocal)));
 }
 
-TEST_F(URLLoaderTest, InsecurePublicToLocalIsBlocked) {
+TEST_F(URLLoaderTest, SecureUnknownToLocalWarn) {
   auto client_security_state = NewSecurityState();
-  client_security_state->is_web_secure_context = false;
+  client_security_state->is_web_secure_context = true;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kUnknown;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kWarn;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+}
+
+TEST_F(URLLoaderTest, SecureUnknownToLocalAllow) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->is_web_secure_context = true;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kUnknown;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kAllow;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+}
+
+TEST_F(URLLoaderTest, NonSecureUnknownToLocalBlock) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kUnknown;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
+              IsError(net::ERR_FAILED));
+  EXPECT_THAT(client()->completion_status().cors_error_status,
+              Optional(CorsErrorStatus(mojom::IPAddressSpace::kLocal)));
+}
+
+TEST_F(URLLoaderTest, NonSecureUnknownToLocalWarn) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kUnknown;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kWarn;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+}
+
+TEST_F(URLLoaderTest, NonSecureUnknownToLocalAllow) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kUnknown;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kAllow;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+}
+
+TEST_F(URLLoaderTest, SecurePublicToLocalBlock) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->is_web_secure_context = true;
   client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
   set_factory_client_security_state(std::move(client_security_state));
 
@@ -1278,9 +1165,62 @@ TEST_F(URLLoaderTest, InsecurePublicToLocalIsBlocked) {
               Optional(CorsErrorStatus(mojom::IPAddressSpace::kLocal)));
 }
 
-TEST_F(URLLoaderTest, InsecurePrivateToLocalIsBlocked) {
+TEST_F(URLLoaderTest, SecurePublicToLocalWarn) {
   auto client_security_state = NewSecurityState();
-  client_security_state->is_web_secure_context = false;
+  client_security_state->is_web_secure_context = true;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kWarn;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+}
+
+TEST_F(URLLoaderTest, SecurePublicToLocalAllow) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->is_web_secure_context = true;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kAllow;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+}
+
+TEST_F(URLLoaderTest, NonSecurePublicToLocalBlock) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
+              IsError(net::ERR_FAILED));
+  EXPECT_THAT(client()->completion_status().cors_error_status,
+              Optional(CorsErrorStatus(mojom::IPAddressSpace::kLocal)));
+}
+
+TEST_F(URLLoaderTest, NonSecurePublicToLocalWarn) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kWarn;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+}
+
+TEST_F(URLLoaderTest, NonSecurePublicToLocalAllow) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kAllow;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+}
+
+TEST_F(URLLoaderTest, SecurePrivateToLocalBlock) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->is_web_secure_context = true;
   client_security_state->ip_address_space = mojom::IPAddressSpace::kPrivate;
   set_factory_client_security_state(std::move(client_security_state));
 
@@ -1290,21 +1230,113 @@ TEST_F(URLLoaderTest, InsecurePrivateToLocalIsBlocked) {
               Optional(CorsErrorStatus(mojom::IPAddressSpace::kLocal)));
 }
 
-TEST_F(URLLoaderTest, InsecureLocalToLocalIsOk) {
+TEST_F(URLLoaderTest, SecurePrivateToLocalWarn) {
   auto client_security_state = NewSecurityState();
-  client_security_state->is_web_secure_context = false;
+  client_security_state->is_web_secure_context = true;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPrivate;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kWarn;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+}
+
+TEST_F(URLLoaderTest, SecurePrivateToLocalAllow) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->is_web_secure_context = true;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPrivate;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kAllow;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+}
+
+TEST_F(URLLoaderTest, NonSecurePrivateToLocalBlock) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPrivate;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
+              IsError(net::ERR_FAILED));
+  EXPECT_THAT(client()->completion_status().cors_error_status,
+              Optional(CorsErrorStatus(mojom::IPAddressSpace::kLocal)));
+}
+
+TEST_F(URLLoaderTest, NonSecurePrivateToLocalWarn) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPrivate;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kWarn;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+}
+
+TEST_F(URLLoaderTest, NonSecurePrivateToLocalAllow) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPrivate;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kAllow;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+}
+
+TEST_F(URLLoaderTest, SecureLocalToLocalBlock) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->is_web_secure_context = true;
   client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
   set_factory_client_security_state(std::move(client_security_state));
 
   EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
 }
 
-TEST_F(URLLoaderTest, InsecureLocalToLocalIsOkPolicyIsWarn) {
+TEST_F(URLLoaderTest, SecureLocalToLocalWarn) {
   auto client_security_state = NewSecurityState();
-  client_security_state->is_web_secure_context = false;
+  client_security_state->is_web_secure_context = true;
   client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
   client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate;
+      mojom::PrivateNetworkRequestPolicy::kWarn;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+}
+
+TEST_F(URLLoaderTest, SecureLocalToLocalAllow) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->is_web_secure_context = true;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kAllow;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+}
+
+TEST_F(URLLoaderTest, NonSecureLocalToLocalBlock) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+}
+
+TEST_F(URLLoaderTest, NonSecureLocalToLocalWarn) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kWarn;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+}
+
+TEST_F(URLLoaderTest, NonSecureLocalToLocalAllow) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kAllow;
   set_factory_client_security_state(std::move(client_security_state));
 
   EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
@@ -1314,9 +1346,8 @@ TEST_F(URLLoaderTest, InsecureLocalToLocalIsOkPolicyIsWarn) {
 // security state indicating that the request initiator is not a secure context
 // and came from the public IP address space, requests to local IP addresses
 // are blocked.
-TEST_F(URLLoaderTest, TrustedParamsInsecurePublicToLocalIsBlocked) {
+TEST_F(URLLoaderTest, NonSecurePublicToLocalTrustedParams) {
   auto client_security_state = NewSecurityState();
-  client_security_state->is_web_secure_context = false;
   client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
   set_request_client_security_state(std::move(client_security_state));
 
@@ -6704,7 +6735,7 @@ TEST_F(URLLoaderMockSocketTest, CorpClosesSocket) {
 TEST_F(URLLoaderMockSocketTest, PrivateNetworkRequestPolicyClosesSocket) {
   auto client_security_state = NewSecurityState();
   client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kBlockFromInsecureToMorePrivate;
+      mojom::PrivateNetworkRequestPolicy::kBlock;
   set_factory_client_security_state(std::move(client_security_state));
 
   // No data should be read or written. Trying to do so will assert.
@@ -6756,7 +6787,7 @@ TEST_F(URLLoaderTest,
   auto client_security_state = NewSecurityState();
   client_security_state->is_web_secure_context = false;
   client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate;
+      mojom::PrivateNetworkRequestPolicy::kWarn;
   client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
   set_factory_client_security_state(std::move(client_security_state));
 
@@ -6771,7 +6802,7 @@ TEST_F(URLLoaderTest,
   ASSERT_TRUE(params.client_security_state);
   auto& state = params.client_security_state;
   EXPECT_EQ(state->private_network_request_policy,
-            mojom::PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate);
+            mojom::PrivateNetworkRequestPolicy::kWarn);
   EXPECT_EQ(state->is_web_secure_context, false);
   EXPECT_EQ(state->ip_address_space, mojom::IPAddressSpace::kPublic);
   EXPECT_EQ(params.resource_address_space, mojom::IPAddressSpace::kLocal);
@@ -6794,7 +6825,7 @@ TEST_F(URLLoaderTest,
   auto client_security_state = NewSecurityState();
   client_security_state->is_web_secure_context = false;
   client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kBlockFromInsecureToMorePrivate;
+      mojom::PrivateNetworkRequestPolicy::kBlock;
   client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
   set_factory_client_security_state(std::move(client_security_state));
 
@@ -6808,9 +6839,8 @@ TEST_F(URLLoaderTest,
   auto& params = *devtools_observer.private_network_request_params();
   ASSERT_TRUE(params.client_security_state);
   auto& state = params.client_security_state;
-  EXPECT_EQ(
-      state->private_network_request_policy,
-      mojom::PrivateNetworkRequestPolicy::kBlockFromInsecureToMorePrivate);
+  EXPECT_EQ(state->private_network_request_policy,
+            mojom::PrivateNetworkRequestPolicy::kBlock);
   EXPECT_EQ(state->is_web_secure_context, false);
   EXPECT_EQ(state->ip_address_space, mojom::IPAddressSpace::kPublic);
   EXPECT_EQ(params.resource_address_space, mojom::IPAddressSpace::kLocal);

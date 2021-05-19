@@ -559,8 +559,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kNone,
             security_state->cross_origin_embedder_policy.value);
-  EXPECT_EQ(network::mojom::PrivateNetworkRequestPolicy::
-                kBlockFromInsecureToMorePrivate,
+  EXPECT_EQ(network::mojom::PrivateNetworkRequestPolicy::kBlock,
             security_state->private_network_request_policy);
 
   // Browser-created empty main frames are trusted to access the local network,
@@ -2215,8 +2214,8 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestNoBlocking,
 }
 
 // This test verifies that with the blocking feature disabled, the private
-// network request policy used by RenderFrameHostImpl for requests is set
-// to warn about insecure requests.
+// network request policy used by RenderFrameHostImpl is to warn about requests
+// from non-secure contexts.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestNoBlocking,
                        PrivateNetworkPolicyIsWarnByDefault) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
@@ -2225,9 +2224,25 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestNoBlocking,
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
+  EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::
-                kWarnFromInsecureToMorePrivate);
+            network::mojom::PrivateNetworkRequestPolicy::kWarn);
+}
+
+// This test verifies that with the blocking feature disabled, the private
+// network request policy used by RenderFrameHostImpl is to allow requests from
+// secure contexts.
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestNoBlocking,
+                       PrivateNetworkPolicyIsAllowByDefaultForSecureContexts) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
 }
 
 // This test mimics the tests below, with the blocking feature disabled. It
@@ -2246,7 +2261,8 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestNoBlocking,
 }
 
 // This test verifies that by default, the private network request policy used
-// by RenderFrameHostImpl for requests is set to block insecure requests.
+// by RenderFrameHostImpl for requests is set to block requests from non-secure
+// contexts.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        PrivateNetworkPolicyIsBlockByDefault) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
@@ -2255,9 +2271,25 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
+  EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::
-                kBlockFromInsecureToMorePrivate);
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// This test verifies that by default, the private network request policy used
+// by RenderFrameHostImpl for requests is set to allow requests from secure
+// contexts.
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       PrivateNetworkPolicyIsAllowByDefaultForSecureContexts) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
 }
 
 // This test verifies that when the right feature is enabled but the content
@@ -2309,15 +2341,15 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   RenderFrameHostImpl* child_frame =
-      AddChildFromURL(root_frame_host(), SecureLocalURL(kDefaultPath));
+      AddChildFromURL(root_frame_host(), InsecureLocalURL(kDefaultPath));
 
   network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
+  EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::
-                kBlockFromInsecureToMorePrivate);
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
 }
 
 // This test verifies that the initial empty document, which inherits its origin
@@ -2396,9 +2428,9 @@ IN_PROC_BROWSER_TEST_F(
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
+  EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::
-                kBlockFromInsecureToMorePrivate);
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
 }
 
 // This test verifies that when the right feature is enabled, requests:

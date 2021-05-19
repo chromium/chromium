@@ -3331,7 +3331,7 @@ void NavigationRequest::OnStartChecksComplete(
   // This is incorrect: frames can cause others in the same browsing context
   // group to navigate to pages, without being the parent. Additionally
   // there is no client security state for top-level navigations, which mainly
-  // means that CORS-RFC1918 checks are skipped for such requests.
+  // means that Private Network Access checks are skipped for such requests.
   //
   // TODO(https://crbug.com/1170335): Pass the client security state of the
   // navigation initiator to this navigation request somehow and use that
@@ -3344,12 +3344,15 @@ void NavigationRequest::OnStartChecksComplete(
   if (parent) {
     client_security_state = parent->BuildClientSecurityState();
 
-    // Selectively disable blocking of insecure private network requests if the
-    // right feature is not enabled.
+    // If the right feature is not enabled, disable blocking of private network
+    // requests for navigation fetches.
     if (!base::FeatureList::IsEnabled(
             features::kBlockInsecurePrivateNetworkRequestsForNavigations)) {
-      client_security_state->private_network_request_policy = network::mojom::
-          PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate;
+      // Only show warnings for requests initiated from non-secure contexts.
+      client_security_state->private_network_request_policy =
+          client_security_state->is_web_secure_context
+              ? network::mojom::PrivateNetworkRequestPolicy::kAllow
+              : network::mojom::PrivateNetworkRequestPolicy::kWarn;
     }
   }
 
@@ -5124,13 +5127,21 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
     return;
   }
 
+  // Requests initiated from secure contexts are not yet affected.
+  if (policy_container_navigation_bundle_->FinalPolicies()
+          .is_web_secure_context) {
+    private_network_request_policy_ =
+        network::mojom::PrivateNetworkRequestPolicy::kAllow;
+    return;
+  }
+
+  // Requests from non-secure contexts are only blocked if the feature is
+  // enabled, otherwise we simply show a warning in DevTools.
   private_network_request_policy_ =
       base::FeatureList::IsEnabled(
           features::kBlockInsecurePrivateNetworkRequests)
-          ? network::mojom::PrivateNetworkRequestPolicy::
-                kBlockFromInsecureToMorePrivate
-          : network::mojom::PrivateNetworkRequestPolicy::
-                kWarnFromInsecureToMorePrivate;
+          ? network::mojom::PrivateNetworkRequestPolicy::kBlock
+          : network::mojom::PrivateNetworkRequestPolicy::kWarn;
 }
 
 void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
