@@ -70,6 +70,12 @@ extern const char kLacrosStabilityLeastStable[];
 extern const char kLacrosStabilityLessStable[];
 extern const char kLacrosStabilityMoreStable[];
 
+// A command-line switch that can also be set from chrome://flags that chooses
+// which selection of Lacros to use.
+extern const char kLacrosSelectionSwitch[];
+extern const char kLacrosSelectionRootfs[];
+extern const char kLacrosSelectionStateful[];
+
 // Boolean preference. Whether to launch lacros-chrome on login.
 extern const char kLaunchOnLoginPref[];
 

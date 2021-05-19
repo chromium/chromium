@@ -275,6 +275,10 @@ const char kLacrosStabilityLeastStable[] = "least-stable";
 const char kLacrosStabilityLessStable[] = "less-stable";
 const char kLacrosStabilityMoreStable[] = "more-stable";
 
+const char kLacrosSelectionSwitch[] = "lacros-selection";
+const char kLacrosSelectionRootfs[] = "rootfs";
+const char kLacrosSelectionStateful[] = "stateful";
+
 const char kLaunchOnLoginPref[] = "lacros.launch_on_login";
 const char kClearUserDataDir1Pref[] = "lacros.clear_user_data_dir_1";
 const char kDataVerPref[] = "lacros.data_version";

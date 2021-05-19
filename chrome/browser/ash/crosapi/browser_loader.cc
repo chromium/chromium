@@ -178,6 +178,22 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
     return;
   }
 
+  // If the user has specified to force using stateful or rootfs lacros-chrome
+  // binary, force the selection.
+  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  if (cmdline->HasSwitch(browser_util::kLacrosSelectionSwitch)) {
+    auto value =
+        cmdline->GetSwitchValueASCII(browser_util::kLacrosSelectionSwitch);
+    if (value == browser_util::kLacrosSelectionRootfs) {
+      LoadRootfsLacros(std::move(callback));
+      return;
+    }
+    if (value == browser_util::kLacrosSelectionStateful) {
+      LoadStatefulLacros(std::move(callback));
+      return;
+    }
+  }
+
   // TODO(b/188473251): Remove this check once rootfs lacros-chrome is in.
   if (!base::PathExists(
           base::FilePath(kRootfsLacrosPath).Append(kLacrosImage))) {

@@ -4585,6 +4585,13 @@ const char kLacrosStabilityLeastStableDescription[] = "Daily updates";
 const char kLacrosStabilityLessStableDescription[] = "Weekly updates";
 const char kLacrosStabilityMoreStableDescription[] = "Monthly updates";
 
+const char kLacrosSelectionName[] = "Lacros selection";
+const char kLacrosSelectionDescription[] =
+    "Choosing between rootfs or stateful Lacros.";
+
+const char kLacrosSelectionRootfsDescription[] = "Rootfs";
+const char kLacrosSelectionStatefulDescription[] = "Stateful";
+
 const char kLacrosSupportName[] = "Lacros support";
 const char kLacrosSupportDescription[] =
     "Support for the experimental lacros-chrome browser. Please note that the "

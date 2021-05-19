@@ -700,6 +700,18 @@ const FeatureEntry::Choice kLacrosStabilityChoices[] = {
      crosapi::browser_util::kLacrosStabilityMoreStable},
 };
 
+const char kLacrosSelectionInternalName[] = "lacros-selection";
+
+const FeatureEntry::Choice kLacrosSelectionChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flag_descriptions::kLacrosSelectionStatefulDescription,
+     crosapi::browser_util::kLacrosSelectionSwitch,
+     crosapi::browser_util::kLacrosSelectionStateful},
+    {flag_descriptions::kLacrosSelectionRootfsDescription,
+     crosapi::browser_util::kLacrosSelectionSwitch,
+     crosapi::browser_util::kLacrosSelectionRootfs},
+};
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2970,6 +2982,9 @@ const FeatureEntry kFeatureEntries[] = {
     {kLacrosStabilityInternalName, flag_descriptions::kLacrosStabilityName,
      flag_descriptions::kLacrosStabilityDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kLacrosStabilityChoices)},
+    {kLacrosSelectionInternalName, flag_descriptions::kLacrosSelectionName,
+     flag_descriptions::kLacrosSelectionDescription, kOsCrOS,
+     MULTI_VALUE_TYPE(kLacrosSelectionChoices)},
     {kWebAppsCrosapiInternalName, flag_descriptions::kWebAppsCrosapiName,
      flag_descriptions::kWebAppsCrosapiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kWebAppsCrosapi)},
