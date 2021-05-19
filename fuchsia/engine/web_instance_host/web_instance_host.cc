@@ -48,6 +48,7 @@
 #include "content/public/common/content_switches.h"
 #include "fuchsia/base/config_reader.h"
 #include "fuchsia/base/string_util.h"
+#include "fuchsia/engine/features.h"
 #include "fuchsia/engine/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -603,7 +604,8 @@ zx_status_t WebInstanceHost::CreateInstanceForContext(
       return ZX_ERR_INVALID_ARGS;
     }
 
-    launch_args.AppendSwitch(switches::kDisableSoftwareVideoDecoders);
+    AppendFeature(switches::kDisableFeatures,
+                  features::kEnableSoftwareOnlyVideoCodecs.name, &launch_args);
   }
 
   if (!HandleCdmDataDirectoryParam(&params, &launch_args, &launch_info)) {

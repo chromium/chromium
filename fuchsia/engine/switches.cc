@@ -7,7 +7,6 @@
 namespace switches {
 
 const char kEnableContentDirectories[] = "enable-content-directories";
-const char kDisableSoftwareVideoDecoders[] = "disable-software-video-decoders";
 const char kEnableWidevine[] = "enable-widevine";
 const char kIncognito[] = "incognito";
 const char kPlayreadyKeySystem[] = "playready-key-system";

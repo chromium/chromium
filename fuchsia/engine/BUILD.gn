@@ -249,7 +249,6 @@ component("web_engine_core") {
     "context_provider_impl.h",
     "context_provider_main.cc",
     "context_provider_main.h",
-    "features.h",
     "renderer/url_request_rules_receiver.cc",
     "renderer/url_request_rules_receiver.h",
     "renderer/web_engine_content_renderer_client.cc",
@@ -267,10 +266,24 @@ component("web_engine_core") {
   visibility = [ ":*" ]
 }
 
+# TODO(crbug.com/1081525): Rename to features_and_switches or collapse into
+# common. Consider moving these and other files in engine/ to common/ or
+# elsewhere.
 source_set("switches") {
+  deps = [ "//base" ]
+
   sources = [
+    "features.h",
     "switches.cc",
     "switches.h",
+  ]
+
+  visibility = [
+    ":*",
+    "./*",
+
+    # TODO(crbug.com/1117629): Remove this when fixed.
+    "//media/renderers",
   ]
 }
 

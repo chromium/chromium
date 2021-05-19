@@ -100,15 +100,6 @@ DefaultDecoderFactory::GetSupportedVideoDecoderConfigsForWebRTC() {
     }
   }
 
-#if defined(OS_FUCHSIA)
-  // TODO(crbug.com/1173503): Implement capabilities for fuchsia.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableSoftwareVideoDecoders)) {
-    // Bypass software codec registration.
-    return supported_configs;
-  }
-#endif
-
   if (!base::FeatureList::IsEnabled(media::kExposeSwDecodersToWebRTC))
     return supported_configs;
 
@@ -190,12 +181,6 @@ void DefaultDecoderFactory::CreateVideoDecoders(
       DLOG(ERROR)
           << "Can't create FuchsiaVideoDecoder due to GPU context loss.";
     }
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableSoftwareVideoDecoders)) {
-    // Bypass software codec registration.
-    return;
   }
 #endif
 

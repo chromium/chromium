@@ -12,6 +12,14 @@ namespace features {
 constexpr base::Feature kHandleMemoryPressureInRenderer{
     "HandleMemoryPressureInRenderer", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the use of video codecs that cannot be hardware-accelerated.
+// When disabled, software video decoders are still available in case they are
+// needed as a fallback due to a hardware decoder failure. Does not affect
+// WebRTC; see media::kExposeSwDecodersToWebRTC and
+// media::kUseDecoderStreamForWebRTC.
+constexpr base::Feature kEnableSoftwareOnlyVideoCodecs{
+    "SoftwareOnlyVideoCodecs", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 
 #endif  // FUCHSIA_ENGINE_FEATURES_H_

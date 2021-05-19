@@ -9,10 +9,11 @@
 #include "base/files/file_path.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia/base/test/frame_test_util.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
-#include "fuchsia/engine/switches.h"
+#include "fuchsia/engine/features.h"
 #include "fuchsia/engine/test/test_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -52,28 +53,32 @@ class MediaTest : public cr_fuchsia::WebEngineBrowserTest {
   cr_fuchsia::TestNavigationListener navigation_listener_;
 };
 
-using SoftwareDecoderEnabledTest = MediaTest;
+using SoftwareOnlyDecodersEnabledTest = MediaTest;
 
-// MediaTest with switches::kDisableSoftwareVideoDecoders.
-class SoftwareDecoderDisabledTest : public MediaTest {
+// MediaTest with kEnableSoftwareOnlyVideoCodecs disabled.
+class SoftwareOnlyDecodersDisabledTest : public MediaTest {
  public:
-  SoftwareDecoderDisabledTest() = default;
-  ~SoftwareDecoderDisabledTest() override = default;
+  SoftwareOnlyDecodersDisabledTest() = default;
+  ~SoftwareOnlyDecodersDisabledTest() override = default;
 
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kDisableSoftwareVideoDecoders);
-    MediaTest::SetUpCommandLine(command_line);
+  void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kEnableSoftwareOnlyVideoCodecs);
+    MediaTest::SetUp();
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// SoftwareDecoderDisabledTest with fuchsia.mediacodec.CodecFactory
+// SoftwareOnlyDecodersDisabledTest with fuchsia.mediacodec.CodecFactory
 // disconnected.
-class SoftwareDecoderDisabledAndHardwareDecoderFailureTest
-    : public SoftwareDecoderDisabledTest {
+class SoftwareOnlyDecodersDisabledAndHardwareDecoderFailureTest
+    : public SoftwareOnlyDecodersDisabledTest {
  public:
-  SoftwareDecoderDisabledAndHardwareDecoderFailureTest() = default;
-  ~SoftwareDecoderDisabledAndHardwareDecoderFailureTest() override = default;
+  SoftwareOnlyDecodersDisabledAndHardwareDecoderFailureTest() = default;
+  ~SoftwareOnlyDecodersDisabledAndHardwareDecoderFailureTest() override =
+      default;
 
  protected:
   // Removes the decoder service to cause calls to it to fail.
@@ -83,7 +88,7 @@ class SoftwareDecoderDisabledAndHardwareDecoderFailureTest
     component_context_->additional_services()
         ->RemovePublicService<fuchsia::mediacodec::CodecFactory>();
 
-    SoftwareDecoderDisabledTest::SetUpOnMainThread();
+    SoftwareOnlyDecodersDisabledTest::SetUpOnMainThread();
   }
 
   // Used to disconnect fuchsia.mediacodec.CodecFactory.
@@ -91,8 +96,8 @@ class SoftwareDecoderDisabledAndHardwareDecoderFailureTest
 };
 
 // Verify that a codec only supported by a software decoder is reported as
-// playable if kDisableSoftwareVideoDecoders is not present.
-IN_PROC_BROWSER_TEST_F(SoftwareDecoderEnabledTest,
+// playable if kEnableSoftwareOnlyVideoCodecs is enabled.
+IN_PROC_BROWSER_TEST_F(SoftwareOnlyDecodersEnabledTest,
                        CanPlayTypeSoftwareOnlyCodecIsTrue) {
   const GURL kUrl(embedded_test_server()->GetURL(kCanPlaySoftwareOnlyCodecUrl));
 
@@ -111,8 +116,8 @@ IN_PROC_BROWSER_TEST_F(SoftwareDecoderEnabledTest,
 }
 
 // Verify that a codec only supported by a software decoder is reported as not
-// playable if kDisableSoftwareVideoDecoders is present.
-IN_PROC_BROWSER_TEST_F(SoftwareDecoderDisabledTest,
+// playable if kEnableSoftwareOnlyVideoCodecs is disabled.
+IN_PROC_BROWSER_TEST_F(SoftwareOnlyDecodersDisabledTest,
                        CanPlayTypeSoftwareOnlyCodecIsFalse) {
   const GURL kUrl(embedded_test_server()->GetURL(kCanPlaySoftwareOnlyCodecUrl));
 
@@ -127,8 +132,8 @@ IN_PROC_BROWSER_TEST_F(SoftwareDecoderDisabledTest,
 }
 
 // Verify that a codec only supported by a software decoder is loaded if
-// kDisableSoftwareVideoDecoders is not present.
-IN_PROC_BROWSER_TEST_F(SoftwareDecoderEnabledTest,
+// kEnableSoftwareOnlyVideoCodecs is enabled.
+IN_PROC_BROWSER_TEST_F(SoftwareOnlyDecodersEnabledTest,
                        PlaySoftwareOnlyCodecSucceeds) {
   const GURL kUrl(embedded_test_server()->GetURL(kLoadSoftwareOnlyCodecUrl));
 
@@ -143,8 +148,8 @@ IN_PROC_BROWSER_TEST_F(SoftwareDecoderEnabledTest,
 }
 
 // Verify that a codec only supported by a software decoder is not loaded if
-// kDisableSoftwareVideoDecoders is present.
-IN_PROC_BROWSER_TEST_F(SoftwareDecoderDisabledTest,
+// kEnableSoftwareOnlyVideoCodecs is disabled.
+IN_PROC_BROWSER_TEST_F(SoftwareOnlyDecodersDisabledTest,
                        LoadSoftwareOnlyCodecFails) {
   const GURL kUrl(embedded_test_server()->GetURL(kLoadSoftwareOnlyCodecUrl));
 
@@ -159,12 +164,11 @@ IN_PROC_BROWSER_TEST_F(SoftwareDecoderDisabledTest,
 }
 
 // Verify that a codec supported by hardware and software decoders plays if
-// kDisableSoftwareVideoDecoders is present.
-// Unlike the software-only codec, this codec loads and plays (when a hardware)
-// decoder is actually available, such as on real hardware.
-// TODO(crbug.com/1207695): Correct the final expected result to "playing".
-// Currently, this fails in emulators. Fixing the bug will change this.
-IN_PROC_BROWSER_TEST_F(SoftwareDecoderDisabledTest,
+// kEnableSoftwareOnlyVideoCodecs is disabled.
+// Unlike the software-only codec, this codec loads because it is supposed to be
+// supported. It then plays because a hardware decoder is used (when on real
+// hardware) or it falls back to the software decoder (i.e., on emulator).
+IN_PROC_BROWSER_TEST_F(SoftwareOnlyDecodersDisabledTest,
                        PlayHardwareAndSoftwareCodecSucceeds) {
   const GURL kUrl(
       embedded_test_server()->GetURL(kLoadHardwareAndSoftwareCodecUrl));
@@ -181,15 +185,16 @@ IN_PROC_BROWSER_TEST_F(SoftwareDecoderDisabledTest,
   navigation_listener_.RunUntilUrlAndTitleEquals(kUrl, "loaded");
   cr_fuchsia::ExecuteJavaScript(frame.get(), "bear.play()");
 
-  navigation_listener_.RunUntilUrlAndTitleEquals(kUrl, "media element error");
+  navigation_listener_.RunUntilUrlAndTitleEquals(kUrl, "playing");
 }
 
-// Verify that a codec supported by hardware and software does not play if
-// kDisableSoftwareVideoDecoders is present and the hardware decoder fails.
+// Verify that a codec supported by hardware and software plays if
+// kEnableSoftwareOnlyVideoCodecs is disabled and the hardware decoder fails.
 // Unlike the software-only codec, this codec loads because it is supposed to be
-// supported but fails when the hardware decoder is unavailable.
-IN_PROC_BROWSER_TEST_F(SoftwareDecoderDisabledAndHardwareDecoderFailureTest,
-                       PlayHardwareAndSoftwareCodecFails) {
+// supported. It then plays because it falls back to the software decoder.
+IN_PROC_BROWSER_TEST_F(
+    SoftwareOnlyDecodersDisabledAndHardwareDecoderFailureTest,
+    PlayHardwareAndSoftwareCodecFails) {
   const GURL kUrl(
       embedded_test_server()->GetURL(kLoadHardwareAndSoftwareCodecUrl));
 
@@ -205,5 +210,5 @@ IN_PROC_BROWSER_TEST_F(SoftwareDecoderDisabledAndHardwareDecoderFailureTest,
   navigation_listener_.RunUntilUrlAndTitleEquals(kUrl, "loaded");
   cr_fuchsia::ExecuteJavaScript(frame.get(), "bear.play()");
 
-  navigation_listener_.RunUntilUrlAndTitleEquals(kUrl, "media element error");
+  navigation_listener_.RunUntilUrlAndTitleEquals(kUrl, "playing");
 }

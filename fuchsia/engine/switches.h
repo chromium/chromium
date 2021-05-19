@@ -12,9 +12,6 @@ namespace switches {
 // Directories will be mounted under a directory in the browser's namespace.
 extern const char kEnableContentDirectories[];
 
-// Prevents the use of video codecs that are not hardware-accelerated.
-extern const char kDisableSoftwareVideoDecoders[];
-
 // Enables Widevine CDM support.
 extern const char kEnableWidevine[];
 

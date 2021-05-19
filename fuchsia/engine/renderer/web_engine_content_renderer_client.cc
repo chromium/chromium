@@ -20,6 +20,7 @@
 #include "fuchsia/engine/renderer/web_engine_url_loader_throttle_provider.h"
 #include "fuchsia/engine/switches.h"
 #include "media/base/eme_constants.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "services/network/public/cpp/features.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
@@ -235,10 +236,9 @@ void WebEngineContentRendererClient::AddSupportedKeySystems(
 
 bool WebEngineContentRendererClient::IsSupportedVideoType(
     const media::VideoType& type) {
-  // Fall back to default codec querying logic if software codecs aren't
-  // disabled.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableSoftwareVideoDecoders)) {
+  // Fall back to default codec querying logic if software-only codecs are
+  // enabled.
+  if (base::FeatureList::IsEnabled(features::kEnableSoftwareOnlyVideoCodecs)) {
     return ContentRendererClient::IsSupportedVideoType(type);
   }
 
