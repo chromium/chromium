@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.features.start_surface;
 
-import static android.os.Build.VERSION_CODES.M;
-
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressKey;
@@ -111,6 +109,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
+import org.chromium.chrome.test.util.ViewUtils;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -227,17 +226,7 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({BASE_PARAMS + "/single/home_button_on_grid_tab_switcher/false"})
-    @FlakyTest(message = "https://crbug.com/1207306")
     public void testShow_SingleAsHomepage() {
-        Assume.assumeFalse("https://crbug.com/1196473",
-                mUseInstantStart && mImmediateReturn
-                        && (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
-                                || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1));
-        Assume.assumeFalse("https://crbug.com/1205514",
-                mUseInstantStart && !mImmediateReturn
-                        && (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP
-                                || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1));
-
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
@@ -246,7 +235,7 @@ public class StartSurfaceTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
-        onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.search_box_text)).check(matches(isDisplayed()));
         onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container))
                 .check(matches(isDisplayed()));
         onView(withId(org.chromium.chrome.tab_ui.R.id.tab_switcher_title))
@@ -463,8 +452,6 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
-    @DisableIf.
-    Build(sdk_is_less_than = Build.VERSION_CODES.P, message = "Flaky, see crbug.com/1169673")
     public void testShow_SingleAsHomepage_FromResumeShowStart() throws Exception {
         // clang-format on
         if (!mImmediateReturn) {
@@ -523,8 +510,7 @@ public class StartSurfaceTest {
         assertThat(cta.getTabModelSelector().getCurrentModel().getCount(), equalTo(2));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+        StartSurfaceTestUtils.waitForOverviewVisible(cta);
         onViewWaiting(withId(R.id.search_box_text));
         TextView urlBar = cta.findViewById(R.id.url_bar);
         Assert.assertFalse(urlBar.isFocused());
@@ -939,7 +925,6 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @DisabledTest(message = "https://crbug.com/1176084")
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testShow_SingleAsHomepage_BackButton() {
@@ -1262,10 +1247,7 @@ public class StartSurfaceTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
-    @DisableIf.Build(sdk_is_less_than = M, message = "https://crbug.com/1170553")
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1170553")
     @CommandLineFlags.Add({BASE_PARAMS + "/single/omnibox_focused_on_new_tab/true"})
-    @DisabledTest(message = "http://crbug/1205998 - the NoInstant_Return version is flaky.")
     public void testOmnibox_FocusedOnNewTabInSingleSurface() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -1274,7 +1256,7 @@ public class StartSurfaceTest {
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
-        assertThat(cta.getTabModelSelector().getCurrentModel().getCount(), equalTo(1));
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
         // Launches a new Tab from the Start surface, and verifies the omnibox is focused.
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
@@ -1313,25 +1295,6 @@ public class StartSurfaceTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertTrue(TextUtils.equals(toolbarDataProvider.getCurrentUrl(), UrlConstants.NTP_URL));
         });
-
-        // Navigates the Tab to show home button.
-        TestThreadUtils.runOnUiThreadBlocking(() -> urlBar.setText("about:blank"));
-        onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
-
-        // Goes to the Start surface from tapping home button, and navigate from the Omnibox. The
-        // new created Tab shouldn't get focus.
-        StartSurfaceTestUtils.pressHomePageButton(cta);
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-
-        onViewWaiting(withId(R.id.search_box_text)).perform(replaceText("about:blank"));
-        onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
-        waitForView(withId(R.id.primary_tasks_surface_view), VIEW_GONE);
-
-        TabUiTestHelper.verifyTabModelTabCount(cta, 4, 0);
-        waitForView(withId(R.id.search_box_text));
-        waitForView(withId(R.id.toolbar_buttons));
-        Assert.assertFalse(urlBar.isFocused());
     }
 
     @Test
@@ -1349,7 +1312,7 @@ public class StartSurfaceTest {
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
-        assertThat(cta.getTabModelSelector().getCurrentModel().getCount(), equalTo(1));
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
         // Launches a new Tab from the Start surface, and verifies the omnibox is focused.
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
@@ -1388,25 +1351,33 @@ public class StartSurfaceTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertTrue(TextUtils.equals(toolbarDataProvider.getCurrentUrl(), UrlConstants.NTP_URL));
         });
+    }
 
-        // Navigates the Tab to show home button.
-        TestThreadUtils.runOnUiThreadBlocking(() -> urlBar.setText("about:blank"));
-        onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
-
-        // Goes to the Start surface from tapping home button, and navigate from the Omnibox. The
-        // new created Tab shouldn't get focus.
-        StartSurfaceTestUtils.pressHomePageButton(cta);
+    @Test
+    @LargeTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/omnibox_focused_on_new_tab/true"})
+    public void testOmnibox_TabOpenedFromOmniboxShouldNotGetFocused() {
+        // clang-format on
+        if (!mImmediateReturn) {
+            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
+        }
         StartSurfaceTestUtils.waitForOverviewVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
         onViewWaiting(allOf(withId(R.id.search_box_text), isDisplayed()))
                 .perform(replaceText("about:blank"));
-        onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
-        waitForView(withId(R.id.primary_tasks_surface_view), VIEW_GONE);
+        onViewWaiting(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
+        waitForView(withId(R.id.primary_tasks_surface_view), ViewUtils.VIEW_INVISIBLE);
 
-        TabUiTestHelper.verifyTabModelTabCount(cta, 4, 0);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
         waitForView(withId(R.id.search_box_text));
         waitForView(withId(R.id.toolbar_buttons));
+        TextView urlBar = cta.findViewById(R.id.url_bar);
         Assert.assertFalse(urlBar.isFocused());
     }
 
@@ -1502,8 +1473,7 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.pressHomePageButton(cta);
 
         // MV tiles and carousel tab switcher should not show anymore.
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+        StartSurfaceTestUtils.waitForOverviewVisible(cta);
         onViewWaiting(withId(R.id.start_tab_switcher_button));
         onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container))
                 .check(matches(withEffectiveVisibility(GONE)));
@@ -1537,8 +1507,7 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.pressHomePageButton(cta);
 
         // MV tiles should shown and carousel tab switcher should not show anymore.
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+        StartSurfaceTestUtils.waitForOverviewVisible(cta);
         onViewWaiting(withId(R.id.start_tab_switcher_button));
         onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout))
                 .check(matches(withEffectiveVisibility(VISIBLE)));
