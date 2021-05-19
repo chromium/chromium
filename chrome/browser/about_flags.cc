@@ -3047,6 +3047,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"wake-on-wifi-allowed", flag_descriptions::kWakeOnWifiAllowedName,
      flag_descriptions::kWakeOnWifiAllowedDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kWakeOnWifiAllowed)},
+    {"microphone-mute-notifications",
+     flag_descriptions::kMicrophoneMuteNotificationsName,
+     flag_descriptions::kMicrophoneMuteNotificationsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kMicMuteNotifications)},
+    {"microphone-mute-switch-device",
+     flag_descriptions::kMicrophoneMuteSwitchDeviceName,
+     flag_descriptions::kMicrophoneMuteSwitchDeviceDescription, kOsCrOS,
+     SINGLE_VALUE_TYPE("enable-microphone-mute-switch-device")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_CHROMEOS)

@@ -3610,6 +3610,16 @@
     "expiry_milestone": 95
   },
   {
+    "name": "microphone-mute-notifications",
+    "owners": ["tbarzic", "rtiknoff", "amehfooz"],
+    "expiry_milestone": 94
+  },
+  {
+    "name": "microphone-mute-switch-device",
+    "owners": ["tbarzic", "rtiknoff", "amehfooz"],
+    "expiry_milestone": 94
+  },
+  {
     "name": "minutes-delay-to-restore-gaia-cookies-if-deleted",
     "owners": ["fernandex", "chrome-signin-team"],
     "expiry_milestone": 99

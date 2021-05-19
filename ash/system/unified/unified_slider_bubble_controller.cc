@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -99,6 +100,9 @@ void UnifiedSliderBubbleController::OnOutputMuteChanged(bool mute_on) {
 }
 
 void UnifiedSliderBubbleController::OnInputMuteChanged(bool mute_on) {
+  if (!features::IsMicMuteNotificationsEnabled())
+    return;
+
   ShowBubble(SLIDER_TYPE_MIC);
 }
 
