@@ -68,6 +68,7 @@ crbug.com/1198063 external/wpt/scroll-animations/progress-based-current-time.ten
 crbug.com/1198063 external/wpt/scroll-animations/scroll-timeline-snapshotting.html [ Timeout ]
 
 # SharedWorker is not supported on Android (https://crbug.com/154571).
+crbug.com/1050754 external/wpt/background-fetch/idlharness.https.any.sharedworker.html [ Failure ]
 crbug.com/1190392 external/wpt/trusted-types/WorkerGlobalScope-eval.html [ Failure ]
 crbug.com/1190392 external/wpt/trusted-types/WorkerGlobalScope-importScripts.html [ Failure ]
 crbug.com/1190392 external/wpt/trusted-types/worker-constructor.https.html [ Failure ]
@@ -313,15 +314,8 @@ crbug.com/1198089 external/wpt/webcodecs/videoFrame-createImageBitmap.any.worker
 crbug.com/1198089 external/wpt/webcodecs/videoFrame-texImage.any.html [ Failure Pass ]
 crbug.com/1198089 external/wpt/webcodecs/videoFrame-texImage.any.worker.html [ Failure Pass ]
 
-# Flaky failure on a DCHECK in DevToolsAgent::ReportChildWorkersCallback. For some reason, this is classified as a Failure here and
-# a Crash in Chrome.
-crbug.com/1199769 external/wpt/background-fetch/abort.https.window.html [ Failure Pass ]
-crbug.com/1199769 external/wpt/background-fetch/fetch-uploads.https.window.html [ Failure Pass ]
-crbug.com/1199769 external/wpt/background-fetch/fetch.https.window.html [ Failure Pass Timeout ]
-crbug.com/1199769 external/wpt/background-fetch/match.https.window.html [ Failure Pass ]
-crbug.com/1199769 external/wpt/background-fetch/mixed-content-and-allowed-schemes.https.window.html [ Failure Pass ]
-crbug.com/1199769 external/wpt/background-fetch/port-blocking.https.window.html [ Failure Pass ]
-crbug.com/1199769 external/wpt/background-fetch/update-ui.https.window.html [ Failure Pass ]
+# Failing background-fetch tests.
+crbug.com/882282 external/wpt/background-fetch/fetch.https.window.html [ Failure Pass Timeout ]
 
 # Test seems to be flaky on both Chrome and WebLayer.
 crbug.com/1177918 external/wpt/input-events/input-events-get-target-ranges.html [ Failure Pass ]
@@ -344,9 +338,6 @@ crbug.com/1050754 external/wpt/accelerometer/Accelerometer.https.html [ Failure 
 crbug.com/1050754 external/wpt/animation-worklet/inactive-timeline.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/animation-worklet/scroll-timeline-writing-modes.https.html [ Failure ]
 crbug.com/1050754 external/wpt/animation-worklet/worklet-animation-local-time-null-1.https.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/background-fetch/get-ids.https.window.html [ Pass ]
-crbug.com/1050754 external/wpt/background-fetch/get.https.window.html [ Pass ]
-crbug.com/1050754 external/wpt/background-fetch/idlharness.https.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/bluetooth/adapter/adapter-absent-getAvailability.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/bluetooth/adapter/adapter-added-getAvailability.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/bluetooth/adapter/adapter-powered-off-getAvailability.https.window.html [ Failure ]

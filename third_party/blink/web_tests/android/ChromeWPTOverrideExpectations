@@ -130,14 +130,8 @@ crbug.com/1198573 external/wpt/html/webappapis/scripting/processing-model-2/inte
 crbug.com/1198573 external/wpt/html/webappapis/scripting/processing-model-2/unhandled-promise-rejections/promise-rejection-events.sharedworker.html [ Failure ]
 crbug.com/1198573 external/wpt/html/webappapis/the-windoworworkerglobalscope-mixin/Worker_Self_Origin.html [ Failure ]
 
-# Flaky failure on a DCHECK in DevToolsAgent::ReportChildWorkersCallback
-crbug.com/1199769 external/wpt/background-fetch/abort.https.window.html [ Crash Pass ]
-crbug.com/1199769 external/wpt/background-fetch/fetch-uploads.https.window.html [ Crash Pass ]
-crbug.com/1199769 external/wpt/background-fetch/fetch.https.window.html [ Crash Pass ]
-crbug.com/1199769 external/wpt/background-fetch/match.https.window.html [ Crash Pass ]
-crbug.com/1199769 external/wpt/background-fetch/mixed-content-and-allowed-schemes.https.window.html [ Crash ]
-crbug.com/1199769 external/wpt/background-fetch/port-blocking.https.window.html [ Crash Pass ]
-crbug.com/1199769 external/wpt/background-fetch/update-ui.https.window.html [ Crash Pass ]
+# Failing background-fetch tests.
+crbug.com/882282 external/wpt/background-fetch/fetch.https.window.html [ Failure Pass Timeout ]
 
 # crbug.com/178097: navigator.registerProtocolHandler is not available on Android.
 crbug.com/1198573 external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/historical.https.window.html [ Failure ]
