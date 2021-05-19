@@ -59,8 +59,9 @@ TestDebugDaemonClient* fake_debug_client() {
 TEST(CrashIdsSourceTest, CallsCrashSender) {
   content::BrowserTaskEnvironment task_environment;
 
-  auto setter = chromeos::DBusThreadManager::GetSetterForTesting();
-  setter->SetDebugDaemonClient(std::make_unique<TestDebugDaemonClient>());
+  chromeos::DBusThreadManager::Initialize();
+  chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
+      std::make_unique<TestDebugDaemonClient>());
 
   CrashIdsSource source;
   source.SetUploadListForTesting(new StubUploadList());

@@ -1069,16 +1069,6 @@ class WizardControllerDeviceStateTest : public WizardControllerFlowTest {
   }
 
   // WizardControllerFlowTest:
-  void SetUpInProcessBrowserTestFixture() override {
-    WizardControllerFlowTest::SetUpInProcessBrowserTestFixture();
-
-    // We need to initialize some dbus clients here, otherwise this test will
-    // timeout in WaitForAutoEnrollmentState on asan builds. TODO(stevenjb):
-    // Determine which client(s) need to be created and extract and initialize
-    // them. https://crbug.com/949063.
-    DBusThreadManager::Initialize();
-  }
-
   void SetUpOnMainThread() override {
     WizardControllerFlowTest::SetUpOnMainThread();
 

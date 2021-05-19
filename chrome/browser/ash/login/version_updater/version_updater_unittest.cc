@@ -90,6 +90,7 @@ class VersionUpdaterUnitTest : public testing::Test {
   void SetUp() override {
     // Initialize objects needed by VersionUpdater.
     fake_update_engine_client_ = new FakeUpdateEngineClient();
+    DBusThreadManager::Initialize();
     DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
         std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
 

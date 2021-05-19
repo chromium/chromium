@@ -333,6 +333,7 @@ void AutomaticRebootManagerBasicTest::SetUp() {
   AutomaticRebootManager::RegisterPrefs(local_state_.registry());
 
   update_engine_client_ = new FakeUpdateEngineClient;
+  DBusThreadManager::Initialize();
   DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
       std::unique_ptr<UpdateEngineClient>(update_engine_client_));
   PowerManagerClient::InitializeFake();

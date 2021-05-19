@@ -23,6 +23,7 @@ class GnubbyNotificationTest : public BrowserWithTestWindowTest {
   ~GnubbyNotificationTest() override {}
 
   void SetUp() override {
+    DBusThreadManager::Initialize();
     DBusThreadManager::GetSetterForTesting()->SetGnubbyClient(
         std::unique_ptr<chromeos::GnubbyClient>(
             new chromeos::FakeGnubbyClient));

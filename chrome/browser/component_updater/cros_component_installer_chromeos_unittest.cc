@@ -207,6 +207,7 @@ class CrOSComponentInstallerTest : public testing::Test {
     auto fake_image_loader_client =
         std::make_unique<chromeos::FakeImageLoaderClient>();
     image_loader_client_ = fake_image_loader_client.get();
+    chromeos::DBusThreadManager::Initialize();
     chromeos::DBusThreadManager::GetSetterForTesting()->SetImageLoaderClient(
         std::move(fake_image_loader_client));
   }

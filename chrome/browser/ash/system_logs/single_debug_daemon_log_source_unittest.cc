@@ -26,6 +26,7 @@ class SingleDebugDaemonLogSourceTest : public ::testing::Test {
   void SetUp() override {
     // Since no debug daemon will be available during a unit test, use
     // FakeDebugDaemonClient to provide dummy DebugDaemonClient functionality.
+    chromeos::DBusThreadManager::Initialize();
     chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
         std::make_unique<chromeos::FakeDebugDaemonClient>());
   }

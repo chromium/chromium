@@ -78,9 +78,8 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
                                            std::make_unique<base::Value>(true));
 
     fake_update_engine_client_ = new chromeos::FakeUpdateEngineClient();
-    std::unique_ptr<chromeos::DBusThreadManagerSetter> dbus_setter =
-        chromeos::DBusThreadManager::GetSetterForTesting();
-    dbus_setter->SetUpdateEngineClient(
+    chromeos::DBusThreadManager::Initialize();
+    chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
         std::unique_ptr<chromeos::UpdateEngineClient>(
             fake_update_engine_client_));
 

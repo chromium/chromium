@@ -60,6 +60,7 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
     wizard_context_ = std::make_unique<WizardContext>();
     fake_view_ = std::make_unique<FakeUpdateRequiredScreenHandler>();
     fake_update_engine_client_ = new FakeUpdateEngineClient();
+    DBusThreadManager::Initialize();
     DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
         std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
 

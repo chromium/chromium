@@ -148,10 +148,8 @@ void OobeBaseTest::SetUpInProcessBrowserTestFixture() {
   // based on timer. It is nice simulation for chromeos-on-linux, but
   // may lead to flakiness in debug/*SAN tests.
   // Set up FakeUpdateEngineClient that does not have any timer-based logic.
-  std::unique_ptr<DBusThreadManagerSetter> dbus_setter =
-      chromeos::DBusThreadManager::GetSetterForTesting();
   update_engine_client_ = new FakeUpdateEngineClient;
-  dbus_setter->SetUpdateEngineClient(
+  chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
       std::unique_ptr<UpdateEngineClient>(update_engine_client_));
 }
 

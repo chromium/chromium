@@ -32,6 +32,7 @@ class EolNotificationTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     fake_update_engine_client_ = new FakeUpdateEngineClient();
+    DBusThreadManager::Initialize();
     DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
         base::WrapUnique<UpdateEngineClient>(fake_update_engine_client_));
     chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);

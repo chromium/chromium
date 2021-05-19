@@ -74,6 +74,7 @@ class UpdateScreenUnitTest : public testing::Test {
     wizard_context_ = std::make_unique<WizardContext>();
     PowerManagerClient::InitializeFake();
     fake_update_engine_client_ = new FakeUpdateEngineClient();
+    DBusThreadManager::Initialize();
     DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
         std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();

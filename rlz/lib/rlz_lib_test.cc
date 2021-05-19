@@ -1104,6 +1104,7 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
 
 TEST_F(RlzLibTest, SetRlzPingSent) {
   TestDebugDaemonClient* debug_daemon_client = new TestDebugDaemonClient;
+  chromeos::DBusThreadManager::Initialize();
   chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
       std::unique_ptr<chromeos::DebugDaemonClient>(debug_daemon_client));
   const char* kPingResponse =
@@ -1124,6 +1125,7 @@ TEST_F(RlzLibTest, SetRlzPingSent) {
       rlz_lib::ParsePingResponse(rlz_lib::TOOLBAR_NOTIFIER, kPingResponse));
   EXPECT_EQ(debug_daemon_client->num_set_rlz_ping_sent(),
             1 + rlz_lib::RlzValueStoreChromeOS::kMaxRetryCount);
+  chromeos::DBusThreadManager::Shutdown();
 }
 
 TEST_F(RlzLibTest, NoRecordCAFEvent) {

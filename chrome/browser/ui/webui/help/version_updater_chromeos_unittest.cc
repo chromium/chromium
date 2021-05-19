@@ -57,9 +57,8 @@ class VersionUpdaterCrosTest : public ::testing::Test {
 
   void SetUp() override {
     fake_update_engine_client_ = new FakeUpdateEngineClient();
-    std::unique_ptr<DBusThreadManagerSetter> dbus_setter =
-        DBusThreadManager::GetSetterForTesting();
-    dbus_setter->SetUpdateEngineClient(
+    DBusThreadManager::Initialize();
+    DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
         std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
 
     EXPECT_CALL(*mock_user_manager_, IsCurrentUserOwner())

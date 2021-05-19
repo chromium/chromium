@@ -171,6 +171,7 @@ class SmbServiceWithSmbfsTest : public testing::Test {
         std::move(user_manager_temp));
 
     // This isn't used, but still needs to exist.
+    chromeos::DBusThreadManager::Initialize();
     chromeos::DBusThreadManager::GetSetterForTesting()->SetSmbProviderClient(
         std::make_unique<FakeSmbProviderClient>());
     chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);

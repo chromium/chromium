@@ -189,10 +189,8 @@ class EnableDebuggingTestBase : public OobeBaseTest {
         chromeos::switches::kDisableHIDDetectionOnOOBEForTesting);
   }
   void SetUpInProcessBrowserTestFixture() override {
-    std::unique_ptr<DBusThreadManagerSetter> dbus_setter =
-        chromeos::DBusThreadManager::GetSetterForTesting();
     debug_daemon_client_ = new TestDebugDaemonClient;
-    dbus_setter->SetDebugDaemonClient(
+    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
         std::unique_ptr<DebugDaemonClient>(debug_daemon_client_));
 
     OobeBaseTest::SetUpInProcessBrowserTestFixture();
@@ -373,9 +371,7 @@ class EnableDebuggingNonDevTest : public EnableDebuggingTestBase {
   EnableDebuggingNonDevTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    std::unique_ptr<DBusThreadManagerSetter> dbus_setter =
-        chromeos::DBusThreadManager::GetSetterForTesting();
-    dbus_setter->SetDebugDaemonClient(
+    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
         std::unique_ptr<DebugDaemonClient>(new FakeDebugDaemonClient));
     EnableDebuggingTestBase::SetUpInProcessBrowserTestFixture();
   }

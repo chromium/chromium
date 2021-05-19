@@ -522,6 +522,7 @@ class DiskMountManagerTest : public testing::Test {
   // Adds a test observer to the disk mount manager.
   void SetUp() override {
     fake_cros_disks_client_ = new FakeCrosDisksClient;
+    DBusThreadManager::Initialize();
     DBusThreadManager::GetSetterForTesting()->SetCrosDisksClient(
         std::unique_ptr<CrosDisksClient>(fake_cros_disks_client_));
     PowerManagerClient::InitializeFake();

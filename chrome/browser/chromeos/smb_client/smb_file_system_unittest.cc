@@ -67,6 +67,7 @@ class SmbFileSystemTest : public testing::Test {
     // The mock needs to be marked as leaked because ownership is passed to
     // DBusThreadManager.
     testing::Mock::AllowLeak(mock_client.get());
+    chromeos::DBusThreadManager::Initialize();
     chromeos::DBusThreadManager::GetSetterForTesting()->SetSmbProviderClient(
         std::move(mock_client));
   }
