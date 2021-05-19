@@ -55,8 +55,10 @@ class MockSurfaceGpu : public WaylandSurfaceGpu {
   }
   ~MockSurfaceGpu() { buffer_manager_->UnregisterSurface(widget_); }
 
-  MOCK_METHOD2(OnSubmission,
-               void(uint32_t buffer_id, const gfx::SwapResult& swap_result));
+  MOCK_METHOD3(OnSubmission,
+               void(uint32_t buffer_id,
+                    const gfx::SwapResult& swap_result,
+                    gfx::GpuFenceHandle release_fence));
   MOCK_METHOD2(OnPresentation,
                void(uint32_t buffer_id,
                     const gfx::PresentationFeedback& feedback));
@@ -497,7 +499,7 @@ TEST_P(WaylandBufferManagerTest, EnsureCorrectOrderOfCallbacks) {
   // All the other expectations must come in order.
   ::testing::InSequence sequence;
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   // wp_presentation must not exist now. This means that the buffer
   // manager must send synthetized presentation feedbacks.
@@ -520,7 +522,7 @@ TEST_P(WaylandBufferManagerTest, EnsureCorrectOrderOfCallbacks) {
   Sync();
 
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId2, _)).Times(1);
 
@@ -551,7 +553,7 @@ TEST_P(WaylandBufferManagerTest, EnsureCorrectOrderOfCallbacks) {
   // Even though, the server send the presentation feeedback, the host manager
   // must make sure the order of the submission and presentation callbacks is
   // correct. Thus, no callbacks must be received by the MockSurfaceGpu.
-  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _)).Times(0);
+  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _, _)).Times(0);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
 
   mock_wp_presentation->SendPresentationCallback();
@@ -559,7 +561,7 @@ TEST_P(WaylandBufferManagerTest, EnsureCorrectOrderOfCallbacks) {
   Sync();
 
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
 
@@ -619,7 +621,7 @@ TEST_P(WaylandBufferManagerTest,
   // Commit the first buffer and expect OnSubmission immediately.
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
   mock_surface->SendFrameCallback();
@@ -637,7 +639,7 @@ TEST_P(WaylandBufferManagerTest,
   // Destroy the first buffer, which should trigger submission for the second
   // buffer.
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, /*fail=*/false);
   mock_surface->DestroyPrevAttachedBuffer();
@@ -659,7 +661,7 @@ TEST_P(WaylandBufferManagerTest,
   // Destroy buffer 2, which should trigger OnSubmission for buffer 3, and
   // OnPresentation for buffer 1, 2, and 3.
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId3, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId3, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(
       mock_surface_gpu,
@@ -728,7 +730,7 @@ TEST_P(WaylandBufferManagerTest,
   // All the other expectations must come in order.
   ::testing::InSequence sequence;
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
 
@@ -746,7 +748,7 @@ TEST_P(WaylandBufferManagerTest,
   Sync();
 
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
 
@@ -766,7 +768,7 @@ TEST_P(WaylandBufferManagerTest,
   Sync();
 
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId3, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId3, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
 
@@ -1007,7 +1009,7 @@ TEST_P(WaylandBufferManagerTest, AnonymousBufferAttachedAndReleased) {
   // All the other expectations must come in order.
   ::testing::InSequence sequence;
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
 
@@ -1031,7 +1033,7 @@ TEST_P(WaylandBufferManagerTest, AnonymousBufferAttachedAndReleased) {
                                                false /* fail */);
 
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId2, _)).Times(1);
 
@@ -1056,7 +1058,7 @@ TEST_P(WaylandBufferManagerTest, AnonymousBufferAttachedAndReleased) {
   Sync();
 
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId3, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId3, gfx::SwapResult::SWAP_ACK, _))
       .Times(0);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId3, _)).Times(0);
 
@@ -1065,7 +1067,7 @@ TEST_P(WaylandBufferManagerTest, AnonymousBufferAttachedAndReleased) {
   Sync();
 
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId3, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId3, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId3, _)).Times(1);
 
@@ -1124,7 +1126,7 @@ TEST_P(WaylandBufferManagerTest, DestroyedWindowNoSubmissionSingleBuffer) {
 
   // All the other expectations must come in order.
   ::testing::InSequence sequence;
-  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _)).Times(0);
+  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _, _)).Times(0);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
 
   temp_window.reset();
@@ -1167,7 +1169,7 @@ TEST_P(WaylandBufferManagerTest, DestroyedWindowNoSubmissionMultipleBuffers) {
 
   // All the other expectations must come in order.
   ::testing::InSequence sequence;
-  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _)).Times(1);
+  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _, _)).Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(1);
 
   buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
@@ -1186,7 +1188,7 @@ TEST_P(WaylandBufferManagerTest, DestroyedWindowNoSubmissionMultipleBuffers) {
   Sync();
 
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId2, _)).Times(1);
 
@@ -1198,7 +1200,7 @@ TEST_P(WaylandBufferManagerTest, DestroyedWindowNoSubmissionMultipleBuffers) {
 
   Sync();
 
-  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _)).Times(0);
+  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _, _)).Times(0);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
   temp_window.reset();
 
@@ -1234,7 +1236,7 @@ TEST_P(WaylandBufferManagerTest, DestroyBufferCommittedTwiceInARow) {
                                                false /* fail */);
 
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
 
@@ -1244,7 +1246,7 @@ TEST_P(WaylandBufferManagerTest, DestroyBufferCommittedTwiceInARow) {
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
 
   // Can't call OnSubmission until there is a release.
-  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _)).Times(0);
+  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _, _)).Times(0);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
 
   buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, bounds);
@@ -1265,7 +1267,7 @@ TEST_P(WaylandBufferManagerTest, DestroyBufferCommittedTwiceInARow) {
 
   // Destroying buffer1 should give us two acks for buffer2.
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK, _))
       .Times(2);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId2, _)).Times(2);
   DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
@@ -1298,7 +1300,7 @@ TEST_P(WaylandBufferManagerTest, ReleaseBufferCommittedTwiceInARow) {
                                                false /* fail */);
 
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
 
@@ -1309,7 +1311,7 @@ TEST_P(WaylandBufferManagerTest, ReleaseBufferCommittedTwiceInARow) {
   auto* wl_buffer1 = mock_surface->attached_buffer();
 
   // Can't call OnSubmission until there is a release.
-  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _)).Times(0);
+  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _, _)).Times(0);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
 
   buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, bounds);
@@ -1324,7 +1326,7 @@ TEST_P(WaylandBufferManagerTest, ReleaseBufferCommittedTwiceInARow) {
 
   // Releasing buffer1 should trigger two acks for buffer2.
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK, _))
       .Times(2);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId2, _)).Times(2);
   mock_surface->ReleaseBuffer(wl_buffer1);
@@ -1362,7 +1364,7 @@ TEST_P(WaylandBufferManagerTest, ReleaseOrderDifferentToCommitOrder) {
                                                false /* fail */);
 
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
@@ -1374,7 +1376,7 @@ TEST_P(WaylandBufferManagerTest, ReleaseOrderDifferentToCommitOrder) {
   auto* wl_buffer1 = mock_surface->attached_buffer();
 
   // Can't call OnSubmission until there is a release.
-  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _)).Times(0);
+  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _, _)).Times(0);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(2);
 
@@ -1391,19 +1393,19 @@ TEST_P(WaylandBufferManagerTest, ReleaseOrderDifferentToCommitOrder) {
 
   // Releasing buffer2 can't trigger OnSubmission for buffer3, because
   // OnSubmission for buffer2 has not been sent yet.
-  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _)).Times(0);
+  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _, _)).Times(0);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
   mock_surface->ReleaseBuffer(wl_buffer2);
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
 
   // Releasing buffer1 should trigger acks for both.
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId2, _)).Times(1);
 
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId3, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId3, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId3, _)).Times(1);
   mock_surface->ReleaseBuffer(wl_buffer1);
@@ -1440,7 +1442,7 @@ TEST_P(WaylandBufferManagerTest,
                                                false /* fail */);
 
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   ASSERT_TRUE(!connection_->presentation());
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
@@ -1460,7 +1462,7 @@ TEST_P(WaylandBufferManagerTest,
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
   testing::Mock::VerifyAndClearExpectations(mock_surface);
 
-  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _)).Times(0);
+  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _, _)).Times(0);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
 
   mock_surface->SendFrameCallback();
@@ -1483,7 +1485,7 @@ TEST_P(WaylandBufferManagerTest,
   testing::Mock::VerifyAndClearExpectations(mock_surface);
 
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId2, _)).Times(1);
 
@@ -1504,7 +1506,7 @@ TEST_P(WaylandBufferManagerTest,
   // sends the submission callback, the compositor is not going to release a
   // buffer as it was the same buffer submitted more than once.
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId2, _)).Times(1);
 
@@ -1523,7 +1525,7 @@ TEST_P(WaylandBufferManagerTest,
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
   testing::Mock::VerifyAndClearExpectations(mock_surface);
 
-  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _)).Times(0);
+  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _, _)).Times(0);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
 
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(0);
@@ -1540,7 +1542,7 @@ TEST_P(WaylandBufferManagerTest,
 
   // If we commit another buffer now, the manager host must not automatically
   // trigger OnSubmission and OnPresentation callbacks.
-  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _)).Times(0);
+  EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _, _)).Times(0);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
 
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
@@ -1559,7 +1561,7 @@ TEST_P(WaylandBufferManagerTest,
 
   // Now, they must be triggered once the buffer is released.
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
 
@@ -1595,7 +1597,7 @@ TEST_P(WaylandBufferManagerTest, OnSubmissionCalledForSingleBuffer) {
                                                false /* fail */);
 
   EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK))
+              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
 

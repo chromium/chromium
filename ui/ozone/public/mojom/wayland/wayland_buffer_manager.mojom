@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/accelerated_widget.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
+import "ui/gfx/mojom/gpu_fence_handle.mojom";
 import "ui/gfx/mojom/presentation_feedback.mojom";
 import "ui/gfx/mojom/swap_result.mojom";
 import "ui/ozone/public/mojom/wayland/wayland_overlay_config.mojom";
@@ -102,7 +103,8 @@ interface WaylandBufferManagerGpu {
   // Signals about swap completion.
   OnSubmission(gfx.mojom.AcceleratedWidget widget,
                uint32 buffer_id,
-               gfx.mojom.SwapResult swap_result);
+               gfx.mojom.SwapResult swap_result,
+               gfx.mojom.GpuFenceHandle? release_fence_handle);
 
   // Signals about presentation.
   OnPresentation(gfx.mojom.AcceleratedWidget widget,

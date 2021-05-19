@@ -63,7 +63,8 @@ void WaylandBufferManagerGpu::Initialize(
 
 void WaylandBufferManagerGpu::OnSubmission(gfx::AcceleratedWidget widget,
                                            uint32_t buffer_id,
-                                           gfx::SwapResult swap_result) {
+                                           gfx::SwapResult swap_result,
+                                           gfx::GpuFenceHandle release_fence) {
   base::AutoLock scoped_lock(lock_);
   DCHECK(io_thread_runner_->BelongsToCurrentThread());
   DCHECK_LE(commit_thread_runners_.count(widget), 1u);
@@ -74,7 +75,8 @@ void WaylandBufferManagerGpu::OnSubmission(gfx::AcceleratedWidget widget,
   it->second->PostTask(
       FROM_HERE,
       base::BindOnce(&WaylandBufferManagerGpu::SubmitSwapResultOnOriginThread,
-                     base::Unretained(this), widget, buffer_id, swap_result));
+                     base::Unretained(this), widget, buffer_id, swap_result,
+                     std::move(release_fence)));
 }
 
 void WaylandBufferManagerGpu::OnPresentation(
@@ -322,12 +324,13 @@ void WaylandBufferManagerGpu::ForgetTaskRunnerForWidgetOnIOThread(
 void WaylandBufferManagerGpu::SubmitSwapResultOnOriginThread(
     gfx::AcceleratedWidget widget,
     uint32_t buffer_id,
-    gfx::SwapResult swap_result) {
+    gfx::SwapResult swap_result,
+    gfx::GpuFenceHandle release_fence) {
   DCHECK_NE(widget, gfx::kNullAcceleratedWidget);
   auto* surface = GetSurface(widget);
   // The surface might be destroyed by the time the swap result is provided.
   if (surface)
-    surface->OnSubmission(buffer_id, swap_result);
+    surface->OnSubmission(buffer_id, swap_result, std::move(release_fence));
 }
 
 void WaylandBufferManagerGpu::SubmitPresentationOnOriginThread(

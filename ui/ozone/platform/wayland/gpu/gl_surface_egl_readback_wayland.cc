@@ -133,7 +133,9 @@ GLSurfaceEglReadbackWayland::~GLSurfaceEglReadbackWayland() {
 
 void GLSurfaceEglReadbackWayland::OnSubmission(
     uint32_t buffer_id,
-    const gfx::SwapResult& swap_result) {
+    const gfx::SwapResult& swap_result,
+    gfx::GpuFenceHandle release_fence) {
+  DCHECK(release_fence.is_null());
   --pending_frames_;
 
   if (in_flight_pixel_buffers_.front()) {

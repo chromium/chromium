@@ -229,7 +229,8 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
   // it with the presentation feedback.
   void OnSubmission(gfx::AcceleratedWidget widget,
                     uint32_t buffer_id,
-                    const gfx::SwapResult& swap_result);
+                    const gfx::SwapResult& swap_result,
+                    gfx::GpuFenceHandle release_fence);
   void OnPresentation(gfx::AcceleratedWidget widget,
                       uint32_t buffer_id,
                       const gfx::PresentationFeedback& feedback);

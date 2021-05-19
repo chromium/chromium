@@ -16,6 +16,7 @@
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_drm.h"
@@ -519,7 +520,8 @@ class WaylandBufferManagerHost::Surface {
     // release because SwapCompletionCallback indicates to the client that the
     // previous buffer is available for reuse.
     buffer_manager_->OnSubmission(wayland_surface_->GetWidget(), buffer_id,
-                                  gfx::SwapResult::SWAP_ACK);
+                                  gfx::SwapResult::SWAP_ACK,
+                                  /*release_fence=*/gfx::GpuFenceHandle());
 
     // If presentation feedback is not supported, use a fake feedback. This
     // literally means there are no presentation feedback callbacks created.
@@ -1250,14 +1252,15 @@ void WaylandBufferManagerHost::OnCreateBufferComplete(
   // be destroyed.
 }
 
-void WaylandBufferManagerHost::OnSubmission(
-    gfx::AcceleratedWidget widget,
-    uint32_t buffer_id,
-    const gfx::SwapResult& swap_result) {
+void WaylandBufferManagerHost::OnSubmission(gfx::AcceleratedWidget widget,
+                                            uint32_t buffer_id,
+                                            const gfx::SwapResult& swap_result,
+                                            gfx::GpuFenceHandle release_fence) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   DCHECK(buffer_manager_gpu_associated_);
-  buffer_manager_gpu_associated_->OnSubmission(widget, buffer_id, swap_result);
+  buffer_manager_gpu_associated_->OnSubmission(widget, buffer_id, swap_result,
+                                               std::move(release_fence));
 }
 
 void WaylandBufferManagerHost::OnPresentation(

@@ -59,7 +59,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // OnSubmission call, it can schedule a new buffer for swap.
   void OnSubmission(gfx::AcceleratedWidget widget,
                     uint32_t buffer_id,
-                    gfx::SwapResult swap_result) override;
+                    gfx::SwapResult swap_result,
+                    gfx::GpuFenceHandle release_fence_handle) override;
   void OnPresentation(gfx::AcceleratedWidget widget,
                       uint32_t buffer_id,
                       const gfx::PresentationFeedback& feedback) override;
@@ -172,7 +173,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // presentation results.
   void SubmitSwapResultOnOriginThread(gfx::AcceleratedWidget widget,
                                       uint32_t buffer_id,
-                                      gfx::SwapResult swap_result);
+                                      gfx::SwapResult swap_result,
+                                      gfx::GpuFenceHandle release_fence);
   void SubmitPresentationOnOriginThread(
       gfx::AcceleratedWidget widget,
       uint32_t buffer_id,

@@ -274,7 +274,9 @@ void GbmSurfacelessWayland::SetNoGLFlushForTests() {
 }
 
 void GbmSurfacelessWayland::OnSubmission(BufferId buffer_id,
-                                         const gfx::SwapResult& swap_result) {
+                                         const gfx::SwapResult& swap_result,
+                                         gfx::GpuFenceHandle release_fence) {
+  DCHECK(release_fence.is_null());
   // submitted_frames_ may temporarily have more than one buffer in it if
   // buffers are released out of order by the Wayland server.
   DCHECK(!submitted_frames_.empty() || background_buffer_id_ == buffer_id);
