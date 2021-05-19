@@ -42,6 +42,10 @@ bool IsTargetHostAllowlistedBySafetyTipsComponent(const SafetyTipsConfig* proto,
 // in sorted order.
 security_state::SafetyTipStatus GetSafetyTipUrlBlockType(const GURL& url);
 
+// Returns whether |word| is included in the component updater common word list
+bool IsCommonWordInConfigProto(const SafetyTipsConfig* proto,
+                               const std::string& word);
+
 }  // namespace reputation
 
 #endif  // COMPONENTS_REPUTATION_CORE_SAFETY_TIPS_CONFIG_H_

@@ -115,7 +115,7 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
         return false;
       });
   if (!GetMatchingDomain(navigated_domain, engaged_sites, in_target_allowlist,
-                         &matched_domain, &match_type)) {
+                         proto, &matched_domain, &match_type)) {
     if (base::FeatureList::IsEnabled(
             lookalikes::features::kLookalikeInterstitialForPunycode) &&
         ShouldBlockBySpoofCheckResult(navigated_domain)) {

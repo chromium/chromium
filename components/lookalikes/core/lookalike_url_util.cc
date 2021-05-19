@@ -27,6 +27,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/lookalikes/core/features.h"
+#include "components/reputation/core/safety_tips_config.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/core/features.h"
 #include "components/url_formatter/spoof_checks/common_words/common_words_util.h"
@@ -285,7 +286,8 @@ bool DoesETLDPlus1MatchTopDomainOrEngagedSite(
 // Returns whether the e2LD of the provided domain is a common word (e.g.
 // weather.com, ask.com). Target embeddings of these domains are often false
 // positives (e.g. "super-best-fancy-hotels.com" isn't spoofing "hotels.com").
-bool UsesCommonWord(const DomainInfo& domain) {
+bool UsesCommonWord(const reputation::SafetyTipsConfig* config_proto,
+                    const DomainInfo& domain) {
   // kDomainsPermittedInEndEmbeddings are based on domains with common words,
   // but they should not be excluded here (and instead are checked later).
   for (auto* permitted_ending : kDomainsPermittedInEndEmbeddings) {
@@ -300,7 +302,13 @@ bool UsesCommonWord(const DomainInfo& domain) {
     return true;
   }
 
-  // Also check the local lists.
+  // Search for words in the component-provided word list.
+  if (reputation::IsCommonWordInConfigProto(config_proto,
+                                            domain.domain_without_registry)) {
+    return true;
+  }
+
+  // Search for words in the local word lists.
   for (auto* common_word : kLocalAdditionalCommonWords) {
     if (domain.domain_without_registry == common_word) {
       return true;
@@ -369,8 +377,9 @@ bool IsAllowedToBeEmbedded(
     const DomainInfo& embedded_target,
     const base::span<const base::StringPiece>& subdomain_span,
     const LookalikeTargetAllowlistChecker& in_target_allowlist,
-    const std::string& embedding_domain) {
-  return UsesCommonWord(embedded_target) ||
+    const std::string& embedding_domain,
+    const reputation::SafetyTipsConfig* config_proto) {
+  return UsesCommonWord(config_proto, embedded_target) ||
          ASubdomainIsAllowlisted(subdomain_span, in_target_allowlist) ||
          IsEmbeddingItself(subdomain_span, embedding_domain) ||
          IsCrossTLDMatch(embedded_target, embedding_domain) ||
@@ -614,6 +623,7 @@ bool GetMatchingDomain(
     const DomainInfo& navigated_domain,
     const std::vector<DomainInfo>& engaged_sites,
     const LookalikeTargetAllowlistChecker& in_target_allowlist,
+    const reputation::SafetyTipsConfig* config_proto,
     std::string* matched_domain,
     LookalikeUrlMatchType* match_type) {
   DCHECK(!navigated_domain.domain_and_registry.empty());
@@ -674,7 +684,7 @@ bool GetMatchingDomain(
 
   TargetEmbeddingType embedding_type =
       GetTargetEmbeddingType(navigated_domain.hostname, engaged_sites,
-                             in_target_allowlist, matched_domain);
+                             in_target_allowlist, config_proto, matched_domain);
   if (embedding_type == TargetEmbeddingType::kSafetyTip) {
     *match_type = LookalikeUrlMatchType::kTargetEmbeddingForSafetyTips;
     return true;
@@ -723,6 +733,7 @@ TargetEmbeddingType GetTargetEmbeddingType(
     const std::string& hostname,
     const std::vector<DomainInfo>& engaged_sites,
     const LookalikeTargetAllowlistChecker& in_target_allowlist,
+    const reputation::SafetyTipsConfig* config_proto,
     std::string* safe_hostname) {
   // Because of how target embeddings are detected (i.e. by sweeping the URL
   // from back to front), we're guaranteed to find tail-embedding before other
@@ -730,13 +741,13 @@ TargetEmbeddingType GetTargetEmbeddingType(
   // are more important than safety tips, so if we find a safety tippable
   // embedding with SearchForEmbeddings, go search again not permitting safety
   // tips to see if we can also find an interstitiallable embedding.
-  auto result =
-      SearchForEmbeddings(hostname, engaged_sites, in_target_allowlist,
-                          /*safety_tips_allowed=*/true, safe_hostname);
+  auto result = SearchForEmbeddings(
+      hostname, engaged_sites, in_target_allowlist, config_proto,
+      /*safety_tips_allowed=*/true, safe_hostname);
   if (result == TargetEmbeddingType::kSafetyTip) {
     std::string no_st_safe_hostname;
     auto no_st_result = SearchForEmbeddings(
-        hostname, engaged_sites, in_target_allowlist,
+        hostname, engaged_sites, in_target_allowlist, config_proto,
         /*safety_tips_allowed=*/false, &no_st_safe_hostname);
     if (no_st_result == TargetEmbeddingType::kNone) {
       return result;
@@ -751,6 +762,7 @@ TargetEmbeddingType SearchForEmbeddings(
     const std::string& hostname,
     const std::vector<DomainInfo>& engaged_sites,
     const LookalikeTargetAllowlistChecker& in_target_allowlist,
+    const reputation::SafetyTipsConfig* config_proto,
     bool safety_tips_allowed,
     std::string* safe_hostname) {
   const std::string embedding_domain = GetETLDPlusOne(hostname);
@@ -791,7 +803,8 @@ TargetEmbeddingType SearchForEmbeddings(
       if (no_separator_dominfo.domain_without_registry.length() >
               kMinE2LDLengthForTargetEmbedding &&
           !IsAllowedToBeEmbedded(no_separator_dominfo, no_separator_tokens,
-                                 in_target_allowlist, embedding_domain)) {
+                                 in_target_allowlist, embedding_domain,
+                                 config_proto)) {
         *safe_hostname = embedded_target;
         return TargetEmbeddingType::kInterstitial;
       }
@@ -820,7 +833,7 @@ TargetEmbeddingType SearchForEmbeddings(
       for (auto& engaged_site : engaged_sites) {
         if (engaged_site.hostname == embedded_dominfo.hostname &&
             !IsAllowedToBeEmbedded(embedded_dominfo, span, in_target_allowlist,
-                                   embedding_domain)) {
+                                   embedding_domain, config_proto)) {
           *safe_hostname = engaged_site.hostname;
           // Tail-embedding (e.g. evil-google.com, where the embedding happens
           // at the very end of the hostname) is a safety tip, but only when
@@ -840,7 +853,8 @@ TargetEmbeddingType SearchForEmbeddings(
     if (DoesETLDPlus1MatchTopDomainOrEngagedSite(
             etld_check_dominfo, engaged_sites, safe_hostname) &&
         !IsAllowedToBeEmbedded(etld_check_dominfo, etld_check_span,
-                               in_target_allowlist, embedding_domain)) {
+                               in_target_allowlist, embedding_domain,
+                               config_proto)) {
       // Tail-embedding (e.g. evil-google.com, where the embedding happens at
       // the very end of the hostname) is a safety tip, but only when safety
       // tips are allowed. If it's tail embedding but we can't create a safety

@@ -5,6 +5,7 @@
 #include "components/reputation/core/safety_tips_config.h"
 
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
@@ -167,6 +168,22 @@ security_state::SafetyTipStatus GetSafetyTipUrlBlockType(const GURL& url) {
   }
 
   return security_state::SafetyTipStatus::kNone;
+}
+
+bool IsCommonWordInConfigProto(const SafetyTipsConfig* proto,
+                               const std::string& word) {
+  // proto is nullptr when running in non-Lookalike tests.
+  if (proto == nullptr) {
+    return false;
+  }
+
+  auto common_words = proto->common_word();
+  DCHECK(base::ranges::is_sorted(common_words.begin(), common_words.end()));
+  auto lower = std::lower_bound(
+      common_words.begin(), common_words.end(), word,
+      [](const std::string& a, const std::string& b) -> bool { return a < b; });
+
+  return lower != common_words.end() && word == *lower;
 }
 
 }  // namespace reputation

@@ -101,7 +101,7 @@ TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponse) {
 TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponseForAllowlistedDomains) {
   GURL lookalike_url("https://xn--googl-fsa.com/");
   reputation::InitializeSafetyTipConfig();
-  reputation::SetSafetyTipAllowlistPatterns({"xn--googl-fsa.com/"}, {});
+  reputation::SetSafetyTipAllowlistPatterns({"xn--googl-fsa.com/"}, {}, {});
 
   EXPECT_TRUE(ShouldAllowResponseUrl(lookalike_url, /*main_frame=*/true)
                   .ShouldAllowNavigation());

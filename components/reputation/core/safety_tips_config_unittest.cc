@@ -13,7 +13,7 @@
 namespace reputation {
 
 TEST(SafetyTipsConfigTest, TestUrlAllowlist) {
-  SetSafetyTipAllowlistPatterns({"example.com/"}, {});
+  SetSafetyTipAllowlistPatterns({"example.com/"}, {}, {});
   auto* config = GetSafetyTipsRemoteConfigProto();
   EXPECT_TRUE(IsUrlAllowlistedBySafetyTipsComponent(
       config, GURL("http://example.com")));
@@ -22,12 +22,22 @@ TEST(SafetyTipsConfigTest, TestUrlAllowlist) {
 }
 
 TEST(SafetyTipsConfigTest, TestTargetUrlAllowlist) {
-  SetSafetyTipAllowlistPatterns({}, {"exa.*\\.com"});
+  SetSafetyTipAllowlistPatterns({}, {"exa.*\\.com"}, {});
   auto* config = GetSafetyTipsRemoteConfigProto();
   EXPECT_TRUE(
       IsTargetHostAllowlistedBySafetyTipsComponent(config, "example.com"));
   EXPECT_FALSE(
       IsTargetHostAllowlistedBySafetyTipsComponent(config, "example.org"));
+}
+
+TEST(SafetyTipsConfigTest, TestCommonWords) {
+  // IsCommonWordInConfigProto does a binary search of sorted common words.
+  SetSafetyTipAllowlistPatterns({}, {}, {"common3", "common1", "common2"});
+  auto* config = GetSafetyTipsRemoteConfigProto();
+  EXPECT_TRUE(IsCommonWordInConfigProto(config, "common1"));
+  EXPECT_TRUE(IsCommonWordInConfigProto(config, "common2"));
+  EXPECT_TRUE(IsCommonWordInConfigProto(config, "common3"));
+  EXPECT_FALSE(IsCommonWordInConfigProto(config, "uncommon"));
 }
 
 }  // namespace reputation

@@ -66,7 +66,7 @@ bool ShouldTriggerSafetyTipFromLookalike(
       base::BindRepeating(
           &reputation::IsTargetHostAllowlistedBySafetyTipsComponent, config);
   if (!GetMatchingDomain(navigated_domain, engaged_sites, in_target_allowlist,
-                         &matched_domain, &match_type)) {
+                         config, &matched_domain, &match_type)) {
     return false;
   }
 

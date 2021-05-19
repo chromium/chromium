@@ -31,7 +31,8 @@ void SetSafetyTipBadRepPatterns(std::vector<std::string> pattern);
 // |target_patterns| is the list of hostname regexes allowed to be targets of
 // lookalikes.
 void SetSafetyTipAllowlistPatterns(std::vector<std::string> patterns,
-                                   std::vector<std::string> target_patterns);
+                                   std::vector<std::string> target_patterns,
+                                   std::vector<std::string> common_words);
 
 // Ensure that the allowlist has been initialized. This is important as some
 // code (e.g. the elision policy) is fail-open (i.e. it won't elide without an

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/reputation/core/safety_tips.pb.h"
 #include "components/url_formatter/url_formatter.h"
 #include "url/gurl.h"
 
@@ -162,6 +163,7 @@ bool GetMatchingDomain(
     const DomainInfo& navigated_domain,
     const std::vector<DomainInfo>& engaged_sites,
     const LookalikeTargetAllowlistChecker& in_target_allowlist,
+    const reputation::SafetyTipsConfig* config_proto,
     std::string* matched_domain,
     LookalikeUrlMatchType* match_type);
 
@@ -174,6 +176,7 @@ TargetEmbeddingType GetTargetEmbeddingType(
     const std::string& hostname,
     const std::vector<DomainInfo>& engaged_sites,
     const LookalikeTargetAllowlistChecker& in_target_allowlist,
+    const reputation::SafetyTipsConfig* config_proto,
     std::string* safe_hostname);
 
 // Same as GetTargetEmbeddingType, but explicitly state whether or not a safety
@@ -185,6 +188,7 @@ TargetEmbeddingType SearchForEmbeddings(
     const std::string& hostname,
     const std::vector<DomainInfo>& engaged_sites,
     const LookalikeTargetAllowlistChecker& in_target_allowlist,
+    const reputation::SafetyTipsConfig* config_proto,
     bool safety_tips_allowed,
     std::string* safe_hostname);
 

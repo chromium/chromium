@@ -76,7 +76,7 @@ TEST_F(UrlElisionPolicyTest, DoesntElideAllowlistedDomains) {
 
   // ...but not when allowlisted.
   reputation::SetSafetyTipAllowlistPatterns(
-      {"alongbutstillallowlisteddomain.com/"}, {});
+      {"alongbutstillallowlisteddomain.com/"}, {}, {});
   EXPECT_FALSE(ShouldElideToRegistrableDomain(kUrl));
 }
 

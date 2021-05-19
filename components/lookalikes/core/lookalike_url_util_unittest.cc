@@ -7,6 +7,8 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/lookalikes/core/features.h"
+#include "components/reputation/core/safety_tip_test_utils.h"
+#include "components/reputation/core/safety_tips_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 std::string TargetEmbeddingTypeToString(TargetEmbeddingType type) {
@@ -151,7 +153,7 @@ struct TargetEmbeddingHeuristicTestCase {
   const TargetEmbeddingType expected_type;
 };
 
-TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
+TEST(LookalikeUrlUtilTest, TargetEmbedding) {
   const std::vector<DomainInfo> kEngagedSites = {
       GetDomainInfo(GURL("https://highengagement.com")),
       GetDomainInfo(GURL("https://highengagement.inthesubdomain.com")),
@@ -318,11 +320,14 @@ TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
       {"example-google.com", "google.com", TargetEmbeddingType::kSafetyTip},
   };
 
+  reputation::InitializeBlankLookalikeAllowlistForTesting();
+  auto* config_proto = reputation::GetSafetyTipsRemoteConfigProto();
+
   for (auto& test_case : kTestCases) {
     std::string safe_hostname;
     TargetEmbeddingType embedding_type = GetTargetEmbeddingType(
         test_case.hostname, kEngagedSites,
-        base::BindRepeating(&IsGoogleScholar), &safe_hostname);
+        base::BindRepeating(&IsGoogleScholar), config_proto, &safe_hostname);
     if (test_case.expected_type != TargetEmbeddingType::kNone) {
       EXPECT_EQ(safe_hostname, test_case.expected_safe_host)
           << test_case.hostname << " should trigger on "
@@ -341,6 +346,30 @@ TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
           << safe_hostname;
     }
   }
+}
+
+TEST(LookalikeUrlUtilTest, TargetEmbeddingIgnoresComponentWordlist) {
+  const std::vector<DomainInfo> kEngagedSites = {
+      GetDomainInfo(GURL("https://commonword.com")),
+      GetDomainInfo(GURL("https://uncommonword.com")),
+  };
+
+  reputation::SetSafetyTipAllowlistPatterns({}, {}, {"commonword"});
+  auto* config_proto = reputation::GetSafetyTipsRemoteConfigProto();
+  TargetEmbeddingType embedding_type;
+  std::string safe_hostname;
+
+  // Engaged sites using uncommon words are still blocked.
+  embedding_type = GetTargetEmbeddingType(
+      "uncommonword.com.evil.com", kEngagedSites,
+      base::BindRepeating(&IsGoogleScholar), config_proto, &safe_hostname);
+  EXPECT_EQ(embedding_type, TargetEmbeddingType::kInterstitial);
+
+  // But engaged sites using common words are not blocked.
+  embedding_type = GetTargetEmbeddingType(
+      "commonword.com.evil.com", kEngagedSites,
+      base::BindRepeating(&IsGoogleScholar), config_proto, &safe_hostname);
+  EXPECT_EQ(embedding_type, TargetEmbeddingType::kNone);
 }
 
 struct GetETLDPlusOneTestCase {

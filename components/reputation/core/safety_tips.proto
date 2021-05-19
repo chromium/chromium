@@ -65,4 +65,9 @@ message SafetyTipsConfig {
   //   In these cases it's simpler to allowlist the target instead of the
   //   embedder.
   repeated HostPattern allowed_target_pattern = 4;
+
+  // A *sorted* list of common words. These words are combined with the list at
+  // components/url_formatter/spoof_checks/common_words. The combined list is
+  // used in some lookalike heuristics to prevent common false positives.
+  repeated string common_word = 5;
 }

@@ -14,6 +14,8 @@ static_library("core") {
     "//base",
     "//components/pref_registry",
     "//components/prefs:prefs",
+    "//components/reputation/core:core",
+    "//components/reputation/core:proto",
     "//components/security_interstitials/core",
     "//components/security_state/core:features",
     "//components/strings",
@@ -36,6 +38,7 @@ source_set("unit_tests") {
   deps = [
     ":core",
     ":features",
+    "//components/reputation/core",
     "//net:test_support",
     "//testing/gtest",
   ]

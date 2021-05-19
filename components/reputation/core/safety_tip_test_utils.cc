@@ -53,13 +53,16 @@ void SetSafetyTipBadRepPatterns(std::vector<std::string> patterns) {
 }
 
 void SetSafetyTipAllowlistPatterns(std::vector<std::string> patterns,
-                                   std::vector<std::string> target_patterns) {
+                                   std::vector<std::string> target_patterns,
+                                   std::vector<std::string> common_words) {
   auto config_proto = GetConfig();
   config_proto->clear_allowed_pattern();
   config_proto->clear_allowed_target_pattern();
+  config_proto->clear_common_word();
 
   std::sort(patterns.begin(), patterns.end());
   std::sort(target_patterns.begin(), target_patterns.end());
+  std::sort(common_words.begin(), common_words.end());
 
   for (const auto& pattern : patterns) {
     UrlPattern* page = config_proto->add_allowed_pattern();
@@ -69,11 +72,14 @@ void SetSafetyTipAllowlistPatterns(std::vector<std::string> patterns,
     HostPattern* page = config_proto->add_allowed_target_pattern();
     page->set_regex(pattern);
   }
+  for (const auto& word : common_words) {
+    config_proto->add_common_word(word);
+  }
   SetSafetyTipsRemoteConfigProto(std::move(config_proto));
 }
 
 void InitializeBlankLookalikeAllowlistForTesting() {
-  SetSafetyTipAllowlistPatterns({}, {});
+  SetSafetyTipAllowlistPatterns({}, {}, {});
 }
 
 }  // namespace reputation
