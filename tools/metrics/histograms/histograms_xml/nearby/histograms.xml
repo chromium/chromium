@@ -605,8 +605,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records if the user has the Nearby Share feature enabled, and if not,
     records why the feature is not enabled. For example, the feature is not
     allowed by policy, or the user onboarded but later disabled the feature.
-    Emitted when the Nearby Share service starts. This happens at login if the
-    feature flag is on.
+    Emitted on sign-in and whenever the feature state changes, for instance,
+    from disabled to enabled.
   </summary>
 </histogram>
 
