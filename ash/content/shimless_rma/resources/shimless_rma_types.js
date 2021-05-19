@@ -137,31 +137,60 @@ export let Component;
 /**
  * @typedef {{state: !RmaState, error: !RmadErrorCode}}
  */
- export let State;
-
- /**
-  * @typedef {{currentState: !RmaState, error: !RmadErrorCode}}
-  */
- export let CurrentState;
-
- /**
-  * @typedef {{nextState: !RmaState, error: !RmadErrorCode}}
-  */
- export let NextState;
-
- /**
-  * @typedef {{prevState: !RmaState, error: !RmadErrorCode}}
-  */
- export let PrevState;
+export let State;
 
 /**
- * Type alias for NetworkListObserver.
- * @typedef {{
- *   onError: !function(!RmadErrorCode)
- * }}
+ * @typedef {{currentState: !RmaState, error: !RmadErrorCode}}
+ */
+export let CurrentState;
+
+/**
+ * @typedef {{nextState: !RmaState, error: !RmadErrorCode}}
+ */
+export let NextState;
+
+/**
+ * @typedef {{prevState: !RmaState, error: !RmadErrorCode}}
+ */
+export let PrevState;
+
+/**
+ * Type alias for ErrorObserver.
+ * @typedef {{onError: !function(!RmadErrorCode)}}
  */
 export let ErrorObserver;
 
+/**
+ * Type alias for CalibrationProgressObserver.
+ * @typedef {{
+ *   onCalibrationUpdated: !function(!CalibrationComponent, number)
+ * }}
+ */
+export let CalibrationObserver;
+
+/**
+ * Type alias for ProvisioningProgressObserver.
+ * @typedef {{
+ *   onProvisioningUpdated: !function(!ProvisioningStep, number)
+ * }}
+ */
+export let ProvisioningObserver;
+
+/**
+ * Type alias for HardwareWriteProtectionState.
+ * @typedef {{
+ *   onHardwareWriteProtectionStateChanged: !function(boolean)
+ * }}
+ */
+export let HardwareWriteProtectionStateObserver;
+
+/**
+ * Type alias for PowerCableState.
+ * @typedef {{
+ *   onPowerCableStateChanged: !function(boolean)
+ * }}
+ */
+export let PowerCableStateObserver;
 
 /**
  * Type of ShimlessRmaServiceInterface.setStates function.

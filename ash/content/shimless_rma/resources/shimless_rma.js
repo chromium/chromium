@@ -71,6 +71,8 @@ export class ShimlessRmaElement extends PolymerElement {
   ready() {
     super.ready();
     this.shimlessRmaService_ = getShimlessRmaService();
+
+    // Get the initial state.
     this.fetchState_().then((state) => this.loadState_(state));
   }
 

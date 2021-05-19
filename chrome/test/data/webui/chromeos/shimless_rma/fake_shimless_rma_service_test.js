@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {ComponentRepairState, ComponentType, RmadErrorCode, RmaState, ShimlessRmaServiceInterface} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationComponent, CalibrationObserver, ComponentRepairState, ComponentType, ErrorObserver, HardwareWriteProtectionStateObserver, PowerCableStateObserver, ProvisioningObserver, ProvisioningStep, RmadErrorCode, RmaState, ShimlessRmaServiceInterface} from 'chrome://shimless-rma/shimless_rma_types.js';
 
-import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertGE, assertLE} from '../../chai_assert.js';
 
 export function fakeShimlessRmaServiceTestSuite() {
   /** @type {?FakeShimlessRmaService} */
@@ -18,6 +18,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   teardown(() => {
     service = null;
   });
+
 
   test('GetCurrentStateDefaultRmaNotRequired', () => {
     return service.getCurrentState().then((state) => {
@@ -673,5 +674,90 @@ export function fakeShimlessRmaServiceTestSuite() {
     return service.cutoffBattery().then((error) => {
       assertEquals(error.error, RmadErrorCode.kRequestInvalid);
     });
+  });
+
+  test('ObserveError', () => {
+    /** @type {!ErrorObserver} */
+    const errorObserver = /** @type {!ErrorObserver} */ ({
+      /**
+       * Implements ErrorObserver.onError()
+       * @param {!RmadErrorCode} error
+       */
+      onError(error) {
+        assertEquals(error, RmadErrorCode.kRequestInvalid);
+      }
+    });
+    service.observeError(errorObserver);
+    return service.triggerErrorObserver(RmadErrorCode.kRequestInvalid, 0);
+  });
+
+  test('ObserveCalibrationUpdate', () => {
+    /** @type {!CalibrationObserver} */
+    const calibrationObserver = /** @type {!CalibrationObserver} */ ({
+      /**
+       * Implements CalibrationObserver.onCalibrationUpdated()
+       * @param {!CalibrationComponent} component
+       * @param {number} progress
+       */
+      onCalibrationUpdated(component, progress) {
+        assertEquals(component, CalibrationComponent.kAccelerometer);
+        assertEquals(progress, 0.5);
+      }
+    });
+    service.observeCalibration(calibrationObserver);
+    return service.triggerCalibrationObserver(
+        CalibrationComponent.kAccelerometer, 0.5, 0);
+  });
+
+  test('ObserveProvisioningUpdate', () => {
+    /** @type {!ProvisioningObserver} */
+    const provisioningObserver = /** @type {!ProvisioningObserver} */ ({
+      /**
+       * Implements ProvisioningObserver.onProvisioningUpdated()
+       * @param {!ProvisioningStep} step
+       * @param {number} progress
+       */
+      onProvisioningUpdated(step, progress) {
+        assertEquals(step, ProvisioningStep.kTwiddleSettings);
+        assertEquals(progress, 0.25);
+      }
+    });
+    service.observeProvisioning(provisioningObserver);
+    return service.triggerProvisioningObserver(
+        ProvisioningStep.kTwiddleSettings, 0.25, 0);
+  });
+
+  test('ObserveHardwareWriteProtectionStateChange', () => {
+    /** @type {!HardwareWriteProtectionStateObserver} */
+    const hardwareWriteProtectionStateObserver =
+        /** @type {!HardwareWriteProtectionStateObserver} */ ({
+          /**
+           * Implements
+           * HardwareWriteProtectionStateObserver.
+           *     onHardwareWriteProtectionStateChanged()
+           * @param {boolean} enable
+           */
+          onHardwareWriteProtectionStateChanged(enable) {
+            assertEquals(enable, true);
+          }
+        });
+    service.observeHardwareWriteProtectionState(
+        hardwareWriteProtectionStateObserver);
+    return service.triggerHardwareWriteProtectionObserver(true, 0);
+  });
+
+  test('ObservePowerCableStateChange', () => {
+    /** @type {!PowerCableStateObserver} */
+    const powerCableStateObserver = /** @type {!PowerCableStateObserver} */ ({
+      /**
+       * Implements PowerCableStateObserver.onPowerCableStateChanged()
+       * @param {boolean} enable
+       */
+      onPowerCableStateChanged(enable) {
+        assertEquals(enable, true);
+      }
+    });
+    service.observePowerCableState(powerCableStateObserver);
+    return service.triggerPowerCableObserver(true, 0);
   });
 }

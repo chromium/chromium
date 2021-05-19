@@ -68,6 +68,7 @@ js_library("fake_shimless_rma_service") {
   deps = [
     ":shimless_rma_types",
     "//ash/content/common/resources:fake_method_resolver",
+    "//ash/content/common/resources:fake_observables",
     "//ui/webui/resources/js:cr.m",
   ]
 }
