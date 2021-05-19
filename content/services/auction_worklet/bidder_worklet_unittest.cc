@@ -610,6 +610,20 @@ TEST_F(BidderWorkletTest, GenerateBidDateNotAvailable) {
       {"https://url.test/:4 Uncaught ReferenceError: Date is not defined."});
 }
 
+TEST_F(BidderWorkletTest, GenerateBidLogAndError) {
+  const char kScript[] = R"(
+    function generateBid() {
+      console.log("Logging");
+      return "hello";
+    }
+  )";
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      kScript, mojom::BidderWorkletBidPtr() /* expected_bid */,
+      {"https://url.test/ [Log]: Logging",
+       "https://url.test/ generateBid() return value not an object."});
+}
+
 // Checks that most input parameters are correctly passed in, and each is parsed
 // as JSON or not, depending on the parameter. Does not test `previousWins` or
 // `trustedBiddingSignals`.

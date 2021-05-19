@@ -7,11 +7,13 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "content/services/auction_worklet/console.h"
 #include "gin/public/isolate_holder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -63,7 +65,8 @@ class AuctionV8Helper {
   }
 
   // Create a v8::Context. The one thing this does that v8::Context::New() does
-  // not is remove access the Date object.
+  // not is remove access the Date object. It also (for now) installs some
+  // rudimentary console emulation.
   v8::Local<v8::Context> CreateContext(
       v8::Handle<v8::ObjectTemplate> global_template =
           v8::Handle<v8::ObjectTemplate>());
@@ -111,7 +114,7 @@ class AuctionV8Helper {
 
   // Compiles the provided script. Despite not being bound to a context, there
   // still must be an active context for this method to be invoked. In case of
-  // an error, sets `error_out`.
+  // an error sets `error_out`.
   v8::MaybeLocal<v8::UnboundScript> Compile(
       const std::string& src,
       const GURL& src_url,
@@ -128,27 +131,56 @@ class AuctionV8Helper {
   // Running this multiple times in the same context will re-load the entire
   // script file in the context, and then run the script again.
   //
-  // In case of an error, sets `error_out`.
+  // In case of an error or console output sets `error_out`.
   v8::MaybeLocal<v8::Value> RunScript(v8::Local<v8::Context> context,
                                       v8::Local<v8::UnboundScript> script,
                                       base::StringPiece script_name,
                                       base::span<v8::Local<v8::Value>> args,
-                                      absl::optional<std::string>& error_out);
+                                      std::vector<std::string>& error_out);
 
   void set_script_timeout_for_testing(base::TimeDelta script_timeout) {
     script_timeout_ = script_timeout;
   }
 
+  // If non-nullptr, this returns a pointer to the of vector representing the
+  // debug output lines of the currently running script.  It's nullptr when
+  // nothing is running.
+  std::vector<std::string>* console_buffer() { return console_buffer_; }
+
+  // Returns a string identifying the currently running script for purpose of
+  // attributing its debug output in a human-understandable way. Empty if
+  // nothing is running.
+  const std::string& console_script_name() { return console_script_name_; }
+
  private:
+  // Sets values of console_buffer() and console_script_name() to those
+  // passed-in to its constructor for duration of its existence, and clears
+  // them afterward.
+  class ScopedConsoleTarget {
+   public:
+    ScopedConsoleTarget(AuctionV8Helper* owner,
+                        const std::string& console_script_name,
+                        std::vector<std::string>* out);
+    ~ScopedConsoleTarget();
+
+   private:
+    AuctionV8Helper* owner_;
+  };
+
   static std::string FormatExceptionMessage(v8::Local<v8::Context> context,
                                             v8::Local<v8::Message> message);
   static std::string FormatValue(v8::Isolate* isolate,
                                  v8::Local<v8::Value> val);
 
   std::unique_ptr<gin::IsolateHolder> isolate_holder_;
+  Console console_{this};
   v8::Global<v8::Context> scratch_context_;
   // Script timeout. Can be changed for testing.
   base::TimeDelta script_timeout_ = kScriptTimeout;
+
+  // See corresponding getters for description.
+  std::vector<std::string>* console_buffer_ = nullptr;
+  std::string console_script_name_;
 };
 
 }  // namespace auction_worklet

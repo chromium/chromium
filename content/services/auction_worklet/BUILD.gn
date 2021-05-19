@@ -14,6 +14,8 @@ source_set("auction_worklet") {
     "auction_worklet_service_impl.h",
     "bidder_worklet.cc",
     "bidder_worklet.h",
+    "console.cc",
+    "console.h",
     "report_bindings.cc",
     "report_bindings.h",
     "seller_worklet.cc",

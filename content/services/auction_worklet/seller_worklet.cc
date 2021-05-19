@@ -220,34 +220,30 @@ void SellerWorklet::ScoreAd(
 
   v8::Local<v8::Value> score_ad_result;
   double score;
-  absl::optional<std::string> error_msg_out;
+  std::vector<std::string> errors_out;
   if (!v8_helper_
            ->RunScript(context, worklet_script_->Get(isolate), "scoreAd", args,
-                       error_msg_out)
+                       errors_out)
            .ToLocal(&score_ad_result)) {
-    std::vector<std::string> errors;
-    if (error_msg_out)
-      errors.emplace_back(std::move(error_msg_out).value());
-    std::move(callback).Run(0 /* score */, errors);
+    std::move(callback).Run(0 /* score */, errors_out);
     return;
   }
 
   if (!gin::ConvertFromV8(isolate, score_ad_result, &score) ||
       std::isnan(score) || !std::isfinite(score)) {
-    std::move(callback).Run(
-        0 /* score */, std::vector<std::string>{base::StrCat(
-                           {script_source_url_.spec(),
-                            " scoreAd() did not return a valid number."})});
+    errors_out.push_back(
+        base::StrCat({script_source_url_.spec(),
+                      " scoreAd() did not return a valid number."}));
+    std::move(callback).Run(0 /* score */, errors_out);
     return;
   }
 
   if (score <= 0) {
-    std::move(callback).Run(0 /* score */,
-                            std::vector<std::string>() /* errors */);
+    std::move(callback).Run(0 /* score */, errors_out);
     return;
   }
 
-  std::move(callback).Run(score, std::vector<std::string>() /* errors */);
+  std::move(callback).Run(score, errors_out);
 }
 
 void SellerWorklet::ReportResult(
@@ -303,16 +299,13 @@ void SellerWorklet::ReportResult(
   args.push_back(browser_signals);
 
   v8::Local<v8::Value> signals_for_winner_value;
-  absl::optional<std::string> error_msg_out;
+  std::vector<std::string> errors_out;
   if (!v8_helper_
            ->RunScript(context, worklet_script_->Get(isolate), "reportResult",
-                       args, error_msg_out)
+                       args, errors_out)
            .ToLocal(&signals_for_winner_value)) {
-    std::vector<std::string> errors;
-    if (error_msg_out)
-      errors.emplace_back(std::move(error_msg_out).value());
     std::move(callback).Run(absl::nullopt /* signals_for_winner */,
-                            absl::nullopt /* report_url */, errors);
+                            absl::nullopt /* report_url */, errors_out);
     return;
   }
 
@@ -325,7 +318,7 @@ void SellerWorklet::ReportResult(
   }
 
   std::move(callback).Run(signals_for_winner, report_bindings.report_url(),
-                          std::vector<std::string>() /* errors */);
+                          errors_out);
 }
 
 void SellerWorklet::OnDownloadComplete(

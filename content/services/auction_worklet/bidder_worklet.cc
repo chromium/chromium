@@ -164,22 +164,18 @@ void BidderWorklet::ReportWin(
 
   // An empty return value indicates an exception was thrown. Any other return
   // value indicates no exception.
-  absl::optional<std::string> error_msg_out;
+  std::vector<std::string> errors_out;
   if (v8_helper_
           ->RunScript(context, worklet_script_->Get(isolate), "reportWin", args,
-                      error_msg_out)
+                      errors_out)
           .IsEmpty()) {
-    std::vector<std::string> errors;
-    if (error_msg_out)
-      errors.push_back(std::move(error_msg_out).value());
-    std::move(callback).Run(absl::nullopt /* report_url */, errors);
+    std::move(callback).Run(absl::nullopt /* report_url */, errors_out);
     return;
   }
 
   // This covers both the case where a report URL was provided, and the case one
   // was not.
-  std::move(callback).Run(report_bindings.report_url(),
-                          std::vector<std::string>() /* errors */);
+  std::move(callback).Run(report_bindings.report_url(), errors_out);
 }
 
 void BidderWorklet::OnScriptDownloaded(
@@ -190,7 +186,10 @@ void BidderWorklet::OnScriptDownloaded(
   if (worklet_script == nullptr) {
     // Abort loading trusted bidding signals, if it hasn't completed already.
     trusted_bidding_signals_.reset();
-    InvokeBidCallbackOnError(std::move(error_msg));
+    std::vector<std::string> errors;
+    if (error_msg.has_value())
+      errors.emplace_back(std::move(error_msg).value());
+    InvokeBidCallbackOnError(std::move(errors));
     return;
   }
 
@@ -329,19 +328,20 @@ void BidderWorklet::GenerateBidIfReady() {
   args.push_back(browser_signals);
 
   v8::Local<v8::Value> generate_bid_result;
-  absl::optional<std::string> error_msg_out;
+  std::vector<std::string> errors_out;
   if (!v8_helper_
            ->RunScript(context, worklet_script_->Get(isolate), "generateBid",
-                       args, error_msg_out)
+                       args, errors_out)
            .ToLocal(&generate_bid_result)) {
-    InvokeBidCallbackOnError(std::move(error_msg_out));
+    InvokeBidCallbackOnError(std::move(errors_out));
     return;
   }
 
   if (!generate_bid_result->IsObject()) {
-    InvokeBidCallbackOnError(
+    errors_out.push_back(
         base::StrCat({script_source_url_.spec(),
                       " generateBid() return value not an object."}));
+    InvokeBidCallbackOnError(std::move(errors_out));
     return;
   }
 
@@ -356,56 +356,57 @@ void BidderWorklet::GenerateBidIfReady() {
       !v8_helper_->ExtractJson(context, ad_object, &ad_json) ||
       !result_dict.Get("bid", &bid) ||
       !result_dict.Get("render", &render_url_string)) {
-    InvokeBidCallbackOnError(
+    errors_out.push_back(
         base::StrCat({script_source_url_.spec(),
                       " generateBid() return value has incorrect structure."}));
+    InvokeBidCallbackOnError(std::move(errors_out));
     return;
   }
 
   if (bid <= 0 || std::isnan(bid) || !std::isfinite(bid)) {
-    InvokeBidCallbackOnError();
+    InvokeBidCallbackOnError(std::move(errors_out));
     return;
   }
 
   GURL render_url(render_url_string);
   if (!render_url.is_valid() || !render_url.SchemeIs(url::kHttpsScheme)) {
-    return InvokeBidCallbackOnError(base::StrCat(
+    errors_out.push_back(base::StrCat(
         {script_source_url_.spec(),
          " generateBid() returned render_url isn't a valid https:// URL."}));
+    InvokeBidCallbackOnError(std::move(errors_out));
     return;
   }
 
   // `render_url` must be in `ad_render_urls`.
   for (const auto& ad : *interest_group.ads) {
     if (render_url == ad->render_url) {
-      std::vector<std::string> errors;
       if (trusted_bidding_signals_error_msg_) {
-        errors.emplace_back(
+        errors_out.emplace_back(
             std::move(trusted_bidding_signals_error_msg_).value());
       }
       std::move(load_bidder_worklet_and_generate_bid_callback_)
           .Run(mojom::BidderWorkletBid::New(
                    std::move(ad_json), bid, std::move(render_url),
                    base::TimeTicks::Now() - start /* bid_duration */),
-               errors);
+               errors_out);
       return;
     }
   }
-  InvokeBidCallbackOnError(
+  errors_out.push_back(
       base::StrCat({script_source_url_.spec(),
                     " generateBid() returned render_url isn't one "
                     "of the registered creative URLs."}));
+  InvokeBidCallbackOnError(std::move(errors_out));
 }
 
 void BidderWorklet::InvokeBidCallbackOnError(
-    absl::optional<std::string> error_msg) {
-  std::vector<std::string> errors;
-  if (error_msg)
-    errors.emplace_back(std::move(error_msg).value());
-  if (trusted_bidding_signals_error_msg_)
-    errors.emplace_back(std::move(trusted_bidding_signals_error_msg_).value());
+    std::vector<std::string> error_msgs) {
+  if (trusted_bidding_signals_error_msg_) {
+    error_msgs.emplace_back(
+        std::move(trusted_bidding_signals_error_msg_).value());
+  }
   std::move(load_bidder_worklet_and_generate_bid_callback_)
-      .Run(mojom::BidderWorkletBidPtr(), errors);
+      .Run(mojom::BidderWorkletBidPtr(), error_msgs);
 }
 
 }  // namespace auction_worklet

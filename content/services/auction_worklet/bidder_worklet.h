@@ -89,9 +89,9 @@ class BidderWorklet : public mojom::BidderWorklet {
   void GenerateBidIfReady();
 
   // Utility function to invoke `load_script_and_generate_bid_callback_` with
-  // `error_msg` and `trusted_bidding_signals_error_msg_`.
+  // `error_msgs` and `trusted_bidding_signals_error_msg_`.
   void InvokeBidCallbackOnError(
-      absl::optional<std::string> error_msg = absl::nullopt);
+      std::vector<std::string> error_msgs = std::vector<std::string>());
 
   AuctionV8Helper* const v8_helper_;
 

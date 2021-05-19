@@ -182,7 +182,18 @@ v8::Local<v8::Context> AuctionV8Helper::CreateContext(
       v8::Context::New(isolate(), nullptr /* extensions */, global_template);
   auto result =
       context->Global()->Delete(context, CreateStringFromLiteral("Date"));
-  DCHECK(!result.IsNothing());
+
+  v8::Local<v8::ObjectTemplate> console_emulation =
+      console_.GetConsoleTemplate();
+  v8::Local<v8::Object> console_obj;
+  if (console_emulation->NewInstance(context).ToLocal(&console_obj)) {
+    result = context->Global()->Set(context, CreateStringFromLiteral("console"),
+                                    console_obj);
+    DCHECK(!result.IsNothing());
+  } else {
+    DCHECK(false);
+  }
+
   return context;
 }
 
@@ -305,8 +316,11 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
     v8::Local<v8::UnboundScript> script,
     base::StringPiece script_name,
     base::span<v8::Local<v8::Value>> args,
-    absl::optional<std::string>& error_out) {
+    std::vector<std::string>& error_out) {
   DCHECK_EQ(isolate(), context->GetIsolate());
+
+  ScopedConsoleTarget direct_console(
+      this, FormatValue(isolate(), script->GetScriptName()), &error_out);
 
   v8::Local<v8::String> v8_script_name;
   if (!CreateUtf8String(script_name).ToLocal(&v8_script_name))
@@ -320,13 +334,14 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
   auto result = local_script->Run(context);
 
   if (try_catch.HasTerminated()) {
-    error_out = base::StrCat({FormatValue(isolate(), script->GetScriptName()),
-                              " top-level execution timed out."});
+    error_out.push_back(
+        base::StrCat({FormatValue(isolate(), script->GetScriptName()),
+                      " top-level execution timed out."}));
     return v8::MaybeLocal<v8::Value>();
   }
 
   if (try_catch.HasCaught()) {
-    error_out = FormatExceptionMessage(context, try_catch.Message());
+    error_out.push_back(FormatExceptionMessage(context, try_catch.Message()));
     return v8::MaybeLocal<v8::Value>();
   }
 
@@ -335,29 +350,48 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
 
   v8::Local<v8::Value> function;
   if (!context->Global()->Get(context, v8_script_name).ToLocal(&function)) {
-    error_out = base::StrCat({FormatValue(isolate(), script->GetScriptName()),
-                              " function `", script_name, "` not found."});
+    error_out.push_back(
+        base::StrCat({FormatValue(isolate(), script->GetScriptName()),
+                      " function `", script_name, "` not found."}));
     return v8::MaybeLocal<v8::Value>();
   }
 
   if (!function->IsFunction()) {
-    error_out = base::StrCat({FormatValue(isolate(), script->GetScriptName()),
-                              " `", script_name, "` is not a function."});
+    error_out.push_back(
+        base::StrCat({FormatValue(isolate(), script->GetScriptName()), " `",
+                      script_name, "` is not a function."}));
     return v8::MaybeLocal<v8::Value>();
   }
 
   v8::MaybeLocal<v8::Value> func_result = v8::Function::Cast(*function)->Call(
       context, context->Global(), args.size(), args.data());
   if (try_catch.HasTerminated()) {
-    error_out = base::StrCat({FormatValue(isolate(), script->GetScriptName()),
-                              " execution of `", script_name, "` timed out."});
+    error_out.push_back(
+        base::StrCat({FormatValue(isolate(), script->GetScriptName()),
+                      " execution of `", script_name, "` timed out."}));
     return v8::MaybeLocal<v8::Value>();
   }
   if (try_catch.HasCaught()) {
-    error_out = FormatExceptionMessage(context, try_catch.Message());
+    error_out.push_back(FormatExceptionMessage(context, try_catch.Message()));
     return v8::MaybeLocal<v8::Value>();
   }
   return func_result;
+}
+
+AuctionV8Helper::ScopedConsoleTarget::ScopedConsoleTarget(
+    AuctionV8Helper* owner,
+    const std::string& console_script_name,
+    std::vector<std::string>* out)
+    : owner_(owner) {
+  DCHECK(!owner_->console_buffer_);
+  DCHECK(owner_->console_script_name_.empty());
+  owner_->console_buffer_ = out;
+  owner_->console_script_name_ = console_script_name;
+}
+
+AuctionV8Helper::ScopedConsoleTarget::~ScopedConsoleTarget() {
+  owner_->console_buffer_ = nullptr;
+  owner_->console_script_name_ = std::string();
 }
 
 // static

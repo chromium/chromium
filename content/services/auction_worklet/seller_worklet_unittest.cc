@@ -343,6 +343,20 @@ TEST_F(SellerWorkletTest, ScoreAdDateNotAvailable) {
       {"https://url.test/:4 Uncaught ReferenceError: Date is not defined."});
 }
 
+TEST_F(SellerWorkletTest, ScoreAdLogAndError) {
+  const char kScript[] = R"(
+    function scoreAd() {
+      console.log("Logging");
+      return "hello";
+    }
+  )";
+
+  RunScoreAdWithJavascriptExpectingResult(
+      kScript, 0,
+      {"https://url.test/ [Log]: Logging",
+       "https://url.test/ scoreAd() did not return a valid number."});
+}
+
 // Checks that input parameters are correctly passed in.
 TEST_F(SellerWorkletTest, ScoreAdParameters) {
   // Parameters that are C++ strings, including JSON strings.
