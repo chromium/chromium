@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_BASE_MODEL_EXECUTOR_HELPERS_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_BASE_MODEL_EXECUTOR_HELPERS_H_
 
+#include <memory>
+#include <vector>
+
+#include "base/check.h"
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
 
 namespace optimization_guide {

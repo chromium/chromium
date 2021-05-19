@@ -20,3 +20,12 @@ Internal implementations.
 Includes factories to instantiate the service.
 
 `SegmentationPlatformService` - Public interface for segmentation platform service.
+
+## Test models
+
+[components/test/data/segmentation_platform](../test/data/segmentation_platform)
+contains ML models used for testing.
+
+*   `adder.tflite`: Takes two floats as input in a single tensor. Outputs a
+    single tensor with a single element which is the sum of the two floats given
+    as input.

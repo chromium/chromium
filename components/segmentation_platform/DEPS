@@ -1,6 +1,8 @@
 include_rules = [
   "+components/keyed_service",
   "+components/leveldb_proto",
-  "+components/optimization_guide/proto/models.pb.h",
-  "+components/optimization_guide/proto/models.proto",
+  "+components/optimization_guide",
+  "-components/optimization_guide/content",
+  "+third_party/tflite",
+  "+third_party/tflite-support",
 ]

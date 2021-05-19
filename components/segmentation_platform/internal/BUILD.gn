@@ -6,6 +6,7 @@ if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
 }
+import("//components/optimization_guide/features.gni")
 
 static_library("internal") {
   visibility = [
@@ -25,6 +26,7 @@ static_library("internal") {
   ]
 
   deps = [
+    ":content",
     "//base",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
@@ -32,6 +34,52 @@ static_library("internal") {
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
   ]
+}
+
+source_set("content") {
+  visibility = [ ":*" ]
+
+  if (build_with_tflite_lib) {
+    sources = [
+      "content/segmentation_model_executor.cc",
+      "content/segmentation_model_executor.h",
+      "content/segmentation_model_handler.cc",
+      "content/segmentation_model_handler.h",
+    ]
+
+    deps = [
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite-support",
+    ]
+
+    public_deps = [
+      "//components/optimization_guide/content/browser",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+    ]
+  }
+}
+
+source_set("content_unit_tests") {
+  testonly = true
+
+  visibility = [ ":unit_tests" ]
+
+  if (build_with_tflite_lib) {
+    # IMPORTANT NOTE: When adding new tests, also remember to update the list of
+    # tests in //components/segmentation_platform/components_unittests.filter
+    sources = [ "content/segmentation_model_executor_unittest.cc" ]
+
+    deps = [
+      ":content",
+      ":internal",
+      "//base",
+      "//base/test:test_support",
+      "//components/optimization_guide/content/browser:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -50,6 +98,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":content_unit_tests",
     ":internal",
     "//base/test:test_support",
     "//components/leveldb_proto:test_support",
