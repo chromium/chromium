@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/python.gni")
 import("//build/util/process_version.gni")
 import("//remoting/build/config/remoting_build.gni")
 import("//remoting/build/config/remoting_logging.gni")
@@ -816,8 +815,7 @@ if (enable_remoting_host) {
     }
   }
 
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action_foreach("remoting_native_messaging_manifests") {
+  action_foreach("remoting_native_messaging_manifests") {
     if (is_mac) {
       me2me_host_path = "/Library/PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$native_messaging_host_bundle_name/Contents/MacOS/native_messaging_host"
       it2me_host_path = "/Library/PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$remote_assistance_host_bundle_name/Contents/MacOS/remote_assistance_host"
@@ -859,9 +857,8 @@ if (enable_remoting_host) {
     ]
   }
 
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
   if (is_mac) {
-    python2_action_foreach("remoting_infoplist_strings") {
+    action_foreach("remoting_infoplist_strings") {
       sources = [
         "installer/mac/uninstaller/remoting_uninstaller-InfoPlist.strings.jinja2",
         "it2me/remote_assistance_host-InfoPlist.strings.jinja2",
