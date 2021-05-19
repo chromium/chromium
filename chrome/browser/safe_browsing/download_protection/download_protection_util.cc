@@ -33,12 +33,6 @@ std::string EscapeCertAttribute(const std::string& attribute) {
 
 }  // namespace
 
-void RecordCountOfAllowlistedDownload(AllowlistType type) {
-  // TODO(jkarlin): Rename to Allowlist.
-  UMA_HISTOGRAM_ENUMERATION("SBClientDownload.CheckWhitelistResult", type,
-                            ALLOWLIST_TYPE_MAX);
-}
-
 void GetCertificateAllowlistStrings(
     const net::X509Certificate& certificate,
     const net::X509Certificate& issuer,

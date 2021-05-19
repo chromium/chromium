@@ -135,8 +135,6 @@ using PPAPIDownloadRequestCallbackList =
 using PPAPIDownloadRequestCallback =
     PPAPIDownloadRequestCallbackList::CallbackType;
 
-void RecordCountOfAllowlistedDownload(AllowlistType type);
-
 // Given a certificate and its immediate issuer certificate, generates the
 // list of strings that need to be checked against the download allowlist to
 // determine whether the certificate is allowlisted.

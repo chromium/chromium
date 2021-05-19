@@ -252,7 +252,6 @@ void CheckClientDownloadRequestBase::OnUrlAllowlistCheckDone(
   // extraction and download ping are skipped.
   if (is_allowlisted) {
     DVLOG(2) << source_url_ << " is on the download allowlist.";
-    RecordCountOfAllowlistedDownload(URL_ALLOWLIST);
     if (ShouldSampleAllowlistedDownload()) {
       skipped_url_whitelist_ = true;
     } else {
@@ -373,7 +372,6 @@ void CheckClientDownloadRequestBase::OnCertificateAllowlistCheckDone(
     bool is_allowlisted) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!skipped_url_whitelist_ && is_allowlisted) {
-    RecordCountOfAllowlistedDownload(SIGNATURE_ALLOWLIST);
     if (ShouldSampleAllowlistedDownload()) {
       skipped_certificate_whitelist_ = true;
     } else {
@@ -384,8 +382,6 @@ void CheckClientDownloadRequestBase::OnCertificateAllowlistCheckDone(
       return;
     }
   }
-
-  RecordCountOfAllowlistedDownload(NO_ALLOWLIST_MATCH);
 
   if (!pingback_enabled_) {
     FinishRequest(DownloadCheckResult::UNKNOWN, REASON_PING_DISABLED);

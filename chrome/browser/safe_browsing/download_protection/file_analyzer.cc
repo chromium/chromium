@@ -272,13 +272,7 @@ void FileAnalyzer::OnDmgAnalysisFinished(
   CopyArchivedBinaries(archive_results.archived_binary,
                        &results_.archived_binaries);
 
-  // Log metrics for DMG analysis.
-  int64_t uma_file_type =
-      FileTypePolicies::GetInstance()->UmaValueForFile(target_path_);
-
   if (archive_results.success) {
-    base::UmaHistogramSparse("SBClientDownload.DmgFileSuccessByType",
-                             uma_file_type);
     results_.type = ClientDownloadRequest::MAC_EXECUTABLE;
   } else {
     results_.type = ClientDownloadRequest::MAC_ARCHIVE_FAILED_PARSING;

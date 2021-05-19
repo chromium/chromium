@@ -150,7 +150,6 @@ void PPAPIDownloadRequest::CheckAllowlistsOnIOThread(
 void PPAPIDownloadRequest::AllowlistCheckComplete(bool was_on_allowlist) {
   DVLOG(2) << __func__ << " was_on_allowlist:" << was_on_allowlist;
   if (was_on_allowlist) {
-    RecordCountOfAllowlistedDownload(URL_ALLOWLIST);
     // TODO(asanka): Should sample allowlisted downloads based on
     // service_->allowlist_sample_rate(). http://crbug.com/610924
     Finish(RequestOutcome::ALLOWLIST_HIT, DownloadCheckResult::SAFE);
