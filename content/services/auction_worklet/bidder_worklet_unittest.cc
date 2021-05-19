@@ -851,22 +851,18 @@ TEST_F(BidderWorkletTest, GenerateBidParametersOptionalString) {
           "[true,true]", 1, GURL("https://response.test/"), base::TimeDelta()));
 }
 
-// Utility methods to create vectors of PreviousWin. Needed because StructPtr's
+// Utility method to create a vector of PreviousWin. Needed because StructPtrs
 // don't allow copying.
-
-std::vector<mojo::StructPtr<mojom::PreviousWin>> CreateWinList(
-    const mojo::StructPtr<mojom::PreviousWin>& win1) {
+std::vector<mojom::PreviousWinPtr> CreateWinList(
+    const mojom::PreviousWinPtr& win1,
+    const mojom::PreviousWinPtr& win2 = mojom::PreviousWinPtr(),
+    const mojom::PreviousWinPtr& win3 = mojom::PreviousWinPtr()) {
   std::vector<mojo::StructPtr<mojom::PreviousWin>> out;
   out.emplace_back(win1.Clone());
-  return out;
-}
-
-std::vector<mojo::StructPtr<mojom::PreviousWin>> CreateWinList(
-    const mojo::StructPtr<mojom::PreviousWin>& win1,
-    const mojo::StructPtr<mojom::PreviousWin>& win2) {
-  std::vector<mojo::StructPtr<mojom::PreviousWin>> out;
-  out.emplace_back(win1.Clone());
-  out.emplace_back(win2.Clone());
+  if (win2)
+    out.emplace_back(win2.Clone());
+  if (win3)
+    out.emplace_back(win3.Clone());
   return out;
 }
 
@@ -922,11 +918,11 @@ TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
           "browserSignals.prevWins",
           R"([[0,"future_ad"]])",
       },
-      // Out of order times.
+      // Out of order wins should be sorted.
       {
-          CreateWinList(future_win, win1),
+          CreateWinList(win2, future_win, win1),
           "browserSignals.prevWins",
-          R"([[0,"future_ad"],[200,"ad1"]])",
+          R"([[200,"ad1"],[100,["ad2"]],[0,"future_ad"]])",
       },
   };
 

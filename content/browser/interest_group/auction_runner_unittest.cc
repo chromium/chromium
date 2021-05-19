@@ -676,9 +676,11 @@ class AuctionRunnerTest : public testing::Test, public AuctionRunner::Delegate {
 
     std::vector<auction_worklet::mojom::PreviousWinPtr> previous_wins;
     previous_wins.push_back(auction_worklet::mojom::PreviousWin::New(
-        base::Time::Now(), R"({"winner": 0})"));
+        base::Time::Now() - base::TimeDelta::FromSeconds(2),
+        R"({"winner": 0})"));
     previous_wins.push_back(auction_worklet::mojom::PreviousWin::New(
-        base::Time::Now(), R"({"winner": -1})"));
+        base::Time::Now() - base::TimeDelta::FromSeconds(1),
+        R"({"winner": -1})"));
     previous_wins.push_back(auction_worklet::mojom::PreviousWin::New(
         base::Time::Now(), R"({"winner": -2})"));
 

@@ -4,6 +4,7 @@
 
 #include "content/services/auction_worklet/bidder_worklet.h"
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <string>
@@ -49,6 +50,40 @@ bool AppendJsonValueOrNull(AuctionV8Helper* const v8_helper,
     args->push_back(v8::Null(isolate));
   }
   return true;
+}
+
+// Creates a V8 array containing information about the passed in previous wins.
+// Array is sorted by time, earliest wins first. Modifies order of `prev_wins`
+// input vector. This should should be harmless, since each list of previous
+// wins is only used for a single bid in a single auction, and its order is
+// unspecified, anyways.
+v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
+    AuctionV8Helper* v8_helper,
+    v8::Local<v8::Context> context,
+    base::Time auction_start_time,
+    std::vector<mojom::PreviousWinPtr>& prev_wins) {
+  std::sort(prev_wins.begin(), prev_wins.end(),
+            [](const mojom::PreviousWinPtr& prev_win1,
+               const mojom::PreviousWinPtr& prev_win2) {
+              return prev_win1->time < prev_win2->time;
+            });
+  std::vector<v8::Local<v8::Value>> prev_wins_v8;
+  v8::Isolate* isolate = v8_helper->isolate();
+  for (const auto& prev_win : prev_wins) {
+    int64_t time_delta = (auction_start_time - prev_win->time).InSeconds();
+    // Don't give negative times if clock has changed since last auction win.
+    if (time_delta < 0)
+      time_delta = 0;
+    v8::Local<v8::Value> win_values[2];
+    win_values[0] = v8::Number::New(isolate, time_delta);
+    if (!v8_helper->CreateValueFromJson(context, prev_win->ad_json)
+             .ToLocal(&win_values[1])) {
+      return v8::MaybeLocal<v8::Value>();
+    }
+    prev_wins_v8.push_back(
+        v8::Array::New(isolate, win_values, base::size(win_values)));
+  }
+  return v8::Array::New(isolate, prev_wins_v8.data(), prev_wins_v8.size());
 }
 
 }  // namespace
@@ -299,27 +334,16 @@ void BidderWorklet::GenerateBidIfReady() {
     return;
   }
 
-  std::vector<v8::Local<v8::Value>> prev_wins_v8;
-  for (const auto& prev_win : bidding_interest_group_->signals->prev_wins) {
-    int64_t time_delta = (auction_start_time_ - prev_win->time).InSeconds();
-    // Don't give negative times if clock has changed since last auction win.
-    // Clock changes do mean times can be out of numerical order, despite being
-    // in chronological order.
-    if (time_delta < 0)
-      time_delta = 0;
-    v8::Local<v8::Value> win_values[2];
-    win_values[0] = v8::Number::New(isolate, time_delta);
-    if (!v8_helper_->CreateValueFromJson(context, prev_win->ad_json)
-             .ToLocal(&win_values[1])) {
-      InvokeBidCallbackOnError();
-      return;
-    }
-    prev_wins_v8.push_back(
-        v8::Array::New(isolate, win_values, base::size(win_values)));
+  v8::Local<v8::Value> prev_wins;
+  if (!CreatePrevWinsArray(v8_helper_, context, auction_start_time_,
+                           bidding_interest_group_->signals->prev_wins)
+           .ToLocal(&prev_wins)) {
+    InvokeBidCallbackOnError();
+    return;
   }
+
   v8::Maybe<bool> result = browser_signals->Set(
-      context, gin::StringToV8(isolate, "prevWins"),
-      v8::Array::New(isolate, prev_wins_v8.data(), prev_wins_v8.size()));
+      context, gin::StringToV8(isolate, "prevWins"), prev_wins);
   if (result.IsNothing() || !result.FromJust()) {
     InvokeBidCallbackOnError();
     return;
