@@ -163,7 +163,8 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
                     /*prefer_container=*/true),
       url, launch_source, apps::MakeWindowInfo(display::kDefaultDisplayId));
 
-  if (web_contents->GetVisibleURL().IsAboutBlank())
+  const GURL& last_committed_url = web_contents->GetLastCommittedURL();
+  if (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank())
     web_contents->ClosePage();
 
   IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
