@@ -22,6 +22,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
@@ -50,6 +51,10 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kContentsElementID);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kTestElementID);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kTestElementID2);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kTestElementID3);
+const char16_t kMenuItem1[] = u"Menu item";
+const char16_t kMenuItem2[] = u"Menu item 2";
+constexpr int kMenuID1 = 1;
+constexpr int kMenuID2 = 2;
 
 #define DECLARE_STEP_CALLBACK(Name)                               \
   base::MockCallback<ui::InteractionSequence::StepCallback> Name; \
@@ -99,16 +104,7 @@ class InteractionSequenceViewsTest : public ViewsTestBase {
   }
 
   void ShowMenu(ui::ElementIdentifier id) {
-    menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
-    menu_model_->AddItem(0, u"Menu item");
-    menu_model_->AddItem(1, u"Menu item 2");
-    menu_model_->SetElementIdentifierAt(1, kTestElementID2);
-
-    menu_runner_ =
-        std::make_unique<MenuRunner>(menu_model_.get(), MenuRunner::NO_FLAGS);
-    menu_runner_->RunMenuAt(
-        widget_.get(), nullptr, gfx::Rect(gfx::Point(), gfx::Size(200, 200)),
-        MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_MOUSE);
+    CreateAndRunMenu(id);
 
     View* const view = ElementToView(
         ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
@@ -174,6 +170,20 @@ class InteractionSequenceViewsTest : public ViewsTestBase {
     return ui::ElementContext(widget_.get());
   }
 
+  virtual void CreateAndRunMenu(ui::ElementIdentifier id) {
+    menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
+    menu_model_->AddItem(kMenuID1, kMenuItem1);
+    menu_model_->AddItem(kMenuID2, kMenuItem2);
+    menu_model_->SetElementIdentifierAt(
+        menu_model_->GetIndexOfCommandId(kMenuID2), id);
+
+    menu_runner_ =
+        std::make_unique<MenuRunner>(menu_model_.get(), MenuRunner::NO_FLAGS);
+    menu_runner_->RunMenuAt(
+        widget_.get(), nullptr, gfx::Rect(gfx::Point(), gfx::Size(200, 200)),
+        MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_MOUSE);
+  }
+
   std::unique_ptr<Widget> widget_;
   View* contents_ = nullptr;
   Widget* bubble_widget_ = nullptr;
@@ -181,7 +191,6 @@ class InteractionSequenceViewsTest : public ViewsTestBase {
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<MenuRunner> menu_runner_;
   MenuItemView* menu_item_ = nullptr;
-  bool menu_command_executed_ = false;
 };
 
 TEST_F(InteractionSequenceViewsTest, DestructWithInitialViewAborts) {
@@ -513,11 +522,10 @@ TEST_F(InteractionSequenceViewsTest, TransitionToMenuWithMenuButton) {
 }
 
 #if !defined(OS_MAC)
-// TODO(dfried): switch to how menu runner unit tests generate a menu, so that
-// we have more control over how events are routed to the menu controller. On
-// Mac, it's very hard to automate activation of even Views-based menu items
-// because of the different event-routing logic. For now, however, exclude Mac
-// from these tests.
+// Because Mac does not use Aura, mouse event delivery to Views menus on Mac
+// doesn't work the same as on other platforms. We still test that activation of
+// Mac menus is correctly communicated through ui::ElementTracker in the
+// following test.
 TEST_F(InteractionSequenceViewsTest, TransitionToMenuAndActivateMenuItem) {
   DECLARE_ABORTED_CALLBACK(aborted);
   DECLARE_COMPLETED_CALLBACK(completed);
@@ -560,19 +568,63 @@ TEST_F(InteractionSequenceViewsTest, TransitionToMenuAndActivateMenuItem) {
   });
 
   EXPECT_CALLS_IN_SCOPE_2(step3, Run, completed, Run, {
-    gfx::Point point(menu_item_->origin());
-    point.Offset(5, 5);
-    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, point, point,
-                         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                         ui::EF_LEFT_MOUSE_BUTTON);
-    ui::MouseEvent release(ui::ET_MOUSE_RELEASED, point, point,
-                           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                           ui::EF_LEFT_MOUSE_BUTTON);
-    menu_item_->GetWidget()->GetRootView()->OnMouseEvent(&press);
-    menu_item_->GetWidget()->GetRootView()->OnMouseEvent(&release);
+    ui::test::EventGenerator generator(GetContext(),
+                                       widget_->GetNativeWindow());
+    generator.MoveMouseTo(menu_item_->GetBoundsInScreen().CenterPoint());
+    generator.ClickLeftButton();
   });
 }
 
 #endif  // !defined(OS_MAC)
+
+TEST_F(InteractionSequenceViewsTest, TransitionOnKeyboardMenuActivation) {
+  DECLARE_ABORTED_CALLBACK(aborted);
+  DECLARE_COMPLETED_CALLBACK(completed);
+  DECLARE_STEP_CALLBACK(step);
+  DECLARE_STEP_CALLBACK(step2);
+  DECLARE_STEP_CALLBACK(step3);
+  auto tracker =
+      ui::InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequenceViews::WithInitialView(contents_))
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetElementID(kTestElementID)
+                       .SetType(ui::InteractionSequence::StepType::kActivated)
+                       .SetStartCallback(step.Get())
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetElementID(kTestElementID2)
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetStartCallback(step2.Get())
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetElementID(kTestElementID2)
+                       .SetType(ui::InteractionSequence::StepType::kActivated)
+                       .SetStartCallback(step3.Get())
+                       .Build())
+          .Build();
+  auto* const button = contents_->AddChildView(
+      std::make_unique<LabelButton>(Button::PressedCallback(
+          base::BindRepeating(&InteractionSequenceViewsTest::ShowMenu,
+                              base::Unretained(this), kTestElementID2))));
+  button->SetProperty(kElementIdentifierKey, kTestElementID);
+  tracker->Start();
+
+  EXPECT_CALLS_IN_SCOPE_2(step, Run, step2, Run, {
+    button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
+                                      ui::EF_NONE, ui::EventTimeForNow()));
+    button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
+                                       ui::EF_NONE, ui::EventTimeForNow()));
+  });
+
+  EXPECT_CALLS_IN_SCOPE_2(step3, Run, completed, Run, {
+    ui::test::EventGenerator generator(GetContext(),
+                                       widget_->GetNativeWindow());
+    generator.PressKey(ui::VKEY_DOWN, 0);
+    generator.PressKey(ui::VKEY_DOWN, 0);
+    generator.PressKey(ui::VKEY_RETURN, 0);
+  });
+}
 
 }  // namespace views
