@@ -247,22 +247,21 @@ TEST(ExtensionWebRequestHelpersTest,
 }
 
 TEST(ExtensionWebRequestHelpersTest, TestStringToCharList) {
-  base::ListValue list_value;
-  list_value.AppendInteger('1');
-  list_value.AppendInteger('2');
-  list_value.AppendInteger('3');
-  list_value.AppendInteger(0xFE);
-  list_value.AppendInteger(0xD1);
+  base::Value list_value(base::Value::Type::LIST);
+  list_value.Append('1');
+  list_value.Append('2');
+  list_value.Append('3');
+  list_value.Append(0xFE);
+  list_value.Append(0xD1);
 
   unsigned char char_value[] = {'1', '2', '3', 0xFE, 0xD1};
   std::string string_value(reinterpret_cast<char *>(char_value), 5);
 
-  std::unique_ptr<base::ListValue> converted_list(
-      StringToCharList(string_value));
-  EXPECT_TRUE(list_value.Equals(converted_list.get()));
+  base::Value converted_list(StringToCharList(string_value));
+  EXPECT_TRUE(list_value.Equals(&converted_list));
 
   std::string converted_string;
-  EXPECT_TRUE(CharListToString(&list_value, &converted_string));
+  EXPECT_TRUE(CharListToString(list_value.GetList(), &converted_string));
   EXPECT_EQ(string_value, converted_string);
 }
 

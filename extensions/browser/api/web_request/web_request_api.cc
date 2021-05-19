@@ -264,26 +264,25 @@ bool IsRequestFromExtension(const WebRequestInfo& request,
 // true if successful.
 bool FromHeaderDictionary(const base::DictionaryValue* header_value,
                           std::string* name,
-                          std::string* value) {
+                          std::string* out_value) {
   if (!header_value->GetString(keys::kHeaderNameKey, name))
     return false;
 
   // We require either a "value" or a "binaryValue" entry.
-  if (!(header_value->HasKey(keys::kHeaderValueKey) ^
-        header_value->HasKey(keys::kHeaderBinaryValueKey))) {
+  const base::Value* value = header_value->FindKey(keys::kHeaderValueKey);
+  const base::Value* binary_value =
+      header_value->FindKey(keys::kHeaderBinaryValueKey);
+  if (!((value != nullptr) ^ (binary_value != nullptr))) {
     return false;
   }
 
-  if (header_value->HasKey(keys::kHeaderValueKey)) {
-    if (!header_value->GetString(keys::kHeaderValueKey, value)) {
+  if (value) {
+    if (!value->is_string())
       return false;
-    }
-  } else if (header_value->HasKey(keys::kHeaderBinaryValueKey)) {
-    const base::ListValue* list = NULL;
-    if (!header_value->HasKey(keys::kHeaderBinaryValueKey)) {
-      *value = "";
-    } else if (!header_value->GetList(keys::kHeaderBinaryValueKey, &list) ||
-               !helpers::CharListToString(list, value)) {
+    *out_value = value->GetString();
+  } else if (binary_value) {
+    if (!binary_value->is_list() ||
+        !helpers::CharListToString(binary_value->GetList(), out_value)) {
       return false;
     }
   }
@@ -911,7 +910,7 @@ struct ExtensionWebRequestEventRouter::BlockedRequest {
 
 bool ExtensionWebRequestEventRouter::RequestFilter::InitFromValue(
     const base::DictionaryValue& value, std::string* error) {
-  if (!value.HasKey("urls"))
+  if (!value.FindKey("urls"))
     return false;
 
   for (base::DictionaryValue::Iterator it(value); !it.IsAtEnd(); it.Advance()) {
@@ -2675,20 +2674,27 @@ WebRequestInternalEventHandledFunction::Run() {
               extension_id_safe(), install_time);
     }
 
+    const base::Value* redirect_url_value = value->FindKey("redirectUrl");
+    const base::Value* auth_credentials_value =
+        value->FindKey(keys::kAuthCredentialsKey);
+    const base::Value* request_headers_value = value->FindKey("requestHeaders");
+    const base::Value* response_headers_value =
+        value->FindKey("responseHeaders");
+
     // In Public Session we restrict everything but "cancel" (except for
     // whitelisted extensions which have no such restrictions).
     if (extension_web_request_api_helpers::
             ArePublicSessionRestrictionsEnabled() &&
         !extensions::IsWhitelistedForPublicSession(extension_id_safe()) &&
-        (value->HasKey("redirectUrl") ||
-         value->HasKey(keys::kAuthCredentialsKey) ||
-         value->HasKey("requestHeaders") || value->HasKey("responseHeaders"))) {
+        (redirect_url_value || auth_credentials_value ||
+         request_headers_value || response_headers_value)) {
       OnError(event_name, sub_event_name, request_id, render_process_id,
               web_view_instance_id, std::move(response));
       return RespondNow(Error(keys::kInvalidPublicSessionBlockingResponse));
     }
 
-    if (value->HasKey("cancel")) {
+    const base::Value* cancel_value = value->FindKey("cancel");
+    if (cancel_value) {
       // Don't allow cancel mixed with other keys.
       if (value->DictSize() != 1) {
         OnError(event_name, sub_event_name, request_id, render_process_id,
@@ -2696,15 +2702,13 @@ WebRequestInternalEventHandledFunction::Run() {
         return RespondNow(Error(keys::kInvalidBlockingResponse));
       }
 
-      bool cancel = false;
-      EXTENSION_FUNCTION_VALIDATE(value->GetBoolean("cancel", &cancel));
-      response->cancel = cancel;
+      EXTENSION_FUNCTION_VALIDATE(cancel_value->is_bool());
+      response->cancel = cancel_value->GetBool();
     }
 
-    if (value->HasKey("redirectUrl")) {
-      std::string new_url_str;
-      EXTENSION_FUNCTION_VALIDATE(value->GetString("redirectUrl",
-                                                   &new_url_str));
+    if (redirect_url_value) {
+      EXTENSION_FUNCTION_VALIDATE(redirect_url_value->is_string());
+      std::string new_url_str = redirect_url_value->GetString();
       response->new_url = GURL(new_url_str);
       if (!response->new_url.is_valid()) {
         OnError(event_name, sub_event_name, request_id, render_process_id,
@@ -2713,8 +2717,8 @@ WebRequestInternalEventHandledFunction::Run() {
       }
     }
 
-    const bool has_request_headers = value->HasKey("requestHeaders");
-    const bool has_response_headers = value->HasKey("responseHeaders");
+    const bool has_request_headers = request_headers_value != nullptr;
+    const bool has_response_headers = response_headers_value != nullptr;
     if (has_request_headers || has_response_headers) {
       if (has_request_headers && has_response_headers) {
         // Allow only one of the keys, not both.
@@ -2770,11 +2774,10 @@ WebRequestInternalEventHandledFunction::Run() {
         response->response_headers = std::move(response_headers);
     }
 
-    if (value->HasKey(keys::kAuthCredentialsKey)) {
-      base::DictionaryValue* credentials_value = NULL;
-      EXTENSION_FUNCTION_VALIDATE(value->GetDictionary(
-          keys::kAuthCredentialsKey,
-          &credentials_value));
+    if (auth_credentials_value) {
+      const base::DictionaryValue* credentials_value = nullptr;
+      EXTENSION_FUNCTION_VALIDATE(
+          auth_credentials_value->GetAsDictionary(&credentials_value));
       std::u16string username;
       std::u16string password;
       EXTENSION_FUNCTION_VALIDATE(

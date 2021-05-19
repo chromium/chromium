@@ -707,22 +707,23 @@ bool InDecreasingExtensionInstallationTimeOrder(const EventResponseDelta& a,
   return a.extension_install_time > b.extension_install_time;
 }
 
-std::unique_ptr<base::ListValue> StringToCharList(const std::string& s) {
-  auto result = std::make_unique<base::ListValue>();
+base::Value StringToCharList(const std::string& s) {
+  base::Value result(base::Value::Type::LIST);
   for (size_t i = 0, n = s.size(); i < n; ++i) {
-    result->AppendInteger(*reinterpret_cast<const unsigned char*>(&s[i]));
+    result.Append(*reinterpret_cast<const unsigned char*>(&s[i]));
   }
   return result;
 }
 
-bool CharListToString(const base::ListValue* list, std::string* out) {
-  if (!list)
-    return false;
-  const size_t list_length = list->GetSize();
+bool CharListToString(base::Value::ConstListView list, std::string* out) {
+  const size_t list_length = list.size();
   out->resize(list_length);
   int value = 0;
   for (size_t i = 0; i < list_length; ++i) {
-    if (!list->GetInteger(i, &value) || value < 0 || value > 255)
+    if (!list[i].is_int())
+      return false;
+    value = list[i].GetInt();
+    if (value < 0 || value > 255)
       return false;
     unsigned char tmp = static_cast<unsigned char>(value);
     (*out)[i] = *reinterpret_cast<char*>(&tmp);
@@ -1722,7 +1723,8 @@ std::unique_ptr<base::DictionaryValue> CreateHeaderDictionary(
   if (base::IsStringUTF8(value)) {
     header->SetString(keys::kHeaderValueKey, value);
   } else {
-    header->Set(keys::kHeaderBinaryValueKey, StringToCharList(value));
+    header->Set(keys::kHeaderBinaryValueKey,
+                std::make_unique<base::Value>(StringToCharList(value)));
   }
   return header;
 }
