@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
+#include "content/browser/interest_group/interest_group_manager.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -74,33 +75,73 @@ AuctionRunner::BidState::BidState(BidState&&) = default;
 
 std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     Delegate* delegate,
+    InterestGroupManager* interest_group_manager,
     blink::mojom::AuctionAdConfigPtr auction_config,
-    std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders,
+    std::vector<url::Origin> filtered_buyers,
     auction_worklet::mojom::BrowserSignalsPtr browser_signals,
     const url::Origin& frame_origin,
     RunAuctionCallback callback) {
+  DCHECK(!filtered_buyers.empty());
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
-      delegate, std::move(auction_config), std::move(bidders),
-      std::move(browser_signals), frame_origin, std::move(callback)));
-  instance->StartBidding();
+      delegate, interest_group_manager, std::move(auction_config),
+      std::move(filtered_buyers), std::move(browser_signals), frame_origin,
+      std::move(callback)));
+  instance->ReadNextInterestGroup();
   return instance;
 }
 
 AuctionRunner::AuctionRunner(
     Delegate* delegate,
+    InterestGroupManager* interest_group_manager,
     blink::mojom::AuctionAdConfigPtr auction_config,
-    std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders,
+    std::vector<url::Origin> filtered_buyers,
     auction_worklet::mojom::BrowserSignalsPtr browser_signals,
     const url::Origin& frame_origin,
     RunAuctionCallback callback)
     : delegate_(delegate),
+      interest_group_manager_(interest_group_manager),
       auction_config_(std::move(auction_config)),
-      bidders_(std::move(bidders)),
+      pending_buyers_(std::move(filtered_buyers)),
       browser_signals_(std::move(browser_signals)),
       frame_origin_(frame_origin),
       callback_(std::move(callback)) {}
 
 AuctionRunner::~AuctionRunner() = default;
+
+void AuctionRunner::ReadNextInterestGroup() {
+  DCHECK_LT(next_pending_buyer_, pending_buyers_.size());
+
+  interest_group_manager_->GetInterestGroupsForOwner(
+      pending_buyers_[next_pending_buyer_],
+      base::BindOnce(&AuctionRunner::OnInterestGroupRead,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AuctionRunner::OnInterestGroupRead(
+    std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
+        interest_groups) {
+  bidders_.insert(bidders_.end(),
+                  std::make_move_iterator(interest_groups.begin()),
+                  std::make_move_iterator(interest_groups.end()));
+  next_pending_buyer_++;
+
+  // If more buyers in the queue, load the next one.
+  if (next_pending_buyer_ < pending_buyers_.size()) {
+    ReadNextInterestGroup();
+    return;
+  }
+
+  // Pending buyers are no longer needed.
+  pending_buyers_.clear();
+
+  // If no interest groups were found, end the auction without a winner.
+  if (bidders_.empty()) {
+    FailAuction();
+    return;
+  }
+
+  StartBidding();
+}
 
 void AuctionRunner::StartBidding() {
   // Auctions are only run when there are bidders participating. As-is, and
@@ -406,8 +447,7 @@ void AuctionRunner::FailAuction() {
   DCHECK(callback_);
   ClosePipes();
 
-  std::move(callback_).Run(GURL(), std::string(), url::Origin(), std::string(),
-                           GURL(), GURL(), errors_);
+  std::move(callback_).Run(GURL(), GURL(), GURL(), errors_);
 }
 
 void AuctionRunner::FailAuctionWithError(std::string error) {
@@ -432,9 +472,17 @@ void AuctionRunner::ReportSuccess(const BidState* state) {
         R"({"render_url":"%s"})", state->bid_result->render_url.spec().c_str());
   }
 
+  interest_group_manager_->RecordInterestGroupWin(
+      state->bidder->group->owner, state->bidder->group->name, ad_metadata);
+
+  // TODO(mmenke): Don't record a bid if the interest group doesn't make a bid.
+  for (const auto& bidder : bidders_) {
+    interest_group_manager_->RecordInterestGroupBid(bidder->group->owner,
+                                                    bidder->group->name);
+  }
+
   std::move(callback_).Run(
-      state->bid_result->render_url, ad_metadata, state->bidder->group->owner,
-      state->bidder->group->name,
+      state->bid_result->render_url,
       bidder_report_url_.has_value() ? *bidder_report_url_ : GURL(),
       seller_report_url_.has_value() ? *seller_report_url_ : GURL(), errors_);
 }

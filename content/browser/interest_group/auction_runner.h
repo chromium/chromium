@@ -27,6 +27,7 @@
 namespace content {
 
 class AuctionURLLoaderFactoryProxy;
+class InterestGroupManager;
 
 // An AuctionRunner loads and runs the bidder and seller worklets, along with
 // their reporting phases and produces the result via a callback.
@@ -50,14 +51,6 @@ class CONTENT_EXPORT AuctionRunner {
   // `render_url` URL of auction winning ad to render.
   //  An empty URL is used if there is no winner.
   //
-  // `ad_metadata` The metadata for the winning ad.
-  //
-  // `winning_interest_group_owner` owner of the winning interest group.
-  //  An opaque origin if there is no winner.
-  //
-  // `winning_interest_group_name` name of winning interest group. Empty if
-  //  there is no winner.
-  //
   // `bidder_report_url` URL to use for reporting result to the bidder. Empty if
   //  no report should be sent.
   //
@@ -68,9 +61,6 @@ class CONTENT_EXPORT AuctionRunner {
   //  sensitive for the renderers to see.
   using RunAuctionCallback =
       base::OnceCallback<void(const GURL& render_url,
-                              const std::string& ad_metadata,
-                              const url::Origin& winning_interest_group_owner,
-                              const std::string& winning_interest_group_name,
                               const GURL& bidder_report_url,
                               const GURL& seller_report_url,
                               const std::vector<std::string>& errors)>;
@@ -101,17 +91,16 @@ class CONTENT_EXPORT AuctionRunner {
   // Runs an entire FLEDGE auction.
   //
   // Arguments:
-  // `delegate` must remain valid until the AuctionRunner is destroyed.
+  // `delegate` and `interest_group_manager` must remain valid until the
+  //  AuctionRunner is destroyed.
   //
   // `auction_config` is the configuration provided by client JavaScript in
   //  the renderer in order to initiate the auction.
   //
-  // `bidders` includes definitions of the interest groups that are selected to
-  //  participate in this auction (initially added by client JS in the renderer,
-  //  but managed by the browser's interest group store), as well as some
-  //  bidding history collected by the interest group store. The bidding
-  //  worklets of these groups will be fetched and executed. `bidders` must not
-  //  be empty.
+  // `filtered_buyers` owners of bidders allowed to participate in this auction.
+  //  These should be a subset of `auction_config`'s `interest_group_buyers`,
+  //  filtered to account for browser configuration (like cookie blocking). Must
+  //  not be empty.
   //
   // `browser_signals` signals from the browser about the auction that are the
   //  same for all worklets.
@@ -120,8 +109,9 @@ class CONTENT_EXPORT AuctionRunner {
   // origin), used as the initiator in network requests.
   static std::unique_ptr<AuctionRunner> CreateAndStart(
       Delegate* delegate,
+      InterestGroupManager* interest_group_manager,
       blink::mojom::AuctionAdConfigPtr auction_config,
-      std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders,
+      std::vector<url::Origin> filtered_buyers,
       auction_worklet::mojom::BrowserSignalsPtr browser_signals,
       const url::Origin& frame_origin,
       RunAuctionCallback callback);
@@ -149,15 +139,28 @@ class CONTENT_EXPORT AuctionRunner {
     double seller_score = 0;
   };
 
-  AuctionRunner(
-      Delegate* delegate,
-      blink::mojom::AuctionAdConfigPtr auction_config,
-      std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders,
-      auction_worklet::mojom::BrowserSignalsPtr browser_signals,
-      const url::Origin& frame_origin,
-      RunAuctionCallback callback);
+  AuctionRunner(Delegate* delegate,
+                InterestGroupManager* interest_group_manager,
+                blink::mojom::AuctionAdConfigPtr auction_config,
+                std::vector<url::Origin> filtered_buyers,
+                auction_worklet::mojom::BrowserSignalsPtr browser_signals,
+                const url::Origin& frame_origin,
+                RunAuctionCallback callback);
 
+  // Retrieves the next interest group in `pending_buyers_` from storage.
+  // OnInterestGroupRead() will be invoked with the lookup results.
+  void ReadNextInterestGroup();
+
+  // Adds `interest_groups` to `bidders_`. Continues retrieving bidders from
+  // `pending_buyers_` if any have not been retrieved yet. Otherwise, invokes
+  // StartBidding().
+  void OnInterestGroupRead(
+      std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
+          interest_groups);
+
+  // Starts loading worklets and generating bids.
   void StartBidding();
+
   void OnGenerateBidCrashed(BidState* state);
   void OnGenerateBidComplete(BidState* state,
                              auction_worklet::mojom::BidderWorkletBidPtr bid,
@@ -210,9 +213,15 @@ class CONTENT_EXPORT AuctionRunner {
   void ClosePipes();
 
   Delegate* const delegate_;
+  InterestGroupManager* const interest_group_manager_;
 
   // Configuration.
   blink::mojom::AuctionAdConfigPtr auction_config_;
+  // Buyers whose interest groups need to be looked up to be added to
+  // `bidders_`.
+  std::vector<url::Origin> pending_buyers_;
+  // Next entry in `pending_buyers_` to fetch the interest group for.
+  size_t next_pending_buyer_ = 0;
   std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders_;
   auction_worklet::mojom::BrowserSignalsPtr browser_signals_;
   const url::Origin frame_origin_;

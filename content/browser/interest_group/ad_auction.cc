@@ -115,68 +115,21 @@ void AdAuction::StartAuction() {
     return;
   }
 
-  ReadNextInterestGroup();
-}
-
-void AdAuction::ReadNextInterestGroup() {
-  DCHECK(!pending_buyers_.empty());
-
-  url::Origin buyer = std::move(pending_buyers_.back());
-  pending_buyers_.pop_back();
-
-  ad_auction_service_->GetInterestGroupManager()->GetInterestGroupsForOwner(
-      buyer, base::BindOnce(&AdAuction::OnInterestGroupRead,
-                            weak_ptr_factory_.GetWeakPtr()));
-}
-
-void AdAuction::OnInterestGroupRead(
-    std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
-        interest_groups) {
-  bidders_.insert(bidders_.end(),
-                  std::make_move_iterator(interest_groups.begin()),
-                  std::make_move_iterator(interest_groups.end()));
-
-  // If more buyers in the queue, load the next one.
-  if (!pending_buyers_.empty()) {
-    ReadNextInterestGroup();
-    return;
-  }
-
-  // If there are no found interest groups, end the auction without a winner.
-  if (bidders_.empty()) {
-    OnAuctionFailed();
-    return;
-  }
-
-  StartWorklets();
-}
-
-void AdAuction::StartWorklets() {
-  DCHECK(pending_buyers_.empty());
-  DCHECK(!bidders_.empty());
-
   // TODO(mmenke): This should be top frame origin, not frame origin.
   auto browser_signals = auction_worklet::mojom::BrowserSignals::New(
       ad_auction_service_->origin(), config_->seller);
 
-  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders_copy;
-  bidders_copy.reserve(bidders_.size());
-  for (auto& bidder : bidders_)
-    bidders_copy.emplace_back(bidder.Clone());
-
   // `config_` is no longer needed after this point, so pass ownership of it
   // over to the AuctionRunner, instead of copying it.
   auction_runner_ = AuctionRunner::CreateAndStart(
-      ad_auction_service_, std::move(config_), std::move(bidders_copy),
+      ad_auction_service_, ad_auction_service_->GetInterestGroupManager(),
+      std::move(config_), std::move(pending_buyers_),
       std::move(browser_signals), ad_auction_service_->origin(),
       base::BindOnce(&AdAuction::WorkletComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AdAuction::WorkletComplete(const GURL& render_url,
-                                const std::string& ad_metadata,
-                                const url::Origin& owner,
-                                const std::string& name,
                                 const GURL& bidder_report_url,
                                 const GURL& seller_report_url,
                                 const std::vector<std::string>& errors) {
@@ -202,15 +155,6 @@ void AdAuction::WorkletComplete(const GURL& render_url,
   absl::optional<GURL> opt_seller_report_url;
   if (seller_report_url.is_valid())
     opt_seller_report_url = seller_report_url;
-
-  ad_auction_service_->GetInterestGroupManager()->RecordInterestGroupWin(
-      owner, name, ad_metadata);
-  // TODO(qingxin): Decide if we should record a bid if the auction fails, or
-  // the interest group doesn't make a bid.
-  for (const auto& bidder : bidders_) {
-    ad_auction_service_->GetInterestGroupManager()->RecordInterestGroupBid(
-        bidder->group->owner, bidder->group->name);
-  }
 
   std::move(callback_).Run(this, render_url, opt_bidder_report_url,
                            opt_seller_report_url);

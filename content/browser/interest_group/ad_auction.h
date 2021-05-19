@@ -44,28 +44,13 @@ class AdAuction {
   void StartAuction();
 
  private:
-  // Retrieves the next interest group in `pending_buyers_` from storage,
-  // removing it from the vector. OnInterestGroupRead() will be invoked
-  // with the lookup results.
-  void ReadNextInterestGroup();
-
-  // Adds `interest_groups` to `bidders_`. Continues retrieving bidders from
-  // `pending_buyers_` if non-empty. Otherwise, starts running the worklets.
-  void OnInterestGroupRead(
-      std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
-          interest_groups);
-
   // Starts running the auction out of process.
   void StartWorklets();
 
   // Called from the worklet service once a worklet is complete.
   //
-  // Validates the results, reports them to `callback_`, and updates the
-  // InterestGroupStorage as needed.
+  // Reports them to `callback_`.
   void WorkletComplete(const GURL& render_url,
-                       const std::string& ad_metadata,
-                       const url::Origin& owner,
-                       const std::string& name,
                        const GURL& bidder_report_url,
                        const GURL& seller_report_url,
                        const std::vector<std::string>& errors);
@@ -78,10 +63,6 @@ class AdAuction {
   // Populated on construction, moved to the worklet service when running an
   // auction, since it's not used afterwards.
   blink::mojom::AuctionAdConfigPtr config_;
-
-  // List of loaded interest groups. Populated by the calls to
-  // OnInterestGroupRead().
-  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders_;
 
   AuctionCompleteCallback callback_;
 
