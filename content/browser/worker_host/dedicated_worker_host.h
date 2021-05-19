@@ -118,6 +118,14 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
   // TODO(crbug.com/906991): Remove this method once PlzDedicatedWorker is
   // enabled by default.
   void MaybeCountWebFeature(const GURL& script_url);
+  // TODO(crbug.com/906991): Remove this method once PlzDedicatedWorker is
+  // enabled by default.
+  void ContinueOnMaybeCountWebFeature(
+      const GURL& script_url,
+      base::WeakPtr<ServiceWorkerContainerHost> container_host,
+      blink::ServiceWorkerStatusCode status,
+      const std::vector<scoped_refptr<ServiceWorkerRegistration>>&
+          registrations);
 
   const net::NetworkIsolationKey& GetNetworkIsolationKey() const {
     return isolation_info_.network_isolation_key();

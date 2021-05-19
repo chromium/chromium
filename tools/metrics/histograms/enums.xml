@@ -32552,6 +32552,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3914" label="SVGTextHangingFromPath"/>
   <int value="3915" label="ClientHintsPrefersColorScheme"/>
   <int value="3916" label="OverscrollBehaviorWillBeFixed"/>
+  <int value="3917" label="ControlledWorkerWillBeUncontrolled"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
