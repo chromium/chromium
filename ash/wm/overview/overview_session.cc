@@ -391,7 +391,12 @@ void OverviewSession::SelectWindow(OverviewItem* item) {
           }
           wm::ActivateWindow(window_state->window());
         }));
-    window->Show();
+    // If we are in split mode, use Show() here to delegate un-minimizing to
+    // SplitViewController as it handles auto snapping cases.
+    if (SplitViewController::Get(window)->InSplitViewMode())
+      window->Show();
+    else
+      window_state->Unminimize();
     return;
   }
 
