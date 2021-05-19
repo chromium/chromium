@@ -13,14 +13,14 @@
 ActiveWebStateObservationForwarder::ActiveWebStateObservationForwarder(
     WebStateList* web_state_list,
     web::WebStateObserver* observer)
-    : web_state_observer_(observer) {
+    : web_state_observation_(observer) {
   DCHECK(observer);
   DCHECK(web_state_list);
-  web_state_list_observer_.Add(web_state_list);
+  web_state_list_observation_.Observe(web_state_list);
 
   web::WebState* active_web_state = web_state_list->GetActiveWebState();
   if (active_web_state) {
-    web_state_observer_.Add(active_web_state);
+    web_state_observation_.Observe(active_web_state);
   }
 }
 
@@ -32,14 +32,7 @@ void ActiveWebStateObservationForwarder::WebStateActivatedAt(
     web::WebState* new_web_state,
     int active_index,
     ActiveWebStateChangeReason reason) {
-  // If this class is created inside a |WebStateActivatedAt| callback, then it
-  // will be initialized already observing |new_web_state|, so it doesn't need
-  // to start or stop observing anything.
-  if (old_web_state && web_state_observer_.IsObserving(old_web_state)) {
-    web_state_observer_.Remove(old_web_state);
-  }
-
-  if (new_web_state && !web_state_observer_.IsObserving(new_web_state)) {
-    web_state_observer_.Add(new_web_state);
-  }
+  web_state_observation_.Reset();
+  if (new_web_state)
+    web_state_observation_.Observe(new_web_state);
 }

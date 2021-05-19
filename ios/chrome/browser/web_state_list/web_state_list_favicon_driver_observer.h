@@ -8,7 +8,7 @@
 #include <map>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 
 #include "components/favicon/core/favicon_driver_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -70,7 +70,8 @@ class WebStateListFaviconDriverObserver
   // notification to WebStateFaviconDriverObservers.
   std::map<favicon::FaviconDriver*, web::WebState*> driver_to_web_state_map_;
 
-  ScopedObserver<WebStateList, WebStateListObserver> web_state_list_observer_;
+  base::ScopedObservation<WebStateList, WebStateListObserver>
+      web_state_list_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebStateListFaviconDriverObserver);
 };

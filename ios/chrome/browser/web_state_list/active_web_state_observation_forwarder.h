@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_WEB_STATE_LIST_ACTIVE_WEB_STATE_OBSERVATION_FORWARDER_H_
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #import "ios/web/public/web_state.h"
@@ -32,9 +32,10 @@ class ActiveWebStateObservationForwarder : public WebStateListObserver {
                            ActiveWebStateChangeReason reason) override;
 
  private:
-  ScopedObserver<WebStateList, WebStateListObserver> web_state_list_observer_{
-      this};
-  ScopedObserver<web::WebState, web::WebStateObserver> web_state_observer_;
+  base::ScopedObservation<WebStateList, WebStateListObserver>
+      web_state_list_observation_{this};
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_;
 
   DISALLOW_COPY_AND_ASSIGN(ActiveWebStateObservationForwarder);
 };

@@ -15,8 +15,8 @@
 WebStateListFaviconDriverObserver::WebStateListFaviconDriverObserver(
     WebStateList* web_state_list,
     id<WebStateFaviconDriverObserver> observer)
-    : favicon_observer_(observer), web_state_list_observer_(this) {
-  web_state_list_observer_.Add(web_state_list);
+    : favicon_observer_(observer) {
+  web_state_list_observation_.Observe(web_state_list);
   for (int i = 0; i < web_state_list->count(); ++i)
     AddNewWebState(web_state_list->GetWebStateAt(i));
 }

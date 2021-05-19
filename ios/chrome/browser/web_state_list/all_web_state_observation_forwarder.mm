@@ -13,14 +13,14 @@
 AllWebStateObservationForwarder::AllWebStateObservationForwarder(
     WebStateList* web_state_list,
     web::WebStateObserver* observer)
-    : web_state_list_observer_(this), web_state_observer_(observer) {
+    : web_state_observations_(observer) {
   DCHECK(observer);
   DCHECK(web_state_list);
-  web_state_list_observer_.Add(web_state_list);
+  web_state_list_observation_.Observe(web_state_list);
 
   for (int ii = 0; ii < web_state_list->count(); ++ii) {
     web::WebState* web_state = web_state_list->GetWebStateAt(ii);
-    web_state_observer_.Add(web_state);
+    web_state_observations_.AddObservation(web_state);
   }
 }
 
@@ -31,7 +31,7 @@ void AllWebStateObservationForwarder::WebStateInsertedAt(
     web::WebState* web_state,
     int index,
     bool activating) {
-  web_state_observer_.Add(web_state);
+  web_state_observations_.AddObservation(web_state);
 }
 
 void AllWebStateObservationForwarder::WebStateReplacedAt(
@@ -39,13 +39,13 @@ void AllWebStateObservationForwarder::WebStateReplacedAt(
     web::WebState* old_web_state,
     web::WebState* new_web_state,
     int index) {
-  web_state_observer_.Remove(old_web_state);
-  web_state_observer_.Add(new_web_state);
+  web_state_observations_.RemoveObservation(old_web_state);
+  web_state_observations_.AddObservation(new_web_state);
 }
 
 void AllWebStateObservationForwarder::WebStateDetachedAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
     int index) {
-  web_state_observer_.Remove(web_state);
+  web_state_observations_.RemoveObservation(web_state);
 }
