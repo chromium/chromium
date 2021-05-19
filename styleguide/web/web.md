@@ -317,7 +317,7 @@ Guide](https://google.github.io/styleguide/jsguide.html) as well as
 ### Closure compiler
 
 * Use the [closure
-  compiler](https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md)
+  compiler](https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md)
   to identify JS type errors and enforce correct JSDoc annotations.
 
 * Add a `BUILD.gn` file to any new web UI code directory.

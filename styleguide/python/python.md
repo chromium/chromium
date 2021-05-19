@@ -1,7 +1,7 @@
 # Chromium Python Style Guide
 
 _For other languages, please see the [Chromium style
-guides](https://chromium.googlesource.com/chromium/src/+/master/styleguide/styleguide.md)._
+guides](https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md)._
 
 As of 2021-05-12, Chromium is transitioning from Python 2 to Python 3 (follow
 [crbug.com/941669](https://crbug.com/941669) for updates). See
@@ -63,7 +63,7 @@ making changes to files that follow them.
 You can propose changes to this style guide by sending an email to
 `python@chromium.org`. Ideally, the list will arrive at some consensus and you
 can request review for a change to this file. If there's no consensus,
-[`//styleguide/python/OWNERS`](https://chromium.googlesource.com/chromium/src/+/master/styleguide/python/OWNERS)
+[`//styleguide/python/OWNERS`](https://chromium.googlesource.com/chromium/src/+/main/styleguide/python/OWNERS)
 get to decide.
 
 ## Tools

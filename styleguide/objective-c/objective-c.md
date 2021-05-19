@@ -1,13 +1,13 @@
 # Chromium Objective-C and Objective-C++ style guide
 
-_For other languages, please see the [Chromium style guides](https://chromium.googlesource.com/chromium/src/+/master/styleguide/styleguide.md)._
+_For other languages, please see the [Chromium style guides](https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md)._
 
 Chromium follows the
 [Google Objective-C style guide](https://google.github.io/styleguide/objcguide.html)
 unless an exception is listed below.
 
 A checkout should give you
-[clang-format](https://chromium.googlesource.com/chromium/src/+/master/docs/clang_format.md)
+[clang-format](https://chromium.googlesource.com/chromium/src/+/main/docs/clang_format.md)
 to automatically format Objective-C and Objective-C++ code. By policy, Clang's
 formatting of code should always be accepted in code reviews. If Clang's
 formatting doesn't follow this style guide, file a bug.

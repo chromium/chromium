@@ -147,7 +147,7 @@ declaration.
 When possible, avoid bare `new` by using
 [`std::make_unique<T>(...)`](http://en.cppreference.com/w/cpp/memory/unique_ptr/make_unique)
 and
-[`base::MakeRefCounted<T>(...)`](https://source.chromium.org/chromium/chromium/src/+/master:base/memory/scoped_refptr.h;l=98;drc=f8c5bd9d40969f02ddeb3e6c7bdb83029a99ca63):
+[`base::MakeRefCounted<T>(...)`](https://source.chromium.org/chromium/chromium/src/+/main:base/memory/scoped_refptr.h;l=98;drc=f8c5bd9d40969f02ddeb3e6c7bdb83029a99ca63):
 
 ```cpp
 // BAD: bare call to new; for refcounted types, not compatible with one-based

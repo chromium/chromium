@@ -1,14 +1,14 @@
 # Chromium C++ style guide
 
 _For other languages, please see the
-[Chromium style guides](https://chromium.googlesource.com/chromium/src/+/master/styleguide/styleguide.md)._
+[Chromium style guides](https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md)._
 
 Chromium follows the [Google C++ Style
 Guide](https://google.github.io/styleguide/cppguide.html) unless an exception
 is listed below.
 
 A checkout should give you
-[clang-format](https://chromium.googlesource.com/chromium/src/+/master/docs/clang_format.md)
+[clang-format](https://chromium.googlesource.com/chromium/src/+/main/docs/clang_format.md)
 to automatically format C++ code. By policy, Clang's formatting of code should
 always be accepted in code reviews.
 
@@ -39,7 +39,7 @@ status of Chromium's C++ support is covered in more detail in
 
   * Functions used only for testing should be restricted to test-only usages
     with the testing suffixes supported by
-    [PRESUMBIT.py](https://chromium.googlesource.com/chromium/src/+/master/PRESUBMIT.py).
+    [PRESUMBIT.py](https://chromium.googlesource.com/chromium/src/+/main/PRESUBMIT.py).
     `ForTesting` is the conventional suffix although similar patterns, such as
     `ForTest`, are also accepted. These suffixes are checked at presubmit time
     to ensure the functions are called only by test files.

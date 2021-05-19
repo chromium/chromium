@@ -6,7 +6,7 @@ Google’s values include a deep respect for everyone who builds and uses our pr
 
 Google is taking active steps to revise internally and externally-facing code, documentation, UI and other artifacts, to better promote inclusivity. 
 
-Users, developers and hardware partners have seen tremendous inclusion strides with Google’s focus on accessibility.  [Gender language equity](https://chromium.googlesource.com/chromium/src/+/master/styleguide/inclusive_code.md) in coding terms and language is another area that has benefited from a focus on increased attention to inclusive language.  
+Users, developers and hardware partners have seen tremendous inclusion strides with Google’s focus on accessibility.  [Gender language equity](https://chromium.googlesource.com/chromium/src/+/main/styleguide/inclusive_code.md) in coding terms and language is another area that has benefited from a focus on increased attention to inclusive language.  
 
 Inclusive language used in coding, development language, all aspects of technical documentation including hardware designs, specifications and referenceable materials, all the way through the Chrome OS system to user help articles and documentation have been added to this effort.  
 
