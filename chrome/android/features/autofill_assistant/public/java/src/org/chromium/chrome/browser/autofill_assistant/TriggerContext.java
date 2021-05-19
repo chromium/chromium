@@ -134,7 +134,10 @@ public class TriggerContext {
      * initial URL when available to avoid issues where the initial URL points to a redirect
      * rather than the actual deeplink.
      */
-    private static final String PARAMETER_ORIGINAL_DEEPLINK = "ORIGINAL_DEEPLINK";
+    public static final String PARAMETER_ORIGINAL_DEEPLINK = "ORIGINAL_DEEPLINK";
+
+    /** Identifies the caller, i.e., the trigger surface. */
+    public static final String PARAMETER_CALLER = "CALLER";
 
     /**
      * Defines whether or not it is allowed to open an app instead of continuing with Autofill

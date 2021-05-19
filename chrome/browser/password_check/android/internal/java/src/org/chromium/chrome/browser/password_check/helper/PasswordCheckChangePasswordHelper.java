@@ -36,6 +36,8 @@ public class PasswordCheckChangePasswordHelper {
     private static final String INTENT = "PASSWORD_CHANGE";
     private static final String START_IMMEDIATELY_PARAMETER = "START_IMMEDIATELY";
     private static final String ORIGINAL_DEEPLINK_PARAMETER = "ORIGINAL_DEEPLINK";
+    private static final String CALLER_PARAMETER = "CALLER";
+    private static final int IN_CHROME_CALLER = 7;
 
     private static final String ENCODING = "UTF-8";
 
@@ -137,6 +139,7 @@ public class PasswordCheckChangePasswordHelper {
         intent.putExtra(AUTOFILL_ASSISTANT_ENABLED_KEY, true);
         intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + INTENT_PARAMETER, INTENT);
         intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + START_IMMEDIATELY_PARAMETER, true);
+        intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + CALLER_PARAMETER, IN_CHROME_CALLER);
         // Note: All string-typed parameters must be URL-encoded, because the
         // corresponding extraction logic will URL-*de*code them before use,
         // see TriggerContext.java.
