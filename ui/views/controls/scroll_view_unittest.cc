@@ -634,12 +634,14 @@ TEST_F(ScrollViewTest, ScrollBars) {
 }
 
 // Assertions around adding a header.
-TEST_F(ScrollViewTest, Header) {
-  auto* header = scroll_view_->SetHeader(std::make_unique<CustomView>());
+TEST_F(WidgetScrollViewTest, Header) {
+  auto contents_ptr = std::make_unique<View>();
+  auto* contents = contents_ptr.get();
+  ScrollView* scroll_view = AddScrollViewWithContents(std::move(contents_ptr));
+  auto* header = scroll_view->SetHeader(std::make_unique<CustomView>());
   View* header_parent = header->parent();
-  View* contents = InstallContents();
 
-  scroll_view_->Layout();
+  widget()->LayoutRootViewIfNecessary();
   // |header|s preferred size is empty, which should result in all space going
   // to contents.
   EXPECT_EQ("0,0 100x0", header->parent()->bounds().ToString());
@@ -657,8 +659,8 @@ TEST_F(ScrollViewTest, Header) {
 
   // Get the header a height of 20.
   header->SetPreferredSize(gfx::Size(10, 20));
-  EXPECT_TRUE(ViewTestApi(scroll_view_.get()).needs_layout());
-  scroll_view_->Layout();
+  EXPECT_TRUE(ViewTestApi(scroll_view).needs_layout());
+  widget()->LayoutRootViewIfNecessary();
   EXPECT_EQ("0,0 100x20", header->parent()->bounds().ToString());
   EXPECT_EQ("0,20 100x80", contents->parent()->bounds().ToString());
   if (contents->layer()) {
@@ -668,9 +670,10 @@ TEST_F(ScrollViewTest, Header) {
   EXPECT_EQ("0,0 0x0", contents->bounds().ToString());
 
   // Remove the header.
-  scroll_view_->SetHeader(nullptr);
+  scroll_view->SetHeader(nullptr);
   // SetHeader(nullptr) deletes header.
   header = nullptr;
+  widget()->LayoutRootViewIfNecessary();
   EXPECT_EQ("0,0 100x0", header_parent->bounds().ToString());
   EXPECT_EQ("0,0 100x100", contents->parent()->bounds().ToString());
 }
@@ -1091,6 +1094,25 @@ TEST_F(ScrollViewTest, ClipHeightToScrollbarUsesWidth) {
   EXPECT_EQ(scroll_view_->contents()->size().width(), expected_width);
   EXPECT_EQ(scroll_view_->contents()->size().height(), 1000 * expected_width);
   EXPECT_EQ(gfx::Size(kWidth, kMaxHeight), scroll_view_->size());
+}
+
+// Verifies ClipHeightTo() updates the ScrollView's preferred size.
+TEST_F(ScrollViewTest, ClipHeightToUpdatesPreferredSize) {
+  auto contents_view = std::make_unique<View>();
+  contents_view->SetPreferredSize({100, 100});
+  scroll_view_->SetContents(std::move(contents_view));
+  EXPECT_FALSE(scroll_view_->is_bounded());
+
+  constexpr int kMinHeight1 = 20;
+  constexpr int kMaxHeight1 = 80;
+  scroll_view_->ClipHeightTo(kMinHeight1, kMaxHeight1);
+  EXPECT_TRUE(scroll_view_->is_bounded());
+  EXPECT_EQ(scroll_view_->GetPreferredSize().height(), kMaxHeight1);
+
+  constexpr int kMinHeight2 = 200;
+  constexpr int kMaxHeight2 = 300;
+  scroll_view_->ClipHeightTo(kMinHeight2, kMaxHeight2);
+  EXPECT_EQ(scroll_view_->GetPreferredSize().height(), kMinHeight2);
 }
 
 TEST_F(ScrollViewTest, CornerViewVisibility) {
@@ -2268,6 +2290,21 @@ TEST_F(WidgetScrollViewTest,
 
   // Check if the scroll view has been offset.
   EXPECT_EQ(gfx::ScrollOffset(10, 0), test_api.CurrentOffset());
+}
+
+TEST_F(WidgetScrollViewTest, UnboundedScrollViewUsesContentPreferredSize) {
+  auto contents = std::make_unique<View>();
+  constexpr gfx::Size kContentsPreferredSize(500, 500);
+  contents->SetPreferredSize(kContentsPreferredSize);
+  ScrollView* scroll_view =
+      AddScrollViewWithContents(std::move(contents), true);
+  EXPECT_EQ(kContentsPreferredSize, scroll_view->GetPreferredSize());
+
+  constexpr gfx::Insets kInsets(20);
+  scroll_view->SetBorder(CreateEmptyBorder(kInsets));
+  gfx::Size preferred_size_with_insets(kContentsPreferredSize);
+  preferred_size_with_insets.Enlarge(kInsets.width(), kInsets.height());
+  EXPECT_EQ(preferred_size_with_insets, scroll_view->GetPreferredSize());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

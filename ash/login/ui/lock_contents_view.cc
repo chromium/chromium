@@ -1639,17 +1639,26 @@ void LockContentsView::CreateMediumDensityLayout(
   primary_big_view_ = main_view_->AddChildView(std::move(primary_big_view));
   auto* spacing_middle =
       main_view_->AddChildView(std::make_unique<NonAccessibleView>());
-  users_list_ = main_view_->AddChildView(
-      BuildScrollableUsersListView(users, LoginDisplayStyle::kSmall));
+  users_list_ =
+      main_view_->AddChildView(std::make_unique<ScrollableUsersListView>(
+          users,
+          base::BindRepeating(&LockContentsView::SwapToBigUser,
+                              base::Unretained(this)),
+          LoginDisplayStyle::kSmall));
   auto* spacing_right =
       main_view_->AddChildView(std::make_unique<NonAccessibleView>());
 
   // Set width for the |spacing_*| views.
   AddDisplayLayoutAction(base::BindRepeating(
       [](views::View* host_view, views::View* big_user_view,
-         views::View* users_list, views::View* spacing_left,
+         ScrollableUsersListView* users_list, views::View* spacing_left,
          views::View* spacing_middle, views::View* spacing_right,
          bool landscape) {
+        // `users_list` has margins that depend on the current orientation.
+        // Update these here so that the following calculations see the correct
+        // bounds.
+        users_list->UpdateUserViewHostLayoutInsets();
+
         int total_width = host_view->GetPreferredSize().width();
         int available_width =
             total_width - (big_user_view->GetPreferredSize().width() +
@@ -1694,8 +1703,12 @@ void LockContentsView::CreateHighDensityLayout(
   fill = main_view_->AddChildView(std::make_unique<NonAccessibleView>());
   main_layout->SetFlexForView(fill, 1);
 
-  users_list_ = main_view_->AddChildView(
-      BuildScrollableUsersListView(users, LoginDisplayStyle::kExtraSmall));
+  users_list_ =
+      main_view_->AddChildView(std::make_unique<ScrollableUsersListView>(
+          users,
+          base::BindRepeating(&LockContentsView::SwapToBigUser,
+                              base::Unretained(this)),
+          LoginDisplayStyle::kExtraSmall));
 
   // User list size may change after a display metric change.
   AddDisplayLayoutAction(base::BindRepeating(
@@ -2246,20 +2259,6 @@ LoginUserView* LockContentsView::TryToFindUserView(const AccountId& user) {
 
   // Try to find |user| in users_list_.
   return users_list_->GetUserView(user);
-}
-
-std::unique_ptr<ScrollableUsersListView>
-LockContentsView::BuildScrollableUsersListView(
-    const std::vector<LoginUserInfo>& users,
-    LoginDisplayStyle display_style) {
-  auto user_list_view = std::make_unique<ScrollableUsersListView>(
-      users,
-      base::BindRepeating(&LockContentsView::SwapToBigUser,
-                          base::Unretained(this)),
-      display_style);
-  user_list_view->ClipHeightTo(user_list_view->contents()->size().height(),
-                               size().height());
-  return user_list_view;
 }
 
 void LockContentsView::SetDisplayStyle(DisplayStyle style) {
