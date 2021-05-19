@@ -9,7 +9,7 @@
 // </p>
 // <p>
 //   Network connection configurations are specified following
-//   <a href="https://chromium.googlesource.com/chromium/src/+/master/components/onc/docs/onc_spec.md">
+//   <a href="https://chromium.googlesource.com/chromium/src/+/main/components/onc/docs/onc_spec.md">
 //   Open Network Configuration (ONC)</a> specification.
 // </p>
 // <p>
