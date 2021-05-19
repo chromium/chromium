@@ -17,6 +17,13 @@
     flex: 1;
   }
 
+  .card-banner {
+    display: block;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    max-width: 400px;
+  }
+
   .label-wrapper {
     display: block;
   }
@@ -111,8 +118,13 @@
   </div>
   <template is="dom-if" if="[[privacySandboxSettings2Enabled_]]">
     <div id="flocCard" class="card">
-      <settings-toggle-button class="hr"
-          pref="{{prefs.generated.floc_enabled}}"
+      <picture>
+        <source class="card-banner" media="(prefers-color-scheme: dark)"
+            srcset="./images/privacy_sandbox_floc_banner_dark.svg">
+        <img class="card-banner" alt=""
+            src="./images/privacy_sandbox_floc_banner.svg">
+      </picture>
+      <settings-toggle-button pref="{{prefs.generated.floc_enabled}}"
           label="$i18n{privacySandboxPageFlocHeading}">
       </settings-toggle-button>
       <div class="cr-row continuation">

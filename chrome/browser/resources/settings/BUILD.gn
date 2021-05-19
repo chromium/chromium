@@ -62,6 +62,8 @@ generate_grd("build_grd") {
     "images/permissions_banner.svg",
     "images/privacy_sandbox_banner_dark.svg",
     "images/privacy_sandbox_banner.svg",
+    "images/privacy_sandbox_floc_banner_dark.svg",
+    "images/privacy_sandbox_floc_banner.svg",
     "images/safe_browsing_banner_dark.svg",
     "images/safe_browsing_banner.svg",
     "images/sync_banner_dark.svg",
