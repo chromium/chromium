@@ -90,7 +90,8 @@ const char kManagementTransitionNotificationId[] =
 void ShowManagementTransitionNotification(Profile* profile) {
   const ArcSupervisionTransition transition = GetSupervisionTransition(profile);
   DCHECK(transition == ArcSupervisionTransition::CHILD_TO_REGULAR ||
-         transition == ArcSupervisionTransition::REGULAR_TO_CHILD);
+         transition == ArcSupervisionTransition::REGULAR_TO_CHILD ||
+         transition == ArcSupervisionTransition::UNMANAGED_TO_MANAGED);
 
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId);

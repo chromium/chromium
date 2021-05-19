@@ -107,6 +107,9 @@ const char kArcCompatibleFilesystemChosen[] =
 // GuestOsEngagementMetrics.
 const char kEngagementPrefsPrefix[] = "arc.metrics";
 
+// A boolean preference that indicates ARC management state.
+const char kArcIsManaged[] = "arc.is_managed";
+
 // ======== LOCAL STATE PREFS ========
 
 // A boolean preference that indicates whether this device has run with the
@@ -160,6 +163,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       kArcSupervisionTransition,
       static_cast<int>(ArcSupervisionTransition::NO_TRANSITION));
+
+  registry->RegisterBooleanPref(kArcIsManaged, false);
 
   guest_os::prefs::RegisterEngagementProfilePrefs(registry,
                                                   kEngagementPrefsPrefix);

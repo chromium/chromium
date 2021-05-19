@@ -145,6 +145,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
+#include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -1228,6 +1229,9 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
         (user->GetType() == user_manager::USER_TYPE_CHILD);
     const bool profile_is_child = profile->IsChild();
     const bool profile_is_new = profile->IsNewProfile();
+    const bool profile_is_managed = !profile->IsOffTheRecord() &&
+                                    arc::policy_util::IsAccountManaged(profile);
+
     if (!profile_is_new && profile_is_child != user_is_child) {
       ProfileAttributesEntry* entry =
           storage.GetProfileAttributesWithPath(profile->GetPath());
@@ -1235,23 +1239,38 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
         LOG(WARNING) << "Profile child status has changed.";
         storage.RemoveProfile(profile->GetPath());
       }
-      arc::ArcSupervisionTransition supervisionTransition;
-      if (!profile->GetPrefs()->GetBoolean(arc::prefs::kArcSignedIn)) {
-        // No transition is necessary if user never enabled ARC.
-        supervisionTransition = arc::ArcSupervisionTransition::NO_TRANSITION;
-      } else {
-        // Notify ARC about user type change via prefs if user enabled ARC.
-        supervisionTransition =
-            user_is_child ? arc::ArcSupervisionTransition::REGULAR_TO_CHILD
-                          : arc::ArcSupervisionTransition::CHILD_TO_REGULAR;
-      }
-      profile->GetPrefs()->SetInteger(arc::prefs::kArcSupervisionTransition,
-                                      static_cast<int>(supervisionTransition));
       ash::ChildAccountTypeChangedUserData::GetForProfile(profile)->SetValue(
           true);
     } else {
       ash::ChildAccountTypeChangedUserData::GetForProfile(profile)->SetValue(
           false);
+    }
+
+    // Notify ARC about transition via prefs if needed.
+    if (!profile_is_new) {
+      const bool arc_is_managed =
+          profile->GetPrefs()->GetBoolean(arc::prefs::kArcIsManaged);
+
+      const bool arc_signed_in =
+          profile->GetPrefs()->GetBoolean(arc::prefs::kArcSignedIn);
+
+      arc::ArcSupervisionTransition transition;
+      if (!arc_signed_in) {
+        // No transition is necessary if user never enabled ARC.
+        transition = arc::ArcSupervisionTransition::NO_TRANSITION;
+      } else if (profile_is_child != user_is_child) {
+        transition = user_is_child
+                         ? arc::ArcSupervisionTransition::REGULAR_TO_CHILD
+                         : arc::ArcSupervisionTransition::CHILD_TO_REGULAR;
+      } else if (profile_is_managed && !arc_is_managed) {
+        transition = arc::ArcSupervisionTransition::UNMANAGED_TO_MANAGED;
+      } else {
+        // User state has not changed.
+        transition = arc::ArcSupervisionTransition::NO_TRANSITION;
+      }
+
+      profile->GetPrefs()->SetInteger(arc::prefs::kArcSupervisionTransition,
+                                      static_cast<int>(transition));
     }
 
     if (user_is_child) {

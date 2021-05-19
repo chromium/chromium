@@ -26,6 +26,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -68,6 +69,7 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/session/arc_supervision_transition.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -235,6 +237,45 @@ class ProfileManagerTest : public testing::Test {
                                                    false /* is_child */);
     g_browser_process->profile_manager()->GetProfile(
         profile_helper->GetProfilePathByUserIdHash(user_id_hash));
+  }
+
+  std::unique_ptr<Profile> InitProfileForArcTransitionTest(
+      bool profile_is_new,
+      bool arc_signed_in,
+      bool profile_is_child,
+      bool user_is_child,
+      bool profile_is_managed,
+      bool arc_is_managed) {
+    chromeos::ProfileHelper* profile_helper = chromeos::ProfileHelper::Get();
+    user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+
+    const std::string user_email = "user_for_transition@example.com";
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId(user_email, "1");
+    const std::string user_id_hash =
+        profile_helper->GetUserIdHashByUserIdForTesting(user_email);
+    const base::FilePath dest_path =
+        profile_helper->GetProfilePathByUserIdHash(user_id_hash);
+
+    TestingProfile::Builder builder;
+    builder.SetPath(dest_path);
+    builder.SetIsNewProfile(profile_is_new);
+
+    if (profile_is_child) {
+      builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
+    }
+
+    builder.OverridePolicyConnectorIsManagedForTesting(profile_is_managed);
+    std::unique_ptr<Profile> profile = builder.Build();
+
+    profile->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn, arc_signed_in);
+    profile->GetPrefs()->SetBoolean(arc::prefs::kArcIsManaged, arc_is_managed);
+
+    user_manager->UserLoggedIn(account_id, user_id_hash,
+                               false /* browser_restart */, user_is_child);
+    g_browser_process->profile_manager()->InitProfileUserPrefs(profile.get());
+
+    return profile;
   }
 
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
@@ -945,24 +986,10 @@ TEST_F(ProfileManagerTest, InitProfileInfoCacheForAProfile) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProfileManagerTest, InitProfileForChildOnFirstSignIn) {
-  chromeos::ProfileHelper* profile_helper = chromeos::ProfileHelper::Get();
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-
-  const std::string user_email = "child@example.com";
-  const AccountId account_id = AccountId::FromUserEmailGaiaId(user_email, "1");
-  const std::string user_id_hash =
-      profile_helper->GetUserIdHashByUserIdForTesting(user_email);
-  const base::FilePath dest_path =
-      profile_helper->GetProfilePathByUserIdHash(user_id_hash);
-
-  TestingProfile::Builder builder;
-  builder.SetPath(dest_path);
-  builder.SetIsNewProfile(true);
-  std::unique_ptr<Profile> profile = builder.Build();
-
-  user_manager->UserLoggedIn(account_id, user_id_hash,
-                             false /* browser_restart */, true /* is_child */);
-  g_browser_process->profile_manager()->InitProfileUserPrefs(profile.get());
+  std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
+      true /* profile_is_new */, false /* arc_signed_in */,
+      false /* profile_is_child */, true /* user_is_child */,
+      false /* profile_is_managed */, false /* arc_is_managed */);
 
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(arc::prefs::kArcSupervisionTransition),
@@ -972,25 +999,10 @@ TEST_F(ProfileManagerTest, InitProfileForChildOnFirstSignIn) {
 }
 
 TEST_F(ProfileManagerTest, InitProfileForRegularToChildTransition) {
-  chromeos::ProfileHelper* profile_helper = chromeos::ProfileHelper::Get();
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-
-  const std::string user_email = "child@example.com";
-  const AccountId account_id = AccountId::FromUserEmailGaiaId(user_email, "1");
-  const std::string user_id_hash =
-      profile_helper->GetUserIdHashByUserIdForTesting(user_email);
-  const base::FilePath dest_path =
-      profile_helper->GetProfilePathByUserIdHash(user_id_hash);
-
-  TestingProfile::Builder builder;
-  builder.SetPath(dest_path);
-  builder.SetIsNewProfile(false);
-  std::unique_ptr<Profile> profile = builder.Build();
-  profile->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn, true);
-
-  user_manager->UserLoggedIn(account_id, user_id_hash,
-                             false /* browser_restart */, true /* is_child */);
-  g_browser_process->profile_manager()->InitProfileUserPrefs(profile.get());
+  std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
+      false /* profile_is_new */, true /* arc_signed_in */,
+      false /* profile_is_child */, true /* user_is_child */,
+      false /* profile_is_managed */, false /* arc_is_managed */);
 
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(arc::prefs::kArcSupervisionTransition),
@@ -1000,26 +1012,10 @@ TEST_F(ProfileManagerTest, InitProfileForRegularToChildTransition) {
 }
 
 TEST_F(ProfileManagerTest, InitProfileForChildToRegularTransition) {
-  chromeos::ProfileHelper* profile_helper = chromeos::ProfileHelper::Get();
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-
-  const std::string user_email = "child@example.com";
-  const AccountId account_id = AccountId::FromUserEmailGaiaId(user_email, "1");
-  const std::string user_id_hash =
-      profile_helper->GetUserIdHashByUserIdForTesting(user_email);
-  const base::FilePath dest_path =
-      profile_helper->GetProfilePathByUserIdHash(user_id_hash);
-
-  TestingProfile::Builder builder;
-  builder.SetPath(dest_path);
-  builder.SetIsNewProfile(false);
-  builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
-  std::unique_ptr<Profile> profile = builder.Build();
-  profile->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn, true);
-
-  user_manager->UserLoggedIn(account_id, user_id_hash,
-                             false /* browser_restart */, false /* is_child */);
-  g_browser_process->profile_manager()->InitProfileUserPrefs(profile.get());
+  std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
+      false /* profile_is_new */, true /* arc_signed_in */,
+      true /* profile_is_child */, false /* user_is_child */,
+      false /* profile_is_managed */, false /* arc_is_managed */);
 
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(arc::prefs::kArcSupervisionTransition),
@@ -1027,28 +1023,42 @@ TEST_F(ProfileManagerTest, InitProfileForChildToRegularTransition) {
   EXPECT_TRUE(profile->GetPrefs()->GetString(prefs::kSupervisedUserId).empty());
 }
 
+TEST_F(ProfileManagerTest, InitProfileForUnmanagedToManagedTransition) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      arc::kEnableUnmanagedToManagedTransitionFeature);
+
+  std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
+      false /* profile_is_new */, true /* arc_signed_in */,
+      false /* profile_is_child */, false /* user_is_child */,
+      true /* profile_is_managed */, false /* arc_is_managed */);
+
+  EXPECT_EQ(
+      profile->GetPrefs()->GetInteger(arc::prefs::kArcSupervisionTransition),
+      static_cast<int>(arc::ArcSupervisionTransition::UNMANAGED_TO_MANAGED));
+}
+
+TEST_F(ProfileManagerTest, InitProfileForManagedUserOnFirstSignIn) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      arc::kEnableUnmanagedToManagedTransitionFeature);
+
+  std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
+      true /* profile_is_new */, false /* arc_signed_in */,
+      false /* profile_is_child */, false /* user_is_child */,
+      true /* profile_is_managed */, false /* arc_is_managed */);
+
+  EXPECT_EQ(
+      profile->GetPrefs()->GetInteger(arc::prefs::kArcSupervisionTransition),
+      static_cast<int>(arc::ArcSupervisionTransition::NO_TRANSITION));
+}
+
 TEST_F(ProfileManagerTest,
        InitProfileForChildToRegularTransitionArcNotSignedIn) {
-  chromeos::ProfileHelper* profile_helper = chromeos::ProfileHelper::Get();
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-
-  const std::string user_email = "child@example.com";
-  const AccountId account_id = AccountId::FromUserEmailGaiaId(user_email, "1");
-  const std::string user_id_hash =
-      profile_helper->GetUserIdHashByUserIdForTesting(user_email);
-  const base::FilePath dest_path =
-      profile_helper->GetProfilePathByUserIdHash(user_id_hash);
-
-  TestingProfile::Builder builder;
-  builder.SetPath(dest_path);
-  builder.SetIsNewProfile(false);
-  builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
-  std::unique_ptr<Profile> profile = builder.Build();
-  profile->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn, false);
-
-  user_manager->UserLoggedIn(account_id, user_id_hash,
-                             false /* browser_restart */, false /* is_child */);
-  g_browser_process->profile_manager()->InitProfileUserPrefs(profile.get());
+  std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
+      false /* profile_is_new */, false /* arc_signed_in */,
+      true /* profile_is_child */, false /* user_is_child */,
+      false /* profile_is_managed */, false /* arc_is_managed */);
 
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(arc::prefs::kArcSupervisionTransition),

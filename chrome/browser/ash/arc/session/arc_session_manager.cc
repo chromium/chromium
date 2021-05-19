@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_default_negotiator.h"
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_oobe_negotiator.h"
 #include "chrome/browser/ash/arc/policy/arc_android_management_checker.h"
+#include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -93,6 +94,9 @@ constexpr const size_t kArcSaltFileSize = 16;
 
 constexpr const char kArcPrepareHostGeneratedDirJobName[] =
     "arc_2dprepare_2dhost_2dgenerated_2ddir";
+
+constexpr base::TimeDelta kWaitForPoliciesTimeout =
+    base::TimeDelta::FromSeconds(20);
 
 // Generates a unique, 20-character hex string from |chromeos_user| and
 // |salt| which can be used as Android's ro.boot.serialno and ro.serialno
@@ -670,6 +674,9 @@ void ArcSessionManager::OnProvisioningFinished(
 
     PrefService* const prefs = profile_->GetPrefs();
 
+    prefs->SetBoolean(prefs::kArcIsManaged,
+                      policy_util::IsAccountManaged(profile_));
+
     if (prefs->GetBoolean(prefs::kArcSignedIn))
       return;
 
@@ -892,6 +899,7 @@ void ArcSessionManager::ResetArcState() {
   playstore_launcher_.reset();
   terms_of_service_negotiator_.reset();
   android_management_checker_.reset();
+  wait_for_policy_timer_.AbandonAndStop();
 }
 
 void ArcSessionManager::AddObserver(ArcSessionManagerObserver* observer) {
@@ -972,6 +980,11 @@ void ArcSessionManager::RequestEnable() {
 
 bool ArcSessionManager::IsPlaystoreLaunchRequestedForTesting() const {
   return playstore_launcher_.get();
+}
+
+void ArcSessionManager::OnBackgroundAndroidManagementCheckedForTesting(
+    policy::AndroidManagementClient::Result result) {
+  OnBackgroundAndroidManagementChecked(result);
 }
 
 void ArcSessionManager::OnVmStarted(
@@ -1341,20 +1354,82 @@ void ArcSessionManager::StartBackgroundAndroidManagementCheck() {
 void ArcSessionManager::OnBackgroundAndroidManagementChecked(
     policy::AndroidManagementClient::Result result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(android_management_checker_);
-  android_management_checker_.reset();
+
+  if (g_enable_check_android_management_in_tests.value_or(true)) {
+    DCHECK(android_management_checker_);
+    android_management_checker_.reset();
+  }
 
   switch (result) {
     case policy::AndroidManagementClient::Result::UNMANAGED:
       // Do nothing. ARC should be started already.
       break;
     case policy::AndroidManagementClient::Result::MANAGED:
-      SetArcPlayStoreEnabledForProfile(profile_, false);
+      if (base::FeatureList::IsEnabled(
+              arc::kEnableUnmanagedToManagedTransitionFeature)) {
+        WaitForPoliciesLoad();
+      } else {
+        SetArcPlayStoreEnabledForProfile(profile_, false /* enabled */);
+      }
       break;
     case policy::AndroidManagementClient::Result::ERROR:
       // This code should not be reached. For background check,
       // retry_on_error should be set.
       NOTREACHED();
+  }
+}
+
+void ArcSessionManager::WaitForPoliciesLoad() {
+  auto* policy_service =
+      profile()->GetProfilePolicyConnector()->policy_service();
+
+  // User might be transitioning to managed state, wait for policies load
+  // to confirm.
+  if (policy_service->IsFirstPolicyLoadComplete(policy::POLICY_DOMAIN_CHROME)) {
+    OnFirstPoliciesLoadedOrTimeout();
+  } else {
+    profile_->GetProfilePolicyConnector()->policy_service()->AddObserver(
+        policy::POLICY_DOMAIN_CHROME, this);
+    wait_for_policy_timer_.Start(
+        FROM_HERE, kWaitForPoliciesTimeout,
+        base::BindOnce(&ArcSessionManager::OnFirstPoliciesLoadedOrTimeout,
+                       base::Unretained(this)));
+  }
+}
+
+void ArcSessionManager::OnFirstPoliciesLoaded(policy::PolicyDomain domain) {
+  DCHECK(domain == policy::POLICY_DOMAIN_CHROME);
+
+  wait_for_policy_timer_.Stop();
+  OnFirstPoliciesLoadedOrTimeout();
+}
+
+void ArcSessionManager::OnFirstPoliciesLoadedOrTimeout() {
+  profile_->GetProfilePolicyConnector()->policy_service()->RemoveObserver(
+      policy::POLICY_DOMAIN_CHROME, this);
+
+  // OnFirstPoliciesLoaded callback is triggered for both unmanaged and managed
+  // users, we need to check user state here.
+  // If timeout comes before policies are loaded, we fallback to calling
+  // SetArcPlayStoreEnabledForProfile(profile_, false).
+  if (arc::policy_util::IsAccountManaged(profile_)) {
+    // User has become managed, notify ARC by setting transition preference,
+    // which is eventually passed to ARC via ArcSession parameters.
+    profile_->GetPrefs()->SetInteger(
+        arc::prefs::kArcSupervisionTransition,
+        static_cast<int>(arc::ArcSupervisionTransition::UNMANAGED_TO_MANAGED));
+
+    // Restart ARC to perform managed re-provisioning.
+    // kArcIsManaged and kArcSignedIn are not reset during the restart.
+    // In case of successful re-provisioning, OnProvisioningFinished is called
+    // and kArcIsManaged is updated.
+    // In case of re-provisioning failure, ARC data is removed and transition
+    // preference is reset.
+    // In case Chrome is terminated during re-provisioning, user transition will
+    // be detected in ProfileManager::InitProfileUserPrefs, on next startup.
+    StopAndEnableArc();
+  } else {
+    SetArcPlayStoreEnabledForProfile(profile_, false /* enabled */);
   }
 }
 
@@ -1430,6 +1505,7 @@ void ArcSessionManager::StopArc() {
     profile_->GetPrefs()->SetBoolean(prefs::kArcFastAppReinstallStarted, false);
     profile_->GetPrefs()->SetBoolean(prefs::kArcProvisioningInitiatedFromOobe,
                                      false);
+    profile_->GetPrefs()->SetBoolean(prefs::kArcIsManaged, false);
   }
 
   ShutdownSession();

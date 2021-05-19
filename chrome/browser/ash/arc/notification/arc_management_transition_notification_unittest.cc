@@ -9,11 +9,13 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/session/arc_supervision_transition.h"
@@ -40,6 +42,9 @@ class ArcManagementTransitionNotificationTest
     display_service_ =
         std::make_unique<NotificationDisplayServiceTester>(profile());
     arc_app_test_.SetUp(profile());
+
+    feature_list_.InitAndEnableFeature(
+        kEnableUnmanagedToManagedTransitionFeature);
   }
 
   void TearDown() override {
@@ -60,6 +65,8 @@ class ArcManagementTransitionNotificationTest
   ArcAppTest arc_app_test_;
 
   content::BrowserTaskEnvironment task_environment_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -67,7 +74,8 @@ INSTANTIATE_TEST_SUITE_P(
     ArcManagementTransitionNotificationTest,
     ::testing::Values(ArcSupervisionTransition::NO_TRANSITION,
                       ArcSupervisionTransition::CHILD_TO_REGULAR,
-                      ArcSupervisionTransition::REGULAR_TO_CHILD));
+                      ArcSupervisionTransition::REGULAR_TO_CHILD,
+                      ArcSupervisionTransition::UNMANAGED_TO_MANAGED));
 
 TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
   ASSERT_TRUE(arc_app_test()->fake_apps().size());
