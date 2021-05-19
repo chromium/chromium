@@ -79,6 +79,10 @@ void OmahaAttributesHandler::PerformActionBasedOnOmahaAttributes(
       extension_id, attributes,
       extensions_features::kDisablePolicyViolationExtensionsRemotely,
       BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION);
+  HandleGreylistOmahaAttribute(
+      extension_id, attributes,
+      extensions_features::kDisablePotentiallyUwsExtensionsRemotely,
+      BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED);
 }
 
 void OmahaAttributesHandler::ReportPolicyViolationUWSOmahaAttributes(
