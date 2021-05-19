@@ -17,9 +17,10 @@ async_test(function(t) {
 
     wsocket.addEventListener('message', t.step_func_done(function(e) {
             assert_equals(e.data, data);
-            done();
     }), true);
+
+    wsocket.addEventListener('close', t.unreached_func('the close event should not fire'), true);
 
 }, "Send data on a WebSocket in a Worker")
 
-
+done();

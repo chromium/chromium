@@ -3,21 +3,19 @@
 // META: variant=?wpt_flags=h2
 // META: variant=?wss
 
-var testOpen = async_test("Create WebSocket - wsocket.binaryType should be set to 'blob' after connection is established - Connection should be opened");
-var testClose = async_test("Create WebSocket - wsocket.binaryType should be set to 'blob' after connection is established - Connection should be closed");
+var test = async_test("Create WebSocket - wsocket.binaryType should be set to 'blob' after connection is established - Connection should be closed");
 
 var wsocket = CreateWebSocket(false, false);
 var isOpenCalled = false;
 
-wsocket.addEventListener('open', testOpen.step_func(function(evt) {
+wsocket.addEventListener('open', test.step_func(function(evt) {
   assert_equals(wsocket.binaryType, "blob", "binaryType should be set to Blob");
   wsocket.close();
   isOpenCalled = true;
-  testOpen.done();
 }), true);
 
-wsocket.addEventListener('close', testClose.step_func(function(evt) {
+wsocket.addEventListener('close', test.step_func(function(evt) {
   assert_true(isOpenCalled, "WebSocket connection should be open");
   assert_equals(evt.wasClean, true, "wasClean should be true");
-  testClose.done();
+  test.done();
 }), true);

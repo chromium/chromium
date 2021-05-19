@@ -22,5 +22,7 @@ async_test(function(t) {
     });
     ws.close();
   })
+  // This will be overridden if the message event fires.
+  ws.onclose = t.unreached_func('close event should not fire before message event');
  });
 </script>

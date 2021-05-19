@@ -14,3 +14,5 @@ wsocket.addEventListener('open', test.step_func(function(evt) {
   });
   test.done();
 }), true);
+
+wsocket.addEventListener('close', test.unreached_func('close event should not fire'), true);

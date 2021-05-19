@@ -24,5 +24,6 @@ async_test(function(t) {
     assert_equals(e.data, data);
     t.done();
   })
+  ws.onclose = t.unreached_func('close event should not fire');
 });
 </script>

@@ -9,6 +9,11 @@ var wsocket = CreateWebSocket(false, false);
 var isOpenCalled = false;
 
 wsocket.addEventListener('open', test.step_func(function(evt) {
+  isOpenCalled = true;
   wsocket.close(undefined);
+}), true);
+
+wsocket.addEventListener('close', test.step_func(function(evt) {
+  assert_true(isOpenCalled, 'open event must fire');
   test.done();
 }), true);
