@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">Alejar</translation>
 <translation id="2230173723195178503">Se cargó la página web</translation>
 <translation id="2239626343334228536">Borrando datos de navegación…</translation>
-<translation id="2257567812274161158">La sincronización no funciona.</translation>
 <translation id="225943865679747347">Código de error: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Agregar cuenta</translation>
 <translation id="2268044343513325586">Definir mejor</translation>
@@ -143,7 +142,6 @@
 Tampoco pueden usar cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios.</translation>
 <translation id="2381405137052800939">Configuración básica</translation>
 <translation id="2386793615875593361">1 foto seleccionada</translation>
-<translation id="2410754283952462441">Elegir una cuenta</translation>
 <translation id="2421004566762153674">Se están bloqueando las cookies de terceros</translation>
 <translation id="2421044535038393232">Seguir editando</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
@@ -362,7 +360,6 @@ Tus datos están encriptados con tu frase de contraseña para sincronización. D
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4747097190499141774">La encriptación de la frase de contraseña no incluye formas de pago ni direcciones de Google Pay. Solo las personas que tengan tu frase de contraseña pueden leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si la olvidas o quieres cambiar esta configuración, deberás restablecer la sincronización. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nueva pestaña de incógnito</translation>
-<translation id="4766678251456904326">Agregar una cuenta al dispositivo</translation>
 <translation id="4775879719735953715">Navegador predeterminado</translation>
 <translation id="4778644898150334464">Usar otra contraseña</translation>
 <translation id="4802417911091824046">La encriptación de la frase de contraseña no incluye formas de pago ni direcciones de Google Pay.
@@ -794,6 +791,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8976382372951310360">Ayuda</translation>
 <translation id="8981454092730389528">Controles de actividad de Google</translation>
 <translation id="8985320356172329008">Accediste a Google como</translation>
+<translation id="8996526648899750015">Agregar cuenta…</translation>
 <translation id="9034759925968272072">No saldrás de tu cuenta de Google. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar original</translation>
 <translation id="9039373489628511875">Ancho de banda</translation>

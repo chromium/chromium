@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">Zvogëlo</translation>
 <translation id="2230173723195178503">Faqja e uebit u ngarkua</translation>
 <translation id="2239626343334228536">Të dhënat e shfletimit po pastrohen...</translation>
-<translation id="2257567812274161158">Sinkronizimi nuk po punon.</translation>
 <translation id="225943865679747347">Kodi i gabimit: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Shto një llogari</translation>
 <translation id="2268044343513325586">Ripërpuno</translation>
@@ -143,7 +142,6 @@
 Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme, për shembull për t'i personalizuar reklamat.</translation>
 <translation id="2381405137052800939">Bazat</translation>
 <translation id="2386793615875593361">1 e përzgjedhur</translation>
-<translation id="2410754283952462441">Zgjidh një llogari</translation>
 <translation id="2421004566762153674">Bllokimi i kukive të palëve të treta</translation>
 <translation id="2421044535038393232">Vazhdo modifikimin</translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
@@ -362,7 +360,6 @@ Të dhënat e tua janë të koduara me frazën tënde të kalimit për sinkroniz
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4747097190499141774">Enkriptimi i frazës së kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay. Vetëm dikush me frazën tënde të kalimit mund t'i lexojë të dhënat e enkriptuara. Fraza e kalimit nuk dërgohet te Google dhe as nuk ruhet nga ai. Nëse e harron frazën e kalimit ose dëshiron ta ndryshosh këtë cilësim, do të duhet të rivendosësh sinkronizimin. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Skedë e re "e fshehtë"</translation>
-<translation id="4766678251456904326">Shto llogari në pajisje</translation>
 <translation id="4775879719735953715">Shfletuesi i parazgjedhur</translation>
 <translation id="4778644898150334464">Përdor një fjalëkalim tjetër</translation>
 <translation id="4802417911091824046">Enkriptimi me frazën e kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.
@@ -618,6 +615,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7029809446516969842">Fjalëkalimet</translation>
 <translation id="7053983685419859001">Bllokoje</translation>
 <translation id="7062545763355031412">Pranoje dhe ndërro llogaritë</translation>
+<translation id="708844789167408367">Dil dhe çaktivizo sinkronizimin...</translation>
 <translation id="7099761977003084116">Skedat e fundit</translation>
 <translation id="7102005569666697658">Po shkarkon… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Fshih</translation>
@@ -793,6 +791,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8976382372951310360">Ndihma</translation>
 <translation id="8981454092730389528">Kontrollet e aktivitetit të Google</translation>
 <translation id="8985320356172329008">Je identifikuar në Google si</translation>
+<translation id="8996526648899750015">Shto llogari...</translation>
 <translation id="9034759925968272072">Nuk do të dalësh nga llogaria e Google. Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Shfaq origjinalin</translation>
 <translation id="9039373489628511875">Gjerësia e bandës</translation>

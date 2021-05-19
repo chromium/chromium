@@ -10,7 +10,7 @@
 <translation id="1049743911850919806">इन्कोग्निटो</translation>
 <translation id="10614374240317010">कहिले पनि बचत नगर्नुहोस्</translation>
 <translation id="1067922213147265141">Google का अन्य सेवाहरू</translation>
-<translation id="107147699690128016">तपाईंले फाइलको एक्स्टेन्सन परिवर्तन गर्नुभयो भने यो फाइल कुनै अर्को अनुप्रयोगमा खुल्न सक्छ जुन तपाईंको डिभाइसका लागि हानिकारक पनि हुन सक्छ।</translation>
+<translation id="107147699690128016">तपाईंले फाइलको एक्स्टेन्सन परिवर्तन गर्नुभयो भने यो फाइल कुनै अर्को एपमा खुल्न सक्छ जुन तपाईंको डिभाइसका लागि हानिकारक पनि हुन सक्छ।</translation>
 <translation id="1100066534610197918">समूहमा नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="1105960400813249514">स्क्रिन क्याप्चर</translation>
 <translation id="1111673857033749125">तपाईँका अन्य डिभाइसमा सुरक्षित गरिएका पुस्तक चिन्हहरू यहाँ देखिनेछन्।</translation>
@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Chrome र Chrome OS का सेवाका अतिरिक्त सर्तहरू</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1810845389119482123">सिंक गर्ने कार्यको प्रारम्भिक सेटअप पूरा भएको छैन</translation>
-<translation id="1821253160463689938">तपाईं ती पृष्ठहरूमा नजानुभए तापनि तपाईंका प्राथमिकताहरू सम्झनका लागि कुकीहरूको प्रयोग गर्छ</translation>
 <translation id="1829244130665387512">पृष्ठमा फेला पार्नुहोस्</translation>
 <translation id="1830550083491357902">साइन इन भएको छैन</translation>
 <translation id="1843805151597803366">अझ राम्रो अनुवाद पाउन Google खोजलाई हालको पृष्ठ प्रयोग गर्न दिनुहोस्</translation>
@@ -273,7 +272,6 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकेन्ड बाँकी छ</translation>
 <translation id="2779651927720337254">डाउनलोड गर्न सकिएन</translation>
 <translation id="2781151931089541271">१ सेकेन्ड बाँकी छ</translation>
-<translation id="279827439955962619">पाठमा गरिएको हाइलाइट हटाउनुहोस्</translation>
 <translation id="2801022321632964776">Chrome को नवीनतम संस्करणमा आफ्नो भाषा प्राप्त गर्न अपडेट गर्नुहोस्</translation>
 <translation id="2805756323405976993">एप्स</translation>
 <translation id="281504910091592009">आफ्नो <ph name="BEGIN_LINK" />Google खाता<ph name="END_LINK" /> मा सुरक्षित गरिएका पासवर्डहरू हेर्नुहोस् र व्यवस्थापन गर्नुहोस्</translation>
@@ -454,7 +452,6 @@
 <translation id="3988466920954086464">यस प्यानलमा खोजका तात्कालिक परिणामहरू हेर्नुहोस्</translation>
 <translation id="4000212216660919741">अफलाइन गृहपृष्ठ</translation>
 <translation id="4016425174436051808">फलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
-<translation id="4021916380760361450">आफ्ना Google खातामा रहेका डेटा नियन्त्रण गर्नुहोस्</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# घन्टा}other{# घन्टा}}</translation>
 <translation id="4045764304651014138">प्रयोगसम्बन्धी डेटा</translation>
 <translation id="4056223980640387499">सेपिया</translation>
@@ -480,7 +477,6 @@
 <translation id="4195643157523330669">नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="4198423547019359126">डाउनलोडसम्बन्धी कुनै पनि स्थानहरू उपलब्ध छैनन्</translation>
 <translation id="4209895695669353772">Google ले सिफारिस गरेको वैयक्तीकृत सामग्री प्राप्त गर्न सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
-<translation id="423219824432660969">Google को पासवर्डमार्फत <ph name="TIME" /> सम्मका सिंक गरिएको डेटा इन्क्रिप्ट गर्नुहोस्</translation>
 <translation id="4242533952199664413">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="4248098802131000011">डेटा चोरी हुने तथा सुरक्षासम्बन्धी अन्य समस्याबाट आफ्ना पासवर्डहरू सुरक्षित राख्नुहोस्</translation>
 <translation id="4250229828105606438">स्क्रिसट</translation>
@@ -558,6 +554,7 @@
 <translation id="47217992755561375">तपाईंका लागि सिफारिस गरिएका शीर्ष साइटहरू हेर्नुहोस्</translation>
 <translation id="4732120983431207637">स्ट्याक Unwinder</translation>
 <translation id="4738836084190194332">अन्तिम पटक सिंक गरिएको: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">हाइलाइट हटाउनुहोस्</translation>
 <translation id="4749960740855309258">एउटा नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="4759238208242260848">डाउनलोडहरू</translation>
 <translation id="4763480195061959176">भिडियो</translation>
@@ -672,7 +669,7 @@
 <translation id="545042621069398927">तपाईंको डाउनलोडको गति बढाउँदै।</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> सँग</translation>
 <translation id="5456381639095306749">पृष्ठ डाउनलोड गर्नुहोस्</translation>
-<translation id="548278423535722844">नक्सा अनुप्रयोगमा खोल्नुहोस्</translation>
+<translation id="548278423535722844">नक्सा एपमा खोल्नुहोस्</translation>
 <translation id="5483197086164197190">Chrome नेभिगेट गर्ने तरिका</translation>
 <translation id="5487521232677179737">डेटा मेटाउनुहोस्</translation>
 <translation id="549025011754480756">बोलेर खोज्ने तरिका</translation>
@@ -698,7 +695,6 @@
 <translation id="562289928968387744">प्रतिक्रियाहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5626134646977739690">नाम:</translation>
 <translation id="5628604359369369630">नपढिएको - अफलाइन उपलब्ध छ</translation>
-<translation id="5632627355679805402">तपाईंको डेटालाई <ph name="TIME" /> मा तपाईंको<ph name="BEGIN_LINK" />Google पासवर्ड<ph name="END_LINK" /> मार्फत इन्क्रिप्ट गरियो। सिंक सुरु गर्न उक्त पासवर्ड प्रविष्टि गर्नुहोस्।</translation>
 <translation id="5639724618331995626">सबै साइटहरूलाई अनुमति दिनुहोस्</translation>
 <translation id="5648166631817621825">पछिल्ला ७ दिन</translation>
 <translation id="5655963694829536461">आफ्ना डाउनलोडहरू खोज्नुहोस्</translation>
@@ -933,7 +929,6 @@
 <translation id="702463548815491781">TalkBack वा पहुँच स्विच गर्नुहोस् नामक सुविधा सक्रिय हुँदा मात्र सिफारिस गरिन्छ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> रिस्टोर गरियो</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
-<translation id="7040531500313579672">हाइलाइट गरिएको पाठको लिंक सेयर गर्नुहोस्</translation>
 <translation id="7054588988317389591">फोटोका विवरणहरू प्राप्त गर्न चाहनुहुन्छ?</translation>
 <translation id="7055152154916055070">रिडिरेक्ट नामक सुविधामाथि रोक लगाइयो:</translation>
 <translation id="7063006564040364415">समक्रमण सर्भरमा जडान गर्न सकेन।</translation>
@@ -969,6 +964,7 @@
 <translation id="7328017930301109123">लाइट मोडमा हुँदा Chrome ले पृष्ठहरू अझ छिटो लोड गर्नुका साथै ६० प्रतिशतसम्म कम डेटा प्रयोग गर्छ।</translation>
 <translation id="7332075081379534664">साइन इन गरियो</translation>
 <translation id="7333031090786104871">अघिल्लो साइट अझै थपिँदै</translation>
+<translation id="7339898014177206373">नयाँ विन्डो</translation>
 <translation id="7340958967809483333">Discover का विकल्पहरू</translation>
 <translation id="7352651011704765696">केही गल्ती भयो</translation>
 <translation id="7352939065658542140">भिडियो</translation>

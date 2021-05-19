@@ -48,12 +48,12 @@
 <translation id="4852878756222711218">For å få mest mulig ut av Chromium, logg på med Google-kontoen din</translation>
 <translation id="4985291216379576555">Uten nett – Chromium kan ikke se etter oppdateringer</translation>
 <translation id="4999538639245140991">Fordi du logger av en konto som er administrert av <ph name="SIGNOUT_MANAGED_DOMAIN" />, blir Chromium-dataene dine slettet fra denne enheten, men de blir værende i Google-kontoen din.</translation>
+<translation id="5171868502429358653">Logg på Chromium</translation>
 <translation id="5224391634244552924">Ingen lagrede passord. Chromium kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="5308226104666789935">Chromium kan ikke se etter oppdateringer</translation>
 <translation id="5396916991083608703">Vil du angi Chromium som standard?</translation>
 <translation id="5521125884468363740">For å se fanene dine overalt hvor du bruker Chromium, logg på og slå på synkronisering</translation>
 <translation id="5573014823074921752">Chromium-tips. For flere fanealternativer, trykk og hold inne Vis faner-knappen på verktøylinjen, som du finner nederst eller øverst på skjermen.</translation>
-<translation id="5651741435382092412">Logg på dette nettstedet, Google-kontoen din og Chromium. Du kan slå på synkronisering senere.</translation>
 <translation id="5700709190537129682">Chromium kan ikke sjekke passordene dine</translation>
 <translation id="5742135483959137648">Bruk Chromium til å åpne linker</translation>
 <translation id="5777187867430702742">Chromium-side</translation>
@@ -64,6 +64,7 @@
 1. Åpne Innstillinger.
 2. Trykk på Standard nettleserapp.
 3. Velg Chromium.</translation>
+<translation id="6155422572367400359">Logg på dette nettstedet, Google-kontoen din og Chromium. Du kan slå på synkronisering senere.</translation>
 <translation id="6268381023930128611">Vil du logge av Chromium?</translation>
 <translation id="632825460376924298">Tillat Chromium-pålogging</translation>
 <translation id="6337530241089703714">Velg om du vil slette Chromium-dataene dine fra denne enheten eller beholde dem</translation>

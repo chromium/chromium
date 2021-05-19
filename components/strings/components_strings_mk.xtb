@@ -253,7 +253,6 @@
     вашето барање за <ph name="SITE" />. Операторите на сајтови може да ги користат правилата за потекло
      за конфигурирање на безбедноста и другите својства за сајтот.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">Ажурирајте ја вашата лозинка за синхронизирање.</translation>
 <translation id="1787142507584202372">Отворените картички се појавуваат тука</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, достапни се повеќе дејства, притискајте Tab за да ги менувате</translation>
@@ -386,6 +385,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> бара корисничко име и лозинка.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, истекува на <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Поставка што ја контролира администраторот</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" /> сака да се спари</translation>
 <translation id="2344028582131185878">Автоматски преземања</translation>
 <translation id="2346319942568447007">Сликата што ја копиравте</translation>
 <translation id="2354001756790975382">Други обележувачи</translation>
@@ -455,6 +455,7 @@
 <translation id="2629325967560697240">За да го добиете нависокото ниво на безбедност на Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />вклучете ја „Подобрената заштита“<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">IP-адресата за серверот на <ph name="HOST_NAME" /> не може да се најде.</translation>
 <translation id="2639739919103226564">Статус:</translation>
+<translation id="264810637653812429">Не се најдени компатибилни уреди.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да ги избришете историјата на прелистувањето, колачињата, кешот и други работи во поставките за Chrome</translation>
 <translation id="2650446666397867134">Пристапот до датотеката беше одбиен</translation>
@@ -501,6 +502,7 @@
 <translation id="2799223571221894425">Рестартирај</translation>
 <translation id="2803306138276472711">Google Safe Browsing неодамна <ph name="BEGIN_LINK" />откри злонамерен софтвер<ph name="END_LINK" /> на <ph name="SITE" />. Веб-локациите што обично се безбедни, некогаш се инфицираат со злонамерен софтвер.</translation>
 <translation id="2807052079800581569">Позиција на сликата Y</translation>
+<translation id="2820957248982571256">Се скенира…</translation>
 <translation id="2824775600643448204">Лента за адреса и за пребарување</translation>
 <translation id="2826760142808435982">Поврзувањето е шифрирано и автентицирано со употреба на <ph name="CIPHER" /> и користи <ph name="KX" /> како клучен механизам за размена.</translation>
 <translation id="2835170189407361413">Исчисти формулар</translation>
@@ -611,6 +613,7 @@
 <translation id="3266793032086590337">Вредност (конфликт)</translation>
 <translation id="3268451620468152448">Отворени картички</translation>
 <translation id="3270847123878663523">&amp;Врати Преуредување</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> сака да се поврзе</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Вашата организација, <ph name="ENROLLMENT_DOMAIN" />, испратила одредени информации на следниве веб-сајтови, како поставки или правила.</translation>
 <translation id="3282497668470633863">Додајте име на картичка</translation>
@@ -1222,6 +1225,7 @@
 <translation id="5455374756549232013">Лош временски печат на правилата</translation>
 <translation id="5457113250005438886">Неважечки</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
+<translation id="5463625433003343978">Се бараат уреди…</translation>
 <translation id="5469868506864199649">италијански</translation>
 <translation id="5470861586879999274">&amp;Повтори уредување</translation>
 <translation id="5478437291406423475">B6/C4 (плик)</translation>
@@ -1271,7 +1275,6 @@
 <translation id="5624120631404540903">Управувај со лозинки</translation>
 <translation id="5629630648637658800">Не успеаја да се вчитаат поставките за политика</translation>
 <translation id="5631439013527180824">Невалиден токен за управување со уреди</translation>
-<translation id="5632627355679805402">Податоците се шифрирани со вашата <ph name="BEGIN_LINK" />лозинка за Google<ph name="END_LINK" /> почнувајќи од <ph name="TIME" />. Внесете ја за да започне синхронизацијата.</translation>
 <translation id="5633066919399395251">Напаѓачите што се моментално на <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> можеби ќе се обидат да инсталираат опасни програми на вашиот компјутер што ги крадат или бришат вашите информации (на пример, фотографии, лозинки, пораки и кредитни картички). <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Лажните содржини се блокирани.</translation>
 <translation id="5644090287519800334">Промена на страната 1 на сликата X</translation>
@@ -1315,6 +1318,7 @@
 <translation id="5804427196348435412">Користи NFC-уреди</translation>
 <translation id="5810442152076338065">Поврзувањето со <ph name="DOMAIN" /> е шифрирано со користење застарена група шифри.</translation>
 <translation id="5813119285467412249">&amp;Повтори додавање</translation>
+<translation id="5817918615728894473">Спари</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Кога плаќате, ќе се наплати од оваа картичка, но нејзиниот вистински број нема да се сподели со сајтов. За дополнителна безбедност, ќе се создаде привремен CVC.}one{Кога плаќате, ќе се наплати од картичката што ќе ја изберете, но нејзиниот вистински број нема да се сподели со сајтов. За дополнителна безбедност, ќе се создаде привремен CVC.}other{Кога плаќате, ќе се наплати од картичката што ќе ја изберете, но нејзиниот вистински број нема да се сподели со сајтов. За дополнителна безбедност, ќе се создаде привремен CVC.}}</translation>
 <translation id="5826507051599432481">Често име (CN)</translation>
 <translation id="5838278095973806738">Не треба да внесувате чувствителни информации на овој сајт (на пример, лозинки или кредитни картички), затоа што може да ги украдат напаѓачи.</translation>
@@ -1322,6 +1326,7 @@
 <translation id="5855253129151731373">Името на хостот на сајтов изгледа слично со <ph name="LOOKALIKE_DOMAIN" />. Напаѓачите понекогаш имитираат сајтови, така што вршат мали, тешко забележливи промени во името на доменот.
 
     Ако сметате дека ова ви се прикажува по грешка, одете на https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
+<translation id="5860033963881614850">Исклучено</translation>
 <translation id="5862579898803147654">Фиока за складирање 8</translation>
 <translation id="5863847714970149516">Страницата што ќе се појави може да се обиде да ви наплати пари</translation>
 <translation id="5866257070973731571">Додајте телефонски број</translation>
@@ -1515,6 +1520,7 @@
 <translation id="6624427990725312378">Информации за контакт</translation>
 <translation id="6626291197371920147">Додајте валиден број на картичка</translation>
 <translation id="6628463337424475685">Пребарување на <ph name="ENGINE" /></translation>
+<translation id="6630043285902923878">Се бараат USB-уреди…</translation>
 <translation id="6630809736994426279">Напаѓачите што се моментално на <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> можеби ќе се обидат да инсталираат опасни програми на вашиот Mac што ги крадат или бришат вашите информации (на пример, фотографии, лозинки, пораки и кредитни картички). <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Исчисти</translation>
@@ -1770,7 +1776,6 @@
 <translation id="7610193165460212391">Вредноста е надвор од опсегот <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Истекува: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да ги прегледувате и да управувате со вашите лозинки во поставките за Chrome</translation>
-<translation id="7615602087246926389">Веќе имате податоци кои се шифрирани со различна верзија на лозинката на вашата сметка на Google. Внесете ја подолу.</translation>
 <translation id="7616645509853975347">Администраторот вклучил Chrome Enterprise Connectors на вашиот прелистувач. Овие конектори имаат пристап до дел од вашите податоци.</translation>
 <translation id="7619838219691048931">Краен лист</translation>
 <translation id="762844065391966283">Еден по еден</translation>
@@ -2183,6 +2188,7 @@
 <translation id="9170848237812810038">&amp;Врати</translation>
 <translation id="9171296965991013597">Дали да се излезе од апликацијата?</translation>
 <translation id="9173282814238175921">Еден документ/нов лист</translation>
+<translation id="9173995187295789444">Скенира за уреди со Bluetooth…</translation>
 <translation id="917450738466192189">Сертификатот на серверот е неважечки.</translation>
 <translation id="9174917557437862841">Копче за префрлање помеѓу картички, притиснете Enter за да се префрлите во картичкава</translation>
 <translation id="9179703756951298733">Управувајте со плаќањата и податоците за кредитните картички во поставките за Chrome</translation>

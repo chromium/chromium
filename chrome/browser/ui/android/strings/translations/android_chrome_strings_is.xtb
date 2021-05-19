@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Viðbótarskilmálar Google Chrome og Chrome OS</translation>
 <translation id="1807246157184219062">Ljóst</translation>
 <translation id="1810845389119482123">Fyrstu uppsetningu samstillingar ekki lokið</translation>
-<translation id="1821253160463689938">Notar fótspor til að muna kjörstillingarnar þínar, jafnvel þótt þú heimsækir ekki þessar síður</translation>
 <translation id="1829244130665387512">Finna á síðu</translation>
 <translation id="1830550083491357902">Ekki innskráð(ur)</translation>
 <translation id="1843805151597803366">Til að fá betri þýðingar skaltu leyfa Google leit að nota núverandi síðu</translation>
@@ -203,6 +202,7 @@
 <ph name="BEGIN_LIST_ITEM1" />Auglýsendur geta séð þegar þúsundir notenda deila svipuðu áhugamáli – eins og hópur á tónleikum – og valið auglýsingar fyrir hópinn frekar en fyrir einstaklinga.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Auglýsendur geta metið árangur auglýsinga án þess að rekja virkni þína á vefsvæðum.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Forhleður síðum sem Chrome telur að þú munir opna. Til að gera það gæti Chrome notað fótspor, ef þú heimilar þau, og gæti dulkóðað og sent síður í gegnum Google til að fela auðkenni þitt fyrir vefsvæðum.</translation>
 <translation id="234265804618409743">Ekki tókst að opna myndavélina. Eitthvað fór úrskeiðis.</translation>
 <translation id="2345671828921229300">Haltu fingri á orði til að leita</translation>
 <translation id="2349710944427398404">Gögn sem Chrome notar alls, þ.m.t. reikningar, bókamerki og vistaðar stillingar</translation>
@@ -273,7 +273,6 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="2777555524387840389"><ph name="SECONDS" /> sek. eftir</translation>
 <translation id="2779651927720337254">mistókst</translation>
 <translation id="2781151931089541271">Ein sek. eftir</translation>
-<translation id="279827439955962619">Fjarlægja auðkenningu</translation>
 <translation id="2801022321632964776">Uppfærðu til að fá tungumálið þitt í nýjustu útgáfunni af Chrome</translation>
 <translation id="2805756323405976993">Forrit</translation>
 <translation id="281504910091592009">Þú getur skoðað og haft umsjón með vistuðum aðgangsorðum á <ph name="BEGIN_LINK" />Google reikningnum<ph name="END_LINK" /> þínum</translation>
@@ -454,7 +453,6 @@ Privacy Sandbox er enn í þróun og er í boði á völdum svæðum. Eins og er
 <translation id="3988466920954086464">Sjá niðurstöður flýtileitar á þessu svæði</translation>
 <translation id="4000212216660919741">Ónettengt</translation>
 <translation id="4016425174436051808">Ekkki er hægt að fylgja. Eitthvað fór úrskeiðis.</translation>
-<translation id="4021916380760361450">Stjórna gögnum Google reikninganna þinna</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# klst.}one{# klst.}other{# klst.}}</translation>
 <translation id="4045764304651014138">Notkunargögn</translation>
 <translation id="4056223980640387499">Brúnn blær</translation>
@@ -480,7 +478,6 @@ Privacy Sandbox er enn í þróun og er í boði á völdum svæðum. Eins og er
 <translation id="4195643157523330669">Opna í nýjum flipa</translation>
 <translation id="4198423547019359126">Engar tiltækar niðurhalsstaðsetningar</translation>
 <translation id="4209895695669353772">Kveiktu á samstillingu til að fá sérsniðið efni sem Google stingur upp á</translation>
-<translation id="423219824432660969">Dulkóða samstillt gögn með Google aðgangsorði frá og með <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Opna stillingar</translation>
 <translation id="4248098802131000011">Tryggðu öryggi aðgangsorðanna gagnvart öryggisbrotum og öðrum öryggisvandamálum</translation>
 <translation id="4250229828105606438">Skjámynd</translation>
@@ -559,6 +556,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="47217992755561375">Sjá mest sóttu vefsvæðin</translation>
 <translation id="4732120983431207637">Afstöflun</translation>
 <translation id="4738836084190194332">Síðast samstillt: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Fjarlægja áherslumerkingu</translation>
 <translation id="4749960740855309258">Opna nýjan flipa</translation>
 <translation id="4759238208242260848">Niðurhal</translation>
 <translation id="4763480195061959176">myndskeið</translation>
@@ -699,7 +697,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="562289928968387744">Stjórna viðbrögðum</translation>
 <translation id="5626134646977739690">Nafn:</translation>
 <translation id="5628604359369369630">Ólesið – aðgengilegt án nettengingar</translation>
-<translation id="5632627355679805402">Gögnin þín voru dulkóðuð með <ph name="BEGIN_LINK" />aðgangsorði Google<ph name="END_LINK" /> frá <ph name="TIME" />. Sláðu það inn til að hefja samstillingu.</translation>
 <translation id="5639724618331995626">Leyfa öll vefsvæði</translation>
 <translation id="5648166631817621825">Síðastliðna sjö daga</translation>
 <translation id="5655963694829536461">Leita í niðurhali</translation>
@@ -934,7 +931,6 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="702463548815491781">Mælt með þegar kveikt er á TalkBack eða rofaaðgangi</translation>
 <translation id="7027549951530753705">Endurheimti <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Aðgangsorð</translation>
-<translation id="7040531500313579672">Deila áherslumerkingu</translation>
 <translation id="7054588988317389591">Fá myndlýsingar?</translation>
 <translation id="7055152154916055070">Lokað á framsendingu:</translation>
 <translation id="7063006564040364415">Ekki var hægt að tengjast samstillingarþjóninum.</translation>
@@ -970,6 +966,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="7328017930301109123">Í léttútgáfu hleður Chrome síðum hraðar og notar allt að 60 prósentum minna gagnamagn.</translation>
 <translation id="7332075081379534664">Innskráning tókst</translation>
 <translation id="7333031090786104871">Er enn að bæta fyrra vefsvæði við</translation>
+<translation id="7339898014177206373">Nýr gluggi</translation>
 <translation id="7340958967809483333">Valkostir fyrir Tillögur</translation>
 <translation id="7352651011704765696">Eitthvað fór úrskeiðis</translation>
 <translation id="7352939065658542140">MYNDSKEIÐ</translation>
@@ -998,6 +995,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="7493994139787901920"><ph name="VERSION" /> (uppfært <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">gagnasparnaður</translation>
 <translation id="7498271377022651285">Augnablik…</translation>
+<translation id="750228856503700085">Uppfærslur eru ekki tiltækar</translation>
 <translation id="7507207699631365376">Sjá <ph name="BEGIN_LINK" />persónuverndarstefnu<ph name="END_LINK" /> þjónustuveitu</translation>
 <translation id="7514365320538308">Sækja</translation>
 <translation id="751961395872307827">Ekki er hægt að tengjast svæðinu</translation>
@@ -1099,6 +1097,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="8076492880354921740">Flipar</translation>
 <translation id="8078096376109663956">Aðeins deila texta</translation>
 <translation id="8084114998886531721">Vistað aðgangsorð</translation>
+<translation id="8084285576995584326">Stjórnaðu gögnum Google reikningsins</translation>
 <translation id="808747664143081553">Tengt við tæki</translation>
 <translation id="8103578431304235997">Huliðsflipi</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="8725066075913043281">Reyna aftur</translation>
 <translation id="8730621377337864115">Lokið</translation>
+<translation id="8746155870861185046">Deila áherslumerkingu</translation>
 <translation id="8748850008226585750">Innihald falið</translation>
 <translation id="8773160212632396039">Unnið úr beiðni</translation>
 <translation id="8788265440806329501">Ferill er lokaður</translation>

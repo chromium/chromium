@@ -48,12 +48,12 @@
 <translation id="4852878756222711218">Para tirar o máximo partido do Chromium, inicie sessão com a sua Conta Google</translation>
 <translation id="4985291216379576555">Está offline. O Chromium não consegue verificar se existem atualizações.</translation>
 <translation id="4999538639245140991">Uma vez que está a terminar sessão numa conta gerida por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os seus dados do Chromium serão eliminados deste dispositivo. Contudo, permanecem na sua Conta Google.</translation>
+<translation id="5171868502429358653">Inicie sessão no Chromium</translation>
 <translation id="5224391634244552924">Não existem palavras-passe guardadas. O Chromium consegue verificar as suas palavras-passe quando as guarda.</translation>
 <translation id="5308226104666789935">O Chromium não consegue verificar se existem atualizações.</translation>
 <translation id="5396916991083608703">Pretende definir o Chromium como a predefinição?</translation>
 <translation id="5521125884468363740">Para ver os seus separadores onde quer que esteja a utilizar o Chromium, inicie sessão e ative a sincronização.</translation>
 <translation id="5573014823074921752">Sugestão para o Chromium: para obter mais opções de separadores, toque sem soltar no botão Mostrar separadores na barra de ferramentas, que se encontra na parte superior ou inferior do ecrã.</translation>
-<translation id="5651741435382092412">Inicie sessão neste site, na sua Conta Google e no Chromium Pode ativar a sincronização mais tarde.</translation>
 <translation id="5700709190537129682">O Chromium não consegue verificar as suas palavras-passe.</translation>
 <translation id="5742135483959137648">Utilize o Chromium para abrir links</translation>
 <translation id="5777187867430702742">Página do Chromium</translation>
@@ -64,6 +64,7 @@
 1. Abra as Definições
 2. Toque em App de navegador predefinida
 3. Selecione o Chromium.</translation>
+<translation id="6155422572367400359">Inicie sessão neste site, na sua Conta Google e no Chromium. Pode ativar a sincronização mais tarde.</translation>
 <translation id="6268381023930128611">Pretende terminar sessão no Chromium?</translation>
 <translation id="632825460376924298">Permitir o início de sessão no Chromium</translation>
 <translation id="6337530241089703714">Escolha se pretende limpar os seus dados do Chromium deste dispositivo ou mantê-los</translation>

@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Termenii și condițiile suplimentare pentru Google Chrome și Sistemul de operare Chrome</translation>
 <translation id="1807246157184219062">Luminos</translation>
 <translation id="1810845389119482123">Configurarea inițială a sincronizării nu este finalizată</translation>
-<translation id="1821253160463689938">Folosește cookie-uri pentru a-ți reține preferințele, chiar dacă nu accesezi paginile respective</translation>
 <translation id="1829244130665387512">Găsește în pagină</translation>
 <translation id="1830550083491357902">Neconectat</translation>
 <translation id="1843805151597803366">Pentru traduceri mai bune, lasă Căutarea Google să folosească pagina actuală</translation>
@@ -203,6 +202,7 @@ Atinge orice cuvânt pentru a-l căuta. Ca să rafinezi căutarea, atinge lung p
 <ph name="BEGIN_LIST_ITEM1" />Advertiserii pot să afle când mii de utilizatori au un interes comun, cum ar fi publicul unui concert, și să selecteze anunțuri pentru grup, nu pentru o singură persoană.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Advertiserii pot studia eficiența anunțurilor într-un mod care nu te urmărește pe site-uri.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Preîncarcă paginile pe care Chrome consideră că le-ai putea accesa. Pentru a face acest lucru, Chrome poate folosi cookie-uri, dacă le permiți, și poate cripta și trimite pagini prin Google pentru a-ți ascunde identitatea de site-uri.</translation>
 <translation id="234265804618409743">Nu se poate deschide camera. A apărut o eroare.</translation>
 <translation id="2345671828921229300">Pentru a căuta, atinge lung un cuvânt</translation>
 <translation id="2349710944427398404">Totalul datelor folosite de Chrome, inclusiv conturile, marcajele și setările salvate</translation>
@@ -273,7 +273,6 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="2777555524387840389"><ph name="SECONDS" /> sec. rămase</translation>
 <translation id="2779651927720337254">nereușită</translation>
 <translation id="2781151931089541271">1 sec. rămasă</translation>
-<translation id="279827439955962619">Elimină evidențierea</translation>
 <translation id="2801022321632964776">Actualizează pentru a descărca limba ta în cea mai recentă versiune de Chrome</translation>
 <translation id="2805756323405976993">Aplicații</translation>
 <translation id="281504910091592009">Vezi și gestionează parolele salvate în <ph name="BEGIN_LINK" />Contul Google<ph name="END_LINK" /></translation>
@@ -454,7 +453,6 @@ Privacy Sandbox este încă în dezvoltare și este disponibil în anumite regiu
 <translation id="3988466920954086464">Afișează rezultatele căutării instantanee în acest panou</translation>
 <translation id="4000212216660919741">Pagina de pornire offline</translation>
 <translation id="4016425174436051808">Nu se poate urmări. A apărut o eroare.</translation>
-<translation id="4021916380760361450">Gestionează datele din conturile Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{O oră}few{# ore}other{# de ore}}</translation>
 <translation id="4045764304651014138">Date de utilizare</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -480,7 +478,6 @@ Privacy Sandbox este încă în dezvoltare și este disponibil în anumite regiu
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
 <translation id="4198423547019359126">Nu există locații de descărcare disponibile</translation>
 <translation id="4209895695669353772">Pentru a obține sugestii de conținut personalizat de la Google, activează sincronizarea</translation>
-<translation id="423219824432660969">Criptează datele sincronizate cu parola Google începând cu <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Deschide setările</translation>
 <translation id="4248098802131000011">Protejează-ți parolele împotriva încălcării securității datelor și a altor probleme de securitate</translation>
 <translation id="4250229828105606438">Captură de ecran</translation>
@@ -559,6 +556,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="47217992755561375">Vezi principalele site-uri</translation>
 <translation id="4732120983431207637">Instrument de derulare a stivei</translation>
 <translation id="4738836084190194332">Ultima sincronizare: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Elimină evidențierea</translation>
 <translation id="4749960740855309258">Deschide o filă nouă</translation>
 <translation id="4759238208242260848">Descărcări</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +697,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="562289928968387744">Gestionează reacțiile</translation>
 <translation id="5626134646977739690">Nume:</translation>
 <translation id="5628604359369369630">Necitită – Disponibilă offline</translation>
-<translation id="5632627355679805402">Datele au fost criptate cu <ph name="BEGIN_LINK" />parola Google<ph name="END_LINK" /> începând cu <ph name="TIME" />. Introdu parola pentru a începe sincronizarea.</translation>
 <translation id="5639724618331995626">Permite toate site-urile</translation>
 <translation id="5648166631817621825">Ultimele 7 zile</translation>
 <translation id="5655963694829536461">Caută în descărcări</translation>
@@ -934,7 +931,6 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="702463548815491781">Recomandat atunci când este activată opțiunea TalkBack sau Acces prin comutare</translation>
 <translation id="7027549951530753705">S-a restabilit <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Parole</translation>
-<translation id="7040531500313579672">Trimite evidențierea</translation>
 <translation id="7054588988317389591">Vrei să generezi descrieri ale imaginilor?</translation>
 <translation id="7055152154916055070">Redirecționarea a fost blocată:</translation>
 <translation id="7063006564040364415">Nu s-a putut stabili conexiunea cu serverul de sincronizare.</translation>
@@ -970,6 +966,7 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="7328017930301109123">În modul Lite, Chrome încarcă mai repede paginile și folosește cu până la 60 de procente mai puține date.</translation>
 <translation id="7332075081379534664">Te-ai conectat</translation>
 <translation id="7333031090786104871">Încă se adaugă site-ul anterior</translation>
+<translation id="7339898014177206373">Fereastră nouă</translation>
 <translation id="7340958967809483333">Opțiuni pentru Discover</translation>
 <translation id="7352651011704765696">A apărut o eroare</translation>
 <translation id="7352939065658542140">VIDEOCLIP</translation>
@@ -998,6 +995,7 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="7493994139787901920"><ph name="VERSION" /> (Actualizată la <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">date economisite</translation>
 <translation id="7498271377022651285">Așteaptă...</translation>
+<translation id="750228856503700085">Nu sunt disponibile actualizări</translation>
 <translation id="7507207699631365376">Consultă <ph name="BEGIN_LINK" />politica de confidențialitate<ph name="END_LINK" /> a furnizorului</translation>
 <translation id="7514365320538308">Descarcă</translation>
 <translation id="751961395872307827">Nu se poate realiza conexiunea la site</translation>
@@ -1099,6 +1097,7 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="8076492880354921740">File</translation>
 <translation id="8078096376109663956">Trimite numai text</translation>
 <translation id="8084114998886531721">Parolă salvată</translation>
+<translation id="8084285576995584326">Gestionează datele din Contul Google</translation>
 <translation id="808747664143081553">S-a conectat la dispozitiv</translation>
 <translation id="8103578431304235997">Filă incognito</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="8712637175834984815">Am înțeles</translation>
 <translation id="8725066075913043281">Încearcă din nou</translation>
 <translation id="8730621377337864115">Terminat</translation>
+<translation id="8746155870861185046">Distribuie selecția</translation>
 <translation id="8748850008226585750">Conținutul este ascuns</translation>
 <translation id="8773160212632396039">Se procesează solicitarea</translation>
 <translation id="8788265440806329501">Istoricul de navigare este închis</translation>

@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome couldn't check for updates. Try again later.</translation>
 <translation id="2732745070297234559">Chrome couldn't check all passwords. Try again tomorrow.</translation>
 <translation id="2740105938841089077">Use Chrome to open links</translation>
+<translation id="2869959624320573933">Sign in to Chrome</translation>
 <translation id="2919738076569633423">By using Chrome, you agree to the <ph name="BEGIN_LINK_TOS" />Terms of Service<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chrome data will be deleted from this device. Your data will remain in your Google Account.</translation>
 <translation id="3167189358072330585">Your account does not work on Google Chrome. Please contact your domain administrator or use a regular Google Account to sign in.</translation>
 <translation id="3173834708294760622">Google Chrome page</translation>
 <translation id="3196546062792660320">Chrome saves you time by bringing your accounts to the web. You can add or remove accounts in Settings.</translation>
-<translation id="3223655207402797071">Sign in to this site, your Google Account and Chrome. You may turn on sync later.</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
 <translation id="3455456143708465450">To get the most out of Chrome, sign in with your Google Account</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome is up to date</translation>
 <translation id="8022947259858476807">Use Chrome by default to open links, search from widgets and auto-fill passwords in other apps</translation>
 <translation id="8160472928944011082">Chrome can't update</translation>
+<translation id="8263079278049777200">Sign in to this site, your Google Account and Chrome. You can turn on sync later.</translation>
 <translation id="8357607116237445042">Choose whether to clear your Chrome data from this device or keep it</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="840168496893712993">Some add-ons cause Chrome to crash. Please try uninstalling them.</translation>

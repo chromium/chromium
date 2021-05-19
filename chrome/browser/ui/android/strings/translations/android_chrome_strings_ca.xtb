@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Condicions del servei addicionals de Chrome i Chrome OS</translation>
 <translation id="1807246157184219062">Clar</translation>
 <translation id="1810845389119482123">La configuració de la sincronització inicial no ha finalitzat</translation>
-<translation id="1821253160463689938">Utilitza galetes per recordar les teves preferències, fins i tot si no visites aquestes pàgines</translation>
 <translation id="1829244130665387512">Cerca a la pàgina</translation>
 <translation id="1830550083491357902">Sessió no iniciada</translation>
 <translation id="1843805151597803366">Per obtenir traduccions millors, deixa que la Cerca de Google utilitzi la pàgina actual</translation>
@@ -203,6 +202,7 @@ Toca qualsevol paraula per cercar. Per definir millor la cerca, mantén premut e
 <ph name="BEGIN_LIST_ITEM1" />Els anunciants poden saber si milers d'usuaris comparteixen un interès semblant (per exemple, el públic d'un concert) i seleccionar anuncis per a aquest públic, en comptes d'una única persona.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Els anunciants poden estudiar l'efectivitat dels anuncis sense fer un seguiment del que fas als llocs web.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Carrega prèviament les pàgines que Chrome considera que pots visitar. Per fer-ho, és possible que Chrome utilitzi galetes, si les permets, i que encripti i enviï pàgines mitjançant Google per amagar la teva identitat als llocs web.</translation>
 <translation id="234265804618409743">No es pot obrir la càmera. S'ha produït un error.</translation>
 <translation id="2345671828921229300">Per fer una cerca, mantén premuda una paraula</translation>
 <translation id="2349710944427398404">Dades totals utilitzades per Chrome, com ara comptes, adreces d'interès i opcions de configuració desades</translation>
@@ -273,7 +273,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2777555524387840389">Queden <ph name="SECONDS" /> segons</translation>
 <translation id="2779651927720337254">ha fallat</translation>
 <translation id="2781151931089541271">Queda 1 segon</translation>
-<translation id="279827439955962619">Suprimeix el text marcat</translation>
 <translation id="2801022321632964776">Fes l'actualització per veure la darrera versió de Chrome en el teu idioma</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="281504910091592009">Consulta i gestiona les contrasenyes desades al <ph name="BEGIN_LINK" />Compte de Google<ph name="END_LINK" /></translation>
@@ -454,7 +453,6 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="3988466920954086464">Consulta els resultats de la cerca instantània en aquest tauler</translation>
 <translation id="4000212216660919741">Pàgina d'inici sense connexió</translation>
 <translation id="4016425174436051808">No es pot seguir. S'ha produït un error.</translation>
-<translation id="4021916380760361450">Controla les dades dels teus Comptes de Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Dades d'ús</translation>
 <translation id="4056223980640387499">Sèpia</translation>
@@ -480,7 +478,6 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="4195643157523330669">Obre en una pestanya nova</translation>
 <translation id="4198423547019359126">No hi ha cap ubicació de baixada disponible</translation>
 <translation id="4209895695669353772">Perquè Google et suggereixi contingut personalitzat, activa la sincronització</translation>
-<translation id="423219824432660969">Encripta les dades sincronitzades amb la contrasenya de Google del dia <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Obre la configuració</translation>
 <translation id="4248098802131000011">Protegeix les contrasenyes contra les violacions de les dades i contra altres problemes de seguretat</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
@@ -559,6 +556,7 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="47217992755561375">Consulta els llocs web que més visites</translation>
 <translation id="4732120983431207637">Anul·lador de piles</translation>
 <translation id="4738836084190194332">Última sincronització: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Suprimeix el marcatge</translation>
 <translation id="4749960740855309258">Obre una pestanya nova</translation>
 <translation id="4759238208242260848">Baixades</translation>
 <translation id="4763480195061959176">vídeo</translation>
@@ -699,7 +697,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="562289928968387744">Gestiona les reaccions</translation>
 <translation id="5626134646977739690">Nom:</translation>
 <translation id="5628604359369369630">No llegits - Disponible sense connexió</translation>
-<translation id="5632627355679805402">Les teves dades s'han encriptat amb la <ph name="BEGIN_LINK" />contrasenya de Google<ph name="END_LINK" /> a partir del dia <ph name="TIME" />. Introdueix-la per començar la sincronització.</translation>
 <translation id="5639724618331995626">Permet tots els llocs</translation>
 <translation id="5648166631817621825">7 darrers dies</translation>
 <translation id="5655963694829536461">Cerca a les baixades</translation>
@@ -934,7 +931,6 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="702463548815491781">Es recomana quan TalkBack o l'accés amb interruptors estan activats</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> s'ha restaurat</translation>
 <translation id="7029809446516969842">Contrasenyes</translation>
-<translation id="7040531500313579672">Comparteix el text marcat</translation>
 <translation id="7054588988317389591">Vols obtenir descripcions de les imatges?</translation>
 <translation id="7055152154916055070">S'ha bloquejat la redirecció:</translation>
 <translation id="7063006564040364415">No s'ha pogut connectar amb el servidor de sincronització.</translation>
@@ -970,6 +966,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="7328017930301109123">En el mode bàsic, Chrome carrega les pàgines més ràpidament i utilitza fins a un 60 per cent menys de dades.</translation>
 <translation id="7332075081379534664">Has iniciat la sessió correctament</translation>
 <translation id="7333031090786104871">Encara s'hi està afegint el lloc anterior</translation>
+<translation id="7339898014177206373">Finestra nova</translation>
 <translation id="7340958967809483333">Opcions per a Discover</translation>
 <translation id="7352651011704765696">S'ha produït un error</translation>
 <translation id="7352939065658542140">VÍDEO</translation>
@@ -998,6 +995,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="7493994139787901920"><ph name="VERSION" /> (última actualització: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">dades estalviades</translation>
 <translation id="7498271377022651285">Espereu...</translation>
+<translation id="750228856503700085">No hi ha actualitzacions disponibles</translation>
 <translation id="7507207699631365376">Consulta la <ph name="BEGIN_LINK" />política de privadesa<ph name="END_LINK" /> d'aquest proveïdor</translation>
 <translation id="7514365320538308">Baixa</translation>
 <translation id="751961395872307827">No es pot connectar amb el lloc web</translation>
@@ -1099,6 +1097,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="8076492880354921740">Pestanyes</translation>
 <translation id="8078096376109663956">Comparteix només el text</translation>
 <translation id="8084114998886531721">Contrasenya desada</translation>
+<translation id="8084285576995584326">Controla les dades del teu Compte de Google</translation>
 <translation id="808747664143081553">Connectat al dispositiu</translation>
 <translation id="8103578431304235997">Pestanya d'incògnit</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8725066075913043281">Torna-ho a provar</translation>
 <translation id="8730621377337864115">Fet</translation>
+<translation id="8746155870861185046">Comparteix els moments destacats</translation>
 <translation id="8748850008226585750">Contingut amagat</translation>
 <translation id="8773160212632396039">S'està processant la sol·licitud</translation>
 <translation id="8788265440806329501">L'historial de navegació està tancat</translation>

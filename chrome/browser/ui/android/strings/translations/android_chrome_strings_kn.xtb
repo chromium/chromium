@@ -117,7 +117,6 @@
 <translation id="1795251344124198516">Chrome ಮತ್ತು Chrome OS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳು</translation>
 <translation id="1807246157184219062">ತಿಳಿ</translation>
 <translation id="1810845389119482123">ಆರಂಭಿಕ ಸಿಂಕ್ ಸೆಟಪ್ ಪೂರ್ಣಗೊಂಡಿಲ್ಲ</translation>
-<translation id="1821253160463689938">ನೀವು ಆ ಪುಟಗಳಿಗೆ ಭೇಟಿ ನೀಡದಿದ್ದರೂ, ನಿಮ್ಮ ಆದ್ಯತೆಗಳನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಲು ಕುಕೀಗಳನ್ನು ಬಳಸುತ್ತದೆ</translation>
 <translation id="1829244130665387512">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ</translation>
 <translation id="1830550083491357902">ಸೈನ್ ಇನ್ ಆಗಿಲ್ಲ</translation>
 <translation id="1843805151597803366">ಉತ್ತಮ ಅನುವಾದಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು, ಪ್ರಸ್ತುತ ಪುಟವನ್ನು ಬಳಸಲು Google Search ಗೆ ಅವಕಾಶ ಮಾಡಿಕೊಡಿ</translation>
@@ -204,6 +203,7 @@
 <ph name="BEGIN_LIST_ITEM1" />ಸಾವಿರಾರು ಬಳಕೆದಾರರು ಒಂದೇ ರೀತಿಯ ಆಸಕ್ತಿಯನ್ನು ಹಂಚಿಕೊಂಡಾಗ ಜಾಹೀರಾತುದಾರರು ತಿಳಿದುಕೊಳ್ಳಬಹುದು – ಉದಾಹರಣೆಗೆ, ಸಂಗೀತ ಕಚೇರಿಯಲ್ಲಿನ ಜನಸಮೂಹ — ಮತ್ತು ಒಬ್ಬ ವ್ಯಕ್ತಿಯ ಬದಲಾಗಿ ಜನಸಮೂಹಕ್ಕಾಗಿ ಜಾಹೀರಾತುಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಬಹುದು.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />ಸೈಟ್‌ಗಳಾದ್ಯಂತ ನಿಮ್ಮನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡದ ರೀತಿಯಲ್ಲಿ ಜಾಹೀರಾತುಗಳ ಪರಿಣಾಮಕಾರಿತ್ವವನ್ನು ಜಾಹೀರಾತುದಾರರು ಅಧ್ಯಯನ ಮಾಡಬಹುದು.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">ನೀವು ಭೇಟಿ ನೀಡಬಹುದು ಎಂದು Chrome ಭಾವಿಸುವ ಪುಟಗಳನ್ನು ಮುಂಗಡ ಲೋಡ್ ಮಾಡುತ್ತದೆ. ಇದನ್ನು ಮಾಡಲು, ನೀವು ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಿದರೆ Chrome ಕುಕೀಗಳನ್ನು ಬಳಸಬಹುದು ಹಾಗೂ ನಿಮ್ಮ ಗುರುತನ್ನು ಸೈಟ್‌ಗಳಿಂದ ಮರೆಮಾಡಲು Google ಮೂಲಕ ಪುಟಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಬಹುದು ಮತ್ತು ಕಳುಹಿಸಬಹುದು.</translation>
 <translation id="234265804618409743">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ. ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>
 <translation id="2345671828921229300">ಹುಡುಕಲು, ಪದವನ್ನು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಹೋಲ್ಡ್‌ ಮಾಡಿ</translation>
 <translation id="2349710944427398404">ಖಾತೆಗಳು, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಉಳಿಸಿದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಒಳಗೊಂಡಂತೆ Chrome ಬಳಸಿದ ಒಟ್ಟು ಡೇಟಾ</translation>
@@ -274,7 +274,6 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> ಸೆಕೆಂಡುಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="2779651927720337254">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="2781151931089541271">1 ಸೆಕೆಂಡು ಉಳಿದಿದೆ</translation>
-<translation id="279827439955962619">ಹೈಲೈಟ್ ಮಾಡುವುದನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="2801022321632964776">ನಿಮ್ಮ ಭಾಷೆಯನ್ನು Chrome ನ ಇತ್ತೀಚಿನ ಆವೃತ್ತಿಯಲ್ಲಿ ಪಡೆದುಕೊಳ್ಳಲು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="2805756323405976993">ಆಪ್ಸ್‌‌</translation>
 <translation id="281504910091592009">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ <ph name="BEGIN_LINK" />Google ಖಾತೆಯಲ್ಲಿ<ph name="END_LINK" /> ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
@@ -455,7 +454,6 @@
 <translation id="3988466920954086464">ಈ ಫಲಕದಲ್ಲಿ ತತ್‌ಕ್ಷಣ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="4000212216660919741">ಆಫ್‌ಲೈನ್ ಹೋಮ್</translation>
 <translation id="4016425174436051808">ಅನುಸರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>
-<translation id="4021916380760361450">ನಿಮ್ಮ Google ಖಾತೆಗಳ ಡೇಟಾವನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ಗಂಟೆ}one{# ಗಂಟೆಗಳು}other{# ಗಂಟೆಗಳು}}</translation>
 <translation id="4045764304651014138">ಬಳಕೆಯ ಡೇಟಾ</translation>
 <translation id="4056223980640387499">ಸೆಪಿಯಾ</translation>
@@ -481,7 +479,6 @@
 <translation id="4195643157523330669">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="4198423547019359126">ಡೌನ್‌ಲೋಡ್ ಸ್ಥಳಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="4209895695669353772">Google ಸಲಹೆ ನೀಡಿದ ವೈಯಕ್ತೀಕರಿಸಲಾದ ವಿಷಯವನ್ನು ಪಡೆದುಕೊಳ್ಳಲು, ಸಿಂಕ್ ಆನ್ ಮಾಡಿ</translation>
-<translation id="423219824432660969"><ph name="TIME" /> ರಂದು ಹೊಂದಿಸಿದ್ದ Google ಪಾಸ್‌ವರ್ಡ್‌ ಬಳಸಿಕೊಂಡು, ಸಿಂಕ್ ಮಾಡಿದ ಡೇಟಾವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿ</translation>
 <translation id="4242533952199664413">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆ</translation>
 <translation id="4248098802131000011">ಡೇಟಾ ಉಲ್ಲಂಘನೆಗಳು ಮತ್ತು ಇತರ ಸುರಕ್ಷತೆ ಸಮಸ್ಯೆಗಳಿಂದಾಗಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="4250229828105606438">ಸ್ಕ್ರೀನ್‌ಶಾಟ್</translation>
@@ -559,6 +556,7 @@
 <translation id="47217992755561375">ನಿಮ್ಮ ಪ್ರಮುಖ ಸೈಟ್‌ಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="4732120983431207637">ಸ್ಟ್ಯಾಕ್ ಅನ್‌ವೈಂಡರ್</translation>
 <translation id="4738836084190194332">ಕೊನೆಯದಾಗಿ ಸಿಂಕ್ ಮಾಡಿರುವ ಸಮಯ: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">ಹೈಲೈಟ್ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="4749960740855309258">ಹೊಸ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
 <translation id="4759238208242260848">ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="4763480195061959176">ವೀಡಿಯೊ</translation>
@@ -699,7 +697,6 @@
 <translation id="562289928968387744">ನಿರ್ಬಂಧಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5626134646977739690">ಹೆಸರು:</translation>
 <translation id="5628604359369369630">ಓದಿಲ್ಲ - ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿದೆ</translation>
-<translation id="5632627355679805402">ನಿಮ್ಮ ಡೇಟಾವನ್ನು <ph name="TIME" /> ಸಮಯಕ್ಕೆ ನಿಮ್ಮ <ph name="BEGIN_LINK" />Google ಪಾಸ್‌ವರ್ಡ್<ph name="END_LINK" /> ನೊಂದಿಗೆ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು ಅದನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="5639724618331995626">ಎಲ್ಲ ಸೈಟ್‌ಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="5648166631817621825">ಕಳೆದ 7 ದಿನಗಳು</translation>
 <translation id="5655963694829536461">ನಿಮ್ಮ ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
@@ -934,7 +931,6 @@
 <translation id="702463548815491781">TalkBack ಅಥವಾ ಪ್ರವೇಶ ಬದಲಾಯಿಸಿ ಆನ್ ಆಗಿದ್ದಾಗ ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="7029809446516969842">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
-<translation id="7040531500313579672">ಹೈಲೈಟ್ ಮಾಡುವುದನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="7054588988317389591">ಚಿತ್ರದ ವಿವರಣೆ ಪಡೆಯಬೇಕೇ?</translation>
 <translation id="7055152154916055070">ಮರುನಿರ್ದೇಶಿಸುವಿಕೆಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ:</translation>
 <translation id="7063006564040364415">ಸಿಂಕ್ ಸರ್ವರ್‌ಗೆ ಸಂಪರ್ಕ ಹೊಂದಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
@@ -970,6 +966,7 @@
 <translation id="7328017930301109123">ಲೈಟ್ ಮೋಡ್‍ನಲ್ಲಿ, Chrome ವೇಗವಾಗಿ ಪುಟಗಳನ್ನು ಲೋಡ್ ಮಾಡುತ್ತದೆ, ಮತ್ತು ಡೇಟಾವನ್ನು ಸುಮಾರು ಶೇಕಡಾ 60 ರಷ್ಟು ಕಡಿಮೆ ಬಳಸುತ್ತದೆ.</translation>
 <translation id="7332075081379534664">ಸೈನ್ ಇನ್ ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
 <translation id="7333031090786104871">ಇನ್ನೂ ಹಿಂದಿನ ಸೈಟ್ ಅನ್ನು ಸೇರಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="7339898014177206373">ಹೊಸ ವಿಂಡೊ</translation>
 <translation id="7340958967809483333">Discover ಗಾಗಿ ಆಯ್ಕೆಗಳು</translation>
 <translation id="7352651011704765696">ಯಾವುದೋ ತಪ್ಪು ಸಂಭವಿಸಿದೆ</translation>
 <translation id="7352939065658542140">ವೀಡಿಯೊ</translation>
@@ -998,6 +995,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="7494974237137038751">ಉಳಿತಾಯವಾದ ಡೇಟಾ</translation>
 <translation id="7498271377022651285">ದಯವಿಟ್ಟು ಕಾಯಿರಿ...</translation>
+<translation id="750228856503700085">ಅಪ್‌ಡೇಟ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="7507207699631365376">ಈ ಪೂರೈಕೆದಾರರ <ph name="BEGIN_LINK" />ಗೌಪ್ಯತೆ ನೀತಿಯನ್ನು<ph name="END_LINK" /> ನೋಡಿ</translation>
 <translation id="7514365320538308">ಡೌನ್‌ಲೋಡ್</translation>
 <translation id="751961395872307827">ಸೈಟ್‌ಗೆ ಸಂಪರ್ಕಪಡಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
@@ -1099,6 +1097,7 @@
 <translation id="8076492880354921740">ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="8078096376109663956">ಪಠ್ಯವನ್ನು ಮಾತ್ರ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="8084114998886531721">ಉಳಿಸಿರುವ ಪಾಸ್‌ವರ್ಡ್</translation>
+<translation id="8084285576995584326">ನಿಮ್ಮ Google ಖಾತೆ ಡೇಟಾವನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="808747664143081553">ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8103578431304235997">ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@
 <translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8725066075913043281">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="8730621377337864115">ಮುಗಿದಿದೆ</translation>
+<translation id="8746155870861185046">ಹೈಲೈಟ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="8748850008226585750">ವಿಷಯಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8773160212632396039">ವಿನಂತಿಯನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8788265440806329501">ನ್ಯಾವಿಗೇಶನ್ ಇತಿಹಾಸ ಮುಚ್ಚಿದೆ</translation>

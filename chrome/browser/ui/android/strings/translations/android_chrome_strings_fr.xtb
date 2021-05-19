@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Conditions d'utilisation supplémentaires de Chrome et Chrome OS</translation>
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1810845389119482123">Configuration de la synchronisation initiale non terminée</translation>
-<translation id="1821253160463689938">Utiliser des cookies pour mémoriser vos préférences, même si vous n'accédez pas à ces pages</translation>
 <translation id="1829244130665387512">Rechercher sur la page</translation>
 <translation id="1830550083491357902">Non connecté</translation>
 <translation id="1843805151597803366">Pour obtenir de meilleures traductions, autorisez la recherche Google à accéder au contenu de la page actuelle</translation>
@@ -273,7 +272,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2777555524387840389"><ph name="SECONDS" /> secondes restantes</translation>
 <translation id="2779651927720337254">échec</translation>
 <translation id="2781151931089541271">1 seconde restante</translation>
-<translation id="279827439955962619">Supprimer la mise en surbrillance</translation>
 <translation id="2801022321632964776">Lancez la mise à jour pour obtenir votre langue dans la dernière version de Chrome</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="281504910091592009">Afficher et gérer les mots de passe enregistrés dans votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /></translation>
@@ -295,6 +293,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2904414404539560095">La liste des appareils avec lesquels vous pouvez partager un onglet est ouverte à hauteur maximale.</translation>
 <translation id="2905036901251765993">Pour partager avec des personnes à proximité, laissez-les scanner ce code QR</translation>
 <translation id="2909615210195135082">Plate-forme de notifications Google</translation>
+<translation id="2912296070571964914">Gérer les thèmes qui vous intéressent</translation>
 <translation id="2923908459366352541">Le nom n'est pas valide</translation>
 <translation id="2932150158123903946">Stockage Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Votre clavier ne sera pas modifié</translation>
@@ -339,6 +338,8 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3254409185687681395">Ajouter cette page aux favoris</translation>
 <translation id="3259831549858767975">Réduire tous les éléments de la page</translation>
 <translation id="3264124641674805320">Comment télécharger un contenu pour plus tard</translation>
+<translation id="3264259168916048410">L'ordinateur souhaite utiliser cet appareil pour se connecter à un site</translation>
+<translation id="3265534588625245297">Gérer les sites que vous suivez</translation>
 <translation id="3269093882174072735">Charger l'image</translation>
 <translation id="3269956123044984603">Activez l'option "Synchro auto des données" dans les paramètres Android de votre compte Google pour accéder à vos onglets sur vos autres appareils.</translation>
 <translation id="3282568296779691940">Connectez-vous à Chrome</translation>
@@ -451,7 +452,6 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="3988466920954086464">Consultez les résultats de la recherche instantanée dans ce panneau</translation>
 <translation id="4000212216660919741">Mode hors connexion</translation>
 <translation id="4016425174436051808">Impossible de vous abonner en raison d'une erreur.</translation>
-<translation id="4021916380760361450">Contrôler les données de vos comptes Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Données d'utilisation</translation>
 <translation id="4056223980640387499">Sépia</translation>
@@ -477,7 +477,6 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4198423547019359126">Aucun emplacement de téléchargements disponible</translation>
 <translation id="4209895695669353772">Activez la synchronisation pour obtenir des suggestions de contenu personnalisées de la part de Google</translation>
-<translation id="423219824432660969">Chiffrer les données synchronisées avec le mot de passe Google à la date suivante : <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4248098802131000011">Protégez vos mots de passe contre les violations de données et d'autres problèmes liés à la sécurité</translation>
 <translation id="4250229828105606438">Capture d'écran</translation>
@@ -497,6 +496,7 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="4351244548802238354">Fermer la boîte de dialogue</translation>
 <translation id="4378154925671717803">Téléphone</translation>
 <translation id="4384468725000734951">Utilisation de Sogou pour les recherches</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> - Téléchargement…</translation>
 <translation id="4404568932422911380">Aucun favori</translation>
 <translation id="4405224443901389797">Déplacer vers…</translation>
 <translation id="4411535500181276704">Mode simplifié</translation>
@@ -555,6 +555,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="47217992755561375">Retrouvez les meilleurs sites pour vous</translation>
 <translation id="4732120983431207637">Dérouleur de pile</translation>
 <translation id="4738836084190194332">Dernière synchronisation : <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Supprimer la surbrillance</translation>
 <translation id="4749960740855309258">Ouvrir un nouvel onglet</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4763480195061959176">vidéo</translation>
@@ -583,6 +584,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="488187801263602086">Renommer le fichier</translation>
 <translation id="4882831918239250449">Contrôler la manière dont votre historique de navigation est utilisé pour personnaliser la recherche, les annonces, etc.</translation>
 <translation id="4885273946141277891">Le nombre d'instances de Chrome n'est pas compatible.</translation>
+<translation id="4905269543817054577">L'historique n'est pas enregistré en navigation privée</translation>
 <translation id="4908869848243824489">Discover de Google</translation>
 <translation id="4910889077668685004">Applications de paiement</translation>
 <translation id="4913161338056004800">Réinitialiser les statistiques</translation>
@@ -694,7 +696,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="562289928968387744">Gérer les réactions</translation>
 <translation id="5626134646977739690">Nom :</translation>
 <translation id="5628604359369369630">Non lu - Disponible hors connexion</translation>
-<translation id="5632627355679805402">Vos données ont été chiffrées avec votre <ph name="BEGIN_LINK" />mot de passe Google<ph name="END_LINK" /> depuis le <ph name="TIME" />. Saisissez-le pour lancer la synchronisation.</translation>
 <translation id="5639724618331995626">Autoriser tous les sites</translation>
 <translation id="5648166631817621825">7 derniers jours</translation>
 <translation id="5655963694829536461">Recherchez dans les téléchargements</translation>
@@ -929,7 +930,6 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="702463548815491781">Recommandé quand TalkBack ou Switch Access sont activés</translation>
 <translation id="7027549951530753705">Téléchargement <ph name="ITEM_TITLE" /> restauré</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
-<translation id="7040531500313579672">Partager la mise en surbrillance</translation>
 <translation id="7054588988317389591">Obtenir les descriptions d'images ?</translation>
 <translation id="7055152154916055070">Redirection bloquée :</translation>
 <translation id="7063006564040364415">Impossible de se connecter au serveur de synchronisation.</translation>
@@ -951,6 +951,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="7191430249889272776">L'onglet a été ouvert en arrière-plan.</translation>
 <translation id="7233236755231902816">Pour afficher le Web dans votre langue, téléchargez la dernière version de Chrome</translation>
 <translation id="7248069434667874558">Assurez-vous que la synchronisation est activée sur votre <ph name="TARGET_DEVICE_NAME" /> dans Chrome</translation>
+<translation id="7252076891734325316">Posez le téléphone près de l'ordinateur</translation>
 <translation id="7274013316676448362">Site bloqué</translation>
 <translation id="7286572596625053347">Modifier <ph name="LANGUAGE" /> ?</translation>
 <translation id="7290209999329137901">Option de changement de nom indisponible</translation>
@@ -964,6 +965,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="7328017930301109123">En mode simplifié, Chrome charge les pages plus rapidement et consomme jusqu'à 60 pour cent de données en moins.</translation>
 <translation id="7332075081379534664">Connexion établie</translation>
 <translation id="7333031090786104871">L'ajout du site précédent est toujours en cours</translation>
+<translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7340958967809483333">Options pour Discover</translation>
 <translation id="7352651011704765696">Un problème est survenu</translation>
 <translation id="7352939065658542140">VIDÉO</translation>
@@ -1017,6 +1019,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="7630202231528827509">URL du fournisseur</translation>
 <translation id="7638584964844754484">Phrase secrète incorrecte.</translation>
 <translation id="7641339528570811325">Effacer les données de navigation</translation>
+<translation id="764170292089748542">Chrome n'enregistre pas votre historique de navigation lorsque vous parcourez le Web en mode privé. Vous pouvez toujours utiliser les favoris pour accéder à vos sites préférés.</translation>
 <translation id="7646772052135772216">La synchronisation du mot de passe ne fonctionne pas</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7665369617277396874">Ajouter un compte</translation>
@@ -1042,6 +1045,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="7810647596859435254">Ouvrir avec…</translation>
 <translation id="7815484226266492798">Capture d'écran pleine page</translation>
 <translation id="7821588508402923572">Vos économies de données s'affichent ici</translation>
+<translation id="78270725016672455">L'ordinateur souhaite enregistrer cet appareil pour se connecter à un site</translation>
 <translation id="7844171778363018843">Aucune donnée à synchroniser</translation>
 <translation id="7846296061357476882">Services Google</translation>
 <translation id="784934925303690534">Période</translation>
@@ -1138,6 +1142,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="8427875596167638501">L'onglet "Aperçu" est ouvert à moitié</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8438566539970814960">Améliorer les recherches et la navigation</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> - Langue prête. Redémarrez <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Aucun événement disponible</translation>
 <translation id="8443209985646068659">Impossible mettre à jour Chrome</translation>
 <translation id="8445448999790540984">Impossible d'exporter les mots de passe</translation>
@@ -1210,6 +1215,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="8937267401510745927">Pour vous aider à effectuer des tâches, Google recevra les URL et le contenu des sites sur lesquels vous utilisez l'Assistant, ainsi que les informations que vous envoyez via celui-ci. Ces informations peuvent être stockées dans votre compte Google. Vous pouvez désactiver l'Assistant dans les paramètres de Chrome.</translation>
 <translation id="8937772741022875483">Supprimer votre activité Chrome de Bien-être numérique ?</translation>
 <translation id="8942627711005830162">Ouvrir dans une autre fenêtre</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> - Impossible de télécharger cette langue. Réessayez plus tard.</translation>
 <translation id="8951232171465285730">Chrome vous a permis de gagner <ph name="MEGABYTES" /> Mo</translation>
 <translation id="8965591936373831584">en attente</translation>
 <translation id="8970887620466824814">Un problème est survenu</translation>

@@ -252,7 +252,6 @@
     ശരിയായ രീതിയിൽ തലക്കെട്ട് സജ്ജീകരിക്കാത്തതിനാൽ,
     <ph name="SITE" /> എന്നതിനുള്ള നിങ്ങളുടെ അഭ്യർത്ഥന പൂർത്തീകരിക്കാൻ ബ്രൗസറിന് കഴിയുന്നില്ല. ഒരു സൈറ്റിന്റെ സുരക്ഷയും മറ്റ് പ്രോപ്പർട്ടികളും കോൺഫിഗർ ചെയ്യാൻ സൈറ്റ് ഓപ്പറേറ്റർമാർക്ക് ഉറവിട നയങ്ങൾ ഉപയോഗിക്കാനാവും.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">നിങ്ങളുടെ സമന്വയ പാസ്‌ഫ്രേസ് അപ്‌ഡേറ്റ് ചെയ്യുക.</translation>
 <translation id="1787142507584202372">നിങ്ങൾ നിലവിൽ തുറന്നിട്ടുള്ള ടാബുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ഒന്നിലധികം പ്രവർത്തനങ്ങൾ ലഭ്യമാണ്, ഒന്നിൽ നിന്ന് മറ്റൊന്നിലേക്ക് മാറാൻ 'Tab' അമർത്തുക</translation>
@@ -385,6 +384,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> ഡൊമെയ്‌ന് ഉപയോക്തൃനാമവും പാസ്‌വേഡും ആവശ്യമാണ്.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" />-ന് കാലഹരണപ്പെടുന്നു</translation>
 <translation id="2337852623177822836">ക്രമീകരണം നിയന്ത്രിക്കുന്നത് നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്ററാണ്</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" /> ജോടിയാക്കാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
 <translation id="2344028582131185878">യാന്ത്രിക ഡൗൺലോഡുകൾ</translation>
 <translation id="2346319942568447007">നിങ്ങൾ പകർത്തിയ ചിത്രം</translation>
 <translation id="2354001756790975382">മറ്റ് ബുക്‌മാര്‍ക്കുകള്‍</translation>
@@ -454,6 +454,7 @@
 <translation id="2629325967560697240">Chrome-ന്റെ ഏറ്റവും ഉയർന്ന സുരക്ഷ നേടാൻ, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />മെച്ചപ്പെടുത്തിയ പരിരക്ഷ ഓണാക്കുക<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />-ന്‍റെ സെർവർ IP വിലാസം കണ്ടെത്താനായില്ല.</translation>
 <translation id="2639739919103226564">നില:</translation>
+<translation id="264810637653812429">അനുയോജ്യമായ ഉപകരണങ്ങളൊന്നും കണ്ടെത്തിയില്ല.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രവും കുക്കികളും കാഷെയും മറ്റും മായ്ക്കാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="2650446666397867134">ഫയലിലേക്കുള്ള ആക്‌സസ് നിരസിച്ചു</translation>
@@ -498,6 +499,7 @@
 <translation id="2799223571221894425">വീണ്ടും സമാരംഭിക്കുക</translation>
 <translation id="2803306138276472711"><ph name="SITE" /> എന്നതിൽ Google സുരക്ഷിത ബ്രൗസിംഗ് ഈയിടെ <ph name="BEGIN_LINK" />മാൽവെയർ കണ്ടെത്തി<ph name="END_LINK" />. സാധാരണ നിലയിൽ സുരക്ഷിതമായ വെബ്സൈറ്റുകളിൽ ചിലപ്പോൾ മാൽവെയർ ഉണ്ടായേക്കാം.</translation>
 <translation id="2807052079800581569">ചിത്രം Y സ്ഥാനം</translation>
+<translation id="2820957248982571256">സ്‌കാൻ ചെയ്യുന്നു...</translation>
 <translation id="2824775600643448204">വിലാസവും തിരയൽ ബാറും</translation>
 <translation id="2826760142808435982"><ph name="CIPHER" /> ഉപയോഗിച്ച് കണക്ഷൻ എൻക്രിപ്‌റ്റുചെയ്‌ത് പ്രാമാണീകരിക്കുന്നു, ഒപ്പം പ്രധാന എക്‌സേഞ്ച് മെക്കാനിസമായി <ph name="KX" /> ഉപയോഗിക്കുന്നു.</translation>
 <translation id="2835170189407361413">ഫോം മായ്‌ക്കുക</translation>
@@ -607,6 +609,7 @@
 <translation id="3266793032086590337">മൂല്യം (വൈരുദ്ധ്യം)</translation>
 <translation id="3268451620468152448">ഓപ്പൺ ടാബുകൾ</translation>
 <translation id="3270847123878663523">&amp;പുനഃക്രമീകരിക്കുന്നത് പഴയപടിയാക്കുക</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> കണക്‌റ്റുചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
 <translation id="3274521967729236597">പാ-കായ്</translation>
 <translation id="3282085321714087552">നിങ്ങളുടെ സ്ഥാപനം, <ph name="ENROLLMENT_DOMAIN" />, ക്രമീകരണമോ നയങ്ങളോ പോലുള്ള ചില വിവരങ്ങൾ ഇനിപ്പറയുന്ന വെബ്‌സൈറ്റുകളിലേക്ക് അയച്ചു.</translation>
 <translation id="3282497668470633863">കാർഡിൽ പേര് ചേർക്കുക</translation>
@@ -1216,6 +1219,7 @@
 <translation id="5455374756549232013">മോശം നയ ടൈംസ്റ്റാമ്പ്</translation>
 <translation id="5457113250005438886">അസാധുവാണ്</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> എണ്ണവും}other{<ph name="CONTACT_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> എണ്ണവും}}</translation>
+<translation id="5463625433003343978">ഉപകരണങ്ങൾ കണ്ടെത്തുന്നു...</translation>
 <translation id="5469868506864199649">ഇറ്റാലിയന്‍</translation>
 <translation id="5470861586879999274">&amp;എഡിറ്റുചെയ്യുന്നത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="5478437291406423475">B6/C4 (എൻവലപ്പ്)</translation>
@@ -1265,7 +1269,6 @@
 <translation id="5624120631404540903">പാസ്‌വേഡുകൾ നിയന്ത്രിക്കുക</translation>
 <translation id="5629630648637658800">നയ ക്രമീകരണങ്ങൾ ലോഡ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു</translation>
 <translation id="5631439013527180824">ഉപകരണ മാനേജുമെന്റ് ടോക്കൺ അസാധുവാണ്</translation>
-<translation id="5632627355679805402"><ph name="TIME" />-ന് <ph name="BEGIN_LINK" />Google പാസ്‌വേഡ്‌<ph name="END_LINK" /> ഉപയോഗിച്ച്‌ നിങ്ങളുടെ ഡാറ്റ എൻക്രിപ്‌റ്റ് ചെയ്‌തു. സമന്വയിപ്പിക്കൽ തുടങ്ങുന്നതിന് ഇത് നൽകുക.</translation>
 <translation id="5633066919399395251"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> എന്ന സൈറ്റിലെ നിലവിലുള്ള അറ്റാക്കർമാർ നിങ്ങളുടെ വിവരങ്ങൾ മോഷ്‌ടിക്കാനോ ഇല്ലാതാക്കാനോ ഇടയുള്ള (ഉദാഹരണത്തിന്, ഫോട്ടോകൾ, പാസ്‌വേഡുകൾ, സന്ദേശങ്ങൾ, ക്രെഡിറ്റ് കാർഡുകൾ എന്നിവ) അപകടകരമായ പ്രോഗ്രാമുകൾ കമ്പ്യൂട്ടറിൽ ഇൻസ്‌റ്റാൾ ചെയ്യാൻ ശ്രമിച്ചേക്കാം. <ph name="BEGIN_LEARN_MORE_LINK" />കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">തെറ്റിദ്ധരിപ്പിക്കുന്ന ഉള്ളടക്കം ബ്ലോക്കുചെയ്‌തു.</translation>
 <translation id="5644090287519800334">സൈഡ് 1 ചിത്രം X ഷിഫ്റ്റ്</translation>
@@ -1309,6 +1312,7 @@
 <translation id="5804427196348435412">NFC ഉപകരണങ്ങൾ ഉപയോഗിക്കുക</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> എന്നതിലേക്കുള്ള നിങ്ങളുടെ കണക്ഷൻ കാലഹരണപ്പെട്ട സൈഫർ സ്യൂട്ട് ഉപയോഗിച്ച് എൻക്രിപ്റ്റുചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="5813119285467412249">&amp;ചേർത്തത് വീണ്ടും ചെയ്യുക</translation>
+<translation id="5817918615728894473">ജോടിയാക്കുക</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{നിങ്ങൾ പണമടയ്ക്കുമ്പോൾ ഈ കാർഡിൽ നിന്ന് നിരക്ക് ഈടാക്കും, എന്നാൽ ഈ സൈറ്റുമായി അതിന്റെ യഥാർത്ഥ നമ്പർ പങ്കിടില്ല. അധിക സുരക്ഷയ്ക്ക് താൽക്കാലികമായ ഒരു CVC സൃഷ്ടിക്കും.}other{നിങ്ങൾ പണമടയ്ക്കുമ്പോൾ, നിങ്ങൾ തിരഞ്ഞെടുത്ത കാർഡിൽ നിന്ന് നിരക്ക് ഈടാക്കും, എന്നാൽ ഈ സൈറ്റുമായി അതിന്റെ യഥാർത്ഥ നമ്പർ പങ്കിടില്ല. അധിക സുരക്ഷയ്ക്ക് താൽക്കാലികമായ ഒരു CVC സൃഷ്ടിക്കും.}}</translation>
 <translation id="5826507051599432481">പൊതുവായ പേര് (CN)</translation>
 <translation id="5838278095973806738">അക്രമകാരികൾ മോഷ്‌ടിക്കാൻ സാധ്യതയുള്ളതിനാൽ ഈ സൈറ്റിൽ നിങ്ങളുടെ രഹസ്യ വിവരങ്ങളൊന്നും (ഉദാഹരണത്തിന്, പാസ്‌വേഡുകളോ ക്രെഡിറ്റ് കാർഡുകളോ പോലുള്ളവ) നൽകരുത്.</translation>
@@ -1316,6 +1320,7 @@
 <translation id="5855253129151731373">ഈ സൈറ്റിന്റെ ഹോസ്റ്റ് നാമം <ph name="LOOKALIKE_DOMAIN" /> എന്നതിന്റെ പേരിന് സമാനമായി തോന്നുന്നു. ഡൊമെയ്ൻ നാമത്തിൽ ചിലപ്പോൾ ചെറുതും കാണാൻ ബുദ്ധിമുട്ടുള്ളതുമായ മാറ്റങ്ങൾ വരുത്തി, ആക്രമണകാരികൾ സൈറ്റുകളുടെ അനുകരണ രൂപം സൃഷ്‌ടിക്കാറുണ്ട്.
 
     ഇത് പിശകിനാൽ കാണിച്ചതാണെന്ന് നിങ്ങൾ വിശ്വസിക്കുന്നുവെങ്കിൽ, https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals സന്ദർശിക്കുക.</translation>
+<translation id="5860033963881614850">ഓഫാക്കുക</translation>
 <translation id="5862579898803147654">സ്റ്റാക്കർ 8</translation>
 <translation id="5863847714970149516">മുമ്പോട്ടുള്ള പേജ് നിങ്ങളിൽ നിന്ന് പണമീടാക്കാൻ ശ്രമിച്ചേക്കാം</translation>
 <translation id="5866257070973731571">ഫോണ്‍ നമ്പര്‍ ചേര്‍ക്കുക</translation>
@@ -1509,6 +1514,7 @@
 <translation id="6624427990725312378">കോണ്‍ടാക്റ്റ് വിവരം</translation>
 <translation id="6626291197371920147">ശരിയായ കാർഡ് നമ്പർ ചേർക്കുക</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> തിരയൽ</translation>
+<translation id="6630043285902923878">USB ഉപകരണങ്ങൾ കണ്ടെത്തുന്നു...</translation>
 <translation id="6630809736994426279"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> എന്ന സൈറ്റിലെ നിലവിലുള്ള ആക്രമികൾ നിങ്ങളുടെ വിവരങ്ങൾ ഇല്ലാതാക്കാനോ മോഷ്‌ടിക്കാനോ ഇടയുള്ള (ഉദാഹരണത്തിന്, ഫോട്ടോകൾ, പാസ്‌വേഡുകൾ, സന്ദേശങ്ങൾ, ക്രെഡിറ്റ് കാർഡുകൾ മുതലായവ) അപകടകരമായ പ്രോഗ്രാമുകൾ Mac-ൽ ഇൻസ്‌റ്റാൾ ചെയ്യാൻ ശ്രമിച്ചേക്കാം. <ph name="BEGIN_LEARN_MORE_LINK" />കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
@@ -1762,7 +1768,6 @@
 <translation id="7610193165460212391">മൂല്യം പരിധിക്ക് പുറത്താണ് <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">കാലഹരണപ്പെടുന്നത്: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ പാസ്‌വേഡുകൾ കാണാനും മാനേജ് ചെയ്യാനും 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
-<translation id="7615602087246926389">Google അക്കൗണ്ട് പാസ്‌വേഡിന്റെ വ്യത്യസ്ത പതിപ്പ് ഉപയോഗിച്ച് എൻക്രിപ്റ്റ് ചെയ്ത ഡേറ്റ ഇപ്പോൾ തന്നെ നിങ്ങളുടെ കൈവശമുണ്ട്. ആ പാസ്‌വേഡ് താഴെ നൽകുക.</translation>
 <translation id="7616645509853975347">അഡ്‌മിൻ നിങ്ങളുടെ ബ്രൗസറിൽ Chrome Enterprise Connectors ഓണാക്കിയിരിക്കുന്നു. ഈ കണക്‌റ്ററുകൾക്ക് നിങ്ങളുടെ ചില ഡാറ്റയിലേക്ക് ആക്‌സസ് ഉണ്ട്.</translation>
 <translation id="7619838219691048931">അവസാന ഷീറ്റ്</translation>
 <translation id="762844065391966283">ഒരു സമയം ഒന്ന്</translation>
@@ -2175,6 +2180,7 @@
 <translation id="9170848237812810038">‍&amp;പൂര്‍വാവസ്ഥയിലാക്കുക</translation>
 <translation id="9171296965991013597">ആപ്പ് വിടണോ?</translation>
 <translation id="9173282814238175921">സിംഗിൾ ഡോക്യുമെന്റ്/പുതിയ ഷീറ്റ്</translation>
+<translation id="9173995187295789444">Bluetooth ഉപകരണങ്ങൾക്കായി സ്‌കാൻ ചെയ്യുന്നു...</translation>
 <translation id="917450738466192189">സെർവറിന്റെ സർട്ടിഫിക്കറ്റ് അസാധുവാണ്.</translation>
 <translation id="9174917557437862841">ടാബ് മാറാനുള്ള ബട്ടൺ, ഈ ടാബിലേക്ക് മാറാൻ എൻ്റർ അമർത്തുക</translation>
 <translation id="9179703756951298733">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പേയ്‌മെന്റുകളും ക്രെഡിറ്റ് കാർഡ് വിവരങ്ങളും മാനേജ് ചെയ്യുക</translation>

@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Pārlūkā Chrome nevarēja pārbaudīt atjauninājumu pieejamību. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="2732745070297234559">Pārlūkprogrammā Chrome nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt.</translation>
 <translation id="2740105938841089077">Chrome izmantošana saišu atvēršanai</translation>
+<translation id="2869959624320573933">Pierakstīšanās pārlūkprogrammā Chrome</translation>
 <translation id="2919738076569633423">Izmantojot pārlūkprogrammu Chrome, jūs piekrītat <ph name="BEGIN_LINK_TOS" />pakalpojumu sniegšanas noteikumiem<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Jūs izrakstāties no konta, kas tiek pārvaldīts domēnā <ph name="SIGNOUT_MANAGED_DOMAIN" />, tādēļ jūsu Chrome dati tiks dzēsti no šīs ierīces. Dati joprojām būs pieejami jūsu Google kontā.</translation>
 <translation id="3167189358072330585">Jūsu konts nedarbojas pārlūkā Google Chrome. Sazinieties ar savu domēna administratoru vai pierakstieties, izmantojot parastu Google kontu.</translation>
 <translation id="3173834708294760622">Google Chrome lapa</translation>
 <translation id="3196546062792660320">Chrome ietaupa jūsu laiku, pievienojot jūsu kontus tīmeklim. Kontus varat pievienot vai noņemt sadaļā Iestatījumi.</translation>
-<translation id="3223655207402797071">Pierakstieties šajā vietnē, savā Google kontā un pārlūkā Chrome. Sinhronizāciju varat ieslēgt vēlāk.</translation>
 <translation id="3282568296779691940">Pierakstīties pārlūkā Chrome</translation>
 <translation id="3345341804167540816">Izmantojiet Chrome visur</translation>
 <translation id="3455456143708465450">Lai pilnvērtīgi izmantotu pārlūku Chrome, pierakstieties Google kontā</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Pārlūks Google Chrome ir atjaunināts.</translation>
 <translation id="8022947259858476807">Lai atvērtu saites, veiktu meklēšanu logrīkos un automātiski aizpildītu paroles citās lietotnēs, izmantojiet pārlūku Chrome kā noklusējuma pārlūku</translation>
 <translation id="8160472928944011082">Nevar atjaunināt pārlūku Chrome.</translation>
+<translation id="8263079278049777200">Pierakstieties šajā vietnē, savā Google kontā un pārlūkprogrammā Chrome. Sinhronizāciju varēsiet ieslēgt vēlāk.</translation>
 <translation id="8357607116237445042">Izvēlieties, vai notīrīt Chrome datus no šīs ierīces vai tos paturēt</translation>
 <translation id="8370517070665726704">Autortiesības: <ph name="YEAR" /> Google LLC. Visas tiesības paturētas.</translation>
 <translation id="840168496893712993">Daži papildinājumi var izraisīt pārlūka Chrome avarēšanu. Lūdzu, atinstalējiet tos.</translation>

@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome ei saanud värskendusi otsida. Proovige hiljem uuesti.</translation>
 <translation id="2732745070297234559">Chrome'il ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>
 <translation id="2740105938841089077">Kasuta linkide avamiseks Chrome'i</translation>
+<translation id="2869959624320573933">Logige Chromeʼi sisse</translation>
 <translation id="2919738076569633423">Chrome'i kasutamisel nõustute <ph name="BEGIN_LINK_TOS" />teenusetingimustega<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Kuna logite välja kontolt, mida haldab <ph name="SIGNOUT_MANAGED_DOMAIN" />, kustutatakse selles seadmes teie Chrome'i andmed. Google'i kontole jäävad teie andmed alles.</translation>
 <translation id="3167189358072330585">Teie konto ei tööta Google Chrome'is. Võtke ühendust domeeni administraatoriga või kasutage sisselogimiseks tavalist Google'i kontot.</translation>
 <translation id="3173834708294760622">Google Chrome'i leht</translation>
 <translation id="3196546062792660320">Chrome säästab aega, tuues teie kontod veebi. Saate kontosid lisada või eemaldada menüüs Seaded.</translation>
-<translation id="3223655207402797071">Logige sellele saidile, oma Google'i kontole ja Chrome'i sisse. Saate sünkroonimise hiljem sisse lülitada.</translation>
 <translation id="3282568296779691940">Chrome'i sisselogimine</translation>
 <translation id="3345341804167540816">Chrome'i kasutamine kõikjal</translation>
 <translation id="3455456143708465450">Chrome'i kasutamiseks parimal moel logige sisse oma Google'i kontoga</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome on ajakohane</translation>
 <translation id="8022947259858476807">Kasutage linkide avamiseks, vidinatest otsimiseks ja muudes rakendustes paroolide automaatselt täitmiseks vaikimisi Chrome'i</translation>
 <translation id="8160472928944011082">Chrome'i ei saa värskendada</translation>
+<translation id="8263079278049777200">Logige sellele saidile, oma Google'i kontole ja Chrome'i sisse. Sünkroonimise saate hiljem sisse lülitada.</translation>
 <translation id="8357607116237445042">Valige, kas soovite oma Chrome'i andmed sellest seadmest kustutada või need säilitada</translation>
 <translation id="8370517070665726704">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>
 <translation id="840168496893712993">Mõned pistikprogrammid põhjustavad Chrome'i kokkujooksmise. Proovige need desinstallida.</translation>

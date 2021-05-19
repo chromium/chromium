@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">Умањите</translation>
 <translation id="2230173723195178503">Веб-страница је учитана</translation>
 <translation id="2239626343334228536">Бришу се подаци прегледања...</translation>
-<translation id="2257567812274161158">Синхронизација не ради.</translation>
 <translation id="225943865679747347">Кôд грешке: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Додај налог</translation>
 <translation id="2268044343513325586">Прецизирај</translation>
@@ -143,7 +142,6 @@
 Сајтови не могу да користе колачиће да би видели ваше активности прегледања на различитим сајтовима, на пример, за персонализацију огласа.</translation>
 <translation id="2381405137052800939">Основе</translation>
 <translation id="2386793615875593361">Изабрана је 1 слика</translation>
-<translation id="2410754283952462441">Изаберите налог</translation>
 <translation id="2421004566762153674">Блокира колачиће треће стране</translation>
 <translation id="2421044535038393232">Настави изменe</translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
@@ -362,7 +360,6 @@
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4747097190499141774">Шифровање помоћу приступне фразе не обухвата начине плаћања и адресе из Google Pay-а. Само неко ко има приступну фразу може да чита шифроване податке. Приступна фраза се не шаље Google-у нити је он чува. Ако заборавите приступну фразу или пожелите да промените ово подешавање, треба да ресетујете синхронизацију. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Нова картица без архивирањa</translation>
-<translation id="4766678251456904326">Додај налог на уређај</translation>
 <translation id="4775879719735953715">Подразумевани прегледач</translation>
 <translation id="4778644898150334464">Користите другу лозинку</translation>
 <translation id="4802417911091824046">Шифровање помоћу приступне фразе не обухвата начине плаћања и адресе из Google Pay-а.
@@ -794,6 +791,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8976382372951310360">Помоћ</translation>
 <translation id="8981454092730389528">Google контроле активности</translation>
 <translation id="8985320356172329008">Пријављени сте на Google као</translation>
+<translation id="8996526648899750015">Додај налог...</translation>
 <translation id="9034759925968272072">Нећемо вас одјавити са Google налога. Google налог можда има друге облике историје прегледања на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Прикажи оригинал</translation>
 <translation id="9039373489628511875">Пропусни опсег</translation>
@@ -816,6 +814,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Извештај о отказивању је послат.</translation>
 <translation id="952704832371081537">Откажи</translation>
+<translation id="984509647832111802">Синхронизација не ради.</translation>
 <translation id="988141524645182168">Други уређаји</translation>
 <translation id="989988560359834682">Измена адресе</translation>
 <translation id="994757059139821576">Предлози чланака</translation>

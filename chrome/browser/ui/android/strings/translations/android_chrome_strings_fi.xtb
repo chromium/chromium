@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Google Chromen ja Chrome-käyttöjärjestelmän lisäkäyttöehdot</translation>
 <translation id="1807246157184219062">Vaalea</translation>
 <translation id="1810845389119482123">Synkronoinnin alkumääritys ei valmis</translation>
-<translation id="1821253160463689938">Käyttää evästeitä asetustesi muistamiseen, vaikka et kävisi kyseisillä sivuilla</translation>
 <translation id="1829244130665387512">Haku sivulta</translation>
 <translation id="1830550083491357902">Ei kirjautunut</translation>
 <translation id="1843805151597803366">Anna Google Haun käyttää nykyistä sivua, jotta saat parempia käännöksiä</translation>
@@ -203,6 +202,7 @@ Hae napauttamalla sanaa. Jos haluat tarkentaa hakuasi, valitse enemmän tai väh
 <ph name="BEGIN_LIST_ITEM1" />Mainostajat voivat saada tiedon siitä, kun sama aihe kiinnostaa tuhansia käyttäjiä (vertaa konserttiyleisöön), ja valita mainoksia yleisölle yksittäisen henkilön sijaan.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Mainostajat voivat tutkia mainosten vaikuttavuutta tavalla, joka ei seuraa sinua eri sivustoilla.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Esilataa sivuja, joita saatat Chromen mukaan avata. Chrome voi käyttää tätä varten evästeitä, jos sallit ne, sekä salata ja lähettää sivuja Googlen kautta henkilöllisyytesi salaamiseksi sivustoilta.</translation>
 <translation id="234265804618409743">Kameraa ei voi avata. Jotain meni pieleen.</translation>
 <translation id="2345671828921229300">Hae koskettamalla sanaa pitkään</translation>
 <translation id="2349710944427398404">Chromen käyttämän tallennustilan kokonaismäärä, mukaan lukien tilit, kirjanmerkit ja tallennetut asetukset.</translation>
@@ -273,7 +273,6 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekuntia jäljellä</translation>
 <translation id="2779651927720337254">epäonnistui</translation>
 <translation id="2781151931089541271">1 sekunti jäljellä</translation>
-<translation id="279827439955962619">Poista korostus</translation>
 <translation id="2801022321632964776">Päivitä Chrome uusimpaan versioon, niin se toimii omalla kielelläsi</translation>
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="281504910091592009">Katso ja ylläpidä <ph name="BEGIN_LINK" />Google-tilille<ph name="END_LINK" /> tallennettuja salasanoja</translation>
@@ -454,7 +453,6 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="3988466920954086464">Näytä Instant-hakutulokset tässä paneelissa</translation>
 <translation id="4000212216660919741">Offline-etusivu</translation>
 <translation id="4016425174436051808">Ei voi seurata. Jotain meni pieleen.</translation>
-<translation id="4021916380760361450">Hallinnoi Google-tilien dataa</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Käyttödata</translation>
 <translation id="4056223980640387499">Seepia</translation>
@@ -480,7 +478,6 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="4195643157523330669">Avaa uudelle välilehdelle</translation>
 <translation id="4198423547019359126">Tallennussijainteja ei ole saatavilla</translation>
 <translation id="4209895695669353772">Ota synkronointi käyttöön, niin näet Googlen suosittelemaa yksilöllistä sisältöä</translation>
-<translation id="423219824432660969">Salaa synkronoitu data Google-salasanalla (<ph name="TIME" />)</translation>
 <translation id="4242533952199664413">Avaa asetukset</translation>
 <translation id="4248098802131000011">Suojaa salasanasi tietosuojaloukkauksilta ja muilta tietoturvaongelmilta</translation>
 <translation id="4250229828105606438">Kuvakaappaus</translation>
@@ -559,6 +556,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="47217992755561375">Katso suositut sivustosi</translation>
 <translation id="4732120983431207637">Pinon tyhjentäjä</translation>
 <translation id="4738836084190194332">Viimeisin synkronointi: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Poista korostus</translation>
 <translation id="4749960740855309258">Uuden välilehden avaaminen</translation>
 <translation id="4759238208242260848">Lataukset</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +697,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="562289928968387744">Ylläpidä reaktioita</translation>
 <translation id="5626134646977739690">Nimi:</translation>
 <translation id="5628604359369369630">Lukematon – luettavissa ilman verkkoyhteyttä</translation>
-<translation id="5632627355679805402">Datasi salattiin <ph name="BEGIN_LINK" />Google-salasanallasi<ph name="END_LINK" /> <ph name="TIME" />. Aloita synkronointi antamalla salasana.</translation>
 <translation id="5639724618331995626">Salli kaikki sivustot</translation>
 <translation id="5648166631817621825">Viimeiset seitsemän päivää</translation>
 <translation id="5655963694829536461">Hae omista latauksistasi</translation>
@@ -934,7 +931,6 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="702463548815491781">Suositellaan käytettäväksi, kun TalkBack tai Kytkimen käyttö on päällä</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> palautettu</translation>
 <translation id="7029809446516969842">Salasanat</translation>
-<translation id="7040531500313579672">Jaa korostus</translation>
 <translation id="7054588988317389591">Muodostetaanko kuvaselitykset?</translation>
 <translation id="7055152154916055070">Uudelleenohjaus estetty:</translation>
 <translation id="7063006564040364415">Synkronointipalvelimeen ei saada yhteyttä.</translation>
@@ -970,6 +966,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="7328017930301109123">Yksinkertaistetussa tilassa Chrome lataa sivuja nopeammin ja käyttää jopa 60 prosenttia vähemmän dataa.</translation>
 <translation id="7332075081379534664">Sisäänkirjautuminen onnistui</translation>
 <translation id="7333031090786104871">Edellisen sivuston lisääminen kesken</translation>
+<translation id="7339898014177206373">Uusi ikkuna</translation>
 <translation id="7340958967809483333">Discover-asetukset</translation>
 <translation id="7352651011704765696">Tapahtui jokin virhe</translation>
 <translation id="7352939065658542140">VIDEO</translation>
@@ -998,6 +995,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="7493994139787901920"><ph name="VERSION" /> (päivitettiin <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">dataa säästetty</translation>
 <translation id="7498271377022651285">Odota…</translation>
+<translation id="750228856503700085">Päivityksiä ei saatavilla</translation>
 <translation id="7507207699631365376">Katso tämän palveluntarjoajan <ph name="BEGIN_LINK" />tietosuojakäytäntö<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Lataa</translation>
 <translation id="751961395872307827">Yhteyden muodostaminen sivustoon epäonnistui</translation>
@@ -1099,6 +1097,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="8076492880354921740">Välilehdet</translation>
 <translation id="8078096376109663956">Jaa vain teksti</translation>
 <translation id="8084114998886531721">Salasana tallennettu</translation>
+<translation id="8084285576995584326">Hallinnoi Google-tilin dataa</translation>
 <translation id="808747664143081553">Yhdistetty laitteeseen</translation>
 <translation id="8103578431304235997">Incognito-välilehti</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="8725066075913043281">Yritä uudelleen</translation>
 <translation id="8730621377337864115">Valmis</translation>
+<translation id="8746155870861185046">Jaa kohta</translation>
 <translation id="8748850008226585750">Sisältö piilotettu</translation>
 <translation id="8773160212632396039">Pyyntöä käsitellään</translation>
 <translation id="8788265440806329501">Navigointihistoria suljettu</translation>

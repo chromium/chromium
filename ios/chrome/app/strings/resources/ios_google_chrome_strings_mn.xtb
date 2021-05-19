@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome-н шинэчлэлтийг шалгаж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="2732745070297234559">Chrome бүх нууц үгийг шалгаж чадсангүй. Маргааш дахин оролдоно уу.</translation>
 <translation id="2740105938841089077">Холбоос нээхийн тулд Chrome-г ашиглана уу</translation>
+<translation id="2869959624320573933">Chrome-д нэвтэрнэ үү</translation>
 <translation id="2919738076569633423">Chrome-г ашигласнаар та <ph name="BEGIN_LINK_TOS" />Үйлчилгээний нөхцөлийг<ph name="END_LINK_TOS" /> зөвшөөрч байна.</translation>
 <translation id="3030414234702425231">Та <ph name="SIGNOUT_MANAGED_DOMAIN" />-н удирддаг бүртгэлээс гарч байгаа тул таны Chrome-н өгөгдлийг энэ төхөөрөмжөөс устгана. Таны өгөгдөл таны Google Бүртгэлд хэвээр үлдэнэ.</translation>
 <translation id="3167189358072330585">Таны бүртгэл Google Chrome-д ажиллахгүй байна. Нэвтрэхийн тулд та домайн админтайгаа холбогдох, эсвэл Google Бүртгэлийн энгийн хувилбарыг ашиглаарай.</translation>
 <translation id="3173834708294760622">Google Chrome-н хуудас</translation>
 <translation id="3196546062792660320">Chrome таны бүртгэлийг вебэд оруулснаар таны цагийг хэмнэдэг. Та Тохиргоо хэсэгт бүртгэл нэмэх, эсвэл устгах боломжтой.</translation>
-<translation id="3223655207402797071">Энэ сайт, өөрийн Google Бүртгэл болон Chrome-д нэвтэрнэ үү. Та синкийг дараа асааж болно.</translation>
 <translation id="3282568296779691940">Chrome руу нэвтрэх</translation>
 <translation id="3345341804167540816">Chrome-г хүссэн газраа ашиглаарай</translation>
 <translation id="3455456143708465450">Chrome-г бүрэн ашиглахын тулд Google Бүртгэлээрээ нэвтрээрэй</translation>
@@ -92,6 +92,7 @@
 <translation id="7855730255114109580">Google Chrome-г шинэчилсэн байна</translation>
 <translation id="8022947259858476807">Холбооснуудыг нээх, жижиг хэрэгслүүдээс хайх, бусад аппад нууц үгнүүдийг автоматаар бөглөхийн тулд Chrome-г өгөгдмөлөөр ашиглана уу</translation>
 <translation id="8160472928944011082">Chrome-г шинэчлэх боломжгүй байна</translation>
+<translation id="8263079278049777200">Энэ сайт, өөрийн Google Бүртгэл болон Chrome-д нэвтэрнэ үү. Та синк хийхийг дараа асааж болно.</translation>
 <translation id="8357607116237445042">Chrome-н өгөгдлөө энэ төхөөрөмжөөс арилгах эсвэл хадгалах эсэхээ сонгоно уу</translation>
 <translation id="8370517070665726704">Зохиогчийн эрх <ph name="YEAR" /> Google ХХК. Бүх эрх хуулиар хамгаалагдсан.</translation>
 <translation id="840168496893712993">Зарим нэмэлт програмууд нь Chrome-ыг эвдрэхэд хүргэдэг. Тэднийг устгах гээд оролдоод үзнэ үү.</translation>

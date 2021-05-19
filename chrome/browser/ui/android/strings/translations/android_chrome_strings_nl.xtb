@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Aanvullende servicevoorwaarden van Google Chrome en Chrome OS</translation>
 <translation id="1807246157184219062">Licht</translation>
 <translation id="1810845389119482123">Eerste synchronisatieconfiguratie niet voltooid</translation>
-<translation id="1821253160463689938">Maakt gebruik van cookies om je voorkeuren te onthouden, zelfs als je deze pagina's niet bezoekt</translation>
 <translation id="1829244130665387512">Zoeken op pagina</translation>
 <translation id="1830550083491357902">Niet ingelogd</translation>
 <translation id="1843805151597803366">Sta Google Zoeken toe de huidige pagina te gebruiken om betere vertalingen te krijgen</translation>
@@ -273,7 +272,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2777555524387840389"><ph name="SECONDS" /> seconden resterend</translation>
 <translation id="2779651927720337254">mislukt</translation>
 <translation id="2781151931089541271">1 seconde resterend</translation>
-<translation id="279827439955962619">Markering verwijderen</translation>
 <translation id="2801022321632964776">Voer een update uit om jouw taal te gebruiken in de nieuwste versie van Chrome</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">Bekijk en beheer opgeslagen wachtwoorden in je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" /></translation>
@@ -454,7 +452,6 @@ Privacy Sandbox is nog actief in ontwikkeling en is beschikbaar in bepaalde regi
 <translation id="3988466920954086464">Instant-zoekresultaten tonen in dit venster</translation>
 <translation id="4000212216660919741">Homepage voor offline</translation>
 <translation id="4016425174436051808">Volgen is mislukt. Er is iets misgegaan.</translation>
-<translation id="4021916380760361450">De gegevens van je Google-account beheren</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# uur}other{# uur}}</translation>
 <translation id="4045764304651014138">Gebruiksgegevens</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -480,7 +477,6 @@ Privacy Sandbox is nog actief in ontwikkeling en is beschikbaar in bepaalde regi
 <translation id="4195643157523330669">Openen op nieuw tabblad</translation>
 <translation id="4198423547019359126">Geen beschikbare downloadlocaties</translation>
 <translation id="4209895695669353772">Zet de synchronisatie aan om suggesties voor gepersonaliseerde content van Google te ontvangen</translation>
-<translation id="423219824432660969">Gesynchroniseerde gegevens versleutelen met Google-wachtwoord vanaf <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Instellingen openen</translation>
 <translation id="4248098802131000011">Bescherm je wachtwoorden tegen gegevenslekken en andere beveiligingsproblemen</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -559,6 +555,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="47217992755561375">Bekijk je populaire sites</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4738836084190194332">Laatst gesynchroniseerd: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Markering verwijderen</translation>
 <translation id="4749960740855309258">Een nieuw tabblad openen</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +696,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="562289928968387744">Reacties beheren</translation>
 <translation id="5626134646977739690">Naam:</translation>
 <translation id="5628604359369369630">Ongelezen: offline beschikbaar</translation>
-<translation id="5632627355679805402">Je gegevens zijn vanaf <ph name="TIME" /> versleuteld met je <ph name="BEGIN_LINK" />Google-wachtwoord<ph name="END_LINK" />. Geef het wachtwoord op om de synchronisatie te starten.</translation>
 <translation id="5639724618331995626">Alle sites toestaan</translation>
 <translation id="5648166631817621825">Afgelopen 7 dagen</translation>
 <translation id="5655963694829536461">Zoek in je downloads</translation>
@@ -934,7 +930,6 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="702463548815491781">Aanbevolen als TalkBack of Toegang via schakelaar aanstaat</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> is hersteld</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
-<translation id="7040531500313579672">Markering delen</translation>
 <translation id="7054588988317389591">Afbeeldingsbeschrijvingen ophalen?</translation>
 <translation id="7055152154916055070">Omleiding geblokkeerd:</translation>
 <translation id="7063006564040364415">Kan geen verbinding maken met synchronisatieserver.</translation>
@@ -970,6 +965,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="7328017930301109123">In de Lite-versie van Chrome worden pagina's sneller geladen en wordt tot wel 60 procent minder data verbruikt.</translation>
 <translation id="7332075081379534664">Inloggen gelukt</translation>
 <translation id="7333031090786104871">Nog steeds bezig met toevoegen van vorige site</translation>
+<translation id="7339898014177206373">Nieuw venster</translation>
 <translation id="7340958967809483333">Opties voor Discover</translation>
 <translation id="7352651011704765696">Er is iets misgegaan</translation>
 <translation id="7352939065658542140">VIDEO</translation>

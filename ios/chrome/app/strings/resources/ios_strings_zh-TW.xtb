@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">縮小</translation>
 <translation id="2230173723195178503">已載入網頁</translation>
 <translation id="2239626343334228536">正在清除瀏覽資料...</translation>
-<translation id="2257567812274161158">同步功能無法正常運作。</translation>
 <translation id="225943865679747347">錯誤代碼：<ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">新增帳戶</translation>
 <translation id="2268044343513325586">修正搜尋</translation>
@@ -143,7 +142,6 @@
 網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2386793615875593361">已選取 1 張</translation>
-<translation id="2410754283952462441">選擇帳戶</translation>
 <translation id="2421004566762153674">封鎖第三方 Cookie</translation>
 <translation id="2421044535038393232">繼續編輯</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
@@ -362,7 +360,6 @@
 <translation id="473775607612524610">更新</translation>
 <translation id="4747097190499141774">通關密語加密保護的資料不包括 Google Pay 的付款方式和地址。只有知道你通關密語的人，才能讀取加密保護的資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果你忘記自己的通關密語，或是想變更這項設定，則必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">新無痕式分頁</translation>
-<translation id="4766678251456904326">在裝置上新增帳戶</translation>
 <translation id="4775879719735953715">預設瀏覽器</translation>
 <translation id="4778644898150334464">使用其他密碼</translation>
 <translation id="4802417911091824046">通關密語加密保護的資料不包括 Google Pay 的付款方式和地址。
@@ -794,6 +791,7 @@
 <translation id="8976382372951310360">說明</translation>
 <translation id="8981454092730389528">Google 活動控制項</translation>
 <translation id="8985320356172329008">已使用下列帳戶登入 Google：</translation>
+<translation id="8996526648899750015">新增帳戶...</translation>
 <translation id="9034759925968272072">您並不會因此登出 Google 帳戶，不過帳戶中可能仍保留了其他類型的瀏覽記錄 (可前往 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 查詢)。</translation>
 <translation id="9037965129289936994">顯示原文</translation>
 <translation id="9039373489628511875">頻寬</translation>

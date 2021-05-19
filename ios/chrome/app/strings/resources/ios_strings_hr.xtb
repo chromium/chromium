@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">Smanji</translation>
 <translation id="2230173723195178503">Web-stranica učitana</translation>
 <translation id="2239626343334228536">Brisanje podataka o pregledavanju...</translation>
-<translation id="2257567812274161158">Sinkronizacija ne funkcionira.</translation>
 <translation id="225943865679747347">Kôd pogreške: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj račun</translation>
 <translation id="2268044343513325586">Pročišćavanje</translation>
@@ -143,7 +142,6 @@
 Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledavanja, primjerice radi prilagođavanja oglasa.</translation>
 <translation id="2381405137052800939">Osnove</translation>
 <translation id="2386793615875593361">1 odabrana</translation>
-<translation id="2410754283952462441">Odabir računa</translation>
 <translation id="2421004566762153674">Blokiranje kolačića trećih strana</translation>
 <translation id="2421044535038393232">Nastavi uređivati</translation>
 <translation id="2435457462613246316">Pokaži zaporku</translation>
@@ -362,7 +360,6 @@ Vaši su podaci šifrirani vašom šifrom za sinkronizaciju. Unesite je da biste
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4747097190499141774">Enkripcija šifrom ne uključuje podatke o načinima plaćanja i adresama s Google Paya. Samo osoba koja ima vašu šifru može čitati vaše kriptirane podatke. Šifra se ne šalje Googleu niti se na njemu pohranjuje. Ako zaboravite šifru ili želite promijeniti tu postavku, morate poništiti sinkronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nova anonimna kartica</translation>
-<translation id="4766678251456904326">Dodajte račun uređaju</translation>
 <translation id="4775879719735953715">Zadani preglednik</translation>
 <translation id="4778644898150334464">Upotreba druge zaporke</translation>
 <translation id="4802417911091824046">Enkripcija šifrom ne uključuje načine plaćanja i adrese s Google Paya.
@@ -794,6 +791,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8976382372951310360">Pomoć</translation>
 <translation id="8981454092730389528">Google kontrole aktivnosti</translation>
 <translation id="8985320356172329008">Prijavljeni ste na Google kao</translation>
+<translation id="8996526648899750015">Dodavanje računa...</translation>
 <translation id="9034759925968272072">Nećete se odjaviti s Google računa. Na Google računu možda postoje drugi oblici povijesti pregledavanja na stranici <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Prikaži izvornik</translation>
 <translation id="9039373489628511875">Propusnost</translation>
@@ -816,6 +814,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Izvješće o rušenju programa poslano je.</translation>
 <translation id="952704832371081537">Odustani</translation>
+<translation id="984509647832111802">Sinkronizacija ne funkcionira.</translation>
 <translation id="988141524645182168">Ostali uređaji</translation>
 <translation id="989988560359834682">Uređivanje adrese</translation>
 <translation id="994757059139821576">Predloženi članci</translation>

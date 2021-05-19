@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Допълнителни общи условия на Chrome и Chrome OS</translation>
 <translation id="1807246157184219062">Светло</translation>
 <translation id="1810845389119482123">Първоначалното настройване на синхронизирането не завърши</translation>
-<translation id="1821253160463689938">Използва „бисквитки“ за запомняне на предпочитанията ви дори ако не посещавате тези страници</translation>
 <translation id="1829244130665387512">Търсене в страницата</translation>
 <translation id="1830550083491357902">Не сте в профила си</translation>
 <translation id="1843805151597803366">За да получите по-добри преводи, позволете на Google Търсене да използва текущата страница</translation>
@@ -203,6 +202,7 @@
 <ph name="BEGIN_LIST_ITEM1" />Рекламодателите могат да научават за споделените интереси на хиляди потребители, като например интересите на публиката на даден концерт, и да избират реклами за цялата публика вместо за отделни лица.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Рекламодателите могат да проучват ефективността на рекламите по начин, който не проследява действията ви в различните сайтове.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Зарежда предварително страниците, които Chrome смята, че може да посетите. За целта браузърът може да използва „бисквитки“, ако сте ги разрешили, и да шифрова и изпраща страниците чрез Google, за да скрива самоличността ви от сайтовете.</translation>
 <translation id="234265804618409743">Камерата не може да се отвори. Нещо се обърка.</translation>
 <translation id="2345671828921229300">За да търсите, докоснете и задръжте дума</translation>
 <translation id="2349710944427398404">Общо място в хранилището, което се използва от Chrome, включително за профили, отметки и запазени настройки</translation>
@@ -273,7 +273,6 @@
 <translation id="2777555524387840389">Остават <ph name="SECONDS" /> сек</translation>
 <translation id="2779651927720337254">неуспешно</translation>
 <translation id="2781151931089541271">Остава 1 сек</translation>
-<translation id="279827439955962619">Премахване на открояването</translation>
 <translation id="2801022321632964776">Актуализирайте, за да получите своя език в най-новата версия на Chrome</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="281504910091592009">Преглеждайте и управлявайте запазените пароли в <ph name="BEGIN_LINK" />профила си в Google<ph name="END_LINK" /></translation>
@@ -454,7 +453,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="3988466920954086464">Отворете този панел, за да видите динамичните резултати от търсенето</translation>
 <translation id="4000212216660919741">Начална страница в офлайн режим</translation>
 <translation id="4016425174436051808">Следенето не е възможно. Нещо се обърка.</translation>
-<translation id="4021916380760361450">Управление на данните в профилите ви в Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ч}other{# ч}}</translation>
 <translation id="4045764304651014138">Данни за употребата</translation>
 <translation id="4056223980640387499">Сепия</translation>
@@ -480,7 +478,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
 <translation id="4198423547019359126">Няма местоположения за изтегляне</translation>
 <translation id="4209895695669353772">Включете синхронизирането, за да получавате персонализирано съдържание, предлагано от Google</translation>
-<translation id="423219824432660969">Шифроване на синхронизираните данни с паролата за Google от <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Отваряне на настройките</translation>
 <translation id="4248098802131000011">Защитете паролите си от нарушения на сигурността на данните и други подобни проблеми</translation>
 <translation id="4250229828105606438">Eкранна снимка</translation>
@@ -559,6 +556,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="47217992755561375">Преглед на водещите сайтове за вас</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4738836084190194332">Последно синхронизиране: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Премахване на открояването</translation>
 <translation id="4749960740855309258">Отваряне на нов раздел</translation>
 <translation id="4759238208242260848">Изтегляния</translation>
 <translation id="4763480195061959176">видео</translation>
@@ -699,7 +697,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="562289928968387744">Управление на реакциите</translation>
 <translation id="5626134646977739690">Име:</translation>
 <translation id="5628604359369369630">Непрочетено – налице офлайн</translation>
-<translation id="5632627355679805402">Данните ви са шифровани с <ph name="BEGIN_LINK" />паролата ви за Google<ph name="END_LINK" /> от <ph name="TIME" />. Въведете я, за да стартирате синхронизирането.</translation>
 <translation id="5639724618331995626">Разрешаване на всички сайтове</translation>
 <translation id="5648166631817621825">Последните 7 дни</translation>
 <translation id="5655963694829536461">Търсете в изтеглянията</translation>
@@ -934,7 +931,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="702463548815491781">Препоръчва се, когато TalkBack или достъпът с превключване са задействани</translation>
 <translation id="7027549951530753705">Файлът „<ph name="ITEM_TITLE" />“ бе възстановен</translation>
 <translation id="7029809446516969842">Пароли</translation>
-<translation id="7040531500313579672">Споделяне на открояването</translation>
 <translation id="7054588988317389591">Искате ли да получавате описания на изображенията?</translation>
 <translation id="7055152154916055070">Блокирано бе пренасочване:</translation>
 <translation id="7063006564040364415">Не можа да се установи връзка със синхронизиращия сървър.</translation>
@@ -970,6 +966,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7328017930301109123">В олекотения режим на Chrome страниците се зареждат по-бързо и се използват до 60 процента по-малко данни.</translation>
 <translation id="7332075081379534664">Входът в профила е успешен</translation>
 <translation id="7333031090786104871">Още се добавя предишният сайт</translation>
+<translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="7340958967809483333">Опции за Discover</translation>
 <translation id="7352651011704765696">Нещо се обърка</translation>
 <translation id="7352939065658542140">ВИДЕОКЛИП</translation>
@@ -998,6 +995,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7493994139787901920"><ph name="VERSION" /> (Актуализирано: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">спестени данни</translation>
 <translation id="7498271377022651285">Моля, изчакайте...</translation>
+<translation id="750228856503700085">Не са налице актуализации</translation>
 <translation id="7507207699631365376">Вижте <ph name="BEGIN_LINK" />декларацията за поверителност<ph name="END_LINK" /> на този доставчик</translation>
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="751961395872307827">Не може да се установи връзка със сайта</translation>
@@ -1099,6 +1097,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8076492880354921740">Раздели</translation>
 <translation id="8078096376109663956">Споделяне само на текста</translation>
 <translation id="8084114998886531721">Запазена парола</translation>
+<translation id="8084285576995584326">Управление на данните в профила ви в Google</translation>
 <translation id="808747664143081553">Установена е връзка с устройството</translation>
 <translation id="8103578431304235997">Раздел в режим „инкогнито“</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
 <translation id="8730621377337864115">Готово</translation>
+<translation id="8746155870861185046">Споделяне на открояването</translation>
 <translation id="8748850008226585750">Съдържанието е скрито</translation>
 <translation id="8773160212632396039">Заявката се обработва</translation>
 <translation id="8788265440806329501">Историята на навигацията е затворена</translation>

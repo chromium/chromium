@@ -249,7 +249,6 @@
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows ਨੈੱਟਵਰਕ ਤਸ਼ਖੀਸਾਂ ਨੂੰ ਚਲਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="1772163372082567643">ਜਿਸ ਸਰਵਰ 'ਤੇ ਤੁਸੀਂ ਜਾ ਰਹੇ ਹੋ, <ph name="ORIGIN" />, ਉਸਨੇ ਇੱਕ ਸਿਰਲੇਖ ਸੈੱਟ ਕੀਤਾ ਹੈ ਜਿਸ ਵਿੱਚ ਇਹ ਚੀਜ਼ ਲੋੜੀਂਦੀ ਹੈ ਕਿ ਮੂਲ ਨੀਤੀ ਨੂੰ ਇਸ 'ਤੇ ਕੀਤੀਆਂ ਗਈਆਂ ਸਾਰੀਆਂ ਬੇਨਤੀਆਂ 'ਤੇ ਲਾਗੂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਪਰ ਸਿਰਲੇਖ ਨੁਕਸਦਾਰ ਹੈ, ਜੋ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ <ph name="SITE" /> ਲਈ ਤੁਹਾਡੀ ਬੇਨਤੀ ਨੂੰ ਪੂਰਾ ਕਰਨ ਤੋਂ ਰੋਕਦਾ ਹੈ। ਮੂਲ ਸੰਬੰਧੀ ਨੀਤੀਆਂ ਨੂੰ ਕਿਸੇ ਸਾਈਟ ਦੀ ਸੁਰੱਖਿਆ ਅਤੇ ਹੋਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦਾ ਸੰਰੂਪਣ ਕਰਨ ਲਈ ਸਾਈਟ ਓਪਰੇਟਰਾਂ ਵੱਲੋਂ ਵਰਤਿਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਸਿੰਕ ਪਾਸਫਰੇਜ਼ ਅੱਪਡੇਟ ਕਰੋ।</translation>
 <translation id="1787142507584202372">ਤੁਹਾਡੇ ਖੁੱਲ੍ਹੇ ਟੈਬ ਇੱਥੇ ਵਿਖਾਈ ਦੇਣਗੇ</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ਇੱਕ ਤੋਂ ਵੱਧ ਕਾਰਵਾਈਆਂ ਉਪਲਬਧ ਹਨ, ਉਹਨਾਂ ਵਿੱਚ ਚੱਕਰ ਲਗਾਉਣ ਲਈ Tab ਦਬਾਓ</translation>
@@ -382,6 +381,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> ਨੂੰ ਇੱਕ ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, ਮਿਆਦ <ph name="EXPIRATION_DATE_ABBR" /> ਨੂੰ ਸਮਾਪਤ ਹੋਵੇਗੀ</translation>
 <translation id="2337852623177822836">ਸੈਟਿੰਗ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਕੰਟਰੋਲ ਕੀਤੀ ਗਈ</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" /> ਜੋੜਾਬੱਧ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="2344028582131185878">ਆਟੋਮੈਟਿਕ ਡਾਊਨਲੋਡਸ</translation>
 <translation id="2346319942568447007">ਤੁਹਾਡੇ ਵੱਲੋਂ ਕਾਪੀ ਕੀਤਾ ਚਿੱਤਰ</translation>
 <translation id="2354001756790975382">ਹੋਰ ਬੁੱਕਮਾਰਕ</translation>
@@ -451,6 +451,7 @@
 <translation id="2629325967560697240">Chrome ਦੀ ਉੱਚਤਮ ਪੱਧਰ ਦੀ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਨੂੰ ਚਾਲੂ ਕਰੋ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ਦਾ ਸਰਵਰ IP ਪਤਾ ਨਹੀਂ ਲੱਭਿਆ।</translation>
 <translation id="2639739919103226564">ਸਥਿਤੀ:</translation>
+<translation id="264810637653812429">ਕੋਈ ਅਨੁਰੂਪ ਡੀਵਾਈਸ ਨਹੀਂ ਮਿਲੇ।</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ, ਕੁਕੀਜ਼, ਕੈਸ਼ੇ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਨੂੰ ਕਲੀਅਰ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="2650446666397867134">ਫਾਈਲ ਤੱਕ ਪਹੁੰਚ ਅਸਵੀਕਾਰ ਕਰ ਦਿੱਤੀ ਗਈ ਸੀ</translation>
@@ -496,6 +497,7 @@
 <translation id="2799223571221894425">ਰੀਲੌਂਚ ਕਰੋ</translation>
 <translation id="2803306138276472711">Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੇ <ph name="SITE" /> 'ਤੇ ਹੁਣੇ ਹੀ<ph name="BEGIN_LINK" /> ਮਲਵੇਅਰ ਖੋਜਿਆ<ph name="END_LINK" /> ਸੀ। ਜੋ ਵੈੱਬਸਾਈਟਾਂ ਆਮ ਤੌਰ ਤੇ ਸੁਰੱਖਿਅਤ ਹੁੰਦੀਆਂ ਹਨ, ਉਹ ਵੀ ਕਦੇ-ਕਦੇ ਮਲਵੇਅਰ ਨਾਲ ਸੰਕ੍ਰਮਿਤ ਹੋ ਜਾਂਦੀਆਂ ਹਨ।</translation>
 <translation id="2807052079800581569">ਚਿੱਤਰ Y ਸਥਿਤੀ</translation>
+<translation id="2820957248982571256">ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="2824775600643448204">ਪਤਾ ਅਤੇ ਖੋਜ ਬਾਰ</translation>
 <translation id="2826760142808435982">ਕਨੈਕਸ਼ਨ <ph name="CIPHER" /> ਵਰਤਦੇ ਹੋਏ ਐਨਕ੍ਰਿਪਟ ਅਤੇ ਪ੍ਰਮਾਣਿਤ ਕੀਤਾ ਗਿਆ ਹੈ ਅਤੇ ਇਹ <ph name="KX" /> ਨੂੰ ਮੁੱਖ ਐਕਸਚੇਂਜ ਬਣਤਰ ਦੇ ਤੌਰ 'ਤੇ ਵਰਤਦਾ ਹੈ।</translation>
 <translation id="2835170189407361413">ਫ਼ਾਰਮ ਹਟਾਓ</translation>
@@ -503,6 +505,7 @@
 <translation id="2850739647070081192">ਸੱਦਾ (ਲਿਫ਼ਾਫ਼ਾ)</translation>
 <translation id="2856444702002559011">ਹਮਲਾਵਰ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ਤੋਂ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਨੂੰ ਚੋਰੀ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਸਕਦੇ ਹਨ (ਉਦਾਹਰਨ ਲਈ, ਪਾਸਵਰਡ, ਸੁਨੇਹੇ, ਜਾਂ ਕ੍ਰੈਡਿਟ ਕਾਰਡ)। <ph name="BEGIN_LEARN_MORE_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">ਇਹ ਸਾਈਟ ਦਖਲਅੰਦਾਜ਼ੀ ਜਾਂ ਗੁਮਰਾਹ ਕਰਨ ਵਾਲੇ ਵਿਗਿਆਪਨ ਦਿਖਾਉਂਦੀ ਹੈ।</translation>
+<translation id="287596039013813457">ਦੋਸਤਾਨਾ</translation>
 <translation id="2876489322757410363">ਕਿਸੇ ਬਾਹਰੀ ਐਪਲੀਕੇਸ਼ਨ ਰਾਹੀਂ ਭੁਗਤਾਨ ਕਰਨ ਲਈ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਤੋਂ ਬਾਹਰ ਜਾਇਆ ਜਾ ਰਿਹਾ ਹੈ। ਕੀ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?</translation>
 <translation id="2878197950673342043">ਪੋਸਟਰ ਰੂਪੀ ਤਹਿ</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -598,10 +601,12 @@
 <translation id="3229041911291329567">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਅਤੇ ਬ੍ਰਾਊਜ਼ਰ ਦੇ ਵਰਜਨ ਬਾਰੇ ਜਾਣਕਾਰੀ</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> ਦਾ CVC ਦਾਖਲ ਕਰੋ</translation>
 <translation id="3234666976984236645">ਇਸ ਸਾਈਟ 'ਤੇ ਹਮੇਸ਼ਾਂ ਆਯਾਤ ਸਮੱਗਰੀ ਖੋਜੋ</translation>
+<translation id="3249845759089040423">ਗਰੂਵੀ</translation>
 <translation id="3252266817569339921">ਫਰੈਂਚ</translation>
 <translation id="3266793032086590337">ਮੁੱਲ (ਵਿਵਾਦ)</translation>
 <translation id="3268451620468152448">ਟੈਬਸ ਖੋਲ੍ਹੋ</translation>
 <translation id="3270847123878663523">&amp;ਦੁਬਾਰਾ ਕ੍ਰਮ ਦੇਣ ਨੂੰ ਅਨਡੂ ਕਰੋ</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> ਕਨੈਕਟ ਹੋਣਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">ਤੁਹਾਡੀ ਸੰਸਥਾ, <ph name="ENROLLMENT_DOMAIN" />, ਨੇ ਅੱਗੇ ਦਿੱਤੀਆਂ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੁਝ ਜਾਣਕਾਰੀ ਭੇਜੀ ਹੈ, ਜਿਵੇਂ ਸੈਟਿੰਗਾਂ ਜਾਂ ਨੀਤੀਆਂ।</translation>
 <translation id="3282497668470633863">ਕਾਰਡ 'ਤੇ ਨਾਮ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -969,6 +974,7 @@
 <translation id="4594403342090139922">&amp;ਮਿਟਾਏ ਗਏ ਨੂੰ ਅਣਕੀਤਾ ਕਰੋ</translation>
 <translation id="4597348597567598915">ਆਕਾਰ 8</translation>
 <translation id="4600854749408232102">C6/C5 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
+<translation id="4606870351894164739">ਅਸਰਦਾਰ</translation>
 <translation id="4628948037717959914">ਫ਼ੋਟੋ</translation>
 <translation id="4631649115723685955">ਕੈਸ਼ਬੈਕ ਨੂੰ ਲਿੰਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4636930964841734540">ਜਾਣਕਾਰੀ</translation>
@@ -1032,6 +1038,8 @@
 <translation id="4813512666221746211">ਨੈੱਟਵਰਕ ਗੜਬੜ</translation>
 <translation id="4816492930507672669">ਸਫ਼ੇ ਤੇ ਫਿਟ</translation>
 <translation id="4819347708020428563">ਕੀ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਦ੍ਰਿਸ਼ ਵਿੱਚ ਐਨੋਟੇਸ਼ਨਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨਾ ਹੈ?</translation>
+<translation id="4825507807291741242">ਸ਼ਕਤੀਸ਼ਾਲੀ</translation>
+<translation id="4838327282952368871">ਸੁਪਨਮਈ</translation>
 <translation id="484462545196658690">ਸਵੈ</translation>
 <translation id="4850886885716139402">ਦੇਖੋ</translation>
 <translation id="485316830061041779">ਜਰਮਨ</translation>
@@ -1190,6 +1198,7 @@
 <translation id="5398772614898833570">ਵਿਗਿਆਪਨ ਬਲੌਕ ਕੀਤੇ ਗਏ</translation>
 <translation id="5400836586163650660">ਸਲੇਟੀ</translation>
 <translation id="540969355065856584">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਇਸ ਸਮੇਂ ਵੈਧ ਨਹੀਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਸੰਰੂਪਣ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
+<translation id="541143247543991491">ਕਲਾਊਡ (ਸਿਸਟਮ-ਵਿਆਪਕ)</translation>
 <translation id="541416427766103491">ਸਟੈਕਰ 4</translation>
 <translation id="5421136146218899937">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਹਟਾਓ</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ਤੁਹਾਨੂੰ ਸੂਚਨਾਵਾਂ ਭੇਜਣਾ ਚਾਹੁੰਦੀ ਹੈ।</translation>
@@ -1203,6 +1212,7 @@
 <translation id="5455374756549232013">ਖ਼ਰਾਬ ਨੀਤੀ ਟਾਈਮਸਟੈਂਪ</translation>
 <translation id="5457113250005438886">ਅਵੈਧ</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ਹੋਰ}other{<ph name="CONTACT_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ਹੋਰ}}</translation>
+<translation id="5463625433003343978">ਡੀਵਾਈਸ ਲੱਭੇ ਜਾ ਰਹੇ ਹਨ...</translation>
 <translation id="5469868506864199649">ਇਤਾਲਵੀ</translation>
 <translation id="5470861586879999274">ਸੰਪਾਦਨ ਕਰਕੇ &amp;ਮੁੜ-ਓਹੀ ਕਰੋ</translation>
 <translation id="5478437291406423475">B6/C4 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
@@ -1252,7 +1262,6 @@
 <translation id="5624120631404540903">ਪਾਸਵਰਡ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="5629630648637658800">ਨੀਤੀ ਸੈਟਿੰਗਾਂ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਫਲ</translation>
 <translation id="5631439013527180824">ਅਵੈਧ ਡੀਵਾਈਸ ਪ੍ਰਬੰਧਨ ਟੋਕਨ</translation>
-<translation id="5632627355679805402">ਤੁਹਾਡਾ ਡਾਟਾ <ph name="TIME" /> ਵਜੇ ਤੁਹਾਡੇ <ph name="BEGIN_LINK" />Google ਪਾਸਵਰਡ<ph name="END_LINK" /> ਨਾਲ ਇਨਕ੍ਰਿਪਟ ਕੀਤਾ ਗਿਆ। ਸਮਕਾਲੀਕਰਨ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਇਸਨੂੰ ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="5633066919399395251">ਇਸ ਵੇਲੇ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 'ਤੇ ਮੌਜੂਦ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਅਜਿਹੇ ਖਤਰਨਾਕ ਪ੍ਰੋਗਰਾਮ ਸਥਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਸਕਦੇ ਹੋ, ਜੋ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਚੋਰੀ ਕਰ ਸਕਦੇ ਹਨ ਜਾਂ ਮਿਟਾ ਸਕਦੇ ਹਨ (ਉਦਾਹਰਨ ਲਈ, ਫ਼ੋਟੋਆਂ, ਪਾਸਵਰਡ, ਸੁਨੇਹੇ, ਅਤੇ ਕ੍ਰੈਡਿਟ ਕਾਰਡ)। <ph name="BEGIN_LEARN_MORE_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">ਭਰਮਪੂਰਨ ਸਮੱਗਰੀ ਬਲਾਕ ਕੀਤੀ ਗਈ।</translation>
 <translation id="5644090287519800334">ਸਾਈਡ 1 ਚਿੱਤਰ X ਸ਼ਿਫਟ</translation>
@@ -1296,6 +1305,7 @@
 <translation id="5804427196348435412">NFC ਡੀਵਾਈਸ ਵਰਤੋ</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> ਵਿੱਚ ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਕਿਸੇ ਪੁਰਾਣਾ ਸਿਫ਼ਰ ਸੂਟ ਦਾ ਉਪਯੋਗ ਕਰਕੇ ਏਨਕ੍ਰਿਪਟ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="5813119285467412249">&amp;ਜੋੜੋ ਨੂੰ ਰੀਡੂ ਕਰੋ</translation>
+<translation id="5817918615728894473">ਜੋੜਾ</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{ਤੁਹਾਡੇ ਵੱਲੋਂ ਭੁਗਤਾਨ ਕਰਨ 'ਤੇ ਇਸ ਕਾਰਡ ਤੋਂ ਖਰਚਾ ਲਿਆ ਜਾਵੇਗਾ, ਪਰ ਇਸਦਾ ਅਸਲੀ ਨੰਬਰ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ। ਵਾਧੂ ਸੁਰੱਖਿਆ ਲਈ, ਅਸਥਾਈ CVC ਸਿਰਜਿਆ ਜਾਵੇਗਾ।}one{ਤੁਹਾਡੇ ਵੱਲੋਂ ਭੁਗਤਾਨ ਕਰਨ 'ਤੇ ਚੁਣੇ ਹੋਏ ਕਾਰਡ ਤੋਂ ਖਰਚਾ ਲਿਆ ਜਾਵੇਗਾ, ਪਰ ਇਸਦਾ ਅਸਲੀ ਨੰਬਰ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ। ਵਾਧੂ ਸੁਰੱਖਿਆ ਲਈ, ਅਸਥਾਈ CVC ਸਿਰਜਿਆ ਜਾਵੇਗਾ।}other{ਤੁਹਾਡੇ ਵੱਲੋਂ ਭੁਗਤਾਨ ਕਰਨ 'ਤੇ ਚੁਣੇ ਹੋਏ ਕਾਰਡਾਂ ਤੋਂ ਖਰਚਾ ਲਿਆ ਜਾਵੇਗਾ, ਪਰ ਇਹਨਾਂ ਦਾ ਅਸਲੀ ਨੰਬਰ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ। ਵਾਧੂ ਸੁਰੱਖਿਆ ਲਈ, ਅਸਥਾਈ CVC ਸਿਰਜਿਆ ਜਾਵੇਗਾ।}}</translation>
 <translation id="5826507051599432481">ਆਮ ਨਾਮ (CN)</translation>
 <translation id="5838278095973806738">ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ 'ਤੇ ਕੋਈ ਵੀ ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਣਕਾਰੀ (ਉਦਾਹਰਨ ਲਈ, ਪਾਸਵਰਡਾਂ ਜਾਂ ਕ੍ਰੈਡਿਟ ਕਾਰਡਾਂ) ਨੂੰ ਦਾਖਲ ਨਹੀਂ ਕਰਨਾ ਚਾਹੀਦਾ ਹੈ, ਕਿਉਂਕਿ ਹਮਲਾਵਰ ਉਸਨੂੰ ਚੋਰੀ ਕਰ ਸਕਦੇ ਹਨ।</translation>
@@ -1303,6 +1313,7 @@
 <translation id="5855253129151731373">ਇਸ ਸਾਈਟ ਦਾ ਹੋਸਟਨਾਮ <ph name="LOOKALIKE_DOMAIN" /> ਵਰਗਾ ਲੱਗਦਾ ਹੈ। ਹਮਲਾਵਰ ਕਦੇ-ਕਦਾਈਂ ਡੋਮੇਨ ਨਾਮ ਵਿੱਚ ਮੁਸ਼ਕਲ ਨਾਲ ਪਤਾ ਲੱਗਣ ਵਾਲੀਆਂ ਨਿੱਕੀਆਂ ਤਬਦੀਲੀਆਂ ਕਰਕੇ ਸਾਈਟਾਂ ਦੀ ਨਕਲ ਤਿਆਰ ਕਰਦੇ ਹਨ।
 
     ਜੇ ਤੁਹਾਨੂੰ ਲੱਗਦਾ ਹੈ ਕਿ ਇਹ ਗਲਤੀ ਨਾਲ ਦਿਖਾਇਆ ਗਿਆ ਹੈ ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals 'ਤੇ ਜਾਓ।</translation>
+<translation id="5860033963881614850">ਬੰਦ ਕਰੋ</translation>
 <translation id="5862579898803147654">ਸਟੈਕਰ 8</translation>
 <translation id="5863847714970149516">ਅਗਲੇ ਪੰਨੇ 'ਤੇ ਜਾਣ ਨਾਲ ਤੁਹਾਡੇ ਤੋਂ ਖਰਚਾ ਲਿਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="5866257070973731571">ਫ਼ੋਨ ਨੰਬਰ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -1495,6 +1506,7 @@
 <translation id="6624427990725312378">ਸੰਪਰਕ ਜਾਣਕਾਰੀ</translation>
 <translation id="6626291197371920147">ਵੈਧ ਕਾਰਡ ਨੰਬਰ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> ਖੋਜ</translation>
+<translation id="6630043285902923878">USB ਡੀਵਾਈਸ ਲੱਭੇ ਜਾ ਰਹੇ ਹਨ...</translation>
 <translation id="6630809736994426279">ਇਸ ਵੇਲੇ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 'ਤੇ ਮੌਜੂਦ ਹਮਲਾਵਰ ਤੁਹਾਡੇ Mac 'ਤੇ ਅਜਿਹੇ ਖਤਰਨਾਕ ਪ੍ਰੋਗਰਾਮ ਸਥਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਸਕਦੇ ਹਨ, ਜੋ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਚੋਰੀ ਕਰ ਸਕਦੇ ਹਨ ਜਾਂ ਮਿਟਾ ਸਕਦੇ ਹਨ (ਉਦਾਹਰਨ ਲਈ, ਫ਼ੋਟੋਆਂ, ਪਾਸਵਰਡ, ਸੁਨੇਹੇ, ਅਤੇ ਕ੍ਰੈਡਿਟ ਕਾਰਡ)। <ph name="BEGIN_LEARN_MORE_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">ਹਟਾਓ</translation>
@@ -1696,6 +1708,7 @@
       &lt;li&gt;ਆਪਣੇ ਕੰਪਿਊਟਰ ਤੋਂ ਸਥਾਈ ਤੌਰ 'ਤੇ ਸਾਫ਼ਟਵੇਅਰ ਕਿਵੇਂ ਹਟਾਇਆ ਜਾਵੇ ਇਹ ਜਾਣਨ ਲਈ &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome ਮਦਦ ਕੇਂਦਰ&lt;/a&gt; 'ਤੇ ਜਾਓ
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">ਚੌੜਾ-ਫਾਰਮੈਟ</translation>
+<translation id="7410471291937727359">ਪਿਆਰਾ</translation>
 <translation id="7416351320495623771">ਪਾਸਵਰਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ…</translation>
 <translation id="7419106976560586862">ਪ੍ਰੋਫਾਈਲ ਪਾਥ</translation>
 <translation id="7437289804838430631">ਸੰਪਰਕ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -1749,7 +1762,6 @@
 <translation id="7610193165460212391">ਵੈਲਯੂ <ph name="VALUE" /> ਰੇਂਜ ਤੋਂ ਬਾਹਰ ਹੈ।</translation>
 <translation id="7613889955535752492">ਮਿਆਦ ਸਮਾਪਤ: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਦੇਖਣ ਅਤੇ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
-<translation id="7615602087246926389">ਤੁਹਾਡੇ ਕੋਲ ਪਹਿਲਾਂ ਹੀ ਉਹ ਡਾਟਾ ਹੈ ਜੋ ਤੁਹਾਡੇ Google ਖਾਤਾ ਪਾਸਵਰਡ ਦਾ ਇੱਕ ਵੱਖ ਵਰਜਨ ਵਰਤਦੇ ਹੋਏ ਇਨਕ੍ਰਿਪਟ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇਸਨੂੰ ਹੇਠਾਂ ਦਰਜ ਕਰੋ।</translation>
 <translation id="7616645509853975347">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ 'ਤੇ Chrome Enterprise Connectors ਨੂੰ ਚਾਲੂ ਕੀਤਾ। ਇਹਨਾਂ ਕਨੈਕਟਰਾਂ ਦੀ ਤੁਹਾਡੇ ਕੁਝ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਹੈ।</translation>
 <translation id="7619838219691048931">ਆਖਰੀ ਸ਼ੀਟ</translation>
 <translation id="762844065391966283">ਇੱਕ ਸਮੇਂ ਵਿੱਚ ਇੱਕ</translation>
@@ -2119,6 +2131,7 @@
 <translation id="9020542370529661692">ਇਸ ਸਫ਼ੇ ਦਾ ਅਨੁਵਾਦ <ph name="TARGET_LANGUAGE" /> ਵਿੱਚ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(ਅਵੈਧ)</translation>
+<translation id="9030265603405983977">ਮੋਨੋਕਰੋਮ</translation>
 <translation id="9035022520814077154">ਸੁਰੱਖਿਆ ਗੜਬੜ</translation>
 <translation id="9038649477754266430">ਪੰਨਿਆਂ ਨੂੰ ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਲੋਡ ਕਰਨ ਲਈ ਅਨੁਮਾਨ ਸੇਵਾ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="9039213469156557790">ਅੱਗੇ, ਇਸ ਸਫ਼ੇ ਵਿੱਚ ਦੂਜੇ ਸ੍ਰੋਤ ਸ਼ਾਮਲ ਹਨ, ਜੋ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹਨ। ਇਹ ਸ੍ਰੋਤ ਟ੍ਰਾਂਜਿਟ ਵਿੱਚ ਹੋਣ ਵੇਲੇ ਦੂਜਿਆਂ ਵੱਲੋਂ ਦੇਖੇ ਜਾ ਸਕਦੇ ਹਨ ਅਤੇ ਸਫ਼ੇ ਦੇ ਵਿਹਾਰ ਨੂੰ ਬਦਲਣ ਲਈ ਇੱਕ ਹਮਲਾਵਰ ਵੱਲੋਂ ਸੰਸ਼ੋਧਿਤ ਕੀਤੇ ਜਾ ਸਕਦੇ ਹਨ।</translation>
@@ -2142,6 +2155,7 @@
 <translation id="91108059142052966">ਗੁਪਤ ਸਮੱਗਰੀ ਦੇ ਦਿਖਣਯੋਗ ਹੋਣ 'ਤੇ ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ <ph name="APPLICATION_TITLE" /> ਨਾਲ ਸਕ੍ਰੀਨ ਸਾਂਝਾਕਰਨ ਬੰਦ ਕਰ ਦਿੰਦੀ ਹੈ</translation>
 <translation id="9114524666733003316">ਕਾਰਡ ਦੀ ਪੁਸ਼ਟੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="9114581008513152754">ਇਹ ਬ੍ਰਾਊਜ਼ਰ ਕਿਸੇ ਕੰਪਨੀ ਜਾਂ ਹੋਰ ਸੰਸਥਾ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਇਸ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਨੂੰ Chrome ਦੇ ਬਾਹਰ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">ਤਾਜ਼ਾ</translation>
 <translation id="9119042192571987207">ਅੱਪਲੋਡ ਕੀਤੀ ਗਈ</translation>
 <translation id="9128016270925453879">ਨੀਤੀਆਂ ਲੋਡ ਕੀਤੀਆਂ ਗਈਆਂ ਹਨ</translation>
 <translation id="9128870381267983090">ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
@@ -2160,6 +2174,7 @@
 <translation id="9170848237812810038">&amp;ਅਨਡੂ</translation>
 <translation id="9171296965991013597">ਕੀ ਐਪ ਛੱਡਣੀ ਹੈ?</translation>
 <translation id="9173282814238175921">ਇਕਹਿਰਾ ਦਸਤਾਵੇਜ਼/ਨਵੀਂ ਸ਼ੀਟ</translation>
+<translation id="9173995187295789444">ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਲਈ ਸਕੈਨ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="917450738466192189">ਸਰਵਰ ਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਅਵੈਧ ਹੈ।</translation>
 <translation id="9174917557437862841">ਟੈਬ ਬਦਲਣ ਦਾ ਬਟਨ, ਇਸ ਟੈਬ 'ਤੇ ਜਾਣ ਲਈ ਐਂਟਰ ਦਬਾਓ</translation>
 <translation id="9179703756951298733">Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਭੁਗਤਾਨਾਂ ਅਤੇ ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>

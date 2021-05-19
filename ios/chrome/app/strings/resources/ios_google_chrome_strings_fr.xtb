@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
+<translation id="1096883626080133124">Soyez plus efficace grâce à Google Chrome, un navigateur simple, sécurisé et encore plus rapide</translation>
 <translation id="1282031177488366470">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome</translation>
 <translation id="1314663809820920746">Vos favoris, votre historique, vos mots de passe et autres paramètres resteront accessibles sur cet appareil, mais les modifications ne seront pas synchronisées avec votre compte Google.</translation>
 <translation id="1479202195792305274">Chrome peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
@@ -8,6 +9,7 @@
 <translation id="1504372625950710826">Chrome n'est pas parvenu à rechercher les mises à jour. Vérifiez votre connexion Internet.</translation>
 <translation id="1682483655351012182">Synchroniser vos données Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1812249337131447686">Contribuez à améliorer Chrome en envoyant des statistiques d'utilisation et des rapports d'erreurs à Google</translation>
 <translation id="1917964099031477364">Ce compte et les données non enregistrées seront supprimés de Chrome et des autres applications Google sur cet appareil.</translation>
 <translation id="2009224836393115614">Chrome n'est pas parvenu à vérifier vos mots de passe. Vérifiez votre connexion Internet.</translation>
 <translation id="2147651015520127414">Chrome a confirmé que le certificat de ce site Web a bien été émis par <ph name="ISSUER" />.</translation>
@@ -27,7 +29,6 @@
 <translation id="3167189358072330585">Votre compte n'est pas compatible avec Google Chrome. Veuillez contacter l'administrateur de votre domaine ou utiliser un compte Google standard pour vous connecter.</translation>
 <translation id="3173834708294760622">Page Google Chrome</translation>
 <translation id="3196546062792660320">Chrome vous permet de gagner du temps en connectant vos comptes au Web. Vous pouvez ajouter ou supprimer des comptes dans la section "Paramètres".</translation>
-<translation id="3223655207402797071">Connectez-vous à ce site, à votre compte Google et à Chrome. Vous pouvez activer la synchronisation plus tard.</translation>
 <translation id="3282568296779691940">Connectez-vous à Chrome</translation>
 <translation id="3345341804167540816">Utilisez Chrome où que vous soyez</translation>
 <translation id="3455456143708465450">Pour tirer pleinement parti de Chrome, connectez-vous avec votre compte Google</translation>

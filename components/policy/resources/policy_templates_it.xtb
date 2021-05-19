@@ -2105,6 +2105,11 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Se queste norme non vengono impostate, gli utenti possono scegliere autonomamente le impostazioni del proxy.</translation>
 <translation id="3758249152301468420">Disabilita Strumenti per sviluppatori</translation>
+<translation id="3759650373178711405">A meno che il criterio <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> non sia impostato per ripristinare in modo permanente gli URL delle sessioni precedenti, l'impostazione di <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> ti consente di creare un elenco di pattern URL che specificano i siti che possono o meno impostare i cookie per una sessione.
+
+      Se il criterio non viene configurato, viene usato <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente. In caso di URL non interessati dai pattern specificati, vengono applicate le impostazioni predefinite.
+
+      Poiché nessun criterio specifico prevale, vedi <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. I pattern URL di questi tre criteri non devono essere in conflitto.</translation>
 <translation id="3760148113224469113">Richiedi sempre agli utenti di confermare i messaggi relativi ai protocolli esterni</translation>
 <translation id="3760231600118073732">La sessione corrente viene bloccata</translation>
 <translation id="3761222804122755011">WebRTC utilizzerà l'interfaccia solo se si connette a una rete pubblica, ma potrà anche connettersi utilizzando indirizzi IP privati.</translation>
@@ -2133,17 +2138,6 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="377044054160169374">Applicazione dell'intervento in caso di esperienza intrusiva</translation>
 <translation id="3778689139323007309">Esegui i controlli delle revoche per i certificati dei server che vengono convalidati correttamente e firmati tramite certificati CA installati localmente</translation>
 <translation id="3780152581321609624">Includi porta non standard in Kerberos SPN</translation>
-<translation id="3783569262370557918">Consente di attivare <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> per un elenco di URL.
-
-      La configurazione di questo criterio consente di specificare gli URL autorizzati a far parte del flusso di attestazione per ricevere l'insieme di segnali dalla macchina.
-
-      Se questo criterio non viene impostato o se viene lasciato vuoto, nessun endpoint potrà avviare il flusso di attestazione o ricevere segnali dalla macchina.
-
-      Gli URL devono avere uno schema HTTPS, ad esempio "https://example.com".
-
-      Nota: i caratteri jolly, <ph name="WILDCARD_VALUE" />, sono consentiti.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="378495749480642482">Consente di stabilire se i siti visitati dagli utenti possono creare sessioni di realtà aumentata immersive usando <ph name="WEBXR_API_NAME" />.
 
       Se questo criterio non viene configurato o se viene attivato, <ph name="WEBXR_API_NAME" /> accetterà <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> durante la creazione delle sessioni, consentendo così agli utenti di vivere esperienze di realtà aumentata.
@@ -2202,6 +2196,19 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3838094946886335701">Se il criterio viene impostato (solo come consigliato), puoi registrare un elenco di gestori di protocolli che vengono uniti a quelli registrati dall'utente, con conseguente utilizzo di entrambi i gruppi. Imposta la proprietà "protocollo" sullo schema (ad esempio "mailto") e la proprietà "URL" sul pattern URL dell'applicazione che gestisce lo schema specificato nel campo "protocollo". Il pattern può includere un segnaposto "%s", che viene sostituito dall'URL gestito.
 
       Gli utenti non possono rimuovere un gestore di protocollo registrato tramite il criterio. Se però installano un nuovo gestore predefinito, possono cambiare i gestori di protocolli installati in base al criterio.</translation>
+<translation id="3857816702027059082">Consente di attivare <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> per un elenco di URL.
+
+      La configurazione di questo criterio consente di specificare gli URL autorizzati a far parte del flusso di attestazione per ricevere l'insieme di segnali dalla macchina.
+
+      Se questo criterio non viene impostato o se viene lasciato vuoto, nessun endpoint potrà avviare il flusso di attestazione o ricevere segnali dalla macchina.
+
+      Gli URL devono avere uno schema HTTPS, ad esempio "https://example.com".
+
+      Nota: i caratteri jolly, <ph name="WILDCARD_VALUE" />, sono consentiti.
+
+      Per Chrome OS, questo criterio riguarda l'attestazione da remoto, durante la quale un certificato viene generato e caricato automaticamente sul Server di gestione del dispositivo.
+
+      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3858128774616573616">Se il criterio viene impostato su Attivato, verrà mostrata l'icona Cast nella barra degli strumenti o nel menu extra e gli utenti non potranno rimuoverla.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, gli utenti potranno bloccare o rimuovere l'icona tramite il relativo menu contestuale.
@@ -2477,6 +2484,15 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="4248277954659222481">Consenti la riproduzione automatica dei contenuti multimediali per una lista consentita di pattern URL</translation>
 <translation id="4250680216510889253">No</translation>
 <translation id="4261820385751181068">Lingua della schermata di accesso del dispositivo</translation>
+<translation id="4266547484666068234">La configurazione del criterio consente di fornire l'accesso agli URL elencati, sotto forma di eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Leggi la descrizione del criterio per conoscere il formato delle voci di questo elenco. Ad esempio, se imposti il criterio <ph name="URL_BLOCKLIST_POLICY_NAME" /> su *, tutte le richieste verranno bloccate e puoi utilizzare questo criterio per consentire l'accesso a un elenco limitato di URL. Utilizzalo per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici utilizzando il formato specificato all'indirizzo https://www.chromium.org/administrators/url-blocklist-filter-format. Il filtro più specifico consente di determinare se un URL è bloccato o consentito. Il criterio <ph name="URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza sul criterio <ph name="URL_BLOCKLIST_POLICY_NAME" />. Per questo criterio è possibile definire al massimo 1000 voci.
+
+      Questo criterio consente anche di attivare la chiamata automatica da parte del browser di applicazioni esterne registrate come gestori di protocollo per i protocolli elencati come "tel:" o "ssh:".
+
+      Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+      A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è supportato anche nella modalità headless.
+
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="4269859918103560644">Consenti all'utente di decidere</translation>
 <translation id="4274691295133617461">Se il criterio viene impostato su 3, i siti web possono richiedere l'accesso di lettura di file e directory nel file system del sistema operativo host tramite l'API file system. Se il criterio viene impostato su 2, l'accesso viene negato.
 
@@ -2859,11 +2875,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se il criterio non viene configurato, non sono consentite eccezioni.
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
-<translation id="4882406948002286350">La configurazione del criterio consente di impedire il caricamento delle pagine web con URL vietati. Consente di fornire un elenco di pattern URL che specificano gli URL vietati. Se il criterio non viene configurato, nessun URL è vietato nel browser. I pattern URL devono avere il formato indicato all'indirizzo https://www.chromium.org/administrators/url-blocklist-filter-format. È possibile definire fino a 1000 eccezioni nel criterio <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      A partire da <ph name="PRODUCT_NAME" /> 73, puoi bloccare gli URL javascript://*. Tuttavia, questa operazione interessa solo il codice JavaScript inserito nella barra degli indirizzi o, ad esempio, nei bookmarklet. Gli URL JavaScript in-page con un caricamento dinamico dei dati non sono soggetti a questo criterio. Ad esempio, se example.com/abc viene bloccato, example.com può comunque caricare example.com/abc tramite XMLHTTPRequest.
-
-      Nota: il blocco degli URL chrome://* interni può generare errori imprevisti.</translation>
 <translation id="4886783562285047261">L'impostazione del criterio su Attivato impone la registrazione a <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> e blocca il processo di avvio di <ph name="PRODUCT_NAME" /> in caso di esito negativo.
 
       Se il criterio viene impostato su Disattivato o non viene impostato, <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> diventa facoltativo e non blocca il processo di avvio di <ph name="PRODUCT_NAME" /> in caso di esito negativo.
@@ -3094,6 +3105,13 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
           Se attivi questa impostazione, <ph name="PRODUCT_NAME" /> ignora tutte le opzioni relative al proxy specificate dalla riga di comando.
 
           Se questa norma non è impostata, gli utenti potranno scegliere le impostazioni proxy autonomamente.</translation>
+<translation id="5172841243186654432">A meno che il criterio <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> non sia impostato per ripristinare in modo permanente gli URL delle sessioni precedenti, l'impostazione di <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> ti consente di creare un elenco di pattern URL che specificano i siti che possono o meno impostare i cookie per una sessione.
+
+      Se il criterio non viene configurato, viene usato <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente. In caso di URL non interessati dai pattern specificati, vengono applicate le impostazioni predefinite.
+
+      Poiché nessun criterio specifico prevale, vedi <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. I pattern URL di questi tre criteri non devono essere in conflitto.
+
+      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="5177260184597743704">Criterio di configurazione per il connettore OnSecurityEvent di Chrome Enterprise</translation>
 <translation id="5178479074002209469">Un flag booleano che indica se le sessioni utente non gestite devono ricevere o meno notifiche e forzare o meno l'uscita dall'account in caso di aggiornamento obbligatorio, in base a questo criterio.</translation>
 <translation id="5182055907976889880">Configura Google Drive in <ph name="PRODUCT_OS_NAME" />.</translation>
@@ -3997,11 +4015,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 
       Se questo criterio non viene impostato o se l'elenco è vuoto, sarà possibile accedere a tutti gli schemi in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6338982178236723271">Segnala informazioni sul sistema</translation>
-<translation id="6347363725343851058">Se il criterio viene impostato su Attivato, la modalità in background viene abilitata. Nella modalità in background, all'accesso al sistema operativo viene avviato un processo <ph name="PRODUCT_NAME" /> che rimane in esecuzione quando l'ultima finestra del browser viene chiusa, consentendo alle app in background e alla sessione di navigazione di rimanere attive, compresi eventuali cookie di sessione. Nella barra delle applicazioni viene visualizzata un'icona per il processo in background che consente di chiuderlo in qualsiasi momento.
-
-      Se il criterio viene impostato su Disattivato, la modalità in background viene disabilitata.
-
-      Se viene configurato, gli utenti non possono modificarlo nelle impostazioni del browser. In caso contrario, la modalità in background è disabilitata, ma gli utenti possono abilitarla.</translation>
 <translation id="6353890097388312479">Se il criterio viene impostato su All (0) o se non viene configurato, gli utenti possono modificare le impostazioni di attendibilità per tutti i certificati CA, rimuovere i certificati importati dagli utenti e importare certificati tramite Gestione certificati. Se viene impostato su UserOnly (1), gli utenti possono gestire solo i certificati importati dagli utenti, ma non possono modificare le impostazioni di attendibilità dei certificati integrati. Se viene impostato su None (2), gli utenti possono visualizzare i certificati CA, ma non possono gestirli.</translation>
 <translation id="6362856770865555544">Se il criterio viene impostato su Attivato o se non viene configurato, l'ottimizzazione WPAD (Web Proxy Auto-Discovery) viene attivata in <ph name="PRODUCT_NAME" />.
 
@@ -4257,7 +4270,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="6689343802305995925">Non viene compiuta alcuna azione</translation>
 <translation id="6689792153960219308">Segnala lo stato dell'hardware</translation>
 <translation id="6690425645391461516">Disattiva controlli dell'intercettazione DNS; consenti barre di informazioni "http://intranetsite/" alternative</translation>
-<translation id="669066148640728553">Consente di specificare un intervallo di tempo target per la fine del periodo di notifica per il riavvio.
+<translation id="669066148640728553">Consente di specificare un intervallo di tempo target per il termine del periodo di notifica per il riavvio.
 
       Agli utenti viene inviata una notifica che informa che è necessario riavviare il browser o il dispositivo in base alle impostazioni dei criteri <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> e <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />. Se il criterio <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> viene impostato su "Required", al termine del periodo di notifica viene forzato il riavvio dei browser e dei dispositivi. Questo criterio <ph name="RELAUNCH_WINDOW_POLICY_NAME" /> può essere usato per rimandare il termine del periodo di notifica affinché rientri in un intervallo di tempo specifico.
 
@@ -4413,7 +4426,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 
       Se il criterio viene impostato su <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, <ph name="LACROS_NAME" /> viene attivato ed è il browser principale. Il criterio <ph name="LACROS_ALLOWED_POLICY_NAME" /> viene ignorato.
 
-      Se il criterio non viene configurato, il valore predefinito è <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> per gli utenti gestiti dall'azienda e <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> per gli utenti non gestiti.
+      Se il criterio non viene configurato, il valore predefinito è <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> per gli utenti gestiti a livello aziendale e <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> per gli utenti non gestiti.
 
       In futuro sarà possibile impostare <ph name="LACROS_NAME" /> come unico browser disponibile in <ph name="PRODUCT_OS_NAME" /> impostando il valore <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="68818134518270542">La configurazione del criterio consente di specificare le app che gli utenti possono attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
@@ -4534,6 +4547,11 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       * PasswordProtectionWarningOnPhishingReuse, l'avviso di protezione delle password viene mostrato quando l'utente riutilizza la propria password protetta su un sito di phishing.
 
       Se il criterio non viene configurato, il servizio di protezione delle password protegge soltanto le password Google, ma gli utenti possono modificare questa impostazione.</translation>
+<translation id="6969079025604591591">Se il criterio viene impostato su Attivato o se non viene configurato, l'integrità del codice del renderer viene attivata.
+
+      Se viene impostato su Disattivato, la sicurezza e la stabilità di <ph name="PRODUCT_NAME" /> diminuiranno, in quanto codice sconosciuto e potenzialmente dannoso può essere caricato all'interno dei processi del renderer di <ph name="PRODUCT_NAME" />. Disattivalo solo se si verificano dei problemi di compatibilità con software di terze parti che devono essere eseguiti all'interno dei processi del renderer di <ph name="PRODUCT_NAME" />.
+
+      Nota: scopri di più sui criteri relativi alla mitigazione dei processi (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="6969131408525928234">La configurazione del criterio consente di disattivare i requisiti di divulgazione di Certificate Transparency per i nomi host e gli URL specificati. Anche se rilevare certificati emessi in modo scorretto diventa più difficile, gli host possono continuare a utilizzare i certificati che altrimenti non verrebbero ritenuti attendibili, in quanto non resi pubblici in modo appropriato.
 
       Se il criterio non viene configurato e se i certificati che richiedono la divulgazione tramite Certificate Transparency non vengono divulgati, <ph name="PRODUCT_NAME" /> non ritiene attendibili tali certificati.
@@ -4547,15 +4565,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       Se il criterio non viene configurato, gli utenti possono modificare questa impostazione.
 
       Nota: il supporto dell'isolamento dei siti per Android migliorerà, ma attualmente potrebbe causare problemi di interferenze. Questo criterio viene applicato solo a Chrome su dispositivi Android con più di 1 GB di RAM. Per applicare il criterio a piattaforme non Androd, utilizza il criterio <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
-<translation id="6978404102280820831">A meno che il criterio <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> non sia impostato per ripristinare in modo permanente gli URL delle sessioni precedenti, l'impostazione di <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> ti consente di creare un elenco di pattern URL che specificano i siti che possono o meno impostare i cookie per una sessione.
-
-      Se il criterio non viene configurato, viene usato <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente. In caso di URL non interessati dai pattern specificati, vengono applicate le impostazioni predefinite.
-
-      Se <ph name="PRODUCT_NAME" /> viene eseguito in background, la sessione potrebbe rimanere attiva finché l'utente non esce dal browser, non quando chiude semplicemente l'ultima finestra. Vedi <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" /> per maggiori dettagli sulla configurazione di questo comportamento.
-
-      Poiché nessun criterio specifico prevale, vedi <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. I pattern URL di questi tre criteri non devono essere in conflitto.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979739838208297344">Se il criterio è impostato su <ph name="BR_ENABLED" />, il backup e ripristino di Android è inizialmente attivo. Se il criterio è impostato su <ph name="BR_DISABLED" /> o se non è configurato, il backup e ripristino rimane disattivato durante la configurazione.
 
@@ -5256,13 +5265,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Consente di stabilire l'ID dell'estensione da utilizzare come salvaschermo nella schermata di accesso. L'estensione deve far parte dell'AppPack configurato per il dominio tramite la norma DeviceAppPack.</translation>
 <translation id="7882857838942884046">Se Google Sync viene disattivato, le funzioni di backup e ripristino di Android non funzionano correttamente.</translation>
 <translation id="7882890448959833986">Elimina l'avviso di sistema operativo non supportato</translation>
-<translation id="788487748427534612">A meno che il criterio <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> non sia impostato per ripristinare in modo permanente gli URL delle sessioni precedenti, l'impostazione di <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> ti consente di creare un elenco di pattern URL che specificano i siti che possono o meno impostare i cookie per una sessione.
-
-      Se il criterio non viene configurato, viene usato <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente. In caso di URL non interessati dai pattern specificati, vengono applicate le impostazioni predefinite.
-
-      Se <ph name="PRODUCT_NAME" /> viene eseguito in background, la sessione potrebbe rimanere attiva finché l'utente non esce dal browser, non quando chiude semplicemente l'ultima finestra. Vedi <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" /> per maggiori dettagli sulla configurazione di questo comportamento.
-
-      Poiché nessun criterio specifico prevale, vedi <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. I pattern URL di questi tre criteri non devono essere in conflitto.</translation>
 <translation id="7887379840451099426">Le impostazioni di gestione dell'alimentazione applicabili soltanto quando viene usata la batteria.</translation>
 <translation id="7891884447851425349">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> consente di specificare l'URL del motore di ricerca utilizzato durante una ricerca predefinita. L'URL dovrebbe includere la stringa <ph name="SEARCH_TERM_MARKER" />, sostituita nella query dai termini di ricerca degli utenti.
 
@@ -5786,6 +5788,13 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se il criterio viene impostato su true, le schede che sono in secondo piano da almeno cinque minuti potrebbero essere bloccate. Il blocco delle schede riduce l'utilizzo di CPU, batteria e memoria. <ph name="PRODUCT_NAME" /> usa l'euristica per evitare di bloccare le schede in secondo piano che hanno una funzione utile (ad esempio visualizzare notifiche, riprodurre audio, riprodurre video in streaming). Gli sviluppatori web possono anche disattivare il blocco nei loro siti (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Se il criterio viene impostato su false, le schede non verranno bloccate.</translation>
+<translation id="8619480582976056396">La configurazione del criterio consente di impedire il caricamento delle pagine web con URL vietati. Consente di fornire un elenco di pattern URL che specificano gli URL vietati. Se il criterio non viene configurato, nessun URL è vietato nel browser. I pattern URL devono avere il formato indicato all'indirizzo https://www.chromium.org/administrators/url-blocklist-filter-format. È possibile definire fino a 1000 eccezioni nel criterio <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+      A partire dalla versione 73 di <ph name="PRODUCT_NAME" />, puoi bloccare gli URL javascript://*. Tuttavia, questa operazione interessa solo il codice JavaScript inserito nella barra degli indirizzi o, ad esempio, nei bookmarklet. Gli URL JavaScript in-page con un caricamento dinamico dei dati non sono soggetti a questo criterio. Ad esempio, se example.com/abc viene bloccato, example.com può comunque caricare example.com/abc tramite XMLHTTPRequest.
+
+      A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è supportato anche nella modalità headless.
+
+      Nota: il blocco degli URL chrome://* interni può generare errori imprevisti.</translation>
 <translation id="8631434304112909927">fino alla versione <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">L'elenco delle app per scrivere note consentite nella schermata di blocco di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8637566476051166626">Porte di rete esplicitamente consentite</translation>
@@ -5876,13 +5885,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se il criterio non viene configurato, Chrome utilizzerà la directory predefinita specifica della piattaforma.
 
       Nota: vedi l'elenco di variabili che puoi utilizzare (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
-<translation id="877499586514669705">La configurazione del criterio consente di fornire l'accesso agli URL elencati, sotto forma di eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Leggi la descrizione del criterio per conoscere il formato delle voci di questo elenco. Ad esempio, se imposti il criterio <ph name="URL_BLOCKLIST_POLICY_NAME" /> su *, tutte le richieste verranno bloccate e puoi utilizzare questo criterio per consentire l'accesso a un elenco limitato di URL. Utilizzalo per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici utilizzando il formato specificato all'indirizzo https://www.chromium.org/administrators/url-blocklist-filter-format. Il filtro più specifico consente di determinare se un URL è bloccato o consentito. Il criterio <ph name="URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza sul criterio <ph name="URL_BLOCKLIST_POLICY_NAME" />. Per questo criterio è possibile definire al massimo 1000 voci.
-
-      Questo criterio consente anche di attivare la chiamata automatica da parte del browser di applicazioni esterne registrate come gestori di protocollo per i protocolli elencati come "tel:" o "ssh:".
-
-      Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="877557628527387598">Accesso con password</translation>
 <translation id="8777369558049831576">Mostra una casella di controllo "Apri sempre" nella finestra di dialogo relativa ai protocolli esterni</translation>
 <translation id="8786409859071107656">Se il criterio viene impostato su Attivato, viene attivato il criterio di gestione per la condivisione dell'alimentazione USB.
@@ -6273,6 +6275,11 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
       Nota: il blocco degli URL chrome://* interni può generare errori imprevisti.</translation>
 <translation id="957778406002650056">L'URL da cui è possibile scaricare l'immagine <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="974349541138387272">Specifica il modello URI del resolver DNS over HTTPS desiderato</translation>
+<translation id="980218166381006412">Se il criterio viene impostato su Attivato, la modalità in background viene abilitata. Nella modalità in background, all'accesso al sistema operativo viene avviato un processo <ph name="PRODUCT_NAME" /> che rimane in esecuzione quando viene chiusa l'ultima finestra del browser, consentendo alle app in background e alla sessione di navigazione di rimanere attive. Nella barra delle applicazioni viene visualizzata un'icona per il processo in background che consente di chiuderlo in qualsiasi momento.
+
+      Se il criterio viene impostato su Disattivato, la modalità in background viene disabilitata.
+
+      Se viene configurato, gli utenti non possono modificarlo nelle impostazioni del browser. In caso contrario, la modalità in background è disabilitata, ma gli utenti possono abilitarla.</translation>
 <translation id="981346395360763138">Servizi di geolocalizzazione di Google disabilitati</translation>
 <translation id="982497069985795632">Attiva il controllo ortografico</translation>
 <translation id="983256325512298435">Definisci un elenco di protocolli che possono lanciare un'applicazione esterna dalle origini elencate senza chiedere conferma all'utente</translation>

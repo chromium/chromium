@@ -48,12 +48,12 @@
 <translation id="4852878756222711218">Pentru a profita din plin de Chromium, conectează-te folosind Contul Google</translation>
 <translation id="4985291216379576555">Offline, Chromium nu poate căuta actualizări</translation>
 <translation id="4999538639245140991">Deoarece te deconectezi de la un cont gestionat de <ph name="SIGNOUT_MANAGED_DOMAIN" />, datele tale Chromium de pe acest dispozitiv vor fi șterse. Datele tale vor rămâne în Contul Google.</translation>
+<translation id="5171868502429358653">Conectează-te la Chromium</translation>
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
 <translation id="5308226104666789935">Chromium nu poate căuta actualizări.</translation>
 <translation id="5396916991083608703">Setezi Chromium ca browser prestabilit?</translation>
 <translation id="5521125884468363740">Pentru a vedea toate filele tale deschise în Chromium, conectează-te și activează sincronizarea</translation>
 <translation id="5573014823074921752">Sfat pentru Chromium: pentru mai multe opțiuni de file, atinge lung butonul Afișează filele din bara de instrumente, care se află în partea de sus sau de jos a ecranului.</translation>
-<translation id="5651741435382092412">Conectează-te la acest site, la Contul Google și la Chromium. Poți activa sincronizarea mai târziu.</translation>
 <translation id="5700709190537129682">Chromium nu îți poate verifica parolele</translation>
 <translation id="5742135483959137648">Folosește Chromium pentru a deschide linkuri</translation>
 <translation id="5777187867430702742">Pagină Chromium</translation>
@@ -64,6 +64,7 @@
 1. deschide Setările;
 2. atinge Aplicația browser prestabilită;
 3. selectează Chromium.</translation>
+<translation id="6155422572367400359">Conectează-te la acest site, la Contul Google și la Chromium. Poți activa sincronizarea mai târziu.</translation>
 <translation id="6268381023930128611">Te deconectezi de la Chromium?</translation>
 <translation id="632825460376924298">Permite conectarea la Chromium</translation>
 <translation id="6337530241089703714">Alege dacă ștergi datele Chromium de pe dispozitiv sau le păstrezi</translation>

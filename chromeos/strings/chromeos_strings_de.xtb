@@ -299,6 +299,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7216409898977639127">Mobilfunkanbieter</translation>
 <translation id="7271040990581020067">Der Scanner wird derzeit verwendet. Versuchen Sie es später noch einmal.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Netzwerkgeräte</translation>
 <translation id="7359657277149375382">Dateityp</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8372477600026034341">Zusätzliche Hosts</translation>
 <translation id="8395584934117017006">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von einem Unternehmen verwaltet</translation>
 <translation id="8398927464629426868">Die Stromstärke, mit der das Gerät momentan geladen oder entladen wird</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Name des Homepageanbieters</translation>
 <translation id="8475690821716466388">Das WLAN ist mit dem schwachen Protokoll WEP PSK gesichert</translation>
 <translation id="8477551185774834963">Die DNS-Latenz liegt etwas über dem zulässigen Grenzwert</translation>

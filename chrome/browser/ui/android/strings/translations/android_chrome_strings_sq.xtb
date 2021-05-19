@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Kushtet shtesë të shërbimit të Google Chrome dhe të sistemit operativ Chrome</translation>
 <translation id="1807246157184219062">I lehtë</translation>
 <translation id="1810845389119482123">Konfigurimi i sinkronizimit fillestar nuk ka përfunduar</translation>
-<translation id="1821253160463689938">Përdor kuki për të kujtuar preferencat e tua, edhe nëse nuk i viziton ato faqe</translation>
 <translation id="1829244130665387512">Gjej në faqe</translation>
 <translation id="1830550083491357902">I pa identifikuar</translation>
 <translation id="1843805151597803366">Për të marrë përkthime më të mira, lejo që "Kërko në Google" të përdorë faqen aktuale</translation>
@@ -273,7 +272,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekonda të mbetura</translation>
 <translation id="2779651927720337254">dështoi</translation>
 <translation id="2781151931089541271">1 sekondë e mbetur</translation>
-<translation id="279827439955962619">Hiq theksimin</translation>
 <translation id="2801022321632964776">Kryej përditësimin për të marrë gjuhën tënde në versionin më të fundit të Chrome</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
 <translation id="281504910091592009">Shfaq dhe menaxho fjalëkalimet e ruajtura në <ph name="BEGIN_LINK" />llogarinë tënde të Google<ph name="END_LINK" /></translation>
@@ -454,7 +452,6 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="3988466920954086464">Shiko rezultatet e çastit të kërkimit në këtë panel</translation>
 <translation id="4000212216660919741">Shtëpia jashtë linje</translation>
 <translation id="4016425174436051808">Nuk mund të ndiqet. Ndodhi një gabim.</translation>
-<translation id="4021916380760361450">Kontrollo të dhënat e "Llogarive të tua të Google"</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# orë}other{# orë}}</translation>
 <translation id="4045764304651014138">Të dhënat e përdorimit</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -480,7 +477,6 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="4195643157523330669">Hape në një skedë të re</translation>
 <translation id="4198423547019359126">Nuk ka vendndodhje shkarkimi</translation>
 <translation id="4209895695669353772">Për të marrë përmbajtje të personalizuar të sugjeruar nga Google, aktivizo sinkronizimin</translation>
-<translation id="423219824432660969">Enkripto të dhënat e sinkronizuara me fjalëkalimin e Google që nga data <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Hap cilësimet</translation>
 <translation id="4248098802131000011">Mbaji fjalëkalimet e tua të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe problemeve të tjera të sigurisë</translation>
 <translation id="4250229828105606438">Pamje e ekranit</translation>
@@ -559,6 +555,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="47217992755561375">Shiko sajtet e tua kryesore</translation>
 <translation id="4732120983431207637">Moduli i zbërthimit të stivës</translation>
 <translation id="4738836084190194332">Sinkronizimi i fundit: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Hiq theksimin</translation>
 <translation id="4749960740855309258">Hap një skedë të re</translation>
 <translation id="4759238208242260848">Shkarkimet</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +696,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="562289928968387744">Menaxho reagimet</translation>
 <translation id="5626134646977739690">Emri:</translation>
 <translation id="5628604359369369630">Të palexuara - ofrohen jashtë linje</translation>
-<translation id="5632627355679805402">Të dhënat e tua janë enkriptuar me <ph name="BEGIN_LINK" />fjalëkalimin tënd të Google<ph name="END_LINK" /> në <ph name="TIME" />. Fute atë për të nisur sinkronizimin.</translation>
 <translation id="5639724618331995626">Lejo të gjitha sajtet</translation>
 <translation id="5648166631817621825">7 ditët e fundit</translation>
 <translation id="5655963694829536461">Kërko te shkarkimet e tua</translation>
@@ -934,7 +930,6 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="702463548815491781">Rekomandohet kur është aktiv TalkBack ose "Qasja me çelës"</translation>
 <translation id="7027549951530753705">Restauruar në datën <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Fjalëkalimet</translation>
-<translation id="7040531500313579672">Ndaj tekstin e theksuar</translation>
 <translation id="7054588988317389591">Të merren përshkrimet e imazheve?</translation>
 <translation id="7055152154916055070">Ridrejtimi u bllokua:</translation>
 <translation id="7063006564040364415">Nuk mund të lidhej me serverin e sinkronizimit.</translation>
@@ -970,6 +965,7 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="7328017930301109123">Në "Modalitetin e lehtë", Chrome i ngarkon faqet më shpejt dhe përdor deri në 60 përqind më pak të dhëna.</translation>
 <translation id="7332075081379534664">Identifikimi i suksesshëm</translation>
 <translation id="7333031090786104871">Ende po shtohet sajti i mëparshëm</translation>
+<translation id="7339898014177206373">Dritare e re</translation>
 <translation id="7340958967809483333">Opsionet për "Zbulo"</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
 <translation id="7352939065658542140">VIDEO</translation>
@@ -1139,6 +1135,7 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="8364299278605033898">Shiko sajte uebi të mirënjohura</translation>
 <translation id="8368027906805972958">Pajisje e panjohur ose e pambështetur (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> është gati.</translation>
+<translation id="8387617938027387193">Verifiko që je ti</translation>
 <translation id="8393700583063109961">Dërgo mesazh</translation>
 <translation id="8410695015584479363">Gjurmo çmimet</translation>
 <translation id="8413126021676339697">Shfaq historikun e plotë</translation>

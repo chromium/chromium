@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Syarat Perkhidmatan Tambahan Chrome &amp; OS Chrome</translation>
 <translation id="1807246157184219062">Cahaya</translation>
 <translation id="1810845389119482123">Penyediaan penyegerakan permulaan belum selesai</translation>
-<translation id="1821253160463689938">Menggunakan kuki untuk mengingati pilihan anda, walaupun anda tidak melawati halaman tersebut</translation>
 <translation id="1829244130665387512">Cari dalam halaman</translation>
 <translation id="1830550083491357902">Tidak dilog masuk</translation>
 <translation id="1843805151597803366">Untuk mendapatkan terjemahan yang lebih baik, benarkan Carian Google menggunakan halaman semasa</translation>
@@ -203,6 +202,7 @@ Ketik mana-mana perkataan untuk mencari. Untuk memperhalus carian anda, sentuh &
 <ph name="BEGIN_LIST_ITEM1" />Pengiklan boleh membuat kajian apabila ribuan pengguna berkongsi minat yang sama – seperti khalayak yang menonton konsert – dan memilih iklan untuk khalayak tersebut, dan bukannya orang perseorangan.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Pengiklan boleh mengkaji keberkesanan iklan dengan cara yang tidak menjejak anda merentas berbilang laman.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Mempramuat halaman yang diramal oleh Chrome akan anda lawati. Untuk berbuat demikian, Chrome mungkin menggunakan kuki, jika anda membenarkan kuki dan mungkin menyulitkan dan menghantar halaman melalui Google untuk menyembunyikan identiti anda daripada laman.</translation>
 <translation id="234265804618409743">Tidak dapat membuka kamera anda. Kesilapan telah berlaku.</translation>
 <translation id="2345671828921229300">Untuk membuat carian, sentuh &amp; tahan perkataan</translation>
 <translation id="2349710944427398404">Jumlah data yang digunakan oleh Chrome, termasuk akaun, penanda halaman dan tetapan yang disimpan</translation>
@@ -273,7 +273,6 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="2777555524387840389"><ph name="SECONDS" /> saat lagi</translation>
 <translation id="2779651927720337254">gagal</translation>
 <translation id="2781151931089541271">1 saat lagi</translation>
-<translation id="279827439955962619">Alih keluar serlahan</translation>
 <translation id="2801022321632964776">Kemas kini untuk mendapatkan bahasa anda dalam versi terkini Chrome</translation>
 <translation id="2805756323405976993">Apl</translation>
 <translation id="281504910091592009">Lihat dan urus kata laluan yang disimpan dalam <ph name="BEGIN_LINK" />Akaun Google<ph name="END_LINK" /> anda</translation>
@@ -454,7 +453,6 @@ Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Bua
 <translation id="3988466920954086464">Lihat hasil carian segera dalam panel ini</translation>
 <translation id="4000212216660919741">Rumah Luar Talian</translation>
 <translation id="4016425174436051808">Tidak dapat mengikuti. Kesilapan telah berlaku.</translation>
-<translation id="4021916380760361450">Kawal data akaun Google anda</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# jam}other{# jam}}</translation>
 <translation id="4045764304651014138">Data penggunaan</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -480,7 +478,6 @@ Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Bua
 <translation id="4195643157523330669">Buka dalam tab baharu</translation>
 <translation id="4198423547019359126">Tiada lokasi muat turun tersedia</translation>
 <translation id="4209895695669353772">Hidupkan penyegerakan untuk mendapatkan kandungan diperibadikan yang dicadangkan oleh Google</translation>
-<translation id="423219824432660969">Sulitkan data yang disegerakkan dengan kata laluan Google bermula dari <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Buka tetapan</translation>
 <translation id="4248098802131000011">Pastikan kata laluan anda selamat daripada pelanggaran data dan isu keselamatan yang lain</translation>
 <translation id="4250229828105606438">Tangkapan skrin</translation>
@@ -559,6 +556,7 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 <translation id="47217992755561375">Lihat tapak web yang paling kerap anda lawati</translation>
 <translation id="4732120983431207637">Pengurai Tindanan</translation>
 <translation id="4738836084190194332">Kali terakhir disegerakkan: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Alih keluar serlahan</translation>
 <translation id="4749960740855309258">Buka tab baharu</translation>
 <translation id="4759238208242260848">Muat turun</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +697,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="562289928968387744">Urus reaksi</translation>
 <translation id="5626134646977739690">Nama:</translation>
 <translation id="5628604359369369630">Belum dibaca - Tersedia di luar talian</translation>
-<translation id="5632627355679805402">Data anda disulitkan dengan <ph name="BEGIN_LINK" />kata laluan Google<ph name="END_LINK" /> anda pada <ph name="TIME" />. Masukkan kata laluan itu untuk memulakan penyegerakan.</translation>
 <translation id="5639724618331995626">Benarkan semua tapak</translation>
 <translation id="5648166631817621825">7 hari lalu</translation>
 <translation id="5655963694829536461">Cari muat turun anda</translation>
@@ -934,7 +931,6 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="702463548815491781">Disyorkan apabila TalkBack atau Akses Suis dihidupkan</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> dipulihkan</translation>
 <translation id="7029809446516969842">Kata laluan</translation>
-<translation id="7040531500313579672">Kongsi serlahan</translation>
 <translation id="7054588988317389591">Dapatkan perihalan imej?</translation>
 <translation id="7055152154916055070">Ubah hala disekat:</translation>
 <translation id="7063006564040364415">Tidak dapat bersambung ke pelayan yang disegerakkan.</translation>
@@ -970,6 +966,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="7328017930301109123">Dalam mod Ringkas, Chrome memuatkan halaman lebih pantas dan mengurangkan penggunaan data sehingga 60 peratus.</translation>
 <translation id="7332075081379534664">Log masuk berjaya</translation>
 <translation id="7333031090786104871">Masih menambahkan tapak yang terdahulu</translation>
+<translation id="7339898014177206373">Tetingkap baharu</translation>
 <translation id="7340958967809483333">Pilihan untuk Discover</translation>
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
 <translation id="7352939065658542140">VIDEO</translation>
@@ -998,6 +995,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="7493994139787901920"><ph name="VERSION" /> (Dikemas kini <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">data disimpan</translation>
 <translation id="7498271377022651285">Sila tunggu…</translation>
+<translation id="750228856503700085">Kemaskinian Tidak Tersedia</translation>
 <translation id="7507207699631365376">Lihat <ph name="BEGIN_LINK" />dasar privasi<ph name="END_LINK" /> penyedia ini</translation>
 <translation id="7514365320538308">Muat Turun</translation>
 <translation id="751961395872307827">Tidak dapat menyambung ke tapak</translation>
@@ -1099,6 +1097,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8078096376109663956">Kongsi teks sahaja</translation>
 <translation id="8084114998886531721">Kata laluan disimpan</translation>
+<translation id="8084285576995584326">Kawal data Akaun Google anda</translation>
 <translation id="808747664143081553">Disambungkan kepada peranti</translation>
 <translation id="8103578431304235997">Tab Inkognito</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="8712637175834984815">Faham</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>
 <translation id="8730621377337864115">Selesai</translation>
+<translation id="8746155870861185046">Kongsi serlahan</translation>
 <translation id="8748850008226585750">Kandungan tersembunyi</translation>
 <translation id="8773160212632396039">Memproses permintaan</translation>
 <translation id="8788265440806329501">Sejarah navigasi ditutup</translation>

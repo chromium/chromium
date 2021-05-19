@@ -253,7 +253,6 @@
     <ph name="SITE" />-д зочлох таны хүсэлтийг гүйцэтгэхэд хөтчид саад болж байна. Үндсэн удирдамжийг
     сайтад зориулж аюулгүй байдал болон бусад шинж чанарыг тохируулахад сайтын оператор ашиглаж болно.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">Та өөрийн тохиргоо хийдэг нууц үгийг шинэчлэнэ үү.</translation>
 <translation id="1787142507584202372">Таны нээлттэй таб энд харагдана</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, олон үйлдэл хийх боломжтой, үйлдэл хооронд шилжихийн тулд Таб дээр дарна уу</translation>
@@ -386,6 +385,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> хэрэглэгчийн нэр, нууц үгийг шаардаж байна.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" />-д дуусна</translation>
 <translation id="2337852623177822836">Тохируулгыг таны администратор хянадаг</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" /> холбогдох хүсэлтэй байна</translation>
 <translation id="2344028582131185878">Автоматаар татаж авах</translation>
 <translation id="2346319942568447007">Таны хуулсан зураг</translation>
 <translation id="2354001756790975382">Бусад хайлтын жагсаалтууд</translation>
@@ -455,6 +455,7 @@
 <translation id="2629325967560697240">Chrome-н хамгийн дээд түвшний аюулгүй байдлыг авахын тулд <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />сайжруулсан хамгаалалтыг асаана уу<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />-н серверийн IP хаяг олдсонгүй.</translation>
 <translation id="2639739919103226564">Статус:</translation>
+<translation id="264810637653812429">Тохирох төхөөрөмж олдсонгүй.</translation>
 <translation id="2649204054376361687"><ph name="CITY" /> , <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-н тохиргоон дээр хөтчийн түүх, күүки, завсрын санах ой болон бусад зүйлийг арилгахын тулд эхлээд Таб дээр, дараа нь Enter дарна уу</translation>
 <translation id="2650446666397867134">Файл руу нэвтрэх үйлдэл таслагдсан.</translation>
@@ -501,6 +502,7 @@
 <translation id="2799223571221894425">Дахин эхлүүлэх</translation>
 <translation id="2803306138276472711"><ph name="SITE" />-д <ph name="BEGIN_LINK" />вирус<ph name="END_LINK" /> байгааг Google-ийн Аюулгүй Хайлт олж ирлрүүллээ. Ихэвчлэн аюулгүй байдаг веб сайтууд заримдаа вирусд өртөх тохиолдол байдаг.</translation>
 <translation id="2807052079800581569">Y тэнхлэгийн дагуу зургийн байршил</translation>
+<translation id="2820957248982571256">Шалгаж байна...</translation>
 <translation id="2824775600643448204">Хаяг ба хайлтын цонх</translation>
 <translation id="2826760142808435982">Энэхүү холболтыг <ph name="CIPHER" /> ашиглаж шифрлэж таниулсан бөгөөд энэ нь түлхүүр солилцох  механизмын дагуу <ph name="KX" />-ыг ашигладаг.</translation>
 <translation id="2835170189407361413">Маягтыг цэвэрлэх</translation>
@@ -612,6 +614,7 @@
 <translation id="3266793032086590337">Утга (зөрчил)</translation>
 <translation id="3268451620468152448">Цонхнуудыг нээх</translation>
 <translation id="3270847123878663523">&amp; Дахин эрэмбэлэх үйлдлийг буцаах</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> холбогдох хүсэлтэй байна</translation>
 <translation id="3274521967729236597">Па-Кай</translation>
 <translation id="3282085321714087552">Танай байгууллага, <ph name="ENROLLMENT_DOMAIN" /> дараах вебсайтууд руу тохиргоо эсвэл бодлого зэрэг зарим мэдээллийг илгээсэн.</translation>
 <translation id="3282497668470633863">Картанд нэр нэмэх</translation>
@@ -1223,6 +1226,7 @@
 <translation id="5455374756549232013">Журмын кодлол сул байна</translation>
 <translation id="5457113250005438886">Хүчингүй</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
+<translation id="5463625433003343978">Төхөөрөмжүүдийг хайж байна...</translation>
 <translation id="5469868506864199649">Итали хэл</translation>
 <translation id="5470861586879999274">&amp; Засварлах үйлдлийг дахин хийх</translation>
 <translation id="5478437291406423475">B6/C4 (Дугтуй)</translation>
@@ -1272,7 +1276,6 @@
 <translation id="5624120631404540903">Нууц үгийг удирдах</translation>
 <translation id="5629630648637658800">Тохиргоог ачаалж чадсангүй.</translation>
 <translation id="5631439013527180824">Хүчин төгөлдөр бус төхөөрөмжийн удирдлагын тэмдэглэгээ</translation>
-<translation id="5632627355679805402">Таны өгөгдлийг таны <ph name="BEGIN_LINK" />Google нууц үгтэй<ph name="END_LINK" /> <ph name="TIME" />-с эхлэн шифрлэсэн байна. Синкийг эхлүүлэхийн тулд үүнийг оруулна уу.</translation>
 <translation id="5633066919399395251">Таны зураг, нууц үг, мессеж, кредит карт зэрэг мэдээллийг хулгайлах эсвэл устгах аюултай программыг таны компьютер дээр суулгаж болзошгүй халдагчид <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-д байна. <ph name="BEGIN_LEARN_MORE_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Хуурамч агуулгыг блоклосон.</translation>
 <translation id="5644090287519800334">Хуудасны нүүрэн тал дээр X тэнхлэгийн дагуу зураг шилжүүлэх</translation>
@@ -1316,6 +1319,7 @@
 <translation id="5804427196348435412">NFC төхөөрөмжүүдийг ашиглах</translation>
 <translation id="5810442152076338065">Таны <ph name="DOMAIN" />-тай холбогдох холболтыг хоцрогдсон шифр ашиглан шифрлэсэн байна.</translation>
 <translation id="5813119285467412249">&amp; Нэмэх үйлдлийг дахин хийх</translation>
+<translation id="5817918615728894473">Холбох</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Таныг төлбөр төлөх үед төлбөрийг энэ картаас суутгах боловч жинхэнэ дугаарыг нь энэ сайттай хуваалцахгүй. Нэмэлт хамгаалалтын үүднээс карт баталгаажуулалтын түр зуурын код үүcгэх болно.}other{Таныг төлбөр төлөх үед таны сонгох картаас төлбөрийг суутгах боловч жинхэнэ дугаарыг нь энэ сайттай хуваалцахгүй. Нэмэлт хамгаалалтын үүднээс карт баталгаажуулалтын түр зуурын код үүcгэх болно.}}</translation>
 <translation id="5826507051599432481">Түгээмэл нэр (CN)</translation>
 <translation id="5838278095973806738">Энэ сайтын мэдээллийг халдагч этгээд хулгайлж болзошгүй тул чухал мэдээллээ бүү оруулна уу (жишээ нь нууц үг, кредит карт зэрэг).</translation>
@@ -1323,6 +1327,7 @@
 <translation id="5855253129151731373">Энэ сайтын хостны нэр <ph name="LOOKALIKE_DOMAIN" />-тай төстэй байна. Халдагч этгээдүүд заримдаа харахад хэцүү, бага зэргийн өөрчлөлтийг домайн нэрд оруулах замаар сайтыг дуурайдаг.
 
     Хэрэв та үүнийг харуулсан нь алдаа гэж үзэж байвал https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals-р зочлоорой.</translation>
+<translation id="5860033963881614850">Идэвхгүй байна</translation>
 <translation id="5862579898803147654">Гарах цаасыг зэрэгцүүлэх тавцан 8</translation>
 <translation id="5863847714970149516">Дараагийн хуудас танд төлбөр ногдуулж болзошгүй</translation>
 <translation id="5866257070973731571">Утасны дугаар нэмэх</translation>
@@ -1515,6 +1520,7 @@
 <translation id="6624427990725312378">Харилцагчийн мэдээлэл</translation>
 <translation id="6626291197371920147">Хүчинтэй картын дугаар оруулах</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Хайх</translation>
+<translation id="6630043285902923878">USB төхөөрөмжүүдийг хайж байна...</translation>
 <translation id="6630809736994426279">Таны зураг, нууц үг, мессеж, кредит карт зэрэг мэдээллийг хулгайлах эсвэл устгах аюултай программыг таны Mac компьютер дээр суулгаж болзошгүй халдагчид <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-д байна. <ph name="BEGIN_LEARN_MORE_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Цэвэрлэх</translation>
@@ -1770,7 +1776,6 @@
 <translation id="7610193165460212391">Утга нь <ph name="VALUE" /> хамрах хүрээнээс гарсан байна.</translation>
 <translation id="7613889955535752492">Дуусах: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-н тохиргоонд нууц үгээ харах болон удирдахын тулд эхлээд Таб дээр, дараа нь Enter дарна уу</translation>
-<translation id="7615602087246926389">Танд Google-ийн дансны өөр нууц үгийг ашиглан кодлосон өгөгдөл байна. Доор үүнийг оруулна уу.</translation>
 <translation id="7616645509853975347">Таны администратор таны хөтөч дээр Chrome Enterprise Connectors-г асаасан байна. Эдгээр холбогч нь таны зарим өгөгдөлд хандах эрхтэй.</translation>
 <translation id="7619838219691048931">Төгсгөлийн хүснэгт</translation>
 <translation id="762844065391966283">Нэг удаад нэг</translation>
@@ -1923,6 +1928,7 @@
 <translation id="8202097416529803614">Захиалгын хураангуй</translation>
 <translation id="8202370299023114387">Зөрчил</translation>
 <translation id="8206978196348664717">Prc4 (Дугтуй)</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Таныг ID-г шинэчлэх үед одоогийн ID тань хүчингүй болох бөгөөд 1 хоногоос бага хугацааны дараа шинийг олгоно}=1{Таныг ID-г шинэчлэх үед одоогийн ID тань хүчингүй болох бөгөөд 1 хоногийн дараа шинийг олгоно}other{Таныг ID-г шинэчлэх үед одоогийн ID тань хүчингүй болох бөгөөд {NUM_DAYS} хоногийн дараа шинийг олгоно}}</translation>
 <translation id="8211406090763984747">Холболт аюулгүй байна</translation>
 <translation id="8213464188712611711">Санах ой</translation>
 <translation id="8218327578424803826">Заасан байршил:</translation>
@@ -2183,6 +2189,7 @@
 <translation id="9170848237812810038">&amp; Буцаах</translation>
 <translation id="9171296965991013597">Аппыг орхих уу?</translation>
 <translation id="9173282814238175921">Дан документ/Шинэ хүснэгт</translation>
+<translation id="9173995187295789444">Bluetooth төхөөрөмжүүдийг хайж байна...</translation>
 <translation id="917450738466192189">Серверийн гэрчилгээ хүчингүй байна.</translation>
 <translation id="9174917557437862841">Таб сэлгэх товчлуур, энэ таб руу сэлгэхийн тулд Enter дээр дарна уу</translation>
 <translation id="9179703756951298733">Chrome-н тохиргоон дээрээс төлбөр, зээлийн картын мэдээллээ удирдах</translation>

@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome kunne ikke se etter oppdateringer. Prøv igjen senere.</translation>
 <translation id="2732745070297234559">Chrome kunne ikke sjekke alle passordene. Prøv på nytt i morgen.</translation>
 <translation id="2740105938841089077">Bruk Chrome til å åpne linker</translation>
+<translation id="2869959624320573933">Logg på Chrome</translation>
 <translation id="2919738076569633423">Ved å bruke Chrome samtykker du i <ph name="BEGIN_LINK_TOS" />vilkårene for bruk<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Fordi du logger av en konto som er administrert av <ph name="SIGNOUT_MANAGED_DOMAIN" />, blir Chrome-dataene dine slettet fra denne enheten, men de blir værende i Google-kontoen din.</translation>
 <translation id="3167189358072330585">Kontoen din fungerer ikke i Google Chrome. Kontakt domeneadministratoren din, eller logg på med en vanlig Google-konto.</translation>
 <translation id="3173834708294760622">Google Chrome-side</translation>
 <translation id="3196546062792660320">Chrome sparer tid for deg ved å legge kontoene dine på nettet. Du kan legge til eller fjerne kontoer i Innstillinger.</translation>
-<translation id="3223655207402797071">Logg på dette nettstedet, Google-kontoen din og Chrome. Du kan slå på synkronisering senere.</translation>
 <translation id="3282568296779691940">Logg på Chrome</translation>
 <translation id="3345341804167540816">Bruk Chrome overalt</translation>
 <translation id="3455456143708465450">For å få mest mulig ut av Chrome, logg på med Google-kontoen din</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome er oppdatert</translation>
 <translation id="8022947259858476807">Bruk Chrome som standard til å åpne linker, søke i moduler og fylle ut passord i andre apper automatisk</translation>
 <translation id="8160472928944011082">Kan ikke oppdatere Chrome</translation>
+<translation id="8263079278049777200">Logg på dette nettstedet, Google-kontoen din og Chrome. Du kan slå på synkronisering senere.</translation>
 <translation id="8357607116237445042">Velg om du vil slette Chrome-dataene dine fra denne enheten eller beholde dem</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med enerett.</translation>
 <translation id="840168496893712993">Noen tillegg fører til at Chrome krasjer. Prøv å avinstallere dem.</translation>

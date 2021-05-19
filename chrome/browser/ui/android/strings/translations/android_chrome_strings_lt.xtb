@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">„Chrome“ ir „Chrome“ OS papildomos paslaugų teikimo sąlygos</translation>
 <translation id="1807246157184219062">Šviesi</translation>
 <translation id="1810845389119482123">Pradinė sinchronizavimo sąranka nebaigta</translation>
-<translation id="1821253160463689938">Naudojami slapukai, siekiant įsiminti jūsų nuostatas, net jei nesilankote tuose puslapiuose</translation>
 <translation id="1829244130665387512">Surasti puslapyje</translation>
 <translation id="1830550083491357902">Neprisijungta</translation>
 <translation id="1843805151597803366">Kad gautumėte geresnių vertimų, leiskite „Google“ paieškai naudoti dabartinį puslapį</translation>
@@ -203,6 +202,7 @@ Norėdami ieškoti, palieskite bet kurį žodį. Jei norite patikslinti paiešk�
 <ph name="BEGIN_LIST_ITEM1" />Reklamuotojai gali sužinoti, kada labai daug naudotojų vienija tas pats pomėgis, pvz., susirinkusieji į koncertą, ir pasirinkti skelbimus, skirtus visiems susirinkusiesiems, o ne atskiram asmeniui.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Reklamuotojai gali tyrinėti skelbimų efektyvumą nestebėdami jūsų svetainėse.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Iš anksto įkeliami puslapiai, kuriuose, „Chrome“ manymu, galite apsilankyti. Kad tai atliktų, „Chrome“ gali naudoti slapukus, jei juos leidžiate, ir šifruoti bei siųsti puslapius per „Google“, kad jūsų tapatybė nebūtų rodoma svetainėms.</translation>
 <translation id="234265804618409743">Kameros atidaryti nepavyko. Įvyko klaida.</translation>
 <translation id="2345671828921229300">Jei norite ieškoti, palieskite ir palaikykite žodį</translation>
 <translation id="2349710944427398404">Bendras „Chrome“ naudojamų duomenų kiekis, įskaitant paskyras, žymes ir išsaugotus nustatymus</translation>
@@ -273,7 +273,6 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="2777555524387840389">Liko <ph name="SECONDS" /> sek.</translation>
 <translation id="2779651927720337254">nepavyko</translation>
 <translation id="2781151931089541271">Liko 1 sek.</translation>
-<translation id="279827439955962619">Pašalinti paryškinimą</translation>
 <translation id="2801022321632964776">Norėdami gauti naujausią versiją su įdiegta savo kalba, atnaujinkite „Chrome“</translation>
 <translation id="2805756323405976993">Taikomosios programos</translation>
 <translation id="281504910091592009">Peržiūrėkite ir tvarkykite išsaugotus slaptažodžius <ph name="BEGIN_LINK" />„Google“ paskyroje<ph name="END_LINK" /></translation>
@@ -454,7 +453,6 @@ Privatumo „sandbox“ (smėlio dėžė) vis dar intensyviai kuriama ir pasieki
 <translation id="3988466920954086464">Žiūrėkite tiesioginius paieškos rezultatus šiame skydelyje</translation>
 <translation id="4000212216660919741">„Home“ neprisijungus</translation>
 <translation id="4016425174436051808">Negalima stebėti. Kažkas ne taip.</translation>
-<translation id="4021916380760361450">Valdykite „Google“ paskyrų duomenis</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# val.}one{# val.}few{# val.}many{# val.}other{# val.}}</translation>
 <translation id="4045764304651014138">Naudojimo duomenys</translation>
 <translation id="4056223980640387499">Sepija</translation>
@@ -480,7 +478,6 @@ Privatumo „sandbox“ (smėlio dėžė) vis dar intensyviai kuriama ir pasieki
 <translation id="4195643157523330669">Atidaryti naujame skirtuke</translation>
 <translation id="4198423547019359126">Nėra pasiekiamų atsisiuntimo vietų</translation>
 <translation id="4209895695669353772">Jei norite gauti „Google“ siūlomo suasmeninto turinio, įjunkite sinchronizavimą</translation>
-<translation id="423219824432660969">Šifruoti sinchronizuotus duomenis nuo <ph name="TIME" /> taikant „Google“ slaptažodį</translation>
 <translation id="4242533952199664413">Atidaryti nustatymus</translation>
 <translation id="4248098802131000011">Apsaugokite slaptažodžius nuo duomenų saugos pažeidimų ir kitų saugos problemų</translation>
 <translation id="4250229828105606438">Ekrano kopija</translation>
@@ -559,6 +556,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="47217992755561375">Peržiūrėkite populiariausias svetaines</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4738836084190194332">Paskutinį kartą sinchronizuota: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Pašalinti paryškinimą</translation>
 <translation id="4749960740855309258">Atidaryti naują skirtuką</translation>
 <translation id="4759238208242260848">Atsisiuntimai</translation>
 <translation id="4763480195061959176">vaizdo įrašas</translation>
@@ -699,7 +697,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="562289928968387744">Tvarkyti reakcijas</translation>
 <translation id="5626134646977739690">Pavadinimas:</translation>
 <translation id="5628604359369369630">Neskaityta – pasiekiama neprisijungus</translation>
-<translation id="5632627355679805402">Nuo <ph name="TIME" /> duomenys užšifruoti naudojant <ph name="BEGIN_LINK" />„Google“ slaptažodį<ph name="END_LINK" />. Įveskite jį, kad pradėtumėte sinchronizuoti.</translation>
 <translation id="5639724618331995626">Leisti visas svetaines</translation>
 <translation id="5648166631817621825">Pastarosios 7 dienos</translation>
 <translation id="5655963694829536461">Ieškokite atsisiųstų elementų</translation>
@@ -934,7 +931,6 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="702463548815491781">Rekomenduojama, kai įjungta „TalkBack“ arba prieiga jungikliu</translation>
 <translation id="7027549951530753705">Atkurta „<ph name="ITEM_TITLE" />“</translation>
 <translation id="7029809446516969842">Slaptažodžiai</translation>
-<translation id="7040531500313579672">Bendrinti paryškinimą</translation>
 <translation id="7054588988317389591">Gauti vaizdų aprašus?</translation>
 <translation id="7055152154916055070">Peradresavimas užblokuotas:</translation>
 <translation id="7063006564040364415">Nepavyko prisijungti prie sinchronizavimo serverio.</translation>
@@ -970,6 +966,7 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="7328017930301109123">Kai įjungtas supaprastintasis režimas, sistemoje „Chrome“ puslapiai įkeliami sparčiau ir naudojama iki 60 proc. mažiau duomenų.</translation>
 <translation id="7332075081379534664">Sėkmingai prisijungta</translation>
 <translation id="7333031090786104871">Vis dar pridedama ankstesnė svetainė</translation>
+<translation id="7339898014177206373">Naujas langas</translation>
 <translation id="7340958967809483333">„Discover“ parinktys</translation>
 <translation id="7352651011704765696">Kažkas negerai</translation>
 <translation id="7352939065658542140">VAIZDO ĮRAŠAS</translation>
@@ -998,6 +995,7 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="7493994139787901920"><ph name="VERSION" /> (atnaujinta <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">sutaupyti duomenys</translation>
 <translation id="7498271377022651285">Palaukite…</translation>
+<translation id="750228856503700085">Naujiniai nepasiekiami</translation>
 <translation id="7507207699631365376">Žr. šio teikėjo <ph name="BEGIN_LINK" />privatumo politiką<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Atsisiųsti</translation>
 <translation id="751961395872307827">Nepavyksta prisijungti prie svetainės</translation>
@@ -1099,6 +1097,7 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="8076492880354921740">Skirtukai</translation>
 <translation id="8078096376109663956">Bendrinti tik tekstą</translation>
 <translation id="8084114998886531721">Išsaugotas slaptažodis</translation>
+<translation id="8084285576995584326">Valdykite „Google“ paskyros duomenis</translation>
 <translation id="808747664143081553">Prisijungta prie įrenginio</translation>
 <translation id="8103578431304235997">Inkognito skirtukas</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="8712637175834984815">Supratau</translation>
 <translation id="8725066075913043281">Bandyti dar kartą</translation>
 <translation id="8730621377337864115">Atlikta</translation>
+<translation id="8746155870861185046">Bendrinti paryškinimą</translation>
 <translation id="8748850008226585750">Turinys paslėptas</translation>
 <translation id="8773160212632396039">Užklausa apdorojama</translation>
 <translation id="8788265440806329501">Naršymo istorija uždaryta</translation>

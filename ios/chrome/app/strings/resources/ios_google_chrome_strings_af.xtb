@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
-<translation id="1096883626080133124">Kry meer gedoen met 'n eenvoudige, veiliger Chrome wat vinniger as ooit vantevore is</translation>
+<translation id="1096883626080133124">Kry meer gedoen met 'n eenvoudige, veiliger Google Chrome wat vinniger as ooit vantevore is</translation>
 <translation id="1282031177488366470">Help om Chrome se kenmerke en werkverrigting te verbeter</translation>
 <translation id="1314663809820920746">Jy kan steeds al jou boekmerke, geskiedenis, wagwoorde en ander instellings op hierdie toestel sien. As jy veranderinge aanbring, sal hulle nie na jou Google-rekening sinkroniseer nie.</translation>
 <translation id="1479202195792305274">Chrome kan jou wagwoorde nagaan as jy met jou Google-rekening aanmeld.</translation>
@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome kon nie vir opdaterings kyk nie. Probeer later weer.</translation>
 <translation id="2732745070297234559">Chrome kon nie alle wagwoorde nagaan nie. Probeer môre weer.</translation>
 <translation id="2740105938841089077">Gebruik Chrome om skakels oop te maak</translation>
+<translation id="2869959624320573933">Meld by Chrome aan</translation>
 <translation id="2919738076569633423">Deur Chrome te gebruik, stem jy in tot die <ph name="BEGIN_LINK_TOS" />diensbepalings<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Omdat jy afmeld uit 'n rekening wat deur <ph name="SIGNOUT_MANAGED_DOMAIN" /> bestuur word, sal jou Chrome-data op hierdie toestel uitgevee word. Jou data sal in jou Google-rekening bly.</translation>
 <translation id="3167189358072330585">Jou rekening werk nie in Google Chrome nie. Kontak asseblief jou domeinadministrateur of gebruik 'n gewone Google-rekening om aan te meld.</translation>
 <translation id="3173834708294760622">Google Chrome-bladsy</translation>
 <translation id="3196546062792660320">Chrome spaar jou tyd deur jou rekeninge na die web te bring. Jy kan rekeninge in instellings byvoeg of verwyder.</translation>
-<translation id="3223655207402797071">Meld by hierdie werf, jou Google-rekening en Chrome aan. Jy kan sinkronisering later aanskakel.</translation>
 <translation id="3282568296779691940">Meld by Chrome aan</translation>
 <translation id="3345341804167540816">Gebruik Chrome oral</translation>
 <translation id="3455456143708465450">Meld met jou Google-rekening aan om die meeste voordeel uit Chrome te trek</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome is op datum</translation>
 <translation id="8022947259858476807">Gebruik by verstek Chrome om skakels oop te maak, van legstukke af te soek, en wagwoorde outomaties by ander programme in te vul</translation>
 <translation id="8160472928944011082">Chrome kan nie opdateer nie</translation>
+<translation id="8263079278049777200">Meld by hierdie werf, jou Google-rekening en Chrome aan. Jy kan sinkronisering later aanskakel.</translation>
 <translation id="8357607116237445042">Kies of jy jou Chrome-data van hierdie toestel wil verwyder, of dit wil hou</translation>
 <translation id="8370517070665726704">Kopiereg <ph name="YEAR" /> Google LLC. Alle regte voorbehou.</translation>
 <translation id="840168496893712993">Sekere byvoegings het veroorsaak dat Chrome omval. Probeer om hulle te deïnstalleer.</translation>

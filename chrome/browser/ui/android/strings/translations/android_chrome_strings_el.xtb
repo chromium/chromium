@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Πρόσθετοι Όροι Παροχής Υπηρεσιών Chrome και Chrome OS</translation>
 <translation id="1807246157184219062">Ανοιχτόχρωμο</translation>
 <translation id="1810845389119482123">Η αρχική ρύθμιση συγχρονισμού δεν ολοκληρώθηκε</translation>
-<translation id="1821253160463689938">Χρησιμοποιεί cookie για την απομνημόνευση των προτιμήσεών σας, ακόμα κι αν δεν επισκέπτεστε αυτές τις σελίδες</translation>
 <translation id="1829244130665387512">Εύρεση στη σελίδα</translation>
 <translation id="1830550083491357902">Δεν είναι συνδεδεμένος</translation>
 <translation id="1843805151597803366">Για λήψη καλύτερων μεταφράσεων, επιτρέψτε στην Αναζήτηση Google να χρησιμοποιήσει την τρέχουσα σελίδα.</translation>
@@ -203,6 +202,7 @@
 <ph name="BEGIN_LIST_ITEM1" />Οι διαφημιζόμενοι μπορούν να μάθουν ότι χιλιάδες χρήστες μοιράζονται ένα παρόμοιο ενδιαφέρον, όπως το πλήθος σε μια συναυλία, και να επιλέξουν διαφημίσεις για το πλήθος αντί για μεμονωμένα άτομα.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Οι διαφημιζόμενοι μπορούν να εξετάζουν την αποδοτικότητα των διαφημίσεων, κατά τρόπο που δεν σας παρακολουθεί καθώς περιηγείστε μεταξύ ιστοτόπων.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Προφορτώνει σελίδες τις οποίες το Chrome πιστεύει ότι μπορεί να επισκεφτείτε. Για να το κάνει αυτό, το Chrome ενδέχεται να χρησιμοποιήσει cookie, εφόσον επιτρέπετε τη χρήση τους, και μπορεί να κρυπτογραφήσει και να στείλει σελίδες μέσω του Google για απόκρυψη της ταυτότητάς σας από ιστοτόπους.</translation>
 <translation id="234265804618409743">Δεν είναι δυνατό το άνοιγμα της κάμερας. Παρουσιάστηκε ένα πρόβλημα.</translation>
 <translation id="2345671828921229300">Για αναζήτηση, αγγίξτε παρατεταμένα μια λέξη</translation>
 <translation id="2349710944427398404">Σύνολο δεδομένων που χρησιμοποιούνται από το Chrome, συμπεριλαμβανομένων των λογαριασμών, των σελιδοδεικτών και των αποθηκευμένων ρυθμίσεων</translation>
@@ -273,7 +273,6 @@
 <translation id="2777555524387840389">Απομένουν <ph name="SECONDS" /> δευτερόλεπτα</translation>
 <translation id="2779651927720337254">απέτυχε</translation>
 <translation id="2781151931089541271">Απομένει 1 δευτερόλεπτο</translation>
-<translation id="279827439955962619">Κατάργηση επισήμανσης</translation>
 <translation id="2801022321632964776">Ενημερώστε για να χρησιμοποιείτε τη γλώσσα σας στην πιο πρόσφατη έκδοση του Chrome</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="281504910091592009">Προβολή και διαχείριση αποθηκευμένων κωδικών πρόσβασης στον <ph name="BEGIN_LINK" />Λογαριασμό σας Google<ph name="END_LINK" /></translation>
@@ -454,7 +453,6 @@
 <translation id="3988466920954086464">Προβολή αποτελεσμάτων αναζήτησης Instant σε αυτό το πλαίσιο</translation>
 <translation id="4000212216660919741">Η αρχική σελίδα είναι εκτός σύνδεσης</translation>
 <translation id="4016425174436051808">Δεν είναι δυνατή η παρακολούθηση. Παρουσιάστηκε κάποιο πρόβλημα.</translation>
-<translation id="4021916380760361450">Ελέγξτε τα δεδομένα των Λογαριασμών σας Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ω.}other{# ω.}}</translation>
 <translation id="4045764304651014138">Δεδομένα χρήσης</translation>
 <translation id="4056223980640387499">Σέπια</translation>
@@ -480,7 +478,6 @@
 <translation id="4195643157523330669">Άνοιγμα σε νέα καρτέλα</translation>
 <translation id="4198423547019359126">Δεν υπάρχουν διαθέσιμες τοποθεσίες λήψης</translation>
 <translation id="4209895695669353772">Για λήψη εξατομικευμένου περιεχομένου που προτείνεται από την Google, ενεργοποιήστε τον συγχρονισμό</translation>
-<translation id="423219824432660969">Κρυπτογράφηση συγχρονισμένων δεδομένων με τον κωδικό πρόσβασης Google από τις <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Ανοίξτε τις ρυθμίσεις</translation>
 <translation id="4248098802131000011">Προστατέψτε τους κωδικούς πρόσβασής σας από παραβιάσεις δεδομένων και άλλα ζητήματα ασφαλείας.</translation>
 <translation id="4250229828105606438">Στιγμιότυπο οθόνης</translation>
@@ -559,6 +556,7 @@
 <translation id="47217992755561375">Δείτε τους κορυφαίους ιστοτόπους σας.</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4738836084190194332">Τελευταίος συγχρονισμός: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Κατάργηση επισήμανσης</translation>
 <translation id="4749960740855309258">Άνοιγμα νέας καρτέλας</translation>
 <translation id="4759238208242260848">Λήψεις</translation>
 <translation id="4763480195061959176">βίντεο</translation>
@@ -699,7 +697,6 @@
 <translation id="562289928968387744">Διαχείριση αντιδράσεων</translation>
 <translation id="5626134646977739690">Όνομα:</translation>
 <translation id="5628604359369369630">Μη αναγνωσμένα - Διαθέσιμα εκτός σύνδεσης</translation>
-<translation id="5632627355679805402">Τα δεδομένα σας κρυπτογραφήθηκαν με τον <ph name="BEGIN_LINK" />κωδικό πρόσβασης Google<ph name="END_LINK" /> στις <ph name="TIME" />. Καταχωρίστε τον, για να ξεκινήσει ο συγχρονισμός.</translation>
 <translation id="5639724618331995626">Να επιτρέπονται όλοι οι ιστότοποι</translation>
 <translation id="5648166631817621825">Τελευταίες 7 ημέρες</translation>
 <translation id="5655963694829536461">Αναζήτηση λήψεων</translation>
@@ -934,7 +931,6 @@
 <translation id="702463548815491781">Συνιστάται όταν έχει ενεργοποιηθεί το TalkBack ή η πρόσβαση με διακόπτη</translation>
 <translation id="7027549951530753705">Έγινε επαναφορά του στοιχείου <ph name="ITEM_TITLE" />.</translation>
 <translation id="7029809446516969842">Κωδ. πρόσβασης</translation>
-<translation id="7040531500313579672">Κοινοποίηση επισήμανσης</translation>
 <translation id="7054588988317389591">Λήψη περιγραφών εικόνων;</translation>
 <translation id="7055152154916055070">Αποκλεισμένη ανακατεύθυνση:</translation>
 <translation id="7063006564040364415">Δεν ήταν δυνατή η σύνδεση στον διακομιστή συγχρονισμού.</translation>
@@ -970,6 +966,7 @@
 <translation id="7328017930301109123">Στη λειτουργία Lite, το Chrome φορτώνει σελίδες πιο γρήγορα και χρησιμοποιεί έως και 60 τοις εκατό λιγότερα δεδομένα.</translation>
 <translation id="7332075081379534664">Η σύνδεση ήταν επιτυχής</translation>
 <translation id="7333031090786104871">Η προσθήκη του προηγούμενου ιστοτόπου δεν έχει ολοκληρωθεί</translation>
+<translation id="7339898014177206373">Νέο παράθυρο</translation>
 <translation id="7340958967809483333">Επιλογές για Discover</translation>
 <translation id="7352651011704765696">Παρουσιάστηκε κάποιο πρόβλημα</translation>
 <translation id="7352939065658542140">ΒΙΝΤΕΟ</translation>
@@ -998,6 +995,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (Ενημέρωση στις <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">δεδομένα που εξοικονομήθηκαν</translation>
 <translation id="7498271377022651285">Περιμένετε…</translation>
+<translation id="750228856503700085">Οι ενημερώσεις δεν είναι διαθέσιμες</translation>
 <translation id="7507207699631365376">Δείτε την <ph name="BEGIN_LINK" />πολιτική απορρήτου<ph name="END_LINK" /> του παρόχου</translation>
 <translation id="7514365320538308">Λήψη</translation>
 <translation id="751961395872307827">Δεν είναι δυνατή η σύνδεση στον ιστότοπο</translation>
@@ -1099,6 +1097,7 @@
 <translation id="8076492880354921740">Καρτέλες</translation>
 <translation id="8078096376109663956">Κοινοποίηση μόνο κειμένου</translation>
 <translation id="8084114998886531721">Αποθηκευμένος κωδικός πρόσβασης</translation>
+<translation id="8084285576995584326">Ελέγξτε τα δεδομένα του Λογαριασμού σας Google</translation>
 <translation id="808747664143081553">Συνδέθηκε στη συσκευή</translation>
 <translation id="8103578431304235997">Καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@
 <translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="8725066075913043281">Προσπαθήστε ξανά</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
+<translation id="8746155870861185046">Κοινοποίηση επισήμανσης</translation>
 <translation id="8748850008226585750">Κρυφό περιεχόμενο</translation>
 <translation id="8773160212632396039">Αίτημα επεξεργασίας</translation>
 <translation id="8788265440806329501">Το Ιστορικό πλοήγηση έκλεισε</translation>

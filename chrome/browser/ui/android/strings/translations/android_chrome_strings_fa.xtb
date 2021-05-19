@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">‏شرایط خدمات تکمیلی Chrome و سیستم‌عامل Chrome</translation>
 <translation id="1807246157184219062">روشن</translation>
 <translation id="1810845389119482123">همگام‌سازی اولیه کامل نشد</translation>
-<translation id="1821253160463689938">از کوکی‌ها برای به خاطر سپردن اولویت‌هایتان استفاده می‌کند، حتی اگر از آن صفحه‌ها بازدید نکنید</translation>
 <translation id="1829244130665387512">یافتن در صفحه</translation>
 <translation id="1830550083491357902">وارد سیستم نشده است</translation>
 <translation id="1843805151597803366">‏برای دریافت ترجمه‌های بهتر، به «جستجوی Google» اجازه دهید از صفحه کنونی استفاده کند</translation>
@@ -203,6 +202,7 @@
 <ph name="BEGIN_LIST_ITEM1" />وقتی هزاران کاربر علاقه یکسانی داشته باشند (مثل جمعیتی در یک کنسرت)، تبلیغ‌کنندگان می‌توانند مطلع شوند و به‌جای اینکه برای یک نفر آگهی انتخاب کند، برای آن جمعیت آگهی انتخاب کند.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />تبلیغ‌کنندگان می‌توانند اثربخشی آگهی‌ها را به روشی بررسی کنند که شما را در سایت‌ها ردیابی نکند.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">‏صفحه‌هایی که Chrome فکر می‌کند شاید بازدید کنید پیش‌بارگیری می‌شود. برای انجام این کار، Chrome از کوکی‌ها (درصورتی که کوکی‌ها را مجاز کرده باشید) استفاده می‌کند و صفحه‌ها را رمزگذاری و ازطریق Google ارسال می‌کند تا هویت شما در سایت‌ها فاش نشود.</translation>
 <translation id="234265804618409743">نمی‌توان دوربین را باز کرد. مشکلی پیش آمد.</translation>
 <translation id="2345671828921229300">برای جستجو کردن، واژه را لمس کنید و نگه دارید</translation>
 <translation id="2349710944427398404">‏کل داده‌های استفاده‌شده توسط Chrome، شامل حساب‌ها، نشانک‌ها و تنظیمات ذخیره‌شده</translation>
@@ -273,7 +273,6 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> ثانیه باقی‌مانده است</translation>
 <translation id="2779651927720337254">انجام نشد</translation>
 <translation id="2781151931089541271">۱ ثانیه باقی‌مانده است</translation>
-<translation id="279827439955962619">حذف برجسته‌سازی</translation>
 <translation id="2801022321632964776">‏با به‌روزرسانی به جدیدترین نسخه Chrome، زبانتان را دریافت کنید</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
 <translation id="281504910091592009">‏در <ph name="BEGIN_LINK" />حساب Google<ph name="END_LINK" /> خود گذرواژه‌های ذخیره‌شده را مشاهده و مدیریت کنید</translation>
@@ -454,7 +453,6 @@
 <translation id="3988466920954086464">نتایج جستجوی فوری را در این پانل مشاهده کنید</translation>
 <translation id="4000212216660919741">صفحه اصلیِ آفلاین</translation>
 <translation id="4016425174436051808">دنبال کردن ممکن نیست. مشکلی پیش آمد.</translation>
-<translation id="4021916380760361450">‏کنترل داده‌های «حساب‌های Google»</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ساعت}one{# ساعت}other{# ساعت}}</translation>
 <translation id="4045764304651014138">داده‌های استفاده</translation>
 <translation id="4056223980640387499">سپیا</translation>
@@ -480,7 +478,6 @@
 <translation id="4195643157523330669">باز کردن در برگهٔ جدید</translation>
 <translation id="4198423547019359126">مکانی برای بارگیری دردسترس نیست</translation>
 <translation id="4209895695669353772">‏برای اینکه Google محتوای شخصی‌شده به شما پیشنهاد دهد، همگام‌سازی را روشن کنید</translation>
-<translation id="423219824432660969">‏رمزگذاری داده‌های همگام‌سازی‌شده با گذرواژه Google از <ph name="TIME" /></translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="4248098802131000011">گذرواژه خود را از نقض داده و سایر مسائل امنیتی ایمن نگه دارید</translation>
 <translation id="4250229828105606438">نماگرفت</translation>
@@ -559,6 +556,7 @@
 <translation id="47217992755561375">دیدن سایت‌های برتر شما</translation>
 <translation id="4732120983431207637">گره‌گشای پشته</translation>
 <translation id="4738836084190194332">آخرین همگام‌سازی: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">برداشتن برجسته‌سازی</translation>
 <translation id="4749960740855309258">باز کردن برگه جدید</translation>
 <translation id="4759238208242260848">بارگیری‌ها</translation>
 <translation id="4763480195061959176">ویدئو</translation>
@@ -699,7 +697,6 @@
 <translation id="562289928968387744">مدیریت واکنش‌ها</translation>
 <translation id="5626134646977739690">نام:</translation>
 <translation id="5628604359369369630">خوانده‌نشده - دردسترس درحالت آفلاین</translation>
-<translation id="5632627355679805402">‏داده‌ها با <ph name="BEGIN_LINK" />گذرواژه Google<ph name="END_LINK" /> شما از <ph name="TIME" /> رمز می‌شود. برای شروع همگام‌سازی، آن را وارد کنید.</translation>
 <translation id="5639724618331995626">همه سایت‌ها مجاز هستند</translation>
 <translation id="5648166631817621825">۷ روز گذشته</translation>
 <translation id="5655963694829536461">بارگیری‌هایتان را جستجو کنید</translation>
@@ -934,7 +931,6 @@
 <translation id="702463548815491781">‏توصیه در زمانی‌که TalkBack یا «دسترسی کلیدی» روشن است</translation>
 <translation id="7027549951530753705">تاریخ بازیابی <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
-<translation id="7040531500313579672">هم‌رسانی برجسته‌سازی</translation>
 <translation id="7054588988317389591">توضیحات تصویر دریافت شود؟</translation>
 <translation id="7055152154916055070">هدایت کردن مسدود شده است:</translation>
 <translation id="7063006564040364415">اتصال به سرور همگام‌سازی ممکن نیست.</translation>
@@ -970,6 +966,7 @@
 <translation id="7328017930301109123">‏در «حالت ساده»، Chrome صفحه‌ها را سریع‌تر بار می‌کند و تا ۶۰ درصد مصرف داده را کاهش می‌دهد.</translation>
 <translation id="7332075081379534664">ورود به سیستم باموفقیت انجام شد</translation>
 <translation id="7333031090786104871">همچنان درحال افزودن سایت قبلی</translation>
+<translation id="7339898014177206373">پنجرهٔ جدید</translation>
 <translation id="7340958967809483333">گزینه‌های «یافته‌ها»</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7352939065658542140">ویدیو</translation>
@@ -998,6 +995,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (زمان به‌روزرسانی <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">داده صرفه‌جویی‌شده</translation>
 <translation id="7498271377022651285">لطفاً صبر کنید...</translation>
+<translation id="750228856503700085">به‌روزرسانی دردسترس نیست</translation>
 <translation id="7507207699631365376">به <ph name="BEGIN_LINK" />خط‌مشی رازداری<ph name="END_LINK" /> این ارائه‌دهنده بروید</translation>
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="751961395872307827">نمی‌توان به این سایت متصل شد</translation>
@@ -1099,6 +1097,7 @@
 <translation id="8076492880354921740">برگه‌ها</translation>
 <translation id="8078096376109663956">فقط نوشتار را هم‌رسانی کنید</translation>
 <translation id="8084114998886531721">گذرواژه ذخیره‌شده</translation>
+<translation id="8084285576995584326">‏کنترل کردن داده‌های «حساب Google»</translation>
 <translation id="808747664143081553">به دستگاه متصل شد</translation>
 <translation id="8103578431304235997">برگه ناشناس</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>
 <translation id="8730621377337864115">تمام</translation>
+<translation id="8746155870861185046">هم‌رسانی مورد برجسته</translation>
 <translation id="8748850008226585750">محتوا پنهان است</translation>
 <translation id="8773160212632396039">درحال پردازش درخواست</translation>
 <translation id="8788265440806329501">سابقه «پیمایش» بسته است</translation>

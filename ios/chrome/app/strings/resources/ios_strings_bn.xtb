@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1989112275319619282">ব্রাউজ করুন</translation>
 <translation id="2015722694326466240">পাসওয়ার্ড দেখার জন্য আপনার ডিভাইসে আপনাকে অবশ্যই একটি পাসকোড সেট করতে হবে।</translation>
+<translation id="2022352537516230970">আপনার iPhone-এর জন্য তৈরি করা হয়েছে</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />সেটিংসে<ph name="END_LINK" /> কী সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারেন।</translation>
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
@@ -124,7 +125,6 @@
 <translation id="2218443599109088993">ছোট করে দেখুন</translation>
 <translation id="2230173723195178503">Webpage loaded</translation>
 <translation id="2239626343334228536">ব্রাউজিং ডেটা মোছা হচ্ছে…</translation>
-<translation id="2257567812274161158">সিঙ্ক কাজ করছে না।</translation>
 <translation id="225943865679747347">ত্রুটি কোড: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">অ্যাকাউন্ট যোগ করুন</translation>
 <translation id="2268044343513325586">রিফাইন করুন</translation>
@@ -142,7 +142,6 @@
 আপনার জন্য পছন্দমতো বিজ্ঞাপন বেছে নেওয়ার মতো বিভিন্ন ওয়েবসাইট জুড়ে আপনার ব্রাউজিং অ্যাক্টিভিটি দেখার জন্য সাইট কুকি ব্যবহার করতে পারবে না।</translation>
 <translation id="2381405137052800939">প্রাথমিক বিষয়াদি</translation>
 <translation id="2386793615875593361">১টি নির্বাচিত</translation>
-<translation id="2410754283952462441">একটি অ্যাকাউন্ট বেছে নিন</translation>
 <translation id="2421004566762153674">থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="2421044535038393232">এডিট করতে থাকুন</translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
@@ -314,6 +313,7 @@
 <translation id="4172051516777682613">সর্বদা দেখান</translation>
 <translation id="418156467088430727">নতুন ট্যাবে অফলাইন ভার্সন দেখুন</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
+<translation id="4184011057600693970">আপনার iPad-এর জন্য তৈরি করা হয়েছে</translation>
 <translation id="424315890655130736">পাসফ্রেজ লিখুন</translation>
 <translation id="4263576668337963058">পৃষ্ঠা সম্পর্কিত উপলভ্য অ্যাকশন দেখুন</translation>
 <translation id="4267380167363222949">পরের ট্যাব</translation>
@@ -360,7 +360,6 @@
 <translation id="473775607612524610">আপডেট করুন</translation>
 <translation id="4747097190499141774">পাসফ্রেজ এনক্রিপশনে Google Pay-এর পেমেন্ট পদ্ধতি ও ঠিকানা অন্তর্ভুক্ত থাকে না। আপনার পাসফ্রেজ আছে এমন কেউই শুধু আপনার এনক্রিপ্ট করা ডেটা পড়তে পারবেন। পাসফ্রেজ Google-এ পাঠানো হয় না বা Google তা সংরক্ষণ করে না। আপনার পাসফ্রেজ ভুলে গেলে বা এই সেটিং পরিবর্তন করতে চাইলে, আপনাকে সিঙ্ক রিসেট করতে হবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">নতুন ছদ্মবেশী ট্যাব খুলুন</translation>
-<translation id="4766678251456904326">ডিভাইসে অ্যাকাউন্ট যোগ করুন</translation>
 <translation id="4775879719735953715">ডিফল্ট ব্রাউজার</translation>
 <translation id="4778644898150334464">অন্য পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="4802417911091824046">পাসফ্রেজ এনক্রিপশনে Google Pay-এর পেমেন্ট পদ্ধতি ও ঠিকানা অন্তর্ভুক্ত থাকে না।
@@ -493,6 +492,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">আপনার খবর ও গতিবিধি এখানে নিয়ন্ত্রণ করুন</translation>
 <translation id="6066301408025741299">বাতিল করতে আলতো চাপুন৷</translation>
+<translation id="60829778314739003">সম্মতি দিন এবং কাজ চালিয়ে যান</translation>
 <translation id="6108923351542677676">সেটআপ চলছে...</translation>
 <translation id="6119050551270742952">বর্তমান ওয়েবপেজটি ছদ্মবেশী মোডে আছে</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
@@ -588,6 +588,7 @@
 <translation id="6801927553864092214">গোপনে ব্রাউজ করতে ছদ্মবেশী ট্যাব খুলুন</translation>
 <translation id="6807889908376551050">সমস্ত দেখান...</translation>
 <translation id="681368974849482173">আইটেম তৈরি করা হয়েছে</translation>
+<translation id="6830804042318138535">আরও পড়ুন</translation>
 <translation id="6831043979455480757">অনুবাদ</translation>
 <translation id="6851516051005285358">ডেস্কটপ সাইটের জন্য অনুরোধ করুন</translation>
 <translation id="6858855187367714033">স্ক্যান করা হয়েছে</translation>
@@ -636,6 +637,7 @@
 <translation id="7291368939935408496">পাসওয়ার্ড তৈরি করা হচ্ছে...</translation>
 <translation id="7293171162284876153">সিঙ্ক চালু করতে "আপনার Chrome ডেটা সিঙ্ক করুন" বিকল্পটি চালু করুন।</translation>
 <translation id="7313347584264171202">আপনি এখানে নিজের ছদ্মবেশী ট্যাবগুলি খুঁজে পাবেন</translation>
+<translation id="7319242366286515846">চালিয়ে যাওয়ার অর্থ হল আপনি <ph name="BEGIN_LINK" />পরিষেবার শর্তাবলী<ph name="END_LINK" />তে সম্মতি দিচ্ছেন</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> শতাংশ ডাউনলোড হয়েছে</translation>
 <translation id="7340958967809483333">Discover-এর বিকল্প</translation>
 <translation id="7346909386216857016">ঠিক আছে, বুঝেছি</translation>
@@ -782,6 +784,7 @@
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8840513115188359703">আপনাকে Google অ্যাকাউন্ট থেকে সাইন-আউট করা হবে না।</translation>
 <translation id="8870413625673593573">সম্প্রতি বন্ধ হয়েছে</translation>
+<translation id="8876882697946675716">আপনার ডিভাইস সিঙ্ক করে রাখুন</translation>
 <translation id="8881801611828450202">এই ইমেজটির জন্য <ph name="SEARCH_ENGINE" />-এ খুঁজুন</translation>
 <translation id="8909135823018751308">শেয়ার করুন...</translation>
 <translation id="8917490105272468696">হ্যাঁ, আমি রাজি</translation>
@@ -789,6 +792,7 @@
 <translation id="8976382372951310360">সহায়তা</translation>
 <translation id="8981454092730389528">Google অ্যাক্টিভিটির নিয়ন্ত্রণগুলি</translation>
 <translation id="8985320356172329008">এই হিসাবে Google এ প্রবেশ করেছেন</translation>
+<translation id="8996526648899750015">অ্যাকাউন্ট যোগ করুন...</translation>
 <translation id="9034759925968272072">আপনাকে Google অ্যাকাউন্ট থেকে সাইন-আউট করা হবে না। আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিং ইতিহাস <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-এ থাকতে পারে।</translation>
 <translation id="9037965129289936994">প্রকৃত রূপ দেখান</translation>
 <translation id="9039373489628511875">ব্যান্ডউইথ</translation>

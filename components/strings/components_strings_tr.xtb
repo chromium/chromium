@@ -250,7 +250,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1772163372082567643">Ziyaret etmek üzere olduğunuz sunucu (<ph name="ORIGIN" />) kendisine gelen tüm isteklere bir kaynak politikası uygulanmasını gerektiren bir üst bilgi ayarladı. Ancak üst bilgi yanlış biçimlendirildiği için tarayıcı, <ph name="SITE" /> sitesiyle ilgili isteğinizi yerine getiremiyor. Kaynak politikaları
     site operatörleri tarafından sitenin güvenliğini ve diğer mülklerini yapılandırmak için kullanılabilir.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">Lütfen senkronizasyon parolanızı güncelleyin.</translation>
 <translation id="1787142507584202372">Açık sekmeleriniz burada görünür</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, birden fazla işlem mevcut, işlemler arasında geçiş yapmak için Sekme'ye basın</translation>
@@ -383,6 +382,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2317259163369394535"><ph name="DOMAIN" /> için kullanıcı adı ve şifre gerekiyor.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> için kullanım süresi sonu: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Ayar yöneticinizin kontrolü altındadır</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" /> eşlenmek istiyor</translation>
 <translation id="2344028582131185878">Otomatik İndirmeler</translation>
 <translation id="2346319942568447007">Kopyalanan resim</translation>
 <translation id="2354001756790975382">Diğer yer işaretleri</translation>
@@ -452,6 +452,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2629325967560697240">Chrome’un sağladığı en yüksek güvenlik düzeyinden faydalanmak için <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />gelişmiş korumayı açın<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ana makinesinin sunucu IP adresi bulunamadı.</translation>
 <translation id="2639739919103226564">Durum:</translation>
+<translation id="264810637653812429">Uyumlu cihaz bulunamadı.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında tarama geçmişinizi, çerezleri, önbelleği ve diğer öğeleri Temizlemek için Sekme'ye, sonra Enter'a basın</translation>
 <translation id="2650446666397867134">Dosyaya erişim reddedildi</translation>
@@ -496,6 +497,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2799223571221894425">Yeniden başlat</translation>
 <translation id="2803306138276472711">Google Güvenli Tarama yakın bir zamanda <ph name="SITE" /> sitesinde <ph name="BEGIN_LINK" />kötü amaçlı yazılım<ph name="END_LINK" /> tespit etti. Normalde güvenli olan web sitelerine bazen kötü amaçlı yazılımlar bulaşır.</translation>
 <translation id="2807052079800581569">Resim Y konumu</translation>
+<translation id="2820957248982571256">Taranıyor...</translation>
 <translation id="2824775600643448204">Adres ve arama çubuğu</translation>
 <translation id="2826760142808435982">Bağlantı <ph name="CIPHER" /> kullanılarak şifrelenmiş ve kimliği doğrulanmıştır. Anahtar değişim mekanizması olarak <ph name="KX" /> kullanılır.</translation>
 <translation id="2835170189407361413">Formu temizle</translation>
@@ -606,6 +608,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3266793032086590337">Değer (çakışma)</translation>
 <translation id="3268451620468152448">Açık Sekmeler</translation>
 <translation id="3270847123878663523">Sıralama Değişikliğini &amp;Geri Al</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> bağlanmak istiyor</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Kuruluşunuz (<ph name="ENROLLMENT_DOMAIN" />), aşağıdaki web sitelerine ayarlar ve politikalar gibi bazı bilgiler gönderdi.</translation>
 <translation id="3282497668470633863">Kart üzerindeki ismi ekle</translation>
@@ -1213,6 +1216,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5455374756549232013">Politika zaman damgası yanlış</translation>
 <translation id="5457113250005438886">Geçersiz</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> kişi daha}other{<ph name="CONTACT_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> kişi daha}}</translation>
+<translation id="5463625433003343978">Cihazlar bulunuyor...</translation>
 <translation id="5469868506864199649">İtalyanca</translation>
 <translation id="5470861586879999274">Düzenlemeyi &amp;yeniden yap</translation>
 <translation id="5478437291406423475">B6/C4 (Zarf)</translation>
@@ -1262,7 +1266,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5624120631404540903">Şifreleri yönet</translation>
 <translation id="5629630648637658800">Politika ayarları yüklenemedi</translation>
 <translation id="5631439013527180824">Geçersiz cihaz yönetimi jetonu</translation>
-<translation id="5632627355679805402"><ph name="TIME" /> itibarıyla verileriniz <ph name="BEGIN_LINK" />Google şifrenizle<ph name="END_LINK" /> şifrelendi. Senkronizasyonu başlatmak için şifreyi girin.</translation>
 <translation id="5633066919399395251">Şu anda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> sitesindeki saldırganlar, bilgilerinizi (örneğin, fotoğraflar, şifreler, mesajlar ve kredi kartları) çalabilecek veya silebilecek tehlikeli programları bilgisayarınıza yüklemeye çalışabilir. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Yanıltıcı içerik engellendi.</translation>
 <translation id="5644090287519800334">Taraf 1 resim X kayması</translation>
@@ -1306,6 +1309,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5804427196348435412">NFC cihazlarını kullanma</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> ile olan bağlantınız eski bir şifre seti kullanılarak şifrelendi.</translation>
 <translation id="5813119285467412249">Eklemeyi &amp;Yeniden Yap</translation>
+<translation id="5817918615728894473">Eşle</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Ödeme yaptığınızda ücret bu karttan alınır ancak kartın gerçek numarası bu site ile paylaşılmaz. Ek güvenlik için geçici bir CVC oluşturulur.}other{Ödeme yaptığınızda ücret, seçtiğiniz karttan alınır ancak kartın gerçek numarası bu site ile paylaşılmaz. Ek güvenlik için geçici bir CVC oluşturulur.}}</translation>
 <translation id="5826507051599432481">Genel Ad (CN)</translation>
 <translation id="5838278095973806738">Bu sitede hiçbir hassas bilginizi (örneğin şifrelerinizi veya kredi kartı bilgilerinizi) girmemelisiniz. Aksi takdirde bu bilgiler saldırganlar tarafından çalınabilir.</translation>
@@ -1313,6 +1317,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5855253129151731373">Bu sitenin ana makine adı <ph name="LOOKALIKE_DOMAIN" /> sitesinin adına benziyor. Saldırganlar bazen alan adında görülmesi zor ufak değişiklikler yaparak siteleri taklit ederler.
 
     Bu mesajın yanlışlıkla gösterildiğini düşünüyorsanız lütfen https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals adresini ziyaret edin.</translation>
+<translation id="5860033963881614850">Kapalı</translation>
 <translation id="5862579898803147654">Yığınlayıcı 8</translation>
 <translation id="5863847714970149516">Gireceğiniz sayfa sizden para almaya çalışabilir</translation>
 <translation id="5866257070973731571">Telefon Numarası Ekleyin</translation>
@@ -1506,6 +1511,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6624427990725312378">İletişim Bilgileri</translation>
 <translation id="6626291197371920147">Geçerli kart numarası ekle</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Arama</translation>
+<translation id="6630043285902923878">USB cihazlar bulunuyor...</translation>
 <translation id="6630809736994426279">Şu anda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> sitesindeki saldırganlar bilgilerinizi (örneğin, fotoğraflar, şifreler, mesajlar ve kredi kartları) çalabilecek veya silebilecek tehlikeli programları Mac'inize yüklemeye çalışabilir. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Temizle</translation>
@@ -1761,7 +1767,6 @@ Ek ayrıntılar:
 <translation id="7610193165460212391">Değer aralık dışında: <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Son kullanım tarihi: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında şifrelerinizi görüntüleyip yönetmek için Sekme'ye, sonra Enter'a basın</translation>
-<translation id="7615602087246926389">Google Hesabı şifrenizin farklı bir sürümü kullanılarak şifrelenmiş verileriniz zaten var. Lütfen bu şifreyi aşağıya girin.</translation>
 <translation id="7616645509853975347">Yöneticiniz, tarayıcınızda Chrome Enterprise Connectors özelliğini etkinleştirdi. Bu bağlayıcıların verilerinizin bir kısmına erişimi vardır.</translation>
 <translation id="7619838219691048931">Son sayfa</translation>
 <translation id="762844065391966283">Birer birer</translation>
@@ -2175,6 +2180,7 @@ Ek ayrıntılar:
 <translation id="9170848237812810038">&amp;Geri al</translation>
 <translation id="9171296965991013597">Uygulamadan çıkılsın mı?</translation>
 <translation id="9173282814238175921">Tek doküman/Yeni sayfa</translation>
+<translation id="9173995187295789444">Bluetooth cihazları taranıyor...</translation>
 <translation id="917450738466192189">Sunucunun sertifikası geçersiz.</translation>
 <translation id="9174917557437862841">Sekme değiştirme düğmesi, bu sekmeye geçmek için Enter tuşuna basın</translation>
 <translation id="9179703756951298733">Chrome ayarlarından ödemelerinizi ve kredi kartı bilgilerini yönetin</translation>

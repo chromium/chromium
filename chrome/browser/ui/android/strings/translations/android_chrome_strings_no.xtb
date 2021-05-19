@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Tilleggsvilkår for bruk av Chrome og Chrome OS</translation>
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1810845389119482123">Det innledende synkroniseringsoppsettet er ikke fullført</translation>
-<translation id="1821253160463689938">Bruker informasjonskapsler til å huske preferansene dine, selv om du ikke går til de sidene</translation>
 <translation id="1829244130665387512">Finn på side</translation>
 <translation id="1830550083491357902">Ikke pålogget</translation>
 <translation id="1843805151597803366">For å få bedre oversettelser, la Google Søk bruke den nåværende siden</translation>
@@ -203,6 +202,7 @@ Trykk på et ord for å søke. For å finstemme søket, trykk og hold inne for �
 <ph name="BEGIN_LIST_ITEM1" />Annonsører kan finne ut når tusenvis av brukere deler lignende interesser – som publikummet på en konsert –, og velge annonser for hele publikummet i stedet for enkeltpersoner.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Annonsører kan studere effektiviteten av annonser på en måte som ikke sporer deg på tvers av nettsteder.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Forhåndslaster sider som Chrome tror du kanskje kommer til å besøke. For å gjøre dette kan det hende Chrome bruker informasjonskapsler (hvis du tillater informasjonskapsler) og krypterer og sender sider gjennom Google for å skjule identiteten din for nettsteder.</translation>
 <translation id="234265804618409743">Kan ikke åpne kameraet. Noe gikk galt.</translation>
 <translation id="2345671828921229300">For å søke, trykk og hold inne på et ord</translation>
 <translation id="2349710944427398404">Total datamengde som brukes av Chrome, deriblant kontoer, bokmerker og lagrede innstillinger</translation>
@@ -273,7 +273,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder igjen</translation>
 <translation id="2779651927720337254">mislyktes</translation>
 <translation id="2781151931089541271">1 sekund igjen</translation>
-<translation id="279827439955962619">Fjern markering</translation>
 <translation id="2801022321632964776">Oppdater for å få språket ditt i den nyeste versjonen av Chrome</translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="281504910091592009">Se og administrer lagrede passord i <ph name="BEGIN_LINK" />Google-kontoen<ph name="END_LINK" /> din</translation>
@@ -454,7 +453,6 @@ Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte
 <translation id="3988466920954086464">Se umiddelbare søkeresultater i dette panelet</translation>
 <translation id="4000212216660919741">Hjem uten nett</translation>
 <translation id="4016425174436051808">Kan ikke følge. Noe gikk galt.</translation>
-<translation id="4021916380760361450">Kontrollér Google-kontodataene dine</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# t}other{# t}}</translation>
 <translation id="4045764304651014138">Bruksdata</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -480,7 +478,6 @@ Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte
 <translation id="4195643157523330669">Åpne i ny fane</translation>
 <translation id="4198423547019359126">Ingen tilgjengelige nedlastingssteder</translation>
 <translation id="4209895695669353772">For å få forslag om personlig tilpasset innhold fra Google, slå på synkronisering</translation>
-<translation id="423219824432660969">Kryptér synkroniserte data med Google-passord fra og med <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Åpne innstillingene</translation>
 <translation id="4248098802131000011">Beskytt passordene dine mot databrudd og andre sikkerhetsproblemer</translation>
 <translation id="4250229828105606438">Skjermdump</translation>
@@ -559,6 +556,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="47217992755561375">Se toppnettstedene dine</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4738836084190194332">Sist synkronisert: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Fjern markering</translation>
 <translation id="4749960740855309258">Åpne en ny fane</translation>
 <translation id="4759238208242260848">Nedlastinger</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +697,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="562289928968387744">Administrer reaksjoner</translation>
 <translation id="5626134646977739690">Navn:</translation>
 <translation id="5628604359369369630">Ulest – tilgjengelig uten nett</translation>
-<translation id="5632627355679805402">Dataene dine har blitt kryptert med <ph name="BEGIN_LINK" />Google-passordet<ph name="END_LINK" /> ditt siden <ph name="TIME" />. Skriv det inn for å starte synkroniseringen.</translation>
 <translation id="5639724618331995626">Tillat alle nettsteder</translation>
 <translation id="5648166631817621825">Siste 7 dager</translation>
 <translation id="5655963694829536461">Søk i nedlastingene dine</translation>
@@ -934,7 +931,6 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="702463548815491781">Anbefalt når TalkBack eller brytertilgang er på</translation>
 <translation id="7027549951530753705">Gjenopprettet <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Passord</translation>
-<translation id="7040531500313579672">Del markering</translation>
 <translation id="7054588988317389591">Vil du ha bildebeskrivelser?</translation>
 <translation id="7055152154916055070">Viderekoblingen er blokkert:</translation>
 <translation id="7063006564040364415">Kunne ikke koble til synkroniseringstjeneren.</translation>
@@ -970,6 +966,7 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="7328017930301109123">I forenklet modus laster Chrome inn sider raskere og bruker opptil 60 prosent mindre data.</translation>
 <translation id="7332075081379534664">Påloggingen var vellykket</translation>
 <translation id="7333031090786104871">Holder fortsatt på å legge til det forrige nettstedet</translation>
+<translation id="7339898014177206373">Nytt vindu</translation>
 <translation id="7340958967809483333">Alternativer for Discover</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
 <translation id="7352939065658542140">VIDEO</translation>
@@ -998,6 +995,7 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="7493994139787901920"><ph name="VERSION" /> (oppdatert <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">data spart</translation>
 <translation id="7498271377022651285">Vent litt</translation>
+<translation id="750228856503700085">Oppdateringer er ikke tilgjengelige</translation>
 <translation id="7507207699631365376">Se denne leverandørens <ph name="BEGIN_LINK" />personvernerklæring<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Last ned</translation>
 <translation id="751961395872307827">Kan ikke koble til nettstedet</translation>
@@ -1099,6 +1097,7 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="8076492880354921740">Faner</translation>
 <translation id="8078096376109663956">Del kun tekst</translation>
 <translation id="8084114998886531721">Lagret passord</translation>
+<translation id="8084285576995584326">Kontrollér Google-kontodataene dine</translation>
 <translation id="808747664143081553">Koblet til enheten</translation>
 <translation id="8103578431304235997">Inkognitofane</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="8725066075913043281">Prøv igjen</translation>
 <translation id="8730621377337864115">Ferdig</translation>
+<translation id="8746155870861185046">Del merket tekst</translation>
 <translation id="8748850008226585750">Innholdet er skjult</translation>
 <translation id="8773160212632396039">Behandler forespørselen</translation>
 <translation id="8788265440806329501">Navigasjonsloggen er lukket</translation>

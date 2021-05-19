@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">जुम घटाउनुहोस्</translation>
 <translation id="2230173723195178503">वेबपृष्ठ लोड गरियो</translation>
 <translation id="2239626343334228536">ब्राउजिङ डेटा खाली गर्दै...</translation>
-<translation id="2257567812274161158">सिंक गर्ने सुविधाले काम गरिरहेको छैन</translation>
 <translation id="225943865679747347">त्रुटि कोड: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">खाता थप्नुहोस्...</translation>
 <translation id="2268044343513325586">परिशुद्ध</translation>
@@ -143,7 +142,6 @@
 साइटहरूले तपाईंका गतिविधिअनुसार विज्ञापन देखाउने जस्ता प्रयोजनका लागि विभिन्न साइटहरूमा तपाईंको ब्राउजिङसम्बन्धी गतिविधि हेर्न कुकीहरू प्रयोग गर्न सक्दैनन्।</translation>
 <translation id="2381405137052800939">आधारभूत</translation>
 <translation id="2386793615875593361">1 चयन गरियो</translation>
-<translation id="2410754283952462441">कुनै खाता छान्नुहोस्</translation>
 <translation id="2421004566762153674">तेस्रो पक्षीय कुकीहरूलाई रोक लगाउँदै</translation>
 <translation id="2421044535038393232">सम्पादन गरिरहनुहोस्</translation>
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
@@ -309,7 +307,7 @@
 <translation id="411254640334432676">डाउनलोड असफल भयो।</translation>
 <translation id="4112644173421521737">खोज्नुहोस्</translation>
 <translation id="4113030288477039509">तपाईंको व्यवस्थापकबाट व्यवस्थित गरिएको</translation>
-<translation id="4121993058175073134">नेट-निर्यात लगत पठाउन, कृपया सेटिङहरूको अनुप्रयोगमा तपाइँको इमेल खाता विन्यास गर्नुहोस्।</translation>
+<translation id="4121993058175073134">नेट-निर्यात लगत पठाउन, कृपया सेटिङहरूको एपमा तपाइँको इमेल खाता विन्यास गर्नुहोस्।</translation>
 <translation id="4124987746317609294">समय दायरा</translation>
 <translation id="4152011295694446843">तपाईंका बुकमार्कहरू यहाँ देखिने छन्</translation>
 <translation id="4172051516777682613">सधैँ देखाउनुहोस्</translation>
@@ -327,7 +325,7 @@
 <translation id="430967081421617822">सर्वकालीन</translation>
 <translation id="4334428914252001502">१ वटा नपढिएको लेख।</translation>
 <translation id="4338650699862464074">यसले Google मा तपाईं जाने पृष्ठका URL हरू पठाउँछ।</translation>
-<translation id="4359125752503270327">यो पृष्ठ अर्को अनुप्रयोगमा खुल्नेछ।</translation>
+<translation id="4359125752503270327">यो पृष्ठ अर्को एपमा खुल्नेछ।</translation>
 <translation id="4375040482473363939">QR कोड खोज्नुहोस्‌</translation>
 <translation id="4378154925671717803">फोन</translation>
 <translation id="4389019817280890563">भाषा परिवर्तन गर्न ट्याप गर्नुहोस्।</translation>
@@ -362,7 +360,6 @@
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
 <translation id="4747097190499141774">पासफ्रेजमार्फत इन्क्रिप्सन गर्ने कार्यअन्तर्गत Google Pay का भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्। तपाईंको पासफ्रेज थाहा हुने व्यक्तिले मात्र तपाईंको इन्क्रिप्ट गरिएको डेटा पढ्न सक्छ। उक्त पासफ्रेज Google मा पठाइँदैन वा त्यहाँ भण्डारण गरिँदैन। तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा तपाईं यो सेटिङ परिवर्तन गर्न चाहनुहुन्छ भने तपाईंले सिंक रिसेट गर्नु पर्ने हुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">नयाँ इन्कोग्निटो ट्याब</translation>
-<translation id="4766678251456904326">यन्त्रमा खाता जोड्नुहोस्</translation>
 <translation id="4775879719735953715">डिफल्ट ब्राउजर</translation>
 <translation id="4778644898150334464">अर्को पासवर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="4802417911091824046">पासफ्रेजमार्फत इन्क्रिप्सन गर्ने कार्यअन्तर्गत Google Pay का भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्।
@@ -510,7 +507,7 @@
 <translation id="6219688215832490856">कहिल्यै पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="6223816392543092032">आफ्ना बुकमार्क, इतिहास, पासवर्ड र अन्य सेटिङ आफ्ना सबै डिभाइसहरूमा उपलब्ध गराउनुहोस्।</translation>
 <translation id="6232329973559504466">इन्कोग्निटो खोज</translation>
-<translation id="6254066287920239840">लिंंकहरूलाई ब्राउजरको सट्टा यो अनुप्रयोगमा खोल्नुहोस्।</translation>
+<translation id="6254066287920239840">लिंंकहरूलाई ब्राउजरको सट्टा यो एपमा खोल्नुहोस्।</translation>
 <translation id="6255097610484507482">क्रेडिट कार्ड सम्पादन गर्नुहोस्</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषा अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="6293101329759844770">Safe Browsing अन गर्न <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> खोल्नुहोस् र Safe Browsing मा ट्याप गर्नुहोस्।</translation>
@@ -794,6 +791,7 @@
 <translation id="8976382372951310360">मद्दत</translation>
 <translation id="8981454092730389528">Google गतिविधि नियन्त्रणहरू</translation>
 <translation id="8985320356172329008">Google मा यस रूपमा साइन इन गरियो</translation>
+<translation id="8996526648899750015">खाता थप्नुहोस्...</translation>
 <translation id="9034759925968272072">तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन। <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> मा रहेको तपाईंको Google खातामा अझै पनि ब्राउजिङको इतिहासका अन्य ढाँचाहरू उपलब्ध हुन सक्छन्।</translation>
 <translation id="9037965129289936994">मूल पाठ देखाउनुहोस्</translation>
 <translation id="9039373489628511875">व्याण्डविथ</translation>

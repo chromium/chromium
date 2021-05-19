@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">Oddialiť</translation>
 <translation id="2230173723195178503">Načítala sa webová stránka</translation>
 <translation id="2239626343334228536">Vymazávajú sa dáta prehliadania…</translation>
-<translation id="2257567812274161158">Synchronizácia nefunguje.</translation>
 <translation id="225943865679747347">Kód chyby: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Pridať účet</translation>
 <translation id="2268044343513325586">Upraviť</translation>
@@ -143,7 +142,6 @@
 Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám).</translation>
 <translation id="2381405137052800939">Základy</translation>
 <translation id="2386793615875593361">Počet vybratých fotografií: 1</translation>
-<translation id="2410754283952462441">Výber účtu</translation>
 <translation id="2421004566762153674">Blokovanie súborov cookie tretích strán</translation>
 <translation id="2421044535038393232">Ďalej upravovať</translation>
 <translation id="2435457462613246316">Zobraziť heslo</translation>
@@ -362,7 +360,6 @@ Postupujte podľa krokov nižšie:</translation>
 <translation id="473775607612524610">Aktualizovať</translation>
 <translation id="4747097190499141774">Šifrovanie prístupovej frázy nezahŕňa spôsoby platby a adresy zo služby Google Pay. Šifrované údaje si môže prečítať iba používateľ s prístupovou frázou. Prístupová fráza sa neodosiela do Googlu ani sa v ňom neuchováva. Ak ju zabudnete, budete musieť resetovať synchronizáciu. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nová karta inkognito</translation>
-<translation id="4766678251456904326">Pridať účet do zariadenia</translation>
 <translation id="4775879719735953715">Predvolený prehliadač</translation>
 <translation id="4778644898150334464">Použiť iné heslo</translation>
 <translation id="4802417911091824046">Šifrovanie prístupovej frázy nezahŕňa spôsoby platby a adresy zo služby Google Pay.
@@ -794,6 +791,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8976382372951310360">Pomocník</translation>
 <translation id="8981454092730389528">Riadenie aktivity Google</translation>
 <translation id="8985320356172329008">Prihlásený účet Google</translation>
+<translation id="8996526648899750015">Pridať účet...</translation>
 <translation id="9034759925968272072">Neodhlásime vás z účtu Google. Váš účet Google môže mať ďalšie formy histórie prehliadania na adrese <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Zobraziť originál</translation>
 <translation id="9039373489628511875">Rýchlosť pripojenia</translation>
@@ -816,6 +814,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Správa o zlyhaní bola odoslaná.</translation>
 <translation id="952704832371081537">Zrušiť</translation>
+<translation id="984509647832111802">Synchronizácia nefunguje.</translation>
 <translation id="988141524645182168">Iné zariadenia</translation>
 <translation id="989988560359834682">Úprava adresy</translation>
 <translation id="994757059139821576">Návrhy článkov</translation>

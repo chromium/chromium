@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">ਟਾਈਮਰ</translation>
 <translation id="3199563858620722075">ਕੋਂਬੋ ਬਾਕਸ</translation>
 <translation id="3220661731597678625">ਮੌਜੂਦਾ ਪੜਾਅ</translation>
+<translation id="3321030238473337787">ਪਲੇਬੈਕ ਦੀ ਗਤੀ</translation>
 <translation id="3329013043687509092">ਸੰਤ੍ਰਿਪਤੀ</translation>
 <translation id="3450233048674729344">ਵੈਲਯੂ <ph name="MAXIMUM" /> ਤੋਂ ਘੱਟ ਜਾਂ ਇਸਦੇ ਬਰਾਬਰ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="3486220673238053218">ਪਰਿਭਾਸ਼ਾ</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">ਮੀਨੂ ਬਾਰ</translation>
 <translation id="4293574643247337246">ਪੰਨੇ ਦਾ ਸਿਰਲੇਖ</translation>
 <translation id="4360991593054037559">ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਪ੍ਰਮਾਣਿਕ ਵੈਲਯੂ ਦਰਜ ਕਰੋ। ਦੋ ਲਗਭਗ ਵੈਲਯੂਜ <ph name="VALID_VALUE_LOW" /> ਅਤੇ <ph name="VALID_VALUE_HIGHER" /> ਹਨ।</translation>
+<translation id="4371899966896349864">ਪਲੇਬੈਕ ਦੀ ਗਤੀ ਵਾਲਾ ਮੀਨੂ ਲੁਕਾਓ</translation>
 <translation id="4384249794467006333">ਇਹ ਚਿੱਤਰ ਲੇਬਲਬੱਧ ਨਹੀਂ ਹੈ। ਚਿੱਤਰ ਦੇ ਵਰਣਨ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਿਖਰ 'ਤੇ ਸੱਜੇ ਪਾਸੇ 'ਹੋਰ ਵਿਕਲਪ' ਮੀਨੂ ਖੋਲ੍ਹੋ।</translation>
 <translation id="4384583879834880242">ਸਵਾਲ-ਜਵਾਬ</translation>
 <translation id="4444765639179266822">ਲੱਗਦਾ ਹੈ ਕਿ ਇਹ ਕਿਹਾ ਜਾ ਰਿਹਾ ਹੈ: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">ਟ੍ਰੀ ਆਈਟਮ</translation>
 <translation id="5466621249238537318">ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਜਾਂ ਵੱਧ ਫਾਈਲਾਂ ਚੁਣੋ।</translation>
 <translation id="5468998798572797635">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
+<translation id="5516235301412634559">0.75</translation>
 <translation id="5516424706154626233">ਮਿਤੀ ਚੋਣਕਰਤਾ</translation>
 <translation id="5537725057119320332">ਕਾਸਟ ਕਰੋ</translation>
 <translation id="5546461542133609677">ਅਨਮਿਊਟ ਕਰੋ</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">ਹੋਰ ਵਿਕਲਪ</translation>
 <translation id="576709008726043716">ਜਾਣ-ਪਛਾਣ</translation>
 <translation id="57838592816432529">ਮਿਊਟ ਕਰੋ</translation>
+<translation id="5786442179789148008">ਪਲੇਬੈਕ ਦੀ ਗਤੀ ਵਾਲਾ ਮੀਨੂ ਦਿਖਾਓ</translation>
 <translation id="5787939484346677755">ਵਿਸਤਾਰ ਕੀਤਾ ਗਿਆ, ਸਵੈ-ਮੁਕੰਮਲ ਵਿਕਲਪ ਉਪਲਬਧ ਹਨ।</translation>
 <translation id="5860033963881614850">ਬੰਦ ਕਰੋ</translation>
 <translation id="588258955323874662">ਫੁਲਸਕ੍ਰੀਨ</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">ਚਾਲੂ</translation>
 <translation id="5939518447894949180">ਰੀਸੈਟ ਕਰੋ</translation>
 <translation id="5966707198760109579">ਹਫ਼ਤਾ</translation>
+<translation id="5985507339671257014">0.5</translation>
 <translation id="5987525920412732405">ਸਪਿਨ ਬਟਨ</translation>
 <translation id="6011459053400940133">ਅਵਾਜ਼ ਸਲਾਈਡਰ</translation>
 <translation id="6015796118275082299">ਸਾਲ</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">ਮਿਊਟ ਕਰੋ</translation>
 <translation id="6885760532393684712">ਡਾਇਰੈਕਟਰੀ</translation>
 <translation id="689129560213475294">ਪੁਸਤਕ 'ਤੇ ਦਿੱਤਾ ਪ੍ਰਕਾਸ਼ਕ ਦਾ ਨਾਮ ਜਾਂ ਚਿੰਨ੍ਹ</translation>
+<translation id="6919891270253167948">1.5</translation>
 <translation id="6934078000481955284">ਬਲੌਕਕੋਟ</translation>
 <translation id="693476918119313863">ਸਿਰਲੇਖ</translation>
 <translation id="6941933287844615239">ਮੀਡੀਆ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
@@ -252,6 +258,7 @@
 <translation id="7745230546936012372">ਗੈਰ-ਮੌਜੂਦ ਚਿੱਤਰ ਵਰਣਨ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਸੰਦਰਭੀ ਮੀਨੂ ਖੋਲ੍ਹੋ।</translation>
 <translation id="7750228210027921155">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ</translation>
 <translation id="775297008183122718">ਅਵੈਧ ਇੰਦਰਾਜ</translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">ਰੋਕੋ</translation>
 <translation id="7802800022689234070">ਖੁਲਾਸਾ ਤਿਕੋਣ</translation>
 <translation id="7852167693871241274">ਰੰਗ ਦੀ ਭਾਹ ਵਾਲਾ ਸਲਾਈਡਰ</translation>
@@ -265,6 +272,7 @@
 <translation id="8105797009065549151">ਨੋਟ ਦਾ ਹਵਾਲਾ</translation>
 <translation id="811583516810654505">ਵਰਣਨ ਪ੍ਰਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="8117451130807776954">ਇਸ ਹਫ਼ਤੇ</translation>
+<translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8208673686607688524">ਸਥਾਨਕ ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ ਚੋਣਕਾਰ</translation>
 <translation id="8261464734335370856">ਅਵੈਧ ਸ਼ਬਦ-ਜੋੜ</translation>
@@ -289,6 +297,7 @@
 <translation id="8613126697340063924">ਰਿਮੋਟ ਪਲੇਬੈਕ ਨੂੰ ਨਿਯੰਤਰਿਤ ਕਰੋ</translation>
 <translation id="862370744433916922">ਉਪਸਿਰੇਲਖ</translation>
 <translation id="8634971699417195529">ਮਹੀਨਾ ਚੋਣਕਾਰ ਦਿਖਾਓ</translation>
+<translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">ਲਾਈਨ ਨੂੰ ਸੀਮਾਬੱਧ ਕਰੋ</translation>
 <translation id="8711688047404765493">ਆਊਟਪੁੱਟ</translation>
 <translation id="8750798805984357768">ਕਿਰਪਾ ਕਰਕੇ ਇਹਨਾਂ ਚੋਣਾਂ ਵਿੱਚੋਂ ਇੱਕ ਚੁਣੋ।</translation>

@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome अपडेट की जांच नहीं कर सका. कुछ देर बाद कोशिश करें.</translation>
 <translation id="2732745070297234559">Chrome सभी पासवर्ड की जांच नहीं कर सका. कल कोशिश करें.</translation>
 <translation id="2740105938841089077">लिंक खोलने के लिए Chrome का इस्तेमाल करें</translation>
+<translation id="2869959624320573933">Chrome में साइन इन करें</translation>
 <translation id="2919738076569633423">Chrome का इस्तेमाल करने का मतलब है कि आप <ph name="BEGIN_LINK_TOS" />सेवा की शर्तों<ph name="END_LINK_TOS" /> से सहमत हैं.</translation>
 <translation id="3030414234702425231">क्‍योंकि आप <ph name="SIGNOUT_MANAGED_DOMAIN" /> की ओर से प्रबंधित खाते से साइन आउट कर रहे हैं, इसलिए आपका Chrome डेटा इस डिवाइस से मिट जाएगा. आपका डेटा आपके Google खाते में बना रहेगा.</translation>
 <translation id="3167189358072330585">आपका खाता Google Chrome पर काम नहीं करता. कृपया साइन इन करने के लिए अपने डोमेन एडमिन से संपर्क करें या नियमित Google खाते का इस्तेमाल करें.</translation>
 <translation id="3173834708294760622">Google Chrome पेज</translation>
 <translation id="3196546062792660320">Chrome आपके खातों को वेब पर लाकर आपका समय बचाता है. आप सेटिंग में खाते जोड़ सकते हैं या उन्हें निकाल सकते हैं.</translation>
-<translation id="3223655207402797071">इस साइट, अपने Google खाते, और Chrome में साइन इन करें. आप सिंक करने की सुविधा बाद में चालू कर सकते हैं.</translation>
 <translation id="3282568296779691940">Chrome में साइन इन करें</translation>
 <translation id="3345341804167540816">Chrome का सभी जगह उपयोग करना</translation>
 <translation id="3455456143708465450">Chrome का ज़्यादा से ज़्यादा फ़ायदा पाने के लिए, अपने Google खाते से साइन इन करें</translation>
@@ -90,6 +90,7 @@
 <translation id="7855730255114109580">Google Chrome अप टू डेट है</translation>
 <translation id="8022947259858476807">लिंक खोलने के लिए, विजेट से खोजने के लिए, Chrome को डिफ़ॉल्ट रूप से इस्तेमाल करें. ऐप्लिकेशन में पासवर्ड अपने-आप भर जाए, इसके लिए भी Chrome को डिफ़ॉल्ट रूप से इस्तेमाल करें.</translation>
 <translation id="8160472928944011082">Chrome को अपडेट नहीं किया जा सका</translation>
+<translation id="8263079278049777200">इस साइट, अपने Google खाते, और Chrome में साइन इन करें. आप सिंक करने की सुविधा को बाद में चालू कर सकते हैं.</translation>
 <translation id="8357607116237445042">चुनें कि आप इस डिवाइस से अपना Chrome डेटा मिटाना चाहते हैं या सेव रखना चाहते हैं</translation>
 <translation id="8370517070665726704">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्वाधिकार सुरक्षित.</translation>
 <translation id="840168496893712993">कुछ ऐड-ऑन के कारण Chrome क्रैश हो जाता है. कृपया उन्हें अनइंस्टॉल करके देखें.</translation>

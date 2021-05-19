@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Yderligere servicevilkår for Google Chrome og Chrome OS</translation>
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1810845389119482123">Indledende konfiguration af synkronisering er ikke afsluttet</translation>
-<translation id="1821253160463689938">Anvender cookies til at huske dine præferencer, også selvom du ikke besøger siderne</translation>
 <translation id="1829244130665387512">Find på siden</translation>
 <translation id="1830550083491357902">Ikke logget ind</translation>
 <translation id="1843805151597803366">Du kan få bedre oversættelser ved at lade Google Søgning bruge den aktuelle side</translation>
@@ -203,6 +202,7 @@ Tryk på et ord for at søge. Du kan tilpasse søgningen ved at holde fingeren n
 <ph name="BEGIN_LIST_ITEM1" />Annoncører kan se, når tusindvis af brugere har en lignende interesse – ligesom publikummet til en koncert – og udvælge annoncer til gruppen af brugere frem for til en enkelt bruger.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Annoncører kan undersøge effektiviteten af annoncer på en måde, der ikke sporer dig på tværs af forskellige websites.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Forudindlæser sider, som Chrome tror, du måske vil besøge. Chrome kan bruge cookies til dette formål, hvis du tillader cookies, og kan kryptere og sende sider via Google for at skjule din identitet for websites.</translation>
 <translation id="234265804618409743">Dit kamera kan ikke åbnes. Noget gik galt.</translation>
 <translation id="2345671828921229300">Hold et ord nede for at søge</translation>
 <translation id="2349710944427398404">Samlet mængde data, som Chrome anvender, herunder konti, bogmærker og gemte indstillinger</translation>
@@ -273,7 +273,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder tilbage</translation>
 <translation id="2779651927720337254">mislykkedes</translation>
 <translation id="2781151931089541271">1 sekund tilbage</translation>
-<translation id="279827439955962619">Fjern fremhævning</translation>
 <translation id="2801022321632964776">Opdater til den nyeste version af Chrome for at bruge dit eget sprog</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">Se og administrer gemte adgangskoder på din <ph name="BEGIN_LINK" />Google-konto<ph name="END_LINK" /></translation>
@@ -454,7 +453,6 @@ Privacy Sandbox er stadig under udvikling og kan anvendes i udvalgte områder. I
 <translation id="3988466920954086464">Se direkte søgeresultater i dette panel</translation>
 <translation id="4000212216660919741">Hjemmet er offline</translation>
 <translation id="4016425174436051808">Indholdet kan ikke følges. Der opstod en fejl.</translation>
-<translation id="4021916380760361450">Administrer dine Google-kontodata</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# t.}one{# t.}other{# t.}}</translation>
 <translation id="4045764304651014138">Brugsdata</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -472,7 +470,7 @@ Privacy Sandbox er stadig under udvikling og kan anvendes i udvalgte områder. I
 <translation id="4135200667068010335">Lukket liste over enheder, der skal deles en fane med.</translation>
 <translation id="4141536112466364990">Lær Chrome at kende</translation>
 <translation id="4149994727733219643">Enkel visning af websider</translation>
-<translation id="4165986682804962316">Indstillinger for websites</translation>
+<translation id="4165986682804962316">Websiteindstillinger</translation>
 <translation id="4170011742729630528">Tjenesten er ikke tilgængelig. Prøv igen senere.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> er brugt</translation>
 <translation id="4181841719683918333">Sprog</translation>
@@ -480,7 +478,6 @@ Privacy Sandbox er stadig under udvikling og kan anvendes i udvalgte områder. I
 <translation id="4195643157523330669">Åbn på ny fane</translation>
 <translation id="4198423547019359126">Der er ingen tilgængelige downloadplaceringer</translation>
 <translation id="4209895695669353772">Aktivér synkronisering for at hente brugertilpasset indhold, som er foreslået af Google</translation>
-<translation id="423219824432660969">Kryptér synkroniserede data med Google-adgangskoden fra <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Åbn Indstillinger</translation>
 <translation id="4248098802131000011">Beskyt dine adgangskoder mod brud på datasikkerheden og andre sikkerhedsproblemer</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -559,6 +556,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="47217992755561375">Se dine mest anvendte websites</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4738836084190194332">Seneste synkronisering: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Fjern fremhævning</translation>
 <translation id="4749960740855309258">Åbn en ny fane</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +697,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="562289928968387744">Administrer reaktioner</translation>
 <translation id="5626134646977739690">Navn:</translation>
 <translation id="5628604359369369630">Ulæst – Tilgængelig offline</translation>
-<translation id="5632627355679805402">Dine data er krypteret med din <ph name="BEGIN_LINK" />Google-adgangskode<ph name="END_LINK" /> fra <ph name="TIME" />. Angiv den for at starte synkroniseringen.</translation>
 <translation id="5639724618331995626">Tillad alle websites</translation>
 <translation id="5648166631817621825">De seneste syv dage</translation>
 <translation id="5655963694829536461">Søg i dine downloads</translation>
@@ -934,7 +931,6 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="702463548815491781">Anbefales, når TalkBack eller Kontaktadgang er aktiveret</translation>
 <translation id="7027549951530753705">Gendannet den <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Adgangskoder</translation>
-<translation id="7040531500313579672">Del fremhævning</translation>
 <translation id="7054588988317389591">Vil du have billedbeskrivelser?</translation>
 <translation id="7055152154916055070">Omdirigeringen blev blokeret:</translation>
 <translation id="7063006564040364415">Der kunne ikke oprettes forbindelse til synkroniseringsserveren.</translation>
@@ -970,6 +966,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="7328017930301109123">Chrome indlæser sider hurtigere og bruger op til 60 procent mindre data i Lite-tilstand.</translation>
 <translation id="7332075081379534664">Login blev fuldført</translation>
 <translation id="7333031090786104871">Det forrige website er stadig ved at blive tilføjet</translation>
+<translation id="7339898014177206373">Nyt vindue</translation>
 <translation id="7340958967809483333">Indstillinger for Discover</translation>
 <translation id="7352651011704765696">Noget gik galt</translation>
 <translation id="7352939065658542140">VIDEO</translation>
@@ -998,6 +995,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="7493994139787901920"><ph name="VERSION" /> (Opdateret <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">databesparelse</translation>
 <translation id="7498271377022651285">Vent…</translation>
+<translation id="750228856503700085">Opdateringer er ikke tilgængelige</translation>
 <translation id="7507207699631365376">Se denne udbyders <ph name="BEGIN_LINK" />privatlivspolitik<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="751961395872307827">Der kunne ikke oprettes forbindelse til websitet</translation>
@@ -1099,6 +1097,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="8076492880354921740">Faner</translation>
 <translation id="8078096376109663956">Kun deling af tekst</translation>
 <translation id="8084114998886531721">Gemt adgangskode</translation>
+<translation id="8084285576995584326">Administrer dine Google-kontodata</translation>
 <translation id="808747664143081553">Der er oprettet forbindelse til enheden</translation>
 <translation id="8103578431304235997">Inkognitofane</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>
 <translation id="8730621377337864115">Udfør</translation>
+<translation id="8746155870861185046">Del fremhævet</translation>
 <translation id="8748850008226585750">Indholdet er skjult</translation>
 <translation id="8773160212632396039">Behandler anmodning</translation>
 <translation id="8788265440806329501">Navigationsoversigt er lukket</translation>

@@ -48,12 +48,12 @@
 <translation id="4852878756222711218">Да бисте искористили Chromium на најбољи начин, пријавите се помоћу Google налога</translation>
 <translation id="4985291216379576555">Офлајн сте. Chromium не може да тражи ажурирања.</translation>
 <translation id="4999538639245140991">Одјављујете се са налога којим управља <ph name="SIGNOUT_MANAGED_DOMAIN" />, што ће избрисати Chromium податке са овог уређаја. Подаци ће остати на Google налогу.</translation>
+<translation id="5171868502429358653">Пријавите се у Chromium</translation>
 <translation id="5224391634244552924">Нема сачуваних лозинки. Chromium може да проверава лозинке када их сачувате.</translation>
 <translation id="5308226104666789935">Chromium не може да тражи ажурирања</translation>
 <translation id="5396916991083608703">Желите да подесите Chromium као подразумевани?</translation>
 <translation id="5521125884468363740">Да бисте видели картице на било којем уређају на ком користите Chromium, пријавите се и укључите синхронизацију</translation>
 <translation id="5573014823074921752">Савет за Chromium. Ако желите више опција за картице, додирните и задржите дугме Прикажи картице на траци с алаткама, која се налази у дну или врху екрана.</translation>
-<translation id="5651741435382092412">Пријавите се на овај сајт, Google налог и у Chromium. Синхронизацију можете да укључите касније.</translation>
 <translation id="5700709190537129682">Chromium не може да вам проверава лозинке</translation>
 <translation id="5742135483959137648">Користите Chromium да бисте отварали линкове</translation>
 <translation id="5777187867430702742">Chromium страница</translation>
@@ -64,6 +64,7 @@
 1. Отворите подешавања
 2. Додирните Подразумевана апликација за прегледање
 3. Изаберите Chromium.</translation>
+<translation id="6155422572367400359">Пријавите се на овај сајт, Google налог и у Chromium. Синхронизацију можете да укључите касније.</translation>
 <translation id="6268381023930128611">Желите ли да се одјавите из Chromium-а?</translation>
 <translation id="632825460376924298">Дозволите пријављивање у Chromium</translation>
 <translation id="6337530241089703714">Одаберите да ли ћете обрисати Chromium податке са овог уређаја или их задржати</translation>

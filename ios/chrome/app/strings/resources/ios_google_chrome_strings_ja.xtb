@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="2732745070297234559">Chrome ですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
 <translation id="2740105938841089077">Chrome でリンクを開く</translation>
+<translation id="2869959624320573933">Chrome へのログイン</translation>
 <translation id="2919738076569633423">Chrome を使用すると、<ph name="BEGIN_LINK_TOS" />利用規約<ph name="END_LINK_TOS" />に同意したことになります。</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> で管理されているアカウントからログアウトするにあたり、Chrome データはこのデバイスから削除されます（ただし Google アカウントには残ります）。</translation>
 <translation id="3167189358072330585">このアカウントは Google Chrome では使用できません。ドメイン管理者に問い合わせるか、通常の Google アカウントでログインしてください。</translation>
 <translation id="3173834708294760622">Google Chrome ページ</translation>
 <translation id="3196546062792660320">Chrome ではアカウントがウェブで管理されるので、さまざまな手間を省くことができます。[設定] でアカウントの追加と削除を行うことができます。</translation>
-<translation id="3223655207402797071">このサイト、Google アカウント、Chrome にログインします。同期を後でオンにすることもできます。</translation>
 <translation id="3282568296779691940">Chrome にログイン</translation>
 <translation id="3345341804167540816">Chromeをどこでも使用</translation>
 <translation id="3455456143708465450">Chrome を最大限に活用するには、Google アカウントでログインしてください</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome は最新版です</translation>
 <translation id="8022947259858476807">Chrome を既定に設定すると、リンクの表示やウィジェットからの検索、他のアプリでのパスワードの自動入力に使用できるようになります</translation>
 <translation id="8160472928944011082">Chrome を更新できません</translation>
+<translation id="8263079278049777200">このサイト、Google アカウント、Chrome にログインします。同期は後でオンにできます。</translation>
 <translation id="8357607116237445042">このデバイスから Chrome データを削除するかどうかを選択してください</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="840168496893712993">アドオンが原因でChromeがクラッシュしました。アドオンをアンインストールしてみてください。</translation>

@@ -48,12 +48,12 @@
 <translation id="4852878756222711218">Chromium-г бүрэн ашиглахын тулд Google Бүртгэлээрээ нэвтрээрэй</translation>
 <translation id="4985291216379576555">Офлайн байна, Chromium-н шинэчлэлтийг шалгах боломжгүй байна</translation>
 <translation id="4999538639245140991">Ta <ph name="SIGNOUT_MANAGED_DOMAIN" />-н удирддаг бүртгэлээс гарч байгаа тул таны Chromium-н өгөгдлийг энэ төхөөрөмжөөс устгана. Таны өгөгдөл таны Google Бүртгэлд хэвээр үлдэнэ.</translation>
+<translation id="5171868502429358653">Chromium-д нэвтэрнэ үү</translation>
 <translation id="5224391634244552924">Хадгалсан ямар ч нууц үг алга. Таныг нууц үгсээ хадгалах үед Chromium тэднийг шалгах боломжтой.</translation>
 <translation id="5308226104666789935">Chromium-н шинэчлэлтийг шалгах боломжгүй байна</translation>
 <translation id="5396916991083608703">Chromium-г өгөгдмөлөөр тохируулах уу?</translation>
 <translation id="5521125884468363740">Та Chromium-г хаанаас ч ашигласан табуудаа харахын тулд нэвтрээд, синк хийхийг асаана уу</translation>
 <translation id="5573014823074921752">Chromium-н зөвлөгөө. Табын бусад сонголтыг харахын тулд дэлгэцийнхээ доод эсвэл дээд хэсэгт байрлах самбараас Табыг харуулах товчлуурыг удаан дарна уу.</translation>
-<translation id="5651741435382092412">Энэ сайт, өөрийн Google Бүртгэл болон Chromium-д нэвтэрнэ үү. Та синк хийхийг дараа асааж болно.</translation>
 <translation id="5700709190537129682">Chromium таны нууц үгнүүдийг шалгах боломжгүй байна</translation>
 <translation id="5742135483959137648">Холбоос нээхийн тулд Chromium-г ашиглана уу</translation>
 <translation id="5777187867430702742">Chromium-н хуудас</translation>
@@ -64,6 +64,7 @@
 1. Тохиргоог нээнэ үү
 2. Өгөгдмөл хөтчийн аппыг товшино уу
 3. Chromium-г сонгоно уу.</translation>
+<translation id="6155422572367400359">Энэ сайт, өөрийн Google Бүртгэл болон Chromium-д нэвтэрнэ үү. Та синк хийхийг дараа асааж болно.</translation>
 <translation id="6268381023930128611">Chromium-с гарах уу?</translation>
 <translation id="632825460376924298">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
 <translation id="6337530241089703714">Chromium-н өгөгдлөө энэ төхөөрөмжөөс арилгах эсвэл хадгалах эсэхээ сонгоно уу</translation>

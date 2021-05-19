@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome ዝማኔዎች ካሉ መፈተሽ አልቻለም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="2732745070297234559">Chrome ሁሉንም የይለፍ ቃላት ማረጋገጥ አልቻለም። ነገ እንደገና ይሞክሩ።</translation>
 <translation id="2740105938841089077">አገናኞችን ለመክፈት Chromeን ይጠቀሙ</translation>
+<translation id="2869959624320573933">በመለያ ወደ Chrome ይግቡ</translation>
 <translation id="2919738076569633423">Chromeን በመጠቀምዎ በ<ph name="BEGIN_LINK_TOS" />አገልግሎት ውሉ<ph name="END_LINK_TOS" /> ተስማማተዋል።</translation>
 <translation id="3030414234702425231">እርስዎ በ<ph name="SIGNOUT_MANAGED_DOMAIN" /> ከሚተዳደር መለያ ዘግተው እየወጡ ስለሆነ Chrome ውሂብዎ ከዚህ መሣሪያ ላይ ይሰረዛል። የእርስዎ ውሂብ በእርስዎ Google መለያ ውስጥ ይቆያል።</translation>
 <translation id="3167189358072330585">መለያዎ በGoogle Chrome ላይ አይሠራም። እባክዎ የጎራዎ አስተዳዳሪውን ያነጋግሩ ወይም ለመግባት መደበኛ የሆነ የGoogle መለያ ይጠቀሙ።</translation>
 <translation id="3173834708294760622">የGoogle Chrome ገጽ</translation>
 <translation id="3196546062792660320">Chrome የእርስዎን መለያዎች ወደ ድር በማምጣት ጊዜ ይቆጥብልዎለታል። ቅንብሮች ውስጥ መለያዎችን ማከል ወይም ማስወገድ ይችላሉ።</translation>
-<translation id="3223655207402797071">ወደዚህ ጣቢያ፣ ወደ የእርስዎ Google መለያ እና ወደ Chrome ይግቡ። በኋላ ስምረትን ማብራት ይችላሉ።</translation>
 <translation id="3282568296779691940">Chrome ውስጥ ይግቡ</translation>
 <translation id="3345341804167540816">Chromeን በየትኛውም ቦታ ይጠቀሙበት</translation>
 <translation id="3455456143708465450">ከChrome የበለጠ ለማግኘት በGoogle መለያዎ ይግቡ</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome የተዘመነ ነው</translation>
 <translation id="8022947259858476807">አገናኞችን ለመክፈት፣ ከመግብሮች ለመፈለግ እና በሌሎች መተግበሪያዎች ውስጥ የይለፍ ቃሎችን የራስ-ለመሙላት በነባሪነት Chrome ን ይጠቀሙ</translation>
 <translation id="8160472928944011082">Chromeን ማዘመን አልተቻለም</translation>
+<translation id="8263079278049777200">ወደዚህ ጣቢያ፣ ወደ የእርስዎ Google መለያ እና ወደ Chrome ይግቡ። በኋላ ስምረትን ማብራት ይችላሉ።</translation>
 <translation id="8357607116237445042">የChrome ውሂብዎን ከዚህ መሣሪያ ይጸዳ ወይም ይቆይ እንደሆነ ይምረጡ</translation>
 <translation id="8370517070665726704">የቅጂ መብት <ph name="YEAR" /> Google LLC. ሁሉም መብቶች በህግ የተጠበቁ ናቸው።</translation>
 <translation id="840168496893712993">አንዳንድ ተጨማሪዎች Chrome እንዲበላሽ ያደርጋሉ። እባክዎ እነሱን ለማራገፍ ይሞክሩ።</translation>

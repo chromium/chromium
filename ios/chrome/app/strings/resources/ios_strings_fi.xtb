@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">Loitonna</translation>
 <translation id="2230173723195178503">Verkkosivu ladattiin.</translation>
 <translation id="2239626343334228536">Selaustietoja poistetaan…</translation>
-<translation id="2257567812274161158">Synkronointi ei toimi.</translation>
 <translation id="225943865679747347">Virhekoodi: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Lisää tili</translation>
 <translation id="2268044343513325586">Tarkenna</translation>
@@ -143,7 +142,6 @@
 Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. personoidakseen mainoksia.</translation>
 <translation id="2381405137052800939">Perusasetukset</translation>
 <translation id="2386793615875593361">1 valittu</translation>
-<translation id="2410754283952462441">Valitse tili</translation>
 <translation id="2421004566762153674">Kolmannen osapuolen evästeet estetään</translation>
 <translation id="2421044535038393232">Jatka muokkausta</translation>
 <translation id="2435457462613246316">Näytä salasana</translation>
@@ -362,7 +360,6 @@ Tietosi salataan synkronoinnin tunnuslauseesi avulla. Aloita synkronointi antama
 <translation id="473775607612524610">Päivitä</translation>
 <translation id="4747097190499141774">Google Payn maksutapoja tai osoitteita ei salata tunnuslauseella. Salattua dataa voidaan lukea vain tunnuslauseesi avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseesi tai haluat muokata tätä asetusta, synkronointi täytyy nollata. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Uusi incognito-välilehti</translation>
-<translation id="4766678251456904326">Lisää tili laitteelle</translation>
 <translation id="4775879719735953715">Oletusselain</translation>
 <translation id="4778644898150334464">Käytä toista salasanaa</translation>
 <translation id="4802417911091824046">Google Payn maksutapoja tai osoitteita ei salata tunnuslauseella.
@@ -794,6 +791,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8976382372951310360">Ohje</translation>
 <translation id="8981454092730389528">Googlen toimintojen hallinta</translation>
 <translation id="8985320356172329008">Olet kirjautuneena Google-tilille käyttäjänä</translation>
+<translation id="8996526648899750015">Lisää tili…</translation>
 <translation id="9034759925968272072">Sinua ei kirjata ulos Google-tililtäsi. Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Näytä alkuperäinen</translation>
 <translation id="9039373489628511875">Kaistanleveys</translation>
@@ -816,6 +814,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Virheraportti lähetettiin.</translation>
 <translation id="952704832371081537">Peru</translation>
+<translation id="984509647832111802">Synkronointi ei toimi.</translation>
 <translation id="988141524645182168">Muut laitteet</translation>
 <translation id="989988560359834682">Osoitteen muokkaus</translation>
 <translation id="994757059139821576">Ehdotetut artikkelit</translation>

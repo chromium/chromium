@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome nie udało się sprawdzić dostępności aktualizacji. Spróbuj ponownie później.</translation>
 <translation id="2732745070297234559">Przeglądarce Chrome nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie jutro.</translation>
 <translation id="2740105938841089077">Otwieraj linki w Chrome</translation>
+<translation id="2869959624320573933">Zaloguj się w Chrome</translation>
 <translation id="2919738076569633423">Używając Chrome, wyrażasz zgodę na <ph name="BEGIN_LINK_TOS" />Warunki korzystania z usługi<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Wylogowujesz się z konta, którym zarządza <ph name="SIGNOUT_MANAGED_DOMAIN" />. Spowoduje to usunięcie danych Chrome z tego urządzenia, ale pozostaną one na koncie Google.</translation>
 <translation id="3167189358072330585">Twoje konto nie działa w Google Chrome. Skontaktuj się z administratorem domeny lub zaloguj się przy użyciu zwykłego konta Google.</translation>
 <translation id="3173834708294760622">Strona Google Chrome</translation>
 <translation id="3196546062792660320">Chrome oszczędza Twój czas, zapisując konta w internecie. Konta możesz dodawać i usuwać w Ustawieniach.</translation>
-<translation id="3223655207402797071">Zaloguj się na tej stronie, na swoim koncie Google i w Chrome. Później możesz włączyć synchronizację.</translation>
 <translation id="3282568296779691940">Zaloguj się w Chrome</translation>
 <translation id="3345341804167540816">Korzystaj z Chrome w dowolnym miejscu</translation>
 <translation id="3455456143708465450">Aby w pełni wykorzystać możliwości Chrome, zaloguj się na konto Google</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Masz aktualną wersję Google Chrome</translation>
 <translation id="8022947259858476807">Używaj domyślnie Chrome, aby otwierać linki, wyszukiwać z widżetów i korzystać z autouzupełniania haseł w innych aplikacjach</translation>
 <translation id="8160472928944011082">Nie udało się zaktualizować Chrome</translation>
+<translation id="8263079278049777200">Zaloguj się na tej stronie, na swoim koncie Google i w Chrome. Synchronizację możesz włączyć później.</translation>
 <translation id="8357607116237445042">Zdecyduj, czy chcesz usunąć swoje dane z Chrome z tego urządzenia czy je na nim zachować</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="840168496893712993">Niektóre dodatki mogą powodować awarie Chrome. Spróbuj je odinstalować.</translation>

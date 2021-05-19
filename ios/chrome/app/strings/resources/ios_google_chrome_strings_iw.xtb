@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">‏Chrome לא הצליח לחפש עדכונים. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="2732745070297234559">‏Chrome לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר.</translation>
 <translation id="2740105938841089077">‏שימוש ב-Chrome לפתיחת קישורים</translation>
+<translation id="2869959624320573933">‏כניסה ל-Chrome</translation>
 <translation id="2919738076569633423">‏השימוש ב-Chrome מהווה הסכמה ל<ph name="BEGIN_LINK_TOS" />תנאים ולהגבלות<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">‏יציאה מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" /> תגרום למחיקת נתוני Chrome שלך מהמכשיר הזה. הנתונים האלה יישארו בחשבון Google שלך.</translation>
 <translation id="3167189358072330585">‏החשבון שלך לא פועל ב-Google Chrome. יש לפנות אל מנהל הדומיין או להשתמש בחשבון Google רגיל כדי להיכנס לחשבון.</translation>
 <translation id="3173834708294760622">‏דף Google Chrome</translation>
 <translation id="3196546062792660320">‏Chromium מאפשר גישה לחשבונות באינטרנט וכך חוסך לך זמן. ניתן להוסיף או להסיר חשבונות בקטע 'הגדרות'.</translation>
-<translation id="3223655207402797071">‏יש להיכנס לאתר זה, לחשבון Google ול-Chrome. אפשר להפעיל את הסנכרון מאוחר יותר.</translation>
 <translation id="3282568296779691940">‏כניסה ל-Chrome</translation>
 <translation id="3345341804167540816">‏להשתמש ב-Chrome בכל מקום</translation>
 <translation id="3455456143708465450">‏כדי להפיק את המרב מ-Chrome, יש להיכנס לחשבון Google</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">‏Google Chrome מעודכן</translation>
 <translation id="8022947259858476807">‏כדאי להגדיר את Chrome כדפדפן ברירת המחדל כדי לפתוח קישורים, לחפש מווידג'טים ולבצע מילוי אוטומטי של סיסמאות באפליקציות אחרות</translation>
 <translation id="8160472928944011082">‏אי אפשר לעדכן את Chrome</translation>
+<translation id="8263079278049777200">‏יש לך אפשרות להיכנס לאתר זה, לחשבון Google ול-Chrome. ניתן להפעיל את הסנכרון מאוחר יותר.</translation>
 <translation id="8357607116237445042">‏האם למחוק את נתוני Chrome מהמכשיר הזה או לשמור אותם?</translation>
 <translation id="8370517070665726704">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
 <translation id="840168496893712993">‏תוספים מסוימים גורמים ל-Chrome לקרוס. יש לנסות להסיר את ההתקנה שלהם.</translation>

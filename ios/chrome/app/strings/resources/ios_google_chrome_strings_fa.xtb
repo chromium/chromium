@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">‏Chrome موفق نشد به‌روزرسانی‌ها را بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="2732745070297234559">‏Chrome نمی‌تواند همه گذرواژه‌هایتان را بررسی کند. فردا دوباره امتحان کنید.</translation>
 <translation id="2740105938841089077">‏استفاده از Chrome برای باز کردن پیوندها</translation>
+<translation id="2869959624320573933">‏ورود به سیستم Chrome</translation>
 <translation id="2919738076569633423">‏بااستفاده از Chrome، موافقت خود را با <ph name="BEGIN_LINK_TOS" />شرایط خدمات<ph name="END_LINK_TOS" /> اعلام می‌کنید.</translation>
 <translation id="3030414234702425231">‏ازآنجایی‌که درحال خارج شدن از حسابی هستید که <ph name="SIGNOUT_MANAGED_DOMAIN" /> آن را مدیریت می‌کند، داده‌های Chrome شما از این دستگاه حذف خواهد شد. داده‌هایتان در حساب Google شما باقی می‌ماند.</translation>
 <translation id="3167189358072330585">‏حساب شما در Google Chrome کار نمی‌کند. لطفاً با سرپرست دامنه‌تان تماس بگیرید یا از یک حساب Google معمولی برای ثبت ورود استفاده کنید.</translation>
 <translation id="3173834708294760622">‏صفحه Google Chrome</translation>
 <translation id="3196546062792660320">‏Chrome با آوردن حساب‌های شما به وب، در وقت شما صرفه‌جویی می‌کند. در «تنظیمات» می‌توانید حساب‌ها را اضافه یا حذف کنید.</translation>
-<translation id="3223655207402797071">‏به سیستم این سایت، «حساب Google» خود، و Chrome وارد شوید. می‌توانید بعداً همگام‌سازی را روشن کنید.</translation>
 <translation id="3282568296779691940">‏ورود به Chrome</translation>
 <translation id="3345341804167540816">‏استفاده از Chrome در همه جا</translation>
 <translation id="3455456143708465450">‏برای استفاده بهتر از Chrome، با «حساب Google» خودتان به سیستم وارد شوید</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">‏Google Chrome به‌روز است</translation>
 <translation id="8022947259858476807">‏برای باز کردن پیوندها، جستجوی ابزارک‌ها، و تکمیل خودکار گذرواژه‌ها در دیگر برنامه‌ها، به‌طور پیش‌فرض از Chrome استفاده کنید</translation>
 <translation id="8160472928944011082">‏Chrome به‌روزرسانی نمی‌شود</translation>
+<translation id="8263079278049777200">‏به سیستم این سایت، «حساب Google» خود، و Chrome وارد شوید. می‌توانید بعداً همگام‌سازی را روشن کنید.</translation>
 <translation id="8357607116237445042">‏انتخاب کنید داده‌های Chrome شما از این دستگاه پاک شوند یا نگه داشته شوند</translation>
 <translation id="8370517070665726704">‏حق نشر <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>
 <translation id="840168496893712993">‏برخی از افزونه‌ها باعث می‌شوند Chrome از کار بیفتد. لطفاً آنها را حذف نصب کنید.</translation>

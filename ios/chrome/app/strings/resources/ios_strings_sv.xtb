@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">Zooma ut</translation>
 <translation id="2230173723195178503">Webbsidan har lästs in</translation>
 <translation id="2239626343334228536">Tar bort webbinformation …</translation>
-<translation id="2257567812274161158">Det går inte att synkronisera.</translation>
 <translation id="225943865679747347">Felkod: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Lägg till konto</translation>
 <translation id="2268044343513325586">Finjustera</translation>
@@ -143,7 +142,6 @@
 Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av cookies och till exempel anpassa annonser.</translation>
 <translation id="2381405137052800939">Grunderna</translation>
 <translation id="2386793615875593361">1 markerat foto</translation>
-<translation id="2410754283952462441">Välj ett konto</translation>
 <translation id="2421004566762153674">Cookies från tredje part blockeras</translation>
 <translation id="2421044535038393232">Fortsätt redigera</translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
@@ -362,7 +360,6 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4747097190499141774">Betalningsmetoder och adresser från Google Pay omfattas inte av kryptering med lösenfras. Endast personer som har ditt lösenord kan läsa dina krypterade uppgifter. Lösenfrasen skickas inte till och sparas inte av Google. Om du glömmer lösenfrasen måste du återställa synkroniseringen. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Ny inkognitoflik</translation>
-<translation id="4766678251456904326">Lägg till konto på enheten</translation>
 <translation id="4775879719735953715">Standardwebbläsare</translation>
 <translation id="4778644898150334464">Använd ett annat lösenord</translation>
 <translation id="4802417911091824046">Betalningsmetoder och adresser från Google Pay omfattas inte av kryptering med lösenfras.
@@ -794,6 +791,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8976382372951310360">Hjälp</translation>
 <translation id="8981454092730389528">Googles aktivitetsinställningar</translation>
 <translation id="8985320356172329008">Inloggad på Google som</translation>
+<translation id="8996526648899750015">Lägg till konto …</translation>
 <translation id="9034759925968272072">Du loggas inte ut från Google-kontot. Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Visa original</translation>
 <translation id="9039373489628511875">Bandbredd</translation>
@@ -816,6 +814,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Felrapporten har skickats.</translation>
 <translation id="952704832371081537">Avbryt</translation>
+<translation id="984509647832111802">Synkroniseringen fungerar inte.</translation>
 <translation id="988141524645182168">Övriga enheter</translation>
 <translation id="989988560359834682">Redigera adress</translation>
 <translation id="994757059139821576">Artikelförslag</translation>

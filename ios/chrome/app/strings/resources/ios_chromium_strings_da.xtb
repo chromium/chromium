@@ -48,12 +48,12 @@
 <translation id="4852878756222711218">Log ind med din Google-konto for at få mest muligt ud af Chromium</translation>
 <translation id="4985291216379576555">Offline – Chromium kan ikke søge efter opdateringer</translation>
 <translation id="4999538639245140991">Da du er ved at logge ud af en konto, der administreres af <ph name="SIGNOUT_MANAGED_DOMAIN" />, slettes dine Chromium-data på denne enhed. Dine data forbliver på din Google-konto.</translation>
+<translation id="5171868502429358653">Log ind på Chromium</translation>
 <translation id="5224391634244552924">Der er ingen gemte adgangskoder. Chromium kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="5308226104666789935">Chromium kan ikke søge efter opdateringer</translation>
 <translation id="5396916991083608703">Vil du angive Chromium som standard?</translation>
 <translation id="5521125884468363740">Log ind, og aktivér synkronisering på alle de enheder, hvor du bruger Chromium, for at se dine faner på dem</translation>
 <translation id="5573014823074921752">Chromium-tip. Hvis du vil se flere faneindstillinger, skal du trykke på knappen Vis faner på værktøjslinjen og holde fingeren nede. Du finder knappen nederst eller øverst på skærmen.</translation>
-<translation id="5651741435382092412">Log ind på dette website, din Google-konto og Chromium. Du kan aktivere synkronisering senere.</translation>
 <translation id="5700709190537129682">Chromium kan ikke tjekke dine adgangskoder</translation>
 <translation id="5742135483959137648">Brug Chromium til at åbne links</translation>
 <translation id="5777187867430702742">Chromium-side</translation>
@@ -64,6 +64,7 @@
 1. Åbn Indstillinger
 2. Tryk på Standardbrowserapp
 3. Vælg Chromium.</translation>
+<translation id="6155422572367400359">Log ind på dette website, din Google-konto og Chromium. Du kan aktivere synkronisering senere.</translation>
 <translation id="6268381023930128611">Vil du logge ud af Chromium?</translation>
 <translation id="632825460376924298">Tillad login via Chromium</translation>
 <translation id="6337530241089703714">Vælg, om du vil rydde dine Chromium-data fra denne enhed eller beholde dem</translation>

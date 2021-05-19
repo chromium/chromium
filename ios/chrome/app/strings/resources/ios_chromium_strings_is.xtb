@@ -48,12 +48,12 @@
 <translation id="4852878756222711218">Skráðu þig inn á Google reikninginn svo að Chromium nýtist þér sem best</translation>
 <translation id="4985291216379576555">Ótengt, Chromium getur ekki leitað að uppfærslum.</translation>
 <translation id="4999538639245140991">Vegna þess að þú ert að skrá þig út af reikningi sem stýrt er af <ph name="SIGNOUT_MANAGED_DOMAIN" /> verður Chromium gögnum þínum eytt úr þessu tæki. Gögnin verða áfram geymd á Google reikningnum þínum.</translation>
+<translation id="5171868502429358653">Skráðu þig inn á Chromium</translation>
 <translation id="5224391634244552924">Engin vistuð aðgangsorð. Chromium getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
 <translation id="5308226104666789935">Chromium getur ekki leitað að uppfærslum</translation>
 <translation id="5396916991083608703">Stilla Chromium sem sjálfgefið?</translation>
 <translation id="5521125884468363740">Skráðu þig inn og kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chromium</translation>
 <translation id="5573014823074921752">Ábending um Chromium. Til að sjá fleiri valkosti fyrir flipa skaltu halda hnappinum „Sýna flipa“ inni á tækjastikunni, sem er neðst eða efst á skjánum.</translation>
-<translation id="5651741435382092412">Skráðu þig inn á þetta vefsvæði, Google reikninginn þinn og Chromium. Þú getur kveikt á samstillingu síðar.</translation>
 <translation id="5700709190537129682">Chromium getur ekki athugað aðgangsorðin þín</translation>
 <translation id="5742135483959137648">Nota Chromium til að opna tengla</translation>
 <translation id="5777187867430702742">Chromium síða</translation>
@@ -64,6 +64,7 @@
 1. Opnaðu Stillingar
 2. Ýttu á „Sjálfgefið vafraforrit“
 3. Veldu Chromium.</translation>
+<translation id="6155422572367400359">Skráðu þig inn á þetta vefsvæði, Google reikninginn þinn og Chromium. Þú getur kveikt á samstillingu síðar.</translation>
 <translation id="6268381023930128611">Skrá út af Chromium?</translation>
 <translation id="632825460376924298">Leyfa innskráningu í Chromium</translation>
 <translation id="6337530241089703714">Veldu hvort þú vilt hreinsa gögn Chromium úr þessu tæki eða geyma þau</translation>

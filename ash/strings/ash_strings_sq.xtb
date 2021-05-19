@@ -24,6 +24,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1148499908455722006">Hap dialogun e informacioneve për <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Pajisjet e çiftuara</translation>
 <translation id="1165712434476988950">Kërkohet rinisja e pajisjes për të zbatuar përditësimin.</translation>
+<translation id="1170240434488307589">Butoni i mikrofonit të pajisjes është çaktivizuar.</translation>
 <translation id="1175572348579024023">Lëviz</translation>
 <translation id="1178581264944972037">Pauzë</translation>
 <translation id="1181037720776840403">Hiq</translation>
@@ -100,6 +101,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1746730358044914197">Metodat e hyrjes konfigurohen nga administratori yt.</translation>
 <translation id="1747827819627189109">Tastiera në ekran u aktivizua</translation>
 <translation id="1761222317188459878">Aktivizo/çaktivizo lidhjen e rrjetit. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">Shkurtorja e tastierës për <ph name="LAUNCHER_KEY_NAME" /> + Pikë është ndryshuar. Për të përdorur tastin Insert, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Lëviz djathtas</translation>
 <translation id="1782199038061388045">përkthimi</translation>
 <translation id="1787955149152357925">Joaktive</translation>

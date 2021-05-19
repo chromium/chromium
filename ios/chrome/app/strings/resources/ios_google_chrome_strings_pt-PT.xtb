@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">O Chrome não conseguiu verificar se existem atualizações. Tente novamente mais tarde.</translation>
 <translation id="2732745070297234559">O Chrome não conseguiu verificar todas as palavras-passe. Tente novamente amanhã.</translation>
 <translation id="2740105938841089077">Utilize o Chrome para abrir links</translation>
+<translation id="2869959624320573933">Inicie sessão no Chrome</translation>
 <translation id="2919738076569633423">Ao utilizar o Chrome, aceita os <ph name="BEGIN_LINK_TOS" />Termos de Utilização<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Uma vez que está a terminar sessão numa conta gerida por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os seus dados do Chrome serão eliminados deste dispositivo. Contudo, permanecem na sua Conta Google.</translation>
 <translation id="3167189358072330585">A sua conta não funciona no Google Chrome. Contacte o gestor do domínio ou utilize uma Conta Google normal para iniciar sessão.</translation>
 <translation id="3173834708294760622">Página do Google Chrome</translation>
 <translation id="3196546062792660320">O Chrome poupa o seu tempo ao trazer as suas contas para a Web. Pode adicionar ou remover contas nas Definições.</translation>
-<translation id="3223655207402797071">Inicie sessão neste site, na sua Conta Google e no Chrome. Pode ativar a sincronização mais tarde.</translation>
 <translation id="3282568296779691940">Iniciar sessão no Chrome</translation>
 <translation id="3345341804167540816">Utilizar o Chrome em todas as plataformas</translation>
 <translation id="3455456143708465450">Para tirar o máximo partido do Chrome, inicie sessão com a sua Conta Google</translation>
@@ -90,6 +90,7 @@
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
 <translation id="8022947259858476807">Utilize o Chrome por predefinição para abrir links, pesquisar a partir de widgets e preencher automaticamente palavras-passe noutras apps</translation>
 <translation id="8160472928944011082">Não é possível atualizar o Chrome.</translation>
+<translation id="8263079278049777200">Inicie sessão neste site, na sua Conta Google e no Chrome. Pode ativar a sincronização mais tarde.</translation>
 <translation id="8357607116237445042">Escolha se pretende limpar os seus dados do Chrome deste dispositivo ou mantê-los</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="840168496893712993">Alguns suplementos provocam falhas no sistema do Chrome. Tente desinstalá-los.</translation>

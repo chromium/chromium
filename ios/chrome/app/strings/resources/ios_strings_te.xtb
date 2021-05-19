@@ -109,7 +109,7 @@
 <translation id="1974060860693918893">అధునాతన సెట్టింగ్‌లు</translation>
 <translation id="1989112275319619282">బ్రౌజ్ చేయి</translation>
 <translation id="2015722694326466240">పాస్‌వర్డ్‌లను చూడటానికి, మీరు ముందుగా తప్పక మీ పరికరంలో పాస్‌కోడ్‌ను సెట్ చేయాలి.</translation>
-<translation id="2022352537516230970">మీ iPhone కోసం బిల్డ్ చేయబడింది</translation>
+<translation id="2022352537516230970">మీ iPhone కోసం రూపొందించబడింది</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> రోజుల క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="2074131957428911366">మీరు ఎప్పుడైనా <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" /> ద్వారా వేటిని సింక్ చేయాలో ఎంచుకోవచ్చు.</translation>
 <translation id="2079545284768500474">చర్య రద్దు</translation>
@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">దూరంగా జూమ్ చేయి</translation>
 <translation id="2230173723195178503">వెబ్‌పేజీ లోడ్ అయ్యింది</translation>
 <translation id="2239626343334228536">బ్రౌజింగ్ డేటాను తీసివేస్తోంది...</translation>
-<translation id="2257567812274161158">సింక్ పని చేయడం లేదు.</translation>
 <translation id="225943865679747347">లోపం కోడ్: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">ఖాతాను జోడించు</translation>
 <translation id="2268044343513325586">మరింత మెరుగుపరచండి</translation>
@@ -143,7 +142,6 @@
 వివిధ సైట్‌లలో మీ బ్రౌజింగ్ యాక్టివిటీని చూడటానికి సైట్‌లు కుక్కీలను ఉపయోగించలేవు, ఉదాహరణకు, యాడ్‌లను వ్యక్తిగతీకరించడం లాంటివి.</translation>
 <translation id="2381405137052800939">ప్రాథమికాలు</translation>
 <translation id="2386793615875593361">1 ఎంచుకోబడింది</translation>
-<translation id="2410754283952462441">ఖాతాను ఎంచుకోండి</translation>
 <translation id="2421004566762153674">థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయడం</translation>
 <translation id="2421044535038393232">సవరణను కొనసాగించు</translation>
 <translation id="2435457462613246316">పాస్‌వర్డ్‌ను చూపించు</translation>
@@ -315,7 +313,7 @@
 <translation id="4172051516777682613">ఎల్లప్పుడూ చూపు</translation>
 <translation id="418156467088430727">కొత్త ట్యాబ్‌లో ఆఫ్‌లైన్ వెర్ష‌న్‌ను వీక్షించండి</translation>
 <translation id="4181841719683918333">భాషలు</translation>
-<translation id="4184011057600693970">మీ iPad కోసం బిల్డ్ చేయబడింది</translation>
+<translation id="4184011057600693970">మీ iPad కోసం రూపొందించబడింది</translation>
 <translation id="424315890655130736">రహస్య పదబంధాన్ని నమోదు చేయండి</translation>
 <translation id="4263576668337963058">పేజీ కోసం అందుబాటులో ఉన్న చర్యలను చూపించు</translation>
 <translation id="4267380167363222949">తర్వాతి ట్యాబ్</translation>
@@ -362,7 +360,6 @@
 <translation id="473775607612524610">అప్‌డేట్‌</translation>
 <translation id="4747097190499141774">Google Payకి సంబంధించిన చెల్లింపు పద్ధతులు మరియు చిరునామాలు రహస్య పదబంధం ఎన్‌క్రిప్షన్‌లో ఉండవు. మీ రహస్య పదబంధాన్ని కలిగి ఉన్నవారు మాత్రమే మీ ఎన్‌క్రిప్ట్ చేసిన డేటాను చదవగలరు. రహస్య పదబంధం Google ద్వారా ఎవరికీ పంపబడదు లేదా నిల్వ చేయబడదు. మీరు మీ రహస్య పదబంధాన్ని మర్చిపోతే లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకుంటే, సమకాలీకరణను రీసెట్ చేయాల్సి ఉంటుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">కొత్త అజ్ఞాత ట్యాబ్</translation>
-<translation id="4766678251456904326">పరికరానికి మరొక ఖాతాను జోడించండి</translation>
 <translation id="4775879719735953715">డిఫాల్ట్ బ్రౌజర్</translation>
 <translation id="4778644898150334464">వేరే పాస్‌వర్డ్‌ను ఉపయోగించండి</translation>
 <translation id="4802417911091824046">Google Payకి సంబంధించిన చెల్లింపు పద్ధతులు మరియు చిరునామాలు రహస్య పదబంధం ఎన్‌క్రిప్షన్‌లో ఉండవు.
@@ -794,6 +791,7 @@
 <translation id="8976382372951310360">సహాయం</translation>
 <translation id="8981454092730389528">Google కార్య‌క‌లాపాల నియంత్రణలు</translation>
 <translation id="8985320356172329008">Googleకి ఇలా సైన్ ఇన్ చేసారు</translation>
+<translation id="8996526648899750015">ఖాతాను జోడించండి...</translation>
 <translation id="9034759925968272072">మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు. <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />లో మీ Google ఖాతా ఇతర రకాల బ్రౌజింగ్ చరిత్రను కలిగి ఉండవచ్చు.</translation>
 <translation id="9037965129289936994">అసలైనది చూపు</translation>
 <translation id="9039373489628511875">బ్యాండ్‌విడ్త్</translation>
@@ -816,6 +814,7 @@
 <translation id="9203116392574189331">హ్యాండ్ఆఫ్</translation>
 <translation id="9223358826628549784">క్రాష్ నివేదిక పంపబడింది.</translation>
 <translation id="952704832371081537">రద్దు చేయి</translation>
+<translation id="984509647832111802">సింక్ పని చేయడం లేదు.</translation>
 <translation id="988141524645182168">ఇతర పరికరాలు</translation>
 <translation id="989988560359834682">చిరునామాను సవరించు</translation>
 <translation id="994757059139821576">కథనం సూచనలు</translation>

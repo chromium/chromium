@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome не можа да провери за актуализации. Опитайте отново по-късно.</translation>
 <translation id="2732745070297234559">Chrome не успя да провери всички пароли. Опитайте отново утре.</translation>
 <translation id="2740105938841089077">Използване на Chrome за отваряне на връзки</translation>
+<translation id="2869959624320573933">Влизане в Chrome</translation>
 <translation id="2919738076569633423">С използването на Chrome приемате <ph name="BEGIN_LINK_TOS" />Общите условия<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Тъй като излизате от профил, управляван от <ph name="SIGNOUT_MANAGED_DOMAIN" />, данните ви в Chrome ще бъдат изтрити от това устройство, но ще останат в профила ви в Google.</translation>
 <translation id="3167189358072330585">Профилът ви не е съвместим с Google Chrome. Моля, свържете се с администратора на домейна си или влезте с обикновен профил в Google.</translation>
 <translation id="3173834708294760622">Страница на Google Chrome</translation>
 <translation id="3196546062792660320">С Chrome спестявате време, като свързвате профилите си с мрежата. Можете да добавяте или премахвате профили от настройките.</translation>
-<translation id="3223655207402797071">Влезте в този сайт, профила си в Google и Chrome. Може да включите синхронизирането по-късно.</translation>
 <translation id="3282568296779691940">Вход в Chrome</translation>
 <translation id="3345341804167540816">Използвайте Chrome навсякъде</translation>
 <translation id="3455456143708465450">За да се възползвате максимално от Chrome, влезте с профила си в Google</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome е актуален</translation>
 <translation id="8022947259858476807">Използвайте Chrome по подразбиране за отваряне на връзки, търсене от приспособления и автоматично попълване на пароли в други приложения</translation>
 <translation id="8160472928944011082">Chrome не може да се актуализира</translation>
+<translation id="8263079278049777200">Влезте в този сайт, профила си в Google и Chrome. Можете да включите синхронизирането по-късно.</translation>
 <translation id="8357607116237445042">Изберете дали данните ви в Chrome да бъдат изчистени от това устройство, или запазени</translation>
 <translation id="8370517070665726704">Авторски права <ph name="YEAR" /> г. Google LLC. Всички права запазени.</translation>
 <translation id="840168496893712993">Някои добавки водят до срив на Chrome. Моля, опитайте да ги деинсталирате.</translation>

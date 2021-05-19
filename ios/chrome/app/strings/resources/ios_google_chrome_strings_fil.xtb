@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Hindi matingnan ng Chrome kung may mga update. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="2732745070297234559">Hindi masuri ng Chrome ang lahat ng password. Subukan ulit bukas.</translation>
 <translation id="2740105938841089077">Gamitin ang Chrome para Magbukas ng Mga Link</translation>
+<translation id="2869959624320573933">Mag-sign In sa Chrome</translation>
 <translation id="2919738076569633423">Sa paggamit ng Chrome, sumasang-ayon ka sa <ph name="BEGIN_LINK_TOS" />Mga Tuntunin ng Serbisyo<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Dahil magsa-sign out ka sa account na pinapamahalaan ng <ph name="SIGNOUT_MANAGED_DOMAIN" />, made-delete ang iyong data sa Chrome sa device na ito. Mananatili ang data mo sa iyong Google Account.</translation>
 <translation id="3167189358072330585">Hindi gumagana ang iyong account sa Google Chrome. Mangyaring makipag-ugnayan sa iyong administrator ng domain o gumamit ng regular na Google Account upang mag-sign in.</translation>
 <translation id="3173834708294760622">Page ng Google Chrome</translation>
 <translation id="3196546062792660320">Nakakatipid ka ng oras sa Chrome sa pamamagitan ng pagdadala ng iyong mga account sa web. Maaari kang magdagdag o mag-alis ng mga account sa Mga Setting.</translation>
-<translation id="3223655207402797071">Mag-sign in sa site na ito, iyong Google Account, at Chrome. Puwede mong i-on ang pag-sync sa ibang pagkakataon.</translation>
 <translation id="3282568296779691940">Mag-sign in sa Chrome</translation>
 <translation id="3345341804167540816">Gamitin ang Chrome sa Lahat ng Lugar</translation>
 <translation id="3455456143708465450">Para masulit ang Chrome, mag-sign in sa iyong Google Account</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Napapanahon ang Google Chrome</translation>
 <translation id="8022947259858476807">Gamitin ang Chrome bilang default para magbukas ng mga link, maghanap mula sa mga widget, at mag-autofill ng mga password sa iba pang app</translation>
 <translation id="8160472928944011082">Hindi makapag-update ang Chrome</translation>
+<translation id="8263079278049777200">Mag-sign in sa site na ito, iyong Google Account, at Chrome. Puwede mong i-on ang pag-sync sa ibang pagkakataon.</translation>
 <translation id="8357607116237445042">Piliin kung iki-clear ang iyong data sa Chrome sa device na ito o kung papanatilihin ito</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="840168496893712993">Nagiging dahilan ang ilang add-on ng pag-crash ng Chrome. Pakisubukang i-uninstall ang mga ito.</translation>

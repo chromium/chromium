@@ -2131,17 +2131,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="377044054160169374">Application de l'intervention en cas d'expérience abusive</translation>
 <translation id="3778689139323007309">Procéder à des vérifications de la révocation des certificats de serveur qui sont validés et signés par des certificats CA installés localement</translation>
 <translation id="3780152581321609624">Inclure un port non standard dans le SPN Kerberos</translation>
-<translation id="3783569262370557918">Activer <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> pour une liste d'URL.
-
-      La définition de cette règle indique quelles URL doivent être autorisées à faire partie du flux d'attestation pour obtenir l'ensemble de signaux depuis la machine.
-
-      Si cette règle n'est pas configurée ou si elle est vide, aucun point de terminaison ne peut démarrer le flux d'attestation ni obtenir de signaux depuis la machine.
-
-      Les URL doivent être au format HTTPS, comme "https://example.com".
-
-      Remarque : les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="378495749480642482">Définit si les sites auxquels l'utilisateur accède sont autorisés à créer des sessions de réalité augmentée immersive avec <ph name="WEBXR_API_NAME" />.
 
       Si cette règle n'est pas configurée ou qu'elle est activée, <ph name="WEBXR_API_NAME" /> accepte <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> lors de la création de sessions. Cela permet aux utilisateurs d'accéder aux expériences de réalité augmentée.
@@ -2854,11 +2843,6 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       Si cette règle n'est pas configurée, aucune exception n'est autorisée.
 
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
-<translation id="4882406948002286350">Si cette règle est configurée, les pages Web avec des URL interdites ne peuvent pas se charger. Cette règle fournit une liste de formats d'URL précisant les URL interdites. Si elle n'est pas configurée, aucune URL n'est interdite dans le navigateur. Les formats d'URL doivent respecter les conditions énoncées à la page https://www.chromium.org/administrators/url-blocklist-filter-format. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      À compter de la version 73 de <ph name="PRODUCT_NAME" />, vous pouvez bloquer les URL javascript://*. Toutefois, cela ne concerne que le code JavaScript saisi dans la barre d'adresse (ou, par exemple, les favoris intelligents). Cette règle ne s'applique pas aux URL JavaScript intégrées dans les pages si les données sont chargées dynamiquement. Par exemple, si vous bloquez "example.com/abc", la page example.com pourra quand même charger "example.com/abc" via une requête XMLHTTPRequest.
-
-      Remarque : le blocage des URL internes chrome://* peut provoquer des erreurs inattendues.</translation>
 <translation id="4886783562285047261">Si cette règle est activée, l'inscription à la règle <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> est obligatoire. En cas d'échec, le processus de lancement de <ph name="PRODUCT_NAME" /> est bloqué.
 
       Si cette règle est désactivée ou si elle n'est pas configurée, l'inscription à la règle <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> est facultative. En cas d'échec, le processus de lancement de <ph name="PRODUCT_NAME" /> n'est pas bloqué.
@@ -4015,11 +3999,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Si cette règle n'est pas configurée ou qu'aucune entrée ne figure dans la liste, tous les schémas sont accessibles dans <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6338982178236723271">Transmettre les informations système</translation>
-<translation id="6347363725343851058">Si vous activez cette règle, le mode arrière-plan est activé. Dans ce mode, un processus <ph name="PRODUCT_NAME" /> est lancé lors de la connexion du système d'exploitation. Ce processus ne se termine que lorsque la dernière fenêtre du navigateur est fermée, ce qui permet aux applications en arrière-plan et à la session de navigation (cookies inclus) de rester actives. Le processus en arrière-plan affiche une icône dans la barre d'état système, qui vous permet d'arrêter le processus.
-
-      Si vous désactivez cette règle, le mode arrière-plan est désactivé.
-
-      Si vous la configurez, les utilisateurs ne peuvent pas la modifier dans les paramètres du navigateur. Si vous ne la configurez pas, le mode arrière-plan est désactivé, mais les utilisateurs peuvent l'activer.</translation>
 <translation id="6353890097388312479">Si la règle est définie sur "All (0)" (Tous (0)) ou qu'elle n'est pas configurée, les utilisateurs peuvent modifier les paramètres de confiance de tous les certificats CA, importer des certificats et supprimer ceux qu'ils ont importés via le gestionnaire de certificats. Si elle est définie sur "UserOnly (1)" (UtilisateurUniquement (1)), les utilisateurs ne peuvent gérer que les certificats qu'ils ont importés, et ils ne sont pas autorisés à modifier les paramètres de confiance des certificats intégrés. Si cette règle est définie sur "None (2)" (Aucun (2)), les utilisateurs peuvent uniquement consulter les certificats CA (sans pouvoir les gérer).</translation>
 <translation id="6362856770865555544">Si cette règle est activée ou qu'elle n'est pas configurée, l'optimisation WPAD (Web Proxy Auto-Discovery, découverte automatique du proxy) est activée dans <ph name="PRODUCT_NAME" />.
 
@@ -4275,6 +4254,14 @@ Si vous sélectionnez les options suivantes :
 <translation id="6689343802305995925">Aucune action ne se produit.</translation>
 <translation id="6689792153960219308">Envoyer des rapports sur l'état du matériel</translation>
 <translation id="6690425645391461516">Désactiver les contrôles d'interception des requêtes DNS ; autoriser les barres d'infos "Essayez avec http://siteintranet/".</translation>
+<translation id="669066148640728553">Permet de définir une fenêtre cible pour la fin de la période de notification du redémarrage.
+
+      Selon les paramètres des règles "<ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />" et "<ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />", les utilisateurs sont prévenus que le navigateur va devoir être relancé, ou l'appareil, redémarré. Si la règle "<ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />" est définie sur "Obligatoire", les navigateurs ou appareils sont redémarrés de manière forcée une fois la période de notification écoulée. La règle "<ph name="RELAUNCH_WINDOW_POLICY_NAME" />" peut servir à différer la fin de la période de notification afin qu'elle coïncide avec une fenêtre spécifique.
+
+      Si cette règle n'est pas configurée, la fenêtre cible par défaut est comprise entre 2h et 4h du matin pour <ph name="PRODUCT_OS_NAME" /> ou étendue à toute la journée pour <ph name="PRODUCT_NAME" /> (la fin de la période de notification n'est alors jamais différée).
+
+      Remarque : Même si la règle peut accepter plusieurs éléments dans "<ph name="ENTRIES_FIELD_NAME" />", ils sont tous ignorés, sauf le premier.
+      Avertissement : Configurer cette règle peut retarder l'application des mises à jour logicielles.</translation>
 <translation id="6698632841807204978">Activer l'impression monochrome</translation>
 <translation id="6699880231565102694">Activer l'authentification forte pour les hôtes d'accès à distance</translation>
 <translation id="6703251016607733593">Permet de désactiver l'application des exigences de divulgation stipulées dans les règles de transparence des certificats pour une liste de hachages <ph name="SUBJECT_PUBLIC_KEY_INFO" />. Les hôtes Enterprise peuvent ainsi continuer d'utiliser des certificats qui ne seraient sinon pas jugés fiables (pour ne pas avoir été communiqués au public comme il se doit). Pour procéder à cette désactivation, l'une des conditions suivantes doit être remplie :
@@ -4413,6 +4400,19 @@ Si vous sélectionnez les options suivantes :
 <translation id="6857240169209507953">Empêcher <ph name="BOREALIS_NAME" /> de fonctionner sur un appareil</translation>
 <translation id="685769593149966548">Appliquer le mode restreint strict sur YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou version ultérieure</translation>
+<translation id="6864283226733000548">Ce paramètre offre plusieurs options de disponibilité pour le navigateur <ph name="LACROS_NAME" />.
+
+      Si la règle est définie sur "<ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />", l'utilisateur peut activer <ph name="LACROS_NAME" /> et en faire le navigateur principal. <ph name="LACROS_NAME" /> peut quand même être non autorisé avec la règle "<ph name="LACROS_ALLOWED_POLICY_NAME" />".
+
+      Si la règle est définie sur "<ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />", l'utilisateur ne peut pas se servir de <ph name="LACROS_NAME" />. La règle "<ph name="LACROS_ALLOWED_POLICY_NAME" />" est ignorée.
+
+      Si la règle est définie sur "<ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />", <ph name="LACROS_NAME" /> est activé, mais n'est pas le navigateur principal. La règle "<ph name="LACROS_ALLOWED_POLICY_NAME" />" est ignorée.
+
+      Si la règle est définie sur "<ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />", <ph name="LACROS_NAME" /> est activé et c'est le navigateur principal. La règle "<ph name="LACROS_ALLOWED_POLICY_NAME" />" est ignorée.
+
+      Si la règle n'est pas configurée, "<ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />" est défini par défaut pour les utilisateurs gérés par l'entreprise et "<ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />" pour les utilisateurs non gérés.
+
+      À l'avenir, la valeur "<ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />" permettra de faire de <ph name="LACROS_NAME" /> le seul navigateur disponible dans <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="68818134518270542">Permet de spécifier les applications que les utilisateurs peuvent activer comme applications de prise de notes sur l'écran de verrouillage <ph name="PRODUCT_OS_NAME" />.
 
       Si l'application de prise de notes préférée est activée sur l'écran de verrouillage, un élément d'interface utilisateur destiné à la lancer s'affiche à l'écran. Une fois démarrée, l'application peut ouvrir une fenêtre au-dessus de l'écran de verrouillage et créer des notes dans ce contexte. L'application peut importer les notes créées dans la session de l'utilisateur principal (lorsque la session est déverrouillée). Seules les applications de prise de notes <ph name="PRODUCT_NAME" /> sont acceptées sur l'écran de verrouillage.
@@ -4544,15 +4544,6 @@ Si vous sélectionnez les options suivantes :
       Si cette règle n'est pas configurée, les utilisateurs peuvent modifier ce paramètre.
 
       Remarque : Il est possible que l'isolation de sites entraîne actuellement des problèmes de performances. C'est pourquoi des améliorations vont y être apportées. Cette règle ne s'applique qu'aux appareils Android dans Chrome, qui possèdent plus de 1 Go de RAM. Pour l'appliquer sur des plates-formes autres qu'Android, utilisez la règle <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
-<translation id="6978404102280820831">Si la règle <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> est configurée, vous pouvez dresser la liste des formats d'URL indiquant les sites autorisés ou non à placer des cookies lors d'une session, sauf si la règle <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> est définie pour restaurer définitivement les URL des sessions précédentes.
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> est utilisée pour tous les sites (à condition qu'elle soit configurée). Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique. Si le format d'URL concerné ne figure pas dans la liste établie, le paramètre par défaut est utilisé.
-
-      Si <ph name="PRODUCT_NAME" /> s'exécute en arrière-plan, la session peut rester ouverte jusqu'à ce que l'utilisateur ferme le navigateur (il ne suffit pas de fermer la dernière fenêtre). Pour en savoir plus à ce sujet, consultez la règle <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" />.
-
-      Même si aucune règle spécifique ne prévaut, consultez les règles <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> et <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. En revanche, les formats d'URL parmi ces trois règles ne doivent pas être en conflit.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, consultez la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979739838208297344">Si cette règle est définie sur "<ph name="BR_ENABLED" />", le service Android de sauvegarde et de restauration est activé au départ. Si elle est définie sur "<ph name="BR_DISABLED" />" ou n'est pas définie, ce service est désactivé pendant la configuration.
 
@@ -5254,13 +5245,6 @@ au maximum si un utilisateur se sert de l'appareil.
        Détermine l'identifiant de l'extension à utiliser comme économiseur d'écran sur l'écran de connexion. L'extension doit faire partie de l'AppPack configuré pour ce domaine via la règle DeviceAppPack.</translation>
 <translation id="7882857838942884046">Si vous désactivez Google Sync, sachez que la sauvegarde et la restauration Android ne fonctionneront pas correctement.</translation>
 <translation id="7882890448959833986">Supprimer l'avertissement relatif au système d'exploitation non compatible</translation>
-<translation id="788487748427534612">Si la règle <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> est configurée, vous pouvez établir la liste des formats d'URL qui spécifient les sites autorisés ou non à placer des cookies lors d'une session, sauf si la règle <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> est définie pour restaurer définitivement les URL des sessions précédentes.
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> est utilisée pour tous les sites (à condition qu'elle soit configurée). Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique. Si le format d'URL concerné ne figure pas dans la liste établie, le paramètre par défaut est utilisé.
-
-      Si <ph name="PRODUCT_NAME" /> est exécuté en arrière-plan, la session peut rester ouverte jusqu'à ce que l'utilisateur ferme le navigateur (il ne suffit pas de fermer la dernière fenêtre). Pour en savoir plus à ce sujet, consultez la règle <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" />.
-
-      Même si aucune règle spécifique ne prévaut, consultez les règles <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> et <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. En revanche, les formats d'URL parmi ces trois règles ne doivent pas être en conflit.</translation>
 <translation id="7887379840451099426">Paramètres de gestion de l'alimentation applicables uniquement si l'appareil fonctionne sur batterie.</translation>
 <translation id="7891884447851425349">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> vous permet de spécifier l'URL du moteur de recherche utilisé lors d'une recherche par défaut. L'URL doit inclure la chaîne <ph name="SEARCH_TERM_MARKER" />, qui sera remplacée dans la requête par les termes de recherche de l'utilisateur.
 
@@ -5880,13 +5864,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si cette règle n'est pas configurée, Chrome utilise le répertoire par défaut correspondant à la plate-forme.
 
       Remarque : Pour savoir quelles variables vous pouvez utiliser, consultez la page https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
-<translation id="877499586514669705">Lorsque cette règle est définie, l'accès aux URL répertoriées comme exceptions à <ph name="URL_BLOCKLIST_POLICY_NAME" /> est autorisé. Consultez la description de la règle pour connaître le format des entrées de cette liste. Par exemple, définir la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> sur "*" entraîne le blocage de toutes les requêtes, et vous pouvez appliquer cette règle pour autoriser l'accès à un nombre limité d'URL. Cela vous permet d'ouvrir des exceptions pour certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines utilisant le format spécifié à la page https://www.chromium.org/administrators/url-blocklist-filter-format. Le filtre le plus spécifique détermine si une URL est bloquée ou non. La règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> prévaut sur la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />. Cette règle est limitée à 1 000 entrées.
-
-      Elle permet également d'autoriser ou non le navigateur d'une application externe enregistrée comme gestionnaire de protocoles à appeler automatiquement les protocoles répertoriés tels que "tel:" ou "ssh:".
-
-      Si cette règle n'est pas configurée, aucune exception n'est autorisée pour <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="877557628527387598">Connexion avec un mot de passe</translation>
 <translation id="8777369558049831576">Afficher une case "Toujours ouvrir" dans une boîte de dialogue de protocole externe.</translation>
 <translation id="8786409859071107656">Si cette règle est activée, la règle de gestion du partage d'alimentation USB l'est également.

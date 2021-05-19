@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Chrome-ի և Chrome OS-ի օգտագործման լրացուցիչ պայմաններ</translation>
 <translation id="1807246157184219062">Բաց</translation>
 <translation id="1810845389119482123">Համաժամացման սկզբնական կարգավորումը չի ավարտվել</translation>
-<translation id="1821253160463689938">Օգտագործում է քուքիները՝ ձեր նախընտրանքները հիշելու համար, նույնիսկ եթե չեք այցելում այդ կայքեր</translation>
 <translation id="1829244130665387512">Գտնել էջում</translation>
 <translation id="1830550083491357902">Մուտք գործած չէ</translation>
 <translation id="1843805151597803366">Ավելի լավ թարգմանությունների համար թույլատրեք, որ Google Որոնումն օգտագործի այս էջը</translation>
@@ -273,7 +272,6 @@
 <translation id="2777555524387840389">Մնացել է <ph name="SECONDS" /> վրկ</translation>
 <translation id="2779651927720337254">չհաջողվեց ներբեռնել</translation>
 <translation id="2781151931089541271">Մնացել է 1 վրկ</translation>
-<translation id="279827439955962619">Հեռացնել ընդգծումը</translation>
 <translation id="2801022321632964776">Տեղադրեք Chrome-ի վերջին տարբերակը՝ կայքերը ձեր լեզվով դիտելու համար</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
 <translation id="281504910091592009">Դիտեք և կառավարեք պահված գաղտնաբառերը ձեր <ph name="BEGIN_LINK" />Google հաշվում<ph name="END_LINK" /></translation>
@@ -454,7 +452,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="3988466920954086464">Որոնման արդյունքներն ակնթարթորեն կհայտնվեն այս վահանակում</translation>
 <translation id="4000212216660919741">Home անցանց ռեժիմում</translation>
 <translation id="4016425174436051808">Սխալի պատճառով չհաջողվեց բաժանորդագրվել։</translation>
-<translation id="4021916380760361450">Կառավարեք ձեր Google հաշիվների տվյալները</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ժամ}one{# ժամ}other{# ժամ}}</translation>
 <translation id="4045764304651014138">Օգտագործման տվյալներ</translation>
 <translation id="4056223980640387499">Սեպիա</translation>
@@ -480,7 +477,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4195643157523330669">Բացել նոր ներդիրով</translation>
 <translation id="4198423547019359126">Ներբեռնումների պանակներ չկան</translation>
 <translation id="4209895695669353772">Google-ից անհատականացված բովանդակություն ստանալու համար միացրեք համաժամացումը</translation>
-<translation id="423219824432660969">Գաղտնագրել համաժամացված տվյալները Google-ի գաղտնաբառով՝ սկսած <ph name="TIME" />-ից</translation>
 <translation id="4242533952199664413">Բացել կարգավորումները</translation>
 <translation id="4248098802131000011">Պաշտպանեք ձեր գաղտնաբառերը տվյալների արտահոսքից և անվտանգության հետ կապված այլ խնդիրներից</translation>
 <translation id="4250229828105606438">Սքրինշոթ</translation>
@@ -559,6 +555,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="47217992755561375">Դիտեք ձեր թոփ կայքերը</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4738836084190194332">Վերջին համաժամացումը՝ <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Հեռացնել ընդգծումը</translation>
 <translation id="4749960740855309258">Բացել նոր ներդիր</translation>
 <translation id="4759238208242260848">Ներբեռնումներ</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +696,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="562289928968387744">Կառավարել արձագանքները</translation>
 <translation id="5626134646977739690">Անուն՝</translation>
 <translation id="5628604359369369630">Չկարդացված – Հասանելի է անցանց ռեժիմում</translation>
-<translation id="5632627355679805402">Ձեր տվյալները գաղտնագրվել են ձեր <ph name="BEGIN_LINK" />Google գաղտնաբառի<ph name="END_LINK" /> միջոցով (<ph name="TIME" />): Համաժամացումը սկսելու համար մուտքագրեք գաղտնաբառը:</translation>
 <translation id="5639724618331995626">Թույլատրել բոլոր կայքերը</translation>
 <translation id="5648166631817621825">Վերջին 7 օրվա</translation>
 <translation id="5655963694829536461">Որոնեք ձեր ներբեռնած տարրերում</translation>
@@ -934,7 +930,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="702463548815491781">Խորհուրդ է տրվում, երբ TalkBack-ը կամ Switch Access-ը միացված են</translation>
 <translation id="7027549951530753705">Վերականգնման ամսաթիվը՝ <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Գաղտնաբառեր</translation>
-<translation id="7040531500313579672">Կիսվել ընդգծումով</translation>
 <translation id="7054588988317389591">Ուզո՞ւմ եք ստանալ պատկերների նկարագրություններ</translation>
 <translation id="7055152154916055070">Վերահասցեավորումն արգելափակված է՝</translation>
 <translation id="7063006564040364415">Չհաջողվեց կապակցվել համաժամացման սերվերին:</translation>
@@ -970,6 +965,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="7328017930301109123">Lite ռեժիմում Chrome-ն ավելի արագ է բեռնում էջերը և օգտագործում է մինչև 60 տոկոս պակաս թրաֆիկ:</translation>
 <translation id="7332075081379534664">Դուք մուտք գործեցիք</translation>
 <translation id="7333031090786104871">Դեռ նախորդ կայքն է ավելացվում</translation>
+<translation id="7339898014177206373">Նոր պատուհան</translation>
 <translation id="7340958967809483333">Discover-ի կարգավորումներ</translation>
 <translation id="7352651011704765696">Ինչ-որ սխալ տեղի ունեցավ</translation>
 <translation id="7352939065658542140">ՏԵՍԱՆՅՈՒԹ</translation>

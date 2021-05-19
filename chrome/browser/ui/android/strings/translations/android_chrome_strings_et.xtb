@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Chrome'i ja Chrome OS-i lisateenusetingimused</translation>
 <translation id="1807246157184219062">Hele</translation>
 <translation id="1810845389119482123">Sünkroonimise algseadistus ei jõudnud lõpule</translation>
-<translation id="1821253160463689938">Kasutage küpsisefaile oma eelistuste meelespidamiseks isegi siis, kui te neid lehti ei külasta</translation>
 <translation id="1829244130665387512">Otsi leheküljelt</translation>
 <translation id="1830550083491357902">Pole sisse logitud</translation>
 <translation id="1843805151597803366">Paremate tõlgete saamiseks lubage Google'i otsingul praegust lehte kasutada</translation>
@@ -203,6 +202,7 @@ Puudutage otsimiseks mis tahes sõna. Otsingu täpsustamiseks puudutage pikalt, 
 <ph name="BEGIN_LIST_ITEM1" />Reklaamijad teavad, millal tuhanded kasutajad – nad on justkui kontserdipublik — jagavad sarnast huvi, ja valivad reklaamid kogu publikule, mitte konkreetsetele inimestele.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Reklaamijad saavad reklaamide tõhusust uurida viisil, mis teie tegevusi saitidel ei jälgi.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Eellaadib lehed, mida Chrome'i arvates võiksite külastada. Selleks võib Chrome kasutada küpsisefaile, kui need lubate, ning lehed krüpteerida ja saata Google'i kaudu, et teie isikut saitide eest varjata.</translation>
 <translation id="234265804618409743">Kaamerat ei saa avada. Midagi läks valesti.</translation>
 <translation id="2345671828921229300">Otsimiseks puudutage sõna pikalt</translation>
 <translation id="2349710944427398404">Chrome'i kasutatav andmemaht kokku, sh kontod, järjehoidjad ja salvestatud seaded</translation>
@@ -273,7 +273,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="2777555524387840389">Jäänud on <ph name="SECONDS" /> sekundit</translation>
 <translation id="2779651927720337254">ebaõnnestus</translation>
 <translation id="2781151931089541271">Jäänud on 1 sekund</translation>
-<translation id="279827439955962619">Esiletõstu eemaldamine</translation>
 <translation id="2801022321632964776">Oma keele kasutamiseks värskendage Chrome uusimale versioonile</translation>
 <translation id="2805756323405976993">Rakendused</translation>
 <translation id="281504910091592009">Vaadake ja hallake salvestatud paroole oma <ph name="BEGIN_LINK" />Google'i kontol<ph name="END_LINK" /></translation>
@@ -454,7 +453,6 @@ Privaatsuse liivakast on endiselt arendusjärgus ja saadaval vaid valitud piirko
 <translation id="3988466920954086464">Vaadake kiirotsingu tulemusi sellel paneelil</translation>
 <translation id="4000212216660919741">Võrguühenduseta avaleht</translation>
 <translation id="4016425174436051808">Ei saanud jälgida. Midagi läks valesti.</translation>
-<translation id="4021916380760361450">Hallake oma Google'i kontode andmeid</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Kasutusandmed</translation>
 <translation id="4056223980640387499">Seepia</translation>
@@ -480,7 +478,6 @@ Privaatsuse liivakast on endiselt arendusjärgus ja saadaval vaid valitud piirko
 <translation id="4195643157523330669">Ava uuel vahelehel</translation>
 <translation id="4198423547019359126">Ükski allalaadimise asukoht ei ole saadaval</translation>
 <translation id="4209895695669353772">Google'i soovitatud isikupärastatud sisu hankimiseks lülitage sünkroonimine sisse</translation>
-<translation id="423219824432660969">Krüpteeri sünkroonitud andmed Google'i parooli abil <ph name="TIME" /> seisuga</translation>
 <translation id="4242533952199664413">Ava seaded</translation>
 <translation id="4248098802131000011">Tagage oma paroolide turvalisus, et vältida andmetega seotud rikkumisi ja muid turvaprobleeme</translation>
 <translation id="4250229828105606438">Ekraanipilt</translation>
@@ -559,6 +556,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="47217992755561375">Vaadake oma sageli külastatud saite</translation>
 <translation id="4732120983431207637">Virnaharutaja</translation>
 <translation id="4738836084190194332">Viimati sünkroonitud: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Eemalda esiletõstmine</translation>
 <translation id="4749960740855309258">Uue vahelehe avamine</translation>
 <translation id="4759238208242260848">Allalaadimised</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +697,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="562289928968387744">Reaktsioonide haldamine</translation>
 <translation id="5626134646977739690">Nimi:</translation>
 <translation id="5628604359369369630">Lugemata – võrguühenduseta saadaval</translation>
-<translation id="5632627355679805402">Teie andmed krüpteeriti viimati teie <ph name="BEGIN_LINK" />Google’i parooliga<ph name="END_LINK" /> kuupäeva <ph name="TIME" /> seisuga. Sisestage see sünkroonimise alustamiseks.</translation>
 <translation id="5639724618331995626">Luba kõik saidid</translation>
 <translation id="5648166631817621825">Viimased seitse päeva</translation>
 <translation id="5655963694829536461">Otsige oma allalaadimiste hulgast</translation>
@@ -934,7 +931,6 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="702463548815491781">Soovitatav juhul, kui TalkBack või lülitiga juurdepääs on sisse lülitatud</translation>
 <translation id="7027549951530753705">Taastati <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Paroolid</translation>
-<translation id="7040531500313579672">Jaga esiletõstu</translation>
 <translation id="7054588988317389591">Kas saada piltide kirjeldusi?</translation>
 <translation id="7055152154916055070">Ümbersuunamine blokeeriti:</translation>
 <translation id="7063006564040364415">Sünkroonimisserveriga ei saanud ühendust.</translation>
@@ -970,6 +966,7 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="7328017930301109123">Lihtsustatud režiimis laadib Chrome lehti kiiremini ja kasutab kuni 60 protsenti vähem andmemahtu.</translation>
 <translation id="7332075081379534664">Sisselogimine õnnestus</translation>
 <translation id="7333031090786104871">Eelmist saiti alles lisatakse</translation>
+<translation id="7339898014177206373">Uus aken</translation>
 <translation id="7340958967809483333">Funktsiooni Discover valikud</translation>
 <translation id="7352651011704765696">Midagi läks valesti</translation>
 <translation id="7352939065658542140">VIDEO</translation>
@@ -998,6 +995,7 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="7493994139787901920"><ph name="VERSION" /> (värskendati <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">säästetud andmemaht</translation>
 <translation id="7498271377022651285">Oodake ...</translation>
+<translation id="750228856503700085">Värskendusi pole saadaval</translation>
 <translation id="7507207699631365376">Vaadake selle teenusepakkuja <ph name="BEGIN_LINK" />privaatsuseeskirju<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Laadi alla</translation>
 <translation id="751961395872307827">Saidiga ei saa ühendust luua</translation>
@@ -1099,6 +1097,7 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="8076492880354921740">Vahelehed</translation>
 <translation id="8078096376109663956">Jagage ainult teksti</translation>
 <translation id="8084114998886531721">Salvestatud parool</translation>
+<translation id="8084285576995584326">Oma Google'i konto andmete haldamine</translation>
 <translation id="808747664143081553">Seadmega ühendatud</translation>
 <translation id="8103578431304235997">Inkognito vaheleht</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8725066075913043281">Proovi uuesti</translation>
 <translation id="8730621377337864115">Valmis</translation>
+<translation id="8746155870861185046">Esiletõstu jagamine</translation>
 <translation id="8748850008226585750">Sisu on peidetud</translation>
 <translation id="8773160212632396039">Taotluse töötlemine</translation>
 <translation id="8788265440806329501">Navigeerimisajalugu on suletud</translation>

@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">A Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételei</translation>
 <translation id="1807246157184219062">Világos</translation>
 <translation id="1810845389119482123">A szinkronizálás kezdeti beállítása nem fejeződött be</translation>
-<translation id="1821253160463689938">Cookie-kat használ a preferenciák megjegyzésére még akkor is, ha Ön nem keresi fel az adott oldalakat</translation>
 <translation id="1829244130665387512">Keresés ezen az oldalon</translation>
 <translation id="1830550083491357902">Nem jelentkezett be</translation>
 <translation id="1843805151597803366">A jobb fordítások érdekében engedélyezze a Google Keresőnek a jelenlegi oldal használatát</translation>
@@ -273,7 +272,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2777555524387840389"><ph name="SECONDS" /> másodperc van hátra</translation>
 <translation id="2779651927720337254">sikertelen</translation>
 <translation id="2781151931089541271">1 másodperc van hátra</translation>
-<translation id="279827439955962619">Kiemelés eltávolítása</translation>
 <translation id="2801022321632964776">Frissítsen, hogy a saját nyelvén használhassa a Chrome legújabb verzióját</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="281504910091592009">Mentett jelszavait megtekintheti és kezelheti <ph name="BEGIN_LINK" />Google-fiókjában<ph name="END_LINK" /></translation>
@@ -454,7 +452,6 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="3988466920954086464">Azonnali keresési találatok megtekintése ezen a panelen</translation>
 <translation id="4000212216660919741">Offline kezdőlap</translation>
 <translation id="4016425174436051808">Nem lehet követni. Hiba történt.</translation>
-<translation id="4021916380760361450">Saját Google-fiókadatok kezelése</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# órája}other{# órája}}</translation>
 <translation id="4045764304651014138">Használati adatok</translation>
 <translation id="4056223980640387499">Szépia</translation>
@@ -480,7 +477,6 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="4195643157523330669">Megnyitás új lapon</translation>
 <translation id="4198423547019359126">Nem áll rendelkezésre letöltési hely</translation>
 <translation id="4209895695669353772">A Google által javasolt, személyre szabott tartalmak fogadásához kapcsolja be a szinkronizálást</translation>
-<translation id="423219824432660969">A szinkronizált adatok titkosítása Google-jelszóval ekkortól: <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Beállítások megnyitása</translation>
 <translation id="4248098802131000011">Védje meg jelszavait az adatvédelmi incidensektől és más biztonsági problémáktól</translation>
 <translation id="4250229828105606438">Képernyőkép</translation>
@@ -559,6 +555,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="47217992755561375">A leginkább kedvelt webhelyei megtekintése</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4738836084190194332">Utolsó szinkronizálás: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Kiemelés eltávolítása</translation>
 <translation id="4749960740855309258">Új lap megnyitása</translation>
 <translation id="4759238208242260848">Letöltések</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +696,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="562289928968387744">Reakciók kezelése</translation>
 <translation id="5626134646977739690">Név:</translation>
 <translation id="5628604359369369630">Olvasatlan (Offline hozzáférhető)</translation>
-<translation id="5632627355679805402">Adatai titkosítva lettek <ph name="BEGIN_LINK" />Google-jelszavával<ph name="END_LINK" /> ekkor: <ph name="TIME" />. Adja meg a jelszót a szinkronizálás megkezdéséhez.</translation>
 <translation id="5639724618331995626">Minden webhely engedélyezése</translation>
 <translation id="5648166631817621825">Az elmúlt 7 napból</translation>
 <translation id="5655963694829536461">Keresés a letöltések között</translation>
@@ -934,7 +930,6 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="702463548815491781">Ajánlott, amikor a TalkBack vagy a Kapcsolóalapú hozzáférés be van kapcsolva</translation>
 <translation id="7027549951530753705">Visszaállítás dátuma: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Jelszavak</translation>
-<translation id="7040531500313579672">Kiemelés megosztása</translation>
 <translation id="7054588988317389591">Lekéri a képleírásokat?</translation>
 <translation id="7055152154916055070">Átirányítás letiltva:</translation>
 <translation id="7063006564040364415">Nem sikerült csatlakozni a szinkronizálószerverhez.</translation>
@@ -970,6 +965,7 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="7328017930301109123">Lite módban a Chrome gyorsabban betölti az oldalakat, és akár 60 százalékkal kisebb adatforgalmat generál.</translation>
 <translation id="7332075081379534664">Sikeres bejelentkezés</translation>
 <translation id="7333031090786104871">Az előző webhely hozzáadása még folyamatban van</translation>
+<translation id="7339898014177206373">Új ablak</translation>
 <translation id="7340958967809483333">A Discover beállításai</translation>
 <translation id="7352651011704765696">Valami nem működik</translation>
 <translation id="7352939065658542140">VIDEÓ</translation>

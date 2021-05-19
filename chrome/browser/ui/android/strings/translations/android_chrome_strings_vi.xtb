@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Điều khoản dịch vụ bổ sung của Chrome và Chrome OS</translation>
 <translation id="1807246157184219062">Sáng</translation>
 <translation id="1810845389119482123">Chưa hoàn tất quá trình thiết lập đồng bộ hóa ban đầu</translation>
-<translation id="1821253160463689938">Sử dụng cookie để ghi nhớ tùy chọn của bạn, ngay cả khi bạn không truy cập vào các trang đó</translation>
 <translation id="1829244130665387512">Tìm trong trang</translation>
 <translation id="1830550083491357902">Chưa đăng nhập</translation>
 <translation id="1843805151597803366">Để có bản dịch chính xác hơn, hãy cho phép Google Tìm kiếm sử dụng trang hiện tại</translation>
@@ -273,7 +272,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2777555524387840389">Còn <ph name="SECONDS" /> giây</translation>
 <translation id="2779651927720337254">không tải xuống được</translation>
 <translation id="2781151931089541271">Còn 1 giây</translation>
-<translation id="279827439955962619">Xóa nội dung được làm nổi bật</translation>
 <translation id="2801022321632964776">Hãy cập nhật để dùng ngôn ngữ của bạn trong phiên bản Chrome mới nhất</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="281504910091592009">Xem và quản lý các mật khẩu đã lưu trong <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" /> của bạn</translation>
@@ -454,7 +452,6 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="3988466920954086464">Xem kết quả tìm kiếm tức thì trong bảng điều khiển này</translation>
 <translation id="4000212216660919741">Nhà ở chế độ không kết nối Internet</translation>
 <translation id="4016425174436051808">Không thể theo dõi. Đã xảy ra lỗi.</translation>
-<translation id="4021916380760361450">Kiểm soát dữ liệu trong Tài khoản Google của bạn</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# giờ}other{# giờ}}</translation>
 <translation id="4045764304651014138">Dữ liệu sử dụng</translation>
 <translation id="4056223980640387499">Màu nâu đỏ</translation>
@@ -480,7 +477,6 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="4195643157523330669">Mở trong thẻ mới</translation>
 <translation id="4198423547019359126">Không có vị trí tải xuống</translation>
 <translation id="4209895695669353772">Để nhận nội dung do Google đề xuất riêng cho bạn, hãy bật tính năng đồng bộ hóa</translation>
-<translation id="423219824432660969">Mã hóa dữ liệu đã đồng bộ hóa bằng mật khẩu Google kể từ <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Mở phần cài đặt</translation>
 <translation id="4248098802131000011">Bảo vệ mật khẩu của bạn trước việc bị rò rỉ dữ liệu và các vấn đề bảo mật khác</translation>
 <translation id="4250229828105606438">Ảnh chụp màn hình</translation>
@@ -559,6 +555,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="47217992755561375">Xem các trang web hàng đầu của bạn</translation>
 <translation id="4732120983431207637">Trình gỡ ngăn xếp</translation>
 <translation id="4738836084190194332">Đồng bộ hóa lần gần đây nhất: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Xóa nội dung được làm nổi bật</translation>
 <translation id="4749960740855309258">Mở thẻ mới</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +696,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="562289928968387744">Quản lý lượt bày tỏ cảm xúc</translation>
 <translation id="5626134646977739690">Tên:</translation>
 <translation id="5628604359369369630">Chưa đọc – Có thể đọc khi không có mạng</translation>
-<translation id="5632627355679805402">Dữ liệu của bạn đã được mã hóa bằng <ph name="BEGIN_LINK" />mật khẩu Google<ph name="END_LINK" /> kể từ <ph name="TIME" />. Hãy nhập mật khẩu đó để bắt đầu đồng bộ hóa.</translation>
 <translation id="5639724618331995626">Cho phép tất cả trang web</translation>
 <translation id="5648166631817621825">7 ngày qua</translation>
 <translation id="5655963694829536461">Tìm kiếm trong các tệp đã tải xuống</translation>
@@ -934,7 +930,6 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="702463548815491781">Khuyên dùng khi dịch vụ TalkBack hoặc Tiếp cận bằng công tắc đang bật</translation>
 <translation id="7027549951530753705">Đã khôi phục <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Mật khẩu</translation>
-<translation id="7040531500313579672">Chia sẻ nội dung được làm nổi bật</translation>
 <translation id="7054588988317389591">Tải nội dung mô tả hình ảnh?</translation>
 <translation id="7055152154916055070">Liên kết chuyển hướng đã chặn:</translation>
 <translation id="7063006564040364415">Không thể kết nối với máy chủ đồng bộ hóa.</translation>
@@ -970,6 +965,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="7328017930301109123">Ở Chế độ thu gọn, Chrome tải trang nhanh hơn và sử dụng ít dữ liệu hơn lên tới 60 phần trăm.</translation>
 <translation id="7332075081379534664">Đăng nhập thành công</translation>
 <translation id="7333031090786104871">Vẫn đang thêm trang web trước</translation>
+<translation id="7339898014177206373">Cửa sổ mới</translation>
 <translation id="7340958967809483333">Các tùy chọn của tính năng Khám phá</translation>
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
 <translation id="7352939065658542140">VIDEO</translation>

@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Ytterligare villkor för Chrome och Chrome OS</translation>
 <translation id="1807246157184219062">Ljus</translation>
 <translation id="1810845389119482123">Konfigurationen av synkronisering har inte slutförts</translation>
-<translation id="1821253160463689938">Kommer ihåg med hjälp av cookies vad du brukar välja även om du inte besöker sidorna i fråga</translation>
 <translation id="1829244130665387512">Hitta på sida</translation>
 <translation id="1830550083491357902">Inte inloggad</translation>
 <translation id="1843805151597803366">Låt Google Sök använda den aktuella sidan så att du får bättre översättningar</translation>
@@ -203,6 +202,7 @@ Sök genom att trycka på ett ord. Du kan finjustera sökningen genom att trycka
 <ph name="BEGIN_LIST_ITEM1" />Annonsörerna kan se att tusentals användare har ett gemensamt intresse – ungefär som när en grupp människor går på konsert — och välja ut annonser för gruppen snarare än för enskilda individer.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Annonsörerna kan utvärdera annonsernas effektivitet med hjälp av andra metoder än att spåra dig från webbplats till webbplats.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Sidor som du kanske vill besöka läses in i förväg. Cookies kan användas för detta, om du har tillåtit cookies, och sidorna kan krypteras och skickas via Google så att din identitet ska döljas för webbplatserna.</translation>
 <translation id="234265804618409743">Det gick inte att öppna kameran. Något gick fel.</translation>
 <translation id="2345671828921229300">Om du vill söka trycker du länge på ett ord</translation>
 <translation id="2349710944427398404">Total data som används av Chrome, inklusive konton, bokmärken och sparade inställningar</translation>
@@ -273,7 +273,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder kvar</translation>
 <translation id="2779651927720337254">misslyckades</translation>
 <translation id="2781151931089541271">1 sekund kvar</translation>
-<translation id="279827439955962619">Ta bort markering</translation>
 <translation id="2801022321632964776">Uppdatera och få ditt språk i den senaste versionen av Chrome</translation>
 <translation id="2805756323405976993">Appar</translation>
 <translation id="281504910091592009">Visa och hantera sparade lösenord i <ph name="BEGIN_LINK" />Google-kontot<ph name="END_LINK" /></translation>
@@ -454,7 +453,6 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="3988466920954086464">Visa snabba sökresultat i panelen</translation>
 <translation id="4000212216660919741">Startsida offline</translation>
 <translation id="4016425174436051808">Det gick inte att börja följa flödet på grund av ett fel.</translation>
-<translation id="4021916380760361450">Styr data i Google-kontot</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# tim}other{# tim}}</translation>
 <translation id="4045764304651014138">Data om användning</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -480,7 +478,6 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="4195643157523330669">Öppna i ny flik</translation>
 <translation id="4198423547019359126">Det fins inga tillgängliga nedladdningsplatser</translation>
 <translation id="4209895695669353772">Aktivera synkronisering om du vill få förslag på anpassat innehåll från Google</translation>
-<translation id="423219824432660969">Kryptera synkroniserad data med Google-lösenordet från <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
 <translation id="4248098802131000011">Skydda dina lösenord från dataintrång och andra säkerhetsproblem</translation>
 <translation id="4250229828105606438">Skärmbild</translation>
@@ -559,6 +556,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="47217992755561375">Se dina mest besökta webbplatser</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4738836084190194332">Synkroniserades senast: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Ta bort markering</translation>
 <translation id="4749960740855309258">Öppna en ny flik</translation>
 <translation id="4759238208242260848">Nedladdningar</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +697,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="562289928968387744">Hantera reaktioner</translation>
 <translation id="5626134646977739690">Namn:</translation>
 <translation id="5628604359369369630">Oläst – Tillgänglig offline</translation>
-<translation id="5632627355679805402">Din data krypterades med det <ph name="BEGIN_LINK" />Google-lösenord<ph name="END_LINK" /> du hade den <ph name="TIME" />. Ange det om du vill starta synkroniseringen.</translation>
 <translation id="5639724618331995626">Tillåt alla webbplatser</translation>
 <translation id="5648166631817621825">Senaste sju dagarna</translation>
 <translation id="5655963694829536461">Sök i dina nedladdningar</translation>
@@ -934,7 +931,6 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="702463548815491781">Rekommenderas när TalkBack eller brytarstyrning är aktiverat</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> återställdes</translation>
 <translation id="7029809446516969842">Lösenord</translation>
-<translation id="7040531500313579672">Dela markering</translation>
 <translation id="7054588988317389591">Vill du få bildbeskrivningar?</translation>
 <translation id="7055152154916055070">Omdirigeringen blockerades:</translation>
 <translation id="7063006564040364415">Det gick inte att ansluta till synkroniseringsservern.</translation>
@@ -970,6 +966,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7328017930301109123">I begränsat läge läses sidorna in snabbare och dataförbrukningen minskar med upp till 60 procent.</translation>
 <translation id="7332075081379534664">Inloggningen lyckades</translation>
 <translation id="7333031090786104871">Processen pågår fortfarande för den förra webbplatsen</translation>
+<translation id="7339898014177206373">Nytt fönster</translation>
 <translation id="7340958967809483333">Alternativ för Förslag</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
 <translation id="7352939065658542140">VIDEO</translation>
@@ -998,6 +995,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7493994139787901920"><ph name="VERSION" /> (uppdaterades <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">Sparad data</translation>
 <translation id="7498271377022651285">Vänta …</translation>
+<translation id="750228856503700085">Inga uppdateringar är tillgängliga</translation>
 <translation id="7507207699631365376">Läs leverantörens <ph name="BEGIN_LINK" />sekretesspolicy<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Ladda ned</translation>
 <translation id="751961395872307827">Det gick inte att ansluta till webbplatsen</translation>
@@ -1099,6 +1097,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="8076492880354921740">Flikar</translation>
 <translation id="8078096376109663956">Dela endast text</translation>
 <translation id="8084114998886531721">Sparat lösenord</translation>
+<translation id="8084285576995584326">Styr data i Google-kontot</translation>
 <translation id="808747664143081553">Ansluten till enheten</translation>
 <translation id="8103578431304235997">Inkognitoflik</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8725066075913043281">Försök igen</translation>
 <translation id="8730621377337864115">Klart</translation>
+<translation id="8746155870861185046">Dela markering</translation>
 <translation id="8748850008226585750">Innehållet har dolts</translation>
 <translation id="8773160212632396039">Bearbetar begäran</translation>
 <translation id="8788265440806329501">Navigeringshistoriken har stängts</translation>

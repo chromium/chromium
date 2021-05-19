@@ -48,12 +48,12 @@
 <translation id="4852878756222711218">‏כדי להפיק את המרב מ-Chromium, יש להיכנס לחשבון Google</translation>
 <translation id="4985291216379576555">‏אופליין, Chromium לא יכול לחפש עדכונים</translation>
 <translation id="4999538639245140991">‏יציאה מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" /> תגרום למחיקת נתוני Chromium שלך מהמכשיר הזה. הנתונים האלה יישארו בחשבון Google שלך.</translation>
+<translation id="5171868502429358653">‏כניסה אל Chromium</translation>
 <translation id="5224391634244552924">‏אין סיסמאות שמורות. Chromium יכול לבדוק את הסיסמאות שלך רק אם שמרת אותן.</translation>
 <translation id="5308226104666789935">‏Chromium לא יכול לחפש עדכונים</translation>
 <translation id="5396916991083608703">‏להגדיר את Chromium כדפדפן ברירת המחדל?</translation>
 <translation id="5521125884468363740">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chromium יש להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="5573014823074921752">‏טיפ למשתמשי Chromium: כדי לקבל אפשרויות נוספות של כרטיסיות, יש ללחוץ לחיצה ארוכה על הלחצן 'הצגת כרטיסיות' בסרגל הכלים, שנמצא בחלק התחתון או העליון של המסך.</translation>
-<translation id="5651741435382092412">‏יש להיכנס לאתר זה, לחשבון Google ול-Chromium. אפשר להפעיל את הסנכרון מאוחר יותר.</translation>
 <translation id="5700709190537129682">‏Chromium לא יכול לבדוק את הסיסמאות שלך</translation>
 <translation id="5742135483959137648">‏שימוש ב-Chromium לפתיחת קישורים</translation>
 <translation id="5777187867430702742">‏דף Chromium</translation>
@@ -64,6 +64,7 @@
 1. פותחים את ההגדרות
 2. מקישים על אפליקציית הדפדפן שמוגדרת כברירת מחדל
 3. בוחרים את Chromium.</translation>
+<translation id="6155422572367400359">‏יש לך אפשרות להיכנס לאתר זה, לחשבון Google ול-Chromium. ניתן להפעיל את הסנכרון מאוחר יותר.</translation>
 <translation id="6268381023930128611">‏האם לצאת מ-Chromium?</translation>
 <translation id="632825460376924298">‏התרת כניסה אל Chromium</translation>
 <translation id="6337530241089703714">‏האם למחוק את נתוני Chromium ממכשיר זה או לשמור אותם?</translation>

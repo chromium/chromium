@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome ei voinut tarkistaa, onko päivityksiä saatavilla. Yritä myöhemmin uudelleen.</translation>
 <translation id="2732745070297234559">Chrome ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna.</translation>
 <translation id="2740105938841089077">Käytä Chromea linkkien avaamiseen</translation>
+<translation id="2869959624320573933">Kirjaudu Chromeen</translation>
 <translation id="2919738076569633423">Käyttämällä Chromea hyväksyt <ph name="BEGIN_LINK_TOS" />käyttöehdot<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Koska kirjaudut ulos verkkotunnuksen <ph name="SIGNOUT_MANAGED_DOMAIN" /> ylläpitämältä tililtä, Chrome-datasi poistetaan tältä laitteelta. Se säilyy edelleen Google-tililläsi.</translation>
 <translation id="3167189358072330585">Tilisi ei toimi Google Chromen kanssa. Ota yhteyttä verkkotunnuksesi järjestelmänvalvojaan tai kirjaudu sisään tavallisella Google-tilillä.</translation>
 <translation id="3173834708294760622">Google Chrome ‑sivu</translation>
 <translation id="3196546062792660320">Chrome säästää aikaasi tuomalla tilisi verkkoon. Voit lisätä tai poistaa tilejä asetuksissa.</translation>
-<translation id="3223655207402797071">Kirjaudu sisään tälle sivustolle, Google-tilillesi ja Chromeen. Voit laittaa synkronoinnin päälle myöhemmin.</translation>
 <translation id="3282568296779691940">Kirjaudu Chromeen</translation>
 <translation id="3345341804167540816">Käytä Chromea missä tahansa</translation>
 <translation id="3455456143708465450">Kirjaudu sisään Google-tililläsi, jotta saat parhaan hyödyn Chromesta</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome on ajan tasalla</translation>
 <translation id="8022947259858476807">Käytä Chromea oletuksena ja avaa linkkejä, hae widgeteistä ja täytä salasanoja automaattisesti muissa sovelluksissa</translation>
 <translation id="8160472928944011082">Chromea ei voi päivittää</translation>
+<translation id="8263079278049777200">Kirjaudu sisään tälle sivustolle, Google-tilillesi ja Chromeen. Voit laittaa synkronoinnin päälle myöhemmin.</translation>
 <translation id="8357607116237445042">Valitse, haluatko poistaa Chrome-datasi tältä laitteelta vai säilyttää sen</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="840168496893712993">Jokin laajennus kaataa Chromen. Kokeile poistaa laajennuksia.</translation>

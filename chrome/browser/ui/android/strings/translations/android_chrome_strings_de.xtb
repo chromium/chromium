@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Zusätzliche Nutzungsbedingungen für Google Chrome und Chrome OS</translation>
 <translation id="1807246157184219062">Hell</translation>
 <translation id="1810845389119482123">Erste Einrichtung der Synchronisierung nicht abgeschlossen</translation>
-<translation id="1821253160463689938">Zum Speichern Ihrer Einstellungen werden Cookies verwendet, auch wenn Sie diese Seiten nicht besuchen</translation>
 <translation id="1829244130665387512">Auf Seite suchen</translation>
 <translation id="1830550083491357902">Nicht angemeldet</translation>
 <translation id="1843805151597803366">Lassen Sie die Google Suche auf die aktuelle Seite zugreifen, um bessere Übersetzungen zu bekommen</translation>
@@ -273,7 +272,6 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2777555524387840389"><ph name="SECONDS" /> Sekunden übrig</translation>
 <translation id="2779651927720337254">fehlgeschlagen</translation>
 <translation id="2781151931089541271">1 Sekunde übrig</translation>
-<translation id="279827439955962619">Hervorhebung löschen</translation>
 <translation id="2801022321632964776">Chrome jetzt aktualisieren und das Internet in Ihrer Sprache entdecken</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">Gespeicherte Passwörter in meinem <ph name="BEGIN_LINK" />Google-Konto<ph name="END_LINK" /> ansehen und verwalten</translation>
@@ -295,6 +293,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2904414404539560095">Die Liste von Geräten, mit denen ein Tab geteilt werden kann, ist ganz geöffnet.</translation>
 <translation id="2905036901251765993">Bitten Sie Leute in der Nähe, diesen QR-Code zu scannen, um Inhalte mit Ihnen zu teilen</translation>
 <translation id="2909615210195135082">Google-Benachrichtigungsplattform</translation>
+<translation id="2912296070571964914">Themen verwalten, an denen Sie interessiert sind</translation>
 <translation id="2923908459366352541">Der Name ist ungültig</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-Speicher</translation>
 <translation id="2932222164150889403">Deine Tastaturbelegung ändert sich nicht</translation>
@@ -339,6 +338,8 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3254409185687681395">Lesezeichen für diese Seite erstellen</translation>
 <translation id="3259831549858767975">Gesamten Seiteninhalt verkleinern</translation>
 <translation id="3264124641674805320">Inhalte für später herunterladen</translation>
+<translation id="3264259168916048410">Ihr Computer möchte dieses Gerät für die Anmeldung bei einer Website verwenden</translation>
+<translation id="3265534588625245297">Websites verwalten, denen Sie folgen</translation>
 <translation id="3269093882174072735">Bild laden</translation>
 <translation id="3269956123044984603">Aktivieren Sie "Daten automatisch synchronisieren" in den Android-Kontoeinstellungen, um Tabs von Ihren anderen Geräten abzurufen.</translation>
 <translation id="3282568296779691940">In Chrome anmelden</translation>
@@ -451,7 +452,6 @@ Privacy Sandbox befindet sich noch in der Entwicklung und ist nur in ausgewählt
 <translation id="3988466920954086464">Instant-Suchergebnisse in diesem Feld ansehen</translation>
 <translation id="4000212216660919741">Offline-Startseite</translation>
 <translation id="4016425174436051808">Folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>
-<translation id="4021916380760361450">Google-Kontodaten verwalten</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Nutzungsdaten</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -477,7 +477,6 @@ Privacy Sandbox befindet sich noch in der Entwicklung und ist nur in ausgewählt
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4198423547019359126">Keine verfügbaren Speicherorte für Downloads</translation>
 <translation id="4209895695669353772">Aktivieren Sie die Synchronisierung, um personalisierte, von Google vorgeschlagene Inhalte zu erhalten</translation>
-<translation id="423219824432660969">Synchronisierte Daten mit dem Google-Passwort vom <ph name="TIME" /> verschlüsseln</translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
 <translation id="4248098802131000011">Schützen Sie Ihre Passwörter vor Datenpannen und anderen Sicherheitsproblemen</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -497,6 +496,7 @@ Privacy Sandbox befindet sich noch in der Entwicklung und ist nur in ausgewählt
 <translation id="4351244548802238354">Dialogfeld schließen</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4384468725000734951">Suche erfolgt mit Sogou</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> – wird heruntergeladen…</translation>
 <translation id="4404568932422911380">Keine Lesezeichen</translation>
 <translation id="4405224443901389797">Verschieben nach…</translation>
 <translation id="4411535500181276704">Lite-Modus</translation>
@@ -555,6 +555,7 @@ Eventuell finden Sie unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="47217992755561375">Ihre Top-Websites aufrufen</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4738836084190194332">Letzte Synchronisierung: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Markierung entfernen</translation>
 <translation id="4749960740855309258">Neuen Tab öffnen</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4763480195061959176">Video</translation>
@@ -583,6 +584,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="488187801263602086">Datei umbenennen</translation>
 <translation id="4882831918239250449">Legen Sie fest, wie Ihr Browserverlauf zur Personalisierung verwendet wird, z. B. bei der Suche und bei Werbung</translation>
 <translation id="4885273946141277891">Nicht unterstützte Anzahl von Chrome-Instanzen</translation>
+<translation id="4905269543817054577">Im Inkognitomodus wird der Verlauf nicht gespeichert</translation>
 <translation id="4908869848243824489">Discover von Google</translation>
 <translation id="4910889077668685004">Zahlungs-Apps</translation>
 <translation id="4913161338056004800">Statistiken wieder auf Null setzen</translation>
@@ -694,7 +696,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="562289928968387744">Reaktionen verwalten</translation>
 <translation id="5626134646977739690">Name:</translation>
 <translation id="5628604359369369630">Ungelesen – offline verfügbar</translation>
-<translation id="5632627355679805402">Ihre Daten sind seit dem <ph name="TIME" /> mit Ihrem <ph name="BEGIN_LINK" />Google-Passwort<ph name="END_LINK" /> verschlüsselt. Geben Sie dieses ein, um die Synchronisierung zu starten.</translation>
 <translation id="5639724618331995626">Alle Websites zulassen</translation>
 <translation id="5648166631817621825">Letzte 7 Tage</translation>
 <translation id="5655963694829536461">In Downloads suchen</translation>
@@ -929,7 +930,6 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="702463548815491781">Empfohlen, wenn TalkBack oder der Schalterzugriff aktiviert ist</translation>
 <translation id="7027549951530753705">Wiederhergestellt: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Passwörter</translation>
-<translation id="7040531500313579672">Hervorhebung teilen</translation>
 <translation id="7054588988317389591">Bildbeschreibungen abrufen?</translation>
 <translation id="7055152154916055070">Weiterleitung blockiert:</translation>
 <translation id="7063006564040364415">Verbindung zum Synchronisierungsserver konnte nicht hergestellt werden.</translation>
@@ -951,6 +951,7 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="7191430249889272776">Tab im Hintergrund geöffnet</translation>
 <translation id="7233236755231902816">Das Web in Ihrer Sprache – mit der aktuellen Version von Chrome</translation>
 <translation id="7248069434667874558">Prüfen Sie, ob auf <ph name="TARGET_DEVICE_NAME" /> die Synchronisierung in Chrome aktiviert ist</translation>
+<translation id="7252076891734325316">Platzieren Sie Ihr Smartphone möglichst nah am Computer</translation>
 <translation id="7274013316676448362">Blockierte Website</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> ändern?</translation>
 <translation id="7290209999329137901">Umbenennen nicht verfügbar</translation>
@@ -964,6 +965,7 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="7328017930301109123">Im Lite-Modus werden Seiten schneller in Chrome geladen und es werden bis zu 60 Prozent weniger Daten verbraucht.</translation>
 <translation id="7332075081379534664">Angemeldet</translation>
 <translation id="7333031090786104871">Vorherige Website wird noch hinzugefügt</translation>
+<translation id="7339898014177206373">Neues Fenster</translation>
 <translation id="7340958967809483333">Optionen für Discover</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten.</translation>
 <translation id="7352939065658542140">VIDEO</translation>
@@ -1017,6 +1019,7 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="7630202231528827509">Anbieter-URL</translation>
 <translation id="7638584964844754484">Falsche Passphrase</translation>
 <translation id="7641339528570811325">Browserdaten löschen…</translation>
+<translation id="764170292089748542">Wenn Sie im Inkognitomodus surfen, speichert Chrome Ihren Browserverlauf nicht. Mit den Lesezeichen können Sie aber immer noch schnell und einfach auf Ihre Lieblingsseiten zugreifen.</translation>
 <translation id="7646772052135772216">Passwortsynchronisierung funktioniert nicht</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7665369617277396874">Konto hinzufügen</translation>
@@ -1042,6 +1045,7 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="7810647596859435254">Öffnen mit…</translation>
 <translation id="7815484226266492798">Langer Screenshot</translation>
 <translation id="7821588508402923572">Ihre Einsparungen bei der Datennutzung werden hier angezeigt</translation>
+<translation id="78270725016672455">Ihr Computer möchte dieses Gerät für die Anmeldung bei einer Website registrieren</translation>
 <translation id="7844171778363018843">Keine Daten zum Synchronisieren ausgewählt</translation>
 <translation id="7846296061357476882">Google-Dienste</translation>
 <translation id="784934925303690534">Zeitraum</translation>
@@ -1138,6 +1142,7 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="8427875596167638501">Vorschau-Tab ist halb geöffnet</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8438566539970814960">Suchanfragen und das Surfen verbessern</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> – Sprache bereit, <ph name="APP_NAME" /> neu starten.</translation>
 <translation id="8442258441309440798">Keine Artikel verfügbar</translation>
 <translation id="8443209985646068659">Update nicht möglich</translation>
 <translation id="8445448999790540984">Passwörter können nicht exportiert werden</translation>
@@ -1210,6 +1215,7 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="8937267401510745927">Wenn Sie in Chrome mit Assistant Aufgaben erledigen, werden die URLs und Inhalte der Websites, auf denen Sie Assistant verwenden, sowie die Daten, die Sie über Assistant weitergeben, an Google gesendet. Diese Informationen werden unter Umständen in Ihrem Google-Konto gespeichert. Sie können Assistant in den Einstellungen von Chrome deaktivieren.</translation>
 <translation id="8937772741022875483">Ihre Chrome-Aktivitäten aus Digital Wellbeing entfernen?</translation>
 <translation id="8942627711005830162">In anderem Fenster öffnen</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> – Diese Sprache konnte nicht heruntergeladen werden. Versuchen Sie es später noch einmal.</translation>
 <translation id="8951232171465285730">Dank Chrome haben Sie <ph name="MEGABYTES" /> MB eingespart</translation>
 <translation id="8965591936373831584">ausstehend</translation>
 <translation id="8970887620466824814">Es gab ein Problem.</translation>

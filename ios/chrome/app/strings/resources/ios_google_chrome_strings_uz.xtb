@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome yangilanishlar chiqqanini tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="2732745070297234559">Chrome barcha parollarni tekshira olmadi. Ertaga qayta urining.</translation>
 <translation id="2740105938841089077">Havolalarni ochish uchun Chrome ishlating</translation>
+<translation id="2869959624320573933">Chrome hisobiga kirish</translation>
 <translation id="2919738076569633423">Chrome ishlatish orqali siz <ph name="BEGIN_LINK_TOS" />Xizmat shartlariga<ph name="END_LINK_TOS" /> rozilik bildirgan hisoblanasiz.</translation>
 <translation id="3030414234702425231">Siz <ph name="SIGNOUT_MANAGED_DOMAIN" /> domenida boshqariladigan hisobdan chiqish arafasidasiz. Barcha Chrome maʼlumotlari ushbu qurilmadan tozalanadi, lekin Google hisobingizda saqlanib qoladi.</translation>
 <translation id="3167189358072330585">Hisobingiz Google Chrome tizimida ishlamaydi. Domen administratoriga murojaat qiling yoki tizimga oddiy Google hisobidan kiring.</translation>
 <translation id="3173834708294760622">Google Chrome sahifasi</translation>
 <translation id="3196546062792660320">Chrome xizmatlariga kirishda har safar foydalanuvchi nomi va parol kiritishingiz shart emas. Chrome qurilmada saqlangan hisoblardan foydalanadi. Ularni sozlamalar orqali boshqarishingiz mumkin.</translation>
-<translation id="3223655207402797071">Bu sayt, Google va Chrome hisoblaringizga kiring. Sinxronizatsiyani keyinroq yoqish mumkin.</translation>
 <translation id="3282568296779691940">Chrome hisobiga kirish</translation>
 <translation id="3345341804167540816">Chrome’ni o‘zingiz bilan olib yuring</translation>
 <translation id="3455456143708465450">Chrome imkoniyatlaridan maksimal foydalanish uchun Google hisobingiz bilan kiring</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome versiyasi yangi</translation>
 <translation id="8022947259858476807">Havolalarni ochish, vidjetlar orqali qidiruv, boshqa ilovalarda parollar avtomatik kitilishda Chrome birlamchi ilova sifatida ishlatilsin</translation>
 <translation id="8160472928944011082">Chrome yangilanmadi</translation>
+<translation id="8263079278049777200">Bu sayt, Google va Chrome hisoblaringizga kiring. Sinxronizatsiyani keyinroq yoqish mumkin.</translation>
 <translation id="8357607116237445042">Chrome maʼlumotlari bu qurilmadan tozalanishi yoki saqlanib qolishini tanlang</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" /> Barcha huquqlar himoyalangan.</translation>
 <translation id="840168496893712993">Ba’zi kengaytmalar Chrome brauzerini ishdan chiqaradi. Ularni o‘chirib tashlang.</translation>

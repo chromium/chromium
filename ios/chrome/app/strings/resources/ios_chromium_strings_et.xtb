@@ -48,12 +48,12 @@
 <translation id="4852878756222711218">Chromiumi kasutamiseks parimal moel logige sisse oma Google'i kontoga</translation>
 <translation id="4985291216379576555">Võrguühenduseta, Chromium ei saa värskendusi otsida</translation>
 <translation id="4999538639245140991">Kuna logite välja kontolt, mida haldab <ph name="SIGNOUT_MANAGED_DOMAIN" />, kustutatakse selles seadmes teie Chromiumi andmed. Google'i kontole jäävad teie andmed alles.</translation>
+<translation id="5171868502429358653">Logige Chromiumi sisse</translation>
 <translation id="5224391634244552924">Salvestatud paroole ei ole. Chromium saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="5308226104666789935">Chromium ei saa värskendusi otsida</translation>
 <translation id="5396916991083608703">Kas määrata Chromium vaikebrauseriks?</translation>
 <translation id="5521125884468363740">Selleks et näha vahelehti kõikjalt, kus Chromiumi kasutate, logige sisse ja lülitage sisse sünkroonimine</translation>
 <translation id="5573014823074921752">Chromiumi nõuanne. Vahelehtede lisavalikute nägemiseks puudutage ja hoidke all ekraanikuva üla- või alaosas tööriistaribal olevat nuppu Kuva vahelehed.</translation>
-<translation id="5651741435382092412">Logige sellele saidile, oma Google'i kontole ja Chromiumi sisse. Saate sünkroonimise hiljem sisse lülitada.</translation>
 <translation id="5700709190537129682">Chromiumil ei õnnestu teie paroole kontrollida</translation>
 <translation id="5742135483959137648">Avage lingid Chromiumiga</translation>
 <translation id="5777187867430702742">Chromiumi leht</translation>
@@ -64,6 +64,7 @@
 1. Avage menüü Seaded.
 2. Puudutage valikut Vaikebrauserirakendus.
 3. Valige Chromium.</translation>
+<translation id="6155422572367400359">Logige sellele saidile, oma Google'i kontole ja Chromiumi sisse. Sünkroonimise saate hiljem sisse lülitada.</translation>
 <translation id="6268381023930128611">Kas logida Chromiumist välja?</translation>
 <translation id="632825460376924298">Luba Chromiumisse sisselogimine</translation>
 <translation id="6337530241089703714">Valige, kas soovite oma Chromiumi andmed sellest seadmest kustutada või need säilitada</translation>

@@ -48,12 +48,12 @@
 <translation id="4852878756222711218">Lai pilnvērtīgi izmantotu pārlūku Chromium, pierakstieties Google kontā</translation>
 <translation id="4985291216379576555">Bezsaistē, pārlūkā Chromium nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="4999538639245140991">Jūs izrakstāties no konta, kas tiek pārvaldīts domēnā <ph name="SIGNOUT_MANAGED_DOMAIN" />, tādēļ jūsu Chromium dati tiks dzēsti no šīs ierīces. Dati joprojām būs pieejami jūsu Google kontā.</translation>
+<translation id="5171868502429358653">Pierakstīšanās pārlūkprogrammā Chromium</translation>
 <translation id="5224391634244552924">Nav saglabātu paroļu. Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="5308226104666789935">Pārlūkā Chromium nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="5396916991083608703">Vai iestatīt Chromium kā noklusējuma pārlūku?</translation>
 <translation id="5521125884468363740">Lai skatītu cilnes no visām ierīcēm, kurās izmantojat pārlūku Chromium, pierakstieties un ieslēdziet sinhronizāciju.</translation>
 <translation id="5573014823074921752">Chromium padoms. Lai iegūtu vairāk ciļņu iespēju, rīkjoslā, kas atrodas ekrāna apakšdaļā vai augšdaļā, pieskarieties pogai Rādīt cilnes un turiet to.</translation>
-<translation id="5651741435382092412">Pierakstieties šajā vietnē, savā Google kontā un pārlūkā Chromium. Sinhronizāciju varat ieslēgt vēlāk.</translation>
 <translation id="5700709190537129682">Pārlūkprogrammā Chromium nevar pārbaudīt jūsu paroles.</translation>
 <translation id="5742135483959137648">Chromium izmantošana saišu atvēršanai</translation>
 <translation id="5777187867430702742">Chromium lapa</translation>
@@ -64,6 +64,7 @@
 1. Atveriet iestatījumus.
 2. Pieskarieties vienumam “Noklusējuma pārlūka lietotne”.
 3. Atlasiet Chromium.</translation>
+<translation id="6155422572367400359">Pierakstieties šajā vietnē, savā Google kontā un pārlūkprogrammā Chromium. Sinhronizāciju varēsiet ieslēgt vēlāk.</translation>
 <translation id="6268381023930128611">Vai izrakstīties no Chromium?</translation>
 <translation id="632825460376924298">Atļaut pierakstīšanos pārlūkā Chromium</translation>
 <translation id="6337530241089703714">Izvēlieties, vai notīrīt Chromium datus no šīs ierīces vai tos paturēt</translation>

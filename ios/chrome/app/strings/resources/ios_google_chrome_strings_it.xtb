@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
-<translation id="1096883626080133124">Aumenta la tua produttività grazie a Google Chrome, che ti offre semplicità, sicurezza e velocità impareggiabile</translation>
+<translation id="1096883626080133124">Aumenta la tua produttività grazie a Google Chrome, che ti offre semplicità, sicurezza e velocità senza precedenti</translation>
 <translation id="1282031177488366470">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome</translation>
 <translation id="1314663809820920746">Puoi trovare ancora tutti i tuoi preferiti, la cronologia, le password e altre impostazioni su questo dispositivo. Le eventuali modifiche apportate non verranno sincronizzate con il tuo Account Google.</translation>
 <translation id="1479202195792305274">Chrome può controllare le tue password quando accedi con il tuo Account Google.</translation>
@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome non ha potuto verificare la disponibilità di aggiornamenti. Riprova più tardi.</translation>
 <translation id="2732745070297234559">Chrome non ha potuto controllare tutte le password. Riprova domani.</translation>
 <translation id="2740105938841089077">Usa Chrome per aprire i link</translation>
+<translation id="2869959624320573933">Accedi a Chrome</translation>
 <translation id="2919738076569633423">Se utilizzi Chrome, accetti i <ph name="BEGIN_LINK_TOS" />Termini di servizio<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Dal momento che stai per uscire da un account gestito da <ph name="SIGNOUT_MANAGED_DOMAIN" />, i dati di Chrome verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="3167189358072330585">Il tuo account non funziona su Google Chrome. Contatta l'amministratore di dominio o utilizza un normale Account Google per accedere.</translation>
 <translation id="3173834708294760622">Pagina di Google Chrome</translation>
 <translation id="3196546062792660320">Chrome ti fa risparmiare tempo portando i tuoi account sul Web. Puoi aggiungere o rimuovere account nelle Impostazioni.</translation>
-<translation id="3223655207402797071">Accedi a questo sito, al tuo Account Google e a Chrome. Potresti voler attivare la sincronizzazione in un secondo momento.</translation>
 <translation id="3282568296779691940">Accedi a Chrome</translation>
 <translation id="3345341804167540816">Utilizza Chrome ovunque</translation>
 <translation id="3455456143708465450">Accedi con il tuo Account Google per usare al meglio Chrome</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome è aggiornato</translation>
 <translation id="8022947259858476807">Usa Chrome per impostazione predefinita per aprire link, eseguire ricerche dai widget e compilare automaticamente le password in altre app</translation>
 <translation id="8160472928944011082">Impossibile aggiornare Chrome</translation>
+<translation id="8263079278049777200">Accedi a questo sito, al tuo Account Google e a Chrome. Puoi attivare la sincronizzazione in un secondo momento.</translation>
 <translation id="8357607116237445042">Scegli se cancellare i tuoi dati di Chrome da questo dispositivo o se conservarli</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC Tutti i diritti riservati.</translation>
 <translation id="840168496893712993">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chrome. Prova a disinstallarli.</translation>

@@ -48,12 +48,12 @@
 <translation id="4852878756222711218">Jei norite išnaudoti visas „Chromium“ galimybes, prisijunkite naudodami „Google“ paskyrą</translation>
 <translation id="4985291216379576555">Neprisijungta, todėl „Chromium“ nepavyko patikrinti, ar yra naujinių</translation>
 <translation id="4999538639245140991">Atsijungiate nuo paskyros, kurią valdo <ph name="SIGNOUT_MANAGED_DOMAIN" />, todėl „Chromium“ duomenys bus ištrinti iš šio įrenginio. Duomenys išliks jūsų „Google“ paskyroje.</translation>
+<translation id="5171868502429358653">Prisijunkite prie „Chromium“</translation>
 <translation id="5224391634244552924">Nėra išsaugotų slaptažodžių. „Chromium“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote.</translation>
 <translation id="5308226104666789935">„Chromium“ nepavyko patikrinti, ar yra naujinių.</translation>
 <translation id="5396916991083608703">Nustatyti „Chromium“ kaip numatytąją?</translation>
 <translation id="5521125884468363740">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chromium“, prisijunkite ir įjunkite sinchronizavimą</translation>
 <translation id="5573014823074921752">„Chromium“ patarimas. Jei reikia daugiau skirtukų parinkčių, palieskite ir palaikykite mygtuką „Rodyti skirtukus“ įrankių juostoje, kuri yra ekrano apačioje arba viršuje.</translation>
-<translation id="5651741435382092412">Prisijunkite prie šios svetainės, „Google“ paskyros ir „Chromium“. Sinchronizavimą galėsite įjungti vėliau.</translation>
 <translation id="5700709190537129682">„Chromium“ negali patikrinti jūsų slaptažodžių</translation>
 <translation id="5742135483959137648">Nuorodų atidarymas naudojant „Chromium“</translation>
 <translation id="5777187867430702742">„Chromium“ puslapis</translation>
@@ -64,6 +64,7 @@
 1. Atidarykite skiltį „Nustatymai“.
 2. Palieskite „Numatytoji naršyklės programa“.
 3. Pasirinkite „Chromium“.</translation>
+<translation id="6155422572367400359">Prisijunkite prie šios svetainės, „Google“ paskyros ir „Chromium“. Sinchronizavimą galėsite įjungti vėliau.</translation>
 <translation id="6268381023930128611">Atsijungti nuo „Chromium“?</translation>
 <translation id="632825460376924298">Leisti „Chromium“ prisijungimą</translation>
 <translation id="6337530241089703714">Pasirinkite, ar norite išvalyti „Chromium“ duomenis iš šio įrenginio ar juos palikti</translation>

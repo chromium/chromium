@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chromu sa nepodarilo skontrolovať dostupnosť aktualizácií. Skúste to neskôr.</translation>
 <translation id="2732745070297234559">Chromu sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra.</translation>
 <translation id="2740105938841089077">Otvárať odkazy pomocou Chromu</translation>
+<translation id="2869959624320573933">Prihláste sa do Chromu</translation>
 <translation id="2919738076569633423">Používaním prehliadača Chrome vyjadrujete súhlas so <ph name="BEGIN_LINK_TOS" />zmluvnými podmienkami<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, takže údaje Chromu budú z tohto zariadenia odstránené. Vaše údaje zostanú vo vašom účte Google.</translation>
 <translation id="3167189358072330585">Váš účet nefunguje v prehliadači Google Chrome. Kontaktujte správcu domény alebo sa prihláste pomocou bežného účtu Google.</translation>
 <translation id="3173834708294760622">Stránka prehliadača Google Chrome</translation>
 <translation id="3196546062792660320">Vaše účty sú na webe, čím Chrome šetrí váš čas. Účty môžete pridávať alebo odstraňovať v nastaveniach.</translation>
-<translation id="3223655207402797071">Prihláste sa na tomto webe, do svojho účtu Google aj Chromu. Neskôr možno budete musieť zapnúť synchronizáciu.</translation>
 <translation id="3282568296779691940">Prihlásiť sa do Chromu</translation>
 <translation id="3345341804167540816">Používajte prehliadač Chrome kdekoľvek</translation>
 <translation id="3455456143708465450">Ak chcete využívať Chrome naplno, prihláste sa svojím účtom Google</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome je aktuálny.</translation>
 <translation id="8022947259858476807">Predvolene otvárajte odkazy, vyhľadávajte v miniaplikáciách a automaticky dopĺňajte heslá v iných aplikáciách pomocou Chromu</translation>
 <translation id="8160472928944011082">Chrome sa nedá aktualizovať</translation>
+<translation id="8263079278049777200">Prihláste sa na tomto webe, do svojho účtu Google aj Chromu. Neskôr môžete zapnúť synchronizáciu.</translation>
 <translation id="8357607116237445042">Vyberte, či chcete údaje Chromu v tomto zariadení vymazať alebo ponechať</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>
 <translation id="840168496893712993">Niektoré doplnky spôsobujú zlyhanie prehliadača Chrome. Skúste ich odinštalovať.</translation>

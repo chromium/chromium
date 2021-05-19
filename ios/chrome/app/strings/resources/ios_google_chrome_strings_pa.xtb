@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
+<translation id="1096883626080133124">ਸਧਾਰਨ, ਸੁੱਰਖਿਅਤ, ਅਤੇ ਪਹਿਲਾਂ ਨਾਲੋਂ ਵੱਧ ਤੇਜ਼, Google Chrome ਨਾਲ ਹੋਰ ਬਹੁਤ ਕੁਝ ਕਰੋ</translation>
 <translation id="1282031177488366470">Chrome ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
 <translation id="1314663809820920746">ਤੁਸੀਂ ਅਜੇ ਵੀ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਆਪਣੇ ਸਾਰੇ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਦੇਖ ਸਕਦੇ ਹੋ। ਜੇ ਤੁਸੀਂ ਤਬਦੀਲੀਆਂ ਕਰਦੇ ਹੋ, ਤਾਂ ਉਹਨਾਂ ਦਾ ਸਮਕਾਲੀਕਰਨ ਤੁਹਾਡੇ Google ਖਾਤੇ ਨਾਲ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1479202195792305274">ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ 'ਤੇ Chrome ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦਾ ਹੈ।</translation>
@@ -8,6 +9,7 @@
 <translation id="1504372625950710826">Chrome ਅੱਪਡੇਟਾਂ ਲਈ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੇਖੋ।</translation>
 <translation id="1682483655351012182">ਆਪਣੇ Chrome ਡਾਟੇ ਦਾ ਸਮਕਾਲੀਕਰਨ ਕਰੋ</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1812249337131447686">Chrome ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ Google ਨੂੰ ਵਰਤੋਂ ਅੰਕੜੇ ਅਤੇ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਭੇਜੋ</translation>
 <translation id="1917964099031477364">Chrome ਅਤੇ ਇਸ ਡੀਵਾਈਸ ਵਿਚਲੀਆਂ ਹੋਰ Google ਐਪਾਂ ਤੋਂ ਇਸ ਖਾਤੇ ਅਤੇ ਕਿਸੇ ਵੀ ਅਣਰੱਖਿਅਤ ਡਾਟੇ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="2009224836393115614">Chrome ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੇਖੋ।</translation>
 <translation id="2147651015520127414">Chrome ਨੇ ਤਸਦੀਕ ਕੀਤਾ ਕਿ ਇਸ ਵੈੱਬਸਾਈਟ ਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ <ph name="ISSUER" /> ਨੇ ਜਾਰੀ ਕੀਤਾ ਹੈ।</translation>
@@ -27,7 +29,6 @@
 <translation id="3167189358072330585">ਤੁਹਾਡਾ ਖਾਤਾ Google Chrome 'ਤੇ ਕੰਮ ਨਹੀਂ ਕਰਦਾ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਡੋਮੇਨ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ ਜਾਂ ਸਾਈਨ-ਇਨ ਲਈ ਇੱਕ ਨਿਯਮਿਤ Google ਖਾਤੇ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="3173834708294760622">Google Chrome ਪੰਨਾ</translation>
 <translation id="3196546062792660320">Chrome ਤੁਹਾਡੇ ਖਾਤਿਆਂ ਨੂੰ ਵੈੱਬ 'ਤੇ ਲਿਆ ਕੇ ਤੁਹਾਡਾ ਸਮਾਂ ਬਚਾਉਂਦਾ ਹੈ। ਤੁਸੀਂ 'ਸੈਟਿੰਗਾਂ' ਵਿੱਚ ਖਾਤੇ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ ਹਟਾ ਸਕਦੇ ਹੋ।</translation>
-<translation id="3223655207402797071">ਇਸ ਸਾਈਟ, ਆਪਣੇ Google ਖਾਤੇ ਅਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ। ਤੁਸੀਂ ਸਮਕਾਲੀਕਰਨ ਨੂੰ ਬਾਅਦ ਵਿੱਚ ਚਾਲੂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3282568296779691940">Chrome 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3345341804167540816">ਹਰ ਥਾਂ 'ਤੇ Chrome ਵਰਤੋ</translation>
 <translation id="3455456143708465450">Chrome ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲੈਣ ਲਈ, ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>

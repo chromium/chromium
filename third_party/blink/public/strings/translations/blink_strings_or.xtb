@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">ଟାଇମର୍‌</translation>
 <translation id="3199563858620722075">କମ୍ୱୋ ବକ୍ସ</translation>
 <translation id="3220661731597678625">ବର୍ତ୍ତମାନର ଷ୍ଟେପ୍</translation>
+<translation id="3321030238473337787">ପ୍ଲେବ୍ୟାକର ସ୍ପିଡ୍</translation>
 <translation id="3329013043687509092">ସମ୍ପୃକ୍ତି</translation>
 <translation id="3450233048674729344">ମୂଲ୍ୟ <ph name="MAXIMUM" />ଠାରୁ ନିଶ୍ଚିତରୂପେ ସାନ କିମ୍ବା ସମାନ ହେବା ଉଚିତ୍‍।</translation>
 <translation id="3486220673238053218">ସଂଜ୍ଞା</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">ମେନୁ ବାର୍</translation>
 <translation id="4293574643247337246">ପୃଷ୍ଠାର ହେଡର୍</translation>
 <translation id="4360991593054037559">ଦୟାକରି, ଏକ ବୈଧ ମୂଲ୍ୟ ଲେଖନ୍ତୁ ଦୁଇଟି ନିକଟସ୍ଥ ବୈଧ ମାନ <ph name="VALID_VALUE_LOW" /> ଏବଂ <ph name="VALID_VALUE_HIGHER" />ଅଟେ।</translation>
+<translation id="4371899966896349864">ପ୍ଲେବ୍ୟାକ୍ ସ୍ପିଡ୍ ମେନୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="4384249794467006333">ଏହି ଛବିକୁ ଲେବଲ୍ କରାଯାଇନାହିଁ। ଛବିର ବର୍ଣ୍ଣନା ପାଇବାକୁ ଡାହାଣପଟ ଶୀର୍ଷରେ ଥିବା ଅଧିକ ବିକଳ୍ପ ମେନୁକୁ ଖୋଲନ୍ତୁ।</translation>
 <translation id="4384583879834880242">ପ୍ରଶ୍ନ&amp;ଉତ୍ତର</translation>
 <translation id="4444765639179266822">ଏହି ସୂଚନା ଏହି ବିଷୟରେ ଲାଗୁଛି: <ph name="OCR_TEXT" /></translation>
@@ -148,6 +150,7 @@
 <translation id="512758898067543763">ଧାଡ଼ି ଶୀର୍ଷକ</translation>
 <translation id="5143125788380636750">ଉପସଂହାର</translation>
 <translation id="5164977714490026579">ମୂଲ୍ୟ <ph name="MINIMUM" />ଠାରୁ ନିଶ୍ଚିତରୂପେ ବଡ କିମ୍ବା ସମାନ ହେବା ଉଚିତ।</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5307600278924710095">ଦୟାକରି '<ph name="ATSIGN" />' ପୂର୍ବର ଅଂଶ ଲେଖନ୍ତୁ। '<ph name="INVALIDADDRESS" />' ଅସମ୍ପୂର୍ଣ୍ଣ ଅଟେ।</translation>
 <translation id="5334352251556557839">ମିଡିଆ ଚଲାଇବା ପାଇଁ ଅକ୍ଷମ।</translation>
@@ -158,6 +161,7 @@
 <translation id="5453733299334684579">ଟ୍ରୀ ଆଇଟମ୍</translation>
 <translation id="5466621249238537318">ଦୟାକରି ଏକ କିମ୍ବା ଅଧିକ ଫାଇଲ୍ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="5468998798572797635">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ରୁ ପ୍ରସ୍ଥାନ କରନ୍ତୁ</translation>
+<translation id="5516235301412634559">0.75</translation>
 <translation id="5516424706154626233">ତାରିଖ ଚୟନକାରୀ</translation>
 <translation id="5537725057119320332">କାଷ୍ଟ</translation>
 <translation id="5546461542133609677">ଅନ୍‍ମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
@@ -169,6 +173,7 @@
 <translation id="5677946354068040947">ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="576709008726043716">ପରିଚୟ</translation>
 <translation id="57838592816432529">ମ୍ୟୁଟ୍‌</translation>
+<translation id="5786442179789148008">ପ୍ଲେବ୍ୟାକ୍ ସ୍ପିଡ୍ ମେନୁ ଦେଖାନ୍ତୁ</translation>
 <translation id="5787939484346677755">ବିସ୍ତାରିତ ହୋଇଛି, ସ୍ଵତଃସମ୍ପୂର୍ଣ୍ଣ ବିକଳ୍ପଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଛି।</translation>
 <translation id="5860033963881614850">ବନ୍ଦ ଅଛି</translation>
 <translation id="588258955323874662">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ</translation>
@@ -177,6 +182,7 @@
 <translation id="5916664084637901428">ଚାଲୁ</translation>
 <translation id="5939518447894949180">ପୁନଃସେଟ୍</translation>
 <translation id="5966707198760109579">ସପ୍ତାହ</translation>
+<translation id="5985507339671257014">0.5</translation>
 <translation id="5987525920412732405">ସ୍ପିନ୍‌ ବଟନ୍‌</translation>
 <translation id="6011459053400940133">ଭଲ୍ୟୁମ୍‍ ସ୍ଲାଇଡର୍‍</translation>
 <translation id="6015796118275082299">ବର୍ଷ</translation>
@@ -215,6 +221,7 @@
 <translation id="6843725295806269523">ମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="6885760532393684712">ଡିରେକ୍ଟୋରୀ</translation>
 <translation id="689129560213475294">colophon</translation>
+<translation id="6919891270253167948">1.5</translation>
 <translation id="6934078000481955284">ବ୍ଲକ୍‌କୋଟ୍</translation>
 <translation id="693476918119313863">ହେଡର୍</translation>
 <translation id="6941933287844615239">ମିଡିଆ ଡାଉନ୍‍‍ଲୋଡ୍ କରନ୍ତୁ</translation>
@@ -251,6 +258,7 @@
 <translation id="7745230546936012372">ଅନୁପଲବ୍ଧ ଛବିର ଡେସ୍କ୍ରିପସନ୍ ପାଇବା ପାଇଁ, ପ୍ରସଙ୍ଗ ମେନୁ ଖୋଲନ୍ତୁ।</translation>
 <translation id="7750228210027921155">ଛବି ମଧ୍ୟରେ ଛବି</translation>
 <translation id="775297008183122718">ଅବୈଧ ଏଣ୍ଟ୍ରି</translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">ବିରତ କରନ୍ତୁ</translation>
 <translation id="7802800022689234070">ପ୍ରକାଶ ତ୍ରିଭୁଜ</translation>
 <translation id="7852167693871241274">ହ୍ୟୁ ସ୍ଲାଇଡର୍</translation>
@@ -264,6 +272,7 @@
 <translation id="8105797009065549151">ନୋଟ୍ ସନ୍ଦର୍ଭ</translation>
 <translation id="811583516810654505">ଡେସ୍କ୍ରିପସନ୍ ପାଉଛି...</translation>
 <translation id="8117451130807776954">ଏହି ସପ୍ତାହ</translation>
+<translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">ବର୍ଷ</translation>
 <translation id="8208673686607688524">ସ୍ଥାନୀୟ ଡାଟା ଏବଂ ସମୟ ପିକର୍</translation>
 <translation id="8261464734335370856">ଅବୈଧ ବନାନ</translation>
@@ -288,6 +297,7 @@
 <translation id="8613126697340063924">ରିମୋଟ୍ ପ୍ଲେବ୍ୟାକ୍ ନିୟନ୍ତ୍ରଣ କରେ</translation>
 <translation id="862370744433916922">ଉପଶୀର୍ଷକ</translation>
 <translation id="8634971699417195529">ମାସ ପିକର୍ ଦେଖାନ୍ତୁ</translation>
+<translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">ଲାଇନ୍ ରାପ୍</translation>
 <translation id="8711688047404765493">ଆଉଟ୍‌ପୁଟ୍</translation>
 <translation id="8750798805984357768">ଦୟାକରି ଏହି ବିକଳ୍ପଗୁଡ଼ିକ ମଧ୍ୟରୁ ଗୋଟିଏ ଚୟନ କରନ୍ତୁ।</translation>

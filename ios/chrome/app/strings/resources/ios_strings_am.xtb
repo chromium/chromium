@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">አሳንስ</translation>
 <translation id="2230173723195178503">ድረ-ገጽ ተጭኗል</translation>
 <translation id="2239626343334228536">የአሰሳ ውሂብን በማጽዳት ላይ...</translation>
-<translation id="2257567812274161158">ስምረት እየሠራ አይደለም።</translation>
 <translation id="225943865679747347">የስህተት ኮድ፦ <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">መለያ አክል</translation>
 <translation id="2268044343513325586">አጽዳ</translation>
@@ -143,7 +142,6 @@
 ጣቢያዎች በተለያዩ ጣቢያዎች ላይ የእርስዎን የአሰሳ እንቅስቃሴ ለመመልከት፣ ለምሳሌ ማስታወቂያዎችን ግላዊነት ለማላበስ፣ ኩኪዎችን መጠቀም አይችሉም።</translation>
 <translation id="2381405137052800939">መሠረታዊ ነገሮች</translation>
 <translation id="2386793615875593361">1 ተመርጧል</translation>
-<translation id="2410754283952462441">አንድ መለያ ይምረጡ</translation>
 <translation id="2421004566762153674">የሶስተኛ ወገን ኩኪዎችን ማገድ</translation>
 <translation id="2421044535038393232">አርትዖቱን ቀጥል</translation>
 <translation id="2435457462613246316">የይለፍ ቃል አሳይ</translation>
@@ -362,7 +360,6 @@
 <translation id="473775607612524610">አዘምን</translation>
 <translation id="4747097190499141774">የእርስዎ የይለፍ ሐረግ ያለው ሰው ብቻ ነው የእርስዎን የተመሰጠረ ውሂብ ማንበብ የሚችለው። የይለፍ ሐረጉ ወደ Google አይላክም እንዲሁም አይከማችም። የእርስዎን የይለፍ ሐረግ ከረሱት ወይም ይህን ቅንብር መለወጥ ከፈለጉ ማሥመሩን ዳግም ማስጀመር ያስፈልገዎታል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">አዲስ ማንነት የማያሳውቅ ትር</translation>
-<translation id="4766678251456904326">መለያ ወደ መሣሪያው ያክሉ</translation>
 <translation id="4775879719735953715">ነባሪ አሳሽ፦</translation>
 <translation id="4778644898150334464">ሌላ የይለፍ ቃል ይጠቀሙ</translation>
 <translation id="4802417911091824046">የይለፍ ሐረግ ምስጠራ ከGoogle Pay የመክፈያ ዘዴዎችን እና አድራሻዎችን አያካትትም።
@@ -794,6 +791,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8976382372951310360">እገዛ</translation>
 <translation id="8981454092730389528">የGoogle እንቅስቃሴ መቆጣጠሪያዎች</translation>
 <translation id="8985320356172329008">እንደሚከተለው ሆነው ወደ Google በመለያ ገብተዋል፦</translation>
+<translation id="8996526648899750015">መለያ ያክሉ...</translation>
 <translation id="9034759925968272072">ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም። የእርስዎ Google መለያ በ<ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ውስጥ ሌሎች ዓይነቶች የአሰሳ ታሪኮች ሊኖሩት ይችላል።</translation>
 <translation id="9037965129289936994">የመጀመሪያውን አሳይ</translation>
 <translation id="9039373489628511875">መተላለፊያ ይዘት</translation>
@@ -816,6 +814,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">የብልሽት ሪፖርት ተልኳል።</translation>
 <translation id="952704832371081537">ይቅር</translation>
+<translation id="984509647832111802">ስምረት እየሠራ አይደለም።</translation>
 <translation id="988141524645182168">ሌሎች መሣሪያዎች</translation>
 <translation id="989988560359834682">አድራሻ ያርትዑ</translation>
 <translation id="994757059139821576">የጽሑፍ አስተያየት ጥቆማዎች</translation>

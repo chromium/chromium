@@ -254,7 +254,6 @@
     करने से रोकता है. साइट ऑपरेटर, साइट की सुरक्षा और दूसरी
     प्रॉपर्टी को कॉन्फ़िगर करने के लिए, मूल नीतियों का इस्तेमाल कर सकते हैं.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">कृपया अपना सिंक 'पासफ्रेज़' अपडेट करें.</translation>
 <translation id="1787142507584202372">  खोले गए टैब, यहां दिखाई देंगे</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, एक से ज़्यादा कार्रवाइयां उपलब्ध हैं, एक-एक करके उन पर जाने के लिए Tab दबाएं</translation>
@@ -387,6 +386,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> के लिए उपयोगकर्ता नाम और पासवर्ड आवश्यक है.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> को खत्म होने वाला है</translation>
 <translation id="2337852623177822836">वह सेटिंग जिसे आपका व्यवस्थापक नियंत्रित करता है</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" /> युग्मित करना चाहता है</translation>
 <translation id="2344028582131185878">अपने आप होने वाले डाउनलोड</translation>
 <translation id="2346319942568447007">आपकी कॉपी की हुई इमेज</translation>
 <translation id="2354001756790975382">अन्य बुकमार्क</translation>
@@ -456,6 +456,7 @@
 <translation id="2629325967560697240">Chrome की सबसे बेहतर सुरक्षा पाने के लिए, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />बेहतर सुरक्षा की सुविधा चालू करें<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> का सर्वर आईपी पता नहीं मिल सका.</translation>
 <translation id="2639739919103226564">स्थिति:</translation>
+<translation id="264810637653812429">कोई संगत डिवाइस नहीं मिला.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में अपना ब्राउज़िंग इतिहास, कुकी, कैश मेमोरी वगैरह मिटाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="2650446666397867134">फ़ाइल को एक्सेस नहीं दिया गया था</translation>
@@ -500,6 +501,7 @@
 <translation id="2799223571221894425">फिर से लॉन्‍च करें</translation>
 <translation id="2803306138276472711">Google सुरक्षित ब्राउज़िंग को <ph name="SITE" /> पर हाल ही में <ph name="BEGIN_LINK" />मैलवेयर का पता चला<ph name="END_LINK" /> है. आमतौर पर सुरक्षित रहने वाली वेबसाइटें कभी-कभी मैलवेयर से संक्रमित हो जाती हैं.</translation>
 <translation id="2807052079800581569">इमेज Y की स्थिति</translation>
+<translation id="2820957248982571256">स्कैन हो रहा है...</translation>
 <translation id="2824775600643448204">पता और सर्च बार</translation>
 <translation id="2826760142808435982">कनेक्शन को <ph name="CIPHER" /> का उपयोग करके सुरक्षित किया गया है और उसकी पहचान की गई है और यह मुख्य विनिमय तकनीक के रूप में <ph name="KX" /> का उपयोग करता है.</translation>
 <translation id="2835170189407361413">फ़ॉर्म साफ़ करें</translation>
@@ -604,11 +606,12 @@
 <translation id="3229041911291329567">आपके डिवाइस और ब्राउज़र के वर्शन के बारे में जानकारी</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> का CVC डालें.</translation>
 <translation id="3234666976984236645">इस साइट पर हमेशा महत्‍वपूर्ण सामग्री का पता लगाएं</translation>
-<translation id="3249845759089040423">ग्रूवी</translation>
+<translation id="3249845759089040423">शानदार</translation>
 <translation id="3252266817569339921">फ़्रांसीसी</translation>
 <translation id="3266793032086590337">मान (मेल नहीं खा रहा)</translation>
 <translation id="3268451620468152448">खुले सत्र</translation>
 <translation id="3270847123878663523">&amp;पुन: क्रमित करना वापस लाएं</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> कनेक्ट करना चाहती है</translation>
 <translation id="3274521967729236597">पा-काई</translation>
 <translation id="3282085321714087552">आपके संगठन <ph name="ENROLLMENT_DOMAIN" /> ने नीचे दी गई वेबसाइटों को सेटिंग या नीतियों वगैरह के बारे में कुछ जानकारी भेजी है.</translation>
 <translation id="3282497668470633863">कार्ड पर नाम जोड़ें</translation>
@@ -1206,7 +1209,7 @@
 <translation id="5398772614898833570">विज्ञापन ब्लॉक हैं</translation>
 <translation id="5400836586163650660">स्लेटी</translation>
 <translation id="540969355065856584">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाण पत्र इस समय मान्य नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
-<translation id="541143247543991491">क्लाउड (सिस्टम-व्यापी)</translation>
+<translation id="541143247543991491">क्लाउड (पूरे सिस्टम में)</translation>
 <translation id="541416427766103491">स्टैकर 4</translation>
 <translation id="5421136146218899937">ब्राउज़िंग डेटा साफ़ करें...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> वेबसाइट आपको सूचनाएं भेजना चाहती है</translation>
@@ -1220,6 +1223,7 @@
 <translation id="5455374756549232013">खराब नीति टाइमस्टैम्प</translation>
 <translation id="5457113250005438886">अमान्य</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}one{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}other{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}}</translation>
+<translation id="5463625433003343978">डिवाइस ढूंढे जा रहे हैं...</translation>
 <translation id="5469868506864199649">इतालवी</translation>
 <translation id="5470861586879999274">&amp;बदलाव को फिर से लागू करें</translation>
 <translation id="5478437291406423475">बी6/सी4 (एन्वेलप)</translation>
@@ -1269,7 +1273,6 @@
 <translation id="5624120631404540903">पासवर्ड प्रबंधित करें</translation>
 <translation id="5629630648637658800">नीति सेटिंग लोड करने में विफल</translation>
 <translation id="5631439013527180824">अमान्य डिवाइस प्रबंधन टोकन</translation>
-<translation id="5632627355679805402">आपका डेटा <ph name="TIME" /> से आपके <ph name="BEGIN_LINK" />Google पासवर्ड<ph name="END_LINK" /> के साथ सुरक्षित किया गया था. सिंक करना शुरू करने के लिए पासवर्ड डालें.</translation>
 <translation id="5633066919399395251">इस समय <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> पर मौजूद हमलावर आपके कंप्यूटर पर ऐसे खतरनाक प्रोग्राम इंस्टॉल करने की कोशिश कर सकते हैं जो आपकी जानकारी (उदाहरण के लिए, फ़ोटो, पासवर्ड, संदेश और क्रेडिट कार्ड) चुराते हैं या उसे मिटा देते हैं. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">भ्रामक सामग्री ब्लॉक की गई.</translation>
 <translation id="5644090287519800334">साइड 1 इमेज X शिफ़्ट</translation>
@@ -1313,6 +1316,7 @@
 <translation id="5804427196348435412">NFC डिवाइस इस्तेमाल करें</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> से आपके कनेक्शन को किसी पुराने सिफ़र सुइट का उपयोग करके सुरक्षित किया गया है.</translation>
 <translation id="5813119285467412249">&amp;जोड़ना फिर से करें</translation>
+<translation id="5817918615728894473">युग्‍मित करें</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{जब आप पैसे चुकाएंगे, तब इस कार्ड से पैसे लिए जाएंगे. हालांकि, इसके सही नंबर को इस साइट के साथ शेयर नहीं किया जाएगा. ज़्यादा सुरक्षा के लिए, कुछ समय तक मान्य रहने वाला कार्ड वेरीफ़िकेशन कोड (सीवीसी) जनरेट किया जाएगा.}one{जब आप पैसे चुकाएंगे, तब आपके चुने हुए कार्ड से पैसे लिए जाएंगे. हालांकि, इसके सही नंबर को इस साइट के साथ शेयर नहीं किया जाएगा. ज़्यादा सुरक्षा के लिए, कुछ समय तक मान्य रहने वाला कार्ड वेरीफ़िकेशन कोड (सीवीसी) जनरेट किया जाएगा.}other{जब आप पैसे चुकाएंगे, तब आपके चुने हुए कार्ड से पैसे लिए जाएंगे. हालांकि, इसके सही नंबर को इस साइट के साथ शेयर नहीं किया जाएगा. ज़्यादा सुरक्षा के लिए, कुछ समय तक मान्य रहने वाला कार्ड वेरीफ़िकेशन कोड (सीवीसी) जनरेट किया जाएगा.}}</translation>
 <translation id="5826507051599432481">सामान्य नाम (CN)</translation>
 <translation id="5838278095973806738">आपको इस साइट पर कोई भी संवेदनशील जानकारी (उदाहरण के लिए, पासवर्ड या क्रेडिट कार्ड) नहीं डालनी चाहिए, क्योंकि उसे हमलावर चुरा सकते हैं.</translation>
@@ -1320,6 +1324,7 @@
 <translation id="5855253129151731373">इस साइट का होस्टनाम <ph name="LOOKALIKE_DOMAIN" /> से मिलता-जुलता है. हमलावर कभी-कभी डोमेन नाम में छोटे और नज़र न आने वाले बदलाव करके, साइटों की नकल कर लेते हैं.
 
     अगर आपको लगता है कि ऐसा गलती से दिखाया गया है, तो कृपया https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals पर जाएं.</translation>
+<translation id="5860033963881614850">बंद</translation>
 <translation id="5862579898803147654">स्टैकर 8</translation>
 <translation id="5863847714970149516">आगे आने वाला पेज आपसे शुल्क लेने की कोशिश कर सकता है</translation>
 <translation id="5866257070973731571">फ़ोन नंबर जोड़ें</translation>
@@ -1513,6 +1518,7 @@
 <translation id="6624427990725312378">संपर्क जानकारी</translation>
 <translation id="6626291197371920147">मान्य कार्ड नंबर जोड़ें</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> सर्च</translation>
+<translation id="6630043285902923878">यूएसबी डिवाइस ढूंढें जा रहे हैं...</translation>
 <translation id="6630809736994426279">इस समय <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> पर मौजूद हमलावर आपके Mac पर ऐसे खतरनाक प्रोग्राम इंस्टॉल करने की कोशिश कर सकते हैं जो आपकी जानकारी (उदाहरण के लिए, फ़ोटो, पासवर्ड, संदेश और क्रेडिट कार्ड) चुराते हैं या उसे मिटा देते हैं. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">साफ़ करें</translation>
@@ -1768,7 +1774,6 @@
 <translation id="7610193165460212391"><ph name="VALUE" /> मान सीमा से बाहर है.</translation>
 <translation id="7613889955535752492">समय-सीमा खत्म: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग में अपने पासवर्ड देखने और उन्हें प्रबंधित करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
-<translation id="7615602087246926389">आपके पास पहले से ऐसा डेटा है, जिसे आपके Google खाते के पासवर्ड के किसी अलग वर्शन का इस्तेमाल करके सुरक्षित किया गया है. कृपया उसे नीचे लिखें.</translation>
 <translation id="7616645509853975347">आपके एडमिन ने आपके ब्राउज़र पर Chrome Enterprise Connectors नाम की सेटिंग को चालू कर दिया है. इस सेटिंग की मदद से आपके कुछ डेटा को ऐक्सेस किया जा सकता है.</translation>
 <translation id="7619838219691048931">एंड शीट</translation>
 <translation id="762844065391966283">एक बार में एक</translation>
@@ -1921,6 +1926,7 @@
 <translation id="8202097416529803614">ऑर्डर की जानकारी</translation>
 <translation id="8202370299023114387">विरोध</translation>
 <translation id="8206978196348664717">पीआरसी4 (एन्वेलप)</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{जब आप आईडी रीसेट करेंगे, तब आपका मौजूदा आईडी अमान्य हो जाएगा और 1 दिन के भीतर नया आईडी जारी कर दिया जाएगा}=1{जब आप आईडी रीसेट करेंगे, तब आपका मौजूदा आईडी अमान्य हो जाएगा और 1 दिन में नया आईडी जारी कर दिया जाएगा}one{जब आप आईडी रीसेट करेंगे, तब आपका मौजूदा आईडी अमान्य हो जाएगा और {NUM_DAYS} दिन में नया आईडी जारी कर दिया जाएगा}other{जब आप आईडी रीसेट करेंगे, तब आपका मौजूदा आईडी अमान्य हो जाएगा और {NUM_DAYS} दिनों में नया आईडी जारी कर दिया जाएगा}}</translation>
 <translation id="8211406090763984747">कनेक्शन सुरक्षित है</translation>
 <translation id="8213464188712611711">मेमोरी</translation>
 <translation id="8218327578424803826">सौंपा गया स्‍थान:</translation>
@@ -2182,6 +2188,7 @@
 <translation id="9170848237812810038">&amp;पूर्ववत् करें</translation>
 <translation id="9171296965991013597">ऐप्लिकेशन बंद करें?</translation>
 <translation id="9173282814238175921">एक दस्तावेज़/नई शीट</translation>
+<translation id="9173995187295789444">ब्लूटूथ डिवाइस के लिए स्कैन किया जा रहा है...</translation>
 <translation id="917450738466192189">सर्वर का प्रमाणपत्र अमान्य है.</translation>
 <translation id="9174917557437862841">टैब बदलने का बटन, इस टैब पर स्विच करने के लिए Enter दबाएं</translation>
 <translation id="9179703756951298733">Chrome की सेटिंग में, आप पैसे चुकाने और क्रेडिट कार्ड की जानकारी को प्रबंधित कर सकते हैं</translation>

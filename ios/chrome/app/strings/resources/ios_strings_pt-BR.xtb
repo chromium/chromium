@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">Diminuir zoom</translation>
 <translation id="2230173723195178503">Página da Web carregada</translation>
 <translation id="2239626343334228536">Limpando dados de navegação…</translation>
-<translation id="2257567812274161158">A sincronização não está funcionando.</translation>
 <translation id="225943865679747347">Código de erro: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Adicionar conta</translation>
 <translation id="2268044343513325586">Refinar</translation>
@@ -143,7 +142,6 @@
 Eles também não podem usar cookies para ver sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="2381405137052800939">Conceitos básicos</translation>
 <translation id="2386793615875593361">Uma selecionada</translation>
-<translation id="2410754283952462441">Escolher uma conta</translation>
 <translation id="2421004566762153674">Bloqueando cookies de terceiros</translation>
 <translation id="2421044535038393232">Continuar editando</translation>
 <translation id="2435457462613246316">Mostrar senha</translation>
@@ -362,7 +360,6 @@ Seus dados são criptografados com sua senha longa de sincronização. Informe-a
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4747097190499141774">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay. Só alguém com acesso a sua senha longa pode ler seus dados criptografados. Essa senha não é enviada ou armazenada pelo Google. Se você esquecer a senha longa ou quiser alterar essa configuração, será necessário redefinir a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nova guia anônima</translation>
-<translation id="4766678251456904326">Adicionar uma conta ao dispositivo</translation>
 <translation id="4775879719735953715">Navegador padrão</translation>
 <translation id="4778644898150334464">Usar outra senha</translation>
 <translation id="4802417911091824046">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay.
@@ -794,6 +791,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8976382372951310360">Ajuda</translation>
 <translation id="8981454092730389528">Controles de atividades do Google</translation>
 <translation id="8985320356172329008">Conectado(a) ao Google como</translation>
+<translation id="8996526648899750015">Adicionar conta...</translation>
 <translation id="9034759925968272072">Você não será desconectado da sua Conta do Google. É possível que sua Conta do Google tenha outras formas de histórico de navegação em <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar original</translation>
 <translation id="9039373489628511875">Largura de banda</translation>
@@ -816,6 +814,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9203116392574189331">Transição</translation>
 <translation id="9223358826628549784">Relatórios de erros enviados.</translation>
 <translation id="952704832371081537">Cancelar</translation>
+<translation id="984509647832111802">A sincronização não está funcionando.</translation>
 <translation id="988141524645182168">Outros dispositivos</translation>
 <translation id="989988560359834682">Editar endereço</translation>
 <translation id="994757059139821576">Artigos sugeridos</translation>

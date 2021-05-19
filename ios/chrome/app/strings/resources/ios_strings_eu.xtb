@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">Txikitu</translation>
 <translation id="2230173723195178503">Kargatu da webgunea</translation>
 <translation id="2239626343334228536">Arakatze-datuak garbitzen…</translation>
-<translation id="2257567812274161158">Sinkronizazioa ez dabil.</translation>
 <translation id="225943865679747347">Errore-kodea: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Gehitu kontu bat</translation>
 <translation id="2268044343513325586">Mugatu</translation>
@@ -143,7 +142,6 @@
 Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, hala nola iragarkiak pertsonalizatzeko.</translation>
 <translation id="2381405137052800939">Oinarrizkoak</translation>
 <translation id="2386793615875593361">Bat hautatu da</translation>
-<translation id="2410754283952462441">Aukeratu kontu bat</translation>
 <translation id="2421004566762153674">Hirugarrenen cookieak blokeatzea</translation>
 <translation id="2421044535038393232">Jarraitu editatzen</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
@@ -362,7 +360,6 @@ Sinkronizatzeko pasaesaldiaren bidez daude enkriptatuta datuak. Idatz ezazu sink
 <translation id="473775607612524610">Eguneratu</translation>
 <translation id="4747097190499141774">Pasaesaldi bidezko enkriptatzeak ez ditu hartzen barne Google Pay-ko ordainketa-metodoak eta helbideak. Pasaesaldia dutenek soilik irakur ditzakete enkriptatutako datuak. Pasaesaldia ez da bidaltzen Google-ra, ezta bertan gordetzen ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, sinkronizazioa berrezarri beharko duzu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Ezkutuko moduko fitxa berria</translation>
-<translation id="4766678251456904326">Gehitu kontu bat gailuan</translation>
 <translation id="4775879719735953715">Arakatzaile lehenetsia</translation>
 <translation id="4778644898150334464">Erabili beste pasahitz bat</translation>
 <translation id="4802417911091824046">Pasaesaldi bidezko enkriptatzeak ez ditu hartzen barne Google Pay-ko ordainketa-metodoak eta helbideak.
@@ -794,6 +791,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8976382372951310360">Laguntza</translation>
 <translation id="8981454092730389528">Google-ko jarduerak kontrolatzeko aukerak</translation>
 <translation id="8985320356172329008">Kontu honekin hasi duzu saioa Google-n:</translation>
+<translation id="8996526648899750015">Gehitu kontu bat…</translation>
 <translation id="9034759925968272072">Ez da amaituko Google-ko kontuko saioa. Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk edukitzea <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> webgunean.</translation>
 <translation id="9037965129289936994">Ikusi jatorrizkoa</translation>
 <translation id="9039373489628511875">Banda-zabalera</translation>
@@ -816,6 +814,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Hutsegite-txostena bidali da</translation>
 <translation id="952704832371081537">Utzi</translation>
+<translation id="984509647832111802">Sinkronizazioa ez dabil.</translation>
 <translation id="988141524645182168">Bestelakoak</translation>
 <translation id="989988560359834682">Editatu helbidea</translation>
 <translation id="994757059139821576">Artikulu-iradokizunak</translation>

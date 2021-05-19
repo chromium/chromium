@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome n'a pas pu vérifier s'il y a des mises à jour. Réessayez plus tard.</translation>
 <translation id="2732745070297234559">Chrome n'a pas pu vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="2740105938841089077">Utiliser Chrome pour ouvrir les liens</translation>
+<translation id="2869959624320573933">Se connecter à Chrome</translation>
 <translation id="2919738076569633423">En utilisant Chrome, vous acceptez les <ph name="BEGIN_LINK_TOS" />conditions d'utilisation<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Puisque vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chrome seront supprimées de cet appareil. Toutefois, vos données resteront dans votre compte Google.</translation>
 <translation id="3167189358072330585">Votre compte n'est pas compatible avec Google Chrome. Veuillez communiquer avec l'administrateur de votre domaine ou utiliser un compte Google ordinaire pour vous connecter.</translation>
 <translation id="3173834708294760622">Page Google Chrome</translation>
 <translation id="3196546062792660320">Chrome vous fait gagner du temps en mettant vos comptes sur le Web. Vous pouvez ajouter ou supprimer des comptes dans Paramètres.</translation>
-<translation id="3223655207402797071">Connectez-vous à ce site, à votre compte Google et à Chrome. Vous pouvez activer la synchronisation plus tard.</translation>
 <translation id="3282568296779691940">Connexion à Chrome</translation>
 <translation id="3345341804167540816">Utiliser Chrome sur toutes les plateformes</translation>
 <translation id="3455456143708465450">Pour profiter au maximum de Chrome, connectez-vous à votre compte Google</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome est à jour</translation>
 <translation id="8022947259858476807">Utilisez Chrome par défaut pour ouvrir des liens, faire des recherches dans des widgets et entrer automatiquement des mots de passe dans d'autres applications</translation>
 <translation id="8160472928944011082">Impossible de mettre à jour Chrome</translation>
+<translation id="8263079278049777200">Connectez-vous à ce site, à votre compte Google et à Chrome. Vous pouvez activer la synchronisation plus tard.</translation>
 <translation id="8357607116237445042">Voulez-vous effacer vos données Chrome de cet appareil ou les conserver?</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="840168496893712993">Certains modules complémentaires provoquent le plantage de Chrome. Veuillez essayer de les désinstaller.</translation>

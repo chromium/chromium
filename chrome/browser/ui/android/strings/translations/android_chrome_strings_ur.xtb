@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">‏Chrome اور Chrome OS کی اضافی سروس کی شرائط</translation>
 <translation id="1807246157184219062">روشنی</translation>
 <translation id="1810845389119482123">مطابقت پذیر بنانے کا ابتدائی سیٹ اپ مکمل نہیں ہوا</translation>
-<translation id="1821253160463689938">چاہے آپ وہ صفحات ملاحظہ نہ کریں، تب بھی آپ کی ترجیحات یاد رکھنے کے لیے کوکیز استعمال کرتی ہے</translation>
 <translation id="1829244130665387512">صفحہ پر تلاش کریں</translation>
 <translation id="1830550083491357902">سائن ان نہیں</translation>
 <translation id="1843805151597803366">‏بہتر ترجمے حاصل کرنے کے لیے، Google تلاش کو موجودہ صفحہ استعمال کرنے دیں</translation>
@@ -273,7 +272,6 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> سیکنڈ باقی</translation>
 <translation id="2779651927720337254">ناکام ہو گیا</translation>
 <translation id="2781151931089541271">1 سیکنڈ باقی</translation>
-<translation id="279827439955962619">ٹیکسٹ سے ہائی لائٹ کو ہٹائیں</translation>
 <translation id="2801022321632964776">‏Chrome کے تازہ ترین ورژن میں اپنی زبان حاصل کرنے کے لیے اپ ڈیٹ کریں</translation>
 <translation id="2805756323405976993">اطلاقات</translation>
 <translation id="281504910091592009">‏اپنے <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> میں محفوظ کردہ پاس ورڈز دیکھیں اور ان کا نظم کریں</translation>
@@ -454,7 +452,6 @@
 <translation id="3988466920954086464">اس پینل میں فوری تلاش کے نتائج دیکھیں</translation>
 <translation id="4000212216660919741">آف لائن ہوم</translation>
 <translation id="4016425174436051808">پیروی نہیں کر سکتے۔ کچھ غلط ہو گیا۔</translation>
-<translation id="4021916380760361450">‏اپنے Google اکاؤنٹس کا ڈیٹا کنٹرول کریں</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# گھنٹہ}other{# گھنٹے}}</translation>
 <translation id="4045764304651014138">استعمال کا ڈیٹا</translation>
 <translation id="4056223980640387499">سیپیا</translation>
@@ -480,7 +477,6 @@
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
 <translation id="4198423547019359126">ڈاؤن لوڈ کیلئے کوئی مقام دستیاب نہیں ہے</translation>
 <translation id="4209895695669353772">‏Google کی جانب سے تجویز کردہ ذاتی نوعیت کا مواد حاصل کرنے کیلئے، سِنک کو آن کریں</translation>
-<translation id="423219824432660969">‏<ph name="TIME" /> تک Google پاس ورڈ کے ساتھ مطابقت پذیر کردہ ڈیٹا کی مرموزکاری کریں</translation>
 <translation id="4242533952199664413">ترتیبات کھولیں</translation>
 <translation id="4248098802131000011">ڈیٹا کی خلاف ورزیوں اور سیکیورٹی کے دیگر معاملات سے اپنا پاس ورڈ محفوظ رکھیں</translation>
 <translation id="4250229828105606438">اسکرین شاٹ</translation>
@@ -559,6 +555,7 @@
 <translation id="47217992755561375">اپنی سرفہرست سائٹس دیکھیں</translation>
 <translation id="4732120983431207637">‏انبار Unwinder</translation>
 <translation id="4738836084190194332">آخری مطابقت پذیری: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">ہائی لائٹ کو ہٹائیں</translation>
 <translation id="4749960740855309258">ایک نیا ٹیب کھولیں</translation>
 <translation id="4759238208242260848">ڈاؤن لوڈز</translation>
 <translation id="4763480195061959176">ویڈیو</translation>
@@ -699,7 +696,6 @@
 <translation id="562289928968387744">ردعمل کا نظم کریں</translation>
 <translation id="5626134646977739690">نام:</translation>
 <translation id="5628604359369369630">بغیر پڑھا ہوا - آف لائن دستیاب ہے</translation>
-<translation id="5632627355679805402">‏آپ کے ڈیٹا کو آپ کے <ph name="BEGIN_LINK" />Google پاس ورڈ<ph name="END_LINK" /> کے ساتھ <ph name="TIME" /> تک مرموز کر دیا گیا۔ مطابقت پذیری شروع کرنے کیلئے اسے درج کریں۔</translation>
 <translation id="5639724618331995626">سبھی سائٹس کو اجازت دیں</translation>
 <translation id="5648166631817621825">آخری 7 دن</translation>
 <translation id="5655963694829536461">اپنے ڈاؤن لوڈز تلاش کریں</translation>
@@ -934,7 +930,6 @@
 <translation id="702463548815491781">‏TalkBack یا سوئچ رسائی آن ہونے پر تجویز کردہ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> کو بحال کیا گیا</translation>
 <translation id="7029809446516969842">پاس ورڈز</translation>
-<translation id="7040531500313579672">ہائی لائٹ کئے گئے ٹیکسٹ کے لنک کا اشتراک کریں</translation>
 <translation id="7054588988317389591">تصویری تفصیلات حاصل کریں؟</translation>
 <translation id="7055152154916055070">ری ڈائریکٹ مسدود کیا گیا:</translation>
 <translation id="7063006564040364415">مطابقت پذیری سرور سے منسلک نہیں کیا جا سکا۔</translation>
@@ -970,6 +965,7 @@
 <translation id="7328017930301109123">‏لائٹ موڈ میں، Chrome صفحات کو زیادہ تیزی سے لوڈ کرتا ہے اور60 فیصد تک کم ڈیٹا استعمال کرتا ہے۔</translation>
 <translation id="7332075081379534664">سائن ان ہو گیا</translation>
 <translation id="7333031090786104871">ابھی بھی سابقہ سائٹ شامل کی جا رہی ہے</translation>
+<translation id="7339898014177206373">نئی ونڈو</translation>
 <translation id="7340958967809483333">‏Discover کے لیے اختیارات</translation>
 <translation id="7352651011704765696">کچھ غلط ہو گیا</translation>
 <translation id="7352939065658542140">ویڈیو</translation>

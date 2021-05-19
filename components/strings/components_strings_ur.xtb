@@ -254,7 +254,6 @@
     آپ کی درخواست کو پورا کرنے سے روکتا ہے۔ کسی سائٹ کی خاطر سیکیورٹی اور دیگر پراپرٹیز کو ترتیب دینے کے لیے
     سائٹ آپریٹرز کے ذریعے ماخذ پالیسیوں کا استعمال کیا جا سکتا ہے۔</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">براہ کرم اپنا مطابقت پذیری پاس فریز اپ ڈیٹ کریں۔</translation>
 <translation id="1787142507584202372">آپ کے کھلے ٹیبز یہاں ظاہر ہوتے ہیں</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742">‏<ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />، متعدد کارروائیاں دستیاب ہیں، ہر ایک پر جانے کیلئے Tab دبائیں</translation>
@@ -387,6 +386,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> کو ایک صارف نام اور پاس ورڈ درکار ہے۔</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> کی میعاد <ph name="EXPIRATION_DATE_ABBR" /> کو ختم ہو جائے گی</translation>
 <translation id="2337852623177822836">ترتیب آپ کے منتظم کی جانب سے کنٹرول کی جاتی ہے</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" /> جوڑا بنانا چاہتی ہے</translation>
 <translation id="2344028582131185878">‏خود کار ڈا‎ؤن لوڈز</translation>
 <translation id="2346319942568447007">آپ کی کاپی کردہ تصویر</translation>
 <translation id="2354001756790975382">دیگر بُک مارکس</translation>
@@ -456,6 +456,7 @@
 <translation id="2629325967560697240">‏Chrome کی اعلی ترین سیکیورٹی حاصل کرنے کے لیے <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />بہتر کردہ حفاظت کو آن کریں<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">‏<ph name="HOST_NAME" /> کے سرور کا IP پتہ نہیں مل سکا۔</translation>
 <translation id="2639739919103226564">صورتحال:</translation>
+<translation id="264810637653812429">کوئی مطابقت پذیر آلہ نہیں ملا۔</translation>
 <translation id="2649204054376361687"><ph name="CITY" />، <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861">‏<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome ترتیبات میں اپنے براؤزنگ کی سرگزشت، کوکیز، کیش اور بہت کچھ کو صاف کرنے کے لیے ٹیب، پھر اینٹر دبائیں</translation>
 <translation id="2650446666397867134">فائل تک رسائی مسترد کر دی گئی</translation>
@@ -503,6 +504,7 @@
 <translation id="2799223571221894425">دوبارہ شروع کریں</translation>
 <translation id="2803306138276472711">‏Google سیف براؤزنگ کو حال ہی میں <ph name="SITE" /> پر <ph name="BEGIN_LINK" />میلویئر کا پتہ چلا<ph name="END_LINK" />۔ جو ویب سائٹس عام طور پر محفوظ ہوتی ہیں وہ کبھی کبھی میلویئر سے متاثر ہو جاتی ہیں۔</translation>
 <translation id="2807052079800581569">‏تصویر کی Y پوزیشن</translation>
+<translation id="2820957248982571256">اسکین ہو رہا ہے…</translation>
 <translation id="2824775600643448204">پتہ اور تلاش بار</translation>
 <translation id="2826760142808435982">کنکشن کو <ph name="CIPHER" /> کا استعمال کر کے مرموز کیا گیا ہے اور اس کی توثیق کی گئی ہے اور یہ کلید کے تبادلہ کے طریقہ کار کے بطور <ph name="KX" /> کا استعمال کرتا ہے۔</translation>
 <translation id="2835170189407361413">فارم صاف کریں</translation>
@@ -614,6 +616,7 @@
 <translation id="3266793032086590337">قدر (متضاد)</translation>
 <translation id="3268451620468152448">کھلے ٹیبز</translation>
 <translation id="3270847123878663523">دوبارہ ترتیب &amp;کالعدم کریں</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> منسلک ہونا چاہتی ہے</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">آپ کی تنظیم، <ph name="ENROLLMENT_DOMAIN" />، نے کچھ معلومات، جیسے ترتیبات یا پالیسیاں درج ذیل ویب سائٹس پر بھیجی ہیں۔</translation>
 <translation id="3282497668470633863">کارڈ پر نام شامل کریں</translation>
@@ -1225,6 +1228,7 @@
 <translation id="5455374756549232013">غلط پالیسی ٹائم اسٹامپ</translation>
 <translation id="5457113250005438886">غلط</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مزید}other{<ph name="CONTACT_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مزید}}</translation>
+<translation id="5463625433003343978">آلات تلاش کئے جا رہے ہیں...</translation>
 <translation id="5469868506864199649">اطالوی</translation>
 <translation id="5470861586879999274">ترمییم &amp;دوبارہ کریں</translation>
 <translation id="5478437291406423475">B6/C4 ‎(Envelope‎)‎</translation>
@@ -1274,7 +1278,6 @@
 <translation id="5624120631404540903">پاس ورڈز کا نظم کریں</translation>
 <translation id="5629630648637658800">پالیسی کی ترتیبات لوڈ ہونے میں ناکام</translation>
 <translation id="5631439013527180824">آلے کے مینیجمنٹ کا غلط ٹوکن</translation>
-<translation id="5632627355679805402">‏آپ کے ڈیٹا کو آپ کے <ph name="BEGIN_LINK" />Google پاس ورڈ<ph name="END_LINK" /> کے ساتھ <ph name="TIME" /> تک مرموز کر دیا گیا۔ مطابقت پذیری شروع کرنے کیلئے اسے درج کریں۔</translation>
 <translation id="5633066919399395251">فی الحال <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> پر موجود حملہ آور آپ کے کمپیوٹر پر ایسے خطرناک پروگرامز انسٹال کرنے کی کوشش کر سکتے ہیں جن سے آپ کی معلومات (مثلاً، تصاویر، پاس ورڈز، پیغامات، اور کریڈٹ کارڈز) چوری یا حذف ہو سکتی ہیں۔ <ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">پُر فریب مواد مسدود ہے۔</translation>
 <translation id="5644090287519800334">‏سائیڈ 1 تصویر X شفٹ</translation>
@@ -1318,6 +1321,7 @@
 <translation id="5804427196348435412">‏NFC آلات استعمال کریں</translation>
 <translation id="5810442152076338065">ایک فرسودہ سائفر سوئٹ کا استعمال کر کے <ph name="DOMAIN" /> کا آپ کا کنکشن مرموز کیا گیا ہے۔</translation>
 <translation id="5813119285467412249">&amp;دوبارہ شامل کریں</translation>
+<translation id="5817918615728894473">جوڑا بنائيں</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{‏ادائیگی کرتے وقت اس کارڈ کو چارج کیا جائے گا، تاہم اس کے اصل نمبر کا اشتراک اس سائٹ کے ساتھ نہیں کیا جائے گا۔ اضافی سیکیورٹی کے لیے ایک عارضی CVC تخلیق کی جائے گی۔}other{‏ادائیگی کرتے وقت آپ کے منتخب کردہ کارڈ کو چارج کیا جائے گا، تاہم اس کے اصل نمبر کا اشتراک اس سائٹ کے ساتھ نہیں کیا جائے گا۔ اضافی سیکیورٹی کے لیے ایک عارضی CVC تخلیق کی جائے گی۔}}</translation>
 <translation id="5826507051599432481">‏عام نام (CN)</translation>
 <translation id="5838278095973806738">اس سائٹ پر آپ کو کوئی حساس معلومات (مثلاً، پاس ورڈز یا کریڈٹ کارڈز) درج نہیں کرنا چاہیے، کیوںکہ اسے حملہ آور چوری کر سکتے ہیں۔</translation>
@@ -1325,6 +1329,7 @@
 <translation id="5855253129151731373">‏اس سائٹ کے میزبان کا نام <ph name="LOOKALIKE_DOMAIN" /> سے مماثل لگتا ہے۔ بعض اوقات حملہ آور ڈومین کے نام میں چھوٹی، مشکل سے نظر آنے والی تبدیلیاں کر کے سائٹس کی نقل کرتے ہیں۔
 
     اگر آپ کو لگتا ہے کہ یہ غلطی سے دکھایا جا رہا ہے تو https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals ملاحظہ کریں۔</translation>
+<translation id="5860033963881614850">آف</translation>
 <translation id="5862579898803147654">اسٹیکر 8</translation>
 <translation id="5863847714970149516">آگے کا صفحہ آپ سے رقم چارج کرنے کی کوشش کر سکتا ہے</translation>
 <translation id="5866257070973731571">فون نمبر شامل کریں</translation>
@@ -1519,6 +1524,7 @@
 <translation id="6624427990725312378">رابطے کی معلومات</translation>
 <translation id="6626291197371920147">درست کارڈ نمبر شامل کریں</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> تلاش</translation>
+<translation id="6630043285902923878">‏USB آلات تلاش کئے جا رہے ہیں...</translation>
 <translation id="6630809736994426279">‏فی الحال <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> پر موجود حملہ آور آپ کے Mac پر ایسے خطرناک پروگرامز انسٹال کرنے کی کوشش کر سکتے ہیں جن سے آپ کی معلومات (مثلاً، تصاویر، پاس ورڈز، پیغامات، اور کریڈٹ کارڈز) چوری یا حذف ہو سکتی ہیں۔ <ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
@@ -1774,7 +1780,6 @@
 <translation id="7610193165460212391">قدر رینج سے باہر کی ہے <ph name="VALUE" />۔</translation>
 <translation id="7613889955535752492">‏اختتامی تاریخ: ‎<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" />‎</translation>
 <translation id="7614494068621678628">‏<ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں اپنے پاس ورڈز کا نظم کرنے اور انہیں دیکھنے کے لیے ٹیب، پھر اینٹر دبائیں</translation>
-<translation id="7615602087246926389">‏آپ کے پاس پہلے ہی ایسا ڈیٹا ہے جسے آپ کے Google اکاؤنٹ کے پاس ورڈ کا مختلف ورژن استعمال کر کے مرموز کر دیا گیا ہے۔ براہ کرم اسے ذیل میں داخل کریں۔</translation>
 <translation id="7616645509853975347">‏آپ کے منتظم نے آپ کے براؤزر میں Chrome انٹرپرائز کنیکٹرز آن کر دیے ہیں۔ ان کنیکٹرز کو آپ کے کچھ ڈیٹا تک رسائی حاصل ہے۔</translation>
 <translation id="7619838219691048931">آخری شیٹ</translation>
 <translation id="762844065391966283">ایک وقت میں ایک</translation>
@@ -2188,6 +2193,7 @@
 <translation id="9170848237812810038">&amp;کالعدم کریں</translation>
 <translation id="9171296965991013597">ایپ بند کریں؟</translation>
 <translation id="9173282814238175921">واحد دستاویز/نئی شیٹ</translation>
+<translation id="9173995187295789444">بلوٹوتھ آلات کیلئے اسکین کیا جا رہا ہے...</translation>
 <translation id="917450738466192189">سرور کا سرٹیفکیٹ غلط ہے۔</translation>
 <translation id="9174917557437862841">‏ٹیب پر سوئچ کرنے کا بٹن، اس ٹیب پر سوئچ کرنے کے لیے Enter دبائیں</translation>
 <translation id="9179703756951298733">‏Chrome ترتیبات میں اپنی ادائیگیوں اور کریڈٹ کارڈ کی معلومات کا نظم کریں</translation>

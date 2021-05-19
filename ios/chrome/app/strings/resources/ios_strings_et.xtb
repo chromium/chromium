@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">Suumi välja</translation>
 <translation id="2230173723195178503">Veebileht laaditi</translation>
 <translation id="2239626343334228536">Sirvimisandmete kustutamine …</translation>
-<translation id="2257567812274161158">Sünkroonimine ei tööta.</translation>
 <translation id="225943865679747347">Veakood: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Lisa konto</translation>
 <translation id="2268044343513325586">Täpsustamine</translation>
@@ -143,7 +142,6 @@
 Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (näiteks reklaamide isikupärastamiseks).</translation>
 <translation id="2381405137052800939">Põhiteave</translation>
 <translation id="2386793615875593361">1 on valitud</translation>
-<translation id="2410754283952462441">Konto valimine</translation>
 <translation id="2421004566762153674">Kolmanda osapoole küpsisefailide blokeerimine</translation>
 <translation id="2421044535038393232">Jätka töötlemist</translation>
 <translation id="2435457462613246316">Kuva parool</translation>
@@ -362,7 +360,6 @@ Teie andmed on krüpteeritud teie sünkroonimisparooliga. Sisestage see sünkroo
 <translation id="473775607612524610">Värskenda</translation>
 <translation id="4747097190499141774">Parooli krüpteerimine ei hõlma Google Pay makseviise ega aadresse. Teie krüpteeritud andmeid saavad lugeda vaid need, kes teavad teie parooli – seda ei saadeta Google'ile ja Google ei talleta seda. Kui unustate parooli või soovite seda seadet muuta, tuleb teil sünkroonimine lähtestada. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Uus inkognito vaheleht</translation>
-<translation id="4766678251456904326">Konto lisamine seadmesse</translation>
 <translation id="4775879719735953715">Vaikebrauser</translation>
 <translation id="4778644898150334464">Kasuta muud parooli</translation>
 <translation id="4802417911091824046">Parooli krüpteerimine ei hõlma Google Pay makseviise ja aadresse.
@@ -794,6 +791,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8976382372951310360">Abi</translation>
 <translation id="8981454092730389528">Google'i kontotegevuste haldus</translation>
 <translation id="8985320356172329008">Google'isse sisse logitud kasutajana</translation>
+<translation id="8996526648899750015">Konto lisamine ...</translation>
 <translation id="9034759925968272072">Teid ei logita Google'i kontolt välja. Aadressil <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu.</translation>
 <translation id="9037965129289936994">Kuva originaal</translation>
 <translation id="9039373489628511875">Ribalaius</translation>
@@ -816,6 +814,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Krahhiaruanne on saadetud.</translation>
 <translation id="952704832371081537">Tühista</translation>
+<translation id="984509647832111802">Sünkroonimine ei tööta.</translation>
 <translation id="988141524645182168">Muud seadmed</translation>
 <translation id="989988560359834682">Aadressi muutmine</translation>
 <translation id="994757059139821576">Artiklite soovitused</translation>

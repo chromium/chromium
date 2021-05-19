@@ -2156,17 +2156,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="377044054160169374">Penerapan Pencegahan Pengalaman yang Menyinggung</translation>
 <translation id="3778689139323007309">Lakukan pemeriksaan pembatalan sertifikat server yang berhasil divalidasi yang ditandatangani oleh sertifikat CA yang diinstal secara lokal</translation>
 <translation id="3780152581321609624">Sertakan port non-standar di SPN Kerberos</translation>
-<translation id="3783569262370557918">Mengaktifkan <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> untuk daftar URL.
-
-      Menyetel kebijakan ini akan menentukan URL mana yang akan diizinkan menjadi bagian dari alur pengesahan untuk mendapatkan serangkaian sinyal dari perangkat.
-
-      Jika kebijakan ini tidak disetel atau disetel ke kosong, tidak ada endpoint yang akan dapat memulai alur pengesahan atau mendapatkan sinyal dari perangkat.
-
-      URL harus berisi skema HTTPS, misalnya "https://example.com".
-
-      Catatan: Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="378495749480642482">Mengonfigurasi apakah situs yang dibuka pengguna akan diizinkan untuk membuat sesi Augmented Reality yang imersif menggunakan <ph name="WEBXR_API_NAME" />.
 
       Jika kebijakan ini diaktifkan atau tidak disetel, <ph name="WEBXR_API_NAME" /> akan menerima <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> selama pembuatan sesi, sehingga memungkinkan pengguna merasakan pengalaman Augmented Reality.
@@ -2881,11 +2870,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika kebijakan tidak disetel, tidak akan ada pengecualian.
 
       Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
-<translation id="4882406948002286350">Menyetel kebijakan akan mencegah pemuatan halaman web yang berisi URL terlarang. Kebijakan menyediakan daftar pola URL yang menentukan URL terlarang. Jika kebijakan tidak disetel, tidak ada URL yang dilarang di browser. Format pola URL sesuai dengan format ini ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Hingga 1.000 pengecualian dapat ditentukan di <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      Mulai <ph name="PRODUCT_NAME" /> versi 73, Anda dapat memblokir URL javascript://*. Namun, ini hanya akan memengaruhi JavaScript yang dimasukkan dalam kolom URL (atau, misalnya, bookmarklet). URL JavaScript dalam halaman dengan data yang dimuat secara dinamis tidak tunduk pada kebijakan ini. Misalnya, jika Anda memblokir example.com/abc, example.com tetap dapat memuat example.com/abc melalui XMLHTTPRequest.
-
-      Catatan: Memblokir URL chrome://* internal dapat menyebabkan error tak terduga.</translation>
 <translation id="4886783562285047261">Menyetel kebijakan ke Aktif akan memerintahkan pendaftaran <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> dan memblokir proses peluncuran <ph name="PRODUCT_NAME" /> jika gagal.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> akan menjadi opsional dan proses peluncuran <ph name="PRODUCT_NAME" /> tidak akan diblokir jika gagal.
@@ -4045,11 +4029,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan ini tidak disetel atau daftar kosong, semua skema akan dapat diakses di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6338982178236723271">Melaporkan info sistem</translation>
-<translation id="6347363725343851058">Jika kebijakan disetel ke Aktif, mode latar belakang akan aktif. Pada mode latar belakang, proses <ph name="PRODUCT_NAME" /> dimulai saat login OS dan terus berjalan saat jendela browser terakhir ditutup sehingga aplikasi latar belakang dan sesi penjelajahan dapat tetap aktif, termasuk cookie sesi apa pun. Proses latar belakang menampilkan ikon di baki sistem dan selalu dapat ditutup dari sana.
-
-      Jika kebijakan disetel ke Nonaktif, mode latar belakang menjadi nonaktif.
-
-      Jika Anda menyetel kebijakan tersebut, pengguna tidak dapat mengubahnya di setelan browser. Jika tidak disetel, mode latar belakang akan nonaktif terlebih dahulu dan pengguna dapat mengubahnya.</translation>
 <translation id="6353890097388312479">Jika kebijakan disetel ke Semua (0) atau tidak disetel, pengguna akan dapat mengedit setelan kepercayaan untuk semua Sertifikat CA, menghapus sertifikat yang diimpor oleh pengguna, dan mengimpor sertifikat menggunakan Pengelola Sertifikat. Jika kebijakan disetel ke Khusus Pengguna (1), pengguna hanya dapat mengelola sertifikat yang diimpor pengguna, dan tidak dapat mengubah setelan kepercayaan dari sertifikat bawaan. Jika kebijakan disetel ke Tidak Ada (2), pengguna akan dapat melihat (tidak mengelola) Sertifikat CA.</translation>
 <translation id="6362856770865555544">Jika kebijakan disetel ke Aktif atau tidak disetel, pengoptimalan WPAD (Web Proxy Auto-Discovery) akan diaktifkan di <ph name="PRODUCT_NAME" />.
 
@@ -4595,15 +4574,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan tidak disetel, pengguna dapat mengubah setelan ini.
 
       Catatan: Dukungan isolasi situs untuk Android akan ditingkatkan, tetapi saat ini mungkin menyebabkan masalah performa. Kebijakan ini hanya berlaku di Chrome pada perangkat yang menjalankan Android dengan RAM harus lebih dari 1 GB. Untuk memberlakukan kebijakan ini di platform non-Android, gunakan <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
-<translation id="6978404102280820831">Menyetel <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> memungkinkan Anda membuat daftar pola URL yang menentukan situs yang dapat dan tidak dapat menyetel cookie untuk satu sesi, kecuali jika kebijakan <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> disetel untuk memulihkan URL dari sesi sebelumnya secara permanen.
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> akan digunakan untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan. Jika URL tidak dicakup oleh pola yang ditentukan, default juga akan digunakan.
-
-      Jika <ph name="PRODUCT_NAME" /> berjalan di mode Latar Belakang, sesi tersebut mungkin akan tetap aktif sampai pengguna keluar dari browser, bukan hanya menutup jendela terakhir. Lihat <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" /> untuk detail tentang mengonfigurasi perilaku ini.
-
-      Jika tidak ada kebijakan tertentu yang diprioritaskan, lihat <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> dan <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. Pola URL di antara 3 kebijakan ini tidak boleh bertentangan.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979739838208297344">Jika kebijakan ditetapkan ke <ph name="BR_ENABLED" />, pencadangan dan pemulihan Android mula-mula akan diaktifkan. Jika kebijakan ditetapkan ke <ph name="BR_DISABLED" /> atau tidak ditetapkan, pencadangan dan pemulihan akan tetap dinonaktifkan selama penyiapan.
 
@@ -5301,13 +5271,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Menentukan id ekstensi untuk digunakan sebagai tirai layar pada layar masuk. Ekstensi haruslah bagian dari AppPack yang dikonfigurasi untuk domain ini melalui kebijakan DeviceAppPack.</translation>
 <translation id="7882857838942884046">Menonaktifkan Google Sync akan menyebabkan Pencadangan dan Pemulihan Android tidak berfungsi dengan benar.</translation>
 <translation id="7882890448959833986">Sembunyikan peringatan OS tidak didukung</translation>
-<translation id="788487748427534612">Jika <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> disetel, Anda akan dapat membuat daftar pola URL yang menentukan situs yang dapat dan tidak dapat menyetel cookie untuk satu sesi, kecuali kebijakan <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> disetel untuk memulihkan URL dari sesi sebelumnya secara permanen.
-
-      Jika kebijakan tidak disetel, <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> akan digunakan untuk semua situs jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan. Jika URL tidak dicakup oleh pola yang ditentukan, default juga akan digunakan.
-
-      Jika <ph name="PRODUCT_NAME" /> berjalan di mode Latar Belakang, sesi tersebut mungkin akan tetap aktif sampai pengguna keluar dari browser, bukan hanya menutup jendela terakhir. Lihat <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" /> untuk detail tentang mengonfigurasi perilaku ini.
-
-      Jika tidak ada kebijakan tertentu yang diprioritaskan, lihat <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> dan <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. Pola URL di antara 3 kebijakan ini tidak boleh bertentangan.</translation>
 <translation id="7887379840451099426">Setelan pengelolaan daya hanya berlaku saat menggunakan daya baterai.</translation>
 <translation id="7891884447851425349">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> akan menentukan URL mesin telusur yang digunakan saat penelusuran default. URL harus menyertakan string <ph name="SEARCH_TERM_MARKER" />, yang diganti di kueri dengan istilah penelusuran pengguna.
 
@@ -5921,13 +5884,6 @@ Kebijakan akan dihapus pada M75.</translation>
       Jika kebijakan tidak disetel, Chrome akan menggunakan direktori default khusus platform.
 
       Catatan: Lihat daftar variabel yang dapat Anda gunakan ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).</translation>
-<translation id="877499586514669705">Jika kebijakan disetel, URL yang tercantum akan diberikan akses sebagai pengecualian untuk <ph name="URL_BLOCKLIST_POLICY_NAME" />. Lihat deskripsi kebijakan tersebut untuk mengetahui format entri daftar ini. Misalnya, menyetel <ph name="URL_BLOCKLIST_POLICY_NAME" /> ke * akan memblokir semua permintaan, dan Anda dapat menggunakan kebijakan ini untuk mengizinkan akses ke URL yang ada dalam daftar terbatas. Gunakan kebijakan ini untuk membuka pengecualian untuk skema tertentu, subdomain dari domain lain, port, atau jalur khusus, menggunakan format yang ditentukan di ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Filter paling spesifik akan menentukan apakah URL diblokir atau diizinkan. Kebijakan <ph name="URL_ALLOWLIST_POLICY_NAME" /> akan lebih diprioritaskan daripada <ph name="URL_BLOCKLIST_POLICY_NAME" />. Kebijakan ini terbatas untuk 1.000 entri.
-
-      Dengan kebijakan ini, panggilan otomatis dapat dilakukan oleh browser aplikasi eksternal yang terdaftar sebagai pengendali protokol untuk protokol yang tercantum seperti "tel:" atau "ssh:".
-
-      Jika kebijakan tidak disetel, tidak akan ada pengecualian untuk <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="877557628527387598">Login sandi</translation>
 <translation id="8777369558049831576">Menampilkan kotak centang "Always open" pada dialog protokol eksternal.</translation>
 <translation id="8786409859071107656">Jika kebijakan disetel ke Aktif, kebijakan pengelolaan berbagi daya USB akan diaktifkan.

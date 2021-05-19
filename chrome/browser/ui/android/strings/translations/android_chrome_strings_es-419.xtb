@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Condiciones del Servicio Adicionales de Chrome y el Sistema operativo Chrome</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1810845389119482123">No se completó la configuración de la sincronización inicial</translation>
-<translation id="1821253160463689938">Usa cookies para recordar tus preferencias, incluso si no visitas esas páginas</translation>
 <translation id="1829244130665387512">Buscar en la página</translation>
 <translation id="1830550083491357902">No has accedido.</translation>
 <translation id="1843805151597803366">Para obtener mejores traducciones, permite que la Búsqueda de Google use la página actual</translation>
@@ -273,7 +272,6 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="2777555524387840389"><ph name="SECONDS" /> segundos restantes</translation>
 <translation id="2779651927720337254">error</translation>
 <translation id="2781151931089541271">1 segundo restante</translation>
-<translation id="279827439955962619">Quitar destacado</translation>
 <translation id="2801022321632964776">Para obtener tu idioma, actualiza a la versión más reciente de Chrome</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="281504910091592009">Ver y administrar las contraseñas guardadas en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /></translation>
@@ -454,7 +452,6 @@ Privacy Sandbox sigue en desarrollo y está disponible en ciertas regiones. Por
 <translation id="3988466920954086464">Los resultados de la búsqueda instantánea se muestran en este panel</translation>
 <translation id="4000212216660919741">Página principal sin conexión</translation>
 <translation id="4016425174436051808">No se puede seguir. Se produjo un error.</translation>
-<translation id="4021916380760361450">Controla los datos de tus Cuentas de Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Datos de uso</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -480,7 +477,6 @@ Privacy Sandbox sigue en desarrollo y está disponible en ciertas regiones. Por
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
 <translation id="4198423547019359126">No hay ubicaciones de descarga disponibles</translation>
 <translation id="4209895695669353772">Para obtener contenido personalizado y sugerido por Google, activa la sincronización</translation>
-<translation id="423219824432660969">Encriptar los datos sincronizados con la contraseña de Google a partir del <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Abrir la configuración</translation>
 <translation id="4248098802131000011">Mantén protegidas tus contraseñas ante violaciones de la seguridad de los datos y otros problemas de seguridad.</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
@@ -559,6 +555,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="47217992755561375">Visualiza los sitios que más visitas</translation>
 <translation id="4732120983431207637">Desenredo de pila</translation>
 <translation id="4738836084190194332">Última sincronización: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Quitar el texto destacado</translation>
 <translation id="4749960740855309258">Abrir una pestaña nueva</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +696,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="562289928968387744">Administrar reacciones</translation>
 <translation id="5626134646977739690">Nombre:</translation>
 <translation id="5628604359369369630">Sin leer: Disponible sin conexión</translation>
-<translation id="5632627355679805402">Tus datos se encriptaron con tu <ph name="BEGIN_LINK" />contraseña de Google<ph name="END_LINK" /> el <ph name="TIME" />. Ingresa la contraseña para iniciar la sincronización.</translation>
 <translation id="5639724618331995626">Permitir todos los sitios</translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5655963694829536461">Buscar tus descargas</translation>
@@ -934,7 +930,6 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="702463548815491781">Se recomienda cuando TalkBack o Accesibilidad con interruptores están activadas</translation>
 <translation id="7027549951530753705">Se restableció <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Contraseñas</translation>
-<translation id="7040531500313579672">Compartir el texto destacado</translation>
 <translation id="7054588988317389591">¿Deseas obtener la descripción de las imágenes?</translation>
 <translation id="7055152154916055070">Se bloqueó el redireccionamiento:</translation>
 <translation id="7063006564040364415">No se pudo establecer conexión con el servidor de sincronización.</translation>
@@ -970,6 +965,7 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="7328017930301109123">En el modo lite, Chrome carga las páginas más rápido y usa hasta un 60 por ciento menos de datos.</translation>
 <translation id="7332075081379534664">Se accedió a la cuenta correctamente.</translation>
 <translation id="7333031090786104871">Aún se está agregando el sitio anterior</translation>
+<translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7340958967809483333">Opciones para Descubre</translation>
 <translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="7352939065658542140">VIDEO</translation>

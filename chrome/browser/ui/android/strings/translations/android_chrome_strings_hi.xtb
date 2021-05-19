@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Chrome और Chrome OS की सेवा की अतिरिक्त शर्तें</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1810845389119482123">शुरुआती सिंक सेट अप पूरा नहीं हुआ</translation>
-<translation id="1821253160463689938">आपकी पसंद याद रखने के लिए कुकी का इस्तेमाल करती है, भले ही आप उन पेजों पर नहीं जाते</translation>
 <translation id="1829244130665387512">पेज में ढूंढें</translation>
 <translation id="1830550083491357902">प्रवेश नहीं है</translation>
 <translation id="1843805151597803366">बेहतर अनुवाद पाने के लिए, Google Search को मौजूदा पेज इस्तेमाल करने दें</translation>
@@ -203,6 +202,7 @@
 <ph name="BEGIN_LIST_ITEM1" />विज्ञापन देने वाले यह जान सकते हैं कि कब हज़ारों उपयोगकर्ताओं की दिलचस्पी एक-दूसरे से मिलती है, जैसे कि कॉन्सर्ट में शामिल हुई भीड़ की दिलचस्पी एक जैसी होती है. इस तरह, विज्ञापन देने वाले, एक-एक व्यक्ति के लिए विज्ञापन चुनने के बजाय, उन हज़ारों उपयोगकर्ताओं के लिए एक साथ विज्ञापन चुन सकते हैं.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />विज्ञापन देने वाले, सभी साइटों पर आपको ट्रैक किए बिना किसी खास तरीके से अपने विज्ञापनों की परफ़ॉर्मेंस को माप सकते हैं.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Chrome उन पेजों को पहले से लोड कर देता है जिनके बारे में उसे लगता है कि आप उन पर जा सकते हैं. अगर आप कुकी के लिए अनुमति देते हैं, तो Chrome ऐसा करने के लिए कुकी इस्तेमाल कर सकता है. साथ ही, साइटों से आपकी पहचान छिपाने के लिए, Chrome, पेजों को एनक्रिप्ट (सुरक्षित) करके Google के ज़रिए भेज सकता है.</translation>
 <translation id="234265804618409743">कैमरा खाेला नहीं जा सकता. कोई गड़बड़ी हुई.</translation>
 <translation id="2345671828921229300">किसी शब्द को खोजने के लिए, उसे दबाकर रखें</translation>
 <translation id="2349710944427398404">Chrome द्वारा उपयोग किया गया कुल डेटा, जिसमें खाते, बुकमार्क और सहेजी गईं सेटिंग शामिल हैं</translation>
@@ -273,7 +273,6 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकंड शेष</translation>
 <translation id="2779651927720337254">डाउनलोड नहीं हो सका</translation>
 <translation id="2781151931089541271">1 सेकंड शेष</translation>
-<translation id="279827439955962619">टेक्स्ट से हाइलाइट हटाएं</translation>
 <translation id="2801022321632964776">Chrome के नए वर्शन में अपनी भाषा पाने के लिए अपडेट करें</translation>
 <translation id="2805756323405976993">ऐप्स</translation>
 <translation id="281504910091592009">अपने <ph name="BEGIN_LINK" />Google खाते<ph name="END_LINK" /> में सेव किए गए पासवर्ड देखें और उन्हें प्रबंधित करें</translation>
@@ -454,7 +453,6 @@
 <translation id="3988466920954086464">झटपट खोज नतीजे इस पैनल में देखें</translation>
 <translation id="4000212216660919741">ऑफ़लाइन होम</translation>
 <translation id="4016425174436051808">फ़ॉलो नहीं कर सकते. कोई गड़बड़ी हुई.</translation>
-<translation id="4021916380760361450">अपने Google खाते का डेटा कंट्रोल करें</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# घंटा}one{# घंटे}other{# घंटे}}</translation>
 <translation id="4045764304651014138">इस्तेमाल के बारे में डेटा</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -480,7 +478,6 @@
 <translation id="4195643157523330669">नए टैब में खोलें</translation>
 <translation id="4198423547019359126">डाउनलोड करने की कोई जगह उपलब्ध नहीं है</translation>
 <translation id="4209895695669353772">Google की ओर से सुझाई गई मनमुताबिक सामग्री पाने के लिए, 'सिंक करें' को चालू करें</translation>
-<translation id="423219824432660969"><ph name="TIME" /> तक का सुरक्षित किया गया किया गया डेटा 'Google पासवर्ड' से सिंक करें</translation>
 <translation id="4242533952199664413">सेटिंग खोलें</translation>
 <translation id="4248098802131000011">डेटा के गलत इस्तेमाल और दूसरी सुरक्षा समस्याओं से अपने पासवर्ड सुरक्षित रखें</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
@@ -559,6 +556,7 @@
 <translation id="47217992755561375">अपने हिसाब से खास साइटें देखें</translation>
 <translation id="4732120983431207637">स्टैक अनवाइंडर</translation>
 <translation id="4738836084190194332">अंतिम बार सिंक किया गया: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">हाइलाइट हटाएं</translation>
 <translation id="4749960740855309258">नया टैब खोलें</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4763480195061959176">वीडियो</translation>
@@ -699,7 +697,6 @@
 <translation id="562289928968387744">प्रतिक्रियाओं को मैनेज करें</translation>
 <translation id="5626134646977739690">नाम:</translation>
 <translation id="5628604359369369630">यह नहीं पढ़ा गया - ऑफ़लाइन उपलब्ध है</translation>
-<translation id="5632627355679805402">आपका डेटा <ph name="TIME" /> से आपके <ph name="BEGIN_LINK" />Google पासवर्ड<ph name="END_LINK" /> के साथ सुरक्षित किया गया था. सिंक करना शुरू करने के लिए पासवर्ड डालें.</translation>
 <translation id="5639724618331995626">सभी साइटों को अनुमति दें</translation>
 <translation id="5648166631817621825">पिछले 7 दिन</translation>
 <translation id="5655963694829536461">अपने डाउनलोड में खोजें</translation>
@@ -934,7 +931,6 @@
 <translation id="702463548815491781">उस समय के लिए सुझाया गया जब 'टॉकबैक' या 'ऐक्सेस करने का तरीका बदलें' चालू हों</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> को पहले जैसा किया गया</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
-<translation id="7040531500313579672">हाइलाइट किए गए टेक्स्ट का लिंक शेयर करें</translation>
 <translation id="7054588988317389591">क्या आप इमेज की जानकारी पाना चाहते हैं?</translation>
 <translation id="7055152154916055070">रीडायरेक्ट ब्लॉक किया गया:</translation>
 <translation id="7063006564040364415">समन्‍वयन सर्वर से कनेक्‍ट नहीं किया जा सका.</translation>
@@ -970,6 +966,7 @@
 <translation id="7328017930301109123">'लाइट मोड' में, Chrome पेजों को ज़्यादा तेज़ी से लोड करता है और 60 प्रतिशत तक कम डेटा इस्तेमाल करता है.</translation>
 <translation id="7332075081379534664">साइन इन हो गया</translation>
 <translation id="7333031090786104871">पिछली साइट अब भी जोड़ी जा रही है</translation>
+<translation id="7339898014177206373">नई विंडो</translation>
 <translation id="7340958967809483333">'डिस्कवर' के लिए विकल्प</translation>
 <translation id="7352651011704765696">कुछ गलत हुआ</translation>
 <translation id="7352939065658542140">वीडियो</translation>
@@ -998,6 +995,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> अपडेट किया गया)</translation>
 <translation id="7494974237137038751">डेटा बचाया गया</translation>
 <translation id="7498271377022651285">कृपया प्रतीक्षा करें...</translation>
+<translation id="750228856503700085">कोई अपडेट उपलब्ध नहीं है</translation>
 <translation id="7507207699631365376">इस सेवा देने वाले की <ph name="BEGIN_LINK" />निजता नीति<ph name="END_LINK" /> देखें</translation>
 <translation id="7514365320538308">डाउनलोड करें</translation>
 <translation id="751961395872307827">साइट से कनेक्ट नहीं किया जा सका</translation>
@@ -1099,6 +1097,7 @@
 <translation id="8076492880354921740">टैब</translation>
 <translation id="8078096376109663956">सिर्फ़ टेक्स्ट शेयर करें</translation>
 <translation id="8084114998886531721">सेव किया गया पासवर्ड</translation>
+<translation id="8084285576995584326">तय करें कि आपके Google खाते का डेटा कैसे इस्तेमाल किया जा सकता है</translation>
 <translation id="808747664143081553">डिवाइस से कनेक्ट किया गया</translation>
 <translation id="8103578431304235997">गुप्त टैब</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8725066075913043281">फिर से कोशिश करें</translation>
 <translation id="8730621377337864115">हो गया</translation>
+<translation id="8746155870861185046">हाइलाइट किया गया टेक्स्ट शेयर करें</translation>
 <translation id="8748850008226585750">छिपी हुई सामग्री</translation>
 <translation id="8773160212632396039">अनुरोध को प्रोसेस किया जा रहा है</translation>
 <translation id="8788265440806329501">नेविगेशन का इतिहास बंद है</translation>

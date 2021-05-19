@@ -48,12 +48,12 @@
 <translation id="4852878756222711218">To get the most out of Chromium, sign in with your Google Account</translation>
 <translation id="4985291216379576555">Offline, Chromium can't check for updates</translation>
 <translation id="4999538639245140991">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chromium data will be deleted from this device. Your data will remain in your Google Account.</translation>
+<translation id="5171868502429358653">Sign in to Chromium</translation>
 <translation id="5224391634244552924">No saved passwords. Chromium can check your passwords when you save them.</translation>
 <translation id="5308226104666789935">Chromium can't check for updates</translation>
 <translation id="5396916991083608703">Set Chromium as default?</translation>
 <translation id="5521125884468363740">To see your tabs from wherever you use Chromium, sign in and turn on sync</translation>
 <translation id="5573014823074921752">Chromium tip. For more tab options, touch and hold the Show Tabs button in the toolbar, which is at the bottom or top of your screen.</translation>
-<translation id="5651741435382092412">Sign in to this site, your Google Account and Chromium. You may turn on sync later.</translation>
 <translation id="5700709190537129682">Chromium can't check your passwords</translation>
 <translation id="5742135483959137648">Use Chromium to open links</translation>
 <translation id="5777187867430702742">Chromium page</translation>
@@ -64,6 +64,7 @@
 1. Open settings
 2. Tap the default browser app
 3. Select Chromium.</translation>
+<translation id="6155422572367400359">Sign in to this site, your Google Account and Chromium. You can turn on sync later.</translation>
 <translation id="6268381023930128611">Sign out of Chromium?</translation>
 <translation id="632825460376924298">Allow Chromium sign-in</translation>
 <translation id="6337530241089703714">Choose whether to clear your Chromium data from this device or keep it</translation>

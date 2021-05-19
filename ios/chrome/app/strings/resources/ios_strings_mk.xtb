@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">Одзумирај</translation>
 <translation id="2230173723195178503">Веб-страницата е вчитана</translation>
 <translation id="2239626343334228536">Се чистат податоците од прелистувањето…</translation>
-<translation id="2257567812274161158">Синхронизацијата не функционира.</translation>
 <translation id="225943865679747347">Код на грешка: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Додајте сметка</translation>
 <translation id="2268044343513325586">Подобри</translation>
@@ -143,7 +142,6 @@
 Сајтовите не може да користат колачиња за да ја следат вашата активност од прелистувањето на различни сајтови, на пример, за персонализирање реклами.</translation>
 <translation id="2381405137052800939">Основи</translation>
 <translation id="2386793615875593361">1 избрано</translation>
-<translation id="2410754283952462441">Изберете сметка</translation>
 <translation id="2421004566762153674">Се блокираат колачиња од трети страни</translation>
 <translation id="2421044535038393232">Продолжи со изменување</translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
@@ -362,7 +360,6 @@
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4747097190499141774">Шифрирањето на лозинката не ги вклучува начините на плаќање и адресите од Google Pay. Само некој што ја има вашата лозинка може да ги чита вашите шифрирани податоци. Лозинката не се испраќа, ниту зачувува во Google. Доколку ја заборавите лозинката или сакате да ја промените поставкава, ќе треба да ја ресетирате синхронизацијата. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Нова инкогнито картичка</translation>
-<translation id="4766678251456904326">Додајте сметка на уредов</translation>
 <translation id="4775879719735953715">Стандарден прелистувач</translation>
 <translation id="4778644898150334464">Употребете друга лозинка</translation>
 <translation id="4802417911091824046">Шифрирањето на лозинката не ги вклучува начините на плаќање и адресите од Google Pay.
@@ -794,6 +791,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8976382372951310360">Помош</translation>
 <translation id="8981454092730389528">Контроли на активност на Google</translation>
 <translation id="8985320356172329008">Најавени сте на Google како</translation>
+<translation id="8996526648899750015">Додајте сметка...</translation>
 <translation id="9034759925968272072">Нема да ве одјавиме од сметката на Google. Вашата сметка на Google можеби има други форми на историја на прелистување на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Прикажи го оригиналот</translation>
 <translation id="9039373489628511875">Проток</translation>

@@ -253,7 +253,6 @@
     üzrə olan sorğunuzu yerinə yetirməsinə mane olur. Mənbə siyasətlər 
     təhlükəsizlik və digər xüsusiyyətləri konfiqurasiya etmək üçün sayt operatorları tərəfindən istifadə edilə bilər.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">Lütfən, sinxronizasiya parol ifadəsini güncəlləşdirin.</translation>
 <translation id="1787142507584202372">Açıq tablarınız burada görünür</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, bir neçə əməliyyat əlçatandır, onları nəzərdən keçirmək üçün Tab düyməsinə basın</translation>
@@ -386,6 +385,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> istifadəçi adı və parol tələb edir.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> tarixində bitir</translation>
 <translation id="2337852623177822836">Ayara administrator tərəfindən nəzarət edilir</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" /> ütləndirmək istəyir</translation>
 <translation id="2344028582131185878">Avtomatik endirmələr</translation>
 <translation id="2346319942568447007">Kopyalanmış şəkil</translation>
 <translation id="2354001756790975382">Digər əlfəcinlər</translation>
@@ -455,6 +455,7 @@
 <translation id="2629325967560697240">Chrome'un ən yüksək təhlükəsizlik səviyyəsini əldə etmək üçün<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />genişləndirilmiş qorumanı aktiv edin<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> serverinin IP ünvanı tapılmadı.</translation>
 <translation id="2639739919103226564">Status:</translation>
+<translation id="264810637653812429">Uyğun cihaz tapılmadı.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome ayarlarında baxış tarixçəsi, kukilər, keş və daha çoxunu təmizləyin</translation>
 <translation id="2650446666397867134">Fayla giriş rədd edildi</translation>
@@ -501,6 +502,7 @@
 <translation id="2799223571221894425">Yenidən başladın</translation>
 <translation id="2803306138276472711">Google Güvənlik Baxış <ph name="SITE" /> saytında <ph name="BEGIN_LINK" />zərərli proqram aşkar etdi<ph name="END_LINK" />. Adətən güvənli olan veb saytlar bəzən zərərli proqramlar ilə yoluxur.</translation>
 <translation id="2807052079800581569">Şəklin Y oxu üzrə mövqeyi</translation>
+<translation id="2820957248982571256">Skan edilir...</translation>
 <translation id="2824775600643448204">Ünvan və axtarış paneli</translation>
 <translation id="2826760142808435982">Bağlantı şifrələnib və <ph name="CIPHER" /> işlədərək doğrulanıb və açar mübadiləsi olaraq <ph name="KX" /> işlədir.</translation>
 <translation id="2835170189407361413">Formanı təmizləyin</translation>
@@ -609,6 +611,7 @@
 <translation id="3266793032086590337">Dəyər (zidd)</translation>
 <translation id="3268451620468152448">Panelləri Açın</translation>
 <translation id="3270847123878663523">Təkrar sıralamanı geri qaytarın</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> qoşulmaq istəyir</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Təşkilatınız <ph name="ENROLLMENT_DOMAIN" /> aşağıdakı veb saytlara ayarlar və ya siyasətlər kimi bəzi məlumatlar göndərib.</translation>
 <translation id="3282497668470633863">Kart üzərindəki adı daxil edin</translation>
@@ -1217,6 +1220,7 @@
 <translation id="5455374756549232013">Uğursuz qaydalar zaman ştampı</translation>
 <translation id="5457113250005438886">Yanlış</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
+<translation id="5463625433003343978">Cihazlar axtarılır...</translation>
 <translation id="5469868506864199649">İtalyan</translation>
 <translation id="5470861586879999274">&amp;Düzəlişi yenidən edin</translation>
 <translation id="5478437291406423475">B6/C4 (Zərf)</translation>
@@ -1266,7 +1270,6 @@
 <translation id="5624120631404540903">Parolları idarə edin</translation>
 <translation id="5629630648637658800">Siyasət ayarlarını yükləmək uğursuz oldu</translation>
 <translation id="5631439013527180824">Yanlış cihaz idarəetmə markeri</translation>
-<translation id="5632627355679805402">Data <ph name="TIME" /> tarixindən etibarən <ph name="BEGIN_LINK" />Google parolu<ph name="END_LINK" /> ilə şifrələnib. Sinxronizasiyanı başlatmaq üçün daxil edin.</translation>
 <translation id="5633066919399395251">Hazırda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytındakı hücumçular kompüterdəki məlumatları (məsələn, foto, parol, mesaj və kredit kartları) oğurlayan və ya silən zərərli proqramlar quraşdırmağa cəhd edə bilər. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Aldadıcı kontent blok edildi.</translation>
 <translation id="5644090287519800334">Şəklin 1-ci tərəfinin X oxu üzrə yerdəyişməsi</translation>
@@ -1310,6 +1313,7 @@
 <translation id="5804427196348435412">NFC cihazlarını istifadə edin</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> domeninə bağlantınız köhnə şifrə paketi ilə şifrələnib.</translation>
 <translation id="5813119285467412249">Yenidən əlavə edin</translation>
+<translation id="5817918615728894473">Qoşulsun</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Ödəniş etdiyiniz zaman bu kartdan məbləğ tutulacaq, ancaq onun əsl nömrəsi bu saytla paylaşılmayacaq. Əlavə təhlükəsizlik üçün müvəqqəti CVC yaradılacaq.}other{Ödəniş etdiyiniz zaman seçdiyiniz kartdan məbləğ tutulacaq, ancaq onun əsl nömrəsi bu saytla paylaşılmayacaq. Əlavə təhlükəsizlik üçün müvəqqəti CVC yaradılacaq.}}</translation>
 <translation id="5826507051599432481">Ümumi Adı (CN)</translation>
 <translation id="5838278095973806738">Bu saytda hər hansı həssəs məlumatı (məsələn, parollar və kredit kartları) yerləşdirməməlisiniz, cünki, hücumçular tərəfindən oğurlana bilər.</translation>
@@ -1317,6 +1321,7 @@
 <translation id="5855253129151731373">Bu saytın host adı <ph name="LOOKALIKE_DOMAIN" /> ilə oxşar görünür. Hücum edənlər bəzən domen adına kiçik, çətin sezilə bilən dəyişikliklər etməklə saytları təqlid edir.
 
     Bunun səhvən göstərildiyini düşünürsünüzsə, bu ünvana baş çəkin: https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
+<translation id="5860033963881614850">Deaktiv</translation>
 <translation id="5862579898803147654">Yığıcı 8</translation>
 <translation id="5863847714970149516">Növbəti səhifədə Sizdən ödəniş tutula bilər</translation>
 <translation id="5866257070973731571">Telefon Nömrəsi Əlavə Edin</translation>
@@ -1510,6 +1515,7 @@
 <translation id="6624427990725312378">Kontakt Məlumatı</translation>
 <translation id="6626291197371920147">Düzgün kart nömrəsi əlavə edin</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> axtarışı</translation>
+<translation id="6630043285902923878">USB cihazları axtarılır...</translation>
 <translation id="6630809736994426279">Hazırda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytındakı hücumçular Mac cihazındakı məlumatları (məsələn, foto, parol, mesaj və kredit kartları) oğurlayan və ya silən təhlükəli proqramlar quraşdırmağa cəhd edə bilər. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Silin</translation>
@@ -1765,7 +1771,6 @@
 <translation id="7610193165460212391">Dəyər <ph name="VALUE" /> aralığından kənardır.</translation>
 <translation id="7613889955535752492">Bitmə tarixi: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome ayarlarında parollarınıza baxın və idarə edin</translation>
-<translation id="7615602087246926389">Google Hesab parolunuzun fərqli versiyasını istifadə edərək şifrələnən data artıq varınızdır. Onu aşağıda daxil edin.</translation>
 <translation id="7616645509853975347">Administratorunuz brauzerinizdə Chrome Enterprise Connectors funksiyasını aktivləşdirib. Bu birləşdiricilərin verilənlərinizdən bəzilərinə giriş imkanı var.</translation>
 <translation id="7619838219691048931">Son vərəq</translation>
 <translation id="762844065391966283">Bir-bir</translation>
@@ -1918,6 +1923,7 @@
 <translation id="8202097416529803614">Sifariş xülasəsi</translation>
 <translation id="8202370299023114387">Ziddiyət</translation>
 <translation id="8206978196348664717">Prc4 (Zərf)</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{ID'ni sıfırladığınız zaman cari ID etibarsız olacaq və yenisi 1 gündən az müddətdə veriləcək}=1{ID'ni sıfırladığınız zaman cari ID etibarsız olacaq və yenisi 1 gün ərzində veriləcək}other{ID'ni sıfırladığınız zaman cari ID etibarsız olacaq və yenisi {NUM_DAYS} gün ərzində veriləcək}}</translation>
 <translation id="8211406090763984747">Bağlantı təhlükəsizdir</translation>
 <translation id="8213464188712611711">Yaddaşlar</translation>
 <translation id="8218327578424803826">Ayrılmış yer:</translation>
@@ -2178,6 +2184,7 @@
 <translation id="9170848237812810038">Ləğv edin</translation>
 <translation id="9171296965991013597">Tətbiqdən çıxılsın?</translation>
 <translation id="9173282814238175921">Tək sənəd/Yeni vərəq</translation>
+<translation id="9173995187295789444">Bluetooth cihazları skan edilir...</translation>
 <translation id="917450738466192189">Serverin sertifikatı yanlışdlr.</translation>
 <translation id="9174917557437862841">Bu taba keçmək üçün keçid düyməsinə klikləyib "Daxil olun" düyməsinə basın</translation>
 <translation id="9179703756951298733">Ödəniş və kredit kartı məlumatlarınızı Chrome ayarlarında idarə edin</translation>

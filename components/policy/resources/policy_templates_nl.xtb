@@ -2118,17 +2118,6 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="377044054160169374">Interventie voor misleidende functionaliteit afdwingen</translation>
 <translation id="3778689139323007309">Intrekkingscontroles uitvoeren voor gevalideerde servercertificaten die zijn ondertekend door lokaal geïnstalleerde CA-certificaten</translation>
 <translation id="3780152581321609624">Niet-standaardpoort in Kerberos-SPN opnemen</translation>
-<translation id="3783569262370557918">Zet <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> aan voor een lijst met URL's.
-
-Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als onderdeel van het attestproces om de reeks signalen van de machine te ontvangen.
-
-      Als je dit beleid niet instelt of leeg laat, kan geen enkel eindpunt het attestproces starten of signalen van de machine ontvangen.
-
-      URL's moeten een HTTPS-schema hebben, zoals https://example.com.
-
-      Opmerking: Jokertekens, <ph name="WILDCARD_VALUE" />, zijn toegestaan.
-
-      Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen.</translation>
 <translation id="378495749480642482">Hiermee configureer je of de sites waar de gebruiker naartoe gaat uitgebreide augmented reality-sessies met <ph name="WEBXR_API_NAME" /> mogen maken.
 
       Als je dit beleid toepast of niet instelt, accepteert de <ph name="WEBXR_API_NAME" /> <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> tijdens het maken van sessies, wat betekent dat gebruikers augmented reality-functionaliteit kunnen gebruiken.
@@ -2840,11 +2829,6 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan.
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
-<translation id="4882406948002286350">Als je het beleid instelt, wordt voorkomen dat webpagina's met verboden URL's worden geladen. Het beleid biedt een lijst met URL-patronen die verboden URL's definiëren. Als je het beleid niet instelt, worden er geen URL's verboden in de browser. Gebruik een notatie voor het URL-patroon volgens deze indeling (https://www.chromium.org/administrators/url-blocklist-filter-format). Er kunnen maximaal 1000 uitzonderingen worden gedefinieerd in <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      Vanaf <ph name="PRODUCT_NAME" /> versie 73 kun je javascript://* URL's blokkeren. Maar dit heeft alleen gevolgen voor JavaScript die wordt ingevoerd in de adresbalk (of bijvoorbeeld bookmarklets). In-page JavaScript-URL's met dynamisch geladen gegevens vallen niet onder dit beleid. Als je bijvoorbeeld 'example.com/abc' blokkeert, kan de pagina 'example.com' nog steeds 'example.com/abc' laden via XMLHTTPRequest.
-
-      Opmerking: Als je interne URL's met chrome://* blokkeert, kan dit tot onverwachte fouten leiden.</translation>
 <translation id="4886783562285047261">Als je dit beleid toepast, wordt <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verplicht ingeschreven en wordt het startproces van <ph name="PRODUCT_NAME" /> geblokkeerd als dit mislukt.
 
       Als je het beleid niet toepast, of niet instelt, is <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> optioneel en wordt het startproces van <ph name="PRODUCT_NAME" /> niet geblokkeerd als het mislukt.
@@ -2958,11 +2942,6 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="4996068111491152684">De inloggegevens van <ph name="PRODUCT_OS_NAME" /> worden niet gebruikt voor netwerkverificatie.</translation>
 <translation id="4996086761250834365">Productanalyse van <ph name="PLUGIN_VM_NAME" /> toestaan</translation>
 <translation id="500149597848135831">Alle varianten aanzetten</translation>
-<translation id="5016942794885590681">Als je dit beleid toepast of niet instelt, staat Code-integriteit van weergaveprogramma aan.
-
-      Als je dit beleid niet toepast, heeft dit een nadelige invloed op de beveiliging en stabiliteit van <ph name="PRODUCT_NAME" /> omdat onbekende en potentieel schadelijke code kan worden geladen in de processen van het weergaveprogramma van <ph name="PRODUCT_NAME" />. Pas het beleid alleen niet toe als er compatibiliteitsproblemen zijn met software van derden die in de processen van het weergaveprogramma van <ph name="PRODUCT_NAME" /> moeten worden uitgevoerd.
-
-      Opmerking: Lees meer informatie over het beleid voor procesbeperking (https://chromium.googlesource.com/chromium/src/+/main/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="5017369989680827157">Als je het beleid instelt op 'True' of niet instelt, krijgen gebruikers de controle over 'Automatisch invullen' voor adressen in de UI.
 
       Als je het beleid instelt op 'False', wordt er nooit adresinformatie voorgesteld of ingevuld door 'Automatisch invullen'. Ook wordt er geen aanvullende adresinformatie opgeslagen die gebruikers opgeven als ze internetten.</translation>
@@ -3973,11 +3952,6 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 
       Als dit beleid niet is ingesteld of als de lijst leeg is, zijn alle schema's toegankelijk in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6338982178236723271">Systeemgegevens rapporteren</translation>
-<translation id="6347363725343851058">Als je het beleid toepast, staat de achtergrondmodus aan. In de achtergrondmodus wordt een <ph name="PRODUCT_NAME" />-proces gestart bij het inloggen bij het OS. Dit proces blijft actief als het laatste browservenster wordt gesloten, waardoor achtergrond-apps en de browsersessie, inclusief sessiecookies, actief kunnen blijven. Voor het achtergrondproces wordt een icoon weergegeven in het systeemvak, waarmee het proces altijd kan worden gesloten.
-
-      Als je het beleid niet toepast, staat de achtergrondmodus uit.
-
-Als je het beleid instelt, kunnen gebruikers dit niet aanpassen in de browserinstellingen. Als je het niet instelt, staat de achtergrondmodus aanvankelijk uit, maar kunnen gebruikers dit aanpassen.</translation>
 <translation id="6353890097388312479">Als je het beleid instelt op All (0) of niet instelt, kunnen gebruikers vertrouwensinstellingen bewerken voor alle CA-certificaten, door de gebruiker geïmporteerde certificaten verwijderen en certificaten importeren met Certificaatbeheer. Als je het beleid instelt op UserOnly (1), kunnen gebruikers alleen door de gebruiker geïmporteerde certificaten beheren, maar niet de vertrouwensinstellingen van ingebouwde certificaten wijzigen. Als je het beleid instelt op None (2), kunnen gebruikers CA-certificaten bekijken (maar niet beheren).</translation>
 <translation id="6362856770865555544">Als je het beleid toepast of niet instelt, staat WPAD-optimalisatie (Web Proxy Auto-Discovery) aan in <ph name="PRODUCT_NAME" />.
 
@@ -4520,15 +4494,6 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
       Als je het beleid niet instelt, kunnen gebruikers deze instelling zelf wijzigen.
 
       Opmerking: Ondersteuning van site-isolatie voor Android wordt verbeterd, maar op dit moment kan het prestatieproblemen veroorzaken. Dit beleid is alleen van toepassing op Chrome op Android-apparaten met meer dan 1 GB RAM-geheugen. Gebruik <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> om het beleid toe te passen op andere platforms dan Android.</translation>
-<translation id="6978404102280820831">Als je <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> instelt, kun je een lijst met URL-patronen opgeven van sites die geen cookies kunnen instellen voor één sessie, tenzij het beleid <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> is ingesteld op het permanent herstellen van URL's uit vorige sessies.
-
-      Als je het beleid niet instelt, wordt <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> gebruikt voor alle sites als dit is ingesteld. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker. Voor URL's die niet overeenkomen met de opgegeven patronen worden de standaardwaarden gebruikt.
-
-      Als <ph name="PRODUCT_NAME" /> in de achtergrondmodus wordt uitgevoerd, kan de sessie actief blijven totdat de gebruiker de browser afsluit (en niet alleen maar het laatste venster sluit). Zie <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" /> voor meer informatie over hoe je dit gedrag configureert.
-
-      Zie <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> en <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> als geen specifiek beleid voorrang krijgt. De URL-patronen die in deze drie beleidsregels worden vermeld, mogen niet met elkaar conflicteren.
-
-      Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979739838208297344">Als het beleid wordt ingesteld op <ph name="BR_ENABLED" />, staat de back-up- en herstelfunctie van Android in eerste instantie aan. Als dit beleid wordt ingesteld op <ph name="BR_DISABLED" /> of niet wordt ingesteld, staat de back-up- en herstelfunctie uit tijdens het instellen.
 
@@ -5228,13 +5193,6 @@ Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRO
       Hiermee bepaal je de ID van de extensie die moet worden gebruikt als schermbeveiliging voor het inlogvenster. De extensie moet onderdeel zijn van het AppPack dat is geconfigureerd voor dit domein via het beleid DeviceAppPack.</translation>
 <translation id="7882857838942884046">Als je de synchronisatie met Google uitzet, werkt de Android-functie Back-up maken en resetten niet meer naar behoren.</translation>
 <translation id="7882890448959833986">De waarschuwing voor een niet-ondersteund besturingssysteem negeren</translation>
-<translation id="788487748427534612">Als je <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> instelt, kun je een lijst met URL-patronen opgeven van sites die geen cookies kunnen instellen voor één sessie, tenzij het beleid <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> is ingesteld op het permanent herstellen van URL's uit vorige sessies.
-
-      Als je het beleid niet instelt, wordt <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> gebruikt voor alle sites als dit is ingesteld. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker. Voor URL's die niet overeenkomen met de opgegeven patronen worden de standaardwaarden gebruikt.
-
-      Als <ph name="PRODUCT_NAME" /> in de achtergrondmodus wordt uitgevoerd, kan de sessie actief blijven totdat de gebruiker de browser afsluit (en niet alleen maar het laatste venster sluit). Zie <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" /> voor meer informatie over hoe je dit gedrag configureert.
-
-      Zie <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> en <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> als geen specifiek beleid voorrang krijgt. De URL-patronen die in deze drie beleidsregels worden vermeld, mogen niet met elkaar conflicteren.</translation>
 <translation id="7887379840451099426">Instellingen voor energiebeheer die alleen van toepassing zijn als er op de batterij wordt gewerkt</translation>
 <translation id="7891884447851425349">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> instelt, wordt de URL gespecificeerd van de zoekmachine die tijdens een standaard zoekopdracht wordt gebruikt. De URL moet de tekenreeks <ph name="SEARCH_TERM_MARKER" /> bevatten. Deze tekenreeks wordt tijdens de zoekopdracht vervangen door de zoektermen van de gebruiker.
 
@@ -5853,13 +5811,6 @@ Dit beleid wordt verwijderd in M75.</translation>
       Als je het beleid niet instelt, gebruikt Chrome de platformspecifieke standaardmap.
 
       Opmerking: Bekijk een lijst met variabelen die je kunt gebruiken (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
-<translation id="877499586514669705">Als je dit beleid instelt, wordt toegang geboden tot de vermelde URL's, als uitzonderingen op <ph name="URL_BLOCKLIST_POLICY_NAME" />. Bekijk de beschrijving van dit beleid voor de indeling van items in deze lijst. Als je <ph name="URL_BLOCKLIST_POLICY_NAME" /> bijvoorbeeld instelt op *, worden alle verzoeken geblokkeerd en kun je dit beleid gebruiken om toegang tot een beperkte lijst met URL's toe te staan. Je kunt dit beleid gebruiken om uitzonderingen voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden op te geven met de indeling die wordt gespecificeerd op (https://www.chromium.org/administrators/url-blocklist-filter-format). Het meest specifieke filter bepaalt of een URL geblokkeerd of toegestaan wordt. Het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" /> krijgt voorrang op <ph name="URL_BLOCKLIST_POLICY_NAME" />. Dit beleid is beperkt tot 1000 items.
-
-      Met dit beleid kan ook de automatische aanroep door de browser van een externe app worden aangezet die is geregistreerd als protocolhandler voor de vermelde protocollen, zoals tel: of ssh:.
-
-      Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="877557628527387598">Inloggen met wachtwoord</translation>
 <translation id="8777369558049831576">Het selectievakje 'Altijd openen' tonen in dialoogvensters voor externe protocollen.</translation>
 <translation id="8786409859071107656">Als je het beleid toepast, wordt ook het stroombeheerbeleid voor energie delen via USB toegepast.

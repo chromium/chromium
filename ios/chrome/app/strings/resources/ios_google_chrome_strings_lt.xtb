@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">„Chrome“ nepavyko patikrinti, ar yra naujinių. Bandykite dar kartą vėliau.</translation>
 <translation id="2732745070297234559">„Chrome“ nepavyko patikrinti visų slaptažodžių. Rytoj bandykite dar kartą.</translation>
 <translation id="2740105938841089077">Nuorodų atidarymas naudojant „Chrome“</translation>
+<translation id="2869959624320573933">Prisijunkite prie „Chrome“</translation>
 <translation id="2919738076569633423">Naudodami „Chrome“ sutinkate su <ph name="BEGIN_LINK_TOS" />paslaugų teikimo sąlygomis<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Atsijungiate nuo paskyros, kurią valdo <ph name="SIGNOUT_MANAGED_DOMAIN" />, todėl „Chrome“ duomenys bus ištrinti iš šio įrenginio. Duomenys išliks jūsų „Google“ paskyroje.</translation>
 <translation id="3167189358072330585">Paskyra neveikia sistemoje „Google Chrome“. Susisiekite su domeno administratoriumi arba prisijungdami naudokite įprastą „Google“ paskyrą.</translation>
 <translation id="3173834708294760622">„Google Chrome“ puslapis</translation>
 <translation id="3196546062792660320">„Chrome“ taupo laiką naudodama paskyras žiniatinklyje. Paskyras galite pridėti arba pašalinti nustatymuose.</translation>
-<translation id="3223655207402797071">Prisijunkite prie šios svetainės, „Google“ paskyros ir „Chrome“. Sinchronizavimą galėsite įjungti vėliau.</translation>
 <translation id="3282568296779691940">Prisijungti prie „Chrome“</translation>
 <translation id="3345341804167540816">Naudokite „Chrome“ visur</translation>
 <translation id="3455456143708465450">Jei norite išnaudoti visas „Chrome“ galimybes, prisijunkite naudodami „Google“ paskyrą</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">„Google Chrome“ yra naujausios versijos</translation>
 <translation id="8022947259858476807">Naudokite „Chrome“ pagal numatytuosius nustatymus, kad atidarytumėte nuorodas, ieškotumėte iš valdiklių ir automatiškai pildytumėte slaptažodžius kitose programose</translation>
 <translation id="8160472928944011082">Nepavyko atnaujinti „Chrome“</translation>
+<translation id="8263079278049777200">Prisijunkite prie šios svetainės, „Google“ paskyros ir „Chrome“. Sinchronizavimą galėsite įjungti vėliau.</translation>
 <translation id="8357607116237445042">Pasirinkite, ar norite išvalyti „Chrome“ duomenis iš šio įrenginio ar juos palikti</translation>
 <translation id="8370517070665726704">Autorių teisės „Google LLC.“, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
 <translation id="840168496893712993">Dėl tam tikrų priedų „Chrome“ užstringa. Pabandykite juos pašalinti.</translation>

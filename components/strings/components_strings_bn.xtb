@@ -253,7 +253,6 @@
      সাথে যোগাযোগ বা তা অ্যাক্সেস করতে পারছে না। সাইট অপারেটর কোনও সাইটের
     নিরাপত্তা ও অন্যান্য প্রপার্টি কনফিগার করতে 'অরিজিন নীতি' ব্যবহার করতে পারে।</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">দয়া করে আপনার সিঙ্ক পাসফ্রেজ আপডেট করুন৷</translation>
 <translation id="1787142507584202372">আপনার খোলা ট্যাবগুলি এখানে দেখা যাবে</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, একাধিক কাজ করা যাবে, বিকল্পগুলি এক এক করে দেখতে ট্যাব টিপুন</translation>
@@ -387,6 +386,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> এর জন্য একটি ইউজারনেম এবং পাসওয়ার্ড প্রয়োজন।</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />-এর মেয়াদ, <ph name="EXPIRATION_DATE_ABBR" /> তারিখে শেষ হবে</translation>
 <translation id="2337852623177822836">সেটিংস আপনার প্রশাসক নিয়ন্ত্রণ করে</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" /> এদের সঙ্গে যুক্ত হতে চাচ্ছে</translation>
 <translation id="2344028582131185878">অটোমেটিক ডাউনলোডগুলি</translation>
 <translation id="2346319942568447007">আপনার কপি করা ছবি</translation>
 <translation id="2354001756790975382">অন্য বুকমার্ক</translation>
@@ -456,6 +456,7 @@
 <translation id="2629325967560697240">Chrome-এ সবচেয়ে বেশি সুরক্ষা পেতে, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />উন্নত সুরক্ষা চালু করুন<ph name="END_ENHANCED_PROTECTION_LINK" />।</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />-এর সার্ভার আইপি অ্যাড্রেস পাওয়া যায়নি।</translation>
 <translation id="2639739919103226564">স্থিতি: </translation>
+<translation id="264810637653812429">উপযুক্ত ডিভাইস খুঁজে পাওয়া যায়নি।</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে আপনার ব্রাউজিং ইতিহাস, কুকি, ক্যাশে ও আরও অনেক কিছু মুছতে প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
 <translation id="2650446666397867134">ফাইলে অ্যাক্সেস অস্বীকৃত হয়েছে</translation>
@@ -502,6 +503,7 @@
 <translation id="2799223571221894425">পুনঃশুরু</translation>
 <translation id="2803306138276472711">Google নিরাপদ ব্রাউজিং সাম্প্রতিক <ph name="SITE" />-এ <ph name="BEGIN_LINK" />ম্যালওয়্যার শনাক্ত করেছে<ph name="END_LINK" />। যেসব ওয়েবসাইট সাধারণত নিরাপদ থাকে, সেগুলি কখনও কখনও ম্যালওয়্যার দিয়ে আক্রান্ত হয়।</translation>
 <translation id="2807052079800581569">ছবি Y পজিশন</translation>
+<translation id="2820957248982571256">স্ক্যান করা হচ্ছে…</translation>
 <translation id="2824775600643448204">ঠিকানা এবং সার্চ দণ্ড</translation>
 <translation id="2826760142808435982"><ph name="CIPHER" /> ব্যবহার করে এই সংযোগটি এনক্রিপ্টেড এবং প্রমাণীকৃত করা হয়েছে এবং কী এক্সচেঞ্জ প্রক্রিয়া হিসাবে <ph name="KX" /> ব্যবহার করে৷</translation>
 <translation id="2835170189407361413">ফর্ম সাফ করুন</translation>
@@ -509,6 +511,7 @@
 <translation id="2850739647070081192">Invite (Envelope)</translation>
 <translation id="2856444702002559011">আক্রমণকারীরা হয়ত <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> থেকে আপনার তথ্য (যেমন পাসওয়ার্ড, মেসেজ বা ক্রেডিট কার্ড) চুরি করার চেষ্টা করছে। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">এই সাইট ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন দেখায়।</translation>
+<translation id="287596039013813457">বন্ধুত্বপূর্ণ</translation>
 <translation id="2876489322757410363">এক্সটার্নাল অ্যাপ্লিকেশনের মাধ্যমে পেমেন্ট করার জন্য ছদ্মবেশী মোড ছেড়ে বেরিয়ে আসা হচ্ছে। চালিয়ে যেতে চান?</translation>
 <translation id="2878197950673342043">পোস্টার ফোল্ড</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -606,10 +609,12 @@
 <translation id="3229041911291329567">আপনার ডিভাইস এবং ব্রাউজারের ভার্সন সম্বন্ধীয় তথ্য</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" />-এর CVC লিখুন</translation>
 <translation id="3234666976984236645">এই সাইটে সবসময় গুরুত্বপূর্ণ কন্টেন্ট শনাক্ত করুন</translation>
+<translation id="3249845759089040423">গ্ৰুভি</translation>
 <translation id="3252266817569339921">ফরাসী</translation>
 <translation id="3266793032086590337">মান (ম্যাচ করছে না)</translation>
 <translation id="3268451620468152448">ওপেন ট্যাব</translation>
 <translation id="3270847123878663523">&amp;পুনর্বিন্যাসকে পূর্বাবস্থায় ফেরান</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> এদের সঙ্গে সংযুক্ত হতে চায়</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">আপনার সংস্থা, <ph name="ENROLLMENT_DOMAIN" />, নিম্নলিখিত ওয়েবসাইটগুলিকে সেটিংস বা নীতির মতো কিছু তথ্য পাঠিয়েছে।</translation>
 <translation id="3282497668470633863">কার্ডে থাকা নাম যোগ করুন</translation>
@@ -983,6 +988,7 @@
 <translation id="4594403342090139922">&amp;মুছে ফেলাকে পূর্বাবস্থায় ফেরান</translation>
 <translation id="4597348597567598915">সাইজ ৮</translation>
 <translation id="4600854749408232102">C6/C5 (Envelope)</translation>
+<translation id="4606870351894164739">প্রভাবশালী</translation>
 <translation id="4628948037717959914">ফটো</translation>
 <translation id="4631649115723685955">ক্যাশব্যাক অফার লিঙ্ক করা হয়েছে</translation>
 <translation id="4636930964841734540">তথ্য</translation>
@@ -1046,6 +1052,8 @@
 <translation id="4813512666221746211">নেটওয়ার্ক  ত্রুটি</translation>
 <translation id="4816492930507672669">পৃষ্ঠাতে মানানসই</translation>
 <translation id="4819347708020428563">ডিফল্ট ভিউতে অ্যানোটেশন এডিট করবেন?</translation>
+<translation id="4825507807291741242">ক্ষমতাশালী</translation>
+<translation id="4838327282952368871">স্বপ্নালু</translation>
 <translation id="484462545196658690">অটো</translation>
 <translation id="4850886885716139402">দেখুন</translation>
 <translation id="485316830061041779">জার্মান</translation>
@@ -1204,6 +1212,7 @@
 <translation id="5398772614898833570">বিজ্ঞাপন ব্লক করা হয়েছে</translation>
 <translation id="5400836586163650660">ধূসর</translation>
 <translation id="540969355065856584">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট এই সময়ে বৈধ নয়। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
+<translation id="541143247543991491">ক্লাউড (সম্পূর্ণ সিস্টেমে)</translation>
 <translation id="541416427766103491">স্ট্যাকার ৪</translation>
 <translation id="5421136146218899937">ব্রাউজিং ডেটা সাফ করুন...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> আপনাকে বিজ্ঞপ্তি পাঠাতে চায়</translation>
@@ -1217,6 +1226,7 @@
 <translation id="5455374756549232013">ত্রুটিপূর্ণ নীতি টাইমস্ট্যাম্প</translation>
 <translation id="5457113250005438886">ভুল</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টি}one{<ph name="CONTACT_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টি}other{<ph name="CONTACT_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টি}}</translation>
+<translation id="5463625433003343978">ডিভাইস খোঁজা হচ্ছে...</translation>
 <translation id="5469868506864199649">ইতালীয়</translation>
 <translation id="5470861586879999274">&amp;সম্পাদনাকে আবার করুন</translation>
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
@@ -1266,7 +1276,6 @@
 <translation id="5624120631404540903">পাসওয়ার্ডগুলি পরিচালনা করুন</translation>
 <translation id="5629630648637658800">নীতি সেটিংস লোড করতে ব্যর্থ হয়েছে</translation>
 <translation id="5631439013527180824">ভুল ডিভাইস পরিচালনা টোকেন</translation>
-<translation id="5632627355679805402"><ph name="TIME" />-এ আপনার <ph name="BEGIN_LINK" />Google পাসওয়ার্ড<ph name="END_LINK" /> দিয়ে ডেটা এনক্রিপ্ট করা হয়েছিল। সিঙ্ক শুরু করতে এটি লিখুন।</translation>
 <translation id="5633066919399395251"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-এ যে আক্রমণকারীরা এই মুহূর্তে সক্রিয় আছে, তারা আপনার কম্পিউটারে এমন বিপজ্জনক প্রোগ্রাম ইনস্টল করে দিতে পারে যেগুলি আপনার তথ্যের (যেমন ফটো, পাসওয়ার্ড, মেসেজ এবং ক্রেডিট কার্ড) ক্ষতি করতে বা সেগুলি চুরি করতে পারে। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">প্রতারণামূলক কন্টেন্ট ব্লক করা হয়েছে।</translation>
 <translation id="5644090287519800334">সাইড 1 ছবি X শিফ্ট</translation>
@@ -1310,6 +1319,7 @@
 <translation id="5804427196348435412">NFC ডিভাইস ব্যবহার করুন</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" />-এ আপনার সংযোগ একটি অপ্রচলিত সাইফার স্যুট ব্যবহার করে এনক্রিপ্ট করা হয়েছে৷</translation>
 <translation id="5813119285467412249">&amp;যোগ করাকে পুনরায় করুন</translation>
+<translation id="5817918615728894473">যুক্ত করুন</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{আপনি পেমেন্ট করলে এই কার্ডে চার্জ করা হবে, তবে এটির আসল নম্বর এই সাইটের সাথে শেয়ার করা হবে না। অতিরিক্ত নিরাপত্তার জন্য, একটি অস্থায়ী সিভিসি জেনারেট করা হবে।}one{আপনি পেমেন্ট করলে বেছে নেওয়া কার্ডটিতে চার্জ করা হবে, তবে এটির আসল নম্বর এই সাইটের সাথে শেয়ার করা হবে না। অতিরিক্ত নিরাপত্তার জন্য, একটি অস্থায়ী সিভিসি জেনারেট করা হবে।}other{আপনি পেমেন্ট করলে বেছে নেওয়া কার্ডটিতে চার্জ করা হবে, তবে এটির আসল নম্বর এই সাইটের সাথে শেয়ার করা হবে না। অতিরিক্ত নিরাপত্তার জন্য, একটি অস্থায়ী সিভিসি জেনারেট করা হবে।}}</translation>
 <translation id="5826507051599432481">কমন নেম (CN)</translation>
 <translation id="5838278095973806738">এই সাইটে আপনার কোনো সংবেদনশীল তথ্য দেওয়া উচিত হবে না (উদাহরণস্বরূপ, পাসওয়ার্ড বা ক্রেডিট কার্ড) কারণ আক্রমণকারীরা এগুলি চুরি করতে পারে।</translation>
@@ -1317,6 +1327,7 @@
 <translation id="5855253129151731373">এই সাইটের হোস্টনেম <ph name="LOOKALIKE_DOMAIN" />-এর মতো মনে হচ্ছে। আক্রমণকারীরা কখনও কখনও ডোমেনের নামে সামান্য বা সহজে দেখা যায় না এমন পরিবর্তন করে কোনও সাইটের নকল করেন।
 
     এটি ভুল করে দেখানো হচ্ছে বলে মনে হলে, https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals লিঙ্কটি দেখুন।</translation>
+<translation id="5860033963881614850">বন্ধ করুন</translation>
 <translation id="5862579898803147654">স্ট্যাকার ৮</translation>
 <translation id="5863847714970149516">পরের পৃষ্ঠাতে আপনাকে চার্জ করা হতে পারে</translation>
 <translation id="5866257070973731571">ফোন নম্বর যোগ করুন</translation>
@@ -1509,6 +1520,7 @@
 <translation id="6624427990725312378">পরিচিতির তথ্য</translation>
 <translation id="6626291197371920147">বৈধ কার্ড নম্বর যোগ করুন</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> সার্চ</translation>
+<translation id="6630043285902923878">USB ডিভাইস খোঁজা হচ্ছে...</translation>
 <translation id="6630809736994426279"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-এ যে আক্রমণকারীরা এই মুহূর্তে সক্রিয় আছে, তারা আপনার Mac-এ এমন বিপজ্জনক প্রোগ্রাম ইনস্টল করে দিতে পারে যেগুলি আপনার তথ্যের (যেমন ফটো, পাসওয়ার্ড, মেসেজ এবং ক্রেডিট কার্ড) ক্ষতি করতে বা সেগুলি চুরি করতে পারে। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">সাফ করুন</translation>
@@ -1710,6 +1722,7 @@
       &lt;li&gt;কম্পিউটার থেকে সফ্টওয়্যারটি স্থায়ীভাবে সরিয়ে দেওয়ার পদ্ধতি জানতে &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome সহায়তা কেন্দ্রে&lt;/a&gt; যান
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
+<translation id="7410471291937727359">সুন্দর</translation>
 <translation id="7416351320495623771">পাসওয়ার্ডগুলি পরিচালনা করুন…</translation>
 <translation id="7419106976560586862">প্রোফাইল পাথ</translation>
 <translation id="7437289804838430631">পরিচিতির তথ্য যোগ করুন</translation>
@@ -1763,7 +1776,6 @@
 <translation id="7610193165460212391">সীমার বাইরে মান <ph name="VALUE" />৷</translation>
 <translation id="7613889955535752492">মেয়াদোত্তীর্ণ: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে আপনার পাসওয়ার্ড দেখতে ও ম্যানেজ করতে প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
-<translation id="7615602087246926389">আপনার কাছে ইতিমধ্যেই এমন ডেটা আছে যা Google অ্যাকাউন্টের পাসওয়ার্ডের কোনো ভিন্ন ভার্সন ব্যবহারের দ্বারা এনক্রিপ্ট করা হয়৷ অনুগ্রহ করে এটিকে নিচে লিখুন৷</translation>
 <translation id="7616645509853975347">আপনার অ্যাডমিনিস্ট্রেটর Chrome Enterprise কানেক্টরগুলিকে আপনার ব্রাউজারে চালু করেছে। এই কানেক্টর আপনার কিছু ডেটা অ্যাক্সেস করতে পারবে।</translation>
 <translation id="7619838219691048931">শেষ শিট</translation>
 <translation id="762844065391966283">এক এক করে</translation>
@@ -2133,6 +2145,7 @@
 <translation id="9020542370529661692">এই পৃষ্ঠাটি <ph name="TARGET_LANGUAGE" /> এ অনুবাদ করা হয়েছে</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(ভুল)</translation>
+<translation id="9030265603405983977">মোনোক্রোম</translation>
 <translation id="9035022520814077154">নিরাপত্তা ত্রুটি</translation>
 <translation id="9038649477754266430">পৃষ্ঠা আরও দ্রুত লোড করার জন্য কোনো পূর্বাভাষ পরিষেবা ব্যবহার করুন</translation>
 <translation id="9039213469156557790">উপরন্তু, এই পৃষ্ঠাতে অন্যান্য সংস্থান অন্তর্ভুক্ত রয়েছে যা নিরাপদ নয়৷ এই সংস্থানগুলি ট্রানজিটের সময় অন্যরা দেখতে পাবে এবং পৃষ্ঠাটির আচরণ পরিবর্তন করার জন্য কোনো আক্রমণকারী এর পরিবর্তন করতে পারেন৷</translation>
@@ -2156,6 +2169,7 @@
 <translation id="91108059142052966">কোনও গোপন কন্টেন্ট দেখা গেলে 'অ্যাডমিনিস্ট্রেটর নীতি' অনুযায়ী <ph name="APPLICATION_TITLE" />-এর সাথে স্ক্রিন শেয়ার করা হবে না</translation>
 <translation id="9114524666733003316">কার্ড নিশ্চিত করা হচ্ছে...</translation>
 <translation id="9114581008513152754">কোনও কোম্পানি বা অন্য কোনও সংস্থা এই ব্রাউজার ম্যানেজ করে না। এই ডিভাইসের অ্যাক্টিভিটি Chrome-এর বাইরে থেকে ম্যানেজ করা যেতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">তাজা</translation>
 <translation id="9119042192571987207">আপলোড করা হয়েছে</translation>
 <translation id="9128016270925453879">নীতি লোড হয়েছে</translation>
 <translation id="9128870381267983090">নেটওয়ার্কে সংযোগ করুন</translation>
@@ -2174,6 +2188,7 @@
 <translation id="9170848237812810038">&amp;পূর্বাবস্থায় ফিরুন</translation>
 <translation id="9171296965991013597">অ্যাপ থেকে বেরিয়ে আসতে চান?</translation>
 <translation id="9173282814238175921">একক ডকুমেন্ট/নতুন শিট</translation>
+<translation id="9173995187295789444">ব্লুটুথ ডিভাইসগুলির জন্য স্ক্যান করা হচ্ছে...</translation>
 <translation id="917450738466192189">সার্ভারের সার্টিফিকেট অকার্যকর৷</translation>
 <translation id="9174917557437862841">ট্যাব সুইচ বোতাম, এই ট্যাবে পরিবর্তন করতে এন্টার প্রেস করুন</translation>
 <translation id="9179703756951298733">Chrome সেটিংস থেকে আপনার পেমেন্ট ও ক্রেডিট কার্ডের তথ্য ম্যানেজ করুন</translation>

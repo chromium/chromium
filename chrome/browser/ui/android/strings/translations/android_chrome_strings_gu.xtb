@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Chrome અને Chrome OSની વધારાની સેવાની શરતો</translation>
 <translation id="1807246157184219062">આછું</translation>
 <translation id="1810845389119482123">સિંકનું પ્રારંભિક સેટઅપ પૂર્ણ થયું નથી</translation>
-<translation id="1821253160463689938">તમારી પસંદગીઓ યાદ રાખવા માટે કુકીનો ઉપયોગ કરે છે, પછી ભલે તમે તે પેજની મુલાકાત ન પણ લો</translation>
 <translation id="1829244130665387512">આ પૃષ્ઠમાં શોધો</translation>
 <translation id="1830550083491357902">સાઇન ઇન નથી</translation>
 <translation id="1843805151597803366">બહેતર અનુવાદો મેળવવા માટે, Google Searchને હાલના પેજનો ઉપયોગ કરવાની પરવાનગી આપો</translation>
@@ -273,7 +272,6 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> સેકંડ બાકી</translation>
 <translation id="2779651927720337254">નિષ્ફળ થયું</translation>
 <translation id="2781151931089541271">1 સેકંડ બાકી</translation>
-<translation id="279827439955962619">હાઇલાઇટ કરવાનું કાઢી નાખો</translation>
 <translation id="2801022321632964776">Chromeના એકદમ નવા વર્ઝનમાં તમારી ભાષા મેળવવા માટે અપડેટ કરો</translation>
 <translation id="2805756323405976993">ઍપ</translation>
 <translation id="281504910091592009">સાચવેલા પાસવર્ડ તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ<ph name="END_LINK" />માં જુઓ અને મેનેજ કરો</translation>
@@ -454,7 +452,6 @@
 <translation id="3988466920954086464">ઝટપટ શોધ પરિણામો આ પૅનલમાં જુઓ</translation>
 <translation id="4000212216660919741">ઑફલાઇન હોમ</translation>
 <translation id="4016425174436051808">ફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>
-<translation id="4021916380760361450">તમારા Google એકાઉન્ટનો ડેટા નિયંત્રિત કરો</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# કલાક}one{# કલાક}other{# કલાક}}</translation>
 <translation id="4045764304651014138">વપરાશનો ડેટા</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -480,7 +477,6 @@
 <translation id="4195643157523330669">નવા ટૅબમાં ખોલો</translation>
 <translation id="4198423547019359126">કોઈ ડાઉનલોડ સ્થાનો ઉપલબ્ધ નથી</translation>
 <translation id="4209895695669353772">Google દ્વારા સૂચવેલ વ્યક્તિગત કરેલ કન્ટેન્ટ મેળવવા માટે, સિંક કરવાનું ચાલુ કરો</translation>
-<translation id="423219824432660969"><ph name="TIME" /> પ્રમાણે Google પાસવર્ડ વડે સિંક કરેલા ડેટાને એન્ક્રિપ્ટ કરો</translation>
 <translation id="4242533952199664413">સેટિંગ્સ ખોલો</translation>
 <translation id="4248098802131000011">ડેટા ઉલ્લંઘનો અને અન્ય સુરક્ષા સંબંધિત સમસ્યાઓથી તમારા પાસવર્ડને સલામત રાખો</translation>
 <translation id="4250229828105606438">સ્ક્રીનશૉટ</translation>
@@ -559,6 +555,7 @@
 <translation id="47217992755561375">તમારા માટે શ્રેષ્ઠ હોય તેવી સાઇટ જુઓ</translation>
 <translation id="4732120983431207637">સ્ટૅક અનવાઇન્ડર</translation>
 <translation id="4738836084190194332">છેલ્લે સમન્વયિત: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">હાઇલાઇટ કાઢી નાખો</translation>
 <translation id="4749960740855309258">એક નવું ટૅબ ખોલો</translation>
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
 <translation id="4763480195061959176">વીડિયો</translation>
@@ -699,7 +696,6 @@
 <translation id="562289928968387744">પ્રતિક્રિયાઓ મેનેજ કરો</translation>
 <translation id="5626134646977739690">નામ:</translation>
 <translation id="5628604359369369630">વાંચ્યા વગરનું - ઑફલાઇન ઉપલબ્ધ</translation>
-<translation id="5632627355679805402">તમારો ડેટા <ph name="TIME" />ના રોજ તમારા <ph name="BEGIN_LINK" />Google પાસવર્ડ<ph name="END_LINK" /> સાથે એન્ક્રિપ્ટ કરવામાં આવ્યો હતો. સિંક શરૂ કરવા માટે તે દાખલ કરો.</translation>
 <translation id="5639724618331995626">તમામ સાઇટની મંજૂરી આપો</translation>
 <translation id="5648166631817621825">છેલ્લા 7 દિવસ</translation>
 <translation id="5655963694829536461">તમારા ડાઉનલોડમાં શોધો</translation>
@@ -934,7 +930,6 @@
 <translation id="702463548815491781">જ્યારે ટૉકબૅક અથવા સ્વિચ ઍક્સેસ ચાલુ હોય ત્યારે આપેલ સુઝાવ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> રિસ્ટોર કર્યું</translation>
 <translation id="7029809446516969842">પાસવર્ડ</translation>
-<translation id="7040531500313579672">હાઇલાઇટ કરવાનું શેર કરો</translation>
 <translation id="7054588988317389591">છબીના વર્ણનો મેળવીએ?</translation>
 <translation id="7055152154916055070">રીડાયરેક્ટ કરવાનું બ્લૉક કરવામાં આવ્યું છે:</translation>
 <translation id="7063006564040364415">સમન્વયન સર્વર સાથે કનેક્ટ કરી શકાયું નથી</translation>
@@ -970,6 +965,7 @@
 <translation id="7328017930301109123">લાઇટ મોડમાં, Chrome પેજને વધુ ઝડપથી લોડ કરે છે અને તે 60 ટકા ઓછા ડેટાનો ઉપયોગ કરે છે.</translation>
 <translation id="7332075081379534664">સાઇન-ઇન કરવામાં સફળ રહ્યાં</translation>
 <translation id="7333031090786104871">હજીપણ પાછલી સાઇટ ઉમેરી રહ્યાં છે</translation>
+<translation id="7339898014177206373">નવી વિંડો</translation>
 <translation id="7340958967809483333">Discover માટેના વિકલ્પો</translation>
 <translation id="7352651011704765696">કંઈક ખોટું થયું હતું</translation>
 <translation id="7352939065658542140">વીડિયો</translation>

@@ -249,7 +249,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Intenta ejecutar el Diagnóstico de red de Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">El servidor <ph name="ORIGIN" /> al que te diriges estableció un encabezado donde se indica que se aplica una política de origen a todas las solicitudes. Sin embargo, el encabezado tiene un formato no válido, por lo que el navegador no puede cumplir con tu solicitud para <ph name="SITE" />. Los operadores de sitios pueden usar políticas de origen para configurar la seguridad y otras propiedades de un sitio.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">Actualiza tu frase de contraseña de sincronización.</translation>
 <translation id="1787142507584202372">Tus pestañas abiertas aparecen aquí</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />: hay varias acciones disponibles; presiona Tab para elegir una</translation>
@@ -382,6 +381,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requiere un nombre de usuario y una contraseña.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, fecha de vencimiento: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Configuración controlada por tu administrador</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" /> desea sincronizarse</translation>
 <translation id="2344028582131185878">Descargas automáticas</translation>
 <translation id="2346319942568447007">Imagen que copiaste</translation>
 <translation id="2354001756790975382">Otros favoritos</translation>
@@ -451,6 +451,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2629325967560697240">Para acceder al nivel más alto de seguridad de Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />activa la protección mejorada<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="2634124572758952069">No se pudo encontrar la dirección IP del servidor de <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">Estado:</translation>
+<translation id="264810637653812429">No se encontraron dispositivos compatibles.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para borrar tu historial de navegación, cookies, memoria caché y más en la configuración de Chrome</translation>
 <translation id="2650446666397867134">Se denegó el acceso al archivo.</translation>
@@ -495,6 +496,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2803306138276472711">La Navegación segura de Google <ph name="BEGIN_LINK" />detectó software malicioso<ph name="END_LINK" /> en <ph name="SITE" /> recientemente. A veces, los sitios web que suelen ser seguros contienen software malicioso.</translation>
 <translation id="2807052079800581569">Posición de la imagen en el eje Y</translation>
+<translation id="2820957248982571256">Buscando…</translation>
 <translation id="2824775600643448204">Barra de direcciones y de búsqueda</translation>
 <translation id="2826760142808435982">La conexión se encriptó y autenticó con <ph name="CIPHER" />, y utiliza <ph name="KX" /> como el mecanismo de intercambio de claves.</translation>
 <translation id="2835170189407361413">Eliminar formulario</translation>
@@ -606,6 +608,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3266793032086590337">Valor (en conflicto)</translation>
 <translation id="3268451620468152448">Pestañas abiertas</translation>
 <translation id="3270847123878663523">&amp;Deshacer Reorganizar</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> desea conectarse</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Tu organización, <ph name="ENROLLMENT_DOMAIN" />, envió parte de la información, como la configuración o las políticas, a los siguientes sitios web.</translation>
 <translation id="3282497668470633863">Agregar el nombre en la tarjeta</translation>
@@ -1212,6 +1215,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5455374756549232013">Marca de tiempo de política incorrecta</translation>
 <translation id="5457113250005438886">Sin validez</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}other{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}}</translation>
+<translation id="5463625433003343978">Buscando dispositivos…</translation>
 <translation id="5469868506864199649">Italiano</translation>
 <translation id="5470861586879999274">&amp;Rehacer Editar</translation>
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
@@ -1261,7 +1265,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5624120631404540903">Administrar contraseñas</translation>
 <translation id="5629630648637658800">Error al cargar la configuración de la política</translation>
 <translation id="5631439013527180824">Token de administración de dispositivos no válido</translation>
-<translation id="5632627355679805402">Tus datos se encriptaron con tu <ph name="BEGIN_LINK" />contraseña de Google<ph name="END_LINK" /> el <ph name="TIME" />. Ingresa la contraseña para iniciar la sincronización.</translation>
 <translation id="5633066919399395251">Es posible que los atacantes que actualmente se encuentran en <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> intenten instalar programas peligrosos en tu computadora para robar o borrar información (p. ej., fotos, contraseñas, mensajes y tarjetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Se bloqueó contenido engañoso.</translation>
 <translation id="5644090287519800334">Cambio en el eje X del lado 1 de la imagen</translation>
@@ -1305,6 +1308,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5804427196348435412">Usar dispositivos con NFC</translation>
 <translation id="5810442152076338065">Tu conexión a <ph name="DOMAIN" /> está encriptada con un conjunto de cifrado obsoleto.</translation>
 <translation id="5813119285467412249">&amp;Rehacer Agregar</translation>
+<translation id="5817918615728894473">Sincronizar</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Cuando realices un pago, el importe se debitará de esta tarjeta, pero el sitio no tendrá acceso a su número real. Para reforzar la seguridad, se generará un CVC temporal.}other{Cuando realices un pago, el importe se debitará de la tarjeta que selecciones, pero el sitio no tendrá acceso a su número real. Para reforzar la seguridad, se generará un CVC temporal.}}</translation>
 <translation id="5826507051599432481">Nombre común (CN)</translation>
 <translation id="5838278095973806738">No debes ingresar información confidencial en este sitio (p. ej., contraseñas o tarjetas de crédito), ya que los atacantes podrían robarla.</translation>
@@ -1312,6 +1316,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5855253129151731373">El nombre de host de este sitio es similar al de <ph name="LOOKALIKE_DOMAIN" />. A veces, los atacantes hacen cambios sutiles y difíciles de detectar en el nombre del dominio para imitar sitios.
 
     Si consideras que se trata de un error, visita https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
+<translation id="5860033963881614850">Desactivado</translation>
 <translation id="5862579898803147654">Apilador 8</translation>
 <translation id="5863847714970149516">Es posible que la página siguiente intente cobrarte dinero</translation>
 <translation id="5866257070973731571">Agregar número de teléfono</translation>
@@ -1505,6 +1510,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6624427990725312378">Información de contacto</translation>
 <translation id="6626291197371920147">Agregar un número de tarjeta válido</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Búsqueda</translation>
+<translation id="6630043285902923878">Buscando dispositivos USB…</translation>
 <translation id="6630809736994426279">Es posible que los atacantes que actualmente se encuentran en <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> intenten instalar programas peligrosos en tu Mac para robar o borrar información (p. ej., fotos, contraseñas, mensajes y tarjetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Borrar</translation>
@@ -1760,7 +1766,6 @@ Detalles adicionales:
 <translation id="7610193165460212391">El valor <ph name="VALUE" /> está fuera del rango.</translation>
 <translation id="7613889955535752492">Vencimiento: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para ver y administrar tus contraseñas en la configuración de Chrome</translation>
-<translation id="7615602087246926389">Ya has utilizado otra versión de la contraseña de tu cuenta de Google para encriptar contenido. Ingrésala a continuación.</translation>
 <translation id="7616645509853975347">Tu administrador activó Chrome Enterprise Connectors en tu navegador. Estos conectores tienen acceso a algunos de tus datos.</translation>
 <translation id="7619838219691048931">Final de la hoja</translation>
 <translation id="762844065391966283">Uno por vez</translation>
@@ -2174,6 +2179,7 @@ Detalles adicionales:
 <translation id="9170848237812810038">&amp;Deshacer</translation>
 <translation id="9171296965991013597">¿Deseas salir de la app?</translation>
 <translation id="9173282814238175921">Documento único/hoja nueva</translation>
+<translation id="9173995187295789444">Buscando dispositivos Bluetooth…</translation>
 <translation id="917450738466192189">El certificado del servidor no es válido.</translation>
 <translation id="9174917557437862841">Botón para cambiar de pestaña; presiona Intro para cambiar a esta pestaña</translation>
 <translation id="9179703756951298733">Administra tus pagos y la información de las tarjetas de crédito en la configuración de Chrome</translation>

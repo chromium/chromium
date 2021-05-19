@@ -249,7 +249,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Uruchom Diagnostykę sieci systemu Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Serwer <ph name="ORIGIN" />, z którym chcesz się połączyć, ma ustawiony nagłówek z wymaganiem, by do wszystkich kierowanych do niego żądań stosować zasadę dotyczącą źródła. Jednak ten nagłówek ma nieprawidłowy format, przez co przeglądarka nie może zrealizować Twojego żądania dotyczącego strony <ph name="SITE" />. Zasady dotyczące źródła mogą stosować operatorzy stron internetowych, by skonfigurować zabezpieczenia i inne właściwości strony.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">Zaktualizuj swoje hasło synchronizacji.</translation>
 <translation id="1787142507584202372">Tutaj pojawiają się otwarte karty</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Dostępnych jest wiele czynności. Naciskaj Tab, by się między nimi przełączać.</translation>
@@ -382,6 +381,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2317259163369394535"><ph name="DOMAIN" /> wymaga nazwy użytkownika i hasła.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, ważna do <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Ustawienie kontrolowane przez administratora</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" /> chce się sparować</translation>
 <translation id="2344028582131185878">Pobieranie automatyczne</translation>
 <translation id="2346319942568447007">Skopiowany obraz</translation>
 <translation id="2354001756790975382">Inne zakładki</translation>
@@ -451,6 +451,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2629325967560697240">Aby korzystać z najwyższego poziomu zabezpieczeń Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />włącz silniejszą ochronę<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">Nie udało się znaleźć adresu IP serwera ze stroną <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">Stan:</translation>
+<translation id="264810637653812429">Nie znaleziono zgodnych urządzeń.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by wyczyścić historię przeglądania, pliki cookie, pamięć podręczną i inne dane w ustawieniach Chrome.</translation>
 <translation id="2650446666397867134">Odmówiono dostępu do pliku</translation>
@@ -497,6 +498,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2799223571221894425">Uruchom ponownie</translation>
 <translation id="2803306138276472711">Bezpieczne przeglądanie Google <ph name="BEGIN_LINK" />wykryło ostatnio złośliwe oprogramowanie<ph name="END_LINK" /> na <ph name="SITE" />. Strony, które zazwyczaj są bezpieczne, zostają czasem zainfekowane destrukcyjnym oprogramowaniem.</translation>
 <translation id="2807052079800581569">Pozycja Y obrazu</translation>
+<translation id="2820957248982571256">Skanuję…</translation>
 <translation id="2824775600643448204">Pasek adresu i wyszukiwania</translation>
 <translation id="2826760142808435982">Połączenie jest szyfrowane i uwierzytelniane algorytmem <ph name="CIPHER" />, a mechanizm wymiany kluczy to <ph name="KX" />.</translation>
 <translation id="2835170189407361413">Wyczyść formularz</translation>
@@ -607,6 +609,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3266793032086590337">Wartość (konflikt)</translation>
 <translation id="3268451620468152448">Otwarte karty</translation>
 <translation id="3270847123878663523">&amp;Cofnij zmianę kolejności</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> chce się połączyć</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Twoja organizacja, <ph name="ENROLLMENT_DOMAIN" />, wysłała do tych witryn pewne informacje, takie jak ustawienia lub zasady.</translation>
 <translation id="3282497668470633863">Dodaj imię i nazwisko na karcie</translation>
@@ -1213,6 +1216,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5455374756549232013">Nieprawidłowy czas zasady</translation>
 <translation id="5457113250005438886">Nieprawidłowe</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
+<translation id="5463625433003343978">Szukam urządzeń...</translation>
 <translation id="5469868506864199649">Włoski</translation>
 <translation id="5470861586879999274">&amp;Ponów edycję</translation>
 <translation id="5478437291406423475">B6/C4 (koperta)</translation>
@@ -1262,7 +1266,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5624120631404540903">Zarządzaj hasłami</translation>
 <translation id="5629630648637658800">Ładowanie ustawień zasady nie powiodło się</translation>
 <translation id="5631439013527180824">Nieprawidłowy token zarządzania urządzeniem</translation>
-<translation id="5632627355679805402">Twoje dane zostały zaszyfrowane <ph name="BEGIN_LINK" />hasłem Google<ph name="END_LINK" /> w dniu <ph name="TIME" />. Wpisz to hasło, by rozpocząć synchronizację.</translation>
 <translation id="5633066919399395251">Osoby obecnie atakujące stronę <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mogą próbować zainstalować na Twoim komputerze niebezpieczne programy, które wykradają lub usuwają informacje (na przykład zdjęcia, hasła, wiadomości lub dane kart kredytowych). <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Zablokowano treści wprowadzające w błąd.</translation>
 <translation id="5644090287519800334">Strona 1 – przesunięcie obrazu wzdłuż osi X</translation>
@@ -1306,6 +1309,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5804427196348435412">Korzystać z urządzeń NFC</translation>
 <translation id="5810442152076338065">Połączenie z <ph name="DOMAIN" /> jest szyfrowane przy użyciu przestarzałego zestawu szyfrów.</translation>
 <translation id="5813119285467412249">&amp;Ponów dodanie</translation>
+<translation id="5817918615728894473">Sparuj</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Gdy zapłacisz, karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}few{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}many{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}other{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}}</translation>
 <translation id="5826507051599432481">Nazwa pospolita (CN)</translation>
 <translation id="5838278095973806738">Nie podawaj żadnych informacji poufnych (takich jak hasła czy dane kart kredytowych) w tej witrynie, bo osoby atakujące będą mogły je wykraść.</translation>
@@ -1313,6 +1317,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5855253129151731373">Nazwa hosta tej witryny jest podobna do <ph name="LOOKALIKE_DOMAIN" />. Złośliwe strony czasami podszywają się pod inne, wprowadzając niewielkie i trudne do zauważenia zmiany w nazwie domeny.
 
     Jeśli uważasz, że ten komunikat pojawił się w wyniku pomyłki, wejdź na https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals</translation>
+<translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5862579898803147654">Układarka 8</translation>
 <translation id="5863847714970149516">Otwierana strona może próbować obciążyć Cię płatnością</translation>
 <translation id="5866257070973731571">Dodaj numer telefonu</translation>
@@ -1506,6 +1511,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6624427990725312378">Dane kontaktowe</translation>
 <translation id="6626291197371920147">Dodaj prawidłowy numer karty</translation>
 <translation id="6628463337424475685">Wyszukiwarka <ph name="ENGINE" /></translation>
+<translation id="6630043285902923878">Szukam urządzeń USB...</translation>
 <translation id="6630809736994426279">Osoby obecnie atakujące stronę <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mogą próbować zainstalować na Twoim komputerze Mac niebezpieczne programy wykradające lub usuwające informacje (na przykład zdjęcia, hasła, wiadomości lub dane kart kredytowych). <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
@@ -1761,7 +1767,6 @@ Dodatkowe informacje:
 <translation id="7610193165460212391">Wartość spoza zakresu (<ph name="VALUE" />)</translation>
 <translation id="7613889955535752492">Wygasa: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by wyświetlić hasła i zarządzać nimi w ustawieniach Chrome.</translation>
-<translation id="7615602087246926389">Masz już dane zaszyfrowane przy użyciu innej wersji hasła konta Google. Wpisz je poniżej.</translation>
 <translation id="7616645509853975347">Administrator włączył w przeglądarce oprogramowanie sprzęgające Chrome Enterprise. Może ono mieć dostęp do niektórych Twoich danych.</translation>
 <translation id="7619838219691048931">Arkusz końcowy</translation>
 <translation id="762844065391966283">Pojedynczo</translation>
@@ -1914,6 +1919,7 @@ Dodatkowe informacje:
 <translation id="8202097416529803614">Podsumowanie zamówienia</translation>
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8206978196348664717">Prc4 (koperta)</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Kiedy zresetujesz identyfikator, stanie się on nieważny, a nowy identyfikator zostanie nadany w ciągu mniej niż 1 dnia}=1{Kiedy zresetujesz identyfikator, stanie się on nieważny, a nowy identyfikator zostanie nadany w ciągu 1 dnia}few{Kiedy zresetujesz identyfikator, stanie się on nieważny, a nowy identyfikator zostanie nadany w ciągu {NUM_DAYS} dni}many{Kiedy zresetujesz identyfikator, stanie się on nieważny, a nowy identyfikator zostanie nadany w ciągu {NUM_DAYS} dni}other{Kiedy zresetujesz identyfikator, stanie się on nieważny, a nowy identyfikator zostanie nadany w ciągu {NUM_DAYS} dnia}}</translation>
 <translation id="8211406090763984747">Połączenie jest bezpieczne</translation>
 <translation id="8213464188712611711">Wspomnienia</translation>
 <translation id="8218327578424803826">Przypisana lokalizacja:</translation>
@@ -2174,6 +2180,7 @@ Dodatkowe informacje:
 <translation id="9170848237812810038">&amp;Cofnij</translation>
 <translation id="9171296965991013597">Zamknąć aplikację?</translation>
 <translation id="9173282814238175921">Pojedynczy dokument / Nowy arkusz</translation>
+<translation id="9173995187295789444">Skanuję w poszukiwaniu urządzeń Bluetooth…</translation>
 <translation id="917450738466192189">Certyfikat serwera jest nieprawidłowy.</translation>
 <translation id="9174917557437862841">Przycisk przełączania kart, naciśnij Enter, by przełączyć na tę kartę</translation>
 <translation id="9179703756951298733">Zarządzaj płatnościami i kartami kredytowymi w ustawieniach Chrome</translation>

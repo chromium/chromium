@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Дополнителни услови за користење на Chrome и Chrome OS</translation>
 <translation id="1807246157184219062">Светла</translation>
 <translation id="1810845389119482123">Првичното поставување на синхронизацијата не е завршено</translation>
-<translation id="1821253160463689938">Користи колачиња за да ги запамети вашите поставки, дури и ако не ги посетувате тие страници</translation>
 <translation id="1829244130665387512">Најди на страница</translation>
 <translation id="1830550083491357902">Не сте најавени</translation>
 <translation id="1843805151597803366">За да добивате подобри преводи, дозволете „Пребарување на Google“ да ја користи тековната страница</translation>
@@ -273,7 +272,6 @@
 <translation id="2777555524387840389">Останаа <ph name="SECONDS" /> секунди</translation>
 <translation id="2779651927720337254">не успеа</translation>
 <translation id="2781151931089541271">Остана 1 секунда</translation>
-<translation id="279827439955962619">Отстрани го нагласеното</translation>
 <translation id="2801022321632964776">Ажурирајте за да го добиете вашиот јазик во најновата верзија на Chrome</translation>
 <translation id="2805756323405976993">Апликации</translation>
 <translation id="281504910091592009">Прегледајте ги и управувајте со зачуваните лозинки во вашата <ph name="BEGIN_LINK" />сметка на Google<ph name="END_LINK" /></translation>
@@ -454,7 +452,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="3988466920954086464">Гледајте инстант резултати од пребарување на таблава</translation>
 <translation id="4000212216660919741">Офлајн</translation>
 <translation id="4016425174436051808">Не може да се следи. Нешто тргна наопаку.</translation>
-<translation id="4021916380760361450">Контролирајте ги податоците од вашите сметки на Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ч.}one{# ч.}other{# ч.}}</translation>
 <translation id="4045764304651014138">Податоци за користењето</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -480,7 +477,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
 <translation id="4198423547019359126">Нема достапни локации за преземање</translation>
 <translation id="4209895695669353772">За да добивате персонализирани содржини предложени од Google, вклучете ја синхронизацијата</translation>
-<translation id="423219824432660969">Шифрирај ги синхронизираните податоци со лозинка на Google од <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Отвори ги поставките</translation>
 <translation id="4248098802131000011">Заштитете ги лозинките од упади во податоци и други безбедносни проблеми</translation>
 <translation id="4250229828105606438">Слика од екран</translation>
@@ -559,6 +555,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="47217992755561375">Видете ги вашите најдобри сајтови</translation>
 <translation id="4732120983431207637">Модул за продолжување претходни задачи</translation>
 <translation id="4738836084190194332">Последна синхронизација: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Отстрани нагласување</translation>
 <translation id="4749960740855309258">Отворете нова картичка</translation>
 <translation id="4759238208242260848">Преземања</translation>
 <translation id="4763480195061959176">видео</translation>
@@ -699,7 +696,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="562289928968387744">Управувајте со реакциите</translation>
 <translation id="5626134646977739690">Име:</translation>
 <translation id="5628604359369369630">Непрочитани - Достапни офлајн</translation>
-<translation id="5632627355679805402">Податоците се шифрирани со вашата <ph name="BEGIN_LINK" />лозинка за Google<ph name="END_LINK" /> почнувајќи од <ph name="TIME" />. Внесете ја за да започне синхронизацијата.</translation>
 <translation id="5639724618331995626">Дозволи ги сите сајтови</translation>
 <translation id="5648166631817621825">Изминатите 7 дена</translation>
 <translation id="5655963694829536461">Пребарајте ги преземањата</translation>
@@ -934,7 +930,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="702463548815491781">Препорачано при вклучен TalkBack или „Пристап со прекинувачи“</translation>
 <translation id="7027549951530753705">Преземањето на <ph name="ITEM_TITLE" /> е вратено</translation>
 <translation id="7029809446516969842">Лозинки</translation>
-<translation id="7040531500313579672">Сподели го нагласеното</translation>
 <translation id="7054588988317389591">Сакате ли да добивате описи на слики?</translation>
 <translation id="7055152154916055070">Пренасочувањето е блокирано:</translation>
 <translation id="7063006564040364415">Не може да се поврзе на серверот за синхронизација.</translation>
@@ -970,6 +965,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7328017930301109123">Во Lite-режим, Chrome побрзо ги вчитува страниците и користи до 60 проценти помалку интернет.</translation>
 <translation id="7332075081379534664">Успешно најавување</translation>
 <translation id="7333031090786104871">Сè уште се додава претходниот сајт</translation>
+<translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="7340958967809483333">Опции за Discover</translation>
 <translation id="7352651011704765696">Нешто не е во ред</translation>
 <translation id="7352939065658542140">ВИДЕО</translation>

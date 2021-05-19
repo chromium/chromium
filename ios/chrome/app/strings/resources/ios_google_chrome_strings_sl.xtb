@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome ni mogel preveriti, ali so na voljo posodobitve. Poskusite pozneje.</translation>
 <translation id="2732745070297234559">Chromu ni uspelo preveriti vseh gesel. Poskusite znova jutri.</translation>
 <translation id="2740105938841089077">Uporaba Chroma za odpiranje povezav</translation>
+<translation id="2869959624320573933">Prijava v Chrome</translation>
 <translation id="2919738076569633423">Če uporabljate Chrome, se strinjate s <ph name="BEGIN_LINK_TOS" />pogoji storitve<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Ker se boste odjavili iz računa, ki ga upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, boste iz te naprave izbrisali podatke v Chromu. Vaši podatki bodo še vedno na voljo v Google Računu.</translation>
 <translation id="3167189358072330585">Vaš račun ne deluje v Google Chromu. Obrnite se na skrbnika domene ali za prijavo uporabite običajen Google Račun.</translation>
 <translation id="3173834708294760622">Stran Google Chroma</translation>
 <translation id="3196546062792660320">Chrome poskrbi, da so vaši računi v spletu, in vam tako prihrani čas. Račune lahko dodajate ali odstranjujete v nastavitvah.</translation>
-<translation id="3223655207402797071">Prijavite se v to spletno mesto, svoj račun Google in Chrome. Sinhronizacijo lahko vklopite pozneje.</translation>
 <translation id="3282568296779691940">Prijava v Chrome</translation>
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
 <translation id="3455456143708465450">Če želite kar najbolje izkoristiti Chrome, se prijavite z računom Google.</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome je posodobljen</translation>
 <translation id="8022947259858476807">Uporabljajte Chrome kot privzeto možnost odpiranja povezav, iskanja v pripomočkih in samodejnega izpolnjevanja gesel v drugih aplikacijah.</translation>
 <translation id="8160472928944011082">Chroma ni mogoče posodobiti</translation>
+<translation id="8263079278049777200">Prijavite se v to spletno mesto, svoj račun Google in Chrome. Sinhronizacijo lahko vklopite pozneje.</translation>
 <translation id="8357607116237445042">Izberite, ali želite izbrisati podatke v Chromu iz te naprave ali jih obdržati.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>
 <translation id="840168496893712993">Nekateri dodatki povzročajo zrušitve Chroma. Poskusite jih odstraniti.</translation>

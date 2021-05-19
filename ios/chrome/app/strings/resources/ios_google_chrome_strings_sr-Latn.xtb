@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome ne može da traži ažuriranja. Probajte ponovo kasnije.</translation>
 <translation id="2732745070297234559">Chrome nije uspeo da proveri sve lozinke. Probajte ponovo sutra.</translation>
 <translation id="2740105938841089077">Koristite Chrome da biste otvarali linkove</translation>
+<translation id="2869959624320573933">Prijavite se u Chrome</translation>
 <translation id="2919738076569633423">Korišćenjem Chrome-a prihvatate <ph name="BEGIN_LINK_TOS" />Uslove korišćenja usluge<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Odjavljujete se sa naloga kojim upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, što će izbrisati Chrome podatke sa ovog uređaja. Podaci će ostati na Google nalogu.</translation>
 <translation id="3167189358072330585">Nalog ne funkcioniše na Google Chrome-u. Kontaktirajte administratora domena ili se prijavite pomoću običnog Google naloga.</translation>
 <translation id="3173834708294760622">Google Chrome stranica</translation>
 <translation id="3196546062792660320">Chrome vam štedi vreme tako što postavlja naloge na veb. Možete da dodajete ili uklanjate naloge u podešavanjima.</translation>
-<translation id="3223655207402797071">Prijavite se na ovaj sajt, Google nalog i u Chrome. Sinhronizaciju možete da uključite kasnije.</translation>
 <translation id="3282568296779691940">Prijavljivanje u Chrome</translation>
 <translation id="3345341804167540816">Koristite Chrome svuda</translation>
 <translation id="3455456143708465450">Da biste iskoristili Chrome na najbolji način, prijavite se pomoću Google naloga</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome je aktuelan</translation>
 <translation id="8022947259858476807">Podrazumevano koristite Chrome da biste otvarali linkove, pretraživali iz vidžeta i automatski popunjavali lozinke u drugim aplikacijama</translation>
 <translation id="8160472928944011082">Chrome ne može da se ažurira</translation>
+<translation id="8263079278049777200">Prijavite se na ovaj sajt, Google nalog i u Chrome. Sinhronizaciju možete da uključite kasnije.</translation>
 <translation id="8357607116237445042">Odaberite da li ćete obrisati Chrome podatke sa ovog uređaja ili ih zadržati</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava zadržana.</translation>
 <translation id="840168496893712993">Neki programski dodaci izazivaju otkazivanje Chrome-a. Pokušajte da ih deinstalirate.</translation>

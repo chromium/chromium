@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">زوم آؤٹ کریں</translation>
 <translation id="2230173723195178503">ویب صفحہ لوڈ کر دیا گیا ہے</translation>
 <translation id="2239626343334228536">براؤزنگ ڈیٹا صاف ہو رہا ہے...</translation>
-<translation id="2257567812274161158">مطابقت پذیری کام نہیں کر رہی ہے۔</translation>
 <translation id="225943865679747347">خرابی کا کوڈ: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">اکاؤنٹ شامل کریں</translation>
 <translation id="2268044343513325586">بہتر بنائیں</translation>
@@ -143,7 +142,6 @@
 سائٹس مختلف سائٹس پر آپ کی براؤزنگ کی سرگرمی دیکھنے کیلئے کوکیز کا استعمال نہیں کر سکتی ہیں، مثال کے طور پر اشتہارات کو ذاتی نوعیت کا بنانا۔</translation>
 <translation id="2381405137052800939">مبادیات</translation>
 <translation id="2386793615875593361">1 کو منتخب کیا گیا</translation>
-<translation id="2410754283952462441">اکاؤنٹ منتخب کریں</translation>
 <translation id="2421004566762153674">فریق ثالث کوکیز کو مسدود کیا جا رہا ہے</translation>
 <translation id="2421044535038393232">ترمیم جاری رکھیں</translation>
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
@@ -362,7 +360,6 @@
 <translation id="473775607612524610">اپ ڈيٹ کریں</translation>
 <translation id="4747097190499141774">‏پاس فریز کی مرموز کاری میں Google Pay کے ادائیگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔ آپ کے پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا ہے اور نہ ہی Google اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو آپ کو مطابقت پذیری کو دوبارہ ترتیب دینے کی ضرورت ہوگی۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">نیا پوشیدگی ٹیب</translation>
-<translation id="4766678251456904326">اکاؤنٹ کو آلہ میں شامل کریں</translation>
 <translation id="4775879719735953715">ڈیفالٹ براؤزر</translation>
 <translation id="4778644898150334464">دوسرا پاس ورڈ استعمال کریں</translation>
 <translation id="4802417911091824046">‏پاس فریز کی مرموز کاری میں Google Pay سے ادائیگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔
@@ -794,6 +791,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8976382372951310360">مدد</translation>
 <translation id="8981454092730389528">‏Google سرگرمی کنٹرولز</translation>
 <translation id="8985320356172329008">‏Google میں سائن ان ہے بطور</translation>
+<translation id="8996526648899750015">اکاؤنٹ شامل کریں…</translation>
 <translation id="9034759925968272072">‏آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے۔ ممکن ہے کہ ‎<ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔</translation>
 <translation id="9037965129289936994">اصل دکھائیں</translation>
 <translation id="9039373489628511875">بینڈ وڈتھ</translation>

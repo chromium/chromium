@@ -251,7 +251,6 @@
     ಹೆಡರ್ ಫೈಲ್ ವಿರೂಪಗೊಂಡಿದೆ, <ph name="SITE" /> ಅನ್ನು ಪ್ರವೇಶಿಸಲು ನಿಮ್ಮ ವಿನಂತಿಯನ್ನು
     ಬ್ರೌಸರ್ ಪೂರೈಸದಂತೆ ತಡೆಯುತ್ತದೆ. ಸೈಟ್‌ ಒಂದಕ್ಕಾಗಿ ಸುರಕ್ಷತೆ ಮತ್ತು ಇತರ ಗುಣಲಕ್ಷಣಗಳನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಲು ಸೈಟ್ ಆಪರೇಟರ್‌ಗಳು ಮೂಲ ಕಾರ್ಯನೀತಿಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">ದಯವಿಟ್ಟು ನಿಮ್ಮ ಸಿಂಕ್ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ.</translation>
 <translation id="1787142507584202372">ನಿಮ್ಮ ತೆರೆಯಲಾದ ಟ್ಯಾಬ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತದೆ</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಅನೇಕ ಕ್ರಿಯೆಗಳು ಲಭ್ಯವಿವೆ. ಅವುಗಳನ್ನು ಒಂದೊಂದಾಗಿ ನೋಡಲು ಟ್ಯಾಬ್ ಒತ್ತಿ</translation>
@@ -384,6 +383,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> ಗೆ ಬಳಕೆದಾರರಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> ದಿನಾಂಕದಂದು ಅವಧಿ ಮೀರುತ್ತದೆ</translation>
 <translation id="2337852623177822836">ನಿಮ್ಮ ನಿರ್ವಾಹಕದಿಂದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿಯಂತ್ರಿಸಲಾಗಿದೆ</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" /> ಜೋಡಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="2344028582131185878">ಸ್ವಯಂಚಾಲಿತ ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="2346319942568447007">ನೀವು ನಕಲಿಸಿದ ಚಿತ್ರ</translation>
 <translation id="2354001756790975382">ಇತರ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
@@ -453,6 +453,7 @@
 <translation id="2629325967560697240">Chrome ನ ಉನ್ನತ ಮಟ್ಟದ ಸುರಕ್ಷತೆಯನ್ನು ಪಡೆಯಲು, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ವರ್ಧಿತ ಸುರಕ್ಷತೆಯನ್ನು ಆನ್ ಮಾಡಿ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ನ ಸರ್ವರ್ IP ವಿಳಾಸ ಕಂಡುಬರಲಿಲ್ಲ.</translation>
 <translation id="2639739919103226564">ಸ್ಥಿತಿ: </translation>
+<translation id="264810637653812429">ಯಾವುದೇ ಹೊಂದಾಣಿಕೆಯಾಗುವ ಸಾಧನಗಳು ಕಂಡುಬಂದಿಲ್ಲ.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಕುಕೀಗಳು, ಕ್ಯಾಷ್ ಮತ್ತು ಇನ್ನಷ್ಟನ್ನು ತೆರವುಗೊಳಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="2650446666397867134">ಫೈಲ್‌ಗೆ ಪ್ರವೇಶವನ್ನು ನಿರಾಕರಿಸಲಾಗಿದೆ</translation>
@@ -497,6 +498,7 @@
 <translation id="2799223571221894425">ಮರುಪ್ರಾರಂಭಿಸು</translation>
 <translation id="2803306138276472711">Google ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಇತ್ತೀಚೆಗೆ <ph name="SITE" /> ನಲ್ಲಿ <ph name="BEGIN_LINK" />ಮಾಲ್‌ವೇರ್ ಪತ್ತೆಹಚ್ಚಿದೆ<ph name="END_LINK" />. ವೆಬ್‌ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಸುರಕ್ಷಿತವಾಗಿದ್ದರೂ, ಕೆಲವೊಮ್ಮೆ ಮಾಲ್‌ವೇರ್‌ಗೆ ತುತ್ತಾಗಿರುತ್ತವೆ.</translation>
 <translation id="2807052079800581569">ಚಿತ್ರ Y ಸ್ಥಿತಿ</translation>
+<translation id="2820957248982571256">ಸ್ಕ್ಯಾನ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="2824775600643448204">ವಿಳಾಸ ಹಾಗೂ ಹುಡುಕಾಟ ಪಟ್ಟಿ</translation>
 <translation id="2826760142808435982"><ph name="CIPHER" /> ಬಳಸಿಕೊಂಡು ಸಂಪರ್ಕವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು ದೃಢೀಕರಿಸಲಾಗಿದೆ ಮತ್ತು <ph name="KX" /> ಅನ್ನು ಕೀ ವಿನಿಮಯ ಯಾಂತ್ರಿಕತೆಯಂತೆ ಬಳಸುತ್ತದೆ.</translation>
 <translation id="2835170189407361413">ಫಾರ್ಮ್ ತೆರವುಗೊಳಿಸು</translation>
@@ -605,6 +607,7 @@
 <translation id="3266793032086590337">ಮೌಲ್ಯ (ಸಂಘರ್ಷ ಇರುವುದು)</translation>
 <translation id="3268451620468152448">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="3270847123878663523">&amp;ಮರುಕ್ರಮಗೊಳಿಸುವುದನ್ನು ರದ್ದುಗೊಳಿಸು</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> ಸಂಪರ್ಕಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">ನಿಮ್ಮ ಸಂಸ್ಥೆ <ph name="ENROLLMENT_DOMAIN" />, ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಅಥವಾ ಕಾರ್ಯನೀತಿಗಳಂತಹ ಕೆಲವು ಮಾಹಿತಿಯನ್ನು ಈ ಕೆಳಗಿನ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಕಳುಹಿಸಿದೆ.</translation>
 <translation id="3282497668470633863">ಕಾರ್ಡ್‌ನಲ್ಲಿರುವ ಹೆಸರನ್ನು ಸೇರಿಸಿ</translation>
@@ -1210,6 +1213,7 @@
 <translation id="5455374756549232013">ತಪ್ಪಾದ ನೀತಿಯ ಸಮಯಸ್ಟ್ಯಾಂಪ್</translation>
 <translation id="5457113250005438886">ಅಮಾನ್ಯ</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ಇನ್ನಷ್ಟು}one{<ph name="CONTACT_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ಇನ್ನಷ್ಟು}other{<ph name="CONTACT_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ಇನ್ನಷ್ಟು}}</translation>
+<translation id="5463625433003343978">ಸಾಧನಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="5469868506864199649">ಇಟಾಲಿಯನ್</translation>
 <translation id="5470861586879999274">&amp;ಎಡಿಟ್ ಮಾಡುವುದನ್ನು ಪುನಃ ಮಾಡು</translation>
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
@@ -1259,7 +1263,6 @@
 <translation id="5624120631404540903">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5629630648637658800">ನೀತಿಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಲೋಡ್ ಮಾಡುವಲ್ಲಿ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="5631439013527180824">ಅಮಾನ್ಯವಾದ ಸಾಧನ ನಿರ್ವಹಣೆ ಟೋಕನ್</translation>
-<translation id="5632627355679805402">ನಿಮ್ಮ ಡೇಟಾವನ್ನು <ph name="TIME" /> ಸಮಯಕ್ಕೆ ನಿಮ್ಮ <ph name="BEGIN_LINK" />Google ಪಾಸ್‌ವರ್ಡ್<ph name="END_LINK" /> ನೊಂದಿಗೆ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು ಅದನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="5633066919399395251"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ನ ದಾಳಿಕೋರರು ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ ಮಾಹಿತಿಯನ್ನು (ಉದಾಹರಣೆಗೆ, ಫೋಟೋಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಮಾಹಿತಿಗಳು) ಕದಿಯಲು ಇಲ್ಲವೇ ಅಳಿಸಲು ಅಪಾಯಕಾರಿ ಪ್ರೋಗ್ರಾಂಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು. <ph name="BEGIN_LEARN_MORE_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">ವಂಚನೀಯ ವಿಷಯವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="5644090287519800334">ಅಂಚು 1 ಚಿತ್ರ X ಶಿಫ್ಟ್</translation>
@@ -1303,6 +1306,7 @@
 <translation id="5804427196348435412">NFC ಸಾಧನಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="5810442152076338065">ಬಳಕೆಯಲ್ಲಿಲ್ಲದ ಸೈಫರ್ ಸೂಟ್ ಬಳಸುವ ಮೂಲಕ <ph name="DOMAIN" /> ಗೆ ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="5813119285467412249">&amp;ಸೇರಿಸುವುದನ್ನು ಮತ್ತೆಮಾಡು</translation>
+<translation id="5817918615728894473">ಜೋಡಿಸು</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{ನೀವು ಪಾವತಿಸಿದಾಗ ಈ ಕಾರ್ಡ್‍ನಿಂದ ಹಣವನ್ನು ಕಡಿತಗೊಳಿಸಲಾಗುತ್ತದೆ, ಆದರೆ ಈ ಕಾರ್ಡ್‍ನ ನಿಜವಾದ ಸಂಖ್ಯೆಯನ್ನು ಈ ಸೈಟ್‍‍ನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳುವುದಿಲ್ಲ. ಹೆಚ್ಚುವರಿ ಸುರಕ್ಷತೆಗಾಗಿ, ತಾತ್ಕಾಲಿಕ CVC ಅನ್ನು ರಚಿಸಲಾಗುತ್ತದೆ.}one{ನೀವು ಪಾವತಿಸುವಾಗ, ನೀವು ಆಯ್ಕೆ ಮಾಡುವ ಕಾರ್ಡ್‍ನಿಂದ ಹಣವನ್ನು ಕಡಿತಗೊಳಿಸಲಾಗುತ್ತದೆ, ಆದರೆ ಈ ಕಾರ್ಡ್‍ನ ನಿಜವಾದ ಸಂಖ್ಯೆಯನ್ನು ಈ ಸೈಟ್‍‍ನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳುವುದಿಲ್ಲ. ಹೆಚ್ಚುವರಿ ಸುರಕ್ಷತೆಗಾಗಿ, ತಾತ್ಕಾಲಿಕ CVC ಅನ್ನು ರಚಿಸಲಾಗುತ್ತದೆ.}other{ನೀವು ಪಾವತಿಸುವಾಗ, ನೀವು ಆಯ್ಕೆ ಮಾಡುವ ಕಾರ್ಡ್‍ನಿಂದ ಹಣವನ್ನು ಕಡಿತಗೊಳಿಸಲಾಗುತ್ತದೆ, ಆದರೆ ಈ ಕಾರ್ಡ್‍ನ ನಿಜವಾದ ಸಂಖ್ಯೆಯನ್ನು ಈ ಸೈಟ್‍‍ನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳುವುದಿಲ್ಲ. ಹೆಚ್ಚುವರಿ ಸುರಕ್ಷತೆಗಾಗಿ, ತಾತ್ಕಾಲಿಕ CVC ಅನ್ನು ರಚಿಸಲಾಗುತ್ತದೆ.}}</translation>
 <translation id="5826507051599432481">ಸಾಮಾನ್ಯ ಹೆಸರು (CN)</translation>
 <translation id="5838278095973806738">ಈ ಸೈಟ್‌ನಲ್ಲಿ ನೀವು ಯಾವುದೇ ಸೂಕ್ಷ್ಮ ಮಾಹಿತಿಯನ್ನು (ಉದಾಹರಣೆಗೆ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಥವಾ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು) ನಮೂದಿಸಬಾರದು, ಏಕೆಂದರೆ ಅದು ದಾಳಿಕೋರರ ಮೂಲಕ ಕಳುವಾಗಬಹುದು.</translation>
@@ -1310,6 +1314,7 @@
 <translation id="5855253129151731373">ಈ ಸೈಟ್‌ನ ಹೋಸ್ಟ್ ಹೆಸರು <ph name="LOOKALIKE_DOMAIN" /> ಗೆ ಹೋಲುತ್ತಿದೆ. ಡೊಮೇನ್‌ ಹೆಸರಿಗೆ ಸಣ್ಣ ಪ್ರಮಾಣದ ಅಥವಾ ಗುರುತಿಸಲು ಸಾಧ್ಯವಾಗದ ರೀತಿಯಲ್ಲಿ ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡುವ ಮೂಲಕ ದಾಳಿಕೋರರು ಕೆಲವೊಮ್ಮೆ ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ಅನುಕರಣೆ ಮಾಡುತ್ತಾರೆ.
 
     ಇದನ್ನು ದೋಷದಿಂದಾಗಿ ತೋರಿಸಲಾಗಿದೆ ಎಂದು ನೀವು ಭಾವಿಸುವುದಾದರೆ, ದಯವಿಟ್ಟು https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals ಪುಟಕ್ಕೆ ಭೇಟಿ ನೀಡಿ.</translation>
+<translation id="5860033963881614850">ಆಫ್</translation>
 <translation id="5862579898803147654">ಸ್ಟ್ಯಾಕರ್ 8</translation>
 <translation id="5863847714970149516">ಮುಂದಿನ ಪುಟವು ನಿಮಗೆ ಶುಲ್ಕ ವಿಧಿಸಲು ಪ್ರಯತ್ನಿಸಬಹುದು</translation>
 <translation id="5866257070973731571">ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ಸೇರಿಸಿ</translation>
@@ -1502,6 +1507,7 @@
 <translation id="6624427990725312378">ಸಂಪರ್ಕ ಮಾಹಿತಿ</translation>
 <translation id="6626291197371920147">ಮಾನ್ಯವಾದ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> ಹುಡುಕಾಟ</translation>
+<translation id="6630043285902923878">USB ಸಾಧನಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="6630809736994426279"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ನ ದಾಳಿಕೋರರು ನಿಮ್ಮ Macನಲ್ಲಿ ಮಾಹಿತಿಯನ್ನು (ಉದಾಹರಣೆಗೆ, ಫೋಟೋಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಸಂದೇಶಗಳು ಮತ್ತು ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಮಾಹಿತಿಗಳು) ಕದಿಯಲು ಇಲ್ಲವೇ ಅಳಿಸಲು ಅಪಾಯಕಾರಿ ಪ್ರೋಗ್ರಾಂಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು. <ph name="BEGIN_LEARN_MORE_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">ತೆರವುಗೊಳಿಸಿ</translation>
@@ -1756,7 +1762,6 @@
 <translation id="7610193165460212391">ಮೌಲ್ಯವು ವ್ಯಾಪ್ತಿಯಿಂದ <ph name="VALUE" /> ಹೊರಗಿದೆ.</translation>
 <translation id="7613889955535752492">ಅವಧಿ ಮೀರುವ ಸಮಯ: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಮತ್ತು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿರಿ</translation>
-<translation id="7615602087246926389">ನಿಮ್ಮ Google ಖಾತೆಯ ಪಾಸ್‌ವರ್ಡ್‌ನ ಬೇರೆ ಆವೃತ್ತಿಯನ್ನು ಬಳಸಿಕೊಂಡು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾದ ಡೇಟಾವನ್ನು ನೀವು ಈಗಾಗಲೇ ಹೊಂದಿರುವಿರಿ. ದಯವಿಟ್ಟು  ಕೆಳಗೆ ಇದನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="7616645509853975347">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನಲ್ಲಿ Chrome Enterprise ಕನೆಕ್ಟರ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಿದ್ದಾರೆ. ನಿಮ್ಮ ಕೆಲವೊಂದು ಡೇಟಾಕ್ಕೆ ಈ ಕನೆಕ್ಟರ್‌ಗಳು ಪ್ರವೇಶ ಹೊಂದಿರುತ್ತವೆ.</translation>
 <translation id="7619838219691048931">ಕೊನೆಯ ಶೀಟ್</translation>
 <translation id="762844065391966283">ಒಂದು ಬಾರಿಗೆ ಒಂದು</translation>
@@ -1909,6 +1914,7 @@
 <translation id="8202097416529803614">ಆರ್ಡರ್ ಸಾರಾಂಶ</translation>
 <translation id="8202370299023114387">ಸಂಘರ್ಷ</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{ನೀವು ID ಯನ್ನು ರೀಸೆಟ್ ಮಾಡಿದಾಗ, ನಿಮ್ಮ ಪ್ರಸ್ತುತ ID ಅಮಾನ್ಯವಾಗುತ್ತದೆ ಮತ್ತು 1 ದಿನಕ್ಕಿಂತ ಕಡಿಮೆ ಅವಧಿಯಲ್ಲಿ ಹೊಸದನ್ನು ನೀಡಲಾಗುತ್ತದೆ}=1{ನೀವು ID ಯನ್ನು ರೀಸೆಟ್ ಮಾಡಿದಾಗ, ನಿಮ್ಮ ಪ್ರಸ್ತುತ ID ಅಮಾನ್ಯವಾಗುತ್ತದೆ ಮತ್ತು 1 ದಿನದಲ್ಲಿ ಹೊಸದನ್ನು ನೀಡಲಾಗುತ್ತದೆ}one{ನೀವು ID ಯನ್ನು ರೀಸೆಟ್ ಮಾಡಿದಾಗ, ನಿಮ್ಮ ಪ್ರಸ್ತುತ ID ಅಮಾನ್ಯವಾಗುತ್ತದೆ ಮತ್ತು {NUM_DAYS} ದಿನಗಳಲ್ಲಿ ಹೊಸದನ್ನು ನೀಡಲಾಗುತ್ತದೆ}other{ನೀವು ID ಯನ್ನು ರೀಸೆಟ್ ಮಾಡಿದಾಗ, ನಿಮ್ಮ ಪ್ರಸ್ತುತ ID ಅಮಾನ್ಯವಾಗುತ್ತದೆ ಮತ್ತು {NUM_DAYS} ದಿನಗಳಲ್ಲಿ ಹೊಸದನ್ನು ನೀಡಲಾಗುತ್ತದೆ}}</translation>
 <translation id="8211406090763984747">ಸಂಪರ್ಕ ಸುರಕ್ಷಿತವಾಗಿದೆ</translation>
 <translation id="8213464188712611711">ನೆನಪುಗಳು</translation>
 <translation id="8218327578424803826">ನಿಯೋಜಿಸಲಾದ ಸ್ಥಳ:</translation>
@@ -2170,6 +2176,7 @@
 <translation id="9170848237812810038">&amp;ರದ್ದುಮಾಡು</translation>
 <translation id="9171296965991013597">ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ತ್ಯಜಿಸಬೇಕೆ?</translation>
 <translation id="9173282814238175921">ಏಕೈಕ ಡಾಕ್ಯುಮೆಂಟ್/ಹೊಸ ಶೀಟ್</translation>
+<translation id="9173995187295789444">ಬ್ಲೂಟೂತ್ ಸಾಧನಳನ್ನು ಹುಡುಕುವುದಕ್ಕಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="917450738466192189">ಸರ್ವರ್‌ನ ಪ್ರಮಾಣಪತ್ರವು ಅಮಾನ್ಯವಾಗಿದೆ.</translation>
 <translation id="9174917557437862841">ಟ್ಯಾಬ್ ಬದಲಿಸುವ ಬಟನ್, ಈ ಟ್ಯಾಬ್‌ಗೆ ಬದಲಾಯಿಸಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="9179703756951298733">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾವತಿಗಳು ಮತ್ತು ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಮಾಹಿತಿಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>

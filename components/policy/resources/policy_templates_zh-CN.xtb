@@ -2113,17 +2113,6 @@
 <translation id="377044054160169374">针对误导性体验的强制干预政策</translation>
 <translation id="3778689139323007309">对于已成功通过验证且已由安装在本地的 CA 证书签名的服务器证书，一律执行撤消检查</translation>
 <translation id="3780152581321609624">在 Kerberos SPN 中加入非标准端口</translation>
-<translation id="3783569262370557918">此政策旨在为一个网址列表启用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
-
-      通过设置此政策，您可以指定应允许哪些网址参与认证流程，以便接收来自计算机的一系列信号。
-
-      如果您未设置此政策或将其留空，任何端点都将无法启动认证流程，也无法接收来自计算机的信号。
-
-      网址必须采用 HTTPS 架构，例如：“https://example.com”。
-
-      注意：允许使用通配符 <ph name="WILDCARD_VALUE" />。
-
-      如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="378495749480642482">此政策旨在配置是否允许用户所导航到的网站使用 <ph name="WEBXR_API_NAME" /> 创建沉浸式增强现实会话。
 
       如果此政策未设置或已启用，<ph name="WEBXR_API_NAME" /> 将会在会话创建过程中接受<ph name="WEBXR_AR_SESSION_ENUM_VALUE" />，从而允许用户进入增强现实体验。
@@ -2837,11 +2826,6 @@
       如果您未设置此政策，网址屏蔽名单将不会有任何例外情况。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于移动设备管理 (MDM) 下的实例或通过 MCX 加入某个网域的实例。</translation>
-<translation id="4882406948002286350">通过设置此政策，您可禁止加载已列入屏蔽名单的网址所对应的网页。此政策列出了一系列网址格式，用于指定禁止加载的网址。如果您未设置此政策，那么任何网址都能在浏览器中加载。所列网址必须采用 https://www.chromium.org/administrators/url-blocklist-filter-format 规定的格式。在 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 中，您最多可定义 1000 个例外情况。
-
-      从 <ph name="PRODUCT_NAME" /> 73 版开始，您可以屏蔽 javascript://* 网址。不过，这仅会影响在地址栏（或小书签等）中输入的 JavaScript 网址。凡是能动态加载数据的页内 JavaScript 网址都不会受此政策影响。例如，即使您屏蔽了 example.com/abc，example.com 仍可以使用 XMLHTTPRequest 加载 example.com/abc。
-
-      注意：屏蔽内部 chrome://* 网址可能会导致意外的错误。</translation>
 <translation id="4886783562285047261">如果此政策已启用，<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />注册会是强制性的。如果注册失败，<ph name="PRODUCT_NAME" /> 便无法启动。
 
       如果此政策已停用或未设置，<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />则是可选的。如果注册失败，<ph name="PRODUCT_NAME" /> 仍能正常启动。
@@ -3964,11 +3948,6 @@
 
       如果此政策未设置或列表为空，则意味着所有协议在 <ph name="PRODUCT_NAME" /> 中都可用。</translation>
 <translation id="6338982178236723271">报告系统信息</translation>
-<translation id="6347363725343851058">如果此政策已启用，系统会开启后台模式。在后台模式下，<ph name="PRODUCT_NAME" /> 进程会在用户登录操作系统时启动，并会在最后一个浏览器窗口关闭后继续运行，从而使后台应用和浏览会话（包括所有会话 Cookie）保持活动状态。系统任务栏中会显示该后台进程的图标，用户可以随时在此处关闭该后台进程。
-
-      如果此政策已停用，系统会关闭后台模式。
-
-      如果您设置了此政策，用户便无法在浏览器设置中更改相关设置。如果您未设置此政策，系统最初会关闭后台模式，但用户可以自行更改它。</translation>
 <translation id="6353890097388312479">如果此政策设为“All (0)”或未设置，用户便可修改所有 CA 证书的信任设置、移除用户导入的证书并使用证书管理器导入证书。如果此政策设为“UserOnly (1)”，用户将仅能管理用户导入的证书，但无法更改内置证书的信任设置。如果此政策设为“None (2)”，用户可以查看（但无法管理）CA 证书。</translation>
 <translation id="6362856770865555544">如果此政策已启用或未设置，系统会在 <ph name="PRODUCT_NAME" /> 中开启 WPAD（网络代理自动发现）优化设置。
 
@@ -4224,6 +4203,14 @@
 <translation id="6689343802305995925">不执行任何操作。</translation>
 <translation id="6689792153960219308">报告硬件状态</translation>
 <translation id="6690425645391461516">停用 DNS 拦截检查功能；允许使用“您是不是要前往 http://intranetsite/？”信息栏。</translation>
+<translation id="669066148640728553">为重新启动通知时间段的结束指定目标时间范围。
+
+      系统会根据 <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> 和 <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> 政策设置向用户发送通知，指明他们需要重新启动浏览器或重启设备。如果 <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> 政策设为“必需”，系统会在通知时间段结束时强制重启浏览器和设备。此 <ph name="RELAUNCH_WINDOW_POLICY_NAME" /> 政策可用于将通知时间段的结束时间推迟至特定的时间范围内。
+
+      如果此政策未设置，<ph name="PRODUCT_OS_NAME" />的默认目标时间范围会是凌晨 2 点到 4 点之间，而 <ph name="PRODUCT_NAME" /> 的默认目标时间范围会是全天（即，一律不推迟通知时间段的结束时间）。
+
+      注意：虽然此政策可以接受“<ph name="ENTRIES_FIELD_NAME" />”中的多个项，但除第一项之外的所有其他项都会被忽略。
+      警告：设置此政策可能会延迟应用软件更新。</translation>
 <translation id="6698632841807204978">启用单色打印</translation>
 <translation id="6699880231565102694">为远程访问主机启用双重身份验证</translation>
 <translation id="6703251016607733593">设置此政策可使系统不对一系列 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 哈希强制执行证书透明度披露要求。因没有恰当公开披露相关信息而不受信任的证书，企业主机也可以继续使用。若要关闭强制执行，哈希必须满足以下条件之一：
@@ -4362,6 +4349,19 @@
 <translation id="6857240169209507953">禁止 <ph name="BOREALIS_NAME" /> 在设备上运行</translation>
 <translation id="685769593149966548">强制启用 YouTube“严格”受限模式</translation>
 <translation id="686079137349561371">Microsoft Windows 7 或更高版本</translation>
+<translation id="6864283226733000548">此设置旨在为 <ph name="LACROS_NAME" /> 浏览器提供多个可用性选项。
+
+      如果此政策设为“<ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />”，用户便可以启用 <ph name="LACROS_NAME" /> 并将其设为主要浏览器。仍可使用 <ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策禁用 <ph name="LACROS_NAME" />。
+
+      如果此政策设为“<ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />”，用户便无法使用 <ph name="LACROS_NAME" />。<ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策会被忽略。
+
+      如果此政策设为“<ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />”，系统将会启用 <ph name="LACROS_NAME" />，但不会将其设为主要浏览器。<ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策会被忽略。
+
+      如果此政策设为“<ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />”，系统将会启用 <ph name="LACROS_NAME" />，并将其设为主要浏览器。<ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策会被忽略。
+
+      如果您未设置此政策，受企业管理的用户将使用默认值“<ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />”，不受企业管理的用户将使用默认值“<ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />”。
+
+      将来可以使用“<ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />”值将 <ph name="LACROS_NAME" /> 设为 <ph name="PRODUCT_OS_NAME" />中唯一可用的浏览器。</translation>
 <translation id="68818134518270542">通过设置此政策，您可以指定用户能在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中将哪些应用作为笔记应用开启。
 
       如果首选的应用已添加到锁定屏幕中，屏幕上将会显示用于启动首选笔记应用的界面元素。启动后，该应用便可在锁定屏幕之上创建窗口，并在此情境中创建笔记。当主要用户会话解锁时，该应用便可将所创建的笔记导入此会话中。目前，锁定屏幕上仅支持 <ph name="PRODUCT_NAME" /> 笔记应用。
@@ -4493,15 +4493,6 @@
       如果您不设置此政策，用户便可更改此设置。
 
       请注意：针对 Android 设备的网站隔离支持将会不断完善，但目前它可能会导致性能问题。这项政策仅适用于 Android 版 Chrome，且运行 Chrome 的设备一定要有超过 1GB 的 RAM。若要在非 Android 平台上应用此政策，请改用 <ph name="ISOLATE_ORIGINS_POLICY_NAME" />。</translation>
-<translation id="6978404102280820831">您可以通过设置 <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> 创建一个网址格式列表，从而指定哪些网站可以/无法为单个会话设置 Cookie，除非 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策设为一律恢复先前会话中的网址。
-
-      如果您未设置此政策，那么，倘若 <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。指定的格式未涵盖的网址也会导致系统使用默认设置。
-
-      如果 <ph name="PRODUCT_NAME" /> 是以“后台模式”运行，会话可能会保持进行中的状态，直到用户退出浏览器（而不仅仅是关闭最后一个窗口）。若要详细了解如何配置此行为，请参阅 <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" />。
-
-      另请查看一下 <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> - 虽然这 3 项政策并无优先级差异，它们的网址格式不得互相冲突。
-
-      如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6979739838208297344">将此政策设为 <ph name="BR_ENABLED" /> 意味着 Android 备份和恢复服务最初会处于开启状态。将此政策设为 <ph name="BR_DISABLED" /> 或不设置，备份和恢复服务会在设置过程中保持关闭状态。
 
@@ -5199,13 +5190,6 @@
       确定在登录屏幕上用作屏幕保护程序的扩展程序的 ID。该扩展程序必须属于通过 DeviceAppPack 策略为此域配置的 AppPack。</translation>
 <translation id="7882857838942884046">停用 Google 同步会导致 Android 的备份和恢复机制无法正常运行。</translation>
 <translation id="7882890448959833986">禁止显示“操作系统不受支持”警告</translation>
-<translation id="788487748427534612">除非 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策设为一律恢复先前会话中的网址，否则您便可以通过设置 <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> 创建一个网址格式列表，从而指定哪些网站可/不可为单个会话设置 Cookie。
-
-      如果您不设置此政策，系统会为所有网站使用 <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" />（若已设置）。否则，系统会应用用户的个人设置。指定的格式未涵盖的网址也会导致系统使用默认设置。
-
-      如果 <ph name="PRODUCT_NAME" /> 是以“后台模式”运行，会话可能会保持进行中的状态，直到用户退出浏览器（而不仅仅是关闭最后一个窗口）。若要详细了解如何配置此行为，请参阅 <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" />。
-
-      请另外查看一下 <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />（这三项政策并无优先级差异）。这 3 项政策中的网址格式不得存在冲突。</translation>
 <translation id="7887379840451099426">仅当使用电池供电时才适用的电源管理设置</translation>
 <translation id="7891884447851425349">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> 来指定在默认搜索期间使用的搜索引擎网址。该网址应包含字符串<ph name="SEARCH_TERM_MARKER" />；当用户执行查询时，系统会将此字符串替换成用户的搜索字词。
 
@@ -5819,13 +5803,6 @@
       如果您不设置此政策，Chrome 会使用自己的平台专用默认目录。
 
       注意：查看您可以使用哪些变量 ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables )。</translation>
-<translation id="877499586514669705">通过设置此政策，您可列出允许访问的网址，以便将这些网址作为 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，将 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 设成 * 会屏蔽所有请求，但您可以通过本政策来允许访问您所列出的部分网址。您可借助本政策为某些协议、其他网域的子网域、端口或特定路径设置例外情况（需使用指定格式，详见 https://www.chromium.org/administrators/url-blocklist-filter-format）。系统会屏蔽还是允许某个网址取决于最具体的过滤条件。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的优先级高于 <ph name="URL_BLOCKLIST_POLICY_NAME" />。此政策最多只能包含 1000 个条目。
-
-      通过此政策，您还可让浏览器自动调用以下类型的外部应用：已注册为所列协议（如“tel:”或“ssh:”）的协议处理程序。
-
-      如果您未设置此政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 将不会有任何例外情况。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于移动设备管理 (MDM) 下的实例或通过 MCX 加入某个网域的实例。</translation>
 <translation id="877557628527387598">密码登录信息</translation>
 <translation id="8777369558049831576">在外部协议对话框中显示“始终打开”复选框。</translation>
 <translation id="8786409859071107656">如果此政策已启用，系统会开启“USB 电源共享”电源管理政策。

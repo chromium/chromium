@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Erweitert</translation>
 <translation id="1989112275319619282">Durchsuchen</translation>
 <translation id="2015722694326466240">Um die Passwörter zu sehen, müssen Sie zuerst einen Passcode auf Ihrem Gerät einrichten.</translation>
+<translation id="2022352537516230970">Für Ihr iPhone entwickelt</translation>
 <translation id="2073572773299281212">Vor <ph name="DAYS" /> Tagen aktiv</translation>
 <translation id="2074131957428911366">Sie können in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> auswählen, was Sie synchronisieren möchten.</translation>
 <translation id="2079545284768500474">Rückgängig machen</translation>
@@ -124,7 +125,6 @@
 <translation id="2218443599109088993">Herauszoomen</translation>
 <translation id="2230173723195178503">Webseite geladen</translation>
 <translation id="2239626343334228536">Browserdaten werden gelöscht…</translation>
-<translation id="2257567812274161158">Synchronisierung funktioniert nicht.</translation>
 <translation id="225943865679747347">Fehlercode: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Konto hinzufügen</translation>
 <translation id="2268044343513325586">Verfeinern</translation>
@@ -142,7 +142,6 @@
 Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen.</translation>
 <translation id="2381405137052800939">Grundeinstellungen</translation>
 <translation id="2386793615875593361">1 ausgewählt</translation>
-<translation id="2410754283952462441">Konto auswählen</translation>
 <translation id="2421004566762153674">Drittanbieter-Cookies werden blockiert</translation>
 <translation id="2421044535038393232">Weiter bearbeiten</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
@@ -314,6 +313,7 @@ Gehen Sie so vor:</translation>
 <translation id="4172051516777682613">Immer anzeigen</translation>
 <translation id="418156467088430727">Offlineversion in einem neuen Tab ansehen</translation>
 <translation id="4181841719683918333">Sprachen</translation>
+<translation id="4184011057600693970">Für Ihr iPad entwickelt</translation>
 <translation id="424315890655130736">Passphrase eingeben</translation>
 <translation id="4263576668337963058">Verfügbare Seitenaktionen anzeigen</translation>
 <translation id="4267380167363222949">Nächster Tab</translation>
@@ -360,7 +360,6 @@ Ihre Daten sind mit Ihrer Synchronisierungspassphrase verschlüsselt. Geben Sie 
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4747097190499141774">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay. Nur Personen mit Ihrer Passphrase können Ihre verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls Sie sie vergessen oder diese Einstellung ändern möchten, müssen Sie die Synchronisierung zurücksetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Neuer Inkognitotab</translation>
-<translation id="4766678251456904326">Konto zum Gerät hinzufügen</translation>
 <translation id="4775879719735953715">Standardbrowser</translation>
 <translation id="4778644898150334464">Anderes Passwort verwenden</translation>
 <translation id="4802417911091824046">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay.
@@ -492,6 +491,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="605721222689873409">JJ</translation>
 <translation id="6059830886158432458">Hier können Sie festlegen, welche Meldungen und Aktivitäten Ihnen angezeigt werden</translation>
 <translation id="6066301408025741299">Zum Abbrechen tippen</translation>
+<translation id="60829778314739003">Akzeptieren und fortfahren</translation>
 <translation id="6108923351542677676">Einrichtung läuft...</translation>
 <translation id="6119050551270742952">Die aktuelle Webseite ist im Inkognitomodus</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -587,6 +587,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6801927553864092214">Wenn Sie privat surfen möchten, öffnen Sie einen Inkognitotab</translation>
 <translation id="6807889908376551050">Alle anzeigen...</translation>
 <translation id="681368974849482173">Element erstellt</translation>
+<translation id="6830804042318138535">Mehr anzeigen</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
 <translation id="6851516051005285358">Desktop-Version</translation>
 <translation id="6858855187367714033">Gescannt</translation>
@@ -635,6 +636,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7291368939935408496">Passwörter werden zum Exportieren vorbereitet…</translation>
 <translation id="7293171162284876153">Aktivieren Sie "Chrome-Daten synchronisieren", um die Synchronisierung zu starten.</translation>
 <translation id="7313347584264171202">Hier werden Ihre Inkognitotabs angezeigt</translation>
+<translation id="7319242366286515846">Wenn Sie fortfahren, akzeptieren Sie damit die <ph name="BEGIN_LINK" />Nutzungsbedingungen<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> % heruntergeladen</translation>
 <translation id="7340958967809483333">Optionen für Discover</translation>
 <translation id="7346909386216857016">Ok</translation>
@@ -781,6 +783,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8820817407110198400">Lesezeichen</translation>
 <translation id="8840513115188359703">Sie werden nicht von Ihrem Google-Konto abgemeldet.</translation>
 <translation id="8870413625673593573">Kürzlich geschlossen</translation>
+<translation id="8876882697946675716">Alle Geräte immer synchronisiert</translation>
 <translation id="8881801611828450202">In <ph name="SEARCH_ENGINE" /> nach dem Bild suchen</translation>
 <translation id="8909135823018751308">Teilen...</translation>
 <translation id="8917490105272468696">Ja, bitte</translation>
@@ -788,6 +791,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8976382372951310360">Hilfe</translation>
 <translation id="8981454092730389528">Google-Aktivitätseinstellungen</translation>
 <translation id="8985320356172329008">In Google angemeldet als</translation>
+<translation id="8996526648899750015">Konto hinzufügen...</translation>
 <translation id="9034759925968272072">Sie werden nicht von Ihrem Google-Konto abgemeldet. Eventuell finden Sie unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> weitere Arten von Browserverlaufsdaten für Ihr Google-Konto.</translation>
 <translation id="9037965129289936994">Original anzeigen</translation>
 <translation id="9039373489628511875">Bandbreite</translation>

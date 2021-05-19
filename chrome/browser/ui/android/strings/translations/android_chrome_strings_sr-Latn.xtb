@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Dodatni uslovi korišćenja usluge za Chrome i Chrome OS</translation>
 <translation id="1807246157184219062">Svetla</translation>
 <translation id="1810845389119482123">Početno podešavanje sinhronizacije nije završeno</translation>
-<translation id="1821253160463689938">Koristi kolačiće da bi se zapamtila podešavanja, čak i kada ne posećujete te stranice</translation>
 <translation id="1829244130665387512">Pronađi na stranici</translation>
 <translation id="1830550083491357902">Niste prijavljeni</translation>
 <translation id="1843805151597803366">Da biste dobili bolje prevode, omogućite da Google pretraga koristi aktuelnu stranicu</translation>
@@ -203,6 +202,7 @@ Dodirnite bilo koju reč za pretragu. Da biste precizirali pretragu, dodirnite i
 <ph name="BEGIN_LIST_ITEM1" />Oglašavači mogu da saznaju kada hiljade korisnika ima slično interesovanje – poput mase na koncertu – i da izaberu oglase za masu, a ne za pojedinačnu osobu.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Oglašavači mogu da proučavaju efikasnost oglasa na način koji vas ne prati na sajtovima.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Predučitava stranice za koje Chrome smatra da ćete ih možda posetiti. Da bi to uradio, Chrome može da koristi kolačiće, ako ih dozvolite, i da šifruje i šalje stranice preko Google-a da bi sakrio vaš identitet od sajtova.</translation>
 <translation id="234265804618409743">Ne možemo da otvorimo kameru. Nešto nije u redu.</translation>
 <translation id="2345671828921229300">Da biste pretraživali, dodirnite i zadržite reč</translation>
 <translation id="2349710944427398404">Svi podaci koje koristi Chrome, uključujući naloge, obeleživače i sačuvana podešavanja</translation>
@@ -273,7 +273,6 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="2777555524387840389">Još <ph name="SECONDS" /> sek</translation>
 <translation id="2779651927720337254">nije uspelo</translation>
 <translation id="2781151931089541271">Još 1 sek</translation>
-<translation id="279827439955962619">Ukloni isticanje</translation>
 <translation id="2801022321632964776">Ažurirajte na najnoviju verziju Chrome-a da biste imali svoj jezik u njoj</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="281504910091592009">Pregledajte sačuvane lozinke i upravljajte njima na <ph name="BEGIN_LINK" />Google nalogu<ph name="END_LINK" /></translation>
@@ -454,7 +453,6 @@ Aktivno programiranje Zaštićenog okruženja privatnosti je još uvek u toku i
 <translation id="3988466920954086464">Pogledajte instant rezultate pretrage na ovoj tabli</translation>
 <translation id="4000212216660919741">Oflajn početna stranica</translation>
 <translation id="4016425174436051808">Praćenje nije uspelo. Došlo je do greške.</translation>
-<translation id="4021916380760361450">Kontrolišite podatke Google naloga</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# č}one{# č}few{# č}other{# č}}</translation>
 <translation id="4045764304651014138">Podaci o korišćenju</translation>
 <translation id="4056223980640387499">Sepija</translation>
@@ -480,7 +478,6 @@ Aktivno programiranje Zaštićenog okruženja privatnosti je još uvek u toku i
 <translation id="4195643157523330669">Otvori na novoj kartici</translation>
 <translation id="4198423547019359126">Nema dostupnih lokacija za preuzimanja</translation>
 <translation id="4209895695669353772">Da biste dobijali personalizovani sadržaj koji predlaže Google, uključite sinhronizaciju</translation>
-<translation id="423219824432660969">Šifrujte sinhronizovane podatke pomoću Google lozinke od <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Otvori podešavanja</translation>
 <translation id="4248098802131000011">Zaštitite lozinke od upada u podatke i drugih bezbednosnih problema</translation>
 <translation id="4250229828105606438">Snimak ekrana</translation>
@@ -559,6 +556,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="47217992755561375">Pogledajte sajtove koje najčešće posećujete</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4738836084190194332">Poslednja sinhronizacija: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Ukloni isticanje</translation>
 <translation id="4749960740855309258">Otvorite novu karticu</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +697,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="562289928968387744">Upravljaj reakcijama</translation>
 <translation id="5626134646977739690">Ime:</translation>
 <translation id="5628604359369369630">Nije pročitano. Dostupno je oflajn</translation>
-<translation id="5632627355679805402">Podaci su šifrovani pomoću <ph name="BEGIN_LINK" />Google lozinke<ph name="END_LINK" /> (<ph name="TIME" />). Unesite je da biste započeli sinhronizaciju.</translation>
 <translation id="5639724618331995626">Dozvoli sve sajtove</translation>
 <translation id="5648166631817621825">Poslednjih 7 dana</translation>
 <translation id="5655963694829536461">Pretražite preuzimanja</translation>
@@ -934,7 +931,6 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="702463548815491781">Preporučujemo vam kada uključite TalkBack ili pristup pomoću prekidača</translation>
 <translation id="7027549951530753705">Vraćena je stavka <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Lozinke</translation>
-<translation id="7040531500313579672">Deli isticanje</translation>
 <translation id="7054588988317389591">Želite da dobijate opise slika?</translation>
 <translation id="7055152154916055070">Blokirano je preusmeravanje:</translation>
 <translation id="7063006564040364415">Nije moguće povezivanje sa serverom za sinhronizaciju.</translation>
@@ -970,6 +966,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="7328017930301109123">U Lite režimu Chrome učitava stranice brže i koristi i do 60 procenata manje podataka.</translation>
 <translation id="7332075081379534664">Prijavljivanje je uspelo</translation>
 <translation id="7333031090786104871">Još uvek dodajemo prethodni sajt</translation>
+<translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7340958967809483333">Opcije za Discover</translation>
 <translation id="7352651011704765696">Nešto nije u redu</translation>
 <translation id="7352939065658542140">VIDEO</translation>
@@ -998,6 +995,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="7493994139787901920"><ph name="VERSION" /> (ažurirano je <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">ušteđenih podataka</translation>
 <translation id="7498271377022651285">Sačekajte...</translation>
+<translation id="750228856503700085">Ažuriranja nisu dostupna</translation>
 <translation id="7507207699631365376">Pogledajte <ph name="BEGIN_LINK" />politiku privatnosti<ph name="END_LINK" /> ovog dobavljača</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="751961395872307827">Povezivanje sa sajtom nije uspelo</translation>
@@ -1099,6 +1097,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8078096376109663956">Delite samo tekst</translation>
 <translation id="8084114998886531721">Sačuvana lozinka</translation>
+<translation id="8084285576995584326">Kontrolišite podatke Google naloga</translation>
 <translation id="808747664143081553">Povezani ste sa uređajem</translation>
 <translation id="8103578431304235997">Kartice bez arhiviranja</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="8712637175834984815">Važi</translation>
 <translation id="8725066075913043281">Probajte ponovo</translation>
 <translation id="8730621377337864115">Gotovo</translation>
+<translation id="8746155870861185046">Deli isticanje</translation>
 <translation id="8748850008226585750">Sadržaj je sakriven</translation>
 <translation id="8773160212632396039">Zahtev se obrađuje</translation>
 <translation id="8788265440806329501">Istorija navigacije je zatvorena</translation>

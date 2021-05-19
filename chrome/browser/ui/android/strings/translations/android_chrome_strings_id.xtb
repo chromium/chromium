@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Persyaratan Layanan Tambahan Chrome &amp; Chrome OS</translation>
 <translation id="1807246157184219062">Terang</translation>
 <translation id="1810845389119482123">Penyiapan sinkronisasi awal belum selesai</translation>
-<translation id="1821253160463689938">Menggunakan cookie untuk mengingat preferensi, meski Anda tidak membuka halaman tersebut</translation>
 <translation id="1829244130665387512">Cari di halaman</translation>
 <translation id="1830550083491357902">Belum masuk</translation>
 <translation id="1843805151597803366">Untuk mendapatkan terjemahan yang lebih baik, izinkan Google Penelusuran menggunakan halaman saat ini</translation>
@@ -273,7 +272,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="2777555524387840389"><ph name="SECONDS" /> detik lagi</translation>
 <translation id="2779651927720337254">gagal</translation>
 <translation id="2781151931089541271">1 detik lagi</translation>
-<translation id="279827439955962619">Hapus sorotan</translation>
 <translation id="2801022321632964776">Update untuk mendapatkan bahasa Anda di versi terbaru Chrome</translation>
 <translation id="2805756323405976993">Apl</translation>
 <translation id="281504910091592009">Lihat dan kelola sandi tersimpan di <ph name="BEGIN_LINK" />Akun Google<ph name="END_LINK" /></translation>
@@ -454,7 +452,6 @@ Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah ter
 <translation id="3988466920954086464">Lihat hasil penelusuran instan di panel ini</translation>
 <translation id="4000212216660919741">Beranda Offline</translation>
 <translation id="4016425174436051808">Tidak dapat mengikuti. Terjadi error.</translation>
-<translation id="4021916380760361450">Kontrol data Akun Google Anda</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# jam}other{# jam}}</translation>
 <translation id="4045764304651014138">Data penggunaan</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -480,7 +477,6 @@ Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah ter
 <translation id="4195643157523330669">Buka di tab baru</translation>
 <translation id="4198423547019359126">Tidak tersedia lokasi download</translation>
 <translation id="4209895695669353772">Untuk mendapatkan konten hasil personalisasi yang disarankan oleh Google, aktifkan sinkronisasi</translation>
-<translation id="423219824432660969">Enkripsikan data yang disinkronkan dengan sandi Google mulai tanggal <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Buka setelan</translation>
 <translation id="4248098802131000011">Amankan sandi Anda dari pelanggaran data dan masalah keamanan lainnya</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -559,6 +555,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="47217992755561375">Lihat situs teratas Anda</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4738836084190194332">Terakhir disinkronkan: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Hapus sorotan</translation>
 <translation id="4749960740855309258">Membuka tab baru</translation>
 <translation id="4759238208242260848">Download</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +696,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="562289928968387744">Kelola reaksi</translation>
 <translation id="5626134646977739690">Nama:</translation>
 <translation id="5628604359369369630">Belum dibaca - Tersedia secara offline</translation>
-<translation id="5632627355679805402">Data Anda dienkripsi dengan <ph name="BEGIN_LINK" />sandi Google<ph name="END_LINK" /> mulai <ph name="TIME" />. Masukkan frasa sandi untuk memulai sinkronisasi.</translation>
 <translation id="5639724618331995626">Izinkan semua situs</translation>
 <translation id="5648166631817621825">7 hari terakhir</translation>
 <translation id="5655963694829536461">Telusuri file download</translation>
@@ -934,7 +930,6 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="702463548815491781">Disarankan saat TalkBack atau Tombol Akses aktif</translation>
 <translation id="7027549951530753705">Memulihkan <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Sandi</translation>
-<translation id="7040531500313579672">Bagikan sorotan</translation>
 <translation id="7054588988317389591">Dapatkan deskripsi gambar?</translation>
 <translation id="7055152154916055070">Pengalihan diblokir:</translation>
 <translation id="7063006564040364415">Tidak dapat menyambung ke server sinkronisasi.</translation>
@@ -970,6 +965,7 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="7328017930301109123">Dalam mode Ringan, Chrome memuat halaman lebih cepat dan menghemat data hingga 60 persen.</translation>
 <translation id="7332075081379534664">Login berhasil</translation>
 <translation id="7333031090786104871">Masih menambahkan situs sebelumnya</translation>
+<translation id="7339898014177206373">Jendela baru</translation>
 <translation id="7340958967809483333">Opsi untuk Discover</translation>
 <translation id="7352651011704765696">Ada yang tidak beres</translation>
 <translation id="7352939065658542140">VIDEO</translation>
@@ -1023,7 +1019,7 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="7630202231528827509">URL Penyedia</translation>
 <translation id="7638584964844754484">Frasa sandi salah</translation>
 <translation id="7641339528570811325">Hapus data penjelajahan...</translation>
-<translation id="764170292089748542">Chrome tidak menyimpan histori penjelajahan saat Anda memilih untuk melakukan penjelajahan rahasia. Anda tetap dapat menggunakan bookmarks untuk mengakses situs favorit Anda.</translation>
+<translation id="764170292089748542">Chrome tidak menyimpan histori penjelajahan saat Anda memilih untuk melakukan penjelajahan rahasia. Anda tetap dapat menggunakan bookmark untuk mengakses situs favorit Anda.</translation>
 <translation id="7646772052135772216">Sinkronisasi sandi tidak berfungsi</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7665369617277396874">Tambahkan akun</translation>

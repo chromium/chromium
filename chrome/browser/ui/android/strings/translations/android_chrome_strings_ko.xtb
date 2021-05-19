@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Chrome 및 Chrome OS 추가 서비스 약관</translation>
 <translation id="1807246157184219062">밝게</translation>
 <translation id="1810845389119482123">초기 동기화 설정이 완료되지 않음</translation>
-<translation id="1821253160463689938">페이지를 방문하지 않더라도 쿠키를 사용하여 환경설정 저장</translation>
 <translation id="1829244130665387512">페이지에서 찾기</translation>
 <translation id="1830550083491357902">로그인하지 않음</translation>
 <translation id="1843805151597803366">번역을 개선하려면 Google 검색을 통해 현재 페이지를 사용하세요.</translation>
@@ -203,6 +202,7 @@
 <ph name="BEGIN_LIST_ITEM1" />콘서트 관객처럼 수천 명의 사용자가 비슷한 관심사를 공유하는 경우 광고주가 이를 파악하여 개인이 아닌 대중의 관심사에 맞는 광고를 선택할 수 있습니다.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />광고주는 사이트 전반에서 사용자를 추적하지 않는 방식으로 광고의 효과를 연구할 수 있습니다.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Chrome에서 사용자가 방문할 가능성이 크다고 생각하는 페이지를 미리 로드합니다. 이를 위해 사용자가 허용한 경우 Chrome에서 쿠키를 사용할 수 있으며, 사이트로부터 사용자의 신원을 보호하기 위해 Google을 통해 페이지를 암호화하여 전송할 수 있습니다.</translation>
 <translation id="234265804618409743">카메라를 열 수 없습니다. 문제가 발생했습니다.</translation>
 <translation id="2345671828921229300">검색하려면 단어를 길게 터치하세요.</translation>
 <translation id="2349710944427398404">계정, 북마크, 저장된 설정 등 Chrome에서 사용한 전체 데이터</translation>
@@ -273,7 +273,6 @@
 <translation id="2777555524387840389"><ph name="SECONDS" />초 남음</translation>
 <translation id="2779651927720337254">실패</translation>
 <translation id="2781151931089541271">1초 남음</translation>
-<translation id="279827439955962619">강조표시한 텍스트 삭제</translation>
 <translation id="2801022321632964776">최신 버전의 Chrome에서 내가 사용하는 언어를 사용하려면 업데이트하세요.</translation>
 <translation id="2805756323405976993">앱</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />에서 저장된 비밀번호 보기 및 관리</translation>
@@ -454,7 +453,6 @@
 <translation id="3988466920954086464">이 패널에서 순간 검색결과 보기</translation>
 <translation id="4000212216660919741">오프라인 홈</translation>
 <translation id="4016425174436051808">팔로우할 수 없습니다. 문제가 발생했습니다.</translation>
-<translation id="4021916380760361450">Google 계정 데이터를 제어합니다.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{#시간}other{#시간}}</translation>
 <translation id="4045764304651014138">사용 데이터</translation>
 <translation id="4056223980640387499">세피아</translation>
@@ -480,7 +478,6 @@
 <translation id="4195643157523330669">새 탭에서 열기</translation>
 <translation id="4198423547019359126">사용할 수 있는 다운로드 위치가 없음</translation>
 <translation id="4209895695669353772">Google에서 추천하는 맞춤 콘텐츠를 보려면 동기화를 사용 설정하세요.</translation>
-<translation id="423219824432660969"><ph name="TIME" />에 Google 비밀번호를 사용하여 동기화된 데이터 암호화</translation>
 <translation id="4242533952199664413">설정 열기</translation>
 <translation id="4248098802131000011">정보 유출 및 다른 보안 문제로부터 비밀번호를 안전하게 보호하세요.</translation>
 <translation id="4250229828105606438">스크린샷</translation>
@@ -559,6 +556,7 @@
 <translation id="47217992755561375">맞춤 인기 사이트 보기</translation>
 <translation id="4732120983431207637">스택 언와인더</translation>
 <translation id="4738836084190194332">마지막 동기화 시간: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">강조표시 삭제</translation>
 <translation id="4749960740855309258">새 탭 열기</translation>
 <translation id="4759238208242260848">다운로드</translation>
 <translation id="4763480195061959176">동영상</translation>
@@ -699,7 +697,6 @@
 <translation id="562289928968387744">반응 관리</translation>
 <translation id="5626134646977739690">이름:</translation>
 <translation id="5628604359369369630">읽지 않음 - 오프라인에서 사용 가능</translation>
-<translation id="5632627355679805402"><ph name="TIME" />자로 데이터가 <ph name="BEGIN_LINK" />Google 비밀번호<ph name="END_LINK" />를 통해 암호화되었습니다. 동기화를 시작하려면 비밀번호를 입력하세요.</translation>
 <translation id="5639724618331995626">모든 사이트 허용</translation>
 <translation id="5648166631817621825">지난 7일</translation>
 <translation id="5655963694829536461">다운로드 항목 검색</translation>
@@ -934,7 +931,6 @@
 <translation id="702463548815491781">음성 안내 지원 또는 스위치 제어를 사용 중일 때 권장됩니다.</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> 복원됨</translation>
 <translation id="7029809446516969842">비밀번호</translation>
-<translation id="7040531500313579672">강조표시한 텍스트 공유</translation>
 <translation id="7054588988317389591">이미지 설명을 표시하시겠습니까?</translation>
 <translation id="7055152154916055070">다음 주소로의 리디렉션이 차단됨:</translation>
 <translation id="7063006564040364415">동기화 서버에 연결할 수 없습니다.</translation>
@@ -970,6 +966,7 @@
 <translation id="7328017930301109123">Chrome의 라이트 모드를 사용하면 페이지가 더 빠르게 로드되고 데이터가 최대 60퍼센트 절약됩니다.</translation>
 <translation id="7332075081379534664">로그인 성공</translation>
 <translation id="7333031090786104871">아직 이전 사이트 추가 중</translation>
+<translation id="7339898014177206373">새 창</translation>
 <translation id="7340958967809483333">디스커버용 옵션</translation>
 <translation id="7352651011704765696">문제가 발생한 경우</translation>
 <translation id="7352939065658542140">동영상</translation>
@@ -998,6 +995,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" />(<ph name="TIME_SINCE_UPDATE" />에 업데이트됨)</translation>
 <translation id="7494974237137038751">데이터 절약됨</translation>
 <translation id="7498271377022651285">잠시 기다려 주세요…</translation>
+<translation id="750228856503700085">업데이트 불가</translation>
 <translation id="7507207699631365376">제공업체의 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" /> 보기</translation>
 <translation id="7514365320538308">다운로드</translation>
 <translation id="751961395872307827">사이트에 연결할 수 없습니다</translation>
@@ -1099,6 +1097,7 @@
 <translation id="8076492880354921740">탭</translation>
 <translation id="8078096376109663956">텍스트만 공유하세요.</translation>
 <translation id="8084114998886531721">저장된 비밀번호</translation>
+<translation id="8084285576995584326">Google 계정 데이터 관리</translation>
 <translation id="808747664143081553">기기에 연결되었습니다.</translation>
 <translation id="8103578431304235997">시크릿 탭</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@
 <translation id="8712637175834984815">확인</translation>
 <translation id="8725066075913043281">다시 시도하세요</translation>
 <translation id="8730621377337864115">완료</translation>
+<translation id="8746155870861185046">강조표시한 텍스트 공유</translation>
 <translation id="8748850008226585750">숨겨진 콘텐츠</translation>
 <translation id="8773160212632396039">요청 처리 중입니다.</translation>
 <translation id="8788265440806329501">탐색 기록 닫힘</translation>

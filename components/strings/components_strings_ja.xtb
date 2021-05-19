@@ -249,7 +249,6 @@
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows ネットワーク診断ツールを実行してみてください<ph name="END_LINK" />。</translation>
 <translation id="1772163372082567643">アクセスしているサーバー <ph name="ORIGIN" /> では、サーバーへのすべてのリクエストにオリジン ポリシーを適用することを求めるヘッダーが設定されていますが、ヘッダーの形式が正しくないため、ブラウザは <ph name="SITE" /> のリクエストを満たすことができません。オリジン ポリシーは、サイトのセキュリティやその他のプロパティを設定する目的でパブリッシャーが使用するものです。</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">同期パスフレーズを更新してください。</translation>
 <translation id="1787142507584202372">最近開いたタブがここに表示されます</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。複数の操作が可能で、Tab キーを押すと操作が切り替わります</translation>
@@ -382,6 +381,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> にはユーザー名とパスワードが必要です。</translation>
 <translation id="2330137317877982892">「<ph name="CREDIT_CARD" />」の有効期限は <ph name="EXPIRATION_DATE_ABBR" /> です</translation>
 <translation id="2337852623177822836">管理者が指定する設定</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" /> がペア設定を要求しています</translation>
 <translation id="2344028582131185878">自動ダウンロード</translation>
 <translation id="2346319942568447007">コピーした画像</translation>
 <translation id="2354001756790975382">その他のブックマーク</translation>
@@ -451,6 +451,7 @@
 <translation id="2629325967560697240">Chrome の最高レベルのセキュリティで保護するには、<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />保護強化機能を有効にしてください<ph name="END_ENHANCED_PROTECTION_LINK" />。</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> のサーバーの IP アドレスが見つかりませんでした。</translation>
 <translation id="2639739919103226564">ステータス:</translation>
+<translation id="264810637653812429">対応デバイスが見つかりませんでした。</translation>
 <translation id="2649204054376361687"><ph name="COUNTRY" /> <ph name="CITY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で閲覧履歴、Cookie、キャッシュなどを削除します</translation>
 <translation id="2650446666397867134">ファイルへのアクセスが拒否されました</translation>
@@ -495,6 +496,7 @@
 <translation id="2799223571221894425">再起動</translation>
 <translation id="2803306138276472711"><ph name="SITE" /> では最近、Google セーフ ブラウジングにより、<ph name="BEGIN_LINK" />不正なソフトウェアが検出されました<ph name="END_LINK" />。通常は安全なウェブサイトであっても、不正なソフトウェアに感染している場合があります。</translation>
 <translation id="2807052079800581569">画像の Y 座標</translation>
+<translation id="2820957248982571256">スキャンしています…</translation>
 <translation id="2824775600643448204">アドレス検索バー</translation>
 <translation id="2826760142808435982">接続は <ph name="CIPHER" /> を使用して暗号化および認証されており、<ph name="KX" /> が鍵交換メカニズムとして使用されています。</translation>
 <translation id="2835170189407361413">フォームをクリア</translation>
@@ -605,6 +607,7 @@
 <translation id="3266793032086590337">値（競合）</translation>
 <translation id="3268451620468152448">開いているタブ</translation>
 <translation id="3270847123878663523">順序変更の取り消し（&amp;U）</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> が接続を要求しています</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">あなたの組織（<ph name="ENROLLMENT_DOMAIN" />）は次のウェブサイトに設定やポリシーなどの情報を送信するよう設定しています。</translation>
 <translation id="3282497668470633863">名義人名を追加</translation>
@@ -1211,6 +1214,7 @@
 <translation id="5455374756549232013">ポリシーのタイムスタンプが不適切です</translation>
 <translation id="5457113250005438886">無効</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 件）}other{<ph name="CONTACT_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 件）}}</translation>
+<translation id="5463625433003343978">デバイスを検出しています...</translation>
 <translation id="5469868506864199649">イタリア語</translation>
 <translation id="5470861586879999274">編集のやり直し（&amp;R）</translation>
 <translation id="5478437291406423475">B6 / C4（封筒）</translation>
@@ -1260,7 +1264,6 @@
 <translation id="5624120631404540903">パスワードを管理</translation>
 <translation id="5629630648637658800">ポリシー設定を読み込めませんでした</translation>
 <translation id="5631439013527180824">無効なデバイス管理トークンです</translation>
-<translation id="5632627355679805402">データは <ph name="TIME" />に <ph name="BEGIN_LINK" />Google パスワード<ph name="END_LINK" />で暗号化されました。同期を開始するにはパスフレーズを入力してください。</translation>
 <translation id="5633066919399395251"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> では現在、悪意のあるユーザーによって、お使いのパソコン上に危険なプログラム（写真、パスワード、メッセージ、クレジット カードなどの情報を盗んだり削除したりするプログラム）がインストールされる可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">不正の可能性があるコンテンツがブロックされました。</translation>
 <translation id="5644090287519800334">1 面の画像の X 軸移動</translation>
@@ -1304,6 +1307,7 @@
 <translation id="5804427196348435412">NFC デバイスの使用</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> への接続は古い暗号スイートにより暗号化されています。</translation>
 <translation id="5813119285467412249">追加のやり直し（&amp;R）</translation>
+<translation id="5817918615728894473">ペア設定</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{お支払いの際はこのカードに請求が行われますが、カード番号はこのサイトと共有されません。追加のセキュリティとして、一時 CVC コードが生成されます。}other{お支払いの際は選択したカードに請求が行われますが、カード番号はこのサイトと共有されません。追加のセキュリティとして、一時 CVC コードが生成されます。}}</translation>
 <translation id="5826507051599432481">一般名（CN）</translation>
 <translation id="5838278095973806738">このサイトでは機密情報（パスワード、クレジット カードなど）を入力しないでください。悪意のあるユーザーに情報が盗まれる恐れがあります。</translation>
@@ -1311,6 +1315,7 @@
 <translation id="5855253129151731373">このサイトのホスト名は <ph name="LOOKALIKE_DOMAIN" /> と似ているようです。不正なユーザーがドメイン名のごく一部を一目ではわからないように改変してサイトを偽装する場合があります。
 
     このメッセージが誤って表示されたと思われる場合は、https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals から問題を報告してください。</translation>
+<translation id="5860033963881614850">オフ</translation>
 <translation id="5862579898803147654">スタッカー 8</translation>
 <translation id="5863847714970149516">表示しようとしているページでは課金される恐れがあります</translation>
 <translation id="5866257070973731571">電話番号の追加</translation>
@@ -1504,6 +1509,7 @@
 <translation id="6624427990725312378">連絡先情報</translation>
 <translation id="6626291197371920147">有効なカード番号を追加</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> 検索</translation>
+<translation id="6630043285902923878">USB デバイスを検出しています...</translation>
 <translation id="6630809736994426279"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> では現在、悪意のあるユーザーによって、お使いの Mac 上に危険なプログラム（写真、パスワード、メッセージ、クレジット カードなどの情報を盗んだり削除したりするプログラム）がインストールされる可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">削除</translation>
@@ -1759,7 +1765,6 @@
 <translation id="7610193165460212391">値（<ph name="VALUE" />）が範囲外です。</translation>
 <translation id="7613889955535752492">有効期限: <ph name="EXPIRATION_MONTH" /> / <ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定でパスワードを表示、管理します</translation>
-<translation id="7615602087246926389">別の Google アカウント パスワードを使って暗号化したデータが既にあります。パスワードを以下に入力してください。</translation>
 <translation id="7616645509853975347">管理者により、お使いのブラウザで Chrome Enterprise Connectors が有効化されています。これらのコネクタには、一部のユーザーデータへのアクセスが許可されます。</translation>
 <translation id="7619838219691048931">最終シート</translation>
 <translation id="762844065391966283">1 件ずつ</translation>
@@ -1912,6 +1917,7 @@
 <translation id="8202097416529803614">ご注文概要</translation>
 <translation id="8202370299023114387">競合</translation>
 <translation id="8206978196348664717">Prc4（封筒）</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{ID をリセットすると、現在の ID が無効になり、1 日以内に新しい ID が発行されます}=1{ID をリセットすると、現在の ID が無効になり、1 日後に新しい ID が発行されます}other{ID をリセットすると、現在の ID が無効になり、{NUM_DAYS} 日後に新しい ID が発行されます}}</translation>
 <translation id="8211406090763984747">この接続は保護されています</translation>
 <translation id="8213464188712611711">思い出</translation>
 <translation id="8218327578424803826">割り当てられた場所:</translation>
@@ -2173,6 +2179,7 @@
 <translation id="9170848237812810038">取消(&amp;U)</translation>
 <translation id="9171296965991013597">アプリを終了しますか？</translation>
 <translation id="9173282814238175921">1 つのドキュメント（新規シート）</translation>
+<translation id="9173995187295789444">Bluetooth デバイスをスキャンしています...</translation>
 <translation id="917450738466192189">サーバーの証明書が無効です。</translation>
 <translation id="9174917557437862841">タブの切り替えボタンです。Enter キーを押すとこのタブに切り替わります</translation>
 <translation id="9179703756951298733">Chrome の設定でお支払いとクレジット カード情報を管理する</translation>

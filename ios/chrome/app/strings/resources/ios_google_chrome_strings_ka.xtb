@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome-მა ვერ შეამოწმა განახლებები. ცადეთ მოგვიანებით.</translation>
 <translation id="2732745070297234559">Chrome-მა ვერ შეამოწმა ყველა პაროლი. ცადეთ ხვალ.</translation>
 <translation id="2740105938841089077">გახსენით ბმულები Chrome-ის მეშვეობით</translation>
+<translation id="2869959624320573933">შედით Chrome-ში</translation>
 <translation id="2919738076569633423">Chrome-ის გამოყენებით თქვენ ეთანხმებით <ph name="BEGIN_LINK_TOS" />მომსახურების პირობებს<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">ვინაიდან თქვენ გადიხართ ანგარიშიდან, რომელსაც მართავს <ph name="SIGNOUT_MANAGED_DOMAIN" />, ამ მოწყობილობიდან წაიშლება თქვენი Chrome მონაცემები, თუმცა ისინი შენარჩუნდება თქვენს Google ანგარიშში.</translation>
 <translation id="3167189358072330585">თქვენი ანგარიში არ მუშაობს Google Chrome-ში. გთხოვთ, დაუკავშირდეთ თქვენი დომენის ადმინისტრატორს, ან სისტემაში შესასვლელად, ჩვეულებრივი Google ანგარიში გამოიყენოთ.</translation>
 <translation id="3173834708294760622">Google Chrome-ის გვერდი</translation>
 <translation id="3196546062792660320">თქვენი ანგარიშების ვებში გამოყენებით, Chrome დროის დაზოგვაში დაგეხმარებათ. ანგარიშების დამატება ან ამოშლა პარამეტრებიდან შეგიძლიათ.</translation>
-<translation id="3223655207402797071">შედით ამ საიტში, თქვენს Google ანგარიშსა და Chrome-ში. სინქრონიზაციის ჩართვა მოგვიანებით შეგიძლიათ.</translation>
 <translation id="3282568296779691940">შესვლა Chrome-ში</translation>
 <translation id="3345341804167540816">გამოიყენეთ Chrome ყველგან</translation>
 <translation id="3455456143708465450">Chrome-ის შესაძლებლობები მაქსიმალურად რომ გამოიყენოთ, შედით სისტემაში თქვენი Google ანგარიშით</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome განახლებულია</translation>
 <translation id="8022947259858476807">გამოიყენეთ Chrome ნაგულისხმევ ბრაუზერად, რომ გახსნათ ბმულები, მოიძიოთ ვიჯეტებიდან და ავტომატურად შეავსოთ პაროლები სხვა აპებში</translation>
 <translation id="8160472928944011082">Chrome ვერ განახლდება</translation>
+<translation id="8263079278049777200">შედით ამ საიტში, თქვენს Google ანგარიშსა და Chrome-ში. სინქრონიზაციის ჩართვა მოგვიანებით შეგიძლიათ.</translation>
 <translation id="8357607116237445042">აირჩიეთ, რა გსურთ — თქვენი Chrome მონაცემების გასუფთავება ამ მოწყობილობიდან თუ მათი შენარჩუნება</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" />, Google LLC. ყველა უფლება დაცულია.</translation>
 <translation id="840168496893712993">ზოგიერთი დანამატი იწვევს Chrome-ის შეცდომას. სცადეთ მათი წაშლა.</translation>

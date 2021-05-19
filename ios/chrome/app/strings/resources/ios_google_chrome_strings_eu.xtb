@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
-<translation id="1096883626080133124">Egin gauza gehiago sinplea eta segurua den, eta inoiz baino bizkorrago funtzionatzen duen Google Chrome batekin</translation>
+<translation id="1096883626080133124">Egin gauza gehiago Chrome-rekin: sinplea, segurua eta inoiz baino bizkorragoa da</translation>
 <translation id="1282031177488366470">Lagundu Chrome-ren eginbideak eta funtzionamendua hobetzen</translation>
 <translation id="1314663809820920746">Gailuan dituzu oraindik laster-marka, historia, pasahitz eta bestelako ezarpen guztiak. Aldaketarik eginez gero, ez dira sinkronizatuko Google-ko kontuarekin.</translation>
 <translation id="1479202195792305274">Saioa Google-ko kontu batekin hasten baduzu, Chrome-k pasahitzak egiazta ditzake.</translation>
@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome-k ezin izan ditu bilatu eguneratzeak. Saiatu berriro geroago.</translation>
 <translation id="2732745070297234559">Chrome-k ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar.</translation>
 <translation id="2740105938841089077">Estekak irekitzeko, erabili Chrome</translation>
+<translation id="2869959624320573933">Hasi saioa Chrome-n</translation>
 <translation id="2919738076569633423">Chrome erabiltzen baduzu, onartu egingo dituzu <ph name="BEGIN_LINK_TOS" />Zerbitzu-baldintzak<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> domeinuak kudeatutako kontu baten saioa amaituko duzunez, Chrome-n dituzun datuak ezabatu egingo dira gailu honetatik. Hala ere, datu horiek Google-ko kontuan egoten jarraituko dute.</translation>
 <translation id="3167189358072330585">Kontua ez dabil Google Chrome-n. Jarri harremanetan domeinuaren administratzailearekin edo erabili ohiko Google-ko kontu bat saioa hasteko.</translation>
 <translation id="3173834708294760622">Google Chrome-ko orri bat</translation>
 <translation id="3196546062792660320">Chrome-rekin denbora aurrezten duzu kontuak sarera eramanda. Kontuak gehi edo ken ditzakezu Ezarpenak atalean.</translation>
-<translation id="3223655207402797071">Hasi saioa webgune honetan, Google-ko kontuan eta Chrome-n. Geroago aktiba dezakezu sinkronizazioa.</translation>
 <translation id="3282568296779691940">Hasi saioa Chrome-n</translation>
 <translation id="3345341804167540816">Erabili Chrome edonon</translation>
 <translation id="3455456143708465450">Chrome-ri etekinik handiena ateratzeko, hasi saioa Google-ko kontuarekin</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Eguneratuta dago Google Chrome</translation>
 <translation id="8022947259858476807">Erabili Chrome modu lehenetsian estekak irekitzeko, widgetetatik bilaketak egiteko eta beste aplikazio batzuetako pasahitzak automatikoki betetzeko</translation>
 <translation id="8160472928944011082">Ezin da eguneratu Chrome</translation>
+<translation id="8263079278049777200">Hasi saioa webgune honetan, Google-ko kontuan eta Chrome-n. Geroago aktiba dezakezu sinkronizazioa.</translation>
 <translation id="8357607116237445042">Erabaki Chrome-ko datuak garbitu nahi dituzun ala ez gailu honetatik</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Eskubide guztiak erreserbatuta.</translation>
 <translation id="840168496893712993">Gehigarri batzuek Chrome huts egitea eragiten dute. Saiatu horiek desinstalatzen.</translation>

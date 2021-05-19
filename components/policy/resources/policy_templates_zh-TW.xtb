@@ -2114,17 +2114,6 @@
 <translation id="377044054160169374">強制干預濫用行為</translation>
 <translation id="3778689139323007309">針對由本機裝載 CA 憑證所簽署並經過成功驗證的伺服器憑證，執行撤銷檢查</translation>
 <translation id="3780152581321609624">Kerberos SPN 包含非標準連接埠</translation>
-<translation id="3783569262370557918">針對清單中的網址啟用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
-
-      透過這項政策，你可以指定要讓哪些網址加入認證流程，接收裝置傳送的信號。
-
-      如果不設定這項政策或設為空白，就沒有端點能啟動認證流程，以及接收裝置傳送的信號。
-
-      網址必須採用 HTTPS 架構，例如「https://example.com」。
-
-      注意：可以使用萬用字元 <ph name="WILDCARD_VALUE" />。
-
-      如果想進一步瞭解有效的<ph name="URL_LABEL" />格式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="378495749480642482">設定使用者前往的網站是否能透過 <ph name="WEBXR_API_NAME" /> 建立沉浸式擴增實境工作階段。
 
       如果未設定這項政策或設為啟用，<ph name="WEBXR_API_NAME" /> 會在工作階段建立期間接受 <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />，為使用者提供擴增實境體驗。
@@ -2835,11 +2824,6 @@
       如果未設定這項政策，就不會有例外項目。
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
-<translation id="4882406948002286350">你可以透過這項政策，禁止系統載入網址遭到禁止的網頁。這項政策可提供網址格式清單，用於指定要禁止的網址。如果未設定這項政策，則瀏覽器不會禁止任何網址。網址格式如下：https://www.chromium.org/administrators/url-blocklist-filter-format。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 中最多可定義 1000 個例外網址。
-
-      自 <ph name="PRODUCT_NAME" /> 73 版開始，你可以封鎖 javascript://* 網址。不過，這項設定只適用於在網址列 (或書籤小程式等) 輸入的 JavaScript，動態載入資料的網頁內 JavaScript 網址不會受到這項政策影響。舉例來說，即使你封鎖了 example.com/abc，example.com 仍可透過 XMLHTTPRequest 載入 example.com/abc。
-
-      注意：封鎖內部的 chrome://* 網址可能會導致非預期的錯誤。</translation>
 <translation id="4886783562285047261">如果將這項政策設為啟用，系統會強制要求註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />。如果註冊失敗，系統會封鎖 <ph name="PRODUCT_NAME" /> 啟動程序。
 
       如果將這項政策設為停用或不設定，使用者可選擇是否要註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />。如果註冊失敗，系統不會封鎖 <ph name="PRODUCT_NAME" /> 啟動程序。
@@ -3951,11 +3935,6 @@
 
       如果不設定這項政策或是清單保留空白，系統將可在 <ph name="PRODUCT_NAME" /> 中存取所有網路通訊協定配置。</translation>
 <translation id="6338982178236723271">回報系統資訊</translation>
-<translation id="6347363725343851058">如果將這項政策設為啟用，系統會開啟背景模式。在背景模式中，<ph name="PRODUCT_NAME" /> 處理程序會在使用者登入作業系統時啟動，並在最後一個瀏覽器視窗關閉後持續執行，讓背景應用程式和瀏覽工作階段 (包括任何工作階段 Cookie) 維持運作。背景處理程序會在系統匣中顯示相應圖示，使用者隨時可從該處關閉處理程序。
-
-      如果將這項政策設為停用，系統將關閉背景模式。
-
-      如果設定這項政策，使用者將無法在瀏覽器設定中予以變更。如果不設定，系統會先關閉背景模式，但使用者可進行變更。</translation>
 <translation id="6353890097388312479">如果將這項政策設為 All (值為 0) 或不設定，使用者將可透過「憑證管理員」編輯所有 CA 憑證的信任設定、移除使用者匯入的憑證以及匯入憑證。如果將這項政策設為 UserOnly (值為 1)，使用者只能管理使用者匯入的憑證，無法變更內建憑證的信任設定。如果設為 None (值為 2)，使用者只能查看 CA 憑證，而無法進行管理。</translation>
 <translation id="6362856770865555544">如果將這項政策設為啟用或不設定，系統會開啟 <ph name="PRODUCT_NAME" /> 中的 WPAD (網路 Proxy 自動探索) 最佳化功能。
 
@@ -4500,15 +4479,6 @@
       如果未設定這項政策，使用者可以自行變更這項設定。
 
       注意：Android 的網站隔離支援日後將會改善，但目前可能會導致效能問題。執行 Chrome 的 Android 系統必須運行於 RAM 實際超過 1 GB 的裝置上，才能套用這項政策。如要在非 Android 平台上套用這項政策，請使用 <ph name="ISOLATE_ORIGINS_POLICY_NAME" />。</translation>
-<translation id="6978404102280820831">除非將 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策設為一律還原先前工作階段的網址，否則你可以透過 <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> 政策建立網址模式清單，用來指定網站是否可為單一工作階段設定 Cookie。
-
-      如果未設定這項政策，系統會針對所有網站使用 <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> (如果已設定)；否則系統會套用使用者的個人設定。如果網址不符合指定的模式，系統也會使用預設值。
-
-      如果 <ph name="PRODUCT_NAME" /> 在背景模式下執行，工作階段可能會持續運作到使用者關閉瀏覽器為止，而非只持續到關閉最後一個視窗。請參閱 <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" />，進一步瞭解如何設定這項行為。
-
-      如果沒有優先執行的政策，請參閱 <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />。這 3 個政策中的網址模式不可發生衝突。
-
-      想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6979739838208297344">如果將這項政策設為 <ph name="BR_ENABLED" />，Android 備份與還原功能的初始狀態是設為啟用。如果將這項政策設為 <ph name="BR_DISABLED" /> 或不設定，系統會在設定期間將備份與還原功能保持停用。
 
@@ -5200,13 +5170,6 @@
       決定使用擴充程式 ID 當做登入畫面的螢幕保護程式。該擴充功能必須屬於你透過 DeviceAppPack 政策為這個網域設定的 AppPack。</translation>
 <translation id="7882857838942884046">停用 Google Sync 會造成 Android 備份與還原功能無法正常運作。</translation>
 <translation id="7882890448959833986">偵測到不支援的作業系統時不顯示警告</translation>
-<translation id="788487748427534612">除非將 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策設為一律還原先前工作階段的網址，否則你可以透過 <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> 政策建立網址模式清單，用來指定網站是否可為單一工作階段設定 Cookie。
-
-      如果未設定這項政策，系統會針對所有網站使用 <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> (如果已設定)；否則系統會套用使用者的個人設定。如果指定的模式中不包含使用者設定的網址，系統也會使用預設值。
-
-      如果使用者在背景中執行 <ph name="PRODUCT_NAME" />，工作階段可能會持續運作到關閉瀏覽器為止，而非只持續到關閉最後一個視窗。請參閱 <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" />，進一步瞭解如何設定這項行為。
-
-      如果沒有優先執行的政策，請參閱 <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />。這 3 個政策中的網址模式不可衝突。</translation>
 <translation id="7887379840451099426">只有在裝置使用電池供電時才適用的電源管理設定</translation>
 <translation id="7891884447851425349">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> 政策來指定在進行預設搜尋時所使用的搜尋引擎網址。網址應包含字串 <ph name="SEARCH_TERM_MARKER" />，系統會在查詢中將其替換為使用者的搜尋字詞。
 
@@ -5818,13 +5781,6 @@
       如果未設定這項政策，Chrome 會使用其平台專屬的預設目錄。
 
       注意：如要查看可使用的變數清單，請前往 https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables。</translation>
-<translation id="877499586514669705">如果設定這項政策，使用者可以存取許可清單中的網址，這些網址是 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外項目。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許使用者存取一些特定的網址。請使用 https://www.chromium.org/administrators/url-blocklist-filter-format 網頁中所指定的格式，透過這項政策將特定的網路通訊協定、其他網域的子網域、連接埠或特定路徑設為例外。系統需要判定是否封鎖某一個網址時，會以最精確的篩選條件為依據。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的優先順序高於 <ph name="URL_BLOCKLIST_POLICY_NAME" />。這項政策最多只能輸入 1,000 個項目。
-
-      這項政策還可以讓瀏覽器自動叫用已註冊為通訊協定處理常式的外部應用程式，用於處理許可清單中的「tel:」或「ssh:」等通訊協定。
-
-      如果未設定這項政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 就不會有例外項目。
-
-      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="877557628527387598">密碼登入資料</translation>
 <translation id="8777369558049831576">在外部通訊協定對話方塊中顯示「一律開啟」核取方塊。</translation>
 <translation id="8786409859071107656">如果將這項政策設為啟用，系統會啟用 USB 電力共享電源管理政策。

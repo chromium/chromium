@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">Redueix</translation>
 <translation id="2230173723195178503">La pàgina web s'ha carregat</translation>
 <translation id="2239626343334228536">S'estan esborrant les dades de navegació...</translation>
-<translation id="2257567812274161158">La sincronització no funciona.</translation>
 <translation id="225943865679747347">Codi d'error: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Afegeix un compte</translation>
 <translation id="2268044343513325586">Restringeix</translation>
@@ -143,7 +142,6 @@
 Els llocs web no poden fer servir galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis.</translation>
 <translation id="2381405137052800939">Configuració bàsica</translation>
 <translation id="2386793615875593361">1 seleccionada</translation>
-<translation id="2410754283952462441">Tria un compte</translation>
 <translation id="2421004566762153674">S'estan bloquejant les galetes de tercers</translation>
 <translation id="2421044535038393232">Continua editant</translation>
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
@@ -362,7 +360,6 @@ Les teves dades estan encriptades amb la teva frase de contrasenya de sincronitz
 <translation id="473775607612524610">Actualitza</translation>
 <translation id="4747097190499141774">L'encriptació de frases de contrasenya no inclou les formes de pagament ni les adreces de Google Pay. Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les dades que encriptes. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si l'oblides o vols canviar aquesta opció, has de restablir la sincronització. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Pestanya d'incògnit nova</translation>
-<translation id="4766678251456904326">Afegeix un compte al dispositiu</translation>
 <translation id="4775879719735953715">Navegador predeterminat</translation>
 <translation id="4778644898150334464">Utilitza una altra contrasenya</translation>
 <translation id="4802417911091824046">L'encriptació de frases de contrasenya no inclou les formes de pagament ni les adreces de Google Pay.
@@ -794,6 +791,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8976382372951310360">Ajuda</translation>
 <translation id="8981454092730389528">Controls d'activitat de Google</translation>
 <translation id="8985320356172329008">Has iniciat la sessió a Google com a</translation>
+<translation id="8996526648899750015">Afegeix un compte...</translation>
 <translation id="9034759925968272072">No se us tancarà la sessió del compte de Google, el qual és possible que tingui altres formes de l'historial de navegació a <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostra l'original</translation>
 <translation id="9039373489628511875">Amplada de banda</translation>
@@ -816,6 +814,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">L'informe d'error s'ha enviat.</translation>
 <translation id="952704832371081537">Cancel·la</translation>
+<translation id="984509647832111802">La sincronització no funciona.</translation>
 <translation id="988141524645182168">Altres dispositius</translation>
 <translation id="989988560359834682">Edita l'adreça</translation>
 <translation id="994757059139821576">Suggeriments d'articles</translation>

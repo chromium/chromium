@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Google Chrome আৰু Chrome OSৰ অতিৰিক্ত চৰ্তাৱলী</translation>
 <translation id="1807246157184219062">পাতল</translation>
 <translation id="1810845389119482123">প্ৰাৰম্ভিক ছিংক ছেট আপ সমাপ্ত হোৱা নাই</translation>
-<translation id="1821253160463689938">আপুনি সেই পৃষ্ঠাসমূহ পুনৰ নাচালেও আপোনাৰ পচন্দসমূহ মনত ৰাখিবলৈ কুকিৰ ব্যৱহাৰ কৰক</translation>
 <translation id="1829244130665387512">পৃষ্ঠাত বিচাৰক</translation>
 <translation id="1830550083491357902">ছাইন ইন কৰা নাই</translation>
 <translation id="1843805151597803366">অধিক ভাল অনুবাদ পাবলৈ, Google Searchক বৰ্তমানৰ পৃষ্ঠাখন ব্যৱহাৰ কৰিবলৈ দিয়ক</translation>
@@ -273,7 +272,6 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> ছেকেণ্ড বাকী আছে</translation>
 <translation id="2779651927720337254">ডাউনল'ড কৰিব পৰা নগ'ল</translation>
 <translation id="2781151931089541271">১ ছেকেণ্ড বাকী আছে</translation>
-<translation id="279827439955962619">হাইলাইট কৰা পাঠ আঁতৰাওক</translation>
 <translation id="2801022321632964776">Chromeৰ সকলোতকৈ শেহতীয়া সংস্কৰণটোত নিজৰ ভাষাটো পাবলৈ আপগ্ৰেড কৰক</translation>
 <translation id="2805756323405976993">এপ্</translation>
 <translation id="281504910091592009">আপোনাৰ <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" />ত ছেভ কৰি থোৱা পাছৱর্ডসমূহ চাওক আৰু পৰিচালনা কৰক</translation>
@@ -454,7 +452,6 @@
 <translation id="3988466920954086464">এই পেনেলটোত তাৎক্ষণিকভাৱে সন্ধানৰ ফলাফল চাওক</translation>
 <translation id="4000212216660919741">অফলাইন গৃহপৃষ্ঠা</translation>
 <translation id="4016425174436051808">ফ’ল’ কৰিব নোৱাৰি। কিবা ভুল হ’ল।</translation>
-<translation id="4021916380760361450">নিজৰ Google একাউণ্টৰ ডেটা নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ঘণ্টা}one{# ঘণ্টা}other{# ঘণ্টা}}</translation>
 <translation id="4045764304651014138">ব্যৱহাৰৰ ডেটা</translation>
 <translation id="4056223980640387499">ছেপিয়া</translation>
@@ -480,7 +477,6 @@
 <translation id="4195643157523330669">নতুন টেবত খোলক</translation>
 <translation id="4198423547019359126">ডাউনল’ড কৰিবলৈ কোনো অৱস্থান নাই</translation>
 <translation id="4209895695669353772">Googleএ চুপাৰিছ কৰা ব্যক্তিগতকৰণ কৰা সমল পাবলৈ ছিংক অন কৰক</translation>
-<translation id="423219824432660969">আপোনাৰ Google ব্যৱহাৰ কৰি <ph name="TIME" /> পৰ্যন্ত আপোনাৰ ছিংক কৰা ডেটা এনক্ৰিপ্ট কৰক</translation>
 <translation id="4242533952199664413">ছেটিংসমূহ খোলক</translation>
 <translation id="4248098802131000011">আপোনাৰ পাছৱর্ডসমূহক ডেটা উলংঘন আৰু অন্য সুৰক্ষা সম্পর্কীয় সমস্যাসমূহৰ পৰা নিৰাপদে ৰাখক</translation>
 <translation id="4250229828105606438">স্ক্রীণশ্বট</translation>
@@ -559,6 +555,7 @@
 <translation id="47217992755561375">আপোনাৰ শীৰ্ষ ছাইটসমূহ চাওক</translation>
 <translation id="4732120983431207637">ষ্টেক আনৱিণ্ডাৰ</translation>
 <translation id="4738836084190194332">অন্তিমবাৰ ছিংক কৰা সময়: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">হাইলাইট আঁতৰাওক</translation>
 <translation id="4749960740855309258">এটা নতুন টেব খোলক</translation>
 <translation id="4759238208242260848">ডাউনল'ডসমূহ</translation>
 <translation id="4763480195061959176">ভিডিঅ’</translation>
@@ -699,7 +696,6 @@
 <translation id="562289928968387744">প্ৰতিক্ৰিয়া পৰিচালনা কৰক</translation>
 <translation id="5626134646977739690">নাম:</translation>
 <translation id="5628604359369369630">নপঢ়া - অফলাইনত উপলব্ধ</translation>
-<translation id="5632627355679805402">আপোনাৰ ডেটা <ph name="BEGIN_LINK" />Google পাছৱৰ্ড<ph name="END_LINK" />ৰ সৈতে <ph name="TIME" /> পর্যন্ত এনক্ৰিপ্ট কৰা হৈছে। ছিংক কৰা আৰম্ভ কৰিবলৈ এইটো দিয়ক।</translation>
 <translation id="5639724618331995626">সকলো ছাইটকে অনুমতি দিয়ক</translation>
 <translation id="5648166631817621825">যোৱা ৭ দিনত</translation>
 <translation id="5655963694829536461">আপোনাৰ ডাউনল’ড সন্ধান কৰক</translation>
@@ -933,7 +929,6 @@
 <translation id="702463548815491781">টকবেক বা ছুইচৰ দ্বাৰা ব্যৱহাৰ কৰা অনুমতি অন থকা অৱস্থান এয়া চুপাৰিছ কৰা হয়</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> পুনঃস্থাপন কৰা হৈছে</translation>
 <translation id="7029809446516969842">পাছৱৰ্ডসমূহ</translation>
-<translation id="7040531500313579672">হাইলাইট কৰা পাঠ শ্বেয়াৰ কৰক</translation>
 <translation id="7054588988317389591">প্ৰতিচ্ছবিৰ বিৱৰণ লাভ কৰিবনে?</translation>
 <translation id="7055152154916055070">পুনৰ নির্দেশ কৰাটো অৱৰোধ কৰা হৈছে</translation>
 <translation id="7063006564040364415">ছিংক ছাৰ্ভাৰৰ সৈতে সংযোগ কৰিব পৰা নগ'ল।</translation>
@@ -969,6 +964,7 @@
 <translation id="7328017930301109123">লাইট ম'ডত Chromeএ পৃষ্ঠা খৰতকীয়াকৈ ল'ড কৰে আৰু ৬০ শতাংশলৈকে কম ডেটা ব্যৱহাৰ কৰে।</translation>
 <translation id="7332075081379534664">সফলভাৱে ছাইন ইন কৰা হ’ল</translation>
 <translation id="7333031090786104871">এতিয়াও পূৰ্বৱৰ্তী ছাইট যোগ কৰি থকা হৈছে</translation>
+<translation id="7339898014177206373">নতুন ৱিণ্ড'</translation>
 <translation id="7340958967809483333">Discoverৰ বিকল্পসমূহ</translation>
 <translation id="7352651011704765696">কিবা সমস্যা হৈছে</translation>
 <translation id="7352939065658542140">ভিডিঅ’</translation>

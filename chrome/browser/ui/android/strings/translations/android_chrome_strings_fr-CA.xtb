@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Conditions d'utilisation supplémentaires pour Google Chrome et Chrome OS</translation>
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1810845389119482123">La configuration de la synchro. initiale n'est pas terminée</translation>
-<translation id="1821253160463689938">Utilise des témoins pour mémoriser vos préférences, même si vous ne consultez pas ces pages</translation>
 <translation id="1829244130665387512">Rechercher sur la page</translation>
 <translation id="1830550083491357902">Non connecté</translation>
 <translation id="1843805151597803366">Pour obtenir des traductions de meilleure qualité, autorisez la recherche Google à utiliser la page actuelle</translation>
@@ -203,6 +202,7 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <ph name="BEGIN_LIST_ITEM1" />Les annonceurs peuvent tirer des apprentissages auprès de milliers d'utilisateurs qui partagent un intérêt similaire, comme une foule qui assiste à un concert, et ainsi sélectionner des annonces pour cette foule, plutôt que pour une personne en particulier.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Les annonceurs peuvent étudier l'efficacité des annonces sans vous suivre sur tous les sites.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Précharge les pages que Chrome pense que vous pourriez visiter. Pour ce faire, Chrome peut utiliser des témoins, si vous les acceptez, et peut chiffrer et envoyer des pages par l'intermédiaire de Google afin de masquer votre identité auprès des sites.</translation>
 <translation id="234265804618409743">Impossible d'ouvrir votre appareil photo. Un problème s'est produit.</translation>
 <translation id="2345671828921229300">Pour effectuer une recherche, maintenez le doigt sur un mot</translation>
 <translation id="2349710944427398404">Le total des données utilisées par Chrome, comprenant les comptes, les favoris et les paramètres enregistrés</translation>
@@ -273,7 +273,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2777555524387840389">Il reste <ph name="SECONDS" /> secondes</translation>
 <translation id="2779651927720337254">échec</translation>
 <translation id="2781151931089541271">Il reste 1 s</translation>
-<translation id="279827439955962619">Retirer la mise en surbrillance</translation>
 <translation id="2801022321632964776">Mettez Chrome à jour pour en profiter dans votre propre langue</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="281504910091592009">Affichez et gérez les mots de passe enregistrés dans votre <ph name="BEGIN_LINK" />compte google<ph name="END_LINK" /></translation>
@@ -454,7 +453,6 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="3988466920954086464">Affichez les résultats de recherche instantanée dans ce volet</translation>
 <translation id="4000212216660919741">Accueil hors ligne</translation>
 <translation id="4016425174436051808">L'abonnement a échoué. Un problème est survenu.</translation>
-<translation id="4021916380760361450">Gérer les données de vos comptes Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Données d'utilisation</translation>
 <translation id="4056223980640387499">Sépia</translation>
@@ -480,7 +478,6 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4198423547019359126">Aucun dossier de téléchargement n'est disponible</translation>
 <translation id="4209895695669353772">Pour obtenir du contenu personnalisé suggéré par Google, activez la synchronisation</translation>
-<translation id="423219824432660969">Chiffrer les données synchronisées avec le mot de passe Google à compter du <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4248098802131000011">Protégez vos mots de passe contre les violations de données et d'autres problèmes de sécurité</translation>
 <translation id="4250229828105606438">Saisie d'écran</translation>
@@ -559,6 +556,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="47217992755561375">Afficher vos sites les plus fréquentés</translation>
 <translation id="4732120983431207637">Dérouleur de pile</translation>
 <translation id="4738836084190194332">Dernière synchronisation : <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Retirer la surbrillance</translation>
 <translation id="4749960740855309258">Ouvrir un nouvel onglet</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4763480195061959176">Vidéo</translation>
@@ -699,7 +697,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="562289928968387744">Gérer les réactions</translation>
 <translation id="5626134646977739690">Nom :</translation>
 <translation id="5628604359369369630">Non lus : accessibles hors ligne</translation>
-<translation id="5632627355679805402">Vos données ont été chiffrées avec votre <ph name="BEGIN_LINK" />mot de passe Google<ph name="END_LINK" /> à compter du <ph name="TIME" />. Entrez votre mot de passe pour démarrer la synchronisation.</translation>
 <translation id="5639724618331995626">Autoriser tous les sites</translation>
 <translation id="5648166631817621825">Sept derniers jours</translation>
 <translation id="5655963694829536461">Rechercher vos téléchargements</translation>
@@ -934,7 +931,6 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="702463548815491781">Recommandé lorsque le service TalkBack ou Switch Access est activé</translation>
 <translation id="7027549951530753705">Élément restauré : <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Mots de passe</translation>
-<translation id="7040531500313579672">Partager le texte en surbrillance</translation>
 <translation id="7054588988317389591">Obtenir les descriptions d'images?</translation>
 <translation id="7055152154916055070">Redirection bloquée :</translation>
 <translation id="7063006564040364415">Échec de connexion au serveur de synchronisation.</translation>
@@ -970,6 +966,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7328017930301109123">En mode simplifié, Chrome charge les pages plus vite et utilise jusqu'à 60 pour cent moins de données.</translation>
 <translation id="7332075081379534664">Connexion réussie</translation>
 <translation id="7333031090786104871">Ajout du site précédent toujours en cours…</translation>
+<translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7340958967809483333">Options pour Découvertes</translation>
 <translation id="7352651011704765696">Une erreur s’est produite</translation>
 <translation id="7352939065658542140">VIDÉO</translation>
@@ -998,6 +995,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7493994139787901920"><ph name="VERSION" /> (mise à jour : <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">données enregistrées</translation>
 <translation id="7498271377022651285">Veuillez patienter...</translation>
+<translation id="750228856503700085">Les mises à jour ne sont pas accessibles</translation>
 <translation id="7507207699631365376">Consulter la <ph name="BEGIN_LINK" />politique de confidentialité<ph name="END_LINK" /> de ce fournisseur</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="751961395872307827">Impossible de se connecter à ce site</translation>
@@ -1099,6 +1097,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8078096376109663956">Partager le texte seulement</translation>
 <translation id="8084114998886531721">Mot de passe enregistré</translation>
+<translation id="8084285576995584326">Gérez les données de votre compte Google</translation>
 <translation id="808747664143081553">Connecté à l'appareil</translation>
 <translation id="8103578431304235997">Onglet de navigation privée</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="8712637175834984815">OK</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8730621377337864115">Terminé</translation>
+<translation id="8746155870861185046">Partager le contenu surligné</translation>
 <translation id="8748850008226585750">Contenus masqués</translation>
 <translation id="8773160212632396039">Traitement de la demande en cours…</translation>
 <translation id="8788265440806329501">L'historique de navigation est fermé</translation>

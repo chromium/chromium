@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">Zoom ud</translation>
 <translation id="2230173723195178503">Websiden er indlæst</translation>
 <translation id="2239626343334228536">Browserdata ryddes...</translation>
-<translation id="2257567812274161158">Der kunne ikke synkroniseres.</translation>
 <translation id="225943865679747347">Fejlkode: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Tilføj konto</translation>
 <translation id="2268044343513325586">Juster</translation>
@@ -143,7 +142,6 @@
 Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige websites for f.eks. at tilpasse annoncer.</translation>
 <translation id="2381405137052800939">Grundlæggende</translation>
 <translation id="2386793615875593361">1 valgt</translation>
-<translation id="2410754283952462441">Vælg en konto</translation>
 <translation id="2421004566762153674">Blokering af cookies fra tredjeparter</translation>
 <translation id="2421044535038393232">Rediger videre</translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
@@ -362,7 +360,6 @@ Dine data er krypteret med din adgangssætning til synkronisering. Angiv den for
 <translation id="473775607612524610">Opdater</translation>
 <translation id="4747097190499141774">Kryptering med adgangssætning omfatter ikke betalingsmetoder og adresser fra Google Pay. Det er kun personer med din adgangssætning, der kan læse dine krypterede data. Adgangssætningen sendes ikke til eller gemmes af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du nulstille synkronisering. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Ny inkognitofane</translation>
-<translation id="4766678251456904326">Føj konto til enhed</translation>
 <translation id="4775879719735953715">Standardbrowser</translation>
 <translation id="4778644898150334464">Brug en anden adgangskode</translation>
 <translation id="4802417911091824046">Kryptering med adgangssætning omfatter ikke betalingsmetoder og adresser fra Google Pay.
@@ -794,6 +791,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8976382372951310360">Hjælp</translation>
 <translation id="8981454092730389528">Aktivitetsadministration på Google</translation>
 <translation id="8985320356172329008">Du er logget ind på Google som</translation>
+<translation id="8996526648899750015">Tilføj konto...</translation>
 <translation id="9034759925968272072">Du logges ikke ud af din Google-konto. Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Vis oprindelig</translation>
 <translation id="9039373489628511875">Båndbredde</translation>
@@ -816,6 +814,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Der er sendt en nedbrudsrapport.</translation>
 <translation id="952704832371081537">Annuller</translation>
+<translation id="984509647832111802">Synkronisering fungerer ikke.</translation>
 <translation id="988141524645182168">Andre enheder</translation>
 <translation id="989988560359834682">Rediger adresse</translation>
 <translation id="994757059139821576">Artikelforslag</translation>

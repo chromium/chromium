@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">කුඩා කරන්න</translation>
 <translation id="2230173723195178503">වෙබ් පිටුව පූරණය කරන ලදී</translation>
 <translation id="2239626343334228536">බ්‍රවුස් කිරීමේ දත්ත හිස් කිරීම...</translation>
-<translation id="2257567812274161158">සමමුහූර්ත කිරීම ක්‍රියා නොකරයි.</translation>
 <translation id="225943865679747347">දෝශ කේතය: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">ගිණුම එක් කරන්න</translation>
 <translation id="2268044343513325586">පිරිපහදු කරන්න</translation>
@@ -143,7 +142,6 @@
 විවිධ වෙබ් අඩවි හරහා ඔබේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් බැලීමට, උදාහරණයක් වශයෙන්, වෙළඳ දැන්වීම් පෞද්ගලීකරණය කිරීමට වෙබ් අඩවිවලට කුකි භාවිත කළ නොහැකිය.</translation>
 <translation id="2381405137052800939">මූලික</translation>
 <translation id="2386793615875593361">0 ක් තෝරා ගන්නා ලදි</translation>
-<translation id="2410754283952462441">ගිණුමක් තෝරා ගන්න</translation>
 <translation id="2421004566762153674">තෙවන පාර්ශ්ව කුකී අවහිර කිරීම</translation>
 <translation id="2421044535038393232">සංස්කරණ කර ගෙන යන්න</translation>
 <translation id="2435457462613246316">මුරපදය පෙන්වන්න</translation>
@@ -362,7 +360,6 @@
 <translation id="473775607612524610">යාවත්කාලීනය</translation>
 <translation id="4747097190499141774">මුර-වැකිකඩ සංකේතනයට Google Pay වෙතින් ගෙවීමේ ක්‍රම සහ ලිපින ඇතුළු නෙවේ. සංකේතන කළ දත්ත කියවිය හැක්කේ ඔබේ මුර-වැකිකඩ සහිත අයෙකුට පමණයි. මෙම මුර-වැකිකඩ Google වෙත යැවීම හෝ ගබඩා කිරීම සිදු නොවේ. ඔබට ඔබේ මුර-වැකිකඩ අමතක වූයේ නම්, ඔබ සමමුහූර්ත කිරීම අවශ්‍ය වෙයි. <ph name="BEGIN_LINK" />තවත් දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">නව අප්‍රසිද්ධ පටිත්ත</translation>
-<translation id="4766678251456904326">උපාංගයට ගිණුමක් එක් කරන්න</translation>
 <translation id="4775879719735953715">පෙරනිමි වෙබ් බ්‍රව්සරය</translation>
 <translation id="4778644898150334464">වෙනත් මුරපදයක් භාවිත කරන්න</translation>
 <translation id="4802417911091824046">මුර-වැකිකඩ සංකේතනයට Google Pay වෙතින් ගෙවීමේ ක්‍රම සහ ලිපින ඇතුළු නොවේ.
@@ -794,6 +791,7 @@
 <translation id="8976382372951310360">උදවු</translation>
 <translation id="8981454092730389528">Google ක්‍රියාකාරකම් පාලනය</translation>
 <translation id="8985320356172329008">Google වෙත පුරනය වූයේ</translation>
+<translation id="8996526648899750015">ගිණුමක් එක් කරන්න...</translation>
 <translation id="9034759925968272072">ඔබව ඔබේ Google ගිණුමෙන් නොවරනු ඇත. ඔබගේ Google ගිණුමට <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> දී බ්‍රවුස් කිරීමේ ඉතිහාසයේ වෙනත් ආකාර තිබිය හැකිය.</translation>
 <translation id="9037965129289936994">මුල් පිටපත පෙන්වන්න</translation>
 <translation id="9039373489628511875">කලාප පළල</translation>
@@ -816,6 +814,7 @@
 <translation id="9203116392574189331">භාර දීම</translation>
 <translation id="9223358826628549784">බිඳ වැටීම් වාර්තාව යවන ලදි.</translation>
 <translation id="952704832371081537">අවලංගු කරන්න</translation>
+<translation id="984509647832111802">සමමුහුර්තය ක්‍රියා නොකරයි.</translation>
 <translation id="988141524645182168">වෙනත් උපාංග</translation>
 <translation id="989988560359834682">ලිපිනය සංස්කරණය කරන්න</translation>
 <translation id="994757059139821576">ලිපි යෝජනා</translation>

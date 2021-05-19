@@ -233,7 +233,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7745317241717453663">This will delete your browsing data from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">The installer couldn't create a temporary directory. Please check for free disk space and permission to install software.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
-<translation id="7827169012280634081">Clear cookies and site data when you quit Chromium</translation>
 <translation id="7828947555739565424">A Chromium profile with this account already exists on this device</translation>
 <translation id="7857220146454061152">To get future Chromium updates, you'll need OS X 10.11 or later. This computer is using OS X 10.10.</translation>
 <translation id="7867198900892795913">Chromium couldn't update to the latest version, so you're missing out on new features and security fixes.</translation>

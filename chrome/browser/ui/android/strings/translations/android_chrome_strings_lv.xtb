@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumi</translation>
 <translation id="1807246157184219062">Gaišs</translation>
 <translation id="1810845389119482123">Sākotnējā sinhronizācijas iestatīšana nav pabeigta</translation>
-<translation id="1821253160463689938">Izmanto sīkfailus, lai iegaumētu jūsu preferences, pat ja neapmeklējāt šīs lapas</translation>
 <translation id="1829244130665387512">Atrast lapā</translation>
 <translation id="1830550083491357902">Nav pierakstījies</translation>
 <translation id="1843805151597803366">Lai iegūtu labākus tulkojumus, ļaujiet pakalpojumam “Google meklēšana” izmantot pašreizējo lapu</translation>
@@ -203,6 +202,7 @@ Pieskarieties jebkuram vārdam, lai to meklētu. Ja vēlaties precizēt meklēš
 <ph name="BEGIN_LIST_ITEM1" />Reklāmdevēji var uzzināt, kādas intereses ir kopīgas tūkstošiem lietotāju (gluži kā koncerta klausītāju pūlim), un atlasīt reklāmas attiecīgajai lietotāju grupai, nevis katram atsevišķam lietotājam.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Reklāmu efektivitāti reklāmdevēji var pētīt, neizsekojot jūsu darbības vietnēs.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Tiek iepriekš ielādētas lapas, ko jūs varētu apmeklēt saskaņā ar Chrome pieejamajiem datiem. Šim nolūkam Chrome var izmantot sīkfailus, ja tos atļaujat, kā arī šifrēt un sūtīt lapas, izmantojot Google sistēmas, lai slēptu jūsu identitāti no vietnēm.</translation>
 <translation id="234265804618409743">Nevar atvērt kameru. Radās kļūda.</translation>
 <translation id="2345671828921229300">Lai meklētu, pieskarieties vārdam un turiet to</translation>
 <translation id="2349710944427398404">Kopējais pārlūkā Chrome izmantoto datu apjoms, ieskaitot kontus, grāmatzīmes un saglabātos iestatījumus</translation>
@@ -273,7 +273,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="2777555524387840389">Atlikušas <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">neizdevās</translation>
 <translation id="2781151931089541271">Atlikusi 1 s</translation>
-<translation id="279827439955962619">Noņemt atzīmēto tekstu</translation>
 <translation id="2801022321632964776">Veiciet atjaunināšanu, lai varētu lasīt savā valodā jaunākajā pārlūka Chrome versijā</translation>
 <translation id="2805756323405976993">Lietotnes</translation>
 <translation id="281504910091592009">Skatiet un pārvaldiet saglabātās paroles savā <ph name="BEGIN_LINK" />Google kontā<ph name="END_LINK" /></translation>
@@ -454,7 +453,6 @@ Privacy Sandbox izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģi
 <translation id="3988466920954086464">Skatīt tūlītējus meklēšanas rezultātus šajā panelī</translation>
 <translation id="4000212216660919741">Bezsaistes sākums</translation>
 <translation id="4016425174436051808">Nevar sekot. Radās kļūda.</translation>
-<translation id="4021916380760361450">Pārvaldiet sava Google konta datus</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}zero{# h}one{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Lietojuma dati</translation>
 <translation id="4056223980640387499">Sēpija</translation>
@@ -480,7 +478,6 @@ Privacy Sandbox izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģi
 <translation id="4195643157523330669">Atvērt jaunā cilnē</translation>
 <translation id="4198423547019359126">Nav pieejamu lejupielādes atrašanās vietu.</translation>
 <translation id="4209895695669353772">Lai saņemtu Google ieteikto personalizēto saturu, ieslēdziet sinhronizāciju.</translation>
-<translation id="423219824432660969">Šifrēt sinhronizētos datus ar Google paroli, sākot no: <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Atvērt iestatījumus</translation>
 <translation id="4248098802131000011">Aizsargājiet savas paroles pret datu pārkāpumiem un citām drošības problēmām.</translation>
 <translation id="4250229828105606438">Ekrānuzņēmums</translation>
@@ -559,6 +556,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="47217992755561375">Skatīt vietnes, ko apmeklējat visbiežāk</translation>
 <translation id="4732120983431207637">Steka atbrīvotājs</translation>
 <translation id="4738836084190194332">Pēdējoreiz sinhronizēts: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Atcelt teksta atzīmēšanu</translation>
 <translation id="4749960740855309258">Atvērt jaunu cilni</translation>
 <translation id="4759238208242260848">Lejupielādes</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +697,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="562289928968387744">Pārvaldīt reakcijas</translation>
 <translation id="5626134646977739690">Nosaukums:</translation>
 <translation id="5628604359369369630">Nelasītas — pieejamas bezsaistē</translation>
-<translation id="5632627355679805402">Jūsu dati tika šifrēti, izmantojot jūsu <ph name="BEGIN_LINK" />Google paroli<ph name="END_LINK" />, no šāda datuma: <ph name="TIME" />. Ievadiet paroli, lai sāktu sinhronizāciju.</translation>
 <translation id="5639724618331995626">Atļaut apmeklēt visas vietnes</translation>
 <translation id="5648166631817621825">Pēdējās 7 dienas</translation>
 <translation id="5655963694829536461">Meklējiet savas lejupielādes</translation>
@@ -934,7 +931,6 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="702463548815491781">Ieteicams, ja ir ieslēgta lietotne TalkBack vai slēdžu piekļuves funkcija.</translation>
 <translation id="7027549951530753705">Atjaunots vienums <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Paroles</translation>
-<translation id="7040531500313579672">Kopīgot atzīmēto tekstu</translation>
 <translation id="7054588988317389591">Vai vēlaties iespējot attēlu aprakstus?</translation>
 <translation id="7055152154916055070">Novirzīšana ir bloķēta:</translation>
 <translation id="7063006564040364415">Nevarēja izveidot savienojumu ar sinhronizācijas serveri.</translation>
@@ -970,6 +966,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="7328017930301109123">Vienkāršotajā režīmā Chrome ielādē lapas ātrāk un patērē pat par 60 procentiem mazāk datu.</translation>
 <translation id="7332075081379534664">Pierakstīšanās sekmīga</translation>
 <translation id="7333031090786104871">Joprojām notiek iepriekšējās vietnes pievienošana</translation>
+<translation id="7339898014177206373">Jauns logs</translation>
 <translation id="7340958967809483333">Discover iespējas</translation>
 <translation id="7352651011704765696">Radās problēma</translation>
 <translation id="7352939065658542140">VIDEOKLIPS</translation>
@@ -998,6 +995,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="7493994139787901920"><ph name="VERSION" /> (atjaunināts: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">Saglabātie dati</translation>
 <translation id="7498271377022651285">Lūdzu, uzgaidiet...</translation>
+<translation id="750228856503700085">Atjauninājumi nav pieejami</translation>
 <translation id="7507207699631365376">Skatīt šī pakalpojumu sniedzēja <ph name="BEGIN_LINK" />konfidencialitātes politiku<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Lejupielādēt</translation>
 <translation id="751961395872307827">Nevar izveidot savienojumu ar vietni.</translation>
@@ -1099,6 +1097,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="8076492880354921740">Cilnes</translation>
 <translation id="8078096376109663956">Kopīgojiet tikai tekstu.</translation>
 <translation id="8084114998886531721">Saglabātā parole</translation>
+<translation id="8084285576995584326">Kontrolējiet savus Google konta datus</translation>
 <translation id="808747664143081553">Izveidots savienojums ar ierīci</translation>
 <translation id="8103578431304235997">Inkognito cilne</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="8712637175834984815">Sapratu!</translation>
 <translation id="8725066075913043281">Mēģināt vēlreiz</translation>
 <translation id="8730621377337864115">Gatavs</translation>
+<translation id="8746155870861185046">Kopīgot atzīmēto tekstu</translation>
 <translation id="8748850008226585750">Saturs paslēpts</translation>
 <translation id="8773160212632396039">Notiek pieprasījuma apstrāde</translation>
 <translation id="8788265440806329501">Navigācijas vēsture ir aizvērta</translation>

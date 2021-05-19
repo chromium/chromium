@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Chrome, Chrome OS അധിക സേവന നിബന്ധനകള്‍</translation>
 <translation id="1807246157184219062">ലൈറ്റ്</translation>
 <translation id="1810845389119482123">പ്രാഥമിക സമന്വയ സജ്ജീകരണം പൂർത്തിയാക്കിയിട്ടില്ല</translation>
-<translation id="1821253160463689938">നിങ്ങൾ ആ പേജുകൾ സന്ദർശിക്കുന്നില്ലെങ്കിൽ പോലും, നിങ്ങളുടെ മുൻഗണനകൾ ഓർമ്മിക്കുന്നതിന് കുക്കികളെ ഉപയോഗിക്കുന്നു</translation>
 <translation id="1829244130665387512">പേജില്‍ കണ്ടുപിടിക്കുക</translation>
 <translation id="1830550083491357902">പ്രവേശിച്ചിട്ടില്ല</translation>
 <translation id="1843805151597803366">മികച്ച വിവർത്തനങ്ങൾ ലഭിക്കുന്നതിന്, നിലവിലെ പേജ് ഉപയോഗിക്കാൻ Google Search-നെ അനുവദിക്കുക</translation>
@@ -273,7 +272,6 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> സെക്കൻഡ് ശേഷിക്കുന്നു</translation>
 <translation id="2779651927720337254">പരാജയപ്പെട്ടു</translation>
 <translation id="2781151931089541271">ഒരു സെക്കൻഡ് ശേഷിക്കുന്നു</translation>
-<translation id="279827439955962619">ഹൈലൈറ്റിംഗ് നീക്കം ചെയ്യുക</translation>
 <translation id="2801022321632964776">Chrome-ൻ്റെ ഏറ്റവും പുതിയ പതിപ്പിൽ നിങ്ങളുടെ ഭാഷ ലഭ്യമാക്കാൻ അപ്‌ഡേറ്റ് ചെയ്യൂ</translation>
 <translation id="2805756323405976993">ആപ്സ്</translation>
 <translation id="281504910091592009">നിങ്ങളുടെ <ph name="BEGIN_LINK" />Google അക്കൗണ്ടിൽ<ph name="END_LINK" /> സംരക്ഷിച്ച പാസ്‌വേഡുകൾ കാണുക, മാനേജ് ചെയ്യുക</translation>
@@ -454,7 +452,6 @@
 <translation id="3988466920954086464">വേഗത്തിലുള്ള തിരയൽ ഫലങ്ങൾ ഈ പാനലിൽ കാണുക</translation>
 <translation id="4000212216660919741">ഓഫ്‌ലൈൻ ഹോം</translation>
 <translation id="4016425174436051808">പിന്തുടരാനാകുന്നില്ല. എന്തോ കുഴപ്പമുണ്ടായി.</translation>
-<translation id="4021916380760361450">നിങ്ങളുടെ Google അക്കൗണ്ടിലെ ഡാറ്റ നിയന്ത്രിക്കുക</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# മണിക്കൂർ}other{# മണിക്കൂർ}}</translation>
 <translation id="4045764304651014138">ഉപയോഗ ഡാറ്റ</translation>
 <translation id="4056223980640387499">സിപിയ</translation>
@@ -480,7 +477,6 @@
 <translation id="4195643157523330669">പുതിയ ടാബില്‍ തുറക്കുക</translation>
 <translation id="4198423547019359126">ലഭ്യമായ ഡൗൺലോഡ് ലൊക്കേഷനുകളൊന്നും ഇല്ല</translation>
 <translation id="4209895695669353772">Google നിർദ്ദേശിക്കുന്ന വ്യക്തിപരമാക്കിയ ഉള്ളടക്കം ലഭിക്കാൻ, സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
-<translation id="423219824432660969">Google പാസ്‌വേഡ് ഉപയോഗിച്ച് <ph name="TIME" /> മുതൽ സമന്വയിപ്പിച്ച ഡാറ്റ എൻക്രി‌പ്‌റ്റ് ചെയ്യുക</translation>
 <translation id="4242533952199664413">ക്രമീകരണം തുറക്കുക</translation>
 <translation id="4248098802131000011">ഡാറ്റാ ലംഘനങ്ങളിൽ നിന്നും മറ്റ് സുരക്ഷാ പ്രശ്‌നങ്ങളിൽ നിന്നും നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമായി സൂക്ഷിക്കുക</translation>
 <translation id="4250229828105606438">സ്‌ക്രീൻഷോട്ട്</translation>
@@ -559,6 +555,7 @@
 <translation id="47217992755561375">നിങ്ങളുടെ പ്രധാന സൈറ്റുകൾ കാണുക</translation>
 <translation id="4732120983431207637">സ്‌റ്റാക്ക് അൺവൈൻഡർ</translation>
 <translation id="4738836084190194332">അവസാനം സമന്വയിപ്പിച്ചത്: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">ഹൈലൈറ്റ് നീക്കം ചെയ്യുക</translation>
 <translation id="4749960740855309258">പുതിയൊരു ടാബ് തുറക്കുക</translation>
 <translation id="4759238208242260848">ഡൌണ്‍ലോഡുകള്‍</translation>
 <translation id="4763480195061959176">വീഡിയോ</translation>
@@ -699,7 +696,6 @@
 <translation id="562289928968387744">പ്രതികരണങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="5626134646977739690">നാമം:</translation>
 <translation id="5628604359369369630">വായിക്കാത്തവ - ഓഫ്‌ലൈനിൽ ലഭ്യമാണ്</translation>
-<translation id="5632627355679805402"><ph name="TIME" />-ന് <ph name="BEGIN_LINK" />Google പാസ്‌വേഡ്‌<ph name="END_LINK" /> ഉപയോഗിച്ച്‌ നിങ്ങളുടെ ഡാറ്റ എൻക്രിപ്‌റ്റ് ചെയ്‌തു. സമന്വയിപ്പിക്കൽ തുടങ്ങുന്നതിന് ഇത് നൽകുക.</translation>
 <translation id="5639724618331995626">എല്ലാ സൈറ്റുകളെയും അനുവദിക്കുക</translation>
 <translation id="5648166631817621825">കഴിഞ്ഞ 7 ദിവസം</translation>
 <translation id="5655963694829536461">നിങ്ങളുടെ ഡൗൺലോഡുകൾ തിരയുക</translation>
@@ -934,7 +930,6 @@
 <translation id="702463548815491781">TalkBack അല്ലെങ്കിൽ ആക്‌സസ് മാറുക ഓണായിരിക്കുമ്പോൾ ശുപാർശ ചെയ്യുന്നു</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="7029809446516969842">പാസ്‌വേഡുകള്‍</translation>
-<translation id="7040531500313579672">ഹൈലൈറ്റിംഗ് പങ്കിടുക</translation>
 <translation id="7054588988317389591">ചിത്ര വിവരണങ്ങൾ നേടണോ?</translation>
 <translation id="7055152154916055070">റീഡയറക്‌റ്റ് ചെയ്യുന്നത് ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="7063006564040364415">സമന്വയ സെർവറിലേക്ക് കണക്‌റ്റ് ചെയ്യാനായില്ല.</translation>
@@ -970,6 +965,7 @@
 <translation id="7328017930301109123">ലൈറ്റ് മോഡിൽ, Chrome 60 ശതമാനം വരെ കുറവ് ഡാറ്റ ഉപയോഗിക്കുകയും പേജുകൾ വേഗത്തിൽ ലോഡ് ചെയ്യുകയും ചെയ്യുന്നു.</translation>
 <translation id="7332075081379534664">സൈൻ ഇൻ ചെയ്തു</translation>
 <translation id="7333031090786104871">ഇപ്പോഴും മുമ്പത്തെ സൈറ്റ് ചേർത്തുകൊണ്ടിരിക്കുകയാണ്</translation>
+<translation id="7339898014177206373">പുതിയ വിന്‍ഡോ</translation>
 <translation id="7340958967809483333">Discover-നുള്ള ഓപ്ഷനുകൾ</translation>
 <translation id="7352651011704765696">എന്തോ കുഴപ്പം സംഭവിച്ചു</translation>
 <translation id="7352939065658542140">വീഡിയോ</translation>

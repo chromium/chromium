@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">प्रगत</translation>
 <translation id="1989112275319619282">ब्राउझ करा</translation>
 <translation id="2015722694326466240">पासवर्ड पाहण्यासाठी, तुम्ही प्रथम तुमच्या डीव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
+<translation id="2022352537516230970">तुमच्या iPhone साठी तयार केलेले</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> दिवसांपूर्वी ॲक्टिव्ह होते</translation>
 <translation id="2074131957428911366">तुम्ही काय सिंक करायचे हे <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये कधीही निवडू शकता.</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
@@ -124,7 +125,6 @@
 <translation id="2218443599109088993">झूम आउट करा</translation>
 <translation id="2230173723195178503">वेबपेज लोड केले</translation>
 <translation id="2239626343334228536">ब्राउझिंग डेटा साफ करत आहे...</translation>
-<translation id="2257567812274161158">सिंक काम करत नाही.</translation>
 <translation id="225943865679747347">एरर कोड: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">खाते जोडा</translation>
 <translation id="2268044343513325586">सुधारित करा</translation>
@@ -142,7 +142,6 @@
 वेगवेगळ्या साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट कुकी वापरू शकत नाहीत, उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्यासाठी.</translation>
 <translation id="2381405137052800939">मूलतत्त्वे</translation>
 <translation id="2386793615875593361">1 निवडले</translation>
-<translation id="2410754283952462441">एक खाते निवडा</translation>
 <translation id="2421004566762153674">तृतीय पक्षाच्या कुकी ब्लॉक करत आहे</translation>
 <translation id="2421044535038393232">संपादन करणे सुरू ठेवा</translation>
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
@@ -314,6 +313,7 @@
 <translation id="4172051516777682613">नेहमी दर्शवा</translation>
 <translation id="418156467088430727">नवीन टॅबमध्‍ये ऑफलाइन आवृत्ती पहा</translation>
 <translation id="4181841719683918333">भाषा</translation>
+<translation id="4184011057600693970">तुमच्या iPad साठी तयार केलेले</translation>
 <translation id="424315890655130736">सांकेतिक पासफ्रेझ एंटर करा</translation>
 <translation id="4263576668337963058">उपलब्ध असलेल्या पेज क्रिया दाखवा</translation>
 <translation id="4267380167363222949">पुढील टॅब</translation>
@@ -361,7 +361,6 @@
 <translation id="473775607612524610">अपडेट करा</translation>
 <translation id="4747097190499141774">पासफ्रेज एंक्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो. फक्त तुमचा पासफ्रेज असलेली एखादी व्यक्ती तुमचा एंक्रिप्ट केलेला डेटा वाचू शकते. पासफ्रेज Google कडे पाठवला किंवा त्याद्वारे स्टोअर केला जात नाही. तुम्ही तुमचा पासफ्रेज विसरल्यास किंवा तुम्हाला हे सेटिंग बदलायचे असल्यास, तुम्हाला सिंक रीसेट करण्याची आवश्यकता असेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">नवीन गुप्त टॅब</translation>
-<translation id="4766678251456904326">डिव्हाइसवर खाते जोडा</translation>
 <translation id="4775879719735953715">डीफॉल्ट ब्राउझर</translation>
 <translation id="4778644898150334464">दुसरा पासवर्ड वापरा</translation>
 <translation id="4802417911091824046">पासफ्रेज एंक्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो.
@@ -493,6 +492,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">तुमच्या स्टोरी आणि अ‍ॅक्टिव्हिटी येथे नियंत्रित करा</translation>
 <translation id="6066301408025741299">रद्द करण्यासाठी टॅप करा.</translation>
+<translation id="60829778314739003">स्वीकारा आणि पुढे सुरू ठेवा</translation>
 <translation id="6108923351542677676">सेटअप प्रगती पथावर आहे...</translation>
 <translation id="6119050551270742952">सध्याचे वेबपेज गुप्त मोडमध्ये सुरू आहे</translation>
 <translation id="6122191549521593678">ऑनलाइन</translation>
@@ -589,6 +589,7 @@
 <translation id="6801927553864092214">खाजगीरीत्या ब्राउझ करण्यासाठी, गुप्त टॅब उघडा</translation>
 <translation id="6807889908376551050">सर्व दर्शवा...</translation>
 <translation id="681368974849482173">तयार केलेला आयटम</translation>
+<translation id="6830804042318138535">आणखी वाचा</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6851516051005285358">डेस्कटॉप साइटची विनंती करा</translation>
 <translation id="6858855187367714033">स्कॅन केलेले</translation>
@@ -637,6 +638,7 @@
 <translation id="7291368939935408496">पासवर्ड तयार करत आहे…</translation>
 <translation id="7293171162284876153">सिंक सुरू करण्यासाठी, "तुमचा Chrome डेटा सिंक करा" सुरू करा.</translation>
 <translation id="7313347584264171202">तुमचे गुप्त टॅब तुम्हाला येथे सापडतील</translation>
+<translation id="7319242366286515846">पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK" />सेवा अटी<ph name="END_LINK" /> यांना सहमती दर्शवता</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> टक्के डाउनलोड केले</translation>
 <translation id="7340958967809483333">Discover चे पर्याय</translation>
 <translation id="7346909386216857016">ठीक आहे, समजले</translation>
@@ -783,6 +785,7 @@
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8840513115188359703">तुम्हाला आपल्या Google खात्यामधून साइन आउट केले जाणार नाही.</translation>
 <translation id="8870413625673593573">अलीकडे बंद</translation>
+<translation id="8876882697946675716">तुमची डिव्हाइस सिंकमध्ये ठेवा</translation>
 <translation id="8881801611828450202">या इमेजसाठी <ph name="SEARCH_ENGINE" /> शोधा</translation>
 <translation id="8909135823018751308">शेअर करा...</translation>
 <translation id="8917490105272468696">होय, मला मान्य आहे</translation>
@@ -790,6 +793,7 @@
 <translation id="8976382372951310360">मदत</translation>
 <translation id="8981454092730389528">Google ॲक्टिव्हिटी नियंत्रणे</translation>
 <translation id="8985320356172329008">Google मध्ये हे म्हणून साइन इन केले</translation>
+<translation id="8996526648899750015">खाते जोडा...</translation>
 <translation id="9034759925968272072">तुम्हाला आपल्या Google खात्यामधून साइन आउट केले जाणार नाही. आपल्या Google खात्यात <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> वर ब्राउझिंग इतिहासाची इतर स्वरूपे असू शकतात.</translation>
 <translation id="9037965129289936994">मूळ दर्शवा</translation>
 <translation id="9039373489628511875">बँडविड्थ</translation>

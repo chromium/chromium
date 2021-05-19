@@ -249,7 +249,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Versuchen Sie, die Windows-Netzwerkdiagnose auszuführen.<ph name="END_LINK" /></translation>
 <translation id="1772163372082567643">Der Server <ph name="ORIGIN" />, zu dem Sie gehen, verlangt in einer Header-Datei, dass auf alle an ihn gerichteten Anfragen eine Ursprungsrichtlinie angewendet wird. Die Header-Datei ist allerdings fehlerhaft. Daher kann der Browser Ihre Anforderung für <ph name="SITE" /> nicht ausführen. Ursprungsrichtlinien können von Websitebetreibern verwendet werden, um die Sicherheit und andere Eigenschaften einer Website zu konfigurieren.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">Synchronisierungs-Passphrase aktualisieren</translation>
 <translation id="1787142507584202372">Hier werden Ihre offenen Tabs angezeigt</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, es sind mehrere Aktionen verfügbar, drücken Sie die Tabulatortaste, um sie durchzugehen</translation>
@@ -382,6 +381,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2317259163369394535">Für <ph name="DOMAIN" /> sind ein Nutzername und ein Passwort erforderlich.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, läuft am <ph name="EXPIRATION_DATE_ABBR" /> ab</translation>
 <translation id="2337852623177822836">Einstellung wird von Ihrem Administrator gesteuert</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" /> möchte eine Kopplung durchführen</translation>
 <translation id="2344028582131185878">Auto-Downloads</translation>
 <translation id="2346319942568447007">Von Ihnen kopiertes Bild</translation>
 <translation id="2354001756790975382">Weitere Lesezeichen</translation>
@@ -451,6 +451,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2629325967560697240">Schalten Sie für größtmögliche Sicherheit in Chrome das <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />erweiterte Safe Browsing<ph name="END_ENHANCED_PROTECTION_LINK" /> ein</translation>
 <translation id="2634124572758952069">Die Server-IP-Adresse von <ph name="HOST_NAME" /> wurde nicht gefunden.</translation>
 <translation id="2639739919103226564">Status: </translation>
+<translation id="264810637653812429">Es wurden keine kompatiblen Geräte gefunden.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um in den Chrome-Einstellungen Ihren Browserverlauf, Ihre Cookies und andere Daten zu löschen sowie den Cache zu leeren</translation>
 <translation id="2650446666397867134">Der Zugriff auf die Datei wurde verweigert.</translation>
@@ -495,6 +496,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2799223571221894425">Neu starten</translation>
 <translation id="2803306138276472711">Google Safe Browsing hat kürzlich <ph name="BEGIN_LINK" />Malware<ph name="END_LINK" /> auf <ph name="SITE" /> gefunden. Websites, die in der Regel sicher sind, können gelegentlich mit Malware infiziert sein.</translation>
 <translation id="2807052079800581569">Y-Position des Bilds</translation>
+<translation id="2820957248982571256">Wird gescannt...</translation>
 <translation id="2824775600643448204">Adress- und Suchleiste</translation>
 <translation id="2826760142808435982">Die Verbindung ist mit <ph name="CIPHER" /> verschlüsselt und authentifiziert und verwendet <ph name="KX" /> als Mechanismus für den Schlüsselaustausch.</translation>
 <translation id="2835170189407361413">Formular leeren</translation>
@@ -502,6 +504,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2850739647070081192">Invite (Umschlag)</translation>
 <translation id="2856444702002559011">Hacker könnten versuchen, Ihre Daten von <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> zu stehlen, zum Beispiel Passwörter, Nachrichten oder Kreditkartendaten. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Diese Website zeigt aufdringliche oder irreführende Werbung an.</translation>
+<translation id="287596039013813457">Freundlich</translation>
 <translation id="2876489322757410363">Der Inkognitomodus wird deaktiviert, um über eine externe Anwendung zu zahlen. Möchten Sie fortfahren?</translation>
 <translation id="2878197950673342043">Posterfaltung</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -599,10 +602,12 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3229041911291329567">Versionsinformationen zu Ihrem Gerät und Browser</translation>
 <translation id="323107829343500871">CVC für <ph name="CREDIT_CARD" /> eingeben</translation>
 <translation id="3234666976984236645">Wichtige Inhalte auf dieser Website immer erkennen</translation>
+<translation id="3249845759089040423">Cool</translation>
 <translation id="3252266817569339921">Französisch</translation>
 <translation id="3266793032086590337">Wert (Konflikt)</translation>
 <translation id="3268451620468152448">Geöffnete Tabs</translation>
 <translation id="3270847123878663523">&amp;Neu anordnen rückgängig machen</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> möchte eine Verbindung herstellen</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Ihre Organisation, <ph name="ENROLLMENT_DOMAIN" />, hat Informationen wie z. B. Einstellungen oder Richtlinien an folgende Websites gesendet.</translation>
 <translation id="3282497668470633863">Angabe für "Name auf der Karte" hinzufügen</translation>
@@ -969,6 +974,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4594403342090139922">&amp;Löschen rückgängig machen</translation>
 <translation id="4597348597567598915">Größe 8</translation>
 <translation id="4600854749408232102">C6/C5 (Umschlag)</translation>
+<translation id="4606870351894164739">Wirkungsvoll</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Cashback zugeordnet</translation>
 <translation id="4636930964841734540">Info</translation>
@@ -1032,6 +1038,8 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4813512666221746211">Netzwerkfehler</translation>
 <translation id="4816492930507672669">An Seite anpassen</translation>
 <translation id="4819347708020428563">Anmerkungen in der Standardansicht bearbeiten?</translation>
+<translation id="4825507807291741242">Beeindruckend</translation>
+<translation id="4838327282952368871">Träumerisch</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
 <translation id="485316830061041779">Deutsch</translation>
@@ -1190,6 +1198,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5398772614898833570">Werbung blockiert</translation>
 <translation id="5400836586163650660">Grau</translation>
 <translation id="540969355065856584">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat ist zurzeit ungültig. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der Ihre Verbindung abfängt.</translation>
+<translation id="541143247543991491">Cloud (für das ganze System)</translation>
 <translation id="541416427766103491">Stapelfach 4</translation>
 <translation id="5421136146218899937">Browserdaten löschen...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> möchte Ihnen Benachrichtigungen senden</translation>
@@ -1203,6 +1212,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5455374756549232013">Zeitstempel der Richtlinie ist fehlerhaft.</translation>
 <translation id="5457113250005438886">Ungültig</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> weiterer}other{<ph name="CONTACT_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> weitere}}</translation>
+<translation id="5463625433003343978">Geräte werden gesucht…</translation>
 <translation id="5469868506864199649">Italienisch</translation>
 <translation id="5470861586879999274">&amp;Bearbeiten wiederholen</translation>
 <translation id="5478437291406423475">B6/C4 (Umschlag)</translation>
@@ -1252,7 +1262,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5624120631404540903">Passwörter verwalten</translation>
 <translation id="5629630648637658800">Fehler beim Laden der Richtlinieneinstellungen</translation>
 <translation id="5631439013527180824">Ungültiges Management-Token für das Gerät</translation>
-<translation id="5632627355679805402">Ihre Daten sind seit dem <ph name="TIME" /> mit Ihrem <ph name="BEGIN_LINK" />Google-Passwort<ph name="END_LINK" /> verschlüsselt. Geben Sie dieses ein, um die Synchronisierung zu starten.</translation>
 <translation id="5633066919399395251">Zurzeit auf <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> befindliche Hacker könnten versuchen, gefährliche Programme auf Ihrem Computer zu installieren, um Daten wie Fotos, Passwörter, Nachrichten und Kreditkartendaten zu stehlen oder zu löschen. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Betrügerische Inhalte blockiert.</translation>
 <translation id="5644090287519800334">Seite 1 – X-Verschiebung des Bilds</translation>
@@ -1296,6 +1305,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5804427196348435412">NFC-Geräte verwenden</translation>
 <translation id="5810442152076338065">Ihre Verbindung zu <ph name="DOMAIN" /> ist mit einer veralteten Codier-Suite verschlüsselt.</translation>
 <translation id="5813119285467412249">&amp;Hinzufügen wiederholen</translation>
+<translation id="5817918615728894473">Koppeln</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Diese Karte wird beim Bezahlen zwar belastet, doch die echte Kreditkartennummer wird nicht an diese Website weitergegeben. Für zusätzliche Sicherheit wird ein temporärer CVC generiert.}other{Die ausgewählte Karte wird beim Bezahlen zwar belastet, doch die echte Kreditkartennummer wird nicht an diese Website weitergegeben. Für zusätzliche Sicherheit wird ein temporärer CVC generiert.}}</translation>
 <translation id="5826507051599432481">Allgemeiner Name (CN)</translation>
 <translation id="5838278095973806738">Sie sollten keine vertraulichen Informationen wie Passwörter oder Kreditkartennummern auf dieser Website eingeben, da sie von Angreifern gestohlen werden könnten.</translation>
@@ -1303,6 +1313,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5855253129151731373">Der Hostname dieser Website ähnelt dem von <ph name="LOOKALIKE_DOMAIN" />. Angreifer kopieren manchmal Websites und nehmen kleine, unauffällige Änderungen an der URL vor.
 
     Wenn dies Ihrer Meinung nach fälschlicherweise angezeigt wird, gehen Sie bitte auf: https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
+<translation id="5860033963881614850">Aus</translation>
 <translation id="5862579898803147654">Stapelfach 8</translation>
 <translation id="5863847714970149516">Auf der nächsten Seite wird möglicherweise versucht, Ihnen etwas in Rechnung zu stellen</translation>
 <translation id="5866257070973731571">Telefonnummer hinzufügen</translation>
@@ -1496,6 +1507,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6624427990725312378">Kontaktdaten</translation>
 <translation id="6626291197371920147">Gültige Kartennummer hinzufügen</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" />-Suche</translation>
+<translation id="6630043285902923878">USB-Geräte werden gesucht…</translation>
 <translation id="6630809736994426279">Zurzeit auf <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> befindliche Hacker könnten versuchen, gefährliche Programme auf Ihrem Mac zu installieren, um Daten wie Fotos, Passwörter, Nachrichten und Kreditkartendaten zu stehlen oder zu löschen. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Löschen</translation>
@@ -1697,6 +1709,7 @@ Weitere Details:
       &lt;li&gt;In der &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome-Hilfe&lt;/a&gt; finden Sie eine Anleitung dazu, wie Sie die Software von Ihrem Computer entfernen.
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
+<translation id="7410471291937727359">Hübsch</translation>
 <translation id="7416351320495623771">Passwörter verwalten…</translation>
 <translation id="7419106976560586862">Profilpfad</translation>
 <translation id="7437289804838430631">Kontaktdaten hinzufügen</translation>
@@ -1750,7 +1763,6 @@ Weitere Details:
 <translation id="7610193165460212391">Wert liegt außerhalb des zulässigen Bereichs (<ph name="VALUE" />).</translation>
 <translation id="7613889955535752492">Gültig bis: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um Passwörter in den Chrome-Einstellungen abzurufen und zu verwalten</translation>
-<translation id="7615602087246926389">Sie verfügen bereits über Daten, die mit einem vorherigen Passwort für Ihr Google-Konto verschlüsselt wurden. Bitte geben Sie dieses Passwort unten ein.</translation>
 <translation id="7616645509853975347">Ihr Administrator hat Chrome Enterprise Connectors für Ihren Browser aktiviert. Diese Connectors haben Zugriff auf einen Teil Ihrer Daten.</translation>
 <translation id="7619838219691048931">Endblatt</translation>
 <translation id="762844065391966283">Einzeln</translation>
@@ -2121,6 +2133,7 @@ Weitere Details:
 <translation id="9020542370529661692">Die Seite wurde übersetzt und liegt nun auf <ph name="TARGET_LANGUAGE" /> vor.</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(Ungültig)</translation>
+<translation id="9030265603405983977">Schwarz-weiß</translation>
 <translation id="9035022520814077154">Sicherheitsfehler</translation>
 <translation id="9038649477754266430">Vorhersagefunktion zum schnelleren Laden von Seiten verwenden
 </translation>
@@ -2145,6 +2158,7 @@ Weitere Details:
 <translation id="91108059142052966">Die Administratorrichtlinie blockiert die Bildschirmfreigabe mit <ph name="APPLICATION_TITLE" />, wenn vertrauliche Inhalte sichtbar sind</translation>
 <translation id="9114524666733003316">Karte wird bestätigt…</translation>
 <translation id="9114581008513152754">Dieser Browser wird nicht von einem Unternehmen oder einer anderen Organisation verwaltet. Aktivitäten auf diesem Gerät werden eventuell außerhalb von Chrome verwaltet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Frisch</translation>
 <translation id="9119042192571987207">Hochgeladen</translation>
 <translation id="9128016270925453879">Richtlinien wurden geladen</translation>
 <translation id="9128870381267983090">Mit Netzwerk verbinden</translation>
@@ -2163,6 +2177,7 @@ Weitere Details:
 <translation id="9170848237812810038">&amp;Rückgängig</translation>
 <translation id="9171296965991013597">App verlassen?</translation>
 <translation id="9173282814238175921">Einzeldokument/neues Blatt</translation>
+<translation id="9173995187295789444">Nach Bluetooth-Geräten wird gesucht…</translation>
 <translation id="917450738466192189">Das Serverzertifikat ist ungültig.</translation>
 <translation id="9174917557437862841">Schaltfläche zum Wechseln des Tabs, Eingabetaste drücken, um zu diesem Tab zu wechseln</translation>
 <translation id="9179703756951298733">Zahlungsmethoden und Kreditkartendaten in den Chrome-Einstellungen verwalten</translation>

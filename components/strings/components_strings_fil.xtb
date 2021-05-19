@@ -253,7 +253,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
     ang iyong kahilingan para sa <ph name="SITE" />. Magagamit ng mga operator ng site ang mga patakaran ng
     pinagmulan para i-configure ang seguridad at iba pang property para sa isang site.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">Mangyaring i-update ang iyong passphrase ng pag-sync.</translation>
 <translation id="1787142507584202372">Lalabas dito ang iyong mga bukas na tab</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, maraming available na pagkilos, pindutin ang Tab para makita ang mga ito</translation>
@@ -386,6 +385,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2317259163369394535">Kailangan ng <ph name="DOMAIN" /> ng username at password.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, mag-e-expire sa <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Kinokontrol ng iyong administrator ang setting</translation>
+<translation id="2340263603246777781">Gustong makipagpares ng <ph name="ORIGIN" /></translation>
 <translation id="2344028582131185878">Mga Awtomatikong Pagda-download</translation>
 <translation id="2346319942568447007">Larawang kinopya mo</translation>
 <translation id="2354001756790975382">Iba pang mga bookmark</translation>
@@ -455,6 +455,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2629325967560697240">Para makuha ang pinakamataas na antas ng seguridad ng Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />i-on ang pinahusay na proteksyon<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">Hindi makita ang IP address ng server ng <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">Katayuan:</translation>
+<translation id="264810637653812429">Walang nahanap na tugmang device.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para I-clear ang iyong history ng pag-browse, cookies, cache, at higit pa sa mga setting ng Chrome</translation>
 <translation id="2650446666397867134">Tinanggihan ang access sa file</translation>
@@ -501,6 +502,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2799223571221894425">Ilunsad Muli</translation>
 <translation id="2803306138276472711">Kamakailan lang, ang Google Safe Browsing ay <ph name="BEGIN_LINK" />nakakita ng malware<ph name="END_LINK" /> sa <ph name="SITE" />. Paminsan-minsan, nagkakaroon ng malware ang mga website na karaniwang ligtas.</translation>
 <translation id="2807052079800581569">Posisyon ng larawan Y</translation>
+<translation id="2820957248982571256">Nagsa-scan...</translation>
 <translation id="2824775600643448204">Address bar at bar sa paghahanap</translation>
 <translation id="2826760142808435982">Ine-encrypt at pinapatotoo ang koneksyon gamit ang <ph name="CIPHER" /> at ginagamit ang <ph name="KX" /> bilang key exchange mechanism.</translation>
 <translation id="2835170189407361413">I-clear ang form</translation>
@@ -611,6 +613,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3266793032086590337">Value (hindi tumutugma)</translation>
 <translation id="3268451620468152448">Mga Bukas na Tab</translation>
 <translation id="3270847123878663523">&amp;I-undo ang Pagbabago sa Ayos</translation>
+<translation id="3271648667212143903">Gustong kumonekta ng <ph name="ORIGIN" /></translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Nagpadala ang iyong organisasyon, ang <ph name="ENROLLMENT_DOMAIN" />, ng ilang impormasyon sa mga sumusunod na website, tulad ng mga setting o patakaran.</translation>
 <translation id="3282497668470633863">Magdagdag ng pangalan sa card</translation>
@@ -1222,6 +1225,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5455374756549232013">Maling timestamp ng patakaran</translation>
 <translation id="5457113250005438886">Di-wasto</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> pa}one{<ph name="CONTACT_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> pa}other{<ph name="CONTACT_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> pa}}</translation>
+<translation id="5463625433003343978">Naghahanap ng mga device...</translation>
 <translation id="5469868506864199649">Italyano</translation>
 <translation id="5470861586879999274">&amp;Gawing muli ang pag-e-edit</translation>
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
@@ -1271,7 +1275,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5624120631404540903">Pamahalaan ang mga password</translation>
 <translation id="5629630648637658800">Nabigong i-load ang mga setting ng patakaran</translation>
 <translation id="5631439013527180824">Di-wastong token sa pamamahala ng device</translation>
-<translation id="5632627355679805402">Na-encrypt ang data mo gamit ang iyong <ph name="BEGIN_LINK" />password sa Google<ph name="END_LINK" /> simula noong <ph name="TIME" />. Ilagay ito para simulan ang pag-sync.</translation>
 <translation id="5633066919399395251">Maaaring magtangka ang mga attacker na kasalukuyang nasa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> na mag-install ng mga mapanganib na program sa iyong computer na magnanakaw o magde-delete ng impormasyon mo (halimbawa, mga larawan, password, mensahe, at credit card). <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Na-block ang mapanlinlang na content.</translation>
 <translation id="5644090287519800334">Pag-shift ng gilid 1 larawan X</translation>
@@ -1315,6 +1318,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5804427196348435412">Gumamit ng mga NFC device</translation>
 <translation id="5810442152076338065">Naka-encrypt ang iyong koneksyon sa <ph name="DOMAIN" /> gamit ang isang hindi na ginagamit na cipher suite.</translation>
 <translation id="5813119285467412249">&amp;Gawing Muli ang Pagdagdag</translation>
+<translation id="5817918615728894473">Ipares</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Sisingilin ang card na ito kapag nagbayad ka, pero hindi ibabahagi sa site na ito ang totoong numero nito. Para sa karagdagang seguridad, bubuo ng pansamantalang CVC.}one{Sisingilin ang card na iyong pipiliin kapag nagbayad ka, pero hindi ibabahagi sa site na ito ang totoong numero nito. Para sa karagdagang seguridad, bubuo ng pansamantalang CVC.}other{Sisingilin ang card na iyong pipiliin kapag nagbayad ka, pero hindi ibabahagi sa site na ito ang totoong numero nito. Para sa karagdagang seguridad, bubuo ng pansamantalang CVC.}}</translation>
 <translation id="5826507051599432481">Common Name (CN)</translation>
 <translation id="5838278095973806738">Hindi ka dapat maglagay ng anumang sensitibong impormasyon sa site na ito (halimbawa, mga password o credit card), dahil maaari itong nakawin ng mga umaatake.</translation>
@@ -1322,6 +1326,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5855253129151731373">Mukhang katulad ng <ph name="LOOKALIKE_DOMAIN" /> ang hostname ng site na ito. Kung minsan, ginagaya ng mga attacker ang mga site sa pamamagitan ng paggawa ng mga maliit at mahirap makitang pagbabago sa domain name.
 
     Kung naniniwala kang mali ang pagpapakita nito, pakibisita ang https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
+<translation id="5860033963881614850">Naka-off</translation>
 <translation id="5862579898803147654">Stacker 8</translation>
 <translation id="5863847714970149516">Maaari kang singilin sa susunod na page</translation>
 <translation id="5866257070973731571">Magdagdag ng Numero ng Telepono</translation>
@@ -1515,6 +1520,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6624427990725312378">Impormasyon ng Contact</translation>
 <translation id="6626291197371920147">Magdagdag ng wastong card number</translation>
 <translation id="6628463337424475685">Paghahanap ng <ph name="ENGINE" /></translation>
+<translation id="6630043285902923878">Naghahanap ng mga USB device...</translation>
 <translation id="6630809736994426279">Maaaring magtangka ang mga attacker na kasalukuyang nasa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> na mag-install ng mga mapanganib na program sa iyong Mac na magnanakaw o magde-delete ng impormasyon mo (halimbawa, mga larawan, password, mensahe, at credit card). <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">I-clear</translation>
@@ -1770,7 +1776,6 @@ Mga karagdagang detalye:
 <translation id="7610193165460212391">Wala sa sakop ang halaga <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Exp: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para tingnan at pamahalaan ang mga password mo sa mga setting ng Chrome</translation>
-<translation id="7615602087246926389">Mayroon ka nang data na na-encrypt gamit ang ibang bersyon ng iyong password ng Google Account. Pakilagay ito sa ibaba.</translation>
 <translation id="7616645509853975347">Na-on ng iyong administrator ang Chrome Enterprise Connectors sa browser mo. May access ang mga connector na ito sa ilan sa iyong data.</translation>
 <translation id="7619838219691048931">Dulong sheet</translation>
 <translation id="762844065391966283">Paisa-isa</translation>
@@ -1923,6 +1928,7 @@ Mga karagdagang detalye:
 <translation id="8202097416529803614">Buod ng order</translation>
 <translation id="8202370299023114387">Hindi pagkakasundo</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Kapag nag-reset ka ng ID, magiging invalid ang iyong kasalukuyang ID at may ibibigay na bago sa loob ng wala pang 1 araw}=1{Kapag nag-reset ka ng ID, magiging invalid ang iyong kasalukuyang ID at may ibibigay na bago sa loob ng 1 araw}one{Kapag nag-reset ka ng ID, magiging invalid ang iyong kasalukuyang ID at may ibibigay na bago sa loob ng {NUM_DAYS} araw}other{Kapag nag-reset ka ng ID, magiging invalid ang iyong kasalukuyang ID at may ibibigay na bago sa loob ng {NUM_DAYS} na araw}}</translation>
 <translation id="8211406090763984747">Secure ang koneksyon</translation>
 <translation id="8213464188712611711">Mga Memory</translation>
 <translation id="8218327578424803826">Itinakdang Lokasyon:</translation>
@@ -2183,6 +2189,7 @@ Mga karagdagang detalye:
 <translation id="9170848237812810038">&amp;I-undo</translation>
 <translation id="9171296965991013597">Umalis sa app?</translation>
 <translation id="9173282814238175921">Isang dokumento/Bagong sheet</translation>
+<translation id="9173995187295789444">Nagsa-scan ng mga Bluetooth device...</translation>
 <translation id="917450738466192189">Di-wastong certificate ng server.</translation>
 <translation id="9174917557437862841">Button na lumipat ng tab, pindutin ang Enter para lumipat sa tab na ito</translation>
 <translation id="9179703756951298733">Pamahalaan ang iyong mga pagbabayad at impormasyon ng credit card sa mga setting ng Chrome</translation>

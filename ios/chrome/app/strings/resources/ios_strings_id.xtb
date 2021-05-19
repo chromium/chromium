@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">Perkecil</translation>
 <translation id="2230173723195178503">Halaman web dimuat</translation>
 <translation id="2239626343334228536">Menghapus data browsing...</translation>
-<translation id="2257567812274161158">Sinkronisasi tidak berfungsi.</translation>
 <translation id="225943865679747347">Kode kesalahan: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Tambahkan Akun</translation>
 <translation id="2268044343513325586">Saring</translation>
@@ -143,7 +142,6 @@
 Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berbagai situs, misalnya untuk mempersonalisasi iklan.</translation>
 <translation id="2381405137052800939">Dasar</translation>
 <translation id="2386793615875593361">1 dipilih</translation>
-<translation id="2410754283952462441">Pilih akun</translation>
 <translation id="2421004566762153674">Memblokir cookie pihak ketiga</translation>
 <translation id="2421044535038393232">Terus Edit</translation>
 <translation id="2435457462613246316">Tampilkan sandi</translation>
@@ -362,7 +360,6 @@ Data Anda dienkripsi dengan frasa sandi sinkronisasi. Loginkan frasa sandi untuk
 <translation id="473775607612524610">Perbarui</translation>
 <translation id="4747097190499141774">Enkripsi frasa sandi tidak mencakup alamat dan metode pembayaran dari Google Pay. Hanya pengguna yang memiliki frasa sandi Anda yang dapat membaca data yang telah Anda enkripsi. Frasa sandi tidak dikirim atau disimpan oleh Google. Jika lupa frasa sandi Anda atau ingin mengubah setelan ini, Anda harus menyetel ulang sinkronisasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Tab Samaran Baru</translation>
-<translation id="4766678251456904326">Tambahkan akun ke perangkat</translation>
 <translation id="4775879719735953715">Browser Default</translation>
 <translation id="4778644898150334464">Gunakan sandi lain</translation>
 <translation id="4802417911091824046">Enkripsi frasa sandi tidak mencakup alamat dan metode pembayaran dari Google Pay.
@@ -639,7 +636,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7291368939935408496">Mempersiapkan Sandi…</translation>
 <translation id="7293171162284876153">Untuk memulai sinkronisasi, aktifkan "Sinkronkan data Chrome Anda".</translation>
 <translation id="7313347584264171202">Tab Samaran Anda akan ditampilkan di sini</translation>
-<translation id="7319242366286515846">Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK" />Persyaratan Layanan<ph name="END_LINK" />.</translation>
+<translation id="7319242366286515846">Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK" />Persyaratan Layanan<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> persen berhasil didownload</translation>
 <translation id="7340958967809483333">Opsi untuk Discover</translation>
 <translation id="7346909386216857016">Oke, mengerti</translation>
@@ -794,6 +791,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8976382372951310360">Bantuan</translation>
 <translation id="8981454092730389528">Kontrol Aktivitas Google</translation>
 <translation id="8985320356172329008">Login ke Google sebagai</translation>
+<translation id="8996526648899750015">Tambahkan akun...</translation>
 <translation id="9034759925968272072">Anda tidak akan dikeluarkan dari Akun Google. Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Tampilkan Halaman Asli</translation>
 <translation id="9039373489628511875">Bandwidth</translation>

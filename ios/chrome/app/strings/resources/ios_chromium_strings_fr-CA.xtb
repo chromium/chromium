@@ -48,12 +48,12 @@
 <translation id="4852878756222711218">Pour profiter au maximum de Chromium, connectez-vous à votre compte Google</translation>
 <translation id="4985291216379576555">Hors ligne, Chromium ne peut pas vérifier s'il y a des mises à jour</translation>
 <translation id="4999538639245140991">Puisque vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil. Toutefois, vos données resteront dans votre compte Google.</translation>
+<translation id="5171868502429358653">Se connecter à Chromium</translation>
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="5308226104666789935">Chromium ne peut pas vérifier s'il y a des mises à jour</translation>
 <translation id="5396916991083608703">Définir Chromium comme navigateur par défaut?</translation>
 <translation id="5521125884468363740">Pour voir vos onglets partout où vous utilisez Chromium, connectez-vous et activez la synchronisation</translation>
 <translation id="5573014823074921752">Astuce pour Chromium. Pour afficher plus d'options d'onglets, maintenez le doigt sur le bouton Afficher les onglets dans la barre d'outils, qui se trouve dans le bas ou le haut de votre écran.</translation>
-<translation id="5651741435382092412">Connectez-vous à ce site, à votre compte Google et à Chromium. Vous pouvez activer la synchronisation plus tard.</translation>
 <translation id="5700709190537129682">Chromium ne peut pas vérifier vos mots de passe</translation>
 <translation id="5742135483959137648">Utiliser Chromium pour ouvrir les liens</translation>
 <translation id="5777187867430702742">Page Chromium</translation>
@@ -64,6 +64,7 @@
 1. Ouvrez l'application Réglages.
 2. Touchez Navigateur par défaut.
 3. Sélectionnez Chromium.</translation>
+<translation id="6155422572367400359">Connectez-vous à ce site, à votre compte Google et à Chromium. Vous pouvez activer la synchronisation plus tard.</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium?</translation>
 <translation id="632825460376924298">Autoriser la connexion dans Chromium</translation>
 <translation id="6337530241089703714">Voulez-vous effacer vos données Chrome de cet appareil ou les conserver?</translation>

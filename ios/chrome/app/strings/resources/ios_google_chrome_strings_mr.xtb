@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1096883626080133124">सोपे, सुरक्षित आणि पूर्वीपेक्षा अधिक जलद Google Chrome वापरून आणखी बरेच काही करा</translation>
 <translation id="1282031177488366470">Chrome ची वैशिष्ट्ये आणि परफॉर्मन्स सुधारण्यात मदत करा</translation>
 <translation id="1314663809820920746">तुम्ही तरीही या डिव्हाइसवर तुमचे सर्व बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्ज पाहू शकता. तुम्ही बदल केल्यास, ते तुमच्या Google खाते मध्ये सिंक केले जाणार नाहीत.</translation>
 <translation id="1479202195792305274">तुम्ही तुमचे Google खाते वापरून साइन इन करता तेव्हा, Chrome तुमचे पासवर्ड तपासू शकते.</translation>
@@ -8,6 +9,7 @@
 <translation id="1504372625950710826">Chrome ला अपडेट तपासता आली नाहीत. तुमचे इंटरनेट कनेक्शन तपासून पाहा.</translation>
 <translation id="1682483655351012182">तुमचा Chrome डेटा सिंक करा</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1812249337131447686">Google कडे वापर आकडेवारी आणि क्रॅश अहवाल पाठवून Chrome मध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="1917964099031477364">हे खाते आणि कोणताही सेव्ह न केलेला डेटा Chrome आणि या डिव्हाइसवरील इतर Google अ‍ॅप्समधून काढून टाकला जाईल.</translation>
 <translation id="2009224836393115614">Chrome ला तुमचे पासवर्ड तपासता आले नाहीत. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
 <translation id="2147651015520127414"><ph name="ISSUER" /> ने या वेबसाइटचे सर्टिफिकेट जारी केले हे Chrome ने पडताळले.</translation>
@@ -27,7 +29,6 @@
 <translation id="3167189358072330585">तुमचे खाते Google Chrome वर काम करत नाही. कृपया तुमच्या डोमेन ॲडमिनिस्ट्रेटरशी संपर्क साधा किंवा साइन इन करण्यासाठी एक नियमित Google खाते वापरा.</translation>
 <translation id="3173834708294760622">Google Chrome पेज</translation>
 <translation id="3196546062792660320">तुमची खाती वेबवर आणून Chrome तुमचा वेळ वाचविते. तुम्ही सेटिंग्जमध्ये खाती जोडू किंवा काढू शकता.</translation>
-<translation id="3223655207402797071">ही साइट, तुमचे Google खाते आणि Chrome यांमध्ये साइन इन करा. तुम्ही सिंक नंतर सुरू करू शकता.</translation>
 <translation id="3282568296779691940">Chrome वर साइन इन करा</translation>
 <translation id="3345341804167540816">Chrome सर्वत्र वापरा</translation>
 <translation id="3455456143708465450">Chrome चा पुरेपूर वापर करण्यासाठी, तुमचे Google खाते वापरून साइन इन करा</translation>

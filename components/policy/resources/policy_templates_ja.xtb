@@ -2055,6 +2055,11 @@
 
       このポリシーが未設定の場合、ユーザーは自分でプロキシ設定を選択できます。</translation>
 <translation id="3758249152301468420">デベロッパー ツールを無効にする</translation>
+<translation id="3759650373178711405"><ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> ポリシーで前のセッションの URL を完全復元するように設定されていない場合は、<ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> を使って URL パターンのリストを作成し、1 回のセッションで Cookie の設定を許可するサイトと禁止するサイトを指定できます。
+
+      このポリシーを未設定のままにした場合、<ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。指定したパターンに URL が一致しない場合もデフォルトの設定が使用されます。
+
+      特定のポリシーが優先されることはありませんが、<ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> と <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> を確認して、これらの 3 つのポリシー間で URL パターンに矛盾がないようにしてください。</translation>
 <translation id="3760148113224469113">ユーザーに外部プロトコルの確認メッセージを毎回表示する</translation>
 <translation id="3760231600118073732">現在のセッションをロックする。</translation>
 <translation id="3761222804122755011">WebRTC は公開インターネットに接続されているインターフェースのみを使用し、接続にプライベート IP アドレスを使用できる。</translation>
@@ -2083,17 +2088,6 @@
 <translation id="377044054160169374">不正なコンテンツに対する処理の適用</translation>
 <translation id="3778689139323007309">ローカルにインストール済みの CA 証明書によって署名された、確認済みのサーバー証明書に対して失効確認を行う</translation>
 <translation id="3780152581321609624">Kerberos SPN に非標準ポートを含める</translation>
-<translation id="3783569262370557918"><ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> を有効にする URL のリストを指定します。
-
-      このポリシーでは、パソコンから一連のシグナルを受け取る認証フローに含める URL を指定できます。
-
-      このポリシーを未設定のままにするか空白にした場合は、どのエンドポイントも、認証フローを開始したり、パソコンからシグナルを受け取ったりできません。
-
-      指定する URL は HTTPS スキームを使用したものでなければなりません（例: 「https://example.com」）。
-
-      注: ワイルドカード（<ph name="WILDCARD_VALUE" />）は使用可能です。
-
-      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。</translation>
 <translation id="378495749480642482">ユーザーがアクセスしたサイトで <ph name="WEBXR_API_NAME" /> を使用した没入的な拡張現実セッションの作成を許可するかどうかを設定します。
 
       このポリシーを設定しない場合や有効にした場合、<ph name="WEBXR_API_NAME" /> では、<ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> モードでのセッション作成が許可され、ユーザーは拡張現実を体験できるようになります。
@@ -2152,6 +2146,19 @@
 <translation id="3838094946886335701">このポリシーを設定した場合（推奨）、プロトコル ハンドラのリストを登録できます。プロトコル ハンドラはユーザーが登録するプロトコル ハンドラと統合され、両方のセットが使用されます。protocol プロパティには「mailto」などのスキームを設定します。URL プロパティには、「protocol」フィールドで指定したスキームを処理するアプリケーションの URL パターンを設定します。このパターンに「%s」プレースホルダを含めて、処理された URL で置き換えることもできます。
 
       ユーザーはポリシーで登録されたプロトコル ハンドラを削除することはできません。ただし、新しいデフォルトのハンドラをインストールすることにより、ポリシーでインストールされたプロトコル ハンドラを変更できます。</translation>
+<translation id="3857816702027059082"><ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> を有効にする URL のリストを指定します。
+
+      このポリシーでは、パソコンから一連のシグナルを受け取る認証フローに含める URL を指定できます。
+
+      このポリシーを未設定のままにするか空白にした場合は、どのエンドポイントも、認証フローを開始したり、パソコンからシグナルを受け取ったりできません。
+
+      指定する URL は HTTPS スキームを使用したものでなければなりません（例: 「https://example.com」）。
+
+      注: ワイルドカード（<ph name="WILDCARD_VALUE" />）は使用可能です。
+
+      ChromeOS では、このポリシーはリモート認証に関連付けられ、証明書が自動的に生成されてデバイス管理サーバーにアップロードされます。
+
+      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。</translation>
 <translation id="3858128774616573616">このポリシーを有効に設定した場合、Cast ツールバー アイコンがツールバーまたはオーバーフロー メニューに表示され、ユーザーはこのアイコンを削除できません。
 
       このポリシーを無効に設定するか未設定のままにした場合、ユーザーはコンテキスト メニューを使ってこのアイコンを固定したり削除したりできます。
@@ -2420,6 +2427,15 @@
 <translation id="4248277954659222481">メディアの自動再生を許可する URL パターンのリストを指定する</translation>
 <translation id="4250680216510889253">いいえ</translation>
 <translation id="4261820385751181068">デバイスのログイン画面の言語 / 地域</translation>
+<translation id="4266547484666068234">このポリシーでは、<ph name="URL_BLOCKLIST_POLICY_NAME" /> の例外としてアクセスを許可する URL のリストを指定できます。リストの指定形式については、このポリシーの説明をご覧ください。このポリシーは、たとえば <ph name="URL_BLOCKLIST_POLICY_NAME" /> で「*」と設定してすべてのリクエストをブロックし、限定された一部の URL のみアクセスを許可する場合に使用します。つまり、特定のスキームや、他のドメインのサブドメイン、ポート、具体的なパスについて例外を設定します。設定の際は、https://www.chromium.org/administrators/url-blocklist-filter-format で指定された形式を使用します。URL をブロックするか許可するかは、最も具体的なフィルタによって決定されます。<ph name="URL_ALLOWLIST_POLICY_NAME" /> ポリシーは、<ph name="URL_BLOCKLIST_POLICY_NAME" /> より優先されます。このポリシーで指定できる URL は最大 1,000 件です。
+
+      また、このポリシーでは、リストで指定したプロトコル（「tel:」、「ssh:」など）のプロトコル ハンドラとして登録されている外部アプリケーションをブラウザから自動で呼び出すことも許可できます。
+
+      このポリシーを未設定のままにした場合、<ph name="URL_BLOCKLIST_POLICY_NAME" /> に例外は設定されません。
+
+      <ph name="PRODUCT_NAME" /> バージョン 92 以降、このポリシーはヘッドレス モードでもサポートされるようになりました。
+
+      <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="4269859918103560644">ユーザーが決定できるようにする</translation>
 <translation id="4274691295133617461">このポリシーを 3 に設定した場合、ウェブサイトは、ホスト オペレーティング システムのファイル システム内にあるファイルやディレクトリへの File System API を経由した読み取りアクセスを要求することが許可されます。このポリシーを 2 に設定した場合、アクセスは拒否されます。
 
@@ -2795,11 +2811,6 @@
       このポリシーを未設定のままにした場合、例外は設定されません。
 
       <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
-<translation id="4882406948002286350">このポリシーでは、禁止した URL のリストからのウェブページの読み込みを防止できます。このリストには、禁止する URL のパターンを指定します。このポリシーを未設定のままにした場合、ブラウザですべての URL が許可されます。URL のパターンは、https://www.chromium.org/administrators/url-blocklist-filter-format の形式で指定します。また、<ph name="URL_ALLOWLIST_POLICY_NAME" /> で最大 1,000 件の URL を例外として指定できます。
-
-      <ph name="PRODUCT_NAME" /> バージョン 73 以降では、「javascript://*」の URL をブロックできます。ただし、ブロックされるのはアドレスバーに入力された（またはブックマークレットなどの）JavaScript のみです。ページ内の JavaScript URL に動的に読み込まれるデータが含まれる場合、このポリシーは適用されません。たとえば、「example.com/abc」をブロックした場合でも、「example.com」では XMLHTTPRequest を使用して「example.com/abc」を読み込むことができます。
-
-      注: 「chrome://*」の内部 URL をブロックすると、予期しないエラーが発生する可能性があります。</translation>
 <translation id="4886783562285047261">このポリシーを有効に設定した場合、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> への登録は必須となります。登録できなかった場合、<ph name="PRODUCT_NAME" /> の起動プロセスはブロックされます。
 
       このポリシーを無効に設定するか未設定のままにした場合、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> への登録は任意となります。登録できなかった場合でも、<ph name="PRODUCT_NAME" /> の起動プロセスはブロックされません。
@@ -2909,11 +2920,6 @@
 <translation id="4996068111491152684"><ph name="PRODUCT_OS_NAME" /> のログイン認証情報をネットワーク認証に使用しない。</translation>
 <translation id="4996086761250834365"><ph name="PLUGIN_VM_NAME" /> のサービス分析を許可する</translation>
 <translation id="500149597848135831">すべてのバリエーションを有効にします</translation>
-<translation id="5016942794885590681">このポリシーを有効に設定するか未設定のままにした場合、レンダラコードの整合性チェックが有効になります。
-
-      このポリシーを無効に設定した場合、悪質な疑いのある不明なコードに対して <ph name="PRODUCT_NAME" /> のレンダラ プロセス内での読み込みが許可されるため、<ph name="PRODUCT_NAME" /> のセキュリティと安定性が低下します。このポリシーは、<ph name="PRODUCT_NAME" /> のレンダラ プロセス内で実行する必要のあるサードパーティ ソフトウェアとの間で互換性の問題が発生する場合にのみ無効にしてください。
-
-      注: 詳しくはプロセス対応ポリシー（https://chromium.googlesource.com/chromium/src/+/main/docs/design/sandbox.md#Process-mitigation-policies）をご覧ください。</translation>
 <translation id="5017369989680827157">このポリシーを True に設定するか未設定のままにした場合、ユーザーは UI で住所の自動入力を制御できます。このポリシーを False に設定した場合、住所情報が候補として表示されたり、自動入力されたりすることはありません。また、ユーザーがウェブの利用中に送信した住所情報が追加で保存されることもありません。</translation>
 <translation id="5021550478471824215">このポリシーでは、事前設定のネットワーク ファイル共有のリストを指定できます。個々の項目は、<ph name="SHARE_URL_FIELD_NAME" /> と <ph name="MODE_FIELD_NAME" /> の 2 つのプロパティで構成されるオブジェクトとなります。
 
@@ -3021,6 +3027,13 @@
           この設定を有効にした場合、<ph name="PRODUCT_NAME" /> では、コマンドラインで指定されたプロキシ関連の設定がすべて無視されます。
 
           このポリシーが未設定の場合、ユーザーは自分でプロキシ設定を選択できます。</translation>
+<translation id="5172841243186654432"><ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> ポリシーで前のセッションの URL を完全復元するように設定されていない場合は、<ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> を使って URL パターンのリストを作成し、1 回のセッションで Cookie の設定を許可するサイトと禁止するサイトを指定できます。
+
+      このポリシーを未設定のままにした場合、<ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。指定したパターンに URL が一致しない場合もデフォルトの設定が使用されます。
+
+      特定のポリシーが優先されることはありませんが、<ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> と <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> を確認して、これらの 3 つのポリシー間で URL パターンに矛盾がないようにしてください。
+
+      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="5177260184597743704">OnSecurityEvent Chrome Enterprise コネクタの設定ポリシー</translation>
 <translation id="5178479074002209469">このポリシーによりアップデートが必須となっている場合に、管理対象外のユーザー セッションで通知を表示してログアウトするかどうかを示すブール値のフラグです。</translation>
 <translation id="5182055907976889880"><ph name="PRODUCT_OS_NAME" /> で Google ドライブを設定します</translation>
@@ -3896,11 +3909,6 @@
 
       このポリシーを設定しないか、リストを空白にした場合、すべてのスキームが <ph name="PRODUCT_NAME" /> でアクセス可能になります。</translation>
 <translation id="6338982178236723271">システム情報を報告する</translation>
-<translation id="6347363725343851058">このポリシーを有効に設定した場合、バックグラウンド モードがオンになります。バックグラウンド モードでは、<ph name="PRODUCT_NAME" /> の処理が OS のログイン時に開始され、ブラウザ ウィンドウがすべて閉じられた後も続行されます。これにより、バックグラウンド アプリとブラウジング セッション（すべてのセッション Cookie を含む）は有効のままになります。バックグラウンド処理中はシステムトレイにアイコンが表示され、このアイコンからいつでも処理を終了できます。
-
-      このポリシーを無効に設定した場合、バックグラウンド モードはオフになります。
-
-      このポリシーを設定した場合、ユーザーはブラウザ設定でこのモードを変更できません。未設定の場合、バックグラウンド モードは初期状態でオフになりますが、ユーザーはこのモードを変更できます。</translation>
 <translation id="6353890097388312479">このポリシーを All（0）に設定するか未設定のままにした場合、ユーザーは、すべての CA 証明書の信頼設定の編集、ユーザーが取り込んだ証明書の削除、証明書マネージャーによる証明書の取り込みを行うことができます。このポリシーを UserOnly（1）に設定した場合、ユーザーは、ユーザーが取り込んだ証明書のみを管理でき、組み込みの証明書の信頼設定を変更することはできません。このポリシーを None（2）に設定した場合、ユーザーは CA 証明書を表示できます（管理はできません）。</translation>
 <translation id="6362856770865555544">このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> で WPAD（ウェブプロキシ自動検出）の最適化が有効になります。
 
@@ -4405,6 +4413,11 @@
       * PasswordProtectionWarningOnPhishingReuse: フィッシング サイトでユーザーが保護されたパスワードを再使用したときに、パスワード保護の警告が表示されます。
 
       このポリシーを未設定のままにした場合、パスワード保護サービスでは Google パスワードのみが保護されますが、ユーザーはこの設定を変更できます。</translation>
+<translation id="6969079025604591591">このポリシーを有効に設定するか未設定のままにした場合、レンダラコードの整合性チェックが有効になります。
+
+      このポリシーを無効に設定した場合、悪質な疑いのある不明なコードに対して <ph name="PRODUCT_NAME" /> のレンダラ プロセス内での読み込みが許可されるため、<ph name="PRODUCT_NAME" /> のセキュリティと安定性が低下します。このポリシーは、<ph name="PRODUCT_NAME" /> のレンダラ プロセス内で実行する必要のあるサードパーティ ソフトウェアとの間で互換性の問題が発生する場合にのみ無効にしてください。
+
+      注: 詳しくはプロセス対応ポリシー（https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies）をご覧ください。</translation>
 <translation id="6969131408525928234">このポリシーを設定した場合、指定した URL 内のホスト名について、Certificate Transparency（証明書の透明性）の開示要件が無効になります。ホストに対して間違って発行された証明書は検出が難しくなりますが、適切に公開されていないことを理由に通常であれば信頼できないものとして扱われる証明書でも、引き続き使用できるようになります。ポリシーを未設定のままにした場合、Certificate Transparency（証明書の透明性）に基づき開示が必要な証明書が開示されていなければ、<ph name="PRODUCT_NAME" /> で信頼されません。
 
       URL のパターンは、https://www.chromium.org/administrators/url-blocklist-filter-format の形式で指定します。ただし、スキーム、ポート、パスに関係なく特定のホスト名に対して証明書が有効になるため、<ph name="PRODUCT_NAME" /> で考慮されるのは URL のホスト名の部分のみです。ワイルドカードを使ったホストの指定はサポートされていません。</translation>
@@ -4416,15 +4429,6 @@
       このポリシーを未設定のままにした場合、ユーザーはこの設定を変更できます。
 
       注: Android 向けのサイト分離のサポートは今後強化されますが、現時点ではこの機能によりパフォーマンスの問題が発生することもあります。このポリシーは、厳密に 1 GB より大きい RAM を搭載した Android デバイスの Chrome のみに適用されます。Android 以外のプラットフォームにこのポリシーを適用するには、<ph name="ISOLATE_ORIGINS_POLICY_NAME" /> を使用してください。</translation>
-<translation id="6978404102280820831"><ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> ポリシーで前のセッションの URL を完全復元するように設定されていない場合は、<ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> を使って URL パターンのリストを作成し、1 回のセッションで Cookie の設定を許可するサイトと禁止するサイトを指定できます。
-
-      このポリシーを未設定のままにした場合、<ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。指定したパターンに URL が一致しない場合もデフォルトの設定が使用されます。
-
-      <ph name="PRODUCT_NAME" /> がバックグラウンド モードで動作中の場合、ユーザーが最後のウィンドウを閉じても、ブラウザを終了するまではセッションがアクティブなままになることがあります。この動作の設定について詳しくは、<ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" /> をご覧ください。
-
-      特定のポリシーが優先されることはありませんが、<ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> と <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> を確認して、これらの 3 つのポリシー間で URL パターンに矛盾がないようにしてください。
-
-      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
 <translation id="6979739838208297344">このポリシーを <ph name="BR_ENABLED" /> に設定した場合、Android のバックアップと復元は初期状態でオンになります。このポリシーを <ph name="BR_DISABLED" /> に設定するか未設定のままにした場合、バックアップと復元は設定中オフになります。
 
@@ -5105,13 +5109,6 @@
       ログイン画面のスクリーンセーバーとして使用する拡張機能の ID を指定します。拡張機能は、DeviceAppPack ポリシーを使用してこのドメインに設定されている AppPack のものである必要があります。</translation>
 <translation id="7882857838942884046">Google Sync を無効にすると、Android のバックアップと復旧が適切に機能しなくなります。</translation>
 <translation id="7882890448959833986">サポート外の OS の警告を表示しない</translation>
-<translation id="788487748427534612"><ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> ポリシーで前のセッションの URL を完全復元するように設定されていない場合は、<ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> を使って URL パターンのリストを作成し、1 回のセッションで Cookie の設定を許可するサイトと禁止するサイトを指定できます。
-
-      このポリシーを未設定のままにした場合、<ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。指定したパターンに URL が一致しない場合もデフォルトの設定が使用されます。
-
-      <ph name="PRODUCT_NAME" /> がバックグラウンド モードで動作中の場合、ユーザーが最後のウィンドウを閉じても、ブラウザを終了するまではセッションがアクティブなままになることがあります。この動作の設定について詳しくは、<ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" /> をご覧ください。
-
-      特定のポリシーが優先されることはありませんが、<ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> と <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> を確認して、これらの 3 つのポリシー間で URL パターンに矛盾がないようにしてください。</translation>
 <translation id="7887379840451099426">バッテリーでの使用中にのみ適用する電源管理設定</translation>
 <translation id="7891884447851425349"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> では、デフォルトの検索に使用する検索エンジンの URL を指定できます。この URL には <ph name="SEARCH_TERM_MARKER" /> という文字列を含めます。この文字列は、クエリの送信時にユーザーが指定した検索キーワードに置き換えられます。
 
@@ -5629,6 +5626,13 @@
       このポリシーを true に設定した場合、5 分以上バックグラウンドになっているタブは凍結可能になります。タブを凍結すると、CPU、バッテリー、メモリの使用量が削減されます。<ph name="PRODUCT_NAME" /> ではヒューリスティックにより、バックグラウンドで有用な処理（通知の表示、サウンドの再生、動画のストリーミングなど）を行うタブが凍結の対象から外されます。ウェブ デベロッパーが自身のサイトを凍結の対象から外すこともできます（https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md）。
 
       このポリシーを false に設定した場合は、どのタブも凍結されません。</translation>
+<translation id="8619480582976056396">このポリシーでは、禁止した URL のリストからのウェブページの読み込みを防止できます。このリストには、禁止する URL のパターンを指定します。このポリシーを未設定のままにした場合、ブラウザですべての URL が許可されます。URL のパターンは、https://www.chromium.org/administrators/url-blocklist-filter-format の形式で指定します。また、<ph name="URL_ALLOWLIST_POLICY_NAME" /> で最大 1,000 件の URL を例外として指定できます。
+
+      <ph name="PRODUCT_NAME" /> バージョン 73 以降では、「javascript://*」の URL をブロックできます。ただし、ブロックされるのはアドレスバーに入力された（またはブックマークレットなどの）JavaScript のみです。ページ内の JavaScript URL に動的に読み込まれるデータが含まれる場合、このポリシーは適用されません。たとえば、「example.com/abc」をブロックした場合でも、「example.com」では XMLHTTPRequest を使用して「example.com/abc」を読み込むことができます。
+
+      <ph name="PRODUCT_NAME" /> バージョン 92 以降、このポリシーはヘッドレス モードでもサポートされるようになりました。
+
+      注: 「chrome://*」の内部 URL をブロックすると、予期しないエラーが発生する可能性があります。</translation>
 <translation id="8631434304112909927">バージョン <ph name="UNTIL_VERSION" /> まで</translation>
 <translation id="8631437968147930597"><ph name="PRODUCT_OS_NAME" /> のロック画面で許可されるメモアプリのリスト</translation>
 <translation id="8637566476051166626">明示的に許可するネットワーク ポートを指定する</translation>
@@ -5719,13 +5723,6 @@
       このポリシーを未設定のままにした場合、Chrome ではプラットフォーム固有のデフォルト ディレクトリが使用されます。
 
       注: 使用できる変数の一覧については、https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables をご覧ください。</translation>
-<translation id="877499586514669705">このポリシーでは、<ph name="URL_BLOCKLIST_POLICY_NAME" /> の例外としてアクセスを許可する URL のリストを指定できます。リストの指定形式については、このポリシーの説明をご覧ください。このポリシーは、たとえば <ph name="URL_BLOCKLIST_POLICY_NAME" /> で「*」と設定してすべてのリクエストをブロックし、限定された一部の URL のみアクセスを許可する場合に使用します。つまり、特定のスキームや、他のドメインのサブドメイン、ポート、具体的なパスについて例外を設定します。設定の際は、https://www.chromium.org/administrators/url-blocklist-filter-format で指定された形式を使用します。URL をブロックするか許可するかは、最も具体的なフィルタによって決定されます。<ph name="URL_ALLOWLIST_POLICY_NAME" /> ポリシーは、<ph name="URL_BLOCKLIST_POLICY_NAME" /> より優先されます。このポリシーで指定できる URL は最大 1,000 件です。
-
-      また、このポリシーでは、リストで指定したプロトコル（「tel:」、「ssh:」など）のプロトコル ハンドラとして登録されている外部アプリケーションをブラウザから自動で呼び出すことも許可できます。
-
-      このポリシーを未設定のままにした場合、<ph name="URL_BLOCKLIST_POLICY_NAME" /> に例外は設定されません。
-
-      <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="877557628527387598">パスワード ログイン</translation>
 <translation id="8777369558049831576">外部プロトコルに関するダイアログに [常に開く] チェックボックスを表示する。</translation>
 <translation id="8786409859071107656">このポリシーを有効に設定した場合、USB 電力供給の電力管理ポリシーが有効になります。
@@ -6117,6 +6114,11 @@
       注: 「chrome://*」の内部 URL をブロックすると、予期しないエラーが発生する可能性があります。</translation>
 <translation id="957778406002650056"><ph name="PLUGIN_VM_NAME" /> 画像をダウンロードすることのできる URL です。</translation>
 <translation id="974349541138387272">希望の DNS-over-HTTPS リゾルバの URI テンプレートを指定する</translation>
+<translation id="980218166381006412">このポリシーを有効に設定した場合、バックグラウンド モードがオンになります。バックグラウンド モードでは、<ph name="PRODUCT_NAME" /> の処理が OS のログイン時に開始され、ブラウザ ウィンドウがすべて閉じられた後も続行されます。これにより、バックグラウンド アプリとブラウジング セッションは有効のままになります。バックグラウンド処理中はシステムトレイにアイコンが表示され、このアイコンからいつでも処理を終了できます。
+
+      このポリシーを無効に設定した場合、バックグラウンド モードはオフになります。
+
+      このポリシーを設定した場合、ユーザーはブラウザ設定でこのモードを変更できません。未設定の場合、バックグラウンド モードは初期状態でオフになりますが、ユーザーはこのモードを変更できます。</translation>
 <translation id="981346395360763138">Google 位置情報サービスが無効</translation>
 <translation id="982497069985795632">スペルチェックを有効にする</translation>
 <translation id="983256325512298435">ユーザーに許可を求めずに外部アプリケーションを実行できるプロトコルとその提供元のリストを定義します</translation>

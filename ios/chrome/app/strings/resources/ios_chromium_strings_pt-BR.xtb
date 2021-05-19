@@ -48,12 +48,12 @@
 <translation id="4852878756222711218">Para aproveitar o Chromium ao máximo, faça login na sua Conta do Google</translation>
 <translation id="4985291216379576555">Off-line. Não é possível verificar se há atualizações</translation>
 <translation id="4999538639245140991">Como você está saindo de uma conta gerenciada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os dados do Chromium serão excluídos deste dispositivo, mas permanecerão na sua Conta do Google.</translation>
+<translation id="5171868502429358653">Faça login no Chromium</translation>
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="5308226104666789935">Não é possível verificar se há atualizações</translation>
 <translation id="5396916991083608703">Definir o Chromium como padrão?</translation>
 <translation id="5521125884468363740">Para ver suas guias em qualquer lugar onde você usar o Chromium, faça login e ative a sincronização</translation>
 <translation id="5573014823074921752">Dica do Chromium. Para ver mais opções de guia, toque no botão "Mostrar guias" na barra de ferramentas localizada na parte superior ou inferior da tela e mantenha-o pressionado.</translation>
-<translation id="5651741435382092412">Faça login neste site, na sua Conta do Google e no Chromium. É possível ativar a sincronização mais tarde.</translation>
 <translation id="5700709190537129682">Não é possível verificar suas senhas com o Chromium</translation>
 <translation id="5742135483959137648">Usar o Chromium para abrir links</translation>
 <translation id="5777187867430702742">Página do Chromium</translation>
@@ -64,6 +64,7 @@
 1. Abra as Configurações.
 2. Toque em 'App do navegador padrão".
 3. Selecione o Chromium.</translation>
+<translation id="6155422572367400359">Faça login neste site, na sua Conta do Google e no Chromium. É possível ativar a sincronização mais tarde.</translation>
 <translation id="6268381023930128611">Sair do Chromium?</translation>
 <translation id="632825460376924298">Permitir login no Chromium</translation>
 <translation id="6337530241089703714">Você quer apagar ou manter os dados do Chromium neste dispositivo?</translation>

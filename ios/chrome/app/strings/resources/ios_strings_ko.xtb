@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">축소</translation>
 <translation id="2230173723195178503">웹페이지 로드됨</translation>
 <translation id="2239626343334228536">인터넷 사용 기록 삭제 중...</translation>
-<translation id="2257567812274161158">동기화가 작동하지 않습니다.</translation>
 <translation id="225943865679747347">오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">계정 추가</translation>
 <translation id="2268044343513325586">상세검색</translation>
@@ -143,7 +142,6 @@
 사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다.</translation>
 <translation id="2381405137052800939">기본설정</translation>
 <translation id="2386793615875593361">1장 선택됨</translation>
-<translation id="2410754283952462441">계정 선택</translation>
 <translation id="2421004566762153674">타사 쿠키 차단</translation>
 <translation id="2421044535038393232">수정 계속</translation>
 <translation id="2435457462613246316">비밀번호 표시</translation>
@@ -362,7 +360,6 @@
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4747097190499141774">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다. 암호를 아는 사람만 암호화된 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 동기화를 재설정해야 합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">새 시크릿 탭</translation>
-<translation id="4766678251456904326">기기에 계정 추가</translation>
 <translation id="4775879719735953715">기본 브라우저</translation>
 <translation id="4778644898150334464">다른 비밀번호 사용</translation>
 <translation id="4802417911091824046">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다.
@@ -794,6 +791,7 @@
 <translation id="8976382372951310360">도움말</translation>
 <translation id="8981454092730389528">Google 활동 제어</translation>
 <translation id="8985320356172329008">다음 계정으로 Google에 로그인함:</translation>
+<translation id="8996526648899750015">계정 추가...</translation>
 <translation id="9034759925968272072">Google 계정에서 로그아웃되지 않습니다. <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />에서 내 Google 계정에 있는 다른 형식의 탐색 기록을 확인할 수 있습니다.</translation>
 <translation id="9037965129289936994">원본 보기</translation>
 <translation id="9039373489628511875">대역폭</translation>
@@ -816,6 +814,7 @@
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">비정상 종료 보고서 전송 완료</translation>
 <translation id="952704832371081537">취소</translation>
+<translation id="984509647832111802">동기화가 작동하지 않습니다.</translation>
 <translation id="988141524645182168">기타 기기</translation>
 <translation id="989988560359834682">주소 수정</translation>
 <translation id="994757059139821576">기사 추천</translation>

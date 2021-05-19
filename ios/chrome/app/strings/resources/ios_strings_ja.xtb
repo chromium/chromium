@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">縮小</translation>
 <translation id="2230173723195178503">ウェブページを読み込みました</translation>
 <translation id="2239626343334228536">閲覧データを削除しています...</translation>
-<translation id="2257567812274161158">同期が機能していません。</translation>
 <translation id="225943865679747347">エラー コード: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">アカウントを追加</translation>
 <translation id="2268044343513325586">絞り込み</translation>
@@ -143,7 +142,6 @@
 サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどが行えなくなります。</translation>
 <translation id="2381405137052800939">基本設定</translation>
 <translation id="2386793615875593361">1 枚選択されています</translation>
-<translation id="2410754283952462441">アカウントの選択</translation>
 <translation id="2421004566762153674">サードパーティの Cookie をブロック</translation>
 <translation id="2421044535038393232">編集を続ける</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
@@ -362,7 +360,6 @@
 <translation id="473775607612524610">更新</translation>
 <translation id="4747097190499141774">パスフレーズ暗号化の対象に Google Pay のお支払い方法と住所は含まれません。パスフレーズを知っているユーザーだけが暗号化データを読み取ることができます。パスフレーズが Google に送信されたり Google で保存されたりすることはありません。パスフレーズを忘れた場合や、この設定を変更する場合は、同期をリセットする必要があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">新しいシークレット タブ</translation>
-<translation id="4766678251456904326">デバイスへのアカウントの追加</translation>
 <translation id="4775879719735953715">既定のブラウザ</translation>
 <translation id="4778644898150334464">他のパスワードを使用</translation>
 <translation id="4802417911091824046">パスフレーズ暗号化の対象に Google Pay のお支払い方法と住所は含まれません。
@@ -794,6 +791,7 @@
 <translation id="8976382372951310360">ヘルプ</translation>
 <translation id="8981454092730389528">Google アクティビティ管理</translation>
 <translation id="8985320356172329008">次のユーザーとして Google にログインしています</translation>
+<translation id="8996526648899750015">アカウントを追加...</translation>
 <translation id="9034759925968272072">Google アカウントへのログイン状態は維持されます。Google アカウントでの他の形式の閲覧履歴が <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> に残ることがあります。</translation>
 <translation id="9037965129289936994">原文のページを表示</translation>
 <translation id="9039373489628511875">帯域幅</translation>
@@ -816,6 +814,7 @@
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">クラッシュレポートを送信しました。</translation>
 <translation id="952704832371081537">キャンセル</translation>
+<translation id="984509647832111802">同期が機能していません。</translation>
 <translation id="988141524645182168">他のデバイス</translation>
 <translation id="989988560359834682">住所の編集</translation>
 <translation id="994757059139821576">記事の候補表示</translation>

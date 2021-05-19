@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Condicións de servizo adicionais de Chrome e Chrome OS</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1810845389119482123">Non se completou a configuración de sincronización inicial</translation>
-<translation id="1821253160463689938">Utiliza cookies para lembrar as túas preferencias, mesmo se non visitas esas páxinas</translation>
 <translation id="1829244130665387512">Buscar na páxina</translation>
 <translation id="1830550083491357902">Sesión non iniciada</translation>
 <translation id="1843805151597803366">Para obter mellores traducións, deixa que a Busca de Google utilice a páxina actual</translation>
@@ -203,6 +202,7 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 <ph name="BEGIN_LIST_ITEM1" />Os anunciantes poden saber cando hai miles de usuarios cun interese en común (por exemplo, o público dun concerto) e seleccionar anuncios para eles en lugar de facelo para unha persoa en concreto.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Os anunciantes poden estudar a eficiencia dos anuncios sen facer un seguimento dos sitios que visitas.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Carga previamente aquelas páxinas que Chrome considera que poderías visitar. Para facelo, o navegador pode utilizar cookies, sempre e cando permitas o seu uso, ademais de encriptar e enviar páxinas a través de Google para ocultar a túa identidade nos sitios.</translation>
 <translation id="234265804618409743">Non se puido abrir a cámara. Produciuse un erro.</translation>
 <translation id="2345671828921229300">Para realizar buscas, mantén premida unha palabra</translation>
 <translation id="2349710944427398404">Datos totais usados por Chrome, incluídas as contas, os marcadores e a configuración gardada</translation>
@@ -273,7 +273,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2777555524387840389">Quedan <ph name="SECONDS" /> segundos</translation>
 <translation id="2779651927720337254">produciuse un erro</translation>
 <translation id="2781151931089541271">Queda 1 segundo</translation>
-<translation id="279827439955962619">Deixar de salientar texto</translation>
 <translation id="2801022321632964776">Descarga a última versión de Chrome para poder navegar no teu idioma</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="281504910091592009">Para consultar e xestionar os contrasinais gardados, accede á túa <ph name="BEGIN_LINK" />Conta de Google<ph name="END_LINK" /></translation>
@@ -454,7 +453,6 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="3988466920954086464">Consulta os resultados da busca instantáneos neste panel</translation>
 <translation id="4000212216660919741">Inicio sen conexión</translation>
 <translation id="4016425174436051808">Non se puido seguir o feed. Produciuse un erro.</translation>
-<translation id="4021916380760361450">Controlar datos da túa conta de Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Datos de uso</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -480,7 +478,6 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="4195643157523330669">Abrir en pestana nova</translation>
 <translation id="4198423547019359126">Non hai localizacións de descarga dispoñibles</translation>
 <translation id="4209895695669353772">Para recibir contido personalizado suxerido por Google, activa a sincronización</translation>
-<translation id="423219824432660969">Encriptar os datos sincronizados co contrasinal de Google a partir do <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Abrir configuración</translation>
 <translation id="4248098802131000011">Protexe os teus contrasinais fronte a violacións da seguranza dos datos e outros problemas de seguranza</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
@@ -559,6 +556,7 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="47217992755561375">Ver os teus sitios favoritos</translation>
 <translation id="4732120983431207637">Recuperador de pillas</translation>
 <translation id="4738836084190194332">Última sincronización: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Deixar de salientar texto</translation>
 <translation id="4749960740855309258">Abrir unha nova pestana</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4763480195061959176">vídeo</translation>
@@ -699,7 +697,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="562289928968387744">Xestionar reaccións</translation>
 <translation id="5626134646977739690">Nome:</translation>
 <translation id="5628604359369369630">Sen ler: dispoñibles sen conexión</translation>
-<translation id="5632627355679805402">Os datos encriptáronse co teu <ph name="BEGIN_LINK" />contrasinal de Google<ph name="END_LINK" /> a partir do <ph name="TIME" />. Introdúceo para iniciar a sincronización.</translation>
 <translation id="5639724618331995626">Permitir todos os sitios</translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5655963694829536461">Buscar as túas descargas</translation>
@@ -934,7 +931,6 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="702463548815491781">Recoméndase cando están activadas as funcións TalkBack ou Acceso con interruptores</translation>
 <translation id="7027549951530753705">Restaurouse <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Contrasinais</translation>
-<translation id="7040531500313579672">Compartir texto destacado</translation>
 <translation id="7054588988317389591">Queres obter descricións de imaxes?</translation>
 <translation id="7055152154916055070">Bloqueouse unha redirección:</translation>
 <translation id="7063006564040364415">Non se puido conectar co servidor de sincronización.</translation>
@@ -970,6 +966,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7328017930301109123">No modo básico, Chrome carga as páxinas máis rápido e usa un 60 por cento menos de datos.</translation>
 <translation id="7332075081379534664">Iniciouse sesión</translation>
 <translation id="7333031090786104871">Aínda se está engadindo o sitio anterior</translation>
+<translation id="7339898014177206373">Nova ventá</translation>
 <translation id="7340958967809483333">Opcións de Discover</translation>
 <translation id="7352651011704765696">Produciuse un erro</translation>
 <translation id="7352939065658542140">VÍDEO</translation>
@@ -998,6 +995,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7493994139787901920"><ph name="VERSION" /> (actualizouse <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">datos aforrados</translation>
 <translation id="7498271377022651285">Agarda…</translation>
+<translation id="750228856503700085">Non hai actualizacións dispoñibles</translation>
 <translation id="7507207699631365376">Consulta a <ph name="BEGIN_LINK" />Política de privacidade<ph name="END_LINK" /> deste fornecedor</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="751961395872307827">Non se puido establecer conexión co sitio</translation>
@@ -1099,6 +1097,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8076492880354921740">Pestanas</translation>
 <translation id="8078096376109663956">Comparte só o texto</translation>
 <translation id="8084114998886531721">Gardouse o contrasinal</translation>
+<translation id="8084285576995584326">Controlar datos da túa Conta de Google</translation>
 <translation id="808747664143081553">Estableceuse conexión co dispositivo</translation>
 <translation id="8103578431304235997">Pestana do modo de incógnito</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>
 <translation id="8730621377337864115">Feito</translation>
+<translation id="8746155870861185046">Compartir texto destacado</translation>
 <translation id="8748850008226585750">Contido oculto</translation>
 <translation id="8773160212632396039">Procesando solicitude</translation>
 <translation id="8788265440806329501">O historial de navegación está pechado</translation>

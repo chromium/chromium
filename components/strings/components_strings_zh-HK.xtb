@@ -249,7 +249,6 @@
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />嘗試執行 Windows 網絡診斷<ph name="END_LINK" />。</translation>
 <translation id="1772163372082567643">您的目標伺服器「<ph name="ORIGIN" />」已設定標題要求為收到的所有要求套用來源政策。不過，由於該標題格式錯誤，因此瀏覽器無法完成您向 <ph name="SITE" /> 提出的要求。網站網絡供應商可使用來源政策設定網站的安全性及其他屬性。</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">請更新您的同步複雜密碼。</translation>
 <translation id="1787142507584202372">您最近開啟的分頁會在這裡顯示</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />，可以進行幾種動作，㩒 Tab 鍵就可以跟次序轉換唔同嘅動作</translation>
@@ -382,6 +381,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> 要求提供使用者名稱和密碼。</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期日：<ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">由管理員控制的設定</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" /> 要求與下列藍牙裝置配對</translation>
 <translation id="2344028582131185878">自動下載</translation>
 <translation id="2346319942568447007">您複製的圖片</translation>
 <translation id="2354001756790975382">其他書籤</translation>
@@ -451,6 +451,7 @@
 <translation id="2629325967560697240">如要獲得 Chrome 最高程度的安全防護，請<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />啟用強化保護功能<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">找不到 <ph name="HOST_NAME" /> 的伺服器 IP 位址。</translation>
 <translation id="2639739919103226564">狀態：</translation>
+<translation id="264810637653812429">找不到任何兼容的裝置。</translation>
 <translation id="2649204054376361687"><ph name="COUNTRY" />，<ph name="CITY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度清除瀏覽記錄、Cookie、快取同更多資料</translation>
 <translation id="2650446666397867134">存取檔案被拒</translation>
@@ -495,6 +496,7 @@
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2803306138276472711">Google 安全瀏覽功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />偵測到惡意軟件<ph name="END_LINK" />。即使是平常可以安全使用的網站，有時也會被惡意軟件感染。</translation>
 <translation id="2807052079800581569">圖片 Y 位置</translation>
+<translation id="2820957248982571256">正在掃瞄…</translation>
 <translation id="2824775600643448204">網址與搜尋列</translation>
 <translation id="2826760142808435982">連線採用 <ph name="CIPHER" /> 加密，並設有 <ph name="KX" /> 金鑰交換機制。</translation>
 <translation id="2835170189407361413">清除表格</translation>
@@ -605,6 +607,7 @@
 <translation id="3266793032086590337">值 (衝突)</translation>
 <translation id="3268451620468152448">開啟的分頁</translation>
 <translation id="3270847123878663523">復原重新排序(&amp;U)</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> 要求連接至</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">機構 (<ph name="ENROLLMENT_DOMAIN" />) 已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>
 <translation id="3282497668470633863">新增持卡人姓名</translation>
@@ -1210,6 +1213,7 @@
 <translation id="5455374756549232013">政策時間戳記有誤</translation>
 <translation id="5457113250005438886">無效</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資料}other{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資料}}</translation>
+<translation id="5463625433003343978">正在尋找裝置…</translation>
 <translation id="5469868506864199649">意大利文</translation>
 <translation id="5470861586879999274">重做編輯(&amp;R)</translation>
 <translation id="5478437291406423475">B6/C4 (信封)</translation>
@@ -1259,7 +1263,6 @@
 <translation id="5624120631404540903">管理密碼</translation>
 <translation id="5629630648637658800">無法載入政策設定</translation>
 <translation id="5631439013527180824">裝置管理憑證無效</translation>
-<translation id="5632627355679805402">您已於 <ph name="TIME" />使用<ph name="BEGIN_LINK" />Google 密碼<ph name="END_LINK" />加密資料。如要開始同步處理資料，請輸入密碼。</translation>
 <translation id="5633066919399395251">目前在 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻擊者可能會試圖在您的電腦上安裝危險的應用程式，以竊取或刪除您的資料 (例如相片、密碼、訊息和信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">已封鎖欺詐內容。</translation>
 <translation id="5644090287519800334">側邊 1 圖片 X 軸移動</translation>
@@ -1303,6 +1306,7 @@
 <translation id="5804427196348435412">使用 NFC 裝置</translation>
 <translation id="5810442152076338065">您與 <ph name="DOMAIN" /> 之間的連線透過過時的加密套件加密處理。</translation>
 <translation id="5813119285467412249">重做新增(&amp;R)</translation>
+<translation id="5817918615728894473">配對</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{付帳時，系統會從此付款卡扣款，但其號碼並不會與此網站分享。為提高安全性，系統會產生一組臨時 CVC。}other{付帳時，系統會從所選的付款卡扣款，但其號碼並不會與此網站分享。為提高安全性，系統會產生一組臨時 CVC。}}</translation>
 <translation id="5826507051599432481">真實姓名 (CN)</translation>
 <translation id="5838278095973806738">您不應在此網站上輸入任何敏感資料 (例如密碼或信用卡資料)，因為攻擊者可能會竊取這些資料。</translation>
@@ -1310,6 +1314,7 @@
 <translation id="5855253129151731373">此網站的主機名稱與 <ph name="LOOKALIKE_DOMAIN" /> 相似。攻擊者有時會在網域名稱中加入難以辨識的細微變更來仿冒網站。
 
     如果您認為系統不應顯示此訊息，請前往 https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals。</translation>
+<translation id="5860033963881614850">關閉</translation>
 <translation id="5862579898803147654">堆疊器 8</translation>
 <translation id="5863847714970149516">接下來的頁面可能會向您收取費用</translation>
 <translation id="5866257070973731571">新增電話號碼</translation>
@@ -1503,6 +1508,7 @@
 <translation id="6624427990725312378">聯絡人資料</translation>
 <translation id="6626291197371920147">新增有效的信用卡號碼</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> 搜尋</translation>
+<translation id="6630043285902923878">正在尋找 USB 裝置…</translation>
 <translation id="6630809736994426279">目前在 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻擊者可能會試圖在您的 Mac 上安裝危險的應用程式，以竊取或刪除您的資料 (例如相片、密碼、訊息和信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">清除</translation>
@@ -1758,7 +1764,6 @@
 <translation id="7610193165460212391">值超出 <ph name="VALUE" /> 的範圍。</translation>
 <translation id="7613889955535752492">到期日：<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度睇同管理密碼</translation>
-<translation id="7615602087246926389">您已經使用其他版本的「Google 帳戶」密碼對數據進行加密，請在下方輸入密碼。</translation>
 <translation id="7616645509853975347">管理員已在您的瀏覽器上啟用 Chrome Enterprise Connectors。這些連接器可存取您的部分資料。</translation>
 <translation id="7619838219691048931">結束工作表</translation>
 <translation id="762844065391966283">一次一個物件</translation>
@@ -2171,6 +2176,7 @@
 <translation id="9170848237812810038">復原(&amp;U)</translation>
 <translation id="9171296965991013597">要退出應用程式嗎？</translation>
 <translation id="9173282814238175921">單一文件/新工作表</translation>
+<translation id="9173995187295789444">正在掃瞄藍牙裝置…</translation>
 <translation id="917450738466192189">伺服器憑證無效。</translation>
 <translation id="9174917557437862841">分頁切換按鈕，㩒一下 Enter 鍵就可以轉去呢個分頁</translation>
 <translation id="9179703756951298733">在 Chrome 設定中管理付款和信用卡資料</translation>

@@ -299,6 +299,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7216409898977639127">Opérateur de téléphonie mobile</translation>
 <translation id="7271040990581020067">Le scanner est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Appareils sur le réseau</translation>
 <translation id="7359657277149375382">Type de fichier</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8372477600026034341">Hôtes supplémentaires</translation>
 <translation id="8395584934117017006">Votre <ph name="DEVICE_TYPE" /> est géré par une entreprise</translation>
 <translation id="8398927464629426868">Taux auquel l'appareil se recharge ou se décharge actuellement</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Nom du fournisseur personnel</translation>
 <translation id="8475690821716466388">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP PSK</translation>
 <translation id="8477551185774834963">Seuil de latence autorisé légèrement dépassé par le DNS</translation>

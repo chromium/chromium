@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome kunde inte söka efter uppdateringar. Försök igen senare.</translation>
 <translation id="2732745070297234559">Chrome kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
 <translation id="2740105938841089077">Öppna länkar i Chrome</translation>
+<translation id="2869959624320573933">Logga in i Chrome</translation>
 <translation id="2919738076569633423">Genom att använda Chrome godkänner du <ph name="BEGIN_LINK_TOS" />användarvillkoren<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Din data i Chrome raderas från den här enheten eftersom du loggar ut från ett konto som hanteras av <ph name="SIGNOUT_MANAGED_DOMAIN" />. Din data finns kvar i Google-kontot.</translation>
 <translation id="3167189358072330585">Kontot fungerar inte på Google Chrome. Kontakta domänadministratören eller logga in med ett vanligt Google-konto.</translation>
 <translation id="3173834708294760622">Google Chrome-sida</translation>
 <translation id="3196546062792660320">Med Chrome sparar du tid genom att dina konton blir tillgängliga på nätet. Du kan lägga till och ta bort konton i inställningarna.</translation>
-<translation id="3223655207402797071">Logga in på den här webbplatsen, i ditt Google-konto och i Chrome. Du kan aktivera synkronisering senare.</translation>
 <translation id="3282568296779691940">Logga in i Chrome</translation>
 <translation id="3345341804167540816">Använd Chrome överallt</translation>
 <translation id="3455456143708465450">Logga in med Google-kontot så att du får ut mesta möjliga av Chrome</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome behöver inte uppdateras</translation>
 <translation id="8022947259858476807">Använd Chrome som standard när du öppnar länkar och söker med en widget och få lösenord ifyllda i andra appar automatiskt</translation>
 <translation id="8160472928944011082">Uppdatering inte möjlig</translation>
+<translation id="8263079278049777200">Logga in på den här webbplatsen, i ditt Google-konto och i Chrome. Du kan aktivera synkronisering senare.</translation>
 <translation id="8357607116237445042">Välj om din data i Chrome ska raderas från den här enheten eller vara kvar</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>
 <translation id="840168496893712993">Några tillägg har fått Chrome att krascha. Testa att avinstallera dem.</translation>

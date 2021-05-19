@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Dodatni pogoji za Google Chrome in Chrome OS</translation>
 <translation id="1807246157184219062">Svetlo</translation>
 <translation id="1810845389119482123">Začetna nastavitev sinhronizacije se ni dokončala</translation>
-<translation id="1821253160463689938">Uporablja piškotke, da si zapomni vaše nastavitve, tudi če teh strani ne obiskujete</translation>
 <translation id="1829244130665387512">Poiščite na strani</translation>
 <translation id="1830550083491357902">Niste prijavljeni</translation>
 <translation id="1843805151597803366">Zaradi boljših prevodov omogočite Iskanju Google uporabo trenutne strani</translation>
@@ -203,6 +202,7 @@ Dotaknite se poljubne besede, če želite iskati. Če želite izboljšati iskanj
 <ph name="BEGIN_LIST_ITEM1" />Oglaševalci lahko izvedo, kdaj ima več tisoč uporabnikov podobno zanimanje – na primer množica na koncertu —, in izberejo oglase za množico, ne pa posamezno osebo.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Oglaševalci lahko preučujejo učinkovitost oglasov na način, ki vam ne sledi na spletnih mestih.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Vnaprej naloži strani, za katere Chrome meni, da jih boste morda obiskali. Chrome za to morda uporabi piškotke, če jih dovolite, ter morda šifrira in pošilja strani prek Googla zaradi skrivanja vaše identitete pred spletnimi mesti.</translation>
 <translation id="234265804618409743">Kamere ni mogoče odpreti. Prišlo je do napake.</translation>
 <translation id="2345671828921229300">Če želite iskati, pridržite besedo</translation>
 <translation id="2349710944427398404">Skupna količina podatkov, ki jih uporablja Chrome, vključno z računi, zaznamki in shranjenimi nastavitvami.</translation>
@@ -273,7 +273,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="2777555524387840389">Še <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">ni uspelo</translation>
 <translation id="2781151931089541271">Še 1 s</translation>
-<translation id="279827439955962619">Odstrani označevanje</translation>
 <translation id="2801022321632964776">Posodobite Chrome na najnovejšo različico, če ga želite v svojem jeziku</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="281504910091592009">Shranjena gesla si lahko ogledate in jih upravljate v <ph name="BEGIN_LINK" />Google Računu<ph name="END_LINK" /></translation>
@@ -454,7 +453,6 @@ Zasebni peskovnik je še vedno v aktivnem razvoju in na voljo le na izbranih obm
 <translation id="3988466920954086464">Ogled rezultatov dinamičnega iskanja v tem podoknu</translation>
 <translation id="4000212216660919741">Začetna stran brez povezave</translation>
 <translation id="4016425174436051808">Ni mogoče spremljati. Prišlo je do napake.</translation>
-<translation id="4021916380760361450">Upravljanje podatkov v računih Google.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}two{# h}few{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Podatki o uporabi</translation>
 <translation id="4056223980640387499">Sepija</translation>
@@ -480,7 +478,6 @@ Zasebni peskovnik je še vedno v aktivnem razvoju in na voljo le na izbranih obm
 <translation id="4195643157523330669">Odpri v novem zavihku</translation>
 <translation id="4198423547019359126">Ni razpoložljivih mest za prenos</translation>
 <translation id="4209895695669353772">Če želite prejemati prilagojeno vsebino, ki jo predlaga Google, vklopite sinhronizacijo</translation>
-<translation id="423219824432660969">Šifriranje sinhroniziranih podatkov z geslom za Google Račun z dnem <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Odpri nastavitve</translation>
 <translation id="4248098802131000011">Varuje gesla pred podatkovnimi kršitvami in drugimi varnostnimi težavami</translation>
 <translation id="4250229828105606438">Posnetek zaslona</translation>
@@ -559,6 +556,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="47217992755561375">Ogled najbolj priljubljenih spletnih mest</translation>
 <translation id="4732120983431207637">Modul za odstranitev sklada</translation>
 <translation id="4738836084190194332">Zadnja sinhronizacija: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Odstrani označitev</translation>
 <translation id="4749960740855309258">Odpiranje novega zavihka</translation>
 <translation id="4759238208242260848">Prenosi</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +697,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="562289928968387744">Upravljanje odzivov</translation>
 <translation id="5626134646977739690">Ime:</translation>
 <translation id="5628604359369369630">Neprebrano – na voljo brez povezave</translation>
-<translation id="5632627355679805402">Vaši podatki so bili ob <ph name="TIME" /> šifrirani z vašim <ph name="BEGIN_LINK" />geslom za Google<ph name="END_LINK" />. Če želite začeti sinhronizacijo, ga vnesite.</translation>
 <translation id="5639724618331995626">Dovoli vsa spletna mesta</translation>
 <translation id="5648166631817621825">Zadnjih 7 dni</translation>
 <translation id="5655963694829536461">Poiščite prenose</translation>
@@ -934,7 +931,6 @@ Podatki anonimne seje se iz Chroma izbrišejo šele, ko <ph name="BEGIN_BOLD2" /
 <translation id="702463548815491781">Priporočljivo, ko je vklopljena aplikacija TalkBack ali funkcija dostopa s stikalom</translation>
 <translation id="7027549951530753705">Obnovljeno: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Gesla</translation>
-<translation id="7040531500313579672">Deli označevanje</translation>
 <translation id="7054588988317389591">Želite pridobiti opise slik?</translation>
 <translation id="7055152154916055070">Preusmeritev je preprečena:</translation>
 <translation id="7063006564040364415">Povezave s strežnikom za sinhronizacijo ni bilo mogoče vzpostaviti.</translation>
@@ -970,6 +966,7 @@ Podatki anonimne seje se iz Chroma izbrišejo šele, ko <ph name="BEGIN_BOLD2" /
 <translation id="7328017930301109123">Chrome v lahkem načinu naloži strani hitreje in uporabi do 60 odstotkov manj podatkov.</translation>
 <translation id="7332075081379534664">Prijava je uspela</translation>
 <translation id="7333031090786104871">Dodajanje prejšnjega spletnega mesta še vedno poteka</translation>
+<translation id="7339898014177206373">Novo okno</translation>
 <translation id="7340958967809483333">Možnosti za Odkrivanje</translation>
 <translation id="7352651011704765696">Prišlo je do neznane težave</translation>
 <translation id="7352939065658542140">VIDEOPOSNETEK</translation>
@@ -998,6 +995,7 @@ Podatki anonimne seje se iz Chroma izbrišejo šele, ko <ph name="BEGIN_BOLD2" /
 <translation id="7493994139787901920"><ph name="VERSION" /> (Posodobljeno: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">prihranjenega prenosa podatkov</translation>
 <translation id="7498271377022651285">Počakajte …</translation>
+<translation id="750228856503700085">Posodobitve niso na voljo.</translation>
 <translation id="7507207699631365376">Oglejte si <ph name="BEGIN_LINK" />pravilnik o zasebnosti<ph name="END_LINK" /> tega ponudnika</translation>
 <translation id="7514365320538308">Prenos</translation>
 <translation id="751961395872307827">Povezave s spletnim mestom ni mogoče vzpostaviti</translation>
@@ -1099,6 +1097,7 @@ Podatki anonimne seje se iz Chroma izbrišejo šele, ko <ph name="BEGIN_BOLD2" /
 <translation id="8076492880354921740">Zavihki</translation>
 <translation id="8078096376109663956">Besedilo lahko samo delite.</translation>
 <translation id="8084114998886531721">Shranjeno geslo</translation>
+<translation id="8084285576995584326">Nadziranje podatkov v računu Google.</translation>
 <translation id="808747664143081553">Povezava z napravo je vzpostavljena.</translation>
 <translation id="8103578431304235997">Anonimni zavihek</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Podatki anonimne seje se iz Chroma izbrišejo šele, ko <ph name="BEGIN_BOLD2" /
 <translation id="8712637175834984815">Razumem</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>
 <translation id="8730621377337864115">Končano</translation>
+<translation id="8746155870861185046">Deli oznako</translation>
 <translation id="8748850008226585750">Vsebina je skrita</translation>
 <translation id="8773160212632396039">Obdelovanje zahteve</translation>
 <translation id="8788265440806329501">Zgodovina krmarjenja je zaprta</translation>

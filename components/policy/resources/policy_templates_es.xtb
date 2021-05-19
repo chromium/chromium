@@ -2156,17 +2156,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="377044054160169374">Aplicar intervención de experiencia abusiva</translation>
 <translation id="3778689139323007309">Realizar comprobaciones de revocación de los certificados del servidor validados correctamente y firmados por certificados AC instalados localmente</translation>
 <translation id="3780152581321609624">Incluir un puerto no estándar en SPN de Kerberos</translation>
-<translation id="3783569262370557918">Habilita <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> para obtener una lista de URLs.
-
-      Si se establece esta política, se especificarán las URL que podrán formar parte del flujo de atestación para obtener un conjunto de señales del equipo.
-
-      Si no se establece esta política o se deja vacía, ningún punto final podrá iniciar el flujo de atestación ni obtener señales procedentes del equipo.
-
-      Las URL deben tener una estructura de HTTPS (por ejemplo, https://example.com).
-
-      Nota: Se permiten los comodines (<ph name="WILDCARD_VALUE" />).
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="378495749480642482">Configura si los sitios a los que accede el usuario tienen permiso para crear sesiones de realidad aumentada inmersiva usando <ph name="WEBXR_API_NAME" />.
 
       Si se habilita esta política o no se le asigna ningún valor, <ph name="WEBXR_API_NAME" /> aceptará el valor <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> durante la creación de la sesión, lo que permitirá a los usuarios disfrutar de experiencias de realidad aumentada.
@@ -2879,11 +2868,6 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       Si la política no se define, no se permitirán excepciones.
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
-<translation id="4882406948002286350">Si se define esta política, se impide que páginas web con URL prohibidas puedan cargarse. Contiene una lista de patrones de URL que especifican las URL prohibidas. Si la política no se define, no se prohibirá ninguna URL en el navegador. Los patrones de URL deben tener el formato que se indica en la página https://www.chromium.org/administrators/url-blocklist-filter-format. Se pueden definir un máximo de 1000 excepciones en <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      Puedes bloquear las URL javascript://* a partir de la versión 73 de <ph name="PRODUCT_NAME" />. Sin embargo, esto solo afecta al código JavaScript que se introduce en la barra de direcciones (por ejemplo, con los bookmarklets). Las URL JavaScript in-page que cargan datos dinámicamente no están sujetas a esta política. Por ejemplo, si bloqueas example.com/abc, la página example.com podrá cargar example.com/abc a través de XMLHTTPRequest.
-
-      Nota: Bloquear las URL internas chrome://* podría provocar errores inesperados.</translation>
 <translation id="4886783562285047261">Si se habilita esta política, se ordena el registro en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> y, si no se puede hacer, se bloquea el proceso de inicio de <ph name="PRODUCT_NAME" />.
 
       Si se inhabilita esta política o no se le asigna ningún valor, el registro en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> será opcional y, si no se puede hacer, no se bloqueará el proceso de inicio de <ph name="PRODUCT_NAME" />.
@@ -4044,11 +4028,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si esta política no se establece o la lista está vacía, se podrá acceder a todos los esquemas en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6338982178236723271">Ofrece información del sistema</translation>
-<translation id="6347363725343851058">Si se habilita esta política, se activará el modo en segundo plano. En el modo de segundo plano, un proceso de <ph name="PRODUCT_NAME" /> comienza al iniciar sesión en el sistema operativo y sigue ejecutándose cuando se cierra la última ventana del navegador, lo que permite que las aplicaciones en segundo plano y la sesión de navegación sigan activas, incluidas las cookies de la sesión. El proceso en segundo plano muestra un icono en la bandeja del sistema y se puede cerrar desde ahí en cualquier momento.
-
-      Si se inhabilita esta política, se desactivará el modo en segundo plano.
-
-      Si se asigna un valor a esta política, los usuarios no podrán cambiarlo desde la configuración del navegador. Si no se le asigna ningún valor, el modo en segundo plano estará desactivado inicialmente, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="6353890097388312479">Si se asigna el valor All (0) a esta política o no se establece, los usuarios podrán editar la configuración de confianza de todos los certificados AC, quitar certificados importados por el usuario e importar certificados mediante el administrador de certificados. Si se le asigna el valor UserOnly (1), los usuarios podrán gestionar únicamente certificados importados por usuarios, pero no podrán cambiar la configuración de confianza de los certificados integrados. Si se le asigna el valor None (2), los usuarios podrán ver los certificados AC, pero no gestionarlos.</translation>
 <translation id="6362856770865555544">Si se habilita la política o no se establece, se habilitará la optimización de WPAD (detección automática de proxy web) en <ph name="PRODUCT_NAME" />.
 
@@ -4594,15 +4573,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si no se le asigna ningún valor, los usuarios podrán cambiar esta opción.
 
       Nota: La compatibilidad del aislamiento de sitios web con Android mejorará, pero por el momento puede provocar problemas de rendimiento. Esta política solo se aplica a Chrome si se utiliza en dispositivos Android con más de 1 GB de RAM. Para aplicar esta política en plataformas distintas de Android, usa <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
-<translation id="6978404102280820831">A menos que la política <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> se configure para que siempre restaure las URL de sesiones anteriores, podrás asignarle el valor <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> para crear una lista de patrones de URL que especifique qué sitios pueden establecer cookies en una sesión y cuáles no.
-
-      Si no se le asigna ningún valor, se utilizará <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> en todos los sitios, si se ha definido previamente. Si no se ha definido, se aplicará la configuración personal del usuario. También se utilizarán valores predeterminados para aquellas URL que no se vean afectadas por los patrones especificados.
-
-      Si <ph name="PRODUCT_NAME" /> se está ejecutando en segundo plano, la sesión podría mantenerse activa hasta que el usuario cierre el navegador, no hasta que cierre la última ventana. Consulta <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" /> para obtener más información sobre la configuración de este comportamiento.
-
-      Aunque ninguna política específica prevalece sobre las otras, consulta <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> y <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. Los patrones de URL de estas tres políticas no deben interferir entre sí.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979739838208297344">Si se asigna el valor <ph name="BR_ENABLED" /> a esta política, el servicio de copia de seguridad y restauración de Android está activado inicialmente. Si se le asigna el valor <ph name="BR_DISABLED" /> o no se le asigna ninguno, el servicio de copia de seguridad y restauración estará desactivado durante la configuración.
 
@@ -5304,13 +5274,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Permite determinar el ID de la extensión que se debe utilizar como salvapantallas en la pantalla de inicio de sesión. La extensión debe formar parte del paquete AppPack configurado para ese dominio a través de la política DeviceAppPack.</translation>
 <translation id="7882857838942884046">Inhabilitar Google Sync provocará que Android Backup and Restore no funcione correctamente.</translation>
 <translation id="7882890448959833986">Eliminar la advertencia de SO no admitido</translation>
-<translation id="788487748427534612">A menos que la política <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> se configure para que siempre restaure las URL de sesiones anteriores, podrás asignarle el valor <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> para crear una lista de patrones de URL que especifique qué sitios web pueden establecer cookies en una sesión y cuáles no.
-
-      Si no se le asigna ningún valor, se utilizará <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> en todos los sitios web, si se ha definido previamente. Si no se ha definido previamente, se aplicará la configuración personal del usuario. También se utilizarán valores predeterminados para aquellas URL que no se vean afectadas por los patrones especificados.
-
-      Si <ph name="PRODUCT_NAME" /> se está ejecutando en segundo plano, la sesión podría mantenerse activa hasta que el usuario cierre el navegador, no hasta que cierre la última ventana. Consulta <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" /> para obtener más información sobre la configuración de este comportamiento.
-
-      Si ninguna política prevalece sobre las otras, consulta <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> y <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. Los patrones de URL de estas tres políticas no deben interferir entre sí.</translation>
 <translation id="7887379840451099426">Configuración de gestión de energía aplicable únicamente cuando el dispositivo funcione con la batería</translation>
 <translation id="7891884447851425349">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" />, se especificará la URL del buscador usada durante una búsqueda predeterminada. La URL debe incluir la cadena <ph name="SEARCH_TERM_MARKER" />, que en la consulta se sustituirá por los términos de búsqueda del usuario.
 
@@ -5933,13 +5896,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Si no se le asigna ningún valor, Chrome usará su directorio predeterminado específico de la plataforma.
 
       Nota: Consulta una lista de variables que puedes utilizar en esta página: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
-<translation id="877499586514669705">Si se define esta política, se permite acceder a las URL incluidas en la lista, las cuales se consideran excepciones de <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulta la descripción de la política para conocer el formato de las entradas de esta lista. Por ejemplo, si se le asigna el valor asterisco (*) a <ph name="URL_BLOCKLIST_POLICY_NAME" />, se bloquearán todas las solicitudes, y esta política se podrá usar para permitir el acceso a una lista limitada de URLs. También se puede utilizar para abrir excepciones de determinados esquemas, subdominios de otros dominios, puertos o rutas específicas usando el formato especificado en ( https://www.chromium.org/administrators/url-blocklist-filter-format ). El filtro más específico determinará si una URL está bloqueada o permitida. La política <ph name="URL_ALLOWLIST_POLICY_NAME" /> prevalece frente a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Esta política está limitada a 1000 entradas.
-
-      Esta política también permite habilitar la invocación automática que realiza el navegador de aplicaciones externas registradas como controladores de los protocolos incluidos en la lista, como "tel:" o "ssh:".
-
-      Si la política no se define, no se permitirán excepciones de <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="877557628527387598">Inicio de sesión con contraseña</translation>
 <translation id="8777369558049831576">Permite mostrar la casilla Siempre abierto en el cuadro de diálogo de un protocolo externo.</translation>
 <translation id="8786409859071107656">Si se habilita esta política, se activa la política de gestión de energía compartida por USB.

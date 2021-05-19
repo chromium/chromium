@@ -253,7 +253,6 @@
     অনুৰোধটো পৰিপূৰ্ণ কৰাত বাধা দিয়ে। কোনো ছাইটৰ বাবে
     সুৰক্ষা আৰু অন্য বৈশিষ্ট্যসমূহ কনফিগাৰ কৰিবলৈ ছাইট অপাৰেটৰসকলে মূল নীতিসমূহ ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">অনুগ্ৰহ কৰি আপোনাৰ ছিংক পাছফ্ৰেজ আপডে’ট কৰক।</translation>
 <translation id="1787142507584202372">আপুনি খোলা টেববোৰ ইয়াত দেখা যাব</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, একাধিক কাৰ্য উপলব্ধ, সেইবিলাক এটা এটাকৈ চাবলৈ টেব টিপক</translation>
@@ -386,6 +385,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" />ৰ বাবে এটা ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ডৰ প্ৰয়োজন।</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" />ত ম্যাদ উকলিব</translation>
 <translation id="2337852623177822836">ছেটিংটো আপোনাৰ প্ৰশাসকৰ দ্বাৰা নিয়ন্ত্ৰণ কৰা হয়</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" />এ যোৰা লাগিব খোজে</translation>
 <translation id="2344028582131185878">স্বয়ংক্ৰিয়ভাৱে হোৱা ডাউনল’ড</translation>
 <translation id="2346319942568447007">আপুনি প্ৰতিলিপি কৰা প্ৰতিচ্ছবি</translation>
 <translation id="2354001756790975382">অন্য বুকমাৰ্কসমূহ</translation>
@@ -455,6 +455,7 @@
 <translation id="2629325967560697240">Chromeৰ সৰ্বোচ্চ স্তৰৰ সুৰক্ষা লাভ কৰিবলৈ <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />বৰ্ধিত সুৰক্ষাৰ সুবিধাটো অন কৰক<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />ৰ ছাৰ্ভাৰৰ IP ঠিকনাটো বিচাৰি পোৱা নগ’ল।</translation>
 <translation id="2639739919103226564">স্থিতি:</translation>
+<translation id="264810637653812429">মিল থকা কোনো ডিভাইচ বিচাৰি পোৱা নগ’ল।</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeৰ ছেটিংসমূহত আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস, কুকিসমূহ, কেশ্ব আৰু বহুতো মচিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="2650446666397867134">ফাইলটোৰ এক্সেছ অস্বীকাৰ কৰা হ’ল</translation>
@@ -501,6 +502,7 @@
 <translation id="2799223571221894425">পুনৰ লঞ্চ কৰক</translation>
 <translation id="2803306138276472711">Googleৰ সুৰক্ষিত ব্ৰাউজিঙে শেহতীয়াকৈ<ph name="SITE" />ত <ph name="BEGIN_LINK" />মালৱেৰ চিনাক্ত কৰিছে<ph name="END_LINK" />। সাধাৰণতে সুৰক্ষিত ৱেবছাইটসমূহ কেতিয়াবা মালৱেৰৰ দ্বাৰা প্ৰভাৱিত হয়।</translation>
 <translation id="2807052079800581569">প্ৰতিচ্ছবিৰ Y স্থান</translation>
+<translation id="2820957248982571256">স্কেন কৰি থকা হৈছে...</translation>
 <translation id="2824775600643448204">ঠিকনা আৰু সন্ধানৰ বাৰ</translation>
 <translation id="2826760142808435982">এই সংযোগটো এনক্ৰিপ্ট কৰিবলৈ তথা সেইটোৰ বিশ্বাসযোগ্যতাৰ সত্যাপন কৰিবলৈ <ph name="CIPHER" /> ব্যৱহাৰ কৰা হৈছে আৰু সেইটোৱে <ph name="KX" />ক সলনা সলনিৰ মুখ্য উপায় হিচাপে ব্যৱহাৰ কৰে।</translation>
 <translation id="2835170189407361413">ফর্ম মচক</translation>
@@ -609,6 +611,7 @@
 <translation id="3266793032086590337">মান (সংঘাত)</translation>
 <translation id="3268451620468152448">খুলি ৰখা টেব</translation>
 <translation id="3270847123878663523">পুনঃক্ৰম কৰাটো &amp;আনডু কৰক</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" />এ সংযোগ কৰিবলৈ বিচাৰিছে</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">আপোনাৰ প্ৰতিষ্ঠান <ph name="ENROLLMENT_DOMAIN" />এ এই ৱেবছাইটসমূহলৈ ছেটিং অথবা নীতিৰ দৰে কিছুমান তথ্য পঠিয়াইছে।</translation>
 <translation id="3282497668470633863">কাৰ্ডত নাম যোগ কৰক</translation>
@@ -1217,6 +1220,7 @@
 <translation id="5455374756549232013">নীতিৰ timestamp বেয়া</translation>
 <translation id="5457113250005438886">অমান্য</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টা}one{<ph name="CONTACT_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টা}other{<ph name="CONTACT_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টা}}</translation>
+<translation id="5463625433003343978">ডিভাইচ বিচাৰি থকা হৈছে...</translation>
 <translation id="5469868506864199649">ইটালিয়ান</translation>
 <translation id="5470861586879999274">&amp;সম্পাদনা ৰিডু কৰক</translation>
 <translation id="5478437291406423475">B6/C4 (লেফাফা)</translation>
@@ -1266,7 +1270,6 @@
 <translation id="5624120631404540903">পাছৱৰ্ড সলনি কৰক</translation>
 <translation id="5629630648637658800">নীতিৰ ছেটিংসমূহ ল’ড কৰিব পৰা নগ’ল</translation>
 <translation id="5631439013527180824">অমান্য ডিভাইচ পৰিচালনাৰ ট’কেন</translation>
-<translation id="5632627355679805402">আপোনাৰ ডেটা <ph name="BEGIN_LINK" />Google পাছৱৰ্ড<ph name="END_LINK" />ৰ সৈতে <ph name="TIME" /> পর্যন্ত এনক্ৰিপ্ট কৰা হৈছে। ছিংক কৰা আৰম্ভ কৰিবলৈ এইটো দিয়ক।</translation>
 <translation id="5633066919399395251">বর্তমান <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ত থকা আক্ৰমণকাৰীয়ে আপোনাৰ কম্পিউটাৰত কিছুমান ক্ষতিকাৰক প্র’গ্ৰেম ইনষ্টল কৰিবলৈ চেষ্টা কৰিব পাৰে ,যিবোৰে আপোনাৰ তথ্য (উদাহৰণ স্বৰূপে ফট’, পাছৱৰ্ড, বাৰ্তা আৰু ক্ৰেডিট কাৰ্ডসমূহ) চুৰি কৰিব বা মচিব পাৰে। <ph name="BEGIN_LEARN_MORE_LINK" />অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">বিভ্ৰান্তিকৰ সমল অৱৰোধ কৰা হৈছে।</translation>
 <translation id="5644090287519800334">কাষৰ ১ প্ৰতিচ্ছবি X শ্বিফ্ট</translation>
@@ -1310,6 +1313,7 @@
 <translation id="5804427196348435412">NFC ডিভাইচসমূহ ব্যৱহাৰ কৰক</translation>
 <translation id="5810442152076338065">আপোনাৰ <ph name="DOMAIN" />ৰ সৈতে থকা সংযোগ কোনো অপ্ৰচলিত চাইফাৰ ছুট ব্যৱহাৰ কৰি এনক্ৰিপ্ট কৰা হৈছে।</translation>
 <translation id="5813119285467412249">যোগ কৰা কার্য &amp;ৰিডু কৰক</translation>
+<translation id="5817918615728894473">যোৰা লগাওক</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{আপুনি পৰিশোধ কৰিলে এই কাৰ্ডখনৰ পৰা টকা আদায় দিয়া হ’ব কিন্তু ইয়াৰ প্ৰকৃত নম্বৰটো এই ছাইটটোৰ সৈতে শ্বেয়াৰ কৰা নহ’ব। অতিৰিক্ত সুৰক্ষাৰ বাবে এটা সাময়িক CVC সৃষ্টি কৰা হ’ব।}one{আপুনি পৰিশোধ কৰিলে আপুনি বাছনি কৰা কাৰ্ডখনৰ পৰা টকা আদায় দিয়া হ’ব কিন্তু ইয়াৰ প্ৰকৃত নম্বৰটো এই ছাইটটোৰ সৈতে শ্বেয়াৰ কৰা নহ’ব। অতিৰিক্ত সুৰক্ষাৰ বাবে এটা সাময়িক CVC সৃষ্টি কৰা হ’ব।}other{আপুনি পৰিশোধ কৰিলে আপুনি বাছনি কৰা কাৰ্ডখনৰ পৰা টকা আদায় দিয়া হ’ব কিন্তু ইয়াৰ প্ৰকৃত নম্বৰটো এই ছাইটটোৰ সৈতে শ্বেয়াৰ কৰা নহ’ব। অতিৰিক্ত সুৰক্ষাৰ বাবে এটা সাময়িক CVC সৃষ্টি কৰা হ’ব।}}</translation>
 <translation id="5826507051599432481">কামাণ্ডৰ নাম (CN)</translation>
 <translation id="5838278095973806738">আপুনি এই চাইটটোত কোনো সংবেদনশীল তথ্য দিয়াটো উচিত নহয় (উদাহৰণ স্বৰূপে, পাছৱৰ্ড বা ক্ৰেডিট কাৰ্ড) কাৰণ এয়া আক্ৰমণকাৰীয়ে চুৰ কৰিব পাৰে।</translation>
@@ -1317,6 +1321,7 @@
 <translation id="5855253129151731373">এই ছাইটটোৰ হ'ষ্টনাম <ph name="LOOKALIKE_DOMAIN" />ৰ দৰে একেই যেন লাগিছে। আক্ৰমণকাৰীসকলে ড’মেইনৰ নামত কেতিয়াবা সৰু, সহজে চকুত নপৰা সালসলনিসমূহ কৰি ছাইটসমূহ নকল কৰিব পাৰে।
 
     যদি আপুনি বিশ্বাস কৰিছে যে এইটো ভুলতে দেখুওৱা হৈছে, অনুগ্ৰহ কৰি https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals চাওক।</translation>
+<translation id="5860033963881614850">অফ আছে</translation>
 <translation id="5862579898803147654">ষ্টেকাৰ ৮</translation>
 <translation id="5863847714970149516">পৰৱর্তী পৃষ্ঠাটোৱে আপোনাৰ পৰা মাচুল ল’বলৈ চেষ্টা কৰিব পাৰে</translation>
 <translation id="5866257070973731571">ফ'ন নম্বৰ যোগ কৰক</translation>
@@ -1508,6 +1513,7 @@
 <translation id="6624427990725312378">যোগাযোগৰ তথ্য</translation>
 <translation id="6626291197371920147">মান্য কার্ড নম্বৰ যোগ কৰক</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Search</translation>
+<translation id="6630043285902923878">ইউএছবি ডিভাইচ বিচাৰি থকা হৈছে...</translation>
 <translation id="6630809736994426279">বর্তমান <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ত থকা আক্ৰমণকাৰীয়ে আপোনাৰ Macত কিছুমান ক্ষতিকাৰক প্র’গ্ৰেম ইনষ্টল কৰিবলৈ চেষ্টা কৰিব পাৰে ,যিবোৰে আপোনাৰ তথ্য (উদাহৰণ স্বৰূপে ফট’, পাছৱৰ্ড, বাৰ্তা আৰু ক্ৰেডিট কাৰ্ডসমূহ) চুৰি কৰিব বা মচিব পাৰে। <ph name="BEGIN_LEARN_MORE_LINK" />অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">মচক</translation>
@@ -1760,7 +1766,6 @@
 <translation id="7610193165460212391"><ph name="VALUE" /> মান পৰিসৰৰ বাহিৰৰ।</translation>
 <translation id="7613889955535752492">ম্যাদ উকলিব: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeৰ ছেটিংসমূহত আপোনাৰ পাছৱৰ্ডসমূহ চাবলৈ আৰু পৰিচালনা কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
-<translation id="7615602087246926389">আপোনাৰ ওচৰত ইতিমধ্যেই এনেকুৱা ডেটা আছে যিবোৰ আপোনাৰ Google একাউণ্টৰ পাছৱৰ্ডৰ কোনো ভিন্ন সংস্কৰণ ব্যৱহাৰ কৰি এনক্রিপ্ট কৰা হৈছে। অনুগ্ৰহ কৰি সেইটো তলত দিয়ক।</translation>
 <translation id="7616645509853975347">আপোনাৰ প্ৰশাসকে আপোনাৰ ব্ৰাউজাৰত Chrome এণ্টাৰপ্ৰাইজ কানেক্টৰসমূহ অন কৰিছে। এই কানেক্টৰসমূহৰ আপোনাৰ কিছুমান ডেটালৈ এক্সেছ আছে।</translation>
 <translation id="7619838219691048931">অন্তিমখন শ্বীট</translation>
 <translation id="762844065391966283">এবাৰত এটা</translation>
@@ -2173,6 +2178,7 @@
 <translation id="9170848237812810038">&amp;আনডু কৰক</translation>
 <translation id="9171296965991013597">এপ্‌টো বাদ দিবনে?</translation>
 <translation id="9173282814238175921">একক নথি/নতুন শ্বীট</translation>
+<translation id="9173995187295789444">ব্লুটুথ ডিভাইচ স্কেন কৰি থকা হৈছে...</translation>
 <translation id="917450738466192189">ছাৰ্ভাৰৰ প্ৰমাণপত্ৰ অমান্য।</translation>
 <translation id="9174917557437862841">টেব সলনি কৰা বুটাম, এই টেবটো ব্যৱহাৰ কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="9179703756951298733">Chromeৰ ছেটিংসমূহত আপোনাৰ পৰিশোধ আৰু ক্ৰেডিট কাৰ্ডৰ তথ্য পৰিচালনা কৰক</translation>

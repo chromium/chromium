@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Chrome &amp; Chrome OS Additional Terms of Service</translation>
 <translation id="1807246157184219062">Light</translation>
 <translation id="1810845389119482123">Initial sync setup not finished</translation>
-<translation id="1821253160463689938">Uses cookies to remember your preferences, even if you don't visit those pages</translation>
 <translation id="1829244130665387512">Find in page</translation>
 <translation id="1830550083491357902">Not signed in</translation>
 <translation id="1843805151597803366">To get better translations, let Google Search use the current page</translation>
@@ -203,6 +202,7 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <ph name="BEGIN_LIST_ITEM1" />Advertisers can learn when thousands of users share a similar interest – like a crowd at a concert – and select ads for the crowd, rather than an individual person.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Advertisers can study the effectiveness of ads in a way that does not track you across sites.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Preloads pages that Chrome thinks you might visit. To do this, Chrome may use cookies, if you allow cookies, and may encrypt and send pages through Google to hide your identity from sites.</translation>
 <translation id="234265804618409743">Can't open your camera. Something went wrong.</translation>
 <translation id="2345671828921229300">To search, touch &amp; hold a word</translation>
 <translation id="2349710944427398404">Total data used by Chrome, including accounts, bookmarks and saved settings</translation>
@@ -273,7 +273,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2777555524387840389"><ph name="SECONDS" /> secs left</translation>
 <translation id="2779651927720337254">failed</translation>
 <translation id="2781151931089541271">1 sec left</translation>
-<translation id="279827439955962619">Remove highlighting</translation>
 <translation id="2801022321632964776">Update to get your language in the latest version of Chrome</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">View and manage saved passwords in your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
@@ -454,7 +453,6 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="3988466920954086464">See instant search results in this panel</translation>
 <translation id="4000212216660919741">Offline Home</translation>
 <translation id="4016425174436051808">Can’t follow. Something went wrong.</translation>
-<translation id="4021916380760361450">Control your Google Accounts data</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# hr}other{# hrs}}</translation>
 <translation id="4045764304651014138">Usage data</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -480,7 +478,6 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4198423547019359126">No available download locations</translation>
 <translation id="4209895695669353772">To get personalised content suggested by Google, turn on sync</translation>
-<translation id="423219824432660969">Encrypt synced data with Google password as of <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Open settings</translation>
 <translation id="4248098802131000011">Keep your passwords safe from data breaches and other security issues</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -559,6 +556,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="47217992755561375">See your top sites</translation>
 <translation id="4732120983431207637">Stack unwinder</translation>
 <translation id="4738836084190194332">Last synced: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Remove highlight</translation>
 <translation id="4749960740855309258">Open a new tab</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4763480195061959176">video</translation>
@@ -699,7 +697,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="562289928968387744">Manage reactions</translation>
 <translation id="5626134646977739690">Name:</translation>
 <translation id="5628604359369369630">Unread – available offline</translation>
-<translation id="5632627355679805402">Your data was encrypted with your <ph name="BEGIN_LINK" />Google password<ph name="END_LINK" /> as of <ph name="TIME" />. Enter it to start sync.</translation>
 <translation id="5639724618331995626">Allow all sites</translation>
 <translation id="5648166631817621825">Last 7 days</translation>
 <translation id="5655963694829536461">Search your downloads</translation>
@@ -934,7 +931,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="702463548815491781">Recommended when TalkBack or Switch Access are on</translation>
 <translation id="7027549951530753705">Restored <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Passwords</translation>
-<translation id="7040531500313579672">Share highlighting</translation>
 <translation id="7054588988317389591">Get image descriptions?</translation>
 <translation id="7055152154916055070">Redirect blocked:</translation>
 <translation id="7063006564040364415">Could not connect to the sync server.</translation>
@@ -970,6 +966,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7328017930301109123">In Lite mode, Chrome loads pages faster and uses up to 60 per cent less data.</translation>
 <translation id="7332075081379534664">Sign-in succeeded</translation>
 <translation id="7333031090786104871">Still adding previous site</translation>
+<translation id="7339898014177206373">New window</translation>
 <translation id="7340958967809483333">Options for Discover</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7352939065658542140">VIDEO</translation>
@@ -998,6 +995,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7493994139787901920"><ph name="VERSION" /> (Updated <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">data saved</translation>
 <translation id="7498271377022651285">Please wait…</translation>
+<translation id="750228856503700085">Updates unavailable</translation>
 <translation id="7507207699631365376">See this provider's <ph name="BEGIN_LINK" />privacy policy<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="751961395872307827">Can't connect to the site</translation>
@@ -1099,6 +1097,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8078096376109663956">Share text only</translation>
 <translation id="8084114998886531721">Saved password</translation>
+<translation id="8084285576995584326">Control your Google Account data</translation>
 <translation id="808747664143081553">Connected to device</translation>
 <translation id="8103578431304235997">Incognito Tab</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8725066075913043281">Try again</translation>
 <translation id="8730621377337864115">Done</translation>
+<translation id="8746155870861185046">Share highlight</translation>
 <translation id="8748850008226585750">Contents hidden</translation>
 <translation id="8773160212632396039">Processing request</translation>
 <translation id="8788265440806329501">Navigation history is closed</translation>

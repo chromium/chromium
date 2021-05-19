@@ -48,12 +48,12 @@
 <translation id="4852878756222711218">Para masulit ang Chromium, mag-sign in sa iyong Google Account</translation>
 <translation id="4985291216379576555">Naka-offline, hindi matingnan ng Chromium kung may mga update</translation>
 <translation id="4999538639245140991">Dahil magsa-sign out ka sa account na pinapamahalaan ng <ph name="SIGNOUT_MANAGED_DOMAIN" />, made-delete ang iyong data sa Chromium sa device na ito. Mananatili ang data mo sa iyong Google Account.</translation>
+<translation id="5171868502429358653">Mag-sign In sa Chromium</translation>
 <translation id="5224391634244552924">Walang naka-save na password. Masusuri ng Chromium ang iyong mga password kapag na-save mo ang mga ito.</translation>
 <translation id="5308226104666789935">Hindi matingnan ng Chromium kung may mga update</translation>
 <translation id="5396916991083608703">Itakda ang Chromium bilang Default?</translation>
 <translation id="5521125884468363740">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chromium, mag-sign in at i-on ang pag-sync</translation>
 <translation id="5573014823074921752">Tip sa Chromium. Para sa higit pang opsyon sa tab, pindutin nang matagal ang button na Ipakita ang Mga Tab sa toolbar, na nasa ibaba o itaas ng iyong screen.</translation>
-<translation id="5651741435382092412">Mag-sign in sa site na ito, sa iyong Google Account, at sa Chromium. Puwede mong i-on ang pag-sync sa ibang pagkakataon.</translation>
 <translation id="5700709190537129682">Hindi masuri ng Chromium ang iyong mga password</translation>
 <translation id="5742135483959137648">Gamitin ang Chromium para Magbukas ng Mga Link</translation>
 <translation id="5777187867430702742">Page ng Chromium</translation>
@@ -64,6 +64,7 @@
 1. Buksan ang Settings
 2. I-tap ang Default Browser App
 3. Piliin ang Chromium.</translation>
+<translation id="6155422572367400359">Mag-sign in sa site na ito, sa iyong Google Account, at sa Chromium. Puwede mong i-on ang pag-sync sa ibang pagkakataon.</translation>
 <translation id="6268381023930128611">Mag-sign out sa Chromium?</translation>
 <translation id="632825460376924298">Payagan ang Pag-sign In sa Chromium</translation>
 <translation id="6337530241089703714">Piliin kung iki-clear ang iyong data sa Chromium sa device na ito o kung papanatilihin ito</translation>

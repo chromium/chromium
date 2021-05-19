@@ -47,12 +47,12 @@
 <translation id="4852878756222711218">Pokud z prohlížeče Chromium chcete získat maximum, přihlaste se pomocí účtu Google</translation>
 <translation id="4985291216379576555">Chrome nemůže vyhledat dostupné aktualizace, protože jste offline</translation>
 <translation id="4999538639245140991">Protože se odhlašujete z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaše data prohlížeče Chromium z tohoto zařízení budou smazána. V účtu Google vám zůstanou.</translation>
+<translation id="5171868502429358653">Přihlásit se do prohlížeče Chromium</translation>
 <translation id="5224391634244552924">Nemáte žádná uložená hesla. Chromium může hesla zkontrolovat, pouze když si je uložíte.</translation>
 <translation id="5308226104666789935">Chromium nemůže vyhledat dostupné aktualizace</translation>
 <translation id="5396916991083608703">Nastavit Chromium jako výchozí prohlížeč?</translation>
 <translation id="5521125884468363740">Chcete-li mít své karty k dispozici všude, kde používáte Chromium, přihlaste se a zapněte synchronizaci</translation>
 <translation id="5573014823074921752">Tip pro Chromium. Další možnosti karet zobrazíte přidržením tlačítka Zobrazit karty, které najdete v dolní nebo horní části obrazovky.</translation>
-<translation id="5651741435382092412">Přihlaste se na tento web, k účtu Google a do Chromia. Synchronizaci můžete zapnout později.</translation>
 <translation id="5700709190537129682">Chromium nemůže zkontrolovat hesla</translation>
 <translation id="5742135483959137648">Otevírat odkazy pomocí Chromium</translation>
 <translation id="5777187867430702742">Stránka prohlížeče Chromium</translation>
@@ -63,6 +63,7 @@
 1. Otevřete nastavení.
 2. Klepněte na Výchozí prohlížeč.
 3. Vyberte Chromium.</translation>
+<translation id="6155422572367400359">Přihlaste se na tento web, k účtu Google a do prohlížeče Chromium. Synchronizaci můžete zapnout později.</translation>
 <translation id="6268381023930128611">Odhlásit se z prohlížeče Chromium?</translation>
 <translation id="632825460376924298">Povolit přihlášení do Chromia</translation>
 <translation id="6337530241089703714">Zvolte, zda z tohoto zařízení chcete vymazat data prohlížeče Chromium, nebo je ponechat</translation>

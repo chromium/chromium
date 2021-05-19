@@ -252,7 +252,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     the header is malformed, which prevents the browser from fulfilling
     your request for <ph name="SITE" />. Origin policies can be used by site operators to configure security and other properties for a site.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">Please update your sync passphrase.</translation>
 <translation id="1787142507584202372">Your open tabs appear here</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, multiple actions are available; press 'Tab' to cycle through them</translation>
@@ -385,6 +384,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requires a username and password.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expires on <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Setting controlled by your administrator</translation>
+<translation id="2340263603246777781"><ph name="ORIGIN" /> wants to pair</translation>
 <translation id="2344028582131185878">Automatic downloads</translation>
 <translation id="2346319942568447007">Image that you copied</translation>
 <translation id="2354001756790975382">Other bookmarks</translation>
@@ -454,6 +454,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2629325967560697240">To get Chrome’s highest level of security, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />turn on enhanced protection<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />’s server IP address could not be found.</translation>
 <translation id="2639739919103226564">Status:</translation>
+<translation id="264810637653812429">No compatible devices found.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to clear your browsing history, cookies, cache and more in Chrome settings</translation>
 <translation id="2650446666397867134">Access to the file was denied</translation>
@@ -500,6 +501,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2799223571221894425">Relaunch</translation>
 <translation id="2803306138276472711">Google Safe Browsing recently <ph name="BEGIN_LINK" />detected malware<ph name="END_LINK" /> on <ph name="SITE" />. Websites that are normally safe are sometimes infected with malware.</translation>
 <translation id="2807052079800581569">Image Y position</translation>
+<translation id="2820957248982571256">Scanning...</translation>
 <translation id="2824775600643448204">Address and search bar</translation>
 <translation id="2826760142808435982">The connection is encrypted and authenticated using <ph name="CIPHER" /> and uses <ph name="KX" /> as the key exchange mechanism.</translation>
 <translation id="2835170189407361413">Clear form</translation>
@@ -610,6 +612,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3266793032086590337">Value (conflict)</translation>
 <translation id="3268451620468152448">Open tabs</translation>
 <translation id="3270847123878663523">&amp;Undo Reorder</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> wants to connect</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Your organisation, <ph name="ENROLLMENT_DOMAIN" />, has sent some info to the following websites, like settings or policies.</translation>
 <translation id="3282497668470633863">Add name on card</translation>
@@ -1221,6 +1224,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5455374756549232013">Bad policy timestamp</translation>
 <translation id="5457113250005438886">Invalid</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}}</translation>
+<translation id="5463625433003343978">Finding devices…</translation>
 <translation id="5469868506864199649">Italian</translation>
 <translation id="5470861586879999274">&amp;Redo edit</translation>
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
@@ -1270,7 +1274,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5624120631404540903">Manage passwords</translation>
 <translation id="5629630648637658800">Failed to load policy settings</translation>
 <translation id="5631439013527180824">Invalid device management token</translation>
-<translation id="5632627355679805402">Your data was encrypted with your <ph name="BEGIN_LINK" />Google password<ph name="END_LINK" /> as of <ph name="TIME" />. Enter it to start sync.</translation>
 <translation id="5633066919399395251">Attackers currently on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> might attempt to install dangerous programs on your computer that steal or delete your information (for example, photos, passwords, messages and credit cards). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Deceptive content blocked.</translation>
 <translation id="5644090287519800334">Side 1 image X shift</translation>
@@ -1314,6 +1317,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5804427196348435412">Use NFC devices</translation>
 <translation id="5810442152076338065">Your connection to <ph name="DOMAIN" /> is encrypted using an obsolete cipher suite.</translation>
 <translation id="5813119285467412249">&amp;Redo Add</translation>
+<translation id="5817918615728894473">Pair</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{This card will be charged when you pay, but its real number won't be shared with this site. For extra security, a temporary CVC will be generated.}other{The card that you select will be charged when you pay, but its real number won't be shared with this site. For extra security, a temporary CVC will be generated.}}</translation>
 <translation id="5826507051599432481">Common Name (CN)</translation>
 <translation id="5838278095973806738">You should not enter any sensitive information on this site (for example, passwords or credit cards) because it could be stolen by attackers.</translation>
@@ -1321,6 +1325,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5855253129151731373">This site's hostname looks similar to <ph name="LOOKALIKE_DOMAIN" />. Attackers sometimes mimic sites by making small, hard-to-see changes to the domain name.
 
     If you believe that this is shown in error please visit https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
+<translation id="5860033963881614850">Off</translation>
 <translation id="5862579898803147654">Stacker 8</translation>
 <translation id="5863847714970149516">The page ahead may try to charge you money</translation>
 <translation id="5866257070973731571">Add Phone Number</translation>
@@ -1514,6 +1519,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6624427990725312378">Contact Info</translation>
 <translation id="6626291197371920147">Add valid card number</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Search</translation>
+<translation id="6630043285902923878">Finding USB devices…</translation>
 <translation id="6630809736994426279">Attackers currently on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> might attempt to install dangerous programs on your Mac that steal or delete your information (for example, photos, passwords, messages and credit cards). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Clear</translation>
@@ -1769,7 +1775,6 @@ Additional details:
 <translation id="7610193165460212391">Value is out of range <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Exp: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to view and manage your passwords in Chrome settings</translation>
-<translation id="7615602087246926389">You already have data that is encrypted using a different version of your Google Account password. Please enter it below.</translation>
 <translation id="7616645509853975347">Your administrator has turned on Chrome Enterprise Connectors on your browser. These connectors have access to some of your data.</translation>
 <translation id="7619838219691048931">End sheet</translation>
 <translation id="762844065391966283">One at a time</translation>
@@ -1922,6 +1927,7 @@ Additional details:
 <translation id="8202097416529803614">Order summary</translation>
 <translation id="8202370299023114387">Conflict</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{When you reset ID, your current ID will become invalid and a new one will be issued in less than 1 day}=1{When you reset ID, your current ID will become invalid and a new one will be issued in 1 day}other{When you reset ID, your current ID will become invalid and a new one will be issued in {NUM_DAYS} days}}</translation>
 <translation id="8211406090763984747">Connection is secure</translation>
 <translation id="8213464188712611711">Memories</translation>
 <translation id="8218327578424803826">Assigned Location:</translation>
@@ -2182,6 +2188,7 @@ Additional details:
 <translation id="9170848237812810038">&amp;Undo</translation>
 <translation id="9171296965991013597">Leave app?</translation>
 <translation id="9173282814238175921">Single document/New sheet</translation>
+<translation id="9173995187295789444">Scanning for Bluetooth devices...</translation>
 <translation id="917450738466192189">Server's certificate is invalid.</translation>
 <translation id="9174917557437862841">Tab switch button, press Enter to switch to this tab</translation>
 <translation id="9179703756951298733">Manage your payments and credit card info in Chrome settings</translation>

@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">નાનું કરો</translation>
 <translation id="2230173723195178503">વેબપેજ લોડ કર્યું</translation>
 <translation id="2239626343334228536">બ્રાઉઝિંગ ડેટા સાફ થઈ રહ્યો છે...</translation>
-<translation id="2257567812274161158">સિંક કાર્ય કરી રહ્યું નથી.</translation>
 <translation id="225943865679747347">ભૂલ કોડ: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">એકાઉન્ટ ઉમેરો</translation>
 <translation id="2268044343513325586">સુધારો</translation>
@@ -143,7 +142,6 @@
 વિભિન્ન સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે, સાઇટ તમારી કુકીનો ઉપયોગ કરી શકતી નથી, ઉદાહરણ તરીકે, મનગમતી જાહેરાતો બનાવવા માટે.</translation>
 <translation id="2381405137052800939">મૂળભૂત</translation>
 <translation id="2386793615875593361">1 પસંદ કર્યું છે</translation>
-<translation id="2410754283952462441">એકાઉન્ટ પસંદ કરો</translation>
 <translation id="2421004566762153674">ત્રીજા પક્ષની કુકી બ્લૉક કરી રહ્યાં છીએ</translation>
 <translation id="2421044535038393232">ફેરફાર કરતા રહો</translation>
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
@@ -362,7 +360,6 @@
 <translation id="473775607612524610">અપડેટ કરો</translation>
 <translation id="4747097190499141774">પાસફ્રેઝ એન્ક્રિપ્શનમાં Google Payની ચુકવણી પદ્ધતિઓ અને ઍડ્રેસ સામેલ હોતા નથી. માત્ર તમારા પાસફ્રેઝ ધરાવતી કોઈ વ્યક્તિ જ તમારા એન્ક્રિપ્ટ કરેલા ડેટાને વાંચી શકે છે. Googleને પાસફ્રેઝ મોકલવામાં આવતો નથી કે તેના દ્વારા સંગ્રહિત કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ અથવા આ સેટિંગ બદલવા માંગતા હો, તો તમારે સિંકને રીસેટ કરવું પડશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">નવું છૂપું ટૅબ</translation>
-<translation id="4766678251456904326">ડિવાઇસમાં એકાઉન્ટ ઉમેરો</translation>
 <translation id="4775879719735953715">ડિફૉલ્ટ બ્રાઉઝર</translation>
 <translation id="4778644898150334464">અન્ય પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="4802417911091824046">પાસફ્રેઝ એન્ક્રિપ્શનમાં Google Payની ચુકવણી પદ્ધતિઓ અને ઍડ્રેસ સામેલ હોતા નથી. 
@@ -794,6 +791,7 @@
 <translation id="8976382372951310360">સહાય</translation>
 <translation id="8981454092730389528">Google પ્રવૃત્તિ નિયંત્રણો</translation>
 <translation id="8985320356172329008">Google પર આ તરીકે સાઇન ઇન થયાં</translation>
+<translation id="8996526648899750015">એકાઉન્ટ ઉમેરો...</translation>
 <translation id="9034759925968272072">તમે તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ થશો નહિ. તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
 <translation id="9037965129289936994">મૂળ બતાવો</translation>
 <translation id="9039373489628511875">બેન્ડવિડ્થ</translation>

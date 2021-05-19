@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="1096883626080133124">‏يمكنك إنجاز المزيد من المهام باستخدام متصفِّح Google Chrome السهل الاستخدام والآمن والأسرع من ذي قبل.</translation>
 <translation id="1282031177488366470">‏المساعدة على تحسين ميزات Chrome وأدائه</translation>
 <translation id="1314663809820920746">‏سيظل بإمكانك الاطّلاع على جميع الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى المتوفّرة على هذا الجهاز. وفي حال إجراء أي تغييرات، لن يتم مزامنتها مع حسابك على Google.</translation>
 <translation id="1479202195792305274">‏يجب تسجيل الدخول إلى حسابك على Google ليتمكّن Chrome من التحقُّق من كلمات المرور.</translation>
@@ -8,6 +9,7 @@
 <translation id="1504372625950710826">‏تعذّر على Chrome البحث عن تحديثات. يُرجى التحقُّق من اتصال الإنترنت.</translation>
 <translation id="1682483655351012182">‏مزامنة بيانات Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1812249337131447686">‏المساعدة في تحسين Chrome من خلال إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google</translation>
 <translation id="1917964099031477364">‏ستتم إزالة هذا الحساب بالإضافة إلى أي بيانات لم يتم حفظها من Chrome وتطبيقات Google الأخرى على هذا الجهاز.</translation>
 <translation id="2009224836393115614">‏تعذّر على متصفِّح Chrome التحقُّق من كلمات المرور. يُرجى التحقُّق من اتصال الإنترنت.</translation>
 <translation id="2147651015520127414">‏لقد تحقق Chrome من أن <ph name="ISSUER" /> أصدر شهادة الموقع الإلكتروني.</translation>
@@ -27,7 +29,6 @@
 <translation id="3167189358072330585">‏لا يعمل حسابك على Google Chrome. يُرجى الاتصال بمشرف النطاق أو استخدام حساب Google عادي لتسجيل الدخول.</translation>
 <translation id="3173834708294760622">‏صفحة Google Chrome</translation>
 <translation id="3196546062792660320">‏يوفر Chrome وقتك من خلال تجميع حساباتك على شبكة الإنترنت. ويمكنك إضافة أو إزالة حسابات في الإعدادات.</translation>
-<translation id="3223655207402797071">‏يُرجى تسجيل الدخول إلى الموقع الإلكتروني هذا وإلى حسابك على Google وChrome. ويمكنك تفعيل المزامنة لاحقًا.</translation>
 <translation id="3282568296779691940">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="3345341804167540816">‏استخدم Chrome في كل مكان</translation>
 <translation id="3455456143708465450">‏للاستفادة إلى أقصى حدّ من Chrome، سجِّل الدخول إلى حسابك على Google.</translation>

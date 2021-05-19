@@ -116,7 +116,6 @@
 <translation id="1795251344124198516">Dodatkowe warunki korzystania z Chrome i Chrome OS</translation>
 <translation id="1807246157184219062">Jasny</translation>
 <translation id="1810845389119482123">Nie dokończono wstępnego konfigurowania synchronizacji</translation>
-<translation id="1821253160463689938">Twoje ustawienia będą zapisywane w plikach cookie, nawet jeśli nie odwiedzisz tych stron</translation>
 <translation id="1829244130665387512">Znajdź na stronie</translation>
 <translation id="1830550083491357902">Niezalogowany</translation>
 <translation id="1843805151597803366">Aby poprawić jakość tłumaczeń, pozwól wyszukiwarce Google na używanie bieżącej strony</translation>
@@ -203,6 +202,7 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <ph name="BEGIN_LIST_ITEM1" />Gdy tysiące użytkowników – tak jak tłum na koncercie – mają podobne zainteresowania, reklamodawcy mogą się o tym dowiedzieć i wybrać reklamy skierowane do tego tłumu, a nie do pojedynczych osób.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Reklamodawcy mogą analizować skuteczność reklam, stosując metody niewymagające śledzenia Cię w witrynach.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Wstępnie wczytuje strony, które możesz chcieć odwiedzić według Chrome. Chrome może w tym celu wykorzystywać pliki cookie, jeśli wyrażasz zgodę na ich używanie, oraz szyfrować i wysyłać strony za pośrednictwem Google, aby ukryć przed witrynami Twoją tożsamość.</translation>
 <translation id="234265804618409743">Nie udało się otworzyć aparatu. Coś poszło nie tak.</translation>
 <translation id="2345671828921229300">Aby wyszukać, naciśnij i przytrzymaj słowo</translation>
 <translation id="2349710944427398404">Łączna ilość danych używanych przez Chrome, w tym konta, zakładki i zapisane ustawienia</translation>
@@ -273,7 +273,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2777555524387840389">Pozostało: <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">Nie pobrano</translation>
 <translation id="2781151931089541271">Pozostała sekunda</translation>
-<translation id="279827439955962619">Usuń podświetlenie</translation>
 <translation id="2801022321632964776">Zaktualizuj Chrome do najnowszej wersji, by mieć w nim dostępny swój język</translation>
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="281504910091592009">Zapisane hasła znajdziesz na swoim <ph name="BEGIN_LINK" />koncie Google<ph name="END_LINK" /></translation>
@@ -454,7 +453,6 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="3988466920954086464">Zobacz wyniki wyszukiwania dynamicznego w tym panelu</translation>
 <translation id="4000212216660919741">Ekran główny offline</translation>
 <translation id="4016425174436051808">Nie udało się dodać do obserwowanych. Coś poszło nie tak.</translation>
-<translation id="4021916380760361450">Zarządzaj danymi na kontach Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# godzina}few{# godziny}many{# godzin}other{# godziny}}</translation>
 <translation id="4045764304651014138">Dane o korzystaniu</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -480,7 +478,6 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
 <translation id="4198423547019359126">Brak dostępnych miejsc zapisu pobieranych plików</translation>
 <translation id="4209895695669353772">Aby uzyskać dostęp do spersonalizowanej treści proponowanej przez Google, włącz synchronizację</translation>
-<translation id="423219824432660969">Zaszyfruj synchronizowane dane hasłem Google z <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
 <translation id="4248098802131000011">Chroń swoje hasła przed naruszeniem bezpieczeństwa danych i innymi zagrożeniami</translation>
 <translation id="4250229828105606438">Zrzut ekranu</translation>
@@ -559,6 +556,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="47217992755561375">Zobacz strony, które odwiedzasz najczęściej</translation>
 <translation id="4732120983431207637">Moduł rozwijania stosu</translation>
 <translation id="4738836084190194332">Ostatnia synchronizacja: <ph name="WHEN" /></translation>
+<translation id="4742970037960872810">Usuń podświetlenie</translation>
 <translation id="4749960740855309258">Otwórz nową kartę</translation>
 <translation id="4759238208242260848">Pobrane pliki</translation>
 <translation id="4763480195061959176">film</translation>
@@ -699,7 +697,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="562289928968387744">Zarządzaj reakcjami</translation>
 <translation id="5626134646977739690">Nazwa:</translation>
 <translation id="5628604359369369630">Nieprzeczytane – dostępne offline</translation>
-<translation id="5632627355679805402">Twoje dane zostały zaszyfrowane <ph name="BEGIN_LINK" />hasłem Google<ph name="END_LINK" /> w dniu <ph name="TIME" />. Wpisz to hasło, by rozpocząć synchronizację.</translation>
 <translation id="5639724618331995626">Pozwól na otwieranie wszystkich stron</translation>
 <translation id="5648166631817621825">Ostatnie 7 dni</translation>
 <translation id="5655963694829536461">Przeszukaj pobrane pliki</translation>
@@ -934,7 +931,6 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="702463548815491781">Zalecane, gdy włączono TalkBack lub Switch Access</translation>
 <translation id="7027549951530753705">Przywrócono: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Hasła</translation>
-<translation id="7040531500313579672">Udostępnij podświetlenie</translation>
 <translation id="7054588988317389591">Czy chcesz pobierać opisy obrazów?</translation>
 <translation id="7055152154916055070">Zablokowano przekierowanie:</translation>
 <translation id="7063006564040364415">Nie udało się nawiązać połączenia z serwerem synchronizacji.</translation>
@@ -970,6 +966,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7328017930301109123">Chrome szybciej ładuje strony w wersji uproszczonej, przesyłając nawet o 60 procent mniej danych.</translation>
 <translation id="7332075081379534664">Zalogowano</translation>
 <translation id="7333031090786104871">Nadal dodaję poprzednią stronę</translation>
+<translation id="7339898014177206373">Nowe okno</translation>
 <translation id="7340958967809483333">Opcje kart Discover</translation>
 <translation id="7352651011704765696">Coś poszło nie tak</translation>
 <translation id="7352939065658542140">FILM</translation>
@@ -998,6 +995,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7493994139787901920"><ph name="VERSION" /> (zaktualizowana <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">zaoszczędzonych danych</translation>
 <translation id="7498271377022651285">Czekaj…</translation>
+<translation id="750228856503700085">Aktualizacje są niedostępne</translation>
 <translation id="7507207699631365376">Zapoznaj się z <ph name="BEGIN_LINK" />polityką prywatności<ph name="END_LINK" /> tego dostawcy</translation>
 <translation id="7514365320538308">Pobierz</translation>
 <translation id="751961395872307827">Nie można połączyć się ze stroną</translation>
@@ -1099,6 +1097,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8078096376109663956">Udostępnij tylko tekst</translation>
 <translation id="8084114998886531721">Zapisane hasło</translation>
+<translation id="8084285576995584326">Zarządzaj danymi z konta Google</translation>
 <translation id="808747664143081553">Podłączono do urządzenia</translation>
 <translation id="8103578431304235997">Karta incognito</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1194,6 +1193,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8712637175834984815">Rozumiem</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
 <translation id="8730621377337864115">Gotowe</translation>
+<translation id="8746155870861185046">Udostępnij zaznaczenie</translation>
 <translation id="8748850008226585750">Treści ukryte</translation>
 <translation id="8773160212632396039">Przetwarzanie żądania</translation>
 <translation id="8788265440806329501">Historia nawigacji jest zamknięta</translation>

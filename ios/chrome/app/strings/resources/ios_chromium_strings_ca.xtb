@@ -48,12 +48,12 @@
 <translation id="4852878756222711218">Per treure el màxim profit de Chromium, inicia la sessió amb el teu Compte de Google</translation>
 <translation id="4985291216379576555">Sense connexió; Chromium no pot cercar actualitzacions</translation>
 <translation id="4999538639245140991">Com que estàs tancant la sessió d'un compte gestionat per <ph name="SIGNOUT_MANAGED_DOMAIN" />, se suprimiran les teves dades de Chromium d'aquest dispositiu, però continuaran emmagatzemades al teu Compte de Google.</translation>
+<translation id="5171868502429358653">Inicia la sessió a Chromium</translation>
 <translation id="5224391634244552924">No hi ha cap contrasenya desada. Chromium pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="5308226104666789935">Chromium no pot cercar actualitzacions</translation>
 <translation id="5396916991083608703">Vols establir Chromium com a predeterminat?</translation>
 <translation id="5521125884468363740">Per veure les pestanyes des de tots els llocs on facis servir Chromium, inicia la sessió i activa la sincronització</translation>
 <translation id="5573014823074921752">Consell de Chromium. Per accedir a més opcions de pestanyes, mantén premut el botó Mostra pestanyes a la barra d'eines, que és a la part inferior o superior de la pantalla.</translation>
-<translation id="5651741435382092412">Inicia la sessió en aquest lloc web, al teu Compte de Google i a Chromium. Podràs activar la sincronització més endavant.</translation>
 <translation id="5700709190537129682">Chromium no pot comprovar les teves contrasenyes</translation>
 <translation id="5742135483959137648">Utilitza Chromium per obrir els enllaços</translation>
 <translation id="5777187867430702742">Pàgina de Chromium</translation>
@@ -64,6 +64,7 @@
 1. Obre Configuració.
 2. Toca Aplicació de navegador predeterminada.
 3. Selecciona Chromium.</translation>
+<translation id="6155422572367400359">Inicia la sessió en aquest lloc web, al teu Compte de Google i a Chromium. Pots activar la sincronització més tard.</translation>
 <translation id="6268381023930128611">Voleu tancar la sessió de Chromium?</translation>
 <translation id="632825460376924298">Permet l'inici de sessió a Chromium</translation>
 <translation id="6337530241089703714">Tria si vols esborrar les teves dades de Chromium d'aquest dispositiu o si vols conservar-les</translation>

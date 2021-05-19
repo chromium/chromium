@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
-<translation id="1096883626080133124">ເຮັດສິ່ງຕ່າງໆໃຫ້ແລ້ວຫຼາຍຂຶ້ນດ້ວຍ Google Chrome ທີ່ງ່າຍ, ດີ ແລະ ໄວກວ່າທີ່ເຄີຍ</translation>
+<translation id="1096883626080133124">ເຮັດສິ່ງຕ່າງໆໃຫ້ແລ້ວຫຼາຍຂຶ້ນດ້ວຍ Google Chrome ທີ່ງ່າຍ, ປອດໄພ ແລະ ໄວກວ່າທີ່ເຄີຍ</translation>
 <translation id="1282031177488366470">ຊ່ວຍປັບປຸງຄຸນສົມບັດ ແລະ ປະສິດທິພາບຂອງ Chrome</translation>
 <translation id="1314663809820920746">ທ່ານຍັງສາມາດເຫັນບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນທັງໝົດຂອງທ່ານໄດ້ໃນອຸປະກອນນີ້. ຖ້າທ່ານເຮັດການປ່ຽນແປງ, ພວກມັນຈະບໍ່ຊິ້ງຂໍ້ມູນກັບບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="1479202195792305274">Chrome ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານ ເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ຂອງທ່ານໄດ້.</translation>
@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome ບໍ່ສາມາດກວດການອັບເດດໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫລັງ.</translation>
 <translation id="2732745070297234559">Chrome ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ກະລຸນາລອງໃໝ່ໃນມື້ອື່ນ.</translation>
 <translation id="2740105938841089077">ໃຊ້ Chrome ເປີດລິ້ງ</translation>
+<translation id="2869959624320573933">ເຂົ້າສູ່ລະບົບຫາ Chrome</translation>
 <translation id="2919738076569633423">ໂດຍການໃຊ້ Chrome, ແມ່ນຖືວ່າທ່ານເຫັນນຳ <ph name="BEGIN_LINK_TOS" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">ເພາະວ່າທ່ານກຳລັງອອກຈາກລະບົບບັນຊີທີ່ຈັດການໂດຍ <ph name="SIGNOUT_MANAGED_DOMAIN" />, ຂໍ້ມູນ Chrome ຂອງທ່ານຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້. ຂໍ້ມູນຂອງທ່ານຈະຍັງຄົງຢູ່ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="3167189358072330585">ບັນຊີຂອງທ່ານໃຊ້ບໍ່ໄດ້ຢູ່ໃນ Google Chrome. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງໂດເມນຂອງທ່ານ ຫຼືໃຊ້ບັນຊີ Google ປົກກະຕິ ເພື່ອເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="3173834708294760622">ໜ້າ Google Chrome</translation>
 <translation id="3196546062792660320">Chrome ຊ່ວຍທ່ານປະຢັດເວລາໂດຍການນຳເອົາບັນຊີຂອງທ່ານມາສູ່ເວັບ. ທ່ານສາມາດເພີ່ມ ຫຼື ລຶບບັນຊີອອກໄດ້ໃນການຕັ້ງຄ່າ.</translation>
-<translation id="3223655207402797071">ເຂົ້າສູ່ລະບົບເວັບໄຊນີ້, ບັນຊີ Google ຂອງທ່ານ ແລະ Chrome. ທ່ານອາດຈະເປີດການຊິ້ງຂໍ້ມູນໃນພາຍຫຼັງກໍໄດ້.</translation>
 <translation id="3282568296779691940">ລົງຊື່ເຂົ້າ​ໃຊ້ Chrome</translation>
 <translation id="3345341804167540816">ໃຊ້ Chrome ຢູ່​ທຸກ​ບ່ອນ</translation>
 <translation id="3455456143708465450">ເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome, ໃຫ້ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ຂອງທ່ານ</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome ແມ່ນເວີຊັນໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
 <translation id="8022947259858476807">ໃຊ້ Chrome ເປັນຄ່າເລີ່ມຕົ້ນເພື່ອເປີດລິ້ງ, ຊອກຫາຈາກວິດເຈັດ ແລະ ການຕື່ມຂໍ້ມູນລະຫັດຜ່ານອັດຕະໂນມັດໃນແອັບອື່ນໆ</translation>
 <translation id="8160472928944011082">Chrome ບໍ່ສາມາດອັບເດດໄດ້</translation>
+<translation id="8263079278049777200">ເຂົ້າສູ່ລະບົບຫາເວັບໄຊນີ້, ບັນຊີ Google ຂອງທ່ານ ແລະ Chrome. ທ່ານສາມາດເປີດການຊິ້ງຂໍ້ມູນໃນພາຍຫຼັງໄດ້.</translation>
 <translation id="8357607116237445042">ເລືອກວ່າຈະລຶບລ້າງຂໍ້ມູນ Chrome ຂອງທ່ານອອກຈາກອຸປະກອນນີ້ ຫຼື ເກັບມັນໄວ້</translation>
 <translation id="8370517070665726704">ລິຂະສິດ <ph name="YEAR" /> Google LLC. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="840168496893712993">ການ​ເພີ່ມ​ໃສ່​ບາງ​ອັນ​ເຮັດ​ໃຫ້ Chrome ເກີດ​ຂັດ​ຂ້ອງ. ກະ​ລຸ​ນາ​ລອງຖອນ​ຕິດ​ຕັ້ງ​ພວກ​ມັນ.</translation>

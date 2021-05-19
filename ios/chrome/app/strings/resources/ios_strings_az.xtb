@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">Kiçildin</translation>
 <translation id="2230173723195178503">Veb səhifə yükləndi</translation>
 <translation id="2239626343334228536">Brauzinq datası silinir...</translation>
-<translation id="2257567812274161158">Sinxronlaşdırma işləmir.</translation>
 <translation id="225943865679747347">Xəta kodu: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Hesab Əlavə edin</translation>
 <translation id="2268044343513325586">Silin</translation>
@@ -143,7 +142,6 @@
 Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir (məsələn, reklamları fərdiləşdirmək üçün).</translation>
 <translation id="2381405137052800939">Əsaslar</translation>
 <translation id="2386793615875593361">1 ədəd seçildi</translation>
-<translation id="2410754283952462441">Hesab seçin</translation>
 <translation id="2421004566762153674">Üçüncü tərəf kukilərinin bloklanması</translation>
 <translation id="2421044535038393232">Redaktəyə Davam Edin</translation>
 <translation id="2435457462613246316">Parol görünsün</translation>
@@ -362,7 +360,6 @@ Datanız sinxronizasiya parol sözü ilə şifrələnib. Sinxronizasiyanı başl
 <translation id="473775607612524610">Güncəlləşdirin</translation>
 <translation id="4747097190499141774">Google Pay'dəki ödəniş metodları və ünvanlar parol şifrələməsinə daxil deyil. Yanlız parolunuzu bilən şəxs şifrələnmiş datanı oxuya bilər. Google parolu əldə etmir və ya saxlamır. Parolu unutsanız və ya bu ayarı dəyişmək istəsəniz, sinxronizasiyanı sıfırlamalısınız. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Yeni Anonim Tab</translation>
-<translation id="4766678251456904326">Cihaza hesab əlavə edin</translation>
 <translation id="4775879719735953715">Defolt Brauzer</translation>
 <translation id="4778644898150334464">Digər paroldan istifadə edin</translation>
 <translation id="4802417911091824046">Google Pay'dəki ödəniş metodları və ünvanlar parol şifrələməsinə daxil deyil.
@@ -794,6 +791,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8976382372951310360">Yardım</translation>
 <translation id="8981454092730389528">Google Fəaliyyət Nəzarəti</translation>
 <translation id="8985320356172329008">Google'a bu cür daxil olunub</translation>
+<translation id="8996526648899750015">Hesab əlavə edin...</translation>
 <translation id="9034759925968272072">Google Hesabından çıxmayacaqsınız. Google Hesabınızın <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> linkində başqa formada axtarış tarixçəsi ola bilər.</translation>
 <translation id="9037965129289936994">Orijinalı Göstərin</translation>
 <translation id="9039373489628511875">Ötürmə qabiliyyəti</translation>
@@ -816,6 +814,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9203116392574189331">Əldən-ələ</translation>
 <translation id="9223358826628549784">Xəta hesabatı göndərildi.</translation>
 <translation id="952704832371081537">Ləğv edin</translation>
+<translation id="984509647832111802">Sinxronlaşdırma işləmir.</translation>
 <translation id="988141524645182168">Digər Cihazlar</translation>
 <translation id="989988560359834682">Ünvana düzəliş edin</translation>
 <translation id="994757059139821576">Məqalə Təklifləri</translation>

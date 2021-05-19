@@ -24,12 +24,12 @@
 <translation id="2695886661449553974">Chrome មិនអាចពិនិត្យរក​កំណែថ្មីបានទេ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</translation>
 <translation id="2732745070297234559">Chrome មិនអាចពិនិត្យពាក្យសម្ងាត់ទាំងអស់បានទេ។ សូម​ព្យាយាម​ម្ដងទៀតនៅថ្ងៃស្អែក។</translation>
 <translation id="2740105938841089077">ប្រើ Chrome ដើម្បីបើកតំណ</translation>
+<translation id="2869959624320573933">ចូល Chrome</translation>
 <translation id="2919738076569633423">ប្រសិនបើ​ប្រើ Chrome មានន័យថា​អ្នក​យល់ព្រម​តាម<ph name="BEGIN_LINK_TOS" />លក្ខខណ្ឌ​ប្រើប្រាស់<ph name="END_LINK_TOS" />។</translation>
 <translation id="3030414234702425231">ដោយសារ​អ្នកកំពុងចាក​ចេញពីគណនី​ដែលបានគ្រប់គ្រង​ដោយ <ph name="SIGNOUT_MANAGED_DOMAIN" /> ទិន្នន័យ Chrome ​របស់អ្នកនឹង​ត្រូវបានលុបចេញ​ពីឧបករណ៍នេះ។ ​ទិន្នន័យរបស់អ្នកនឹង​នៅតែស្ថិត​នៅក្នុងគណនី Google ​របស់អ្នកដដែល។</translation>
 <translation id="3167189358072330585">គណនីរបស់អ្នកមិនដំណើរការនៅលើ Google Chrome ទេ។ សូមទាក់ទងអ្នកគ្រប់គ្រងដែនរបស់អ្នក ឫប្រើគណនី Google ធម្មតាដើម្បីចូល។</translation>
 <translation id="3173834708294760622">ទំព័រ Google Chrome</translation>
 <translation id="3196546062792660320">Chrome សន្សំពេលវេលាដោយប្រើគណនីរបស់អ្នកនៅលើបណ្តាញអ៊ីនធឺណិត។ អ្នកអាចបញ្ចូល ឬលុបគណនីនៅក្នុងការកំណត់។</translation>
-<translation id="3223655207402797071">ចូលគេហទំព័រនេះ, គណនី Google របស់អ្នក និង Chrome។ អ្នកអាចបើកសមកាលកម្មនៅពេលក្រោយ។</translation>
 <translation id="3282568296779691940">ចូលទៅ Chrome</translation>
 <translation id="3345341804167540816">ប្រើ Chrome គ្រប់ទីកន្លែង</translation>
 <translation id="3455456143708465450">ដើម្បីទទួលបានអត្ថប្រយោជន៍ច្រើនបំផុតពី Chrome សូមចូល​ដោយប្រើគណនី Google របស់អ្នក</translation>
@@ -91,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome នេះជា​កំណែថ្មី​ហើយ</translation>
 <translation id="8022947259858476807">ប្រើ Chrome តាមលំនាំដើម ដើម្បីបើកតំណ ស្វែងរក​ពីធាតុក្រាហ្វិក និងបំពេញ​ពាក្យសម្ងាត់ដោយស្វ័យ​ប្រវត្តិនៅក្នុងកម្មវិធី​ផ្សេងទៀត</translation>
 <translation id="8160472928944011082">Chrome មិន​អាចដំឡើងកំណែ​បានទេ</translation>
+<translation id="8263079278049777200">ចូលគេហទំព័រនេះ, គណនី Google របស់អ្នក និង Chrome។ អ្នក​អាចបើកសមកាលកម្ម​នៅពេលក្រោយ។</translation>
 <translation id="8357607116237445042">ជ្រើសរើសថាតើត្រូវ​សម្អាតទិន្នន័យ Chrome របស់អ្នកពីឧបករណ៍នេះ ឬរក្សាទុកវា</translation>
 <translation id="8370517070665726704">រក្សា​សិទ្ធិ <ph name="YEAR" /> Google LLC ។ រក្សាសិទ្ធិ​គ្រប់យ៉ាង។</translation>
 <translation id="840168496893712993">កម្មវិធីបន្ថែមមួយចំនួនអាចធ្វើឲ្យ Chrome គាំង សូមព្យាយាមដកការដំឡើងពួកវា។</translation>

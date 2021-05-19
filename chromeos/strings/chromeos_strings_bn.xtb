@@ -298,6 +298,7 @@
 <translation id="7216409898977639127">মোবাইল পরিষেবা প্রদানকারী</translation>
 <translation id="7271040990581020067">স্ক্যানার বর্তমানে ব্যবহার করা হচ্ছে। পরে আবার চেষ্টা করুন।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">নেটওয়ার্ক ডিভাইস</translation>
 <translation id="7359657277149375382">ফাইলের প্রকার</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -346,6 +347,7 @@
 <translation id="8372477600026034341">এক্সট্রা হোস্ট</translation>
 <translation id="8395584934117017006">এই <ph name="DEVICE_TYPE" /> এন্টারপ্রাইজ ম্যানেজ করে</translation>
 <translation id="8398927464629426868">বর্তমানে যে হারে ডিভাইসটি চার্জ হচ্ছে বা এটির চার্জ শেষ হচ্ছে</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">হোম পরিষেবা প্রদানকারীর নাম</translation>
 <translation id="8475690821716466388">দুর্বল WEP PSK প্রোটোকল ব্যবহার করে ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত করা হয়েছে</translation>
 <translation id="8477551185774834963">যতদূর পর্যন্ত লেটেন্সির ঊর্ধ্বসীমা অনুমোদন করা যায়, ডিএনএস লেটেন্সি তার চেয়ে বেশি</translation>

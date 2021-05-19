@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">জুম আউট কৰক</translation>
 <translation id="2230173723195178503">ৱেবপৃষ্ঠা ল’ড হ’ল</translation>
 <translation id="2239626343334228536">ব্ৰাউজিঙৰ ডেটা মচি থকা হৈছে...</translation>
-<translation id="2257567812274161158">ছিংক কৰা সুবিধাটোৱে কাম কৰা নাই।</translation>
 <translation id="225943865679747347">আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">একাউণ্ট যোগ দিয়ক</translation>
 <translation id="2268044343513325586">পৰিষ্কৰণ</translation>
@@ -143,7 +142,6 @@
 বিভিন্ন ছাইটত আপোনাৰ ব্ৰাউজিঙৰ কার্যকলাপ চাবলৈ ছাইটসমূহে কুকিসমূহ ব্যৱহাৰ কৰিব নোৱাৰে, উদাহৰণস্বৰূপে, বিজ্ঞাপন ব্যক্তিগতকৰণ কৰিবলৈ।</translation>
 <translation id="2381405137052800939">মৌলিক</translation>
 <translation id="2386793615875593361">১টা বাছনি কৰা হৈছে</translation>
-<translation id="2410754283952462441">কোনো একাউণ্ট বাছনি কৰক</translation>
 <translation id="2421004566762153674">তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা</translation>
 <translation id="2421044535038393232">সম্পাদনা কৰি থাকক</translation>
 <translation id="2435457462613246316">পাছৱৰ্ড দেখুৱাওক</translation>
@@ -362,7 +360,6 @@
 <translation id="473775607612524610">আপডে'ট কৰক</translation>
 <translation id="4747097190499141774">পাছফ্ৰেজ এনক্ৰিপশ্বনত Google Payৰ পৰিশোধ পদ্ধতি আৰু ঠিকনা অন্তৰ্ভুক্ত নহয়। আপোনাৰ পাছফ্ৰেজ থকাজনেহে আপোনাৰ এনক্ৰিপ্ট কৰা ডেটা পঢ়িব পাৰিব। পাছফ্ৰেজ Googleএ নপঠায় বা ষ্ট’ৰ নকৰে। আপুনি যদি নিজৰ পাছফ্রেজটো পাহৰিছে বা এই ছেটিংটো সলনি কৰিব বিচাৰিছে তেন্তে আপুনি পুনৰ ছিংক ৰিছেট কৰাৰ আৱশ্যক। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">নতুন ইনকগনিট’ টেব</translation>
-<translation id="4766678251456904326">ডিভাইচত একাউণ্ট যোগ দিয়ক</translation>
 <translation id="4775879719735953715">ডিফ’ল্ট ব্ৰাউজাৰ</translation>
 <translation id="4778644898150334464">অন্য পাছৱৰ্ড ব্যৱহাৰ কৰক</translation>
 <translation id="4802417911091824046">পাছফ্ৰেজ এনক্ৰিপশ্বনত Google Payৰ পৰিশোধ পদ্ধতি আৰু ঠিকনা অন্তৰ্ভুক্ত নহয়।
@@ -791,6 +788,7 @@
 <translation id="8976382372951310360">সহায়</translation>
 <translation id="8981454092730389528">Googleৰ কাৰ্যকলাপৰ নিয়ন্ত্ৰণ</translation>
 <translation id="8985320356172329008">এই হিচাপে Googleত ছাইন ইন কৰক</translation>
+<translation id="8996526648899750015">একাউণ্ট যোগ কৰক...</translation>
 <translation id="9034759925968272072">আপোনাক নিজৰ Google একাউণ্টৰ পৰা ছাইন আউট কৰোৱা নহয়। <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />ত আপোনাৰ Google একাউণ্টৰ অন্য ধৰণৰ ব্ৰাউজিঙৰ ইতিহাস থাকিবও পাৰে।</translation>
 <translation id="9037965129289936994">প্ৰকৃত সমল দেখুৱাওক</translation>
 <translation id="9039373489628511875">বেণ্ডৱিথ</translation>

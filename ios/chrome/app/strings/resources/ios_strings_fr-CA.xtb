@@ -125,7 +125,6 @@
 <translation id="2218443599109088993">Zoom arrière</translation>
 <translation id="2230173723195178503">Page Web chargée</translation>
 <translation id="2239626343334228536">Effacement des données de navigation en cours…</translation>
-<translation id="2257567812274161158">La synchronisation ne fonctionne pas.</translation>
 <translation id="225943865679747347">Code d'erreur : <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Ajouter un compte</translation>
 <translation id="2268044343513325586">Affiner</translation>
@@ -143,7 +142,6 @@
 Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces).</translation>
 <translation id="2381405137052800939">Paramètres de base</translation>
 <translation id="2386793615875593361">1 sélectionné</translation>
-<translation id="2410754283952462441">Choisir un compte</translation>
 <translation id="2421004566762153674">Blocage des témoins tiers</translation>
 <translation id="2421044535038393232">Continuer à modifier</translation>
 <translation id="2435457462613246316">Affich. mot de passe</translation>
@@ -362,7 +360,6 @@ Vos données sont chiffrées avec votre phrase de passe. Veuillez l'entrer pour 
 <translation id="473775607612524610">Mise à jour</translation>
 <translation id="4747097190499141774">Le chiffrement par phrase de passe ne couvre pas les modes de paiement ni les adresses de Google Pay. Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. Google ne reçoit ni ne stocke la phrase de passe. Si vous l'oubliez ou souhaitez modifier ce paramètre, vous devrez réinitialiser la synchronisation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nouvel onglet de navigation privée</translation>
-<translation id="4766678251456904326">Ajouter un compte à l'appareil</translation>
 <translation id="4775879719735953715">Navigateur par défaut</translation>
 <translation id="4778644898150334464">Utiliser un autre mot de passe</translation>
 <translation id="4802417911091824046">Le chiffrement par phrase de passe ne couvre pas les modes de paiement ni les adresses de Google Pay.
@@ -793,6 +790,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8976382372951310360">Aide</translation>
 <translation id="8981454092730389528">Commandes d'activité Google</translation>
 <translation id="8985320356172329008">Connecté(e) à Google en tant que</translation>
+<translation id="8996526648899750015">Ajouter un compte…</translation>
 <translation id="9034759925968272072">Vous ne serez pas déconnecté de votre compte Google. D'autres formes d'historique de navigation peuvent exister sur votre compte Google. Plus de détails à <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Afficher la version d'origine</translation>
 <translation id="9039373489628511875">Bande passante</translation>
@@ -815,6 +813,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9203116392574189331">Transférer</translation>
 <translation id="9223358826628549784">Rapport de plantage envoyé.</translation>
 <translation id="952704832371081537">Annuler</translation>
+<translation id="984509647832111802">La synchronisation ne fonctionne pas.</translation>
 <translation id="988141524645182168">Autr appar</translation>
 <translation id="989988560359834682">Modifier l'adresse</translation>
 <translation id="994757059139821576">Articles suggérés</translation>
