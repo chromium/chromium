@@ -42,7 +42,7 @@ public class PageItem {
 
         PageItem other = (PageItem) o;
 
-        return mUrl.equals(other.mUrl) && mTitle.equals(other.mTitle);
+        return mUrl.equals(other.getUrl()) && mTitle.equals(other.getTitle());
     }
 
     @Override

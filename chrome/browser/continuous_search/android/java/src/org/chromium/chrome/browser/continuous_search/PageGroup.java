@@ -41,8 +41,8 @@ public class PageGroup {
 
         PageGroup other = (PageGroup) o;
 
-        return mLabel.equals(other.mLabel) && mIsAdGroup == other.mIsAdGroup
-                && mPageItems.equals(other.mPageItems);
+        return mLabel.equals(other.getLabel()) && mIsAdGroup == other.isAdGroup()
+                && mPageItems.equals(other.getPageItems());
     }
 
     @Override

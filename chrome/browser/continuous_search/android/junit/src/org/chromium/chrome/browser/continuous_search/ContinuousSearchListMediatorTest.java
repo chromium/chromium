@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -18,6 +19,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.WebContents;
@@ -58,12 +60,19 @@ public class ContinuousSearchListMediatorTest {
                 ApplicationProvider.getApplicationContext().getResources());
         ContinuousNavigationUserDataImpl continuousNavigationUserData =
                 Mockito.mock(ContinuousNavigationUserDataImpl.class);
+        Mockito.doAnswer((invocation) -> {
+                   mMediator.onInvalidate();
+                   return null;
+               })
+                .when(continuousNavigationUserData)
+                .invalidateData();
         ContinuousNavigationUserDataImpl.setInstanceForTesting(continuousNavigationUserData);
     }
 
     @After
     public void tearDown() {
         ContinuousNavigationUserDataImpl.setInstanceForTesting(null);
+        mMediator.destroy();
     }
 
     /**
@@ -84,6 +93,7 @@ public class ContinuousSearchListMediatorTest {
                 mLayoutVisibilityFalse.getCallCount());
 
         // UI should hide on invalidate.
+        mMediator.onScrolled();
         mMediator.onInvalidate();
         Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 0,
                 mLayoutVisibilityTrue.getCallCount());
@@ -179,8 +189,11 @@ public class ContinuousSearchListMediatorTest {
      */
     @Test
     public void testModelList() {
+        Tab tab = Mockito.mock(Tab.class);
+        mMediator.onResult(tab);
         // Mock 3 SearchResultGroups, with 1, 2 and 3 SearchResults. The first group is an ad group.
-        PageItem pageItem11 = new PageItem(Mockito.mock(GURL.class), "result 11");
+        GURL url11 = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+        PageItem pageItem11 = new PageItem(url11, "result 11");
         PageItem pageItem21 = new PageItem(Mockito.mock(GURL.class), "result 21");
         PageItem pageItem22 = new PageItem(Mockito.mock(GURL.class), "result 22");
         PageItem pageItem31 = new PageItem(Mockito.mock(GURL.class), "result 31");
@@ -217,6 +230,72 @@ public class ContinuousSearchListMediatorTest {
         assertListItemEqualsSearchResult(mModelList.get(4), pageItem31, false);
         assertListItemEqualsSearchResult(mModelList.get(5), pageItem32, false);
         assertListItemEqualsSearchResult(mModelList.get(6), pageItem33, false);
+
+        mModelList.get(1).model.get(ContinuousSearchListProperties.CLICK_LISTENER).onClick(null);
+        ArgumentCaptor<LoadUrlParams> params = ArgumentCaptor.forClass(LoadUrlParams.class);
+        Mockito.verify(tab, Mockito.times(1)).loadUrl(params.capture());
+        Assert.assertEquals(url11.getSpec(), params.getValue().getUrl());
+    }
+
+    /**
+     * Tests that the data is invalidated on user dismissal.
+     */
+    @Test
+    public void testUserInvalidate() {
+        mMediator.onResult(Mockito.mock(Tab.class));
+        PageItem pageItem = new PageItem(Mockito.mock(GURL.class), "result");
+        PageGroup pageGroup = new PageGroup("group", true, Arrays.asList(pageItem));
+        ContinuousNavigationMetadata continuousNavigationMetadata =
+                new ContinuousNavigationMetadata(
+                        Mockito.mock(GURL.class), "query", 1, Arrays.asList(pageGroup));
+        mMediator.onUpdate(continuousNavigationMetadata);
+        Assert.assertEquals("ModelList length is incorrect.", 2, mModelList.size());
+
+        mRootViewModel.get(ContinuousSearchListProperties.DISMISS_CLICK_CALLBACK).onClick(null);
+        Assert.assertEquals("ModelList length is incorrect.", 0, mModelList.size());
+    }
+
+    /**
+     * Tests that the data is invalidated if a new tab is observed.
+     */
+    @Test
+    public void testObserveNewTab() {
+        PageItem pageItem = new PageItem(Mockito.mock(GURL.class), "result");
+        PageGroup pageGroup = new PageGroup("group", true, Arrays.asList(pageItem));
+        ContinuousNavigationMetadata continuousNavigationMetadata =
+                new ContinuousNavigationMetadata(
+                        Mockito.mock(GURL.class), "query", 1, Arrays.asList(pageGroup));
+        mMediator.onUpdate(continuousNavigationMetadata);
+        Assert.assertEquals("ModelList length is incorrect.", 2, mModelList.size());
+
+        mMediator.onResult(null);
+        Assert.assertEquals("ModelList length is incorrect.", 0, mModelList.size());
+    }
+
+    /**
+     * Tests that theme color is updated correctly.
+     */
+    @Test
+    public void testThemeColorChanged() {
+        PageItem pageItem = new PageItem(Mockito.mock(GURL.class), "result");
+        PageGroup pageGroup = new PageGroup("group", true, Arrays.asList(pageItem));
+        ContinuousNavigationMetadata continuousNavigationMetadata =
+                new ContinuousNavigationMetadata(
+                        Mockito.mock(GURL.class), "query", 1, Arrays.asList(pageGroup));
+        mMediator.onUpdate(continuousNavigationMetadata);
+        Assert.assertEquals("ModelList length is incorrect.", 2, mModelList.size());
+
+        // Use a dark color.
+        int color = 0xFFFFFF;
+        mMediator.onThemeColorChanged(color, false);
+        Assert.assertEquals("Background color incorrect.", color,
+                mRootViewModel.get(ContinuousSearchListProperties.BACKGROUND_COLOR));
+
+        // Use a light color.
+        color = 0x000000;
+        mMediator.onThemeColorChanged(color, false);
+        Assert.assertEquals("Background color incorrect.", color,
+                mRootViewModel.get(ContinuousSearchListProperties.BACKGROUND_COLOR));
     }
 
     private void assertListItemEqualsSearchResult(

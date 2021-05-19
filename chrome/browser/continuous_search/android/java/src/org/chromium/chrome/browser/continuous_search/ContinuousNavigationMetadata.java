@@ -63,8 +63,9 @@ public class ContinuousNavigationMetadata {
         if (!(o instanceof ContinuousNavigationMetadata)) return false;
 
         ContinuousNavigationMetadata other = (ContinuousNavigationMetadata) o;
-        return mRootUrl.equals(other.mRootUrl) && mQuery.equals(other.mQuery)
-                && mCategory == other.mCategory && mGroups.equals(other.mGroups);
+
+        return mRootUrl.equals(other.getRootUrl()) && mQuery.equals(other.getQuery())
+                && mCategory == other.getCategory() && mGroups.equals(other.getGroups());
     }
 
     @Override

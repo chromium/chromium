@@ -8,6 +8,8 @@ import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewStub;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -140,5 +142,10 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
         unregisterResource();
         mContainerMediator.destroy();
         mListCoordinator.destroy();
+    }
+
+    @VisibleForTesting
+    ContinuousSearchViewResourceFrameLayout getRootViewForTesting() {
+        return mRootView;
     }
 }
