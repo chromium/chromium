@@ -1585,7 +1585,12 @@ void DownloadItemImpl::Start(
     destination_info_.hash.clear();
     deferred_interrupt_reason_ = new_create_info.result;
     TransitionTo(INTERRUPTED_TARGET_PENDING_INTERNAL);
-    DetermineDownloadTarget();
+    // We're posting the call to DetermineDownloadTarget() instead of calling it
+    // directly to ensure that OnDownloadTargetDetermined() is not called
+    // synchronously. See crbug.com/1209856 for more details.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&DownloadItemImpl::DetermineDownloadTarget,
+                                  weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
