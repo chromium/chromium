@@ -110,21 +110,22 @@ class PhishingScorerTest : public ::testing::Test {
 
 TEST_F(PhishingScorerTest, HasValidModel) {
   std::unique_ptr<Scorer> scorer;
-  scorer.reset(Scorer::Create(model_.SerializeAsString()));
-  EXPECT_TRUE(scorer.get() != NULL);
+  scorer.reset(Scorer::Create(model_.SerializeAsString(), base::File()));
+  EXPECT_TRUE(scorer.get() != nullptr);
 
   // Invalid model string.
-  scorer.reset(Scorer::Create("bogus string"));
+  scorer.reset(Scorer::Create("bogus string", base::File()));
   EXPECT_FALSE(scorer.get());
 
   // Mode is missing a required field.
   model_.clear_max_words_per_term();
-  scorer.reset(Scorer::Create(model_.SerializePartialAsString()));
+  scorer.reset(Scorer::Create(model_.SerializePartialAsString(), base::File()));
   EXPECT_FALSE(scorer.get());
 }
 
 TEST_F(PhishingScorerTest, PageTerms) {
-  std::unique_ptr<Scorer> scorer(Scorer::Create(model_.SerializeAsString()));
+  std::unique_ptr<Scorer> scorer(
+      Scorer::Create(model_.SerializeAsString(), base::File()));
   ASSERT_TRUE(scorer.get());
 
   // Use std::vector instead of std::unordered_set for comparison.
@@ -143,7 +144,8 @@ TEST_F(PhishingScorerTest, PageTerms) {
 }
 
 TEST_F(PhishingScorerTest, PageWords) {
-  std::unique_ptr<Scorer> scorer(Scorer::Create(model_.SerializeAsString()));
+  std::unique_ptr<Scorer> scorer(
+      Scorer::Create(model_.SerializeAsString(), base::File()));
   ASSERT_TRUE(scorer.get());
   std::vector<uint32_t> expected_page_words;
   expected_page_words.push_back(1000U);
@@ -164,7 +166,8 @@ TEST_F(PhishingScorerTest, PageWords) {
 }
 
 TEST_F(PhishingScorerTest, ComputeScore) {
-  std::unique_ptr<Scorer> scorer(Scorer::Create(model_.SerializeAsString()));
+  std::unique_ptr<Scorer> scorer(
+      Scorer::Create(model_.SerializeAsString(), base::File()));
   ASSERT_TRUE(scorer.get());
 
   // An empty feature map should match the empty rule.
@@ -191,7 +194,8 @@ TEST_F(PhishingScorerTest, ComputeScore) {
 }
 
 TEST_F(PhishingScorerTest, GetMatchingVisualTargetsMatchOne) {
-  std::unique_ptr<Scorer> scorer(Scorer::Create(model_.SerializeAsString()));
+  std::unique_ptr<Scorer> scorer(
+      Scorer::Create(model_.SerializeAsString(), base::File()));
 
   // Make the whole image white
   for (int x = 0; x < 1000; x++)
@@ -220,7 +224,8 @@ TEST_F(PhishingScorerTest, GetMatchingVisualTargetsMatchOne) {
 }
 
 TEST_F(PhishingScorerTest, GetMatchingVisualTargetsMatchBoth) {
-  std::unique_ptr<Scorer> scorer(Scorer::Create(model_.SerializeAsString()));
+  std::unique_ptr<Scorer> scorer(
+      Scorer::Create(model_.SerializeAsString(), base::File()));
 
   // Make the whole image white
   for (int x = 0; x < 1000; x++)

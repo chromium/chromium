@@ -104,7 +104,7 @@ class PhishingClassifierTest : public ChromeRenderViewTest {
     // Add an empty visual target to ensure visual detection runs.
     model.mutable_vision_model()->add_targets();
 
-    scorer_.reset(Scorer::Create(model.SerializeAsString()));
+    scorer_.reset(Scorer::Create(model.SerializeAsString(), base::File()));
     ASSERT_TRUE(scorer_.get());
   }
 

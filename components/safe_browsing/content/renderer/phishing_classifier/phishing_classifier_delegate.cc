@@ -83,10 +83,11 @@ void PhishingClassifierDelegate::SetPhishingModel(
     const std::string& model,
     base::File tflite_visual_model) {
   safe_browsing::Scorer* scorer = nullptr;
-  // An empty model string means we should disable client-side phishing
-  // detection.
-  if (!model.empty()) {
-    scorer = safe_browsing::Scorer::Create(model);
+  // An empty model string and invalid model file means we should disable
+  // client-side phishing detection.
+  if (!model.empty() || tflite_visual_model.IsValid()) {
+    scorer =
+        safe_browsing::Scorer::Create(model, std::move(tflite_visual_model));
     if (!scorer)
       return;
   }

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "chrome/test/base/chrome_unit_test_suite.h"
@@ -242,6 +243,26 @@ TEST_F(PhishingClassifierDelegateTest, HasPhishingModel) {
   ClientSideModel model;
   model.set_max_words_per_term(1);
   delegate_->SetPhishingModel(model.SerializeAsString(), base::File());
+  ASSERT_TRUE(classifier_->is_ready());
+
+  // The delegate will cancel pending classification on destruction.
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
+}
+
+TEST_F(PhishingClassifierDelegateTest, HasVisualTfLiteModel) {
+  ASSERT_FALSE(classifier_->is_ready());
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path =
+      temp_dir.GetPath().AppendASCII("visual_model.tflite");
+  base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
+                                 base::File::FLAG_READ |
+                                 base::File::FLAG_WRITE);
+  std::string file_contents = "visual model file";
+  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+
+  delegate_->SetPhishingModel("", std::move(file));
   ASSERT_TRUE(classifier_->is_ready());
 
   // The delegate will cancel pending classification on destruction.

@@ -21,6 +21,8 @@
 #include <unordered_set>
 
 #include "base/callback.h"
+#include "base/files/file.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -38,7 +40,8 @@ class Scorer {
 
   // Factory method which creates a new Scorer object by parsing the given
   // model.  If parsing fails this method returns NULL.
-  static Scorer* Create(const base::StringPiece& model_str);
+  static Scorer* Create(const base::StringPiece& model_str,
+                        base::File visual_tflite_model);
 
   // This method computes the probability that the given features are indicative
   // of phishing.  It returns a score value that falls in the range [0.0,1.0]
@@ -55,8 +58,17 @@ class Scorer {
       base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)> callback)
       const;
 
+  // This method applies the TfLite visual model to the given bitmap. It
+  // asynchronously returns the list of scores for each category, in the same
+  // order as `tflite_thresholds()`.
+  void ApplyVisualTfLiteModel(
+      const SkBitmap& bitmap,
+      base::OnceCallback<void(std::vector<double>)> callback) const;
+
   // Returns the version number of the loaded client model.
   int model_version() const;
+
+  bool HasVisualTfLiteModel() const;
 
   // -- Accessors used by the page feature extractor ---------------------------
 
@@ -83,6 +95,13 @@ class Scorer {
   // Returns the threshold probability above which we send a CSD ping.
   float threshold_probability() const;
 
+  // Returns the version of the visual TFLite model.
+  int tflite_model_version() const;
+
+  // Returns the thresholds configured for the visual TFLite model categories.
+  const google::protobuf::RepeatedPtrField<ClientSideModel::Threshold>&
+  tflite_thresholds() const;
+
  protected:
   // Most clients should use the factory method.  This constructor is public
   // to allow for mock implementations.
@@ -102,6 +121,8 @@ class Scorer {
   ClientSideModel model_;
   std::unordered_set<std::string> page_terms_;
   std::unordered_set<uint32_t> page_words_;
+
+  base::MemoryMappedFile visual_tflite_model_;
 
   base::WeakPtrFactory<Scorer> weak_ptr_factory_{this};
 

@@ -166,7 +166,11 @@ void PhishingClassifier::TermExtractionFinished(bool success) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     ExtractVisualFeatures();
 #else
-    VisualExtractionFinished(true);
+    if (scorer_->HasVisualTfLiteModel()) {
+      ExtractVisualFeatures();
+    } else {
+      VisualExtractionFinished(true);
+    }
 #endif
   } else {
     RunFailureCallback();
@@ -243,7 +247,9 @@ void PhishingClassifier::VisualExtractionFinished(bool success) {
       base::BindOnce(&PhishingClassifier::OnVisualTargetsMatched,
                      weak_factory_.GetWeakPtr()));
 #else
-  RunCallback(*verdict);
+  scorer_->ApplyVisualTfLiteModel(
+      *bitmap_, base::BindOnce(&PhishingClassifier::OnVisualTfLiteModelDone,
+                               weak_factory_.GetWeakPtr(), std::move(verdict)));
 #endif
 }
 
@@ -255,6 +261,33 @@ void PhishingClassifier::OnVisualTargetsMatched(
   }
   base::UmaHistogramTimes("SBClientPhishing.VisualComparisonTime",
                           base::TimeTicks::Now() - visual_matching_start_);
+
+  scorer_->ApplyVisualTfLiteModel(
+      *bitmap_, base::BindOnce(&PhishingClassifier::OnVisualTfLiteModelDone,
+                               weak_factory_.GetWeakPtr(), std::move(verdict)));
+}
+
+void PhishingClassifier::OnVisualTfLiteModelDone(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    std::vector<double> result) {
+  if (static_cast<int>(result.size()) > scorer_->tflite_thresholds().size()) {
+    // Model is misconfigured, so bail out.
+    RunFailureCallback();
+    return;
+  }
+
+  verdict->set_tflite_model_version(scorer_->tflite_model_version());
+  for (size_t i = 0; i < result.size(); i++) {
+    ClientPhishingRequest::CategoryScore* category =
+        verdict->add_tflite_model_scores();
+    category->set_label(scorer_->tflite_thresholds().at(i).label());
+    category->set_value(result[i]);
+
+    if (result[i] >= scorer_->tflite_thresholds().at(i).threshold()) {
+      verdict->set_is_phishing(true);
+      verdict->set_is_tflite_match(true);
+    }
+  }
 
   RunCallback(*verdict);
 }

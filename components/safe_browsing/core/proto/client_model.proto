@@ -119,7 +119,11 @@ message ClientSideModel {
   // Safe Browsing for a more definitive classification.
   repeated Threshold tflite_thresholds = 14;
 
-  // next available tag number: 15
+  // The width and height of the input tensor to the corresponding TFLite model.
+  optional int32 tflite_model_input_width = 15;
+  optional int32 tflite_model_input_height = 16;
+
+  // next available tag number: 17
 }
 
 // Wrapper of the vision model for the similarity check target images.

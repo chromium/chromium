@@ -125,6 +125,11 @@ class PhishingClassifier {
   // model.
   void OnVisualTargetsMatched(std::unique_ptr<ClientPhishingRequest> verdict);
 
+  // Callback when the visual TFLite model has been applied, and returned a list
+  // of scores.
+  void OnVisualTfLiteModelDone(std::unique_ptr<ClientPhishingRequest> verdict,
+                               std::vector<double> result);
+
   // Helper method to run the DoneCallback and clear the state.
   void RunCallback(const ClientPhishingRequest& verdict);
 

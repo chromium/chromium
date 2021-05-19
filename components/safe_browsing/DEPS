@@ -31,6 +31,8 @@ include_rules = [
   "+testing/gtest",
   "+third_party/blink/public/common/loader/url_loader_throttle.h",
   "+third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h",
+  "+third_party/tflite-support",
+  "+third_party/tflite",
   "+third_party/protobuf",
   "+ui/base/resource/resource_bundle.h",
   "+ui/android/view_android.h",

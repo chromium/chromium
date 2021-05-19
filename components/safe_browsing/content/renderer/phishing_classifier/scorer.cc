@@ -22,10 +22,15 @@
 #include "content/public/renderer/render_thread.h"
 #include "crypto/sha2.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h"
+#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/image_classifier.h"
+#include "third_party/tflite/src/tensorflow/lite/kernels/builtin_op_kernels.h"
+#include "third_party/tflite/src/tensorflow/lite/op_resolver.h"
 
 namespace safe_browsing {
 
 namespace {
+
 // Enum used to keep stats about the status of the Scorer creation.
 enum ScorerCreationStatus {
   SCORER_SUCCESS,
@@ -34,6 +39,7 @@ enum ScorerCreationStatus {
   SCORER_FAIL_MODEL_FILE_TOO_LARGE,  // Not used anymore
   SCORER_FAIL_MODEL_PARSE_ERROR,
   SCORER_FAIL_MODEL_MISSING_FIELDS,
+  SCORER_FAIL_MAP_VISUAL_TFLITE_MODEL,
   SCORER_STATUS_MAX  // Always add new values before this one.
 };
 
@@ -79,6 +85,104 @@ std::unique_ptr<ClientPhishingRequest> GetMatchingVisualTargetsHelper(
   return request;
 }
 
+std::unique_ptr<tflite::MutableOpResolver> CreateOpResolver() {
+  tflite::MutableOpResolver resolver;
+  // The minimal set of OPs required to run the visual model.
+  resolver.AddBuiltin(tflite::BuiltinOperator_ADD,
+                      tflite::ops::builtin::Register_ADD());
+  resolver.AddBuiltin(tflite::BuiltinOperator_CONV_2D,
+                      tflite::ops::builtin::Register_CONV_2D());
+  resolver.AddBuiltin(tflite::BuiltinOperator_DEPTHWISE_CONV_2D,
+                      tflite::ops::builtin::Register_DEPTHWISE_CONV_2D());
+  resolver.AddBuiltin(tflite::BuiltinOperator_FULLY_CONNECTED,
+                      tflite::ops::builtin::Register_FULLY_CONNECTED());
+  resolver.AddBuiltin(tflite::BuiltinOperator_MEAN,
+                      tflite::ops::builtin::Register_MEAN());
+  resolver.AddBuiltin(tflite::BuiltinOperator_SOFTMAX,
+                      tflite::ops::builtin::Register_SOFTMAX());
+  return std::make_unique<tflite::MutableOpResolver>(resolver);
+}
+
+std::unique_ptr<tflite::task::vision::ImageClassifier> CreateClassifier(
+    const std::string& model_data) {
+  tflite::task::vision::ImageClassifierOptions options;
+  options.mutable_model_file_with_metadata()->set_file_content(model_data);
+  auto statusor_classifier =
+      tflite::task::vision::ImageClassifier::CreateFromOptions(
+          options, CreateOpResolver());
+  if (!statusor_classifier.ok()) {
+    VLOG(1) << statusor_classifier.status().ToString();
+    return nullptr;
+  }
+
+  return std::move(*statusor_classifier);
+}
+
+std::string GetModelInput(const SkBitmap& bitmap, int width, int height) {
+  // Use the Rec. 2020 color space, in case the user input is wide-gamut.
+  sk_sp<SkColorSpace> rec2020 = SkColorSpace::MakeRGB(
+      {2.22222f, 0.909672f, 0.0903276f, 0.222222f, 0.0812429f, 0, 0},
+      SkNamedGamut::kRec2020);
+
+  SkImageInfo downsampled_info = SkImageInfo::MakeN32(
+      width, height, SkAlphaType::kUnpremul_SkAlphaType, rec2020);
+  SkBitmap downsampled;
+  if (!downsampled.tryAllocPixels(downsampled_info))
+    return std::string();
+  bitmap.pixmap().scalePixels(
+      downsampled.pixmap(),
+      SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNearest));
+
+  // Format as an RGB buffer for input into the model
+  std::string data;
+  for (int y = 0; y < height; ++y) {
+    for (int x = 0; x < width; ++x) {
+      SkColor color = downsampled.getColor(x, y);
+      data += static_cast<char>(SkColorGetR(color));
+      data += static_cast<char>(SkColorGetG(color));
+      data += static_cast<char>(SkColorGetB(color));
+    }
+  }
+
+  return data;
+}
+
+std::vector<double> ApplyVisualTfLiteModelHelper(
+    const SkBitmap& bitmap,
+    int input_width,
+    int input_height,
+    const std::string& model_data) {
+  std::unique_ptr<tflite::task::vision::ImageClassifier> classifier =
+      CreateClassifier(model_data);
+  if (!classifier)
+    return std::vector<double>();
+
+  std::string model_input = GetModelInput(bitmap, input_width, input_height);
+  if (model_input.empty())
+    return std::vector<double>();
+
+  tflite::task::vision::FrameBuffer::Plane plane{
+      reinterpret_cast<const tflite::uint8*>(model_input.data()),
+      {3 * input_width, 3}};
+  auto frame_buffer = tflite::task::vision::FrameBuffer::Create(
+      {plane}, {input_width, input_height},
+      tflite::task::vision::FrameBuffer::Format::kRGB,
+      tflite::task::vision::FrameBuffer::Orientation::kTopLeft);
+  auto statusor_result = classifier->Classify(*frame_buffer);
+  if (!statusor_result.ok()) {
+    VLOG(1) << statusor_result.status().ToString();
+    return std::vector<double>();
+  } else {
+    std::vector<double> scores(
+        statusor_result->classifications(0).classes().size());
+    for (const tflite::task::vision::Class& clas :
+         statusor_result->classifications(0).classes()) {
+      scores[clas.index()] = clas.score();
+    }
+    return scores;
+  }
+}
+
 }  // namespace
 
 // Helper function which converts log odds to a probability in the range
@@ -98,25 +202,40 @@ Scorer::Scorer() {}
 Scorer::~Scorer() {}
 
 /* static */
-Scorer* Scorer::Create(const base::StringPiece& model_str) {
+Scorer* Scorer::Create(const base::StringPiece& model_str,
+                       base::File visual_tflite_model) {
   std::unique_ptr<Scorer> scorer(new Scorer());
   ClientSideModel& model = scorer->model_;
   // Parse the phishing model.
-  if (!model.ParseFromArray(model_str.data(), model_str.size())) {
+  if (!model_str.empty() &&
+      !model.ParseFromArray(model_str.data(), model_str.size())) {
     RecordScorerCreationStatus(SCORER_FAIL_MODEL_PARSE_ERROR);
-    return NULL;
-  } else if (!model.IsInitialized()) {
+    return nullptr;
+  }
+
+  if (!model_str.empty() && !model.IsInitialized()) {
     // The model may be missing some required fields.
     RecordScorerCreationStatus(SCORER_FAIL_MODEL_MISSING_FIELDS);
-    return NULL;
+    return nullptr;
   }
+
+  if (!model_str.empty()) {
+    for (int i = 0; i < model.page_term_size(); ++i) {
+      scorer->page_terms_.insert(model.hashes(model.page_term(i)));
+    }
+    for (int i = 0; i < model.page_word_size(); ++i) {
+      scorer->page_words_.insert(model.page_word(i));
+    }
+  }
+
+  // Only do this part if the visual model file exists
+  if (visual_tflite_model.IsValid() && !scorer->visual_tflite_model_.Initialize(
+                                           std::move(visual_tflite_model))) {
+    RecordScorerCreationStatus(SCORER_FAIL_MAP_VISUAL_TFLITE_MODEL);
+    return nullptr;
+  }
+
   RecordScorerCreationStatus(SCORER_SUCCESS);
-  for (int i = 0; i < model.page_term_size(); ++i) {
-    scorer->page_terms_.insert(model.hashes(model.page_term(i)));
-  }
-  for (int i = 0; i < model.page_word_size(); ++i) {
-    scorer->page_words_.insert(model.page_word(i));
-  }
   return scorer.release();
 }
 
@@ -143,8 +262,31 @@ void Scorer::GetMatchingVisualTargets(
       std::move(callback));
 }
 
+void Scorer::ApplyVisualTfLiteModel(
+    const SkBitmap& bitmap,
+    base::OnceCallback<void(std::vector<double>)> callback) const {
+  DCHECK(content::RenderThread::IsMainThread());
+  if (visual_tflite_model_.IsValid()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&ApplyVisualTfLiteModelHelper, bitmap,
+                       model_.tflite_model_input_width(),
+                       model_.tflite_model_input_height(),
+                       std::string(reinterpret_cast<const char*>(
+                                       visual_tflite_model_.data()),
+                                   visual_tflite_model_.length())),
+        std::move(callback));
+  } else {
+    std::move(callback).Run(std::vector<double>());
+  }
+}
+
 int Scorer::model_version() const {
   return model_.version();
+}
+
+bool Scorer::HasVisualTfLiteModel() const {
+  return visual_tflite_model_.IsValid();
 }
 
 const std::unordered_set<std::string>& Scorer::page_terms() const {
@@ -173,6 +315,15 @@ size_t Scorer::shingle_size() const {
 
 float Scorer::threshold_probability() const {
   return model_.threshold_probability();
+}
+
+int Scorer::tflite_model_version() const {
+  return model_.tflite_model_version();
+}
+
+const google::protobuf::RepeatedPtrField<ClientSideModel::Threshold>&
+Scorer::tflite_thresholds() const {
+  return model_.tflite_thresholds();
 }
 
 double Scorer::ComputeRuleScore(const ClientSideModel::Rule& rule,
