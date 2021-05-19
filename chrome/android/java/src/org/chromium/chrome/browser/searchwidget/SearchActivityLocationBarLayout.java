@@ -157,10 +157,9 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
             mUrlBar.post(() -> {
                 mUrlBar.requestFocus();
                 mUrlCoordinator.setKeyboardVisibility(true, false);
+                getAutocompleteCoordinator().startCachedZeroSuggest();
             });
             mUrlBarFocusRequested = false;
         }
-        // Use cached suggestions only if native is not yet ready.
-        getAutocompleteCoordinator().setShowCachedZeroSuggestResults(!mNativeInitialized);
     }
 }

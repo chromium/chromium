@@ -98,6 +98,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     private AutocompleteController mAutocomplete;
     private long mUrlFocusTime;
     private boolean mEnableAdaptiveSuggestionsCount;
+    private boolean mShouldCacheSuggestions;
 
     @IntDef({SuggestionVisibilityState.DISALLOWED, SuggestionVisibilityState.PENDING_ALLOW,
             SuggestionVisibilityState.ALLOWED})
@@ -294,13 +295,15 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     }
 
     /**
-     * Sets to show cached zero suggest results. This will start both caching zero suggest results
-     * in shared preferences and also attempt to show them when appropriate without needing native
-     * initialization.
-     * @param showCachedZeroSuggestResults Whether cached zero suggest should be shown.
+     * Show cached zero suggest results.
+     * Enables Autocomplete subsystem to offer most recently presented suggestions in the event
+     * where Native counterpart is not yet initialized.
+     *
+     * Note: the only supported page context right now is the ANDROID_SEARCH_WIDGET.
      */
-    void setShowCachedZeroSuggestResults(boolean showCachedZeroSuggestResults) {
-        if (showCachedZeroSuggestResults) mAutocomplete.startCachedZeroSuggest();
+    void startCachedZeroSuggest() {
+        if (mNativeInitialized) return;
+        onSuggestionsReceived(CachedZeroSuggestionsManager.readFromCache(), "");
     }
 
     /** Notify the mediator that a item selection is pending and should be accepted. */
@@ -707,6 +710,10 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             return;
         }
 
+        if (mShouldCacheSuggestions) {
+            CachedZeroSuggestionsManager.saveToCache(autocompleteResult);
+        }
+
         final List<AutocompleteMatch> newSuggestions = autocompleteResult.getSuggestionsList();
         String userText = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();
         mUrlTextAfterSuggestionsReceived = userText + inlineAutocompleteText;
@@ -857,6 +864,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
                 && (mDataProvider.hasTab() || mDataProvider.isInOverviewAndShowingOmnibox())) {
             int pageClassification =
                     mDataProvider.getPageClassification(mDelegate.didFocusUrlFromFakebox());
+            mShouldCacheSuggestions =
+                    pageClassification == PageClassification.ANDROID_SEARCH_WIDGET_VALUE;
             mAutocomplete.startZeroSuggest(mDataProvider.getProfile(),
                     mUrlBarEditingTextProvider.getTextWithAutocomplete(),
                     mDataProvider.getCurrentUrl(), pageClassification, mDataProvider.getTitle());
@@ -1074,6 +1083,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * Cancel any pending autocomplete actions.
      */
     private void cancelAutocompleteRequests() {
+        mShouldCacheSuggestions = false;
         if (mCurrentAutocompleteRequest != null) {
             mHandler.removeCallbacks(mCurrentAutocompleteRequest);
             mCurrentAutocompleteRequest = null;

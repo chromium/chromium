@@ -46,8 +46,6 @@ public class AutocompleteController {
     private long mNativeAutocompleteControllerAndroid;
     private OnSuggestionsReceivedListener mListener;
 
-    private boolean mUseCachedZeroSuggestResults;
-    private boolean mWaitingForSuggestionsToCache;
     private Profile mProfile;
     private @NonNull AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
 
@@ -108,17 +106,6 @@ public class AutocompleteController {
     }
 
     /**
-     * Use cached zero suggest results if there are any available and start caching them
-     * for all zero suggest updates.
-     */
-    void startCachedZeroSuggest() {
-        assert mListener != null : "Ensure a listener is set prior to calling.";
-        mUseCachedZeroSuggestResults = true;
-        AutocompleteResult data = CachedZeroSuggestionsManager.readFromCache();
-        mListener.onSuggestionsReceived(data, "");
-    }
-
-    /**
      * Starts querying for omnibox suggestions for a given text.
      *
      * @param profile The profile to use for starting the AutocompleteController
@@ -145,7 +132,6 @@ public class AutocompleteController {
                     AutocompleteController.this, text, cursorPosition, null, url,
                     pageClassification, preventInlineAutocomplete, false, false, true, queryTileId,
                     isQueryStartedFromTiles);
-            mWaitingForSuggestionsToCache = false;
         }
     }
 
@@ -210,7 +196,6 @@ public class AutocompleteController {
         setProfile(profile);
 
         if (mNativeAutocompleteControllerAndroid != 0) {
-            if (mUseCachedZeroSuggestResults) mWaitingForSuggestionsToCache = true;
             AutocompleteControllerJni.get().onOmniboxFocused(mNativeAutocompleteControllerAndroid,
                     AutocompleteController.this, omniboxText, url, pageClassification, title);
         }
@@ -226,7 +211,6 @@ public class AutocompleteController {
      */
     public void stop(boolean clear) {
         assert mListener != null : "Ensure a listener is set prior to calling.";
-        mWaitingForSuggestionsToCache = false;
         if (mNativeAutocompleteControllerAndroid != 0) {
             AutocompleteControllerJni.get().stop(
                     mNativeAutocompleteControllerAndroid, AutocompleteController.this, clear);
@@ -274,10 +258,6 @@ public class AutocompleteController {
 
         // Notify callbacks of suggestions.
         mListener.onSuggestionsReceived(autocompleteResult, inlineAutocompleteText);
-
-        if (mWaitingForSuggestionsToCache) {
-            CachedZeroSuggestionsManager.saveToCache(originalResult);
-        }
     }
 
     @CalledByNative

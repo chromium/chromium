@@ -304,13 +304,12 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     }
 
     /**
-     * Sets to show cached zero suggest results. This will start both caching zero suggest results
-     * in shared preferences and also attempt to show them when appropriate without needing native
-     * initialization.
-     * @param showCachedZeroSuggestResults Whether cached zero suggest should be shown.
+     * Show cached zero suggest results.
+     * Enables Autocomplete subsystem to offer most recently presented suggestions in the event
+     * where Native counterpart is not yet initialized.
      */
-    public void setShowCachedZeroSuggestResults(boolean showCachedZeroSuggestResults) {
-        mMediator.setShowCachedZeroSuggestResults(showCachedZeroSuggestResults);
+    public void startCachedZeroSuggest() {
+        mMediator.startCachedZeroSuggest();
     }
 
     /**
