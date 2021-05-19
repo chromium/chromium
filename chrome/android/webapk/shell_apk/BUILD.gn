@@ -69,6 +69,7 @@ template("webapk_java") {
       "src/org/chromium/webapk/shell_apk/h2o/H2OMainActivity.java",
       "src/org/chromium/webapk/shell_apk/h2o/H2OOpaqueMainActivity.java",
       "src/org/chromium/webapk/shell_apk/h2o/H2OTransparentLauncherActivity.java",
+      "src/org/chromium/webapk/shell_apk/h2o/LaunchTrigger.java",
       "src/org/chromium/webapk/shell_apk/h2o/SplashActivity.java",
       "src/org/chromium/webapk/shell_apk/h2o/SplashContentProvider.java",
       "src/org/chromium/webapk/shell_apk/h2o/SplashUtils.java",
