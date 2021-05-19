@@ -90,7 +90,6 @@ component("gtk") {
   deps = [
     ":gtk_stubs",
     "//base",
-    "//printing",
     "//skia",
 
     # GTK pulls pangoft2, which requires HarfBuzz symbols. When linking
@@ -117,6 +116,10 @@ component("gtk") {
     "//ui/strings",
     "//ui/views",
   ]
+
+  if (enable_basic_printing) {
+    deps += [ "//printing" ]
+  }
 
   if (use_cups) {
     deps += [ "//printing/mojom" ]

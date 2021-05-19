@@ -25,6 +25,7 @@ import("//gpu/vulkan/features.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 import("//pdf/features.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//remoting/remoting_enable.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
@@ -164,7 +165,6 @@ group("gn_all") {
       "//ppapi/examples/video_capture",
       "//ppapi/examples/video_decode",
       "//ppapi/examples/video_encode",
-      "//printing:printing_unittests",
       "//third_party/vulkan-deps/spirv-tools/src:SPIRV-Tools",
       "//third_party/vulkan-deps/spirv-tools/src/test/fuzzers",
       "//tools/perf/clear_system_cache",
@@ -271,6 +271,10 @@ group("gn_all") {
   }
 
   deps += root_extra_deps
+
+  if (enable_basic_printing) {
+    deps += [ "//printing:printing_unittests" ]
+  }
 
   if (enable_extensions) {
     deps += [
@@ -778,7 +782,6 @@ group("gn_all") {
   if (((is_linux || is_chromeos) && !is_chromecast) ||
       (is_win && use_libfuzzer) || (use_libfuzzer && is_mac)) {
     deps += [
-      "//chrome/services/ipp_parser/public/cpp:fuzzers",
       "//testing/libfuzzer/fuzzers",
       "//third_party/freetype-testing:fuzzers",
       "//third_party/grpc:fuzzers",
@@ -788,8 +791,12 @@ group("gn_all") {
       "//third_party/zlib/contrib/tests/fuzzers",
     ]
 
+    if (is_chromeos_ash) {
+      deps += [ "//chrome/services/ipp_parser/public/cpp:fuzzers" ]
+    }
+
     # TODO(crbug.com/906751): Get the libFuzzer tests working on Windows.
-    # Disable them for now becaue they cause the Windows clang ToT builder to
+    # Disable them for now because they cause the Windows clang ToT builder to
     # fail.
     if (!is_win) {
       deps += [ "//testing/libfuzzer/tests:libfuzzer_tests" ]

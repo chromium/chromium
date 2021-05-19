@@ -33,7 +33,7 @@
 #include "ui/gtk/printing/printing_gtk_util.h"
 
 #if defined(USE_CUPS)
-#include "printing/mojom/print.mojom.h"
+#include "printing/mojom/print.mojom.h"  // nogncheck
 #endif
 
 using printing::PageRanges;

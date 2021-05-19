@@ -31,7 +31,6 @@
 #include "chrome/browser/policy/homepage_location_policy_handler.h"
 #include "chrome/browser/policy/javascript_policy_handler.h"
 #include "chrome/browser/policy/network_prediction_policy_handler.h"
-#include "chrome/browser/policy/printing_restrictions_policy_handler.h"
 #include "chrome/browser/policy/webusb_allow_devices_for_urls_policy_handler.h"
 #include "chrome/browser/profiles/force_safe_search_policy_handler.h"
 #include "chrome/browser/profiles/force_youtube_safety_mode_policy_handler.h"
@@ -100,6 +99,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "printing/buildflags/buildflags.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/first_run/android/first_run_prefs.h"
@@ -154,6 +154,10 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/manifest.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "chrome/browser/policy/printing_restrictions_policy_handler.h"
+#endif
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 #include "components/spellcheck/browser/pref_names.h"
@@ -1513,12 +1517,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
   handlers->AddHandler(
       std::make_unique<WebUsbAllowDevicesForUrlsPolicyHandler>(chrome_schema));
-  handlers->AddHandler(
-      std::make_unique<PrintingAllowedBackgroundGraphicsModesPolicyHandler>());
-  handlers->AddHandler(
-      std::make_unique<PrintingBackgroundGraphicsDefaultPolicyHandler>());
-  handlers->AddHandler(
-      std::make_unique<PrintingPaperSizeDefaultPolicyHandler>());
   handlers->AddHandler(std::make_unique<DeveloperToolsPolicyHandler>());
   handlers->AddHandler(std::make_unique<FileSelectionDialogsPolicyHandler>());
   handlers->AddHandler(std::make_unique<JavascriptPolicyHandler>());
@@ -2039,6 +2037,15 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  handlers->AddHandler(
+      std::make_unique<PrintingAllowedBackgroundGraphicsModesPolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<PrintingBackgroundGraphicsDefaultPolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<PrintingPaperSizeDefaultPolicyHandler>());
+#endif
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   handlers->AddHandler(std::make_unique<SpellcheckLanguagePolicyHandler>());
