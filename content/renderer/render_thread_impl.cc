@@ -1166,7 +1166,14 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
 
   bool support_locking = false;
   bool support_raster_interface = true;
+
+  // Only support OOPR on this context if the general feature is enabled in
+  // addition to OOPR for canvas. Otherwise this context will raster canvas
+  // through Skia's GrContext.
   bool support_oop_rasterization =
+      gpu_channel_host->gpu_feature_info()
+              .status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
+          gpu::kGpuFeatureStatusEnabled &&
       base::FeatureList::IsEnabled(features::kCanvasOopRasterization);
   bool support_gles2_interface = false;
   bool support_grcontext = !support_oop_rasterization;
