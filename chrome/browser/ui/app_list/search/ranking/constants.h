@@ -25,6 +25,11 @@ constexpr double kTopMatchScoreBoost = 1000.0;
 //   kCategoryScoreFactor*(category rank) + (result relevance)
 constexpr double kCategoryScoreFactor = 10.0;
 
+// String to add to the details text of top match results. Keep the char[] and
+// char16_t versions in sync.
+constexpr char kTopMatchDetails[] = "(top match) ";
+constexpr char16_t kTopMatchDetailsUTF16[] = u"(top match) ";
+
 }  // namespace app_list
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_CONSTANTS_H_

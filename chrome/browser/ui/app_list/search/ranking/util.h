@@ -9,11 +9,14 @@
 
 namespace app_list {
 
-// Deletes a prefix of the form "(...) " from the start of |str|.
-//
 // TODO(crbug.com/1199206): Once the UI has support for categories this can be
 // removed.
+
+// Deletes a prefix of the form "(...) " from |str| if it exists.
 std::u16string RemoveDebugPrefix(std::u16string str);
+
+// Deletes the prefix "(top match) " from |str| if it exists.
+std::u16string RemoveTopMatchPrefix(std::u16string str);
 
 }  // namespace app_list
 

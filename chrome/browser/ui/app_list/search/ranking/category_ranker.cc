@@ -167,10 +167,6 @@ void CategoryRanker::Rank(ResultsMap& results, ProviderType provider) {
   for (const auto& result : it->second) {
     const double old_relevance = result->relevance();
 
-    // Don't change the score of top matches.
-    if (old_relevance >= kTopMatchScoreBoost)
-      continue;
-
     DCHECK(0.0 <= old_relevance && old_relevance <= 1);
     const auto category = ResultTypeToCategory(result->result_type());
     const double new_relevance =

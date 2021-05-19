@@ -93,8 +93,8 @@ SearchControllerImplNew::~SearchControllerImplNew() {}
 
 void SearchControllerImplNew::InitializeRankers() {
   ranker_->AddRanker(std::make_unique<ScoreNormalizingRanker>(profile_));
-  ranker_->AddRanker(std::make_unique<TopMatchRanker>());
   ranker_->AddRanker(std::make_unique<CategoryRanker>(profile_));
+  ranker_->AddRanker(std::make_unique<TopMatchRanker>());
   ranker_->AddRanker(std::make_unique<FilteringRanker>());
 }
 

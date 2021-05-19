@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/top_match_ranker.h"
 
+#include <cmath>
 #include <vector>
 
 #include "base/strings/strcat.h"
@@ -14,8 +15,6 @@
 
 namespace app_list {
 namespace {
-
-constexpr char16_t kTopMatchDetails[] = u"(top match) ";
 
 // Returns true if the |type| provider's results should never be a top match.
 bool ShouldIgnoreProvider(ProviderType type) {
@@ -54,36 +53,45 @@ void TopMatchRanker::Rank(ResultsMap& results, ProviderType provider) {
   // matches. Once we have category support built in to the ChromeSearchResult
   // type this should be simplified.
 
-  // Early exit for providers we don't include in the top matches.
-  if (ShouldIgnoreProvider(provider))
-    return;
-
   // Build a vector of all current matches. At the same time, reset the top
   // match list by removing the score boost from any results that have it
   // currently.
   std::vector<std::pair<ChromeSearchResult*, double>> top_results;
   for (const auto& type_results : results) {
+    // Skip results from providers that are never included in the top matches.
+    if (ShouldIgnoreProvider(type_results.first))
+      continue;
+
     for (const auto& result : type_results.second) {
-      if (result->relevance() >= kTopMatchScoreBoost)
+      // Reset the score boost on each result, as it might have previously been
+      // set as a top match.
+      if (result->relevance() >= kTopMatchScoreBoost) {
         result->set_relevance(result->relevance() - kTopMatchScoreBoost);
-      if (result->relevance() >= kTopMatchThreshold)
-        top_results.push_back({result.get(), result->relevance()});
+        result->SetDetails(RemoveTopMatchPrefix(result->details()));
+      }
+
+      // Compute the result's score while ignoring any category boost.
+      const double normalized_score =
+          std::fmod(result->relevance(), kCategoryScoreFactor);
+      if (normalized_score >= kTopMatchThreshold)
+        top_results.push_back({result.get(), normalized_score});
     }
   }
 
-  // Sort |top_results| best-to-worst.
+  // Sort |top_results| best-to-worst according to normalized score ignoring
+  // category.
   std::sort(top_results.begin(), top_results.end(),
             [](const auto& a, const auto& b) { return a.second > b.second; });
 
   // Apply a score boost to at most the top |kNumTopMatches| results.
   for (int i = 0; i < std::min(kNumTopMatches, top_results.size()); ++i) {
-    const double current_score = top_results[i].second;
-    top_results[i].first->set_relevance(kTopMatchScoreBoost + current_score);
+    auto* result = top_results[i].first;
+    result->set_relevance(kTopMatchScoreBoost + result->relevance());
 
     // TODO(crbug.com/1199206): This adds some debug information to the result
     // details. Remove once we have explicit categories in the UI.
-    const auto details = RemoveDebugPrefix(top_results[i].first->details());
-    top_results[i].first->SetDetails(base::StrCat({kTopMatchDetails, details}));
+    result->SetDetails(
+        base::StrCat({kTopMatchDetailsUTF16, result->details()}));
   }
 }
 
