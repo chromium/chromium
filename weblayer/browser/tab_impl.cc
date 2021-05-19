@@ -682,29 +682,13 @@ void TabImpl::SetJavaImpl(JNIEnv* env, const JavaParamRef<jobject>& impl) {
   java_impl_ = impl;
 }
 
-void TabImpl::OnAutofillProviderChanged(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& autofill_provider) {
+void TabImpl::InitializeAutofillIfNecessary(JNIEnv* env) {
   if (g_system_autofill_disabled_for_testing)
     return;
-
-  if (!autofill_provider_) {
-    // The first invocation should be when instantiating the autofill
-    // infrastructure, at which point the Java-side object should not be null.
-    DCHECK(autofill_provider);
-
-    // Initialize the native side of the autofill infrastructure.
-    autofill_provider_ = std::make_unique<autofill::AutofillProviderAndroid>(
-        autofill_provider, web_contents_.get());
-    InitializeAutofill();
-    return;
+  if (!autofill::ContentAutofillDriverFactory::FromWebContents(
+          web_contents_.get())) {
+    InitializeAutofillDriver();
   }
-
-  // The AutofillProvider Java object has been changed; inform
-  // |autofill_provider_|.
-  auto* provider =
-      static_cast<autofill::AutofillProviderAndroid*>(autofill_provider_.get());
-  provider->OnJavaAutofillProviderChanged(env, autofill_provider);
 }
 
 void TabImpl::UpdateBrowserControlsConstraint(JNIEnv* env,
@@ -1376,20 +1360,15 @@ void TabImpl::SetBrowserControlsConstraint(
 }
 #endif
 
-void TabImpl::InitializeAutofillForTests(
-    std::unique_ptr<autofill::AutofillProvider> provider) {
-  DCHECK(!autofill_provider_);
-
-  autofill_provider_ = std::move(provider);
-  InitializeAutofill();
+void TabImpl::InitializeAutofillForTests() {
+  InitializeAutofillDriver();
 }
 
-void TabImpl::InitializeAutofill() {
-  DCHECK(autofill_provider_);
-
+void TabImpl::InitializeAutofillDriver() {
   content::WebContents* web_contents = web_contents_.get();
   DCHECK(
       !autofill::ContentAutofillDriverFactory::FromWebContents(web_contents));
+  DCHECK(autofill::AutofillProvider::FromWebContents(web_contents));
 
   AutofillClientImpl::CreateForWebContents(web_contents);
 
@@ -1409,10 +1388,7 @@ void TabImpl::InitializeAutofill() {
   autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
       web_contents, AutofillClientImpl::FromWebContents(web_contents),
       i18n::GetApplicationLocale(), enable_autofill_download_manager,
-      autofill_provider_
-          ? base::BindRepeating(&autofill::AndroidAutofillManager::Create,
-                                autofill_provider_.get())
-          : autofill::AutofillManager::AutofillManagerFactoryCallback());
+      base::BindRepeating(&autofill::AndroidAutofillManager::Create));
 }
 
 find_in_page::FindTabHelper* TabImpl::GetFindTabHelper() {

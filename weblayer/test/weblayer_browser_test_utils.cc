@@ -94,9 +94,8 @@ void InitializeAutofillWithEventForwarding(
     const base::RepeatingCallback<void(const autofill::FormData&)>&
         on_received_form_data) {
   TabImpl* tab_impl = static_cast<TabImpl*>(shell->tab());
-
-  tab_impl->InitializeAutofillForTests(
-      std::make_unique<StubAutofillProvider>(on_received_form_data));
+  new StubAutofillProvider(tab_impl->web_contents(), on_received_form_data);
+  tab_impl->InitializeAutofillForTests();
 }
 
 void ActivateSubresourceFilterInWebContentsForURL(

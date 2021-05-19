@@ -359,8 +359,10 @@ public final class TabImpl extends ITab.Stub {
             if (mBrowser.getContext() == null) {
                 // The Context and ViewContainer in which Autofill was previously operating have
                 // gone away, so tear down |mAutofillProvider|.
-                mAutofillProvider = null;
-                TabImplJni.get().onAutofillProviderChanged(mNativeTab, null);
+                if (mAutofillProvider != null) {
+                    mAutofillProvider.destroy();
+                    mAutofillProvider = null;
+                }
                 selectionController.setNonSelectionActionModeCallback(null);
             } else {
                 if (mAutofillProvider == null) {
@@ -368,8 +370,9 @@ public final class TabImpl extends ITab.Stub {
                     // the context won't change unless it is first nulled out, since the fragment
                     // must be detached before it can be reattached to a new Context.
                     mAutofillProvider = new AutofillProvider(mBrowser.getContext(),
-                            mBrowser.getViewAndroidDelegateContainerView(), "WebLayer");
-                    TabImplJni.get().onAutofillProviderChanged(mNativeTab, mAutofillProvider);
+                            mBrowser.getViewAndroidDelegateContainerView(), mWebContents,
+                            "WebLayer");
+                    TabImplJni.get().initializeAutofillIfNecessary(mNativeTab);
                 }
                 mAutofillProvider.onContainerViewChanged(
                         mBrowser.getViewAndroidDelegateContainerView());
@@ -1013,6 +1016,11 @@ public final class TabImpl extends ITab.Stub {
             mMediaSessionHelper = null;
         }
 
+        if (mAutofillProvider != null) {
+            mAutofillProvider.destroy();
+            mAutofillProvider = null;
+        }
+
         // Destroying FaviconCallbackProxy removes from mFaviconCallbackProxies. Copy to avoid
         // problems.
         Set<FaviconCallbackProxy> faviconCallbackProxies = mFaviconCallbackProxies;
@@ -1258,7 +1266,7 @@ public final class TabImpl extends ITab.Stub {
         void removeTabFromBrowserBeforeDestroying(long nativeTabImpl);
         void deleteTab(long tab);
         void setJavaImpl(long nativeTabImpl, TabImpl impl);
-        void onAutofillProviderChanged(long nativeTabImpl, AutofillProvider autofillProvider);
+        void initializeAutofillIfNecessary(long nativeTabImpl);
         void setBrowserControlsContainerViews(long nativeTabImpl,
                 long nativeTopBrowserControlsContainerView,
                 long nativeBottomBrowserControlsContainerView);

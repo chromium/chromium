@@ -322,7 +322,9 @@ public class AutofillProvider {
     private WebContentsAccessibility mWebContentsAccessibility;
     private View mAnchorView;
 
-    public AutofillProvider(Context context, ViewGroup containerView, String providerName) {
+    public AutofillProvider(Context context, ViewGroup containerView, WebContents webContents,
+            String providerName) {
+        mWebContents = webContents;
         mProviderName = providerName;
         try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped("AutofillProvider.constructor")) {
             assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
@@ -347,6 +349,12 @@ public class AutofillProvider {
             mAutofillManager.addInputUIObserver(mInputUIObserver);
             mContext = context;
         }
+        mNativeAutofillProvider = initializeNativeAutofillProvider(webContents);
+    }
+
+    public void destroy() {
+        detachFromJavaAutofillProvider();
+        mAutofillManager.destroy();
     }
 
     /**
@@ -539,6 +547,11 @@ public class AutofillProvider {
 
         // Update focus field position.
         mRequest.setFocusField(new FocusField(focusField.fieldIndex, absBound));
+    }
+
+    // Add a specific method in order to mock it in test.
+    protected long initializeNativeAutofillProvider(WebContents webContents) {
+        return AutofillProviderJni.get().init(this, webContents);
     }
 
     private boolean isDatalistField(int childId) {
@@ -734,12 +747,16 @@ public class AutofillProvider {
     }
 
     private void onSuggestionSelected(String value) {
-        acceptDataListSuggestion(mNativeAutofillProvider, value);
+        if (mNativeAutofillProvider != 0) {
+            acceptDataListSuggestion(mNativeAutofillProvider, value);
+        }
         hidePopup();
     }
 
     private void setAnchorViewRect(RectF rect) {
-        setAnchorViewRect(mNativeAutofillProvider, mAnchorView, rect);
+        if (mNativeAutofillProvider != 0) {
+            setAnchorViewRect(mNativeAutofillProvider, mAnchorView, rect);
+        }
     }
 
     /**
@@ -765,13 +782,24 @@ public class AutofillProvider {
         // in AutofillManagerWrapper.destroy().
         if (mNativeAutofillProvider != 0) mRequest = null;
         mNativeAutofillProvider = nativeAutofillProvider;
-        if (nativeAutofillProvider == 0) mAutofillManager.destroy();
+    }
+
+    private void detachFromJavaAutofillProvider() {
+        if (mNativeAutofillProvider == 0) return;
+        // Makes sure this is the last call to mNativeAutofillProvider.
+        long nativeAutofillProvider = mNativeAutofillProvider;
+        mNativeAutofillProvider = 0;
+        AutofillProviderJni.get().detachFromJavaAutofillProvider(nativeAutofillProvider);
     }
 
     public void setWebContents(WebContents webContents) {
         if (webContents == mWebContents) return;
         if (mWebContents != null) mRequest = null;
         mWebContents = webContents;
+        detachFromJavaAutofillProvider();
+        if (mWebContents != null) {
+            initializeNativeAutofillProvider(webContents);
+        }
     }
 
     @CalledByNative
@@ -880,15 +908,14 @@ public class AutofillProvider {
 
     @NativeMethods
     interface Natives {
+        long init(AutofillProvider caller, WebContents webContents);
+        void detachFromJavaAutofillProvider(long nativeAutofillProviderAndroid);
         void onAutofillAvailable(
                 long nativeAutofillProviderAndroid, AutofillProvider caller, FormData formData);
-
         void onAcceptDataListSuggestion(
                 long nativeAutofillProviderAndroid, AutofillProvider caller, String value);
-
         void setAnchorViewRect(long nativeAutofillProviderAndroid, AutofillProvider caller,
                 View anchorView, float x, float y, float width, float height);
-
         boolean isQueryServerFieldTypesEnabled();
     }
 }

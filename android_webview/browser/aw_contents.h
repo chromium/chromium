@@ -30,10 +30,6 @@
 
 class SkBitmap;
 
-namespace autofill {
-class AutofillProvider;
-}
-
 namespace content {
 class WebContents;
 }
@@ -96,8 +92,9 @@ class AwContents : public FindHelper::Listener,
       const base::android::JavaParamRef<jobject>& web_contents_delegate,
       const base::android::JavaParamRef<jobject>& contents_client_bridge,
       const base::android::JavaParamRef<jobject>& io_thread_client,
-      const base::android::JavaParamRef<jobject>& intercept_navigation_delegate,
-      const base::android::JavaParamRef<jobject>& autofill_provider);
+      const base::android::JavaParamRef<jobject>&
+          intercept_navigation_delegate);
+  void InitializeAndroidAutofill(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetWebContents(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
@@ -382,9 +379,6 @@ class AwContents : public FindHelper::Listener,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
-  jlong GetAutofillProvider(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj);
-
   void RendererUnresponsive(content::RenderProcessHost* render_process_host);
   void RendererResponsive(content::RenderProcessHost* render_process_host);
 
@@ -427,7 +421,6 @@ class AwContents : public FindHelper::Listener,
   std::unique_ptr<AwContents> pending_contents_;
   std::unique_ptr<AwPdfExporter> pdf_exporter_;
   std::unique_ptr<PermissionRequestHandler> permission_request_handler_;
-  std::unique_ptr<autofill::AutofillProvider> autofill_provider_;
   std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
 
   bool view_tree_force_dark_state_ = false;

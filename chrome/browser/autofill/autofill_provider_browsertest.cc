@@ -41,8 +41,11 @@ namespace {
 
 class MockAutofillProvider : public TestAutofillProvider {
  public:
-  MockAutofillProvider() {}
-  ~MockAutofillProvider() override {}
+  // WebContents takes ownership of the MockAutofillProvider.
+  explicit MockAutofillProvider(content::WebContents* web_contents)
+      : TestAutofillProvider(web_contents) {}
+
+  ~MockAutofillProvider() override = default;
 
   MOCK_METHOD4(OnFormSubmitted,
                void(AndroidAutofillManager* manager,
@@ -96,7 +99,8 @@ class AutofillProviderBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     autofill_client_ = std::make_unique<TestAutofillClient>();
-    autofill_provider_ = std::make_unique<MockAutofillProvider>();
+    // WebContents takes ownership of the MockAutofillProvider.
+    autofill_provider_ = new MockAutofillProvider(WebContents());
     // Serve both a.com and b.com (and any other domain).
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -121,12 +125,11 @@ class AutofillProviderBrowserTest : public InProcessBrowserTest {
     ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
         web_contents, autofill_client_.get(), "en-US",
         BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
-        base::BindRepeating(&AndroidAutofillManager::Create,
-                            autofill_provider_.get()));
+        base::BindRepeating(&AndroidAutofillManager::Create));
   }
 
   void TearDownOnMainThread() override {
-    testing::Mock::VerifyAndClearExpectations(autofill_provider_.get());
+    testing::Mock::VerifyAndClearExpectations(autofill_provider_);
   }
 
   content::RenderFrameHost* GetMainFrame() {
@@ -163,13 +166,13 @@ class AutofillProviderBrowserTest : public InProcessBrowserTest {
     base::RunLoop run_loop;
     EXPECT_CALL(*autofill_provider_, OnQueryFormFieldAutofill(_, _, _, _, _, _))
         .Times(testing::Exactly(2))
-        .WillOnce(Invoke(autofill_provider_.get(),
+        .WillOnce(Invoke(autofill_provider_,
                          &MockAutofillProvider::OnQueryFormFieldAutofillImpl))
         .WillOnce(
             testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
     EXPECT_CALL(*autofill_provider_, OnFormSubmitted)
-        .WillOnce(Invoke(autofill_provider_.get(),
+        .WillOnce(Invoke(autofill_provider_,
                          &MockAutofillProvider::OnFormSubmittedImpl));
 
     ui_test_utils::NavigateToURL(browser(), embedded_test_server()->GetURL(
@@ -209,7 +212,7 @@ class AutofillProviderBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  std::unique_ptr<MockAutofillProvider> autofill_provider_;
+  MockAutofillProvider* autofill_provider_;
 
  private:
   std::unique_ptr<TestAutofillClient> autofill_client_;

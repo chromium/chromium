@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "components/android_autofill/browser/test_autofill_provider.h"
+#include "content/public/browser/web_contents.h"
 
 namespace weblayer {
 
@@ -15,7 +16,9 @@ namespace weblayer {
 // the browser.
 class StubAutofillProvider : public autofill::TestAutofillProvider {
  public:
+  // WebContents takes the ownership of StubAutofillProvider.
   explicit StubAutofillProvider(
+      content::WebContents* web_contents,
       const base::RepeatingCallback<void(const autofill::FormData&)>&
           on_received_form_data);
   ~StubAutofillProvider() override;

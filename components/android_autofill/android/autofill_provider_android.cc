@@ -25,6 +25,7 @@ using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
+using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
@@ -36,38 +37,52 @@ namespace autofill {
 
 using mojom::SubmissionSource;
 
+static jlong JNI_AutofillProvider_Init(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jcaller,
+    const JavaParamRef<jobject>& jweb_contents) {
+  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
+  DCHECK(web_contents);
+  auto* provider = AutofillProvider::FromWebContents(web_contents);
+  if (provider) {
+    static_cast<AutofillProviderAndroid*>(provider)
+        ->AttachToJavaAutofillProvider(env, jcaller);
+    return reinterpret_cast<intptr_t>(provider);
+  }
+  return reinterpret_cast<intptr_t>(
+      AutofillProviderAndroid::Create(env, jcaller, web_contents));
+}
+
 static jboolean JNI_AutofillProvider_IsQueryServerFieldTypesEnabled(
     JNIEnv* env) {
   return base::FeatureList::IsEnabled(
       features::kAndroidAutofillQueryServerFieldTypes);
 }
 
+// Static
+AutofillProviderAndroid* AutofillProviderAndroid::Create(
+    JNIEnv* env,
+    const JavaRef<jobject>& jcaller,
+    content::WebContents* web_contents) {
+  DCHECK(!FromWebContents(web_contents));
+  // This object is owned by WebContents.
+  return new AutofillProviderAndroid(env, jcaller, web_contents);
+}
+
+AutofillProviderAndroid* AutofillProviderAndroid::FromWebContents(
+    content::WebContents* web_contents) {
+  return static_cast<AutofillProviderAndroid*>(
+      AutofillProvider::FromWebContents(web_contents));
+}
+
 AutofillProviderAndroid::AutofillProviderAndroid(
+    JNIEnv* env,
     const JavaRef<jobject>& jcaller,
     content::WebContents* web_contents)
-    : id_(kNoQueryId), web_contents_(web_contents), check_submission_(false) {
-  OnJavaAutofillProviderChanged(AttachCurrentThread(), jcaller);
-}
-
-void AutofillProviderAndroid::OnJavaAutofillProviderChanged(
-    JNIEnv* env,
-    const JavaRef<jobject>& jcaller) {
-  // If the current Java object isn't null (e.g., because it hasn't been
-  // garbage-collected yet), clear its reference to this object.
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj.is_null()) {
-    Java_AutofillProvider_setNativeAutofillProvider(env, obj, 0);
-  }
-
-  java_ref_ = JavaObjectWeakGlobalRef(env, jcaller);
-
-  // If the new Java object isn't null, set its native object to |this|.
-  obj = java_ref_.get(env);
-  if (!obj.is_null()) {
-    Java_AutofillProvider_setNativeAutofillProvider(
-        env, obj, reinterpret_cast<jlong>(this));
-  }
-}
+    : AutofillProvider(web_contents),
+      id_(kNoQueryId),
+      java_ref_(JavaObjectWeakGlobalRef(env, jcaller)),
+      check_submission_(false) {}
 
 AutofillProviderAndroid::~AutofillProviderAndroid() {
   JNIEnv* env = AttachCurrentThread();
@@ -77,6 +92,18 @@ AutofillProviderAndroid::~AutofillProviderAndroid() {
 
   // Remove the reference to this object on the Java side.
   Java_AutofillProvider_setNativeAutofillProvider(env, obj, 0);
+}
+
+void AutofillProviderAndroid::AttachToJavaAutofillProvider(
+    JNIEnv* env,
+    const JavaRef<jobject>& jcaller) {
+  DCHECK(java_ref_.get(env).is_null());
+  java_ref_ = JavaObjectWeakGlobalRef(env, jcaller);
+}
+
+void AutofillProviderAndroid::DetachFromJavaAutofillProvider(JNIEnv* env) {
+  // Reset the reference to Java peer.
+  java_ref_.reset();
 }
 
 void AutofillProviderAndroid::OnQueryFormFieldAutofill(
@@ -190,7 +217,7 @@ void AutofillProviderAndroid::SetAnchorViewRect(JNIEnv* env,
                                                 jfloat y,
                                                 jfloat width,
                                                 jfloat height) {
-  ui::ViewAndroid* view_android = web_contents_->GetNativeView();
+  ui::ViewAndroid* view_android = web_contents()->GetNativeView();
   if (!view_android)
     return;
 
@@ -434,7 +461,7 @@ bool AutofillProviderAndroid::IsCurrentlyLinkedForm(const FormData& form) {
 
 gfx::RectF AutofillProviderAndroid::ToClientAreaBound(
     const gfx::RectF& bounding_box) {
-  gfx::Rect client_area = web_contents_->GetContainerBounds();
+  gfx::Rect client_area = web_contents()->GetContainerBounds();
   return bounding_box + client_area.OffsetFromOrigin();
 }
 

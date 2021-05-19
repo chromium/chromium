@@ -20,17 +20,28 @@ class FormDataAndroid;
 
 // Android implementation of AutofillProvider, it has one instance per
 // WebContents, this class is native peer of AutofillProvider.java.
+// This class is always instantialized by AutofillProvider Java object.
 class AutofillProviderAndroid : public AutofillProvider {
  public:
-  AutofillProviderAndroid(const base::android::JavaRef<jobject>& jcaller,
-                          content::WebContents* web_contents);
-  // Invoked when the Java-side AutofillProvider counterpart of this object
-  // has been changed (either to null or to a new object).
-  void OnJavaAutofillProviderChanged(
+  static AutofillProviderAndroid* Create(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& jcaller,
+      content::WebContents* web_contents);
+
+  static AutofillProviderAndroid* FromWebContents(
+      content::WebContents* web_contents);
+
+  ~AutofillProviderAndroid() override;
+
+  // Attach this detached object to |jcaller|.
+  void AttachToJavaAutofillProvider(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jcaller);
 
-  ~AutofillProviderAndroid() override;
+  // Invoked when the WebContents that associates with Java AutofillProvider
+  // is changed or Java AutofillProvider is destroyed, it indicates this
+  // AutofillProviderAndroid object shall not talk to its Java peer anymore.
+  void DetachFromJavaAutofillProvider(JNIEnv* env);
 
   // AutofillProvider:
   void OnQueryFormFieldAutofill(
@@ -88,6 +99,10 @@ class AutofillProviderAndroid : public AutofillProvider {
                          jfloat height);
 
  private:
+  AutofillProviderAndroid(JNIEnv* env,
+                          const base::android::JavaRef<jobject>& jcaller,
+                          content::WebContents* web_contents);
+
   void FireSuccessfulSubmission(mojom::SubmissionSource source);
   void OnFocusChanged(bool focus_on_form,
                       size_t index,
@@ -117,7 +132,6 @@ class AutofillProviderAndroid : public AutofillProvider {
   FieldGlobalId field_id_;
   base::WeakPtr<AndroidAutofillManager> manager_;
   JavaObjectWeakGlobalRef java_ref_;
-  content::WebContents* web_contents_;
   bool check_submission_;
   // Valid only if check_submission_ is true.
   mojom::SubmissionSource pending_submission_source_;

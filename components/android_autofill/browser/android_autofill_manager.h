@@ -17,7 +17,6 @@ class AutofillProvider;
 class AndroidAutofillManager : public AutofillManager {
  public:
   static std::unique_ptr<AutofillManager> Create(
-      AutofillProvider* provider,
       AutofillDriver* driver,
       AutofillClient* client,
       const std::string& app_locale,
@@ -47,7 +46,6 @@ class AndroidAutofillManager : public AutofillManager {
   AndroidAutofillManager(
       AutofillDriver* driver,
       AutofillClient* client,
-      AutofillProvider* provider,
       AutofillManager::AutofillDownloadManagerState enable_download_manager);
 
   void OnFormSubmittedImpl(const FormData& form,
@@ -95,9 +93,19 @@ class AndroidAutofillManager : public AutofillManager {
                             AutofillDownloadManager::RequestType request_type,
                             int http_error) override;
 
+ protected:
+#ifdef UNIT_TEST
+  // For the unit tests where WebContents isn't available.
+  void set_autofill_provider_for_testing(AutofillProvider* autofill_provider) {
+    autofill_provider_for_testing_ = autofill_provider;
+  }
+#endif  // UNIT_TEST
+
  private:
+  AutofillProvider* GetAutofillProvider();
+
   bool has_server_prediction_ = false;
-  AutofillProvider* provider_;
+  AutofillProvider* autofill_provider_for_testing_ = nullptr;
   base::WeakPtrFactory<AndroidAutofillManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AndroidAutofillManager);

@@ -13,8 +13,9 @@ class AndroidAutofillManagerTestHelper : public AndroidAutofillManager {
   explicit AndroidAutofillManagerTestHelper(AutofillProvider* autofill_provider)
       : AndroidAutofillManager(nullptr,
                                nullptr,
-                               autofill_provider,
-                               DISABLE_AUTOFILL_DOWNLOAD_MANAGER) {}
+                               DISABLE_AUTOFILL_DOWNLOAD_MANAGER) {
+    set_autofill_provider_for_testing(autofill_provider);
+  }
 
   void SimulatePropagateAutofillPredictions() {
     PropagateAutofillPredictions(nullptr, std::vector<FormStructure*>());

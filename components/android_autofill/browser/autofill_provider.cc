@@ -4,14 +4,18 @@
 
 #include "components/android_autofill/browser/autofill_provider.h"
 
+#include "base/memory/ptr_util.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
+#include "content/public/browser/web_contents.h"
 
 namespace autofill {
 namespace {
-bool g_is_download_manager_disabled_for_testing = false;
-}
 
-// static
+bool g_is_download_manager_disabled_for_testing = false;
+}  // namespace
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AutofillProvider)
+
 bool AutofillProvider::is_download_manager_disabled_for_testing() {
   return g_is_download_manager_disabled_for_testing;
 }
@@ -20,7 +24,10 @@ void AutofillProvider::set_is_download_manager_disabled_for_testing() {
   g_is_download_manager_disabled_for_testing = true;
 }
 
-AutofillProvider::AutofillProvider() = default;
+AutofillProvider::AutofillProvider(content::WebContents* web_contents)
+    : web_contents_(web_contents) {
+  web_contents->SetUserData(UserDataKey(), base::WrapUnique(this));
+}
 
 AutofillProvider::~AutofillProvider() = default;
 

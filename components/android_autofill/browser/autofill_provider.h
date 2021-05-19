@@ -5,26 +5,30 @@
 #ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_H_
 #define COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_H_
 
-#include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
+#include "content/public/browser/web_contents_user_data.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace gfx {
 class RectF;
-}
+}  // namespace gfx
 
 namespace autofill {
 
 class AndroidAutofillManager;
 
 // This class defines the interface for the autofill implementation other than
-// default BrowserAutofillManager.
-class AutofillProvider {
+// default BrowserAutofillManager. Unlike BrowserAutofillManager, this class
+// has one instance per WebContents.
+class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
  public:
-  AutofillProvider();
-  virtual ~AutofillProvider();
+  ~AutofillProvider() override;
 
   static bool is_download_manager_disabled_for_testing();
   static void set_is_download_manager_disabled_for_testing();
@@ -91,6 +95,23 @@ class AutofillProvider {
   void RendererShouldAcceptDataListSuggestion(AndroidAutofillManager* manager,
                                               const FieldGlobalId& field_id,
                                               const std::u16string& value);
+
+ protected:
+  // WebContents takes the ownership of AutofillProvider.
+  explicit AutofillProvider(content::WebContents* web_contents);
+  friend class content::WebContentsUserData<AutofillProvider>;
+
+#ifdef UNIT_TEST
+  // For the unit tests where WebContents isn't available.
+  AutofillProvider() = default;
+#endif  // UNIT_TEST
+
+  content::WebContents* web_contents() { return web_contents_; }
+
+ private:
+  content::WebContents* web_contents_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace autofill

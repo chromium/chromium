@@ -160,14 +160,10 @@ class TabImpl : public Tab,
   void SetJavaImpl(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& impl);
 
-  // Invoked every time that the Java-side AutofillProvider instance is
-  // changed (set to null or to a new object). On first invocation with a non-
-  // null object initializes the native Autofill infrastructure. On
-  // subsequent invocations updates the association of that native
-  // infrastructure with its Java counterpart.
-  void OnAutofillProviderChanged(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& autofill_provider);
+  // Invoked every time that the Java-side AutofillProvider instance is created,
+  // the native side autofill might have been initialized in the case that
+  // Android context is switched.
+  void InitializeAutofillIfNecessary(JNIEnv* env);
   void UpdateBrowserControlsConstraint(JNIEnv* env,
                                        jint constraint,
                                        jboolean animate);
@@ -243,9 +239,8 @@ class TabImpl : public Tab,
   // Executes |script| with a user gesture.
   void ExecuteScriptWithUserGestureForTests(const std::u16string& script);
 
-  // Initializes the autofill system with |provider| for tests.
-  void InitializeAutofillForTests(
-      std::unique_ptr<autofill::AutofillProvider> provider);
+  // Initializes the autofill system for tests.
+  void InitializeAutofillForTests();
 
  private:
   // content::WebContentsDelegate:
@@ -347,7 +342,7 @@ class TabImpl : public Tab,
 
   void UpdateRendererPrefs(bool should_sync_prefs);
 
-  void InitializeAutofill();
+  void InitializeAutofillDriver();
 
   // Returns the FindTabHelper for the page, or null if none exists.
   find_in_page::FindTabHelper* GetFindTabHelper();
@@ -401,8 +396,6 @@ class TabImpl : public Tab,
 
   // If true, the fullscreen delegate is called when the tab gains active.
   bool enter_fullscreen_on_gained_active_ = false;
-
-  std::unique_ptr<autofill::AutofillProvider> autofill_provider_;
 
   const std::string guid_;
 

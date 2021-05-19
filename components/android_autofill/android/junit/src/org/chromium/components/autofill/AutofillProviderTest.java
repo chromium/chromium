@@ -48,6 +48,7 @@ public class AutofillProviderTest {
     private ViewGroup mContainerView;
     private AutofillProvider mAutofillProvider;
     private DisplayAndroid mDisplayAndroid;
+    private long mMockedNativeAutofillProviderAndroid = 1;
 
     @Before
     public void setUp() {
@@ -57,8 +58,14 @@ public class AutofillProviderTest {
         mDisplayAndroid = Mockito.mock(DisplayAndroid.class);
         mWebContents = Mockito.mock(WebContents.class);
         mContainerView = Mockito.mock(ViewGroup.class);
-        mAutofillProvider = new AutofillProvider(mContext, mContainerView, "AutofillProviderTest");
-        mAutofillProvider.setWebContents(mWebContents);
+
+        mAutofillProvider = new AutofillProvider(
+                mContext, mContainerView, mWebContents, "AutofillProviderTest") {
+            @Override
+            protected long initializeNativeAutofillProvider(WebContents webContents) {
+                return mMockedNativeAutofillProviderAndroid;
+            }
+        };
 
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mWindowAndroid.getDisplay()).thenReturn(mDisplayAndroid);

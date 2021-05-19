@@ -592,6 +592,7 @@ public class AwSettings {
      * See {@link android.webkit.WebSettings#setSaveFormData}.
      */
     public void setSaveFormData(final boolean enable) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) return;
         if (TRACE) Log.i(LOGTAG, "setSaveFormData=" + enable);
         synchronized (mAwSettingsLock) {
             if (mAutoCompleteEnabled != enable) {

@@ -7,9 +7,11 @@
 namespace weblayer {
 
 StubAutofillProvider::StubAutofillProvider(
+    content::WebContents* web_contents,
     const base::RepeatingCallback<void(const autofill::FormData&)>&
         on_received_form_data)
-    : on_received_form_data_(on_received_form_data) {}
+    : autofill::TestAutofillProvider(web_contents),
+      on_received_form_data_(on_received_form_data) {}
 
 StubAutofillProvider::~StubAutofillProvider() = default;
 

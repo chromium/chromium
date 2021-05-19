@@ -1015,7 +1015,6 @@ public class AwContents implements SmartClipProvider {
             mContainerView.setWillNotDraw(false);
 
             mContext = context;
-            initializeAutofillProviderIfNecessary(mContext);
             mAppTargetSdkVersion = mContext.getApplicationInfo().targetSdkVersion;
             mInternalAccessAdapter = internalAccessAdapter;
             mNativeDrawFunctorFactory = nativeDrawFunctorFactory;
@@ -1073,10 +1072,6 @@ public class AwContents implements SmartClipProvider {
         mViewEventSink.setHideKeyboardOnBlur(false);
         SelectionPopupController controller = SelectionPopupController.fromWebContents(webContents);
         controller.setActionModeCallback(new AwActionModeCallback(mContext, this, webContents));
-        if (mAutofillProvider != null) {
-            controller.setNonSelectionActionModeCallback(
-                    new AutofillActionModeCallback(mContext, mAutofillProvider));
-        }
         controller.setSelectionClient(SelectionClient.createSmartSelectionClient(webContents));
 
         // Listen for dpad events from IMEs (e.g. Samsung Cursor Control) so we know to enable
@@ -1091,10 +1086,19 @@ public class AwContents implements SmartClipProvider {
         });
     }
 
-    private void initializeAutofillProviderIfNecessary(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mAutofillProvider = new AutofillProvider(context, mContainerView, "Android WebView");
+    private void initializeAutofillProviderIfNecessary() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
+
+        if (mAutofillProvider == null) {
+            mAutofillProvider =
+                    new AutofillProvider(mContext, mContainerView, mWebContents, "Android WebView");
+        } else {
+            mAutofillProvider.setWebContents(mWebContents);
         }
+        SelectionPopupController.fromWebContents(mWebContents)
+                .setNonSelectionActionModeCallback(
+                        new AutofillActionModeCallback(mContext, mAutofillProvider));
+        AwContentsJni.get().initializeAndroidAutofill(mNativeAwContents);
     }
 
     private boolean isSamsungMailApp() {
@@ -1420,14 +1424,14 @@ public class AwContents implements SmartClipProvider {
                 mWindowAndroid.getWindowAndroid(), mWebContentsInternalsHolder);
         AwContentsJni.get().setJavaPeers(mNativeAwContents, AwContents.this, this,
                 mWebContentsDelegate, mContentsClientBridge, mIoThreadClient,
-                mInterceptNavigationDelegate, mAutofillProvider);
+                mInterceptNavigationDelegate);
         GestureListenerManager.fromWebContents(mWebContents)
                 .addListener(new AwGestureStateListener());
 
         mNavigationController = mWebContents.getNavigationController();
         installWebContentsObserver();
         mSettings.setWebContents(mWebContents);
-        if (mAutofillProvider != null) mAutofillProvider.setWebContents(mWebContents);
+        initializeAutofillProviderIfNecessary();
 
         mDisplayObserver.onDIPScaleChanged(getDeviceScaleFactor());
 
@@ -1584,6 +1588,11 @@ public class AwContents implements SmartClipProvider {
         if (mOnscreenContentProvider != null) {
             mOnscreenContentProvider.destroy();
             mOnscreenContentProvider = null;
+        }
+
+        if (mAutofillProvider != null) {
+            mAutofillProvider.destroy();
+            mAutofillProvider = null;
         }
 
         // Remove pending messages
@@ -4247,8 +4256,8 @@ public class AwContents implements SmartClipProvider {
                 AwWebContentsDelegate webViewWebContentsDelegate,
                 AwContentsClientBridge contentsClientBridge,
                 AwContentsIoThreadClient ioThreadClient,
-                InterceptNavigationDelegate navigationInterceptionDelegate,
-                AutofillProvider autofillProvider);
+                InterceptNavigationDelegate navigationInterceptionDelegate);
+        void initializeAndroidAutofill(long nativeAwContents);
         WebContents getWebContents(long nativeAwContents, AwContents caller);
         AwBrowserContext getBrowserContext(long nativeAwContents, AwContents caller);
         void setCompositorFrameConsumer(

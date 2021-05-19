@@ -10,6 +10,10 @@ static_library("browser") {
     "autofill_provider.h",
   ]
   public_deps = [ "//components/autofill/core/browser" ]
+  deps = [
+    "//components/autofill/content/browser",
+    "//content/public/browser",
+  ]
 }
 
 source_set("unit_tests") {
@@ -26,4 +30,5 @@ source_set("test_support") {
   testonly = true
   sources = [ "test_autofill_provider.h" ]
   public_deps = [ ":browser" ]
+  deps = [ "//content/public/browser" ]
 }
