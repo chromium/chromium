@@ -152,8 +152,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsBrowserTest, UserResetFlocID) {
   privacy_sandbox_settings()->AddObserver(&observer);
   EXPECT_CALL(observer, OnFlocDataAccessibleSinceUpdated(true));
 
-  privacy_sandbox_settings()->SetFlocDataAccessibleFromNow(
-      /*reset_calculate_timer=*/true);
+  privacy_sandbox_settings()->ResetFlocId();
 
   EXPECT_NE(base::Time(),
             privacy_sandbox_settings()->FlocDataAccessibleSince());

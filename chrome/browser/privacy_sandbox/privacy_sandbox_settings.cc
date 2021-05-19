@@ -300,6 +300,10 @@ bool PrivacySandboxSettings::IsFlocIdResettable() const {
   return floc_feature_enabled && floc_id.IsValid() && IsFlocAllowed();
 }
 
+void PrivacySandboxSettings::ResetFlocId() const {
+  SetFlocDataAccessibleFromNow(/*reset_calculate_timer=*/true);
+}
+
 bool PrivacySandboxSettings::IsConversionMeasurementAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {
@@ -387,15 +391,6 @@ void PrivacySandboxSettings::SetPrivacySandboxEnabled(bool enabled) {
   }
   pref_service_->SetBoolean(prefs::kPrivacySandboxManuallyControlled, true);
   pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabled, enabled);
-}
-
-void PrivacySandboxSettings::SetFlocDataAccessibleFromNow(
-    bool reset_calculate_timer) const {
-  pref_service_->SetTime(prefs::kPrivacySandboxFlocDataAccessibleSince,
-                         base::Time::Now());
-
-  for (auto& observer : observers_)
-    observer.OnFlocDataAccessibleSinceUpdated(reset_calculate_timer);
 }
 
 void PrivacySandboxSettings::OnCookiesCleared() {
@@ -554,6 +549,15 @@ void PrivacySandboxSettings::ReconcilePrivacySandboxPref() {
   // has occurred.
   StopObserving();
   LogPrivacySandboxState();
+}
+
+void PrivacySandboxSettings::SetFlocDataAccessibleFromNow(
+    bool reset_calculate_timer) const {
+  pref_service_->SetTime(prefs::kPrivacySandboxFlocDataAccessibleSince,
+                         base::Time::Now());
+
+  for (auto& observer : observers_)
+    observer.OnFlocDataAccessibleSinceUpdated(reset_calculate_timer);
 }
 
 void PrivacySandboxSettings::StopObserving() {

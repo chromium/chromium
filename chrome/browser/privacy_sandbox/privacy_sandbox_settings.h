@@ -109,6 +109,10 @@ class PrivacySandboxSettings : public KeyedService,
   // valid.
   bool IsFlocIdResettable() const;
 
+  // Sets the time when history is accessible for FLoC calculation to the
+  // current time and resets the time to the next FLoC id calculation
+  void ResetFlocId() const;
+
   // Determines whether Conversion Measurement is allowable in a particular
   // context. Should be called at both impression & conversion. At each of these
   // points |top_frame_origin| is the same as either the impression origin or
@@ -153,11 +157,6 @@ class PrivacySandboxSettings : public KeyedService,
 
   // Gets invoked by the UI when the user manually changed the state of the API.
   void SetPrivacySandboxEnabled(bool enabled);
-
-  // Sets the time when history is accessible for FLoC calculation to the
-  // current time, optionally resetting the time to the next FLoC id calculation
-  // if |reset_calculate_timer| is true.
-  void SetFlocDataAccessibleFromNow(bool reset_calculate_timer) const;
 
   // Called when there's a broad cookies clearing action. For example, this
   // should be called on "Clear browsing data", but shouldn't be called on the
@@ -255,6 +254,11 @@ class PrivacySandboxSettings : public KeyedService,
   // As the sandbox is default enabled, reconcilliation will only ever opt a
   // user out of the sandbox.
   void ReconcilePrivacySandboxPref();
+
+  // Sets the time when history is accessible for FLoC calculation to the
+  // current time, optionally resetting the time to the next FLoC id calculation
+  // if |reset_calculate_timer| is true.
+  void SetFlocDataAccessibleFromNow(bool reset_calculate_timer) const;
 
   // Stops any observation of services being performed by this class.
   void StopObserving();
