@@ -366,6 +366,7 @@ InterpretSafeBrowsingResult(safe_browsing::DownloadCheckResult result) {
     case Result::BLOCKED_PASSWORD_PROTECTED:
     case Result::BLOCKED_TOO_LARGE:
     case Result::BLOCKED_UNSUPPORTED_FILE_TYPE:
+    case Result::DANGEROUS_ACCOUNT_COMPROMISE:
       return ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::
           kBlock;
 
@@ -722,7 +723,6 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
                  util::TimeToValue(context_->clock_->Now()));
     return value;
   }
-
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -860,6 +860,15 @@ std::u16string DownloadItemNotification::GetWarningStatusString() const {
       return l10n_util::GetStringFUTF16(IDS_PROMPT_MALICIOUS_DOWNLOAD_CONTENT,
                                         elided_filename);
     }
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE: {
+      return base::FeatureList::IsEnabled(
+                 safe_browsing::kSafeBrowsingCTDownloadWarning)
+                 ? l10n_util::GetStringFUTF16(
+                       IDS_PROMPT_DANGEROUS_DOWNLOAD_ACCOUNT_COMPROMISE,
+                       elided_filename)
+                 : l10n_util::GetStringFUTF16(
+                       IDS_PROMPT_MALICIOUS_DOWNLOAD_CONTENT, elided_filename);
+    }
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT: {
       bool requests_ap_verdicts =
           safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(

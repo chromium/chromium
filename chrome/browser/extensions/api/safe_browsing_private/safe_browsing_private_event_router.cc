@@ -119,6 +119,8 @@ std::string DangerTypeToThreatType(download::DownloadDangerType danger_type) {
       return "DANGEROUS_HOST";
     case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
       return "POTENTIALLY_UNWANTED";
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+      return "DANGEROUS_ACCOUNT_COMPROMISE";
     default:
       // This can be reached when reporting an opened download that doesn't have
       // a verdict yet.

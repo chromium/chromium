@@ -1023,6 +1023,7 @@ ui::ImageModel DownloadItemView::GetIcon() const {
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
       return kError;
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
       return kWarning;

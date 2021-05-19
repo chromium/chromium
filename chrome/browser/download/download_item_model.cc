@@ -125,7 +125,7 @@ DownloadItemModelData::DownloadItemModelData()
       danger_level_(DownloadFileType::NOT_DANGEROUS),
       is_being_revived_(false) {}
 
-} // namespace
+}  // namespace
 
 // -----------------------------------------------------------------------------
 // DownloadItemModel
@@ -176,8 +176,8 @@ std::u16string DownloadItemModel::GetTabProgressStatusText() const {
     base::i18n::AdjustStringForLocaleDirection(&total_text);
 
     base::i18n::AdjustStringForLocaleDirection(&received_size);
-    amount = l10n_util::GetStringFUTF16(
-        IDS_DOWNLOAD_TAB_PROGRESS_SIZE, received_size, total_text);
+    amount = l10n_util::GetStringFUTF16(IDS_DOWNLOAD_TAB_PROGRESS_SIZE,
+                                        received_size, total_text);
   } else {
     amount.assign(received_size);
   }
@@ -190,9 +190,9 @@ std::u16string DownloadItemModel::GetTabProgressStatusText() const {
   if (download_->IsPaused()) {
     time_remaining = l10n_util::GetStringUTF16(IDS_DOWNLOAD_PROGRESS_PAUSED);
   } else if (download_->TimeRemaining(&remaining)) {
-    time_remaining = ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_REMAINING,
-                                            ui::TimeFormat::LENGTH_SHORT,
-                                            remaining);
+    time_remaining =
+        ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_REMAINING,
+                               ui::TimeFormat::LENGTH_SHORT, remaining);
   }
 
   if (time_remaining.empty()) {
@@ -200,8 +200,8 @@ std::u16string DownloadItemModel::GetTabProgressStatusText() const {
     return l10n_util::GetStringFUTF16(
         IDS_DOWNLOAD_TAB_PROGRESS_STATUS_TIME_UNKNOWN, speed_text, amount);
   }
-  return l10n_util::GetStringFUTF16(
-      IDS_DOWNLOAD_TAB_PROGRESS_STATUS, speed_text, amount, time_remaining);
+  return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_TAB_PROGRESS_STATUS,
+                                    speed_text, amount, time_remaining);
 }
 
 int64_t DownloadItemModel::GetCompletedBytes() const {
@@ -209,8 +209,8 @@ int64_t DownloadItemModel::GetCompletedBytes() const {
 }
 
 int64_t DownloadItemModel::GetTotalBytes() const {
-  return download_->AllDataSaved() ? download_->GetReceivedBytes() :
-                                     download_->GetTotalBytes();
+  return download_->AllDataSaved() ? download_->GetReceivedBytes()
+                                   : download_->GetTotalBytes();
 }
 
 // TODO(asanka,rdsmith): Once 'open' moves exclusively to the
@@ -240,6 +240,7 @@ bool DownloadItemModel::IsMalicious() const {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
     case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
       return true;
 
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:

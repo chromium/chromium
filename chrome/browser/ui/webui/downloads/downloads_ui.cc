@@ -134,6 +134,8 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
                              IDS_BLOCK_REASON_MIXED_CONTENT);
   source->AddLocalizedString("asyncScanningDownloadDesc",
                              IDS_BLOCK_REASON_DEEP_SCANNING);
+  source->AddLocalizedString("accountCompromiseDownloadDesc",
+                             IDS_BLOCK_REASON_ACCOUNT_COMPROMISE);
   if (browser_defaults::kDownloadPageHasShowInFolder)
     source->AddLocalizedString("controlShowInFolder", IDS_DOWNLOAD_LINK_SHOW);
 

@@ -32,7 +32,8 @@ enum class DownloadCheckResult {
   DEEP_SCANNED_SAFE = 12,
   PROMPT_FOR_SCANNING = 13,
   BLOCKED_UNSUPPORTED_FILE_TYPE = 14,
-  kMaxValue = BLOCKED_UNSUPPORTED_FILE_TYPE,
+  DANGEROUS_ACCOUNT_COMPROMISE = 15,
+  kMaxValue = DANGEROUS_ACCOUNT_COMPROMISE,
 };
 
 // Enum to keep track why a particular download verdict was chosen.
@@ -74,6 +75,7 @@ enum DownloadCheckResultReason {
   REASON_DEEP_SCANNED_SAFE = 33,
   REASON_ADVANCED_PROTECTION_PROMPT = 34,
   REASON_BLOCKED_UNSUPPORTED_FILE_TYPE = 35,
+  REASON_DOWNLOAD_DANGEROUS_ACCOUNT_COMPROMISE = 36,
   REASON_MAX  // Always add new values before this one.
 };
 

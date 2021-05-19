@@ -1764,6 +1764,10 @@ are declared in tools/grit/grit_rule.gni.
           Extensions, apps, and themes can harm your computer. Are you sure you want to continue?
         </message>
       </if>
+      <message name="IDS_PROMPT_DANGEROUS_DOWNLOAD_ACCOUNT_COMPROMISE"
+        desc="Message shown to the user to validate the download when the download content is deteremined to be associated with account compromise by safebrowsing.">
+        <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> could let attackers steal your personal information.
+      </message>
       <message name="IDS_PROMPT_UNCOMMON_DOWNLOAD_CONTENT"
          desc="Message shown to the user to validate the download when the download content is classified as uncommon by safebrowsing.">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> is not commonly downloaded and may be dangerous.
@@ -1848,6 +1852,10 @@ are declared in tools/grit/grit_rule.gni.
         desc="Message shown on chrome://downloads when a download is being scanned">
         This file is being scanned.
       </message>
+      <message name="IDS_BLOCK_REASON_ACCOUNT_COMPROMISE"
+        desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it is associated with account compromise.">
+        This file could let attackers steal your personal information.
+      </message>
       <message name="IDS_DEEP_SCANNED_SAFE_DESCRIPTION"
         desc="Message shown to the user on chrome://downloads page to explain this this download was deep scanned, and found to be safe.">
         Security checks are done
@@ -1901,6 +1909,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_KEEP_UNCOMMON_DOWNLOAD_TITLE"
                desc="Title for the confirmation dialog asking whether the user really meant to keep an uncommon download">
         Keep file?
+      </message>
+      <message name="IDS_CONFIRM_DANGEROUS_DOWNLOAD_ACCOUNT_COMPROMISE_TITLE"
+        desc="Title for the confirmation dialog asking whether the user really meant to keep an uncommon download">
+        This file is dangerous
       </message>
       <message name="IDS_PROMPT_CONFIRM_KEEP_DANGEROUS_DOWNLOAD"
                desc="Prompt text for the confirmation dialog asking whether the user really meant to keep a dangerous download">

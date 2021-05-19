@@ -104,6 +104,7 @@ bool IsDownloadAllowedBySafeBrowsing(
     case Result::UNCOMMON:
     case Result::DANGEROUS_HOST:
     case Result::POTENTIALLY_UNWANTED:
+    case Result::DANGEROUS_ACCOUNT_COMPROMISE:
       return false;
 
     // Safe Browsing should only return these results for client downloads, not
@@ -158,7 +159,8 @@ FileSelectHelper::~FileSelectHelper() {
 }
 
 void FileSelectHelper::FileSelected(const base::FilePath& path,
-                                    int index, void* params) {
+                                    int index,
+                                    void* params) {
   FileSelectedWithExtraInfo(ui::SelectedFileInfo(path, path), index, params);
 }
 
@@ -698,8 +700,7 @@ void FileSelectHelper::RunFileChooserOnUIThread(
       select_file_types_.get() && !select_file_types_->extensions.empty()
           ? 1
           : 0,  // 1-based index of default extension to show.
-      base::FilePath::StringType(),
-      owning_window,
+      base::FilePath::StringType(), owning_window,
 #if defined(OS_ANDROID)
       &accept_types);
 #else

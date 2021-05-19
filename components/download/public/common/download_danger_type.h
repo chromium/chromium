@@ -81,6 +81,10 @@ enum DownloadDangerType {
   // policy for details.
   DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE = 18,
 
+  // SafeBrowsing download service has classified this file as being associated
+  // with account compromise through stealing cookies.
+  DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE = 19,
+
   // Memory space for histograms is determined by the max.
   // ALWAYS ADD NEW VALUES BEFORE THIS ONE.
   DOWNLOAD_DANGER_TYPE_MAX

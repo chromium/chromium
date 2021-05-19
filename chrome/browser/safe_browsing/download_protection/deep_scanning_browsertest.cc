@@ -1024,13 +1024,17 @@ class MetadataCheckAndDeepScanningBrowserTest
         return "POTENTIALLY_UNWANTED";
       case ClientDownloadResponse::DANGEROUS_HOST:
         return "DANGEROUS_HOST";
+      case ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE:
+        return "DANGEROUS_ACCOUNT_COMPROMISE";
     }
   }
 
   std::string expected_threat_type() const {
     // These results exempt the file from being deep scanned.
     if (metadata_check_verdict() == ClientDownloadResponse::DANGEROUS ||
-        metadata_check_verdict() == ClientDownloadResponse::DANGEROUS_HOST) {
+        metadata_check_verdict() == ClientDownloadResponse::DANGEROUS_HOST ||
+        metadata_check_verdict() ==
+            ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE) {
       return metadata_check_threat_type();
     }
     switch (scanning_verdict()) {
@@ -1051,6 +1055,9 @@ class MetadataCheckAndDeepScanningBrowserTest
       case ClientDownloadResponse::DANGEROUS_HOST:
         return download::DownloadDangerType::
             DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST;
+      case ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE:
+        return download::DownloadDangerType::
+            DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE;
       case ClientDownloadResponse::UNCOMMON:
         if (scanning_verdict() != ScanningVerdict::MALWARE) {
           return download::DownloadDangerType::
@@ -1084,7 +1091,9 @@ class MetadataCheckAndDeepScanningBrowserTest
 
   bool deep_scan_needed() const {
     return metadata_check_verdict() != ClientDownloadResponse::DANGEROUS &&
-           metadata_check_verdict() != ClientDownloadResponse::DANGEROUS_HOST;
+           metadata_check_verdict() != ClientDownloadResponse::DANGEROUS_HOST &&
+           metadata_check_verdict() !=
+               ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE;
   }
 };
 
@@ -1097,7 +1106,8 @@ INSTANTIATE_TEST_SUITE_P(
                         ClientDownloadResponse::UNCOMMON,
                         ClientDownloadResponse::POTENTIALLY_UNWANTED,
                         ClientDownloadResponse::DANGEROUS_HOST,
-                        ClientDownloadResponse::UNKNOWN),
+                        ClientDownloadResponse::UNKNOWN,
+                        ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE),
         testing::Values(ScanningVerdict::MALWARE,
                         ScanningVerdict::UNWANTED,
                         ScanningVerdict::SAFE),

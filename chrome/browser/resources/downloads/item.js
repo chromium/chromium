@@ -287,6 +287,9 @@ Polymer({
 
           case DangerType.SENSITIVE_CONTENT_WARNING:
             return loadTimeData.getString('sensitiveContentWarningDesc');
+
+          case DangerType.DANGEROUS_ACCOUNT_COMPROMISE:
+            return loadTimeData.getString('accountCompromiseDownloadDesc');
         }
         break;
 
@@ -417,7 +420,8 @@ Polymer({
         (this.data.dangerType === DangerType.DANGEROUS_CONTENT ||
          this.data.dangerType === DangerType.DANGEROUS_HOST ||
          this.data.dangerType === DangerType.DANGEROUS_URL ||
-         this.data.dangerType === DangerType.POTENTIALLY_UNWANTED);
+         this.data.dangerType === DangerType.POTENTIALLY_UNWANTED || 
+         this.data.dangerType === DangerType.DANGEROUS_ACCOUNT_COMPROMISE);
   },
 
   /** @private */

@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/unicodestring.h"
 #include "base/strings/string_number_conversions.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
+#include "components/safe_browsing/core/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
@@ -35,8 +37,8 @@
 #include "ui/base/l10n/time_format.h"
 
 using content::BrowserContext;
-using download::DownloadItem;
 using content::DownloadManager;
+using download::DownloadItem;
 
 using DownloadVector = DownloadManager::DownloadVector;
 
@@ -78,6 +80,11 @@ const char* GetDangerTypeString(download::DownloadDangerType danger_type) {
       return "DEEP_SCANNED_OPENED_DANGEROUS";
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
       return "BLOCKED_UNSUPPORTED_FILE_TYPE";
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+      return base::FeatureList::IsEnabled(
+                 safe_browsing::kSafeBrowsingCTDownloadWarning)
+                 ? "DANGEROUS_ACCOUNT_COMPROMISE"
+                 : "DANGEROUS_CONTENT";
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
@@ -344,11 +351,11 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
 
 bool DownloadsListTracker::IsIncognito(const DownloadItem& item) const {
   return GetOriginalNotifierManager() && GetMainNotifierManager() &&
-      GetMainNotifierManager()->GetDownload(item.GetId()) == &item;
+         GetMainNotifierManager()->GetDownload(item.GetId()) == &item;
 }
 
-const DownloadItem* DownloadsListTracker::GetItemForTesting(size_t index)
-    const {
+const DownloadItem* DownloadsListTracker::GetItemForTesting(
+    size_t index) const {
   if (index >= sorted_items_.size())
     return nullptr;
 

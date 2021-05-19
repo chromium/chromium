@@ -60,6 +60,9 @@ struct EnumTraits<download_shelf::mojom::DangerType,
       case DownloadDangerType::
           DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
         return MojoDangerType::kBlockedUnsupportedFileType;
+      case DownloadDangerType::
+          DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+        return MojoDangerType::kDangerousAccountCompromise;
       case DownloadDangerType::DOWNLOAD_DANGER_TYPE_MAX:
         break;
     }
@@ -129,6 +132,10 @@ struct EnumTraits<download_shelf::mojom::DangerType,
       case MojoDangerType::kBlockedUnsupportedFileType:
         *out = DownloadDangerType::
             DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE;
+        return true;
+      case MojoDangerType::kDangerousAccountCompromise:
+        *out = DownloadDangerType::
+            DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE;
         return true;
     }
     NOTREACHED();

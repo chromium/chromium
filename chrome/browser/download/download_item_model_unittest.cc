@@ -456,6 +456,8 @@ TEST_F(DownloadItemModelTest, ShouldShowDropdown) {
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE;
   download::DownloadDangerType dangerous_content =
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT;
+  download::DownloadDangerType dangerous_account_compromise =
+      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE;
   download::DownloadDangerType blocked_encrypted =
       download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED;
   download::DownloadDangerType blocked_too_large =
@@ -471,16 +473,17 @@ TEST_F(DownloadItemModelTest, ShouldShowDropdown) {
     bool is_dangerous;        // Expectation for IsDangerous()
     bool expected_result;
   } kTestCases[] = {
-    //                                            .--- Is dangerous.
-    // Download state         Danger type         |      .--- Expected result.
-    {DownloadItem::COMPLETE,  safe,              false, true},
-    {DownloadItem::COMPLETE,  dangerous_file,    true,  false},
-    {DownloadItem::CANCELLED, dangerous_file,    true,  true},
-    {DownloadItem::COMPLETE,  dangerous_content, true,  true},
-    {DownloadItem::COMPLETE,  blocked_encrypted, true,  false},
-    {DownloadItem::COMPLETE,  blocked_too_large, true,  false},
-    {DownloadItem::COMPLETE,  blocked_sensitive, true,  false},
-    {DownloadItem::COMPLETE,  blocked_filetype,  true,  false},
+      //                                            .--- Is dangerous.
+      // Download state         Danger type         |      .--- Expected result.
+      {DownloadItem::COMPLETE,  safe,              false, true},
+      {DownloadItem::COMPLETE,  dangerous_file,    true,  false},
+      {DownloadItem::CANCELLED, dangerous_file,    true,  true},
+      {DownloadItem::COMPLETE,  dangerous_account_compromise, true, true},
+      {DownloadItem::COMPLETE,  dangerous_content, true,  true},
+      {DownloadItem::COMPLETE,  blocked_encrypted, true,  false},
+      {DownloadItem::COMPLETE,  blocked_too_large, true,  false},
+      {DownloadItem::COMPLETE,  blocked_sensitive, true,  false},
+      {DownloadItem::COMPLETE,  blocked_filetype,  true,  false},
   };
 
   SetupDownloadItemDefaults();

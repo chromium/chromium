@@ -790,6 +790,8 @@ std::string ClientDownloadResponseVerdictToString(
       return "DANGEROUS_HOST";
     case ClientDownloadResponse::UNKNOWN:
       return "UNKNOWN";
+    case ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE:
+      return "DANGEROUS_ACCOUNT_COMPROMISE";
   }
 }
 

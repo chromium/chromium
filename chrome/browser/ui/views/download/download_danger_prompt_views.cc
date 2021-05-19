@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/download/download_stats.h"
@@ -17,6 +18,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
+#include "components/safe_browsing/core/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -163,6 +165,15 @@ std::u16string DownloadDangerPromptViews::GetWindowTitle() const {
       return l10n_util::GetStringUTF16(IDS_KEEP_DANGEROUS_DOWNLOAD_TITLE);
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
       return l10n_util::GetStringUTF16(IDS_KEEP_UNCOMMON_DOWNLOAD_TITLE);
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE: {
+      if (base::FeatureList::IsEnabled(
+              safe_browsing::kSafeBrowsingCTDownloadWarning)) {
+        return l10n_util::GetStringUTF16(
+            IDS_CONFIRM_DANGEROUS_DOWNLOAD_ACCOUNT_COMPROMISE_TITLE);
+      } else {
+        return l10n_util::GetStringUTF16(IDS_KEEP_DANGEROUS_DOWNLOAD_TITLE);
+      }
+    }
     default: {
       return l10n_util::GetStringUTF16(
           IDS_CONFIRM_KEEP_DANGEROUS_DOWNLOAD_TITLE);
@@ -196,6 +207,18 @@ std::u16string DownloadDangerPromptViews::GetMessageBody() const {
         return l10n_util::GetStringFUTF16(
             IDS_PROMPT_MALICIOUS_DOWNLOAD_CONTENT,
             download_->GetFileNameToReportUser().LossyDisplayName());
+      }
+      case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE: {
+        if (base::FeatureList::IsEnabled(
+                safe_browsing::kSafeBrowsingCTDownloadWarning)) {
+          return l10n_util::GetStringFUTF16(
+              IDS_PROMPT_DANGEROUS_DOWNLOAD_ACCOUNT_COMPROMISE,
+              download_->GetFileNameToReportUser().LossyDisplayName());
+        } else {
+          return l10n_util::GetStringFUTF16(
+              IDS_PROMPT_MALICIOUS_DOWNLOAD_CONTENT,
+              download_->GetFileNameToReportUser().LossyDisplayName());
+        }
       }
       case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT: {
         if (safe_browsing::AdvancedProtectionStatusManagerFactory::
@@ -248,6 +271,14 @@ std::u16string DownloadDangerPromptViews::GetMessageBody() const {
         return l10n_util::GetStringUTF16(
             IDS_PROMPT_CONFIRM_KEEP_MALICIOUS_DOWNLOAD_BODY);
       }
+      case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE: {
+        return base::FeatureList::IsEnabled(
+                   safe_browsing::kSafeBrowsingCTDownloadWarning)
+                   ? l10n_util::GetStringUTF16(
+                         IDS_PROMPT_CONFIRM_DANGEROUS_DOWNLOAD_ACCOUNT_COMPROMISE_BODY)
+                   : l10n_util::GetStringUTF16(
+                         IDS_PROMPT_CONFIRM_KEEP_MALICIOUS_DOWNLOAD_BODY);
+      }
       default: {
         return l10n_util::GetStringUTF16(
             IDS_PROMPT_CONFIRM_KEEP_DANGEROUS_DOWNLOAD);
@@ -271,10 +302,10 @@ void DownloadDangerPromptViews::RunDone(Action action) {
       if (!download_->GetURL().is_empty() &&
           !content::DownloadItemUtils::GetBrowserContext(download_)
                ->IsOffTheRecord()) {
-        ClientSafeBrowsingReportRequest::ReportType report_type
-            = show_context_ ?
-                ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_BY_API :
-                ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_RECOVERY;
+        ClientSafeBrowsingReportRequest::ReportType report_type =
+            show_context_
+                ? ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_BY_API
+                : ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_RECOVERY;
         SendSafeBrowsingDownloadReport(report_type, accept, *download_);
       }
     }

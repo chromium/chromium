@@ -91,6 +91,8 @@ download::DownloadDangerType ToContentDownloadDangerType(
       return download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING;
     case DownloadDangerType::BLOCKED_UNSUPPORTED_FILETYPE:
       return download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE;
+    case DownloadDangerType::DANGEROUS_ACCOUNT_COMRPOMISE:
+      return download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE;
     case DownloadDangerType::INVALID:
       NOTREACHED();
       return download::DOWNLOAD_DANGER_TYPE_MAX;
@@ -140,7 +142,8 @@ DownloadDangerType ToHistoryDownloadDangerType(
       return DownloadDangerType::PROMPT_FOR_SCANNING;
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
       return DownloadDangerType::BLOCKED_UNSUPPORTED_FILETYPE;
-
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+      return DownloadDangerType::DANGEROUS_ACCOUNT_COMRPOMISE;
     default:
       NOTREACHED();
       return DownloadDangerType::INVALID;

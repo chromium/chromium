@@ -124,6 +124,7 @@ EventResult GetEventResult(DownloadCheckResult download_result,
     // |download_restriction|.
     case DownloadCheckResult::DANGEROUS:
     case DownloadCheckResult::DANGEROUS_HOST:
+    case DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE:
       switch (download_restriction) {
         case DownloadPrefs::DownloadRestriction::ALL_FILES:
         case DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:

@@ -575,6 +575,11 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
           reason = REASON_VERDICT_UNKNOWN;
           result = DownloadCheckResult::UNKNOWN;
           break;
+        case ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE:
+          reason = REASON_DOWNLOAD_DANGEROUS_ACCOUNT_COMPROMISE;
+          result = DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE;
+          token = response.token();
+          break;
         default:
           LOG(DFATAL) << "Unknown download response verdict: "
                       << response.verdict();

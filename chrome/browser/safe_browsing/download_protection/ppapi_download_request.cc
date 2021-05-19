@@ -325,6 +325,8 @@ PPAPIDownloadRequest::DownloadCheckResultFromClientDownloadResponse(
       return DownloadCheckResult::DANGEROUS_HOST;
     case ClientDownloadResponse::UNKNOWN:
       return DownloadCheckResult::UNKNOWN;
+    case ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE:
+      return DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE;
   }
   return DownloadCheckResult::UNKNOWN;
 }

@@ -1154,7 +1154,9 @@ int DownloadManagerImpl::NonMaliciousInProgressCount() {
         it.second->GetDangerType() !=
             download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED &&
         it.second->GetDangerType() !=
-            download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS) {
+            download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS &&
+        it.second->GetDangerType() !=
+            download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE) {
       ++count;
     }
   }

@@ -194,6 +194,9 @@ TEST_F(DownloadFeedbackServiceTest, MaybeStorePingsForDownload) {
     EXPECT_EQ(upload_requested,
               WillStorePings(DownloadCheckResult::POTENTIALLY_UNWANTED,
                              upload_requested, ok_size));
+    EXPECT_EQ(upload_requested,
+              WillStorePings(DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE,
+                             upload_requested, ok_size));
 
     // Bad sizes never upload
     EXPECT_FALSE(
@@ -208,6 +211,9 @@ TEST_F(DownloadFeedbackServiceTest, MaybeStorePingsForDownload) {
                                 upload_requested, bad_size));
     EXPECT_FALSE(WillStorePings(DownloadCheckResult::POTENTIALLY_UNWANTED,
                                 upload_requested, bad_size));
+    EXPECT_FALSE(
+        WillStorePings(DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE,
+                       upload_requested, bad_size));
   }
 }
 

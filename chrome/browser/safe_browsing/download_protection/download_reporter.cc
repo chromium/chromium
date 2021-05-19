@@ -32,7 +32,9 @@ bool DangerTypeIsDangerous(download::DownloadDangerType danger_type) {
           danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT ||
           danger_type == download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT ||
           danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST ||
-          danger_type == download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED);
+          danger_type == download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED ||
+          danger_type ==
+              download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE);
 }
 
 void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {

@@ -5713,6 +5713,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Download.DownloadDangerPrompt.BlockedTooLarge"/>
   <affected-histogram
       name="Download.DownloadDangerPrompt.BlockedUnsupportedFiletype"/>
+  <affected-histogram
+      name="Download.DownloadDangerPrompt.DangerousAccountCompromise"/>
   <affected-histogram name="Download.DownloadDangerPrompt.DangerousContent"/>
   <affected-histogram name="Download.DownloadDangerPrompt.DangerousFile"/>
   <affected-histogram name="Download.DownloadDangerPrompt.DangerousHost"/>
@@ -5736,6 +5738,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="BlockedTooLarge" label="File marked BLOCKED_TOO_LARGE"/>
   <suffix name="BlockedUnsupportedFiletype"
       label="File marked BLOCKED_UNSUPPORTED_FILETYPE"/>
+  <suffix name="DangerousAccountCompromise"
+      label="File marked DANGEROUS_ACCOUNT_COMPROMISE"/>
   <suffix name="DangerousContent" label="File marked DANGEROUS_CONTENT"/>
   <suffix name="DangerousFile" label="File marked DANGEROUS_FILE"/>
   <suffix name="DangerousHost" label="File marked DANGEROUS_HOST"/>

@@ -83,8 +83,12 @@ extern const base::Feature kPasswordProtectionWithToken;
 // scanning.
 extern const base::Feature kPromptEsbForDeepScanning;
 
-// Controls whether we are performing enterprise download checks for users with
-// the appropriate policies enabled.
+// Contros whether users will see an account compromise specific warning
+// when Safe Browsing determines a file is associated with stealing cookies.
+extern const base::Feature kSafeBrowsingCTDownloadWarning;
+
+// Controls whether we are performing enterprise download checks for users
+// with the appropriate policies enabled.
 extern const base::Feature kSafeBrowsingEnterpriseCsd;
 
 // Controls whether we are disabling consumer download checks for users using

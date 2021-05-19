@@ -59,6 +59,8 @@ const char* GetDangerTypeString(
       return "PromptForScanning";
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
       return "BlockedUnsupportedFiletype";
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+      return "DangerousAccountCompromise";
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
@@ -97,14 +99,17 @@ void DownloadDangerPrompt::SendSafeBrowsingDownloadReport(
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
       report->set_download_verdict(ClientDownloadResponse::DANGEROUS_HOST);
       break;
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+      report->set_download_verdict(
+          ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE);
+      break;
     default:  // Don't send report for any other danger types.
       return;
   }
   report->set_url(download.GetURL().spec());
   report->set_did_proceed(did_proceed);
   std::string token =
-    safe_browsing::DownloadProtectionService::GetDownloadPingToken(
-        &download);
+      safe_browsing::DownloadProtectionService::GetDownloadPingToken(&download);
   if (!token.empty())
     report->set_token(token);
   std::string serialized_report;

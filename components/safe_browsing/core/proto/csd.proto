@@ -981,6 +981,9 @@ message ClientDownloadResponse {
     // The backend doesn't have confidence in its verdict of this file.
     // Chrome should show the default warning if configured for this file type.
     UNKNOWN = 5;
+    // Download is associated with stealing cookies and account compromise.
+    // Chrome should show a severe warning.
+    DANGEROUS_ACCOUNT_COMPROMISE = 8;
   }
   optional Verdict verdict = 1 [default = SAFE];
 
