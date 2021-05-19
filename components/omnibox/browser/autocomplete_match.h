@@ -517,14 +517,12 @@ struct AutocompleteMatch {
   void UpgradeMatchWithPropertiesFrom(AutocompleteMatch& duplicate_match);
 
   // Tries, in order, to:
-  // - Prefix autocomplete |primary_text|,
-  // - Prefix autocomplete |secondary_text|,
-  // - Non-prefix autocomplete |primary_text|, and
-  // - Non-prefix autocomplete |secondary_text|.
-  // Midword and title autocompletion are only attempted if
-  // |OmniboxFieldTrial::RichAutocompletionAutocompleteTitles()| and
-  // |OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefix*()| are true
-  // respectively.
+  // - Prefix autocomplete |primary_text|
+  // - Prefix autocomplete |secondary_text|
+  // - Non-prefix autocomplete |primary_text|
+  // - Non-prefix autocomplete |secondary_text|
+  // - Split autocomplete |primary_text|
+  // - Split autocomplete |secondary_text|
   // Returns false if none of the autocompletions were appropriate (or the
   // features were disabled).
   bool TryRichAutocompletion(const std::u16string& primary_text,

@@ -35,11 +35,11 @@ namespace {
 
 // Return true if either non prefix or split autocompletion is enabled.
 bool RichAutocompletionEitherNonPrefixOrSplitEnabled() {
-  return OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixAll() ||
+  return OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixAll.Get() ||
          OmniboxFieldTrial::
-             RichAutocompletionAutocompleteNonPrefixShortcutProvider() ||
-         OmniboxFieldTrial::RichAutocompletionSplitTitleCompletion() ||
-         OmniboxFieldTrial::RichAutocompletionSplitUrlCompletion();
+             kRichAutocompletionAutocompleteNonPrefixShortcutProvider.Get() ||
+         OmniboxFieldTrial::kRichAutocompletionSplitTitleCompletion.Get() ||
+         OmniboxFieldTrial::kRichAutocompletionSplitUrlCompletion.Get();
 }
 
 }  // namespace
