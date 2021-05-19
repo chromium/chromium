@@ -216,6 +216,7 @@ class ReceiverPresentationServiceDelegate;
 class RenderFrameHost;
 class RenderProcessHost;
 class SerialDelegate;
+class SpeculationHostDelegate;
 class SiteInstance;
 class SpeechRecognitionManagerDelegate;
 class StoragePartition;
@@ -2042,6 +2043,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   // main frame should be disallowed.
   virtual bool SuppressDifferentOriginSubframeJSDialogs(
       BrowserContext* browser_context);
+
+  // Allows the embedder to provide a SpeculationHostDelegate that will be used
+  // to process speculation rules provided by the document hosted by
+  // `render_frame_host`.
+  virtual std::unique_ptr<SpeculationHostDelegate>
+  CreateSpeculationHostDelegate(RenderFrameHost& render_frame_host);
 };
 
 }  // namespace content

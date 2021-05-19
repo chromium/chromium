@@ -727,6 +727,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool SuppressDifferentOriginSubframeJSDialogs(
       content::BrowserContext* browser_context) override;
+  std::unique_ptr<content::SpeculationHostDelegate>
+  CreateSpeculationHostDelegate(
+      content::RenderFrameHost& render_frame_host) override;
 
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);

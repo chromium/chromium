@@ -22,7 +22,6 @@
 #include "chrome/browser/predictors/network_hints_handler_impl.h"
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_processor_impl_delegate.h"
-#include "chrome/browser/prefetch/speculation_host_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -619,9 +618,6 @@ void PopulateChromeFrameBinders(
         base::BindRepeating(&DraggableRegionsHostImpl::CreateIfAllowed));
   }
 #endif
-
-  map->Add<blink::mojom::SpeculationHost>(
-      base::BindRepeating(&SpeculationHostImpl::Bind));
 }
 
 void PopulateChromeWebUIFrameBinders(

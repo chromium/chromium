@@ -38,6 +38,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/quota_permission_context.h"
 #include "content/public/browser/sms_fetcher.h"
+#include "content/public/browser/speculation_host_delegate.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
 #include "content/public/browser/vpn_service_proxy.h"
 #include "content/public/browser/web_contents.h"
@@ -1216,6 +1217,12 @@ bool ContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
     BrowserContext* browser_context) {
   return base::FeatureList::IsEnabled(
       features::kSuppressDifferentOriginSubframeJSDialogs);
+}
+
+std::unique_ptr<SpeculationHostDelegate>
+ContentBrowserClient::CreateSpeculationHostDelegate(
+    RenderFrameHost& render_frame_host) {
+  return nullptr;
 }
 
 }  // namespace content

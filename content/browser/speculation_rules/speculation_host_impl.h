@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PREFETCH_SPECULATION_HOST_IMPL_H_
-#define CHROME_BROWSER_PREFETCH_SPECULATION_HOST_IMPL_H_
+#ifndef CONTENT_BROWSER_SPECULATION_RULES_SPECULATION_HOST_IMPL_H_
+#define CONTENT_BROWSER_SPECULATION_RULES_SPECULATION_HOST_IMPL_H_
 
 #include <vector>
 
 #include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/speculation_host_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
-#include "url/gurl.h"
 
 namespace content {
 class RenderFrameHost;
-}  // namespace content
 
 // Receiver for speculation rules from the web platform. See
 // third_party/blink/renderer/core/speculation_rules/README.md
@@ -23,14 +22,14 @@ class SpeculationHostImpl
  public:
   // Creates and binds an instance of this per-frame.
   static void Bind(
-      content::RenderFrameHost* frame_host,
+      RenderFrameHost* frame_host,
       mojo::PendingReceiver<blink::mojom::SpeculationHost> receiver);
 
   ~SpeculationHostImpl() override;
 
  private:
   SpeculationHostImpl(
-      content::RenderFrameHost* frame_host,
+      RenderFrameHost* frame_host,
       mojo::PendingReceiver<blink::mojom::SpeculationHost> receiver);
 
   void UpdateSpeculationCandidates(
@@ -41,8 +40,9 @@ class SpeculationHostImpl
   // ignored.
   bool received_update_ = false;
 
-  // The URL of the document that this object was created for.
-  const GURL document_url_;
+  std::unique_ptr<SpeculationHostDelegate> delegate_;
 };
 
-#endif  // CHROME_BROWSER_PREFETCH_SPECULATION_HOST_IMPL_H_
+}  // namespace content
+
+#endif  // CONTENT_BROWSER_SPECULATION_RULES_SPECULATION_HOST_IMPL_H_
