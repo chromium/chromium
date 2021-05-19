@@ -480,13 +480,13 @@ void ClipboardAndroid::ReadAvailableTypes(
     types->push_back(base::UTF8ToUTF16(kMimeTypeText));
   if (IsFormatAvailable(ClipboardFormatType::GetHtmlType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeHTML));
+  if (IsFormatAvailable(ClipboardFormatType::GetBitmapType(), buffer, data_dst))
+    types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
 
   // these formats aren't supported by the ClipboardMap currently, but might
   // be one day?
   if (IsFormatAvailable(ClipboardFormatType::GetRtfType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
-  if (IsFormatAvailable(ClipboardFormatType::GetBitmapType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
