@@ -10,6 +10,7 @@
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/system/sys_info.h"
 #include "base/timer/timer.h"
 #include "crypto/random.h"
 
@@ -39,6 +40,11 @@ constexpr int kUncompressibleRegionSize = 4096;
 }  // namespace
 
 MemoryAblationStudy::MemoryAblationStudy() {
+  // We restrict the memory ablation study to 4GB+ devices. There's some
+  // variance on exact RAM values, so we use 3500 as a rough threshold.
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() < 3500)
+    return;
+
   // This class does nothing if the study is disabled.
   if (!base::FeatureList::IsEnabled(kCrosMemoryAblationStudy)) {
     return;
