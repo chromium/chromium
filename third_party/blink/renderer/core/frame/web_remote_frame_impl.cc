@@ -153,11 +153,20 @@ WebLocalFrame* WebRemoteFrameImpl::ToWebLocalFrame() {
   return nullptr;
 }
 
+const WebLocalFrame* WebRemoteFrameImpl::ToWebLocalFrame() const {
+  NOTREACHED();
+  return nullptr;
+}
+
 bool WebRemoteFrameImpl::IsWebRemoteFrame() const {
   return true;
 }
 
 WebRemoteFrame* WebRemoteFrameImpl::ToWebRemoteFrame() {
+  return this;
+}
+
+const WebRemoteFrame* WebRemoteFrameImpl::ToWebRemoteFrame() const {
   return this;
 }
 

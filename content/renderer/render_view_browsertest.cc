@@ -902,7 +902,8 @@ TEST_F(RenderViewImplTest, BeginNavigation) {
 }
 
 TEST_F(RenderViewImplTest, BeginNavigationHandlesAllTopLevel) {
-  blink::RendererPreferences prefs = view()->GetRendererPreferences();
+  blink::RendererPreferences prefs =
+      view()->GetWebView()->GetRendererPreferences();
   prefs.browser_handles_all_top_level_requests = true;
   view()->GetWebView()->SetRendererPreferences(prefs);
 

@@ -148,6 +148,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SetWindowFeatures(const WebWindowFeatures&) override;
   void SetOpenedByDOM() override;
   WebFrame* MainFrame() override;
+  const WebFrame* MainFrame() const override;
   WebLocalFrame* FocusedFrame() override;
   void SetFocusedFrame(WebFrame*) override;
   void SmoothScroll(int target_x,
@@ -201,7 +202,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       CrossVariantMojoRemote<mojom::RendererPreferenceWatcherInterfaceBase>
           watcher) override;
   void SetRendererPreferences(const RendererPreferences& preferences) override;
-  const RendererPreferences& GetRendererPreferences() override;
+  const RendererPreferences& GetRendererPreferences() const override;
   void SetWebPreferences(const web_pref::WebPreferences& preferences) override;
   const web_pref::WebPreferences& GetWebPreferences() override;
   void SetHistoryListFromNavigation(

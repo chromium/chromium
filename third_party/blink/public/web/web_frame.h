@@ -75,8 +75,10 @@ class BLINK_EXPORT WebFrame {
 
   virtual bool IsWebLocalFrame() const = 0;
   virtual WebLocalFrame* ToWebLocalFrame() = 0;
+  virtual const WebLocalFrame* ToWebLocalFrame() const = 0;
   virtual bool IsWebRemoteFrame() const = 0;
   virtual WebRemoteFrame* ToWebRemoteFrame() = 0;
+  virtual const WebRemoteFrame* ToWebRemoteFrame() const = 0;
 
   bool Swap(WebFrame*);
 

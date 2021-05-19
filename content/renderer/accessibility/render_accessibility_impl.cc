@@ -111,7 +111,7 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
   content::RenderThread::Get()->BindHostReceiver(
       recorder.InitWithNewPipeAndPassReceiver());
   ukm_recorder_ = std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
-  WebView* web_view = render_frame_->GetRenderView()->GetWebView();
+  WebView* web_view = render_frame_->GetWebView();
   WebSettings* settings = web_view->GetSettings();
 
   SetAccessibilityCrashKey(mode);
@@ -309,7 +309,7 @@ void RenderAccessibilityImpl::HitTest(
     // The following transformation of the input point is naive, but works
     // fairly well. It will fail with CSS transforms that rotate or shear.
     // https://crbug.com/981959.
-    WebView* web_view = render_frame_->GetRenderView()->GetWebView();
+    WebView* web_view = render_frame_->GetWebView();
     gfx::PointF viewport_offset = web_view->VisualViewportOffset();
     transformed_point +=
         gfx::Vector2d(viewport_offset.x(), viewport_offset.y()) -
@@ -1378,8 +1378,7 @@ void RenderAccessibilityImpl::AddImageAnnotationDebuggingAttributes(
 }
 
 blink::WebDocument RenderAccessibilityImpl::GetPopupDocument() {
-  blink::WebPagePopup* popup =
-      render_frame_->GetRenderView()->GetWebView()->GetPagePopup();
+  blink::WebPagePopup* popup = render_frame_->GetWebView()->GetPagePopup();
   if (popup)
     return popup->GetDocument();
   return WebDocument();

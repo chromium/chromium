@@ -509,8 +509,10 @@ class CORE_EXPORT WebLocalFrameImpl final
   // to call these on a WebLocalFrameImpl.
   bool IsWebLocalFrame() const override;
   WebLocalFrame* ToWebLocalFrame() override;
+  const WebLocalFrame* ToWebLocalFrame() const override;
   bool IsWebRemoteFrame() const override;
   WebRemoteFrame* ToWebRemoteFrame() override;
+  const WebRemoteFrame* ToWebRemoteFrame() const override;
   void CreateFrameWidgetInternal(
       base::PassKey<WebLocalFrame> pass_key,
       CrossVariantMojoAssociatedRemote<

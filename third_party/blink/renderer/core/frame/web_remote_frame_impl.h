@@ -138,8 +138,10 @@ class CORE_EXPORT WebRemoteFrameImpl final
   // to call these on a WebRemoteFrameImpl.
   bool IsWebLocalFrame() const override;
   WebLocalFrame* ToWebLocalFrame() override;
+  const WebLocalFrame* ToWebLocalFrame() const override;
   bool IsWebRemoteFrame() const override;
   WebRemoteFrame* ToWebRemoteFrame() override;
+  const WebRemoteFrame* ToWebRemoteFrame() const override;
 
   WebRemoteFrameClient* client_;
   // TODO(dcheng): Inline this field directly rather than going through Member.

@@ -42,6 +42,7 @@ class WebFrame;
 class WebLocalFrame;
 class WebPlugin;
 struct WebPluginParams;
+class WebView;
 }  // namespace blink
 
 namespace gfx {
@@ -151,8 +152,13 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
   // Get the routing ID of the frame.
   virtual int GetRoutingID() = 0;
 
+  // Returns the associated WebView.
+  virtual blink::WebView* GetWebView() = 0;
+  virtual const blink::WebView* GetWebView() const = 0;
+
   // Returns the associated WebFrame.
   virtual blink::WebLocalFrame* GetWebFrame() = 0;
+  virtual const blink::WebLocalFrame* GetWebFrame() const = 0;
 
   // Gets WebKit related preferences associated with this frame.
   virtual const blink::web_pref::WebPreferences& GetBlinkPreferences() = 0;

@@ -1451,7 +1451,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   // The WebFrame created here was already attached to the Page as its main
   // frame, and the WebFrameWidget has been initialized, so we can call
   // WebView's DidAttachLocalMainFrame().
-  render_view->GetWebView()->DidAttachLocalMainFrame();
+  render_frame->GetWebView()->DidAttachLocalMainFrame();
 
   // The WebFrameWidget should start with valid VisualProperties, including a
   // non-zero size. While WebFrameWidget would not normally receive IPCs and
@@ -2279,13 +2279,30 @@ blink::WebLocalFrame* RenderFrameImpl::GetWebFrame() {
   return frame_;
 }
 
+const blink::WebLocalFrame* RenderFrameImpl::GetWebFrame() const {
+  DCHECK(frame_);
+  return frame_;
+}
+
+blink::WebView* RenderFrameImpl::GetWebView() {
+  blink::WebView* web_view = GetWebFrame()->View();
+  DCHECK(web_view);
+  return web_view;
+}
+
+const blink::WebView* RenderFrameImpl::GetWebView() const {
+  const blink::WebView* web_view = GetWebFrame()->View();
+  DCHECK(web_view);
+  return web_view;
+}
+
 const blink::web_pref::WebPreferences& RenderFrameImpl::GetBlinkPreferences() {
-  return GetWebFrame()->View()->GetWebPreferences();
+  return GetWebView()->GetWebPreferences();
 }
 
 const blink::RendererPreferences& RenderFrameImpl::GetRendererPreferences()
     const {
-  return render_view_->GetRendererPreferences();
+  return GetWebView()->GetRendererPreferences();
 }
 
 void RenderFrameImpl::ShowVirtualKeyboard() {
@@ -2818,8 +2835,7 @@ void RenderFrameImpl::CommitFailedNavigation(
   AssertNavigationCommits assert_navigation_commits(
       this, kMayReplaceInitialEmptyDocument);
 
-  DCHECK(render_view_->GetWebView());
-  render_view_->GetWebView()->SetHistoryListFromNavigation(
+  GetWebView()->SetHistoryListFromNavigation(
       commit_params->current_history_list_offset,
       commit_params->current_history_list_length);
 
@@ -3214,7 +3230,7 @@ RenderFrameImpl::CreateWorkerFetchContext() {
 
   mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
       watcher_receiver;
-  render_view()->RegisterRendererPreferenceWatcher(
+  GetWebView()->RegisterRendererPreferenceWatcher(
       watcher_receiver.InitWithNewPipeAndPassRemote());
 
   mojo::PendingRemote<blink::mojom::ResourceLoadInfoNotifier>
@@ -3229,7 +3245,7 @@ RenderFrameImpl::CreateWorkerFetchContext() {
   // non-PlzDedicatedWorker and worklets.
   scoped_refptr<WebWorkerFetchContextImpl> worker_fetch_context =
       WebWorkerFetchContextImpl::Create(
-          provider->context(), render_view_->GetRendererPreferences(),
+          provider->context(), GetWebView()->GetRendererPreferences(),
           std::move(watcher_receiver), GetLoaderFactoryBundle()->Clone(),
           GetLoaderFactoryBundle()->CloneWithoutAppCacheFactory(),
           /*pending_subresource_loader_updater=*/mojo::NullReceiver(),
@@ -3256,7 +3272,7 @@ RenderFrameImpl::CreateWorkerFetchContextForPlzDedicatedWorker(
 
   mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
       watcher_receiver;
-  render_view()->RegisterRendererPreferenceWatcher(
+  GetWebView()->RegisterRendererPreferenceWatcher(
       watcher_receiver.InitWithNewPipeAndPassRemote());
 
   mojo::PendingRemote<blink::mojom::ResourceLoadInfoNotifier>
@@ -3269,7 +3285,7 @@ RenderFrameImpl::CreateWorkerFetchContextForPlzDedicatedWorker(
   scoped_refptr<WebWorkerFetchContextImpl> worker_fetch_context =
       static_cast<DedicatedWorkerHostFactoryClient*>(factory_client)
           ->CreateWorkerFetchContext(
-              render_view_->GetRendererPreferences(),
+              GetWebView()->GetRendererPreferences(),
               std::move(watcher_receiver),
               std::move(pending_resource_load_info_notifier));
 
@@ -3944,7 +3960,7 @@ void RenderFrameImpl::WillSendRequestInternal(
     bool for_main_frame,
     ui::PageTransition transition_type,
     ForRedirect for_redirect) {
-  if (render_view_->GetRendererPreferences().enable_do_not_track) {
+  if (GetWebView()->GetRendererPreferences().enable_do_not_track) {
     request.SetHttpHeaderField(
         blink::WebString::FromUTF8(blink::kDoNotTrackHeader), "1");
   }
@@ -3994,7 +4010,7 @@ void RenderFrameImpl::WillSendRequestInternal(
       is_for_no_state_prefetch);
   url_request_extra_data->set_frame_request_blocker(frame_request_blocker_);
   url_request_extra_data->set_allow_cross_origin_auth_prompt(
-      render_view_->GetRendererPreferences().allow_cross_origin_auth_prompt);
+      GetWebView()->GetRendererPreferences().allow_cross_origin_auth_prompt);
   url_request_extra_data->set_top_frame_origin(GetSecurityOriginOfTopFrame());
 
   request.SetDownloadToNetworkCacheOnly(is_for_no_state_prefetch &&
@@ -4012,7 +4028,7 @@ void RenderFrameImpl::WillSendRequestInternal(
 
   request.SetHasUserGesture(frame_->HasTransientUserActivation());
 
-  if (!render_view_->GetRendererPreferences().enable_referrers) {
+  if (!GetWebView()->GetRendererPreferences().enable_referrers) {
     request.SetReferrerString(WebString());
     request.SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
   }
@@ -4168,7 +4184,8 @@ blink::WebEncryptedMediaClient* RenderFrameImpl::EncryptedMediaClient() {
 
 blink::WebString RenderFrameImpl::UserAgentOverride() {
   if (ShouldUseUserAgentOverride()) {
-    return WebString::FromUTF8(render_view_->GetRendererPreferences()
+    return WebString::FromUTF8(GetWebView()
+                                   ->GetRendererPreferences()
                                    .user_agent_override.ua_string_override);
   }
 
@@ -4192,27 +4209,22 @@ blink::WebString RenderFrameImpl::UserAgentOverride() {
 absl::optional<blink::UserAgentMetadata>
 RenderFrameImpl::UserAgentMetadataOverride() {
   if (ShouldUseUserAgentOverride()) {
-    return render_view_->GetRendererPreferences()
+    return GetWebView()
+        ->GetRendererPreferences()
         .user_agent_override.ua_metadata_override;
   }
   return absl::nullopt;
 }
 
 bool RenderFrameImpl::ShouldUseUserAgentOverride() const {
-  if (!render_view_->GetWebView() || !render_view_->GetWebView()->MainFrame() ||
-      render_view_->GetRendererPreferences()
-          .user_agent_override.ua_string_override.empty()) {
-    return false;
-  }
-
+  auto* web_view = GetWebView();
   // TODO(nasko): When the top-level frame is remote, there is no
   // WebDocumentLoader associated with it, so the checks below are not valid.
   // Temporarily return early and fix properly as part of
   // https://crbug.com/426555.
-  if (render_view_->GetWebView()->MainFrame()->IsWebRemoteFrame())
+  if (web_view->MainFrame()->IsWebRemoteFrame())
     return false;
-  WebLocalFrame* main_frame =
-      render_view_->GetWebView()->MainFrame()->ToWebLocalFrame();
+  const WebLocalFrame* main_frame = web_view->MainFrame()->ToWebLocalFrame();
 
   WebDocumentLoader* document_loader = main_frame->GetDocumentLoader();
   InternalDocumentStateData* internal_data =
@@ -4223,7 +4235,7 @@ bool RenderFrameImpl::ShouldUseUserAgentOverride() const {
 }
 
 blink::WebString RenderFrameImpl::DoNotTrackValue() {
-  if (render_view_->GetRendererPreferences().enable_do_not_track)
+  if (GetWebView()->GetRendererPreferences().enable_do_not_track)
     return WebString::FromUTF8("1");
   return WebString();
 }
@@ -4503,7 +4515,7 @@ void RenderFrameImpl::UpdateNavigationHistory(
       blink::WebString::FromUTF8(unique_name_helper_.value()));
 
   bool is_new_navigation = commit_type == blink::kWebStandardCommit;
-  blink::WebView* webview = render_view_->GetWebView();
+  blink::WebView* webview = GetWebView();
   if (commit_params.should_clear_history_list) {
     webview->SetHistoryListFromNavigation(/*history_offset*/ 0,
                                           /*history_length*/ 1);
@@ -4541,7 +4553,7 @@ void RenderFrameImpl::UpdateStateForCommit(
   UpdateNavigationHistory(commit_type);
 
   if (internal_data->must_reset_scroll_and_scale_state()) {
-    render_view_->GetWebView()->ResetScrollAndScaleState();
+    GetWebView()->ResetScrollAndScaleState();
     internal_data->set_must_reset_scroll_and_scale_state(false);
   }
   if (!frame_->Parent()) {  // Only for top frames.
@@ -4576,13 +4588,13 @@ void RenderFrameImpl::UpdateStateForCommit(
   // existing autoplay flags on the Page. This is because flags are stored at
   // the page level so subframes would only add to them.
   if (!frame_->Parent() && !navigation_state->WasWithinSameDocument()) {
-    render_view_->GetWebView()->ClearAutoplayFlags();
+    GetWebView()->ClearAutoplayFlags();
   }
 
   // Set the correct autoplay flags on the Page and wipe the cached origin so
   // this will not be used incorrectly.
   if (url::Origin(frame_->GetSecurityOrigin()) == autoplay_flags_.first) {
-    render_view_->GetWebView()->AddAutoplayFlags(autoplay_flags_.second);
+    GetWebView()->AddAutoplayFlags(autoplay_flags_.second);
     autoplay_flags_.first = url::Origin();
   }
 }
@@ -4639,8 +4651,7 @@ void RenderFrameImpl::PrepareFrameForCommit(
   GetContentClient()->SetActiveURL(
       url, frame_->Top()->GetSecurityOrigin().ToString().Utf8());
 
-  DCHECK(render_view_->GetWebView());
-  render_view_->GetWebView()->SetHistoryListFromNavigation(
+  GetWebView()->SetHistoryListFromNavigation(
       commit_params.current_history_list_offset,
       commit_params.current_history_list_length);
 }
@@ -4742,7 +4753,7 @@ bool RenderFrameImpl::SwapIn(WebFrame* previous_web_frame) {
     // The WebFrame being swapped in here has now been attached to the Page as
     // its main frame, and the WebFrameWidget was previously initialized when
     // the frame was created so we can call WebView's DidAttachLocalMainFrame().
-    render_view_->GetWebView()->DidAttachLocalMainFrame();
+    GetWebView()->DidAttachLocalMainFrame();
   }
 
   return true;
@@ -4846,7 +4857,8 @@ void RenderFrameImpl::BeginNavigation(
 
   // If the browser is interested, then give it a chance to look at the request.
   if (IsTopLevelNavigation(frame_) &&
-      render_view_->GetRendererPreferences()
+      GetWebView()
+          ->GetRendererPreferences()
           .browser_handles_all_top_level_requests) {
     OpenURL(std::move(info));
     return;  // Suppress the load here.
@@ -5119,8 +5131,8 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
   params->blob_url_token = CloneBlobURLToken(info->blob_url_token);
   params->should_replace_current_entry =
       info->frame_load_type == WebFrameLoadType::kReplaceCurrentItem &&
-      render_view_->GetWebView()->HistoryBackListCount() +
-          render_view_->GetWebView()->HistoryForwardListCount() + 1;
+      GetWebView()->HistoryBackListCount() +
+          GetWebView()->HistoryForwardListCount() + 1;
   params->user_gesture = info->has_transient_user_activation;
   params->initiator_policy_container_keep_alive_handle =
       std::move(info->initiator_policy_container_keep_alive_handle);

@@ -179,6 +179,7 @@ class WebView {
   // Frames --------------------------------------------------------------
 
   virtual WebFrame* MainFrame() = 0;
+  virtual const WebFrame* MainFrame() const = 0;
 
   // Focus ---------------------------------------------------------------
 
@@ -426,7 +427,7 @@ class WebView {
 
   virtual void SetRendererPreferences(
       const RendererPreferences& preferences) = 0;
-  virtual const RendererPreferences& GetRendererPreferences() = 0;
+  virtual const RendererPreferences& GetRendererPreferences() const = 0;
 
   // Web preferences ---------------------------------------------------
 

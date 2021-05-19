@@ -362,7 +362,7 @@ WebView* RenderViewImpl::CreateView(
   DCHECK_EQ(GetRoutingID(), creator_frame->render_view()->GetRoutingID());
 
   view_params->window_was_created_with_opener = true;
-  view_params->renderer_preferences = GetRendererPreferences();
+  view_params->renderer_preferences = webview_->GetRendererPreferences();
   view_params->web_preferences = webview_->GetWebPreferences();
   view_params->view_id = reply->route_id;
 
@@ -448,16 +448,6 @@ void RenderViewImpl::StartNavStateSyncTimerIfNecessary(RenderFrameImpl* frame) {
   // Tell each frame with pending state to inform the browser.
   nav_state_sync_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(delay),
                               this, &RenderViewImpl::SendFrameStateUpdates);
-}
-
-void RenderViewImpl::RegisterRendererPreferenceWatcher(
-    mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher) {
-  GetWebView()->RegisterRendererPreferenceWatcher(std::move(watcher));
-}
-
-const blink::RendererPreferences& RenderViewImpl::GetRendererPreferences()
-    const {
-  return webview_->GetRendererPreferences();
 }
 
 void RenderViewImpl::OnPageFrozenChanged(bool frozen) {

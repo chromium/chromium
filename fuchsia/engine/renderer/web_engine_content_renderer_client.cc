@@ -140,8 +140,7 @@ void WebEngineContentRendererClient::RenderFrameCreated(
   // Both the RenderView and WebView should be guaranteed to be non-null, since
   // the |render_frame| was only just created.
   if (render_frame->IsMainFrame()) {
-    render_frame->GetRenderView()->GetWebView()->SetBaseBackgroundColor(
-        SK_AlphaTRANSPARENT);
+    render_frame->GetWebView()->SetBaseBackgroundColor(SK_AlphaTRANSPARENT);
   }
 
   // Add WebEngine services to the new RenderFrame.

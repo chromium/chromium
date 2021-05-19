@@ -349,11 +349,10 @@ void AwRenderFrameExt::ResetScrollAndScaleState() {
 }
 
 blink::WebView* AwRenderFrameExt::GetWebView() {
-  if (!render_frame() || !render_frame()->GetRenderView() ||
-      !render_frame()->GetRenderView()->GetWebView())
+  if (!render_frame())
     return nullptr;
 
-  return render_frame()->GetRenderView()->GetWebView();
+  return render_frame()->GetWebView();
 }
 
 blink::WebFrameWidget* AwRenderFrameExt::GetWebFrameWidget() {

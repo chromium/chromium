@@ -312,7 +312,7 @@ void ChromeRenderFrameObserver::DraggableRegionsChanged() {
 
 void ChromeRenderFrameObserver::SetWindowFeatures(
     blink::mojom::WindowFeaturesPtr window_features) {
-  render_frame()->GetRenderView()->GetWebView()->SetWindowFeatures(
+  render_frame()->GetWebView()->SetWindowFeatures(
       content::ConvertMojoWindowFeaturesToWebWindowFeatures(*window_features));
 }
 

@@ -337,6 +337,9 @@ class CONTENT_EXPORT RenderFrameImpl
   std::unique_ptr<AXTreeSnapshotter> CreateAXTreeSnapshotter() override;
   int GetRoutingID() override;
   blink::WebLocalFrame* GetWebFrame() override;
+  const blink::WebLocalFrame* GetWebFrame() const override;
+  blink::WebView* GetWebView() override;
+  const blink::WebView* GetWebView() const override;
   const blink::web_pref::WebPreferences& GetBlinkPreferences() override;
   void ShowVirtualKeyboard() override;
   blink::WebPlugin* CreatePlugin(const WebPluginInfo& info,

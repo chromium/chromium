@@ -689,11 +689,20 @@ WebLocalFrame* WebLocalFrameImpl::ToWebLocalFrame() {
   return this;
 }
 
+const WebLocalFrame* WebLocalFrameImpl::ToWebLocalFrame() const {
+  return this;
+}
+
 bool WebLocalFrameImpl::IsWebRemoteFrame() const {
   return false;
 }
 
 WebRemoteFrame* WebLocalFrameImpl::ToWebRemoteFrame() {
+  NOTREACHED();
+  return nullptr;
+}
+
+const WebRemoteFrame* WebLocalFrameImpl::ToWebRemoteFrame() const {
   NOTREACHED();
   return nullptr;
 }

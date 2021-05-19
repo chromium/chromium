@@ -279,7 +279,7 @@ void BlinkAXTreeSource::PopulateAXRelativeBounds(WebAXObject obj,
     bounds->offset_container_id = offset_container.AxID();
 
   if (content::AXShouldIncludePageScaleFactorInRoot() && obj.Equals(root())) {
-    const WebView* web_view = render_frame_->GetRenderView()->GetWebView();
+    const WebView* web_view = render_frame_->GetWebView();
     std::unique_ptr<gfx::Transform> container_transform =
         std::make_unique<gfx::Transform>(web_container_transform);
     container_transform->Scale(web_view->PageScaleFactor(),

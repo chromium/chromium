@@ -1974,7 +1974,7 @@ bool PepperPluginInstanceImpl::SetFullscreen(bool fullscreen) {
     return false;
 
   if (fullscreen) {
-    if (!render_frame_->render_view()
+    if (!render_frame_->GetWebView()
              ->GetRendererPreferences()
              .plugin_fullscreen_allowed) {
       return false;

@@ -1907,6 +1907,11 @@ WebFrame* WebViewImpl::MainFrame() {
   return WebFrame::FromCoreFrame(page ? page->MainFrame() : nullptr);
 }
 
+const WebFrame* WebViewImpl::MainFrame() const {
+  Page* page = page_.Get();
+  return WebFrame::FromCoreFrame(page ? page->MainFrame() : nullptr);
+}
+
 WebLocalFrameImpl* WebViewImpl::MainFrameImpl() const {
   Page* page = page_.Get();
   if (!page)
@@ -3132,7 +3137,7 @@ void WebViewImpl::SetRendererPreferences(
   UpdateRendererPreferences(preferences);
 }
 
-const RendererPreferences& WebViewImpl::GetRendererPreferences() {
+const RendererPreferences& WebViewImpl::GetRendererPreferences() const {
   return renderer_preferences_;
 }
 
