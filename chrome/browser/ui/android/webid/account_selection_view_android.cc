@@ -28,9 +28,10 @@ using base::android::JavaParamRef;
 
 namespace {
 
-std::vector<std::string> ConvertAccountToFields(const Account& account) {
+std::vector<std::string> ConvertAccountToFields(const Account& account,
+                                                const GURL& idp_url) {
   return {account.sub,        account.email,   account.name,
-          account.given_name, account.picture, ""};
+          account.given_name, account.picture, idp_url.spec()};
 }
 
 Account ConvertFieldsToAccount(JNIEnv* env,
@@ -59,7 +60,8 @@ AccountSelectionViewAndroid::~AccountSelectionViewAndroid() {
   }
 }
 
-void AccountSelectionViewAndroid::Show(const GURL& url,
+void AccountSelectionViewAndroid::Show(const GURL& rp_url,
+                                       const GURL& idp_url,
                                        base::span<const Account> accounts) {
   if (!RecreateJavaObject()) {
     // It's possible that the constructor cannot access the bottom sheet clank
@@ -68,12 +70,12 @@ void AccountSelectionViewAndroid::Show(const GURL& url,
     delegate_->OnDismiss();
     return;
   }
+
   // Serialize the |accounts| span into a Java array and instruct the bridge
   // to show it together with |url| to the user.
-  // TODO(majidvp): Pass the serialized IdP GURL as part of the account to UI.
   std::vector<std::vector<std::string>> accounts_fields(accounts.size());
   for (size_t i = 0; i < accounts.size(); ++i) {
-    accounts_fields[i] = ConvertAccountToFields(accounts[i]);
+    accounts_fields[i] = ConvertAccountToFields(accounts[i], idp_url);
   }
 
   JNIEnv* env = AttachCurrentThread();
@@ -82,7 +84,7 @@ void AccountSelectionViewAndroid::Show(const GURL& url,
       base::android::ToJavaArrayOfStringArray(env, accounts_fields);
 
   Java_AccountSelectionBridge_showAccounts(
-      env, java_object_internal_, ConvertUTF8ToJavaString(env, url.spec()),
+      env, java_object_internal_, ConvertUTF8ToJavaString(env, rp_url.spec()),
       accounts_fields_obj);
 }
 
@@ -105,7 +107,7 @@ bool AccountSelectionViewAndroid::RecreateJavaObject() {
     Java_AccountSelectionBridge_destroy(AttachCurrentThread(),
                                         java_object_internal_);
   }
-  java_object_internal_ = Java_AccountSelectionBridge_Constructor(
+  java_object_internal_ = Java_AccountSelectionBridge_create(
       AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
       delegate_->GetNativeView()->GetWindowAndroid()->GetJavaObject());
   return !!java_object_internal_;

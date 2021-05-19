@@ -18,7 +18,9 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   ~AccountSelectionViewAndroid() override;
 
   // AccountSelectionView:
-  void Show(const GURL& url, base::span<const Account> accounts) override;
+  void Show(const GURL& rp_url,
+            const GURL& idp_url,
+            base::span<const Account> accounts) override;
 
   void OnAccountSelected(
       JNIEnv* env,

@@ -1,0 +1,4 @@
+include_rules = [
+  "+chrome/android",
+  "+components/browser_ui/bottomsheet/android",
+]

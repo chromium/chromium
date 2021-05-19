@@ -95,20 +95,22 @@ WebIdDialog& IdentityDialogController::GetOrCreateView(
 void IdentityDialogController::ShowAccountsDialog(
     content::WebContents* rp_web_contents,
     content::WebContents* idp_web_contents,
-    const GURL& idp_signin_url,
+    const GURL& idp_url,
     AccountList accounts,
     AccountSelectionCallback on_selected) {
+  // IDP scheme is expected to always be `https://`.
+  CHECK(idp_url.SchemeIs(url::kHttpsScheme));
 #if !defined(OS_ANDROID)
   std::move(on_selected).Run(accounts[0].sub);
 #else
   rp_web_contents_ = rp_web_contents;
   on_account_selection_ = std::move(on_selected);
-  const GURL& url = rp_web_contents_->GetLastCommittedURL();
+  const GURL& rp_url = rp_web_contents_->GetLastCommittedURL();
 
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
 
-  account_view_->Show(url, accounts);
+  account_view_->Show(rp_url, idp_url, accounts);
 #endif
 }
 

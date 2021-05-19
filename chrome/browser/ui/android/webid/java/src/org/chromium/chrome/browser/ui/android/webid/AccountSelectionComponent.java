@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.android.webid;
 import android.content.Context;
 
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.util.List;
 
@@ -36,9 +37,10 @@ public interface AccountSelectionComponent {
     /**
      * Initializes the component.
      * @param context A {@link Context} to create views and retrieve resources.
+     * @param sheetController A {@link BottomSheetController} used to show/hide the sheet.
      * @param delegate A {@link Delegate} that handles dismiss events.
      */
-    void initialize(Context context, Delegate delegate);
+    void initialize(Context context, BottomSheetController sheetController, Delegate delegate);
 
     /**
      * Displays the given accounts in a new bottom sheet.

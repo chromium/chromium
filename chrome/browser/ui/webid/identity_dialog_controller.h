@@ -48,7 +48,7 @@ class IdentityDialogController
 
   void ShowAccountsDialog(content::WebContents* rp_web_contents,
                           content::WebContents* idp_web_contents,
-                          const GURL& idp_signin_url,
+                          const GURL& idp_url,
                           AccountList accounts,
                           AccountSelectionCallback on_selected) override;
 

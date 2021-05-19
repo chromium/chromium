@@ -15,8 +15,7 @@ used to complete authentication via WebID mediation based approach.
 #### java/
 
 The root folder contains the public interface of this component and data that is
-used to fill it with content, e.g. Account. This folder also contains the
-factory to instantiate the component.
+used to fill it with content, e.g. Accounts.
 
 Add `chrome/browser/ui/android/webid/android:public_java` as dependency to use
 the interface and classes defined here.
@@ -27,5 +26,23 @@ Contains the actual implementation. Don't try to use any class defined here
 outside of this package. If you need access to any method, consider making it
 part of the public interface as defined in `AccountSelectionComponent`
 
-At the moment the implementation is a simple stub that selects the first
-account.
+This folder contains a separate [README](internal/README.md) that explains in
+detail how the architecture looks like and how to extend the component further.
+
+## Example usage
+
+``` java
+
+// Currently, you need access to internal/ to instantiate the component:
+AccountSelectionComponent component = new AccountSelectionCoordinator(/*...*/);
+
+component.initialize(activity, activity.getBottomSheetController(), () -> {
+  // Things to do when the component is dismissed.
+}));
+
+List<Account> accounts; // Add accounts to show!
+component.showAccounts("www.displayed-url.example", accounts, (account) -> {
+  // The |account| that was clicked should be used to fill something now.
+})
+
+```

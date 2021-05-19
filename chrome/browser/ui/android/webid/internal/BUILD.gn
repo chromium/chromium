@@ -12,12 +12,23 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/webid:public_java",
+    "//chrome/browser/util:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
+    "//url:gurl_java",
   ]
 
-  sources = [ "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionMediator.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionProperties.java",
+  ]
 
   resources_package = "org.chromium.chrome.browser.ui.android.webid"
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

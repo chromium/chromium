@@ -370,7 +370,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       DCHECK(!idp_web_contents_);
       idp_web_contents_ = CreateIdpWebContents();
       request_dialog_controller_->ShowAccountsDialog(
-          rp_web_contents, idp_web_contents_.get(), GURL(), accounts,
+          rp_web_contents, idp_web_contents_.get(), provider_, accounts,
           base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                          weak_ptr_factory_.GetWeakPtr()));
       return;

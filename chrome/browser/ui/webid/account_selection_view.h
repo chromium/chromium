@@ -37,10 +37,12 @@ class AccountSelectionView {
   virtual ~AccountSelectionView() = default;
 
   // Instructs the view to show the provided |accounts| to the user.
-  // |url| is the  current origin.
+  // |rp_url| is the current origin and |idp_url| is the IdP origin.
   // After user interaction either OnAccountSelected() or OnDismiss() gets
   // invoked.
-  virtual void Show(const GURL& url, base::span<const Account> accounts) = 0;
+  virtual void Show(const GURL& rp_url,
+                    const GURL& idp_url,
+                    base::span<const Account> accounts) = 0;
 
  protected:
   Delegate* delegate_ = nullptr;

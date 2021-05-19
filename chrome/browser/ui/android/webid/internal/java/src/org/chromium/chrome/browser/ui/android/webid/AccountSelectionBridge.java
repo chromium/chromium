@@ -4,10 +4,16 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.Arrays;
 
 /**
  * This bridge creates and initializes a {@link AccountSelectionComponent} on construction and
@@ -15,10 +21,23 @@ import org.chromium.ui.base.WindowAndroid;
  */
 class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     private long mNativeView;
+    private final AccountSelectionComponent mAccountSelectionComponent;
+
+    private AccountSelectionBridge(long nativeView, WindowAndroid windowAndroid,
+            BottomSheetController bottomSheetController) {
+        mNativeView = nativeView;
+        mAccountSelectionComponent = new AccountSelectionCoordinator();
+        mAccountSelectionComponent.initialize(
+                windowAndroid.getContext().get(), bottomSheetController, this);
+    }
 
     @CalledByNative
-    private AccountSelectionBridge(long nativeView, WindowAndroid windowAndroid) {
-        mNativeView = nativeView;
+    private static @Nullable AccountSelectionBridge create(
+            long nativeView, WindowAndroid windowAndroid) {
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerProvider.from(windowAndroid);
+        if (bottomSheetController == null) return null;
+        return new AccountSelectionBridge(nativeView, windowAndroid, bottomSheetController);
     }
 
     @CalledByNative
@@ -36,6 +55,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      */
     @CalledByNative
     private void showAccounts(String url, String[][] accountsFields) {
+        assert accountsFields != null && accountsFields.length > 0;
         Account[] accounts = new Account[accountsFields.length];
         for (int i = 0; i < accountsFields.length; i++) {
             String[] fields = accountsFields[i];
@@ -48,8 +68,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
                     /* originUrl= */ fields[5]);
         }
 
-        // TODO(majidvp): Actually show UI that lists the account.
-        onAccountSelected(accounts[0]);
+        mAccountSelectionComponent.showAccounts(url, Arrays.asList(accounts));
     }
 
     @Override
