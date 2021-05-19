@@ -83,16 +83,15 @@ size_t OmniboxAction::EstimateMemoryUsage() const {
 
 void OmniboxAction::OpenURL(OmniboxAction::ExecutionContext& context,
                             const GURL& url) const {
-  // destination_url_entered_without_scheme is used to determine whether
+  // Set `match_type` as if the user just typed |url| verbatim.
+  // `destination_url_entered_without_scheme` is used to determine whether
   // navigations typed without a scheme and upgraded to HTTPS should fall back
   // to HTTP. The URL might have been entered without a scheme, but Action
   // destination URLs don't need a fallback so it's fine to pass false here.
-  //
-  // TODO(tommycli): Update the AutocompleteMatchType to not be a PEDAL
-  // for non-Pedal actions, once they exist.
   context.controller_.OnAutocompleteAccept(
       url, nullptr, WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_GENERATED, AutocompleteMatchType::PEDAL,
+      ui::PAGE_TRANSITION_GENERATED,
+      /*match_type=*/AutocompleteMatchType::URL_WHAT_YOU_TYPED,
       context.match_selection_timestamp_,
       /*destination_url_entered_without_scheme=*/false);
 }

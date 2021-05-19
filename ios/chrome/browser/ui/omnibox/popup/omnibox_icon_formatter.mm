@@ -57,7 +57,7 @@ OmniboxSuggestionIconType IconTypeFromMatchAndAnswerType(
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
-    case AutocompleteMatchType::PEDAL:
+    case AutocompleteMatchType::PEDAL_DEPRECATED:
     case AutocompleteMatchType::HISTORY_BODY:
     case AutocompleteMatchType::HISTORY_KEYWORD:
     case AutocompleteMatchType::HISTORY_TITLE:

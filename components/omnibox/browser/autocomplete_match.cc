@@ -397,6 +397,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::SEARCH_OTHER_ENGINE:
     case Type::CONTACT_DEPRECATED:
     case Type::VOICE_SUGGEST:
+    case Type::PEDAL_DEPRECATED:
     case Type::CLIPBOARD_TEXT:
     case Type::CLIPBOARD_IMAGE:
     case Type::TILE_SUGGESTION:
@@ -440,9 +441,6 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
         default:
           return omnibox::kPageIcon;
       }
-
-    case Type::PEDAL:
-      return (pedal ? pedal->GetVectorIcon() : omnibox::kPedalIcon);
 
     case Type::NUM_TYPES:
       // TODO(https://crbug.com/1024114): Replace with NOTREACHED() once fixed.
@@ -1010,10 +1008,6 @@ AutocompleteMatch::AsOmniboxEventResultType() const {
       return OmniboxEventProto::Suggestion::CLIPBOARD_URL;
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
       return OmniboxEventProto::Suggestion::DOCUMENT;
-    case AutocompleteMatchType::PEDAL:
-      // TODO(orinj): Add a new OmniboxEventProto type for Pedals.
-      // return OmniboxEventProto::Suggestion::PEDAL;
-      return OmniboxEventProto::Suggestion::NAVSUGGEST;
     case AutocompleteMatchType::CLIPBOARD_TEXT:
       return OmniboxEventProto::Suggestion::CLIPBOARD_TEXT;
     case AutocompleteMatchType::CLIPBOARD_IMAGE:
@@ -1029,6 +1023,7 @@ AutocompleteMatch::AsOmniboxEventResultType() const {
     case AutocompleteMatchType::PHYSICAL_WEB_DEPRECATED:
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
+    case AutocompleteMatchType::PEDAL_DEPRECATED:
     case AutocompleteMatchType::NUM_TYPES:
       break;
   }

@@ -33,7 +33,7 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
-    case AutocompleteMatchType::PEDAL:
+    case AutocompleteMatchType::PEDAL_DEPRECATED:
       return DEFAULT_FAVICON;
     case AutocompleteMatchType::HISTORY_BODY:
     case AutocompleteMatchType::HISTORY_KEYWORD:

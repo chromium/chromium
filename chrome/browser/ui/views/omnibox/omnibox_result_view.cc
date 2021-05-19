@@ -267,8 +267,7 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
         match_.answer->second_line(), true);
   } else {
     const bool deemphasize =
-        match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
-        match_.type == AutocompleteMatchType::PEDAL;
+        match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
     suggestion_view_->description()->SetTextWithStyling(
         match_.description, match_.description_class, deemphasize);
   }
@@ -330,8 +329,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
         OmniboxPart::RESULTS_TEXT_DEFAULT);
     suggestion_view_->description()->ApplyTextColor(
         OmniboxPart::RESULTS_TEXT_DEFAULT);
-  } else if (match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
-             match_.type == AutocompleteMatchType::PEDAL) {
+  } else if (match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
     suggestion_view_->content()->ApplyTextColor(
         OmniboxPart::RESULTS_TEXT_DEFAULT);
     suggestion_view_->description()->ApplyTextColor(

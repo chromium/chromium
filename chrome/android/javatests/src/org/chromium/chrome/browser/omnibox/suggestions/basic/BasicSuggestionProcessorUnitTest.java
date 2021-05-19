@@ -90,7 +90,6 @@ public class BasicSuggestionProcessorUnitTest {
                     put(OmniboxSuggestionType.NAVSUGGEST_PERSONALIZED, "NAVSUGGEST_PERSONALIZED");
                     put(OmniboxSuggestionType.VOICE_SUGGEST, "VOICE_SUGGEST");
                     put(OmniboxSuggestionType.DOCUMENT_SUGGESTION, "DOCUMENT_SUGGESTION");
-                    put(OmniboxSuggestionType.PEDAL, "PEDAL");
                     // Note: CALCULATOR suggestions are not handled by basic suggestion processor.
                     // These suggestions are now processed by AnswerSuggestionProcessor instead.
                 }
@@ -193,7 +192,6 @@ public class BasicSuggestionProcessorUnitTest {
                 {OmniboxSuggestionType.NAVSUGGEST_PERSONALIZED, SuggestionIcon.MAGNIFIER},
                 {OmniboxSuggestionType.VOICE_SUGGEST, SuggestionIcon.VOICE},
                 {OmniboxSuggestionType.DOCUMENT_SUGGESTION, SuggestionIcon.MAGNIFIER},
-                {OmniboxSuggestionType.PEDAL, SuggestionIcon.MAGNIFIER},
         };
 
         mProcessor.onNativeInitialized();
@@ -227,7 +225,6 @@ public class BasicSuggestionProcessorUnitTest {
                 {OmniboxSuggestionType.NAVSUGGEST_PERSONALIZED, SuggestionIcon.GLOBE},
                 {OmniboxSuggestionType.VOICE_SUGGEST, SuggestionIcon.GLOBE},
                 {OmniboxSuggestionType.DOCUMENT_SUGGESTION, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.PEDAL, SuggestionIcon.GLOBE},
         };
 
         mProcessor.onNativeInitialized();
@@ -261,7 +258,6 @@ public class BasicSuggestionProcessorUnitTest {
                 {OmniboxSuggestionType.NAVSUGGEST_PERSONALIZED, SuggestionIcon.BOOKMARK},
                 {OmniboxSuggestionType.VOICE_SUGGEST, SuggestionIcon.BOOKMARK},
                 {OmniboxSuggestionType.DOCUMENT_SUGGESTION, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.PEDAL, SuggestionIcon.BOOKMARK},
         };
 
         mIsBookmarked.mState = true;
