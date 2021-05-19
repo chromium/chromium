@@ -133,7 +133,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   double GetTimeRange() const { return time_range_ ? time_range_.value() : 0; }
   bool ScrollOffsetsEqual(
       const HeapVector<Member<ScrollTimelineOffset>>& other) const;
-  size_t AttachedAnimationsCount() const { return scroll_animations_.size(); }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);
@@ -184,12 +183,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
 
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;
-
-  // The only purpose of scroll_animations_ is keeping strong references to
-  // attached animations. This is required to keep attached animations alive
-  // as long as the timeline is alive. Scroll timeline is alive as long as its
-  // scroller is alive.
-  HeapHashSet<Member<Animation>> scroll_animations_;
 };
 
 template <>

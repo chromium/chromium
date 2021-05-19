@@ -594,17 +594,16 @@ void ScrollTimeline::GetCurrentAndMaxOffset(const LayoutBox* layout_box,
 }
 
 void ScrollTimeline::AnimationAttached(Animation* animation) {
-  AnimationTimeline::AnimationAttached(animation);
-  if (resolved_scroll_source_ && scroll_animations_.IsEmpty())
+  if (resolved_scroll_source_ && !HasAnimations())
     resolved_scroll_source_->RegisterScrollTimeline(this);
 
-  scroll_animations_.insert(animation);
+  AnimationTimeline::AnimationAttached(animation);
 }
 
 void ScrollTimeline::AnimationDetached(Animation* animation) {
   AnimationTimeline::AnimationDetached(animation);
-  scroll_animations_.erase(animation);
-  if (resolved_scroll_source_ && scroll_animations_.IsEmpty())
+
+  if (resolved_scroll_source_ && !HasAnimations())
     resolved_scroll_source_->UnregisterScrollTimeline(this);
 }
 
@@ -621,7 +620,6 @@ void ScrollTimeline::WorkletAnimationDetached() {
 }
 
 void ScrollTimeline::Trace(Visitor* visitor) const {
-  visitor->Trace(scroll_animations_);
   visitor->Trace(scroll_source_);
   visitor->Trace(resolved_scroll_source_);
   visitor->Trace(scroll_offsets_);
@@ -661,7 +659,7 @@ void ScrollTimeline::Invalidate(Node* node) {
 }
 
 void ScrollTimeline::InvalidateEffectTargetStyle() {
-  for (Animation* animation : scroll_animations_)
+  for (Animation* animation : GetAnimations())
     animation->InvalidateEffectTargetStyle();
 }
 

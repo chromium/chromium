@@ -235,14 +235,14 @@ bool CSSScrollTimeline::Matches(const Options& options) const {
 }
 
 void CSSScrollTimeline::AnimationAttached(Animation* animation) {
-  ScrollTimeline::AnimationAttached(animation);
-  if (AttachedAnimationsCount() == 1)
+  if (!HasAnimations())
     SetObservers(CreateElementReferenceObservers(GetDocument(), rule_, this));
+  ScrollTimeline::AnimationAttached(animation);
 }
 
 void CSSScrollTimeline::AnimationDetached(Animation* animation) {
   ScrollTimeline::AnimationDetached(animation);
-  if (AttachedAnimationsCount() == 0)
+  if (!HasAnimations())
     SetObservers(HeapVector<Member<IdTargetObserver>>());
 }
 

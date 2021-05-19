@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -52,6 +53,17 @@ HeapVector<Member<ScrollTimelineOffset>> CreateScrollOffsets(
   scroll_offsets.push_back(start_scroll_offset);
   scroll_offsets.push_back(end_scroll_offset);
   return scroll_offsets;
+}
+
+Animation* CreateTestAnimation(AnimationTimeline* timeline) {
+  Timing timing;
+  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(0.1);
+  return Animation::Create(MakeGarbageCollected<KeyframeEffect>(
+                               nullptr,
+                               MakeGarbageCollected<StringKeyframeEffectModel>(
+                                   StringKeyframeVector()),
+                               timing),
+                           timeline, ASSERT_NO_EXCEPTION);
 }
 
 }  // namespace
@@ -440,6 +452,116 @@ TEST_F(ScrollTimelineTest, AnimationIsGarbageCollectedWhenScrollerIsRemoved) {
   ThreadState::Current()->CollectAllGarbageForTesting();
   // Scroller is removed and unreachable, animation is GC'ed.
   EXPECT_EQ(0u, AnimationsCount());
+}
+
+TEST_F(ScrollTimelineTest, AnimationPersistsWhenFinished) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller { overflow: scroll; width: 100px; height: 100px; }
+      #spacer { width: 200px; height: 200px; }
+    </style>
+    <div id='scroller'>
+      <div id ='spacer'></div>
+    </div>
+  )HTML");
+
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
+  PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
+  Persistent<TestScrollTimeline> scroll_timeline =
+      MakeGarbageCollected<TestScrollTimeline>(&GetDocument(),
+                                               GetElementById("scroller"));
+  Animation* animation = CreateTestAnimation(scroll_timeline);
+  animation->play();
+  SimulateFrame();
+
+  // Scroll to finished:
+  scrollable_area->SetScrollOffset(ScrollOffset(0, 91),
+                                   mojom::blink::ScrollType::kProgrammatic);
+  SimulateFrame();
+  EXPECT_EQ("finished", animation->playState());
+
+  // Animation should still persist after GC.
+  animation = nullptr;
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  ASSERT_EQ(1u, scroll_timeline->GetAnimations().size());
+  animation = *scroll_timeline->GetAnimations().begin();
+
+  // Scroll back to 50%. The animation should update, even though it was
+  // previously in a finished state.
+  ScrollOffset offset(0, 50);  // 10 + (90 - 10) * 0.5 = 50
+  scrollable_area->SetScrollOffset(offset,
+                                   mojom::blink::ScrollType::kProgrammatic);
+  SimulateFrame();
+  EXPECT_EQ("running", animation->playState());
+  EXPECT_TIME_NEAR(50.0, animation->CurrentTimeInternal()
+                             .value_or(AnimationTimeDelta())
+                             .InMillisecondsF());
+}
+
+TEST_F(ScrollTimelineTest, AnimationPersistsWhenSourceBecomesNonScrollable) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller { width: 100px; height: 100px; }
+      #spacer { width: 200px; height: 200px; }
+      .scroll { overflow: scroll; }
+    </style>
+    <div id='scroller' class='scroll'>
+      <div id ='spacer'></div>
+    </div>
+  )HTML");
+
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
+  Persistent<TestScrollTimeline> scroll_timeline =
+      MakeGarbageCollected<TestScrollTimeline>(&GetDocument(),
+                                               GetElementById("scroller"));
+  Animation* animation = CreateTestAnimation(scroll_timeline);
+  animation->play();
+  SimulateFrame();
+
+  // Scroll to 50%:
+  ASSERT_TRUE(scroller->GetScrollableArea());
+  ScrollOffset offset_50(0, 50);  // 10 + (90 - 10) * 0.5 = 50
+  scroller->GetScrollableArea()->SetScrollOffset(
+      offset_50, mojom::blink::ScrollType::kProgrammatic);
+  SimulateFrame();
+  EXPECT_TIME_NEAR(50.0, animation->CurrentTimeInternal()
+                             .value_or(AnimationTimeDelta())
+                             .InMillisecondsF());
+
+  // Make #scroller non-scrollable.
+  GetElementById("scroller")->classList().Remove("scroll");
+  UpdateAllLifecyclePhasesForTest();
+  scroller = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
+  ASSERT_TRUE(scroller);
+  EXPECT_FALSE(scroller->GetScrollableArea());
+
+  // ScrollTimeline should now have an unresolved current time.
+  SimulateFrame();
+  EXPECT_FALSE(scroll_timeline->CurrentTimeMilliseconds().has_value());
+
+  // Animation should still persist after GC.
+  animation = nullptr;
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  ASSERT_EQ(1u, scroll_timeline->GetAnimations().size());
+  animation = *scroll_timeline->GetAnimations().begin();
+
+  // Make #scroller scrollable again.
+  GetElementById("scroller")->classList().Add("scroll");
+  UpdateAllLifecyclePhasesForTest();
+  scroller = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
+  ASSERT_TRUE(scroller);
+  ASSERT_TRUE(scroller->GetScrollableArea());
+
+  // Scroll to 40%:
+  ScrollOffset offset_42(0, 42);  // 10 + (90 - 10) * 0.4 = 42
+  scroller->GetScrollableArea()->SetScrollOffset(
+      offset_42, mojom::blink::ScrollType::kProgrammatic);
+  SimulateFrame();
+  EXPECT_TIME_NEAR(40.0, animation->CurrentTimeInternal()
+                             .value_or(AnimationTimeDelta())
+                             .InMillisecondsF());
 }
 
 TEST_F(ScrollTimelineTest, ScheduleFrameOnlyWhenScrollOffsetChanges) {
@@ -1013,6 +1135,53 @@ TEST_F(ScrollTimelineTest, OverlappingScrollOffsets) {
                                    mojom::blink::ScrollType::kProgrammatic);
   SimulateFrame();
   EXPECT_EQ(80, scroll_timeline->CurrentTimeMilliseconds().value());
+}
+
+TEST_F(ScrollTimelineTest, WeakReferences) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller { overflow: scroll; width: 100px; height: 100px; }
+      #spacer { width: 200px; height: 200px; }
+    </style>
+    <div id='scroller'>
+      <div id ='spacer'></div>
+    </div>
+  )HTML");
+
+  Persistent<TestScrollTimeline> scroll_timeline =
+      MakeGarbageCollected<TestScrollTimeline>(&GetDocument(),
+                                               GetElementById("scroller"));
+
+  EXPECT_EQ(0u, scroll_timeline->GetAnimations().size());
+
+  // Attaching an animation to a ScrollTimeline, and never playing it:
+  Animation* animation = CreateTestAnimation(scroll_timeline);
+  DCHECK(animation);
+  animation = nullptr;
+  EXPECT_EQ(1u, scroll_timeline->GetAnimations().size());
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_EQ(0u, scroll_timeline->GetAnimations().size());
+
+  // Playing, then canceling an animation:
+  animation = CreateTestAnimation(scroll_timeline);
+  EXPECT_EQ(1u, scroll_timeline->GetAnimations().size());
+
+  animation->play();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1u, scroll_timeline->GetAnimations().size());
+
+  animation->cancel();
+  // UpdateAllLifecyclePhasesForTest does not call Animation::Update with
+  // reason=kTimingUpdateForAnimationFrame, which is required in order to lose
+  // all strong references to the animation. Hence the explicit call to
+  // SimulateFrame().
+  SimulateFrame();
+  UpdateAllLifecyclePhasesForTest();
+  animation = nullptr;
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_EQ(0u, scroll_timeline->GetAnimations().size());
 }
 
 }  //  namespace blink
