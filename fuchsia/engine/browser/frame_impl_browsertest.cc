@@ -80,7 +80,7 @@ const char kDataUrl[] =
 const int64_t kOnLoadScriptId = 0;
 const char kChildQueryParamName[] = "child_url";
 const char kPopupChildFile[] = "popup_child.html";
-const char kAutoplayFileAndQuery[] = "play_vp8.html?autoplay=1";
+const char kAutoplayFileAndQuery[] = "play_vp8.html?autoplay=1&codecs=vp8";
 const char kAutoPlayBlockedTitle[] = "blocked";
 const char kAutoPlaySuccessTitle[] = "playing";
 

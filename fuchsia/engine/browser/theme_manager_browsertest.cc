@@ -119,7 +119,9 @@ class ThemeManagerTest : public cr_fuchsia::WebEngineBrowserTest,
     if (on_watch_closure_)
       std::move(on_watch_closure_).Run();
   }
-  void NotImplemented_(const std::string&) final {}
+  void NotImplemented_(const std::string& name) final {
+    ADD_FAILURE() << "Unexpected call: " << name;
+  }
 
   absl::optional<base::TestComponentContextForProcess> component_context_;
   absl::optional<base::ScopedServiceBinding<fuchsia::settings::Display>>

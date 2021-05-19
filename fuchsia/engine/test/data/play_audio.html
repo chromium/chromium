@@ -7,7 +7,7 @@
       audio.src = URL.createObjectURL(mediaSource);
 
       audio.onended = function() { document.title = 'ended'; }
-      audio.onerror = function() { document.title = 'error'; }
+      audio.onerror = function() { document.title = 'media element error'; }
 
       // Play two files with different sample rate to force mid-stream
       // re-initialization.

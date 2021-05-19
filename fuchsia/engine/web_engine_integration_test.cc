@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fuchsia/mediacodec/cpp/fidl.h>
 #include <fuchsia/mem/cpp/fidl.h>
 #include <zircon/rights.h>
 #include <zircon/types.h>
@@ -28,6 +29,15 @@ constexpr char kValidUserAgentVersion[] = "dev.12345";
 constexpr char kValidUserAgentProductAndVersion[] = "TestProduct/dev.12345";
 constexpr char kInvalidUserAgentProduct[] = "Test/Product";
 constexpr char kInvalidUserAgentVersion[] = "dev/12345";
+
+// TODO(crbug.com/1207695): Rename play_vp8.html to play_video.html.
+constexpr char kAutoplayVp9OpusUrl[] =
+    "fuchsia-dir://testdata/play_vp8.html?codecs=vp9,opus&autoplay=1";
+constexpr char kAutoplayVp9OpusToEndUrl[] =
+    "fuchsia-dir://testdata/"
+    "play_vp8.html?codecs=vp9,opus&autoplay=1&reportended=1";
+constexpr char kLoadVp9OpusUrl[] =
+    "fuchsia-dir://testdata/play_vp8.html?codecs=vp9,opus";
 
 }  // namespace
 
@@ -317,7 +327,7 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudio_NoFlag) {
       "fuchsia-dir://testdata/play_audio.html",
       cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
 
-  navigation_listener()->RunUntilTitleEquals("error");
+  navigation_listener()->RunUntilTitleEquals("media element error");
   EXPECT_FALSE(is_requested);
 }
 
@@ -325,7 +335,7 @@ TEST_F(WebEngineIntegrationMediaTest, PlayVideo) {
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
-      "fuchsia-dir://testdata/play_video.html?autoplay",
+      kAutoplayVp9OpusToEndUrl,
       cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
 
   navigation_listener()->RunUntilTitleEquals("ended");
@@ -380,7 +390,7 @@ TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_Blocked) {
   frame_->SetBlockMediaLoading(true);
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
-      "fuchsia-dir://testdata/play_video.html?autoplay",
+      kAutoplayVp9OpusUrl,
       cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
 
   // Check different indicators that media has not loaded and is not playing.
@@ -399,7 +409,7 @@ TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_AfterUnblock) {
   frame_->SetBlockMediaLoading(true);
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
-      "fuchsia-dir://testdata/play_video.html?autoplay",
+      kAutoplayVp9OpusUrl,
       cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
 
   // Check that media loading has been blocked.
@@ -419,8 +429,7 @@ TEST_F(WebEngineIntegrationMediaTest,
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
-      "fuchsia-dir://testdata/play_video.html",
-      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+      kLoadVp9OpusUrl, cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
 
   navigation_listener()->RunUntilTitleEquals("loaded");
   frame_->SetBlockMediaLoading(true);
@@ -532,7 +541,7 @@ TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
   CreateContextAndFrame(std::move(create_params));
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
-      "fuchsia-dir://testdata/play_video.html?autoplay",
+      kAutoplayVp9OpusToEndUrl,
       cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
   navigation_listener()->RunUntilTitleEquals("ended");
 
@@ -555,7 +564,7 @@ TEST_F(WebEngineIntegrationMediaTest, HardwareVideoDecoderFlag_NotProvided) {
   CreateContextAndFrame(std::move(create_params));
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
-      "fuchsia-dir://testdata/play_video.html?autoplay",
+      kAutoplayVp9OpusToEndUrl,
       cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
 
   navigation_listener()->RunUntilTitleEquals("ended");

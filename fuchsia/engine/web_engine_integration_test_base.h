@@ -5,7 +5,6 @@
 #ifndef FUCHSIA_ENGINE_WEB_ENGINE_INTEGRATION_TEST_BASE_H_
 #define FUCHSIA_ENGINE_WEB_ENGINE_INTEGRATION_TEST_BASE_H_
 
-#include <fuchsia/mediacodec/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
