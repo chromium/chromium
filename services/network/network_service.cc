@@ -623,6 +623,7 @@ void NetworkService::SetCryptConfig(mojom::CryptConfigPtr crypt_config) {
   auto config = std::make_unique<os_crypt::Config>();
   config->store = crypt_config->store;
   config->product_name = crypt_config->product_name;
+  config->application_name = crypt_config->application_name;
   config->main_thread_runner = base::ThreadTaskRunnerHandle::Get();
   config->should_use_preference = crypt_config->should_use_preference;
   config->user_data_path = crypt_config->user_data_path;

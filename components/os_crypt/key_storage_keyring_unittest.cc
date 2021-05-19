@@ -130,7 +130,7 @@ class GnomeKeyringTest : public testing::Test {
 };
 
 GnomeKeyringTest::GnomeKeyringTest()
-    : task_runner_(new base::TestSimpleTaskRunner()), keyring_(task_runner_) {
+    : task_runner_(new base::TestSimpleTaskRunner()), keyring_(task_runner_, "chromium") {
   MockGnomeKeyringLoader::ResetForOSCrypt();
 }
 

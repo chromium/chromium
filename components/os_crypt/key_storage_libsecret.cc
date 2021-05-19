@@ -14,12 +14,6 @@
 
 namespace {
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const char kApplicationName[] = "chrome";
-#else
-const char kApplicationName[] = "chromium";
-#endif
-
 const SecretSchema kKeystoreSchemaV2 = {
     "chrome_libsecret_os_crypt_password_v2",
     SECRET_SCHEMA_DONT_MATCH_NAME,
@@ -64,6 +58,9 @@ void AnalyseKeyHistory(GList* secret_items) {
 
 }  // namespace
 
+KeyStorageLibsecret::KeyStorageLibsecret(std::string application_name)
+    : application_name_(std::move(application_name)) {}
+
 absl::optional<std::string>
 KeyStorageLibsecret::AddRandomPasswordInLibsecret() {
   std::string password;
@@ -71,7 +68,7 @@ KeyStorageLibsecret::AddRandomPasswordInLibsecret() {
   GError* error = nullptr;
   bool success = LibsecretLoader::secret_password_store_sync(
       &kKeystoreSchemaV2, nullptr, KeyStorageLinux::kKey, password.c_str(),
-      nullptr, &error, "application", kApplicationName, nullptr);
+      nullptr, &error, "application", application_name_.c_str(), nullptr);
   if (error) {
     VLOG(1) << "Libsecret lookup failed: " << error->message;
     g_error_free(error);
@@ -88,7 +85,7 @@ KeyStorageLibsecret::AddRandomPasswordInLibsecret() {
 
 absl::optional<std::string> KeyStorageLibsecret::GetKeyImpl() {
   LibsecretAttributesBuilder attrs;
-  attrs.Append("application", kApplicationName);
+  attrs.Append("application", application_name_);
 
   LibsecretLoader::SearchHelper helper;
   helper.Search(&kKeystoreSchemaV2, attrs.Get(),

@@ -20,8 +20,9 @@ class SingleThreadTaskRunner;
 // Specialisation of KeyStorageLinux that uses Libsecret.
 class COMPONENT_EXPORT(OS_CRYPT) KeyStorageKeyring : public KeyStorageLinux {
  public:
-  explicit KeyStorageKeyring(
-      scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner);
+  KeyStorageKeyring(
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
+      std::string application_name);
   ~KeyStorageKeyring() override;
 
  protected:
@@ -36,6 +37,8 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageKeyring : public KeyStorageLinux {
 
   // Keyring calls need to originate from the main thread.
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner_;
+
+  const std::string application_name_;
 
   DISALLOW_COPY_AND_ASSIGN(KeyStorageKeyring);
 };

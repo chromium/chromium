@@ -26,6 +26,12 @@ struct COMPONENT_EXPORT(OS_CRYPT) Config {
   std::string store;
   // The product name to use for permission prompts.
   std::string product_name;
+  // The application name to store the key under. For Chromium/Chrome builds
+  // leave this unset and it will default correctly.  This config option is
+  // for embedders to provide their application name in place of "Chromium".
+  // Only used when the allow_runtime_configurable_key_storage feature is
+  // enabled.
+  std::string application_name;
   // A runner on the main thread for gnome-keyring to be called from.
   // TODO(crbug/466975): Libsecret and KWallet don't need this. We can remove
   // this when we stop supporting keyring.

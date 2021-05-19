@@ -99,6 +99,13 @@ struct CryptConfig {
   // The product name to use for permission prompts.
   string product_name;
 
+  // The application name to store the crypto key against. For Chromium/Chrome
+  // builds leave this unset and it will default correctly.  This config option
+  // is for embedders to provide their application name in place of "Chromium".
+  // Only used when the allow_runtime_configurable_key_storage feature is
+  // enabled
+  string application_name;
+
   // Controls whether preference on using or ignoring backends is used.
   bool should_use_preference;
 

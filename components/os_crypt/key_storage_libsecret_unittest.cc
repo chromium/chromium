@@ -236,7 +236,7 @@ class LibsecretTest : public testing::Test {
 };
 
 TEST_F(LibsecretTest, LibsecretRepeats) {
-  KeyStorageLibsecret libsecret;
+  KeyStorageLibsecret libsecret("chromium");
   MockLibsecretLoader::ResetForOSCrypt();
   g_password_store.Pointer()->SetPassword("initial password");
   absl::optional<std::string> password = libsecret.GetKey();
@@ -248,7 +248,7 @@ TEST_F(LibsecretTest, LibsecretRepeats) {
 }
 
 TEST_F(LibsecretTest, LibsecretCreatesRandomised) {
-  KeyStorageLibsecret libsecret;
+  KeyStorageLibsecret libsecret("chromium");
   MockLibsecretLoader::ResetForOSCrypt();
   absl::optional<std::string> password = libsecret.GetKey();
   MockLibsecretLoader::ResetForOSCrypt();

@@ -15,7 +15,7 @@
 // Specialisation of KeyStorageLinux that uses Libsecret.
 class COMPONENT_EXPORT(OS_CRYPT) KeyStorageLibsecret : public KeyStorageLinux {
  public:
-  KeyStorageLibsecret() = default;
+  explicit KeyStorageLibsecret(std::string application_name);
   ~KeyStorageLibsecret() override = default;
 
  protected:
@@ -25,6 +25,8 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageLibsecret : public KeyStorageLinux {
 
  private:
   absl::optional<std::string> AddRandomPasswordInLibsecret();
+
+  const std::string application_name_;
 
   DISALLOW_COPY_AND_ASSIGN(KeyStorageLibsecret);
 };
