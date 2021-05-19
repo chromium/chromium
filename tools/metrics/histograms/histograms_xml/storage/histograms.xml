@@ -451,6 +451,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Storage.SessionStorage.RendererAreaCacheHit"
+    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="M97">
+  <owner>mek@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The renderer side cache hit rate metrics for new HTML5 SessionStorage DB
+    opened.
+  </summary>
+</histogram>
+
 <histogram name="Storage.StoragePressure.Bubble"
     enum="StoragePressureBubbleUserAction" expires_after="2022-03-12">
   <owner>jarrydg@chromium.org</owner>

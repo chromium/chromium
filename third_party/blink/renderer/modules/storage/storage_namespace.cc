@@ -30,7 +30,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -86,10 +86,12 @@ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
                                           : CacheMetrics::kUnused;
     result = cache_it->value;
   }
-  if (IsSessionStorage())
-    LOCAL_HISTOGRAM_ENUMERATION("SessionStorage.RendererAreaCacheHit", metric);
-  else
-    UMA_HISTOGRAM_ENUMERATION("LocalStorage.RendererAreaCacheHit", metric);
+  if (IsSessionStorage()) {
+    base::UmaHistogramEnumeration("Storage.SessionStorage.RendererAreaCacheHit",
+                                  metric);
+  } else {
+    base::UmaHistogramEnumeration("LocalStorage.RendererAreaCacheHit", metric);
+  }
 
   if (result)
     return result;

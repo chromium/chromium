@@ -262,8 +262,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LocalStorage.RendererAreaCacheHit"
-    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="M77">
-  <owner>ssid@chromium.org</owner>
+    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="M97">
+  <owner>mek@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The renderer side cache hit rate metrics for new HTML5 LocalStorage DB
     opened.
