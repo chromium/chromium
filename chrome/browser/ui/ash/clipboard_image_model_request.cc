@@ -145,7 +145,7 @@ void ClipboardImageModelRequest::Start(Params&& params) {
       "<!DOCTYPE html>"
       "<html>"
       " <head><meta charset=\"UTF-8\"></meta></head>"
-      " <body contenteditable='true'> "
+      " <body contenteditable='true' style=\"overflow: hidden\"> "
       "  <script>"
       // Focus the Contenteditable body to ensure WebContents::Paste() reaches
       // the body.
