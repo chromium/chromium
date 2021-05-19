@@ -30,6 +30,10 @@ void LogInsertEmoji(bool is_variant) {
                                 insert_value);
 }
 
+void LogInsertEmojiDelay(base::TimeDelta delay) {
+  base::UmaHistogramMediumTimes("InputMethod.SystemEmojiPicker.Delay", delay);
+}
+
 EmojiPageHandler::EmojiPageHandler(
     mojo::PendingReceiver<emoji_picker::mojom::PageHandler> receiver,
     content::WebUI* web_ui,
@@ -49,6 +53,7 @@ void EmojiPageHandler::ShowUI() {
   if (embedder) {
     embedder->ShowUI();
   }
+  shown_time_ = base::TimeTicks::Now();
 }
 
 void EmojiPageHandler::IsIncognitoTextField(
@@ -65,7 +70,7 @@ void EmojiPageHandler::InsertEmoji(const std::string& emoji_to_insert,
     embedder->CloseUI();
   }
   LogInsertEmoji(is_variant);
-
+  LogInsertEmojiDelay(base::TimeTicks::Now() - shown_time_);
   // In theory, we are returning focus to the input field where the user
   // originally selected emoji. However, the input field may not exist anymore
   // e.g. JS has mutated the web page while emoji picker was open, so check that

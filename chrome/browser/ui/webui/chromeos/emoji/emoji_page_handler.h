@@ -33,6 +33,7 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
  private:
   mojo::Receiver<emoji_picker::mojom::PageHandler> receiver_;
 
+  base::TimeTicks shown_time_;
   EmojiUI* const webui_controller_;
   bool incognito_mode_;
 };
