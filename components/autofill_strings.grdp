@@ -316,28 +316,13 @@
     </message>
   </if>
 
-  <!-- Explicit save/update address prompt strings  -->
-  <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save a new address.">
-    Save address?
-  </message>
+  <!-- Explicit save/update address prompt strings -->
+  <!-- Common on all platforms (platform-specific defined later): -->
   <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to save a new address.">
     Save
   </message>
-  <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the prompt that offers the user to save a new address.">
-    No thanks
-  </message>
-  <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP" desc="Tooltip of the Edit button in the prompt that offers the user to save a new address.">
-    Edit address
-  </message>
-
-  <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to update an existing address.">
-    Update address?
-  </message>
   <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to update an existing address.">
     Update
-  </message>
-  <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the prompt that offers the user to update an existing address.">
-    No thanks
   </message>
   <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_NEW_VALUES_SECTION_LABEL" meaning="In the address update prompt" desc="Label shown next to the section that displays the new address values in the prompt that offers the user to update an existing address.">
     New
@@ -345,19 +330,73 @@
   <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OLD_VALUES_SECTION_LABEL" meaning="In the address update prompt" desc="Label shown next to the section that displays the old address values in the prompt that offers the user to update an existing address.">
     Old
   </message>
-
-  <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_TITLE" desc="Title shown at the top of dialog that edits an address before saving it">
-    Edit address
-  </message>
-  <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE" desc="Label of the OK button in the dialog that edits the address before saving it as a new address.">
-    Save
-  </message>
-  <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_UPDATE" desc="Label of the OK button in the dialog that edits the address before using it to update an existing address.">
-    Update
-  </message>
-  <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the dialog that edits an address before saving it.">
-    Cancel
-  </message>
-
-
+  <!-- Used on Android: -->
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save a new address.">
+      Save address?
+    </message>
+    <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to update an existing address.">
+      Update address?
+    </message>
+    <message name="IDS_ANDROID_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the negative button in the modal dialog that offers the user to save a new address.">
+      Cancel
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP" desc="Tooltip of the Edit button in the prompt that offers the user to save a new address.">
+      Edit address
+    </message>
+    <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_TITLE" desc="Title shown at the top of dialog that edits an address before saving it">
+      Edit address
+    </message>
+  </if>
+  <!-- Used on iOS: -->
+  <if expr="is_ios">
+    <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_TITLE" desc="In Title Case: Title shown in the message that offers the user to proceed with saving a new address." meaning="In Title Case for iOS">
+      Save Address?
+    </message>
+    <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION" desc="Label of the primary action button in the message that offers the user to proceed with saving a new address.">
+      Save…
+    </message>
+    <message name="IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_TITLE" desc="In Title Case: Title shown in the message that offers the user to proceed with updating an existing address." meaning="In Title Case for iOS">
+      Update Address?
+    </message>
+    <message name="IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_PRIMARY_ACTION" desc="Label of the primary action button in the message that offers the user to proceed with updating an existing address.">
+      Update…
+    </message>
+    <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE" desc="In Title Case: Title shown at the top of modal dialog that offers the user to save a new address." meaning="In Title Case for iOS">
+      Save Address
+    </message>
+    <message name="IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="In Title Case: Title shown at the top of modal dialog that offers the user to update an existing address." meaning="In Title Case for iOS">
+      Update Address
+    </message>
+  </if>
+  <!-- Used on Desktop: -->
+  <if expr="not is_android and not is_ios">
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save a new address.">
+      Save address?
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the prompt that offers the user to save a new address.">
+      No thanks
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP" desc="Tooltip of the Edit button in the prompt that offers the user to save a new address.">
+      Edit address
+    </message>
+    <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to update an existing address.">
+      Update address?
+    </message>
+    <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the prompt that offers the user to update an existing address.">
+      No thanks
+    </message>
+    <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_TITLE" desc="Title shown at the top of dialog that edits an address before saving it">
+      Edit address
+    </message>
+    <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE" desc="Label of the OK button in the dialog that edits the address before saving it as a new address.">
+      Save
+    </message>
+    <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_UPDATE" desc="Label of the OK button in the dialog that edits the address before using it to update an existing address.">
+      Update
+    </message>
+    <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the dialog that edits an address before saving it.">
+      Cancel
+    </message>
+  </if>
 </grit-part>
