@@ -1638,10 +1638,10 @@ std::unique_ptr<base::ListValue> MetadataDatabase::DumpTrackers() {
     "active", "dirty", "folder_listing", "demoted",
     "title", "kind", "md5", "etag", "missing", "change_id",
   };
-  std::vector<std::string> key_strings(trackerKeys,
-                                       trackerKeys + base::size(trackerKeys));
   auto keys = std::make_unique<base::ListValue>();
-  keys->AppendStrings(key_strings);
+  for (const char* str : trackerKeys) {
+    keys->Append(str);
+  }
   metadata->SetString("title", "Trackers");
   metadata->Set("keys", std::move(keys));
   trackers->Append(std::move(metadata));
@@ -1700,10 +1700,10 @@ std::unique_ptr<base::ListValue> MetadataDatabase::DumpMetadata() {
     "file_id", "title", "type", "md5", "etag", "missing",
     "change_id", "parents"
   };
-  std::vector<std::string> key_strings(fileKeys,
-                                       fileKeys + base::size(fileKeys));
   auto keys = std::make_unique<base::ListValue>();
-  keys->AppendStrings(key_strings);
+  for (const char* str : fileKeys) {
+    keys->Append(str);
+  }
   metadata->SetString("title", "Metadata");
   metadata->Set("keys", std::move(keys));
   files->Append(std::move(metadata));
