@@ -43,16 +43,17 @@ class BASE_EXPORT AddressPoolManagerBitmap {
       kAddressSpaceSize / kBytesPer1BitOfBRPPoolBitmap;
 
   // Non-BRP pool includes both normal bucket and direct map allocations, so
-  // PageAllocationGranularity() has to be used. No need to eliminate guard
+  // DirectMapAllocationGranularity() has to be used. No need to eliminate guard
   // pages at the ends, as this is a BackupRefPtr-specific concern.
   static constexpr size_t kNonBRPPoolBits =
-      kAddressSpaceSize / PageAllocationGranularity();
+      kAddressSpaceSize / DirectMapAllocationGranularity();
 
   // Returns false for nullptr.
   static bool IsManagedByNonBRPPool(const void* address) {
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
     static_assert(
-        std::numeric_limits<uintptr_t>::max() / PageAllocationGranularity() <
+        std::numeric_limits<uintptr_t>::max() /
+                DirectMapAllocationGranularity() <
             non_brp_pool_bits_.size(),
         "The bitmap is too small, will result in unchecked out of bounds "
         "accesses.");
@@ -60,7 +61,8 @@ class BASE_EXPORT AddressPoolManagerBitmap {
     // is responsible for guaranteeing that the address is inside a valid
     // allocation and the deallocation call won't race with this call.
     return TS_UNCHECKED_READ(
-        non_brp_pool_bits_)[address_as_uintptr / PageAllocationGranularity()];
+        non_brp_pool_bits_)[address_as_uintptr /
+                            DirectMapAllocationGranularity()];
   }
 
   // Returns false for nullptr.

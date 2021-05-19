@@ -2863,6 +2863,7 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
       kSuperPageSize + PartitionPageSize(),
       kSuperPageSize + SystemPageSize() + PartitionPageSize(),
       kSuperPageSize + PageAllocationGranularity(),
+      kSuperPageSize + DirectMapAllocationGranularity(),
   };
   for (size_t huge_size : huge_sizes) {
     // For direct map, we commit only as many pages as needed.
@@ -2871,12 +2872,9 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
     expected_committed_size += aligned_size;
     size_t surrounding_pages_size =
         PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize();
-    size_t alignment = PageAllocationGranularity();
-#if defined(PA_HAS_64_BITS_POINTERS)
-    alignment = kSuperPageSize;
-#endif
     size_t expected_direct_map_size =
-        bits::AlignUp(aligned_size + surrounding_pages_size, alignment);
+        bits::AlignUp(aligned_size + surrounding_pages_size,
+                      DirectMapAllocationGranularity());
     EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
     EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
     EXPECT_EQ(expected_direct_map_size, root.total_size_of_direct_mapped_pages);

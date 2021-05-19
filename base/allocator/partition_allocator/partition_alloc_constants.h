@@ -12,6 +12,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "build/build_config.h"
 
 #if defined(OS_APPLE)
@@ -185,6 +186,28 @@ NumPartitionPagesPerSuperPage() {
   return kSuperPageSize / PartitionPageSize();
 }
 
+#if defined(PA_HAS_64_BITS_POINTERS)
+// In 64-bit mode, the direct map allocation granularity is super page size,
+// because this is the reservation granularit of the GigaCage.
+constexpr ALWAYS_INLINE size_t DirectMapAllocationGranularity() {
+  return kSuperPageSize;
+}
+#else
+// In 32-bit mode, address space is space is a scarce resource. Use the system
+// allocation granularity, which is the lowest possible address space allocation
+// unit. However, don't go below partition page size, so that GigaCage bitmaps
+// don't get too large.
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+DirectMapAllocationGranularity() {
+  return std::max(PageAllocationGranularity(), PartitionPageSize());
+}
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
+
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+DirectMapAllocationGranularityOffsetMask() {
+  return DirectMapAllocationGranularity() - 1;
+}
+
 // Alignment has two constraints:
 // - Alignment requirement for scalar types: alignof(std::max_align_t)
 // - Alignment requirement for operator new().
@@ -248,7 +271,7 @@ static const size_t kMinDirectMappedDownsize = kMaxBucketed + 1;
 // crbug.com/998048 for details.
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 MaxDirectMapped() {
-  // Subtract kSuperPageSize to accommodate for alignment inside
+  // Subtract kSuperPageSize to accommodate for granularity inside
   // PartitionRoot::GetDirectMapReservedSize.
   return (1UL << 31) - kSuperPageSize;
 }

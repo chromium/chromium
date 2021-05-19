@@ -279,7 +279,7 @@ void ResetBitmap(std::bitset<bitsize>& bitmap,
 char* AddressPoolManager::Reserve(pool_handle handle,
                                   void* requested_address,
                                   size_t length) {
-  PA_DCHECK(!(length & PageAllocationGranularityOffsetMask()));
+  PA_DCHECK(!(length & DirectMapAllocationGranularityOffsetMask()));
   char* ptr = reinterpret_cast<char*>(
       AllocPages(requested_address, length, kSuperPageSize, PageInaccessible,
                  PageTag::kPartitionAlloc));
@@ -295,7 +295,7 @@ void AddressPoolManager::UnreserveAndDecommit(pool_handle handle,
                                               size_t length) {
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
   PA_DCHECK(!(ptr_as_uintptr & kSuperPageOffsetMask));
-  PA_DCHECK(!(length & PageAllocationGranularityOffsetMask()));
+  PA_DCHECK(!(length & DirectMapAllocationGranularityOffsetMask()));
   MarkUnused(handle, ptr_as_uintptr, length);
   FreePages(ptr, length);
 }
@@ -307,8 +307,8 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
   AutoLock guard(AddressPoolManagerBitmap::GetLock());
   if (handle == kNonBRPPoolHandle) {
     SetBitmap(AddressPoolManagerBitmap::non_brp_pool_bits_,
-              ptr_as_uintptr / PageAllocationGranularity(),
-              length / PageAllocationGranularity());
+              ptr_as_uintptr / DirectMapAllocationGranularity(),
+              length / DirectMapAllocationGranularity());
   } else {
     PA_DCHECK(handle == kBRPPoolHandle);
     PA_DCHECK(!(length & kSuperPageOffsetMask));
@@ -352,8 +352,8 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
   // allocated from there. Thus LIKELY is used.
   if (LIKELY(handle == kNonBRPPoolHandle)) {
     ResetBitmap(AddressPoolManagerBitmap::non_brp_pool_bits_,
-                address / PageAllocationGranularity(),
-                length / PageAllocationGranularity());
+                address / DirectMapAllocationGranularity(),
+                length / DirectMapAllocationGranularity());
   } else {
     PA_DCHECK(handle == kBRPPoolHandle);
     PA_DCHECK(!(length & kSuperPageOffsetMask));

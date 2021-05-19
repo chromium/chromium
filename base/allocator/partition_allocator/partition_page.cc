@@ -47,10 +47,10 @@ PartitionDirectUnmap(SlotSpanMetadata<thread_safe>* slot_span) {
   size_t reserved_size =
       extent->map_size +
       PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
-  PA_DCHECK(!(reserved_size & PageAllocationGranularityOffsetMask()));
+  PA_DCHECK(!(reserved_size & DirectMapAllocationGranularityOffsetMask()));
   PA_DCHECK(root->total_size_of_direct_mapped_pages >= reserved_size);
   root->total_size_of_direct_mapped_pages -= reserved_size;
-  PA_DCHECK(!(reserved_size & PageAllocationGranularityOffsetMask()));
+  PA_DCHECK(!(reserved_size & DirectMapAllocationGranularityOffsetMask()));
 
   char* ptr = reinterpret_cast<char*>(
       SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(slot_span));

@@ -52,7 +52,7 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
 
   // Limit to prevent callers accidentally overflowing an int size.
   STATIC_ASSERT_OR_PA_CHECK(
-      MaxDirectMapped() <= (1UL << 31) + PageAllocationGranularity(),
+      MaxDirectMapped() <= (1UL << 31) + DirectMapAllocationGranularity(),
       "maximum direct mapped allocation");
 
   // Check that some of our zanier calculations worked out as expected.

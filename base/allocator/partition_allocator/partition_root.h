@@ -417,14 +417,8 @@ struct BASE_EXPORT PartitionRoot {
     // limit before calling. This also guards against integer overflow in the
     // calculation here.
     PA_DCHECK(raw_size <= MaxDirectMapped());
-    // Align to allocation granularity. However, in 64-bit mode, the granularity
-    // is super page size.
-    size_t alignment = PageAllocationGranularity();
-#if defined(PA_HAS_64_BITS_POINTERS)
-    alignment = kSuperPageSize;
-#endif
     return bits::AlignUp(raw_size + GetDirectMapMetadataAndGuardPagesSize(),
-                         alignment);
+                         DirectMapAllocationGranularity());
   }
 
 // PartitionRefCount contains a cookie if slow checks are enabled or
