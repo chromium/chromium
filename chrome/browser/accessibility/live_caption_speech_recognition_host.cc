@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/caption_host_impl.h"
+#include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
 
 #include <memory>
 #include <utility>
@@ -17,15 +17,17 @@
 namespace captions {
 
 // static
-void CaptionHostImpl::Create(
+void LiveCaptionSpeechRecognitionHost::Create(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
         receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<CaptionHostImpl>(frame_host),
-                              std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<LiveCaptionSpeechRecognitionHost>(frame_host),
+      std::move(receiver));
 }
 
-CaptionHostImpl::CaptionHostImpl(content::RenderFrameHost* frame_host)
+LiveCaptionSpeechRecognitionHost::LiveCaptionSpeechRecognitionHost(
+    content::RenderFrameHost* frame_host)
     : frame_host_(frame_host) {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents)
@@ -33,13 +35,13 @@ CaptionHostImpl::CaptionHostImpl(content::RenderFrameHost* frame_host)
   Observe(web_contents);
 }
 
-CaptionHostImpl::~CaptionHostImpl() {
+LiveCaptionSpeechRecognitionHost::~LiveCaptionSpeechRecognitionHost() {
   CaptionController* caption_controller = GetCaptionController();
   if (caption_controller)
     caption_controller->OnAudioStreamEnd(this);
 }
 
-void CaptionHostImpl::OnSpeechRecognitionRecognitionEvent(
+void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
     media::mojom::SpeechRecognitionResultPtr result,
     OnSpeechRecognitionRecognitionEventCallback reply) {
   CaptionController* caption_controller = GetCaptionController();
@@ -50,7 +52,7 @@ void CaptionHostImpl::OnSpeechRecognitionRecognitionEvent(
   std::move(reply).Run(caption_controller->DispatchTranscription(this, result));
 }
 
-void CaptionHostImpl::OnLanguageIdentificationEvent(
+void LiveCaptionSpeechRecognitionHost::OnLanguageIdentificationEvent(
     media::mojom::LanguageIdentificationEventPtr event) {
   CaptionController* caption_controller = GetCaptionController();
   if (!caption_controller)
@@ -59,18 +61,19 @@ void CaptionHostImpl::OnLanguageIdentificationEvent(
   caption_controller->OnLanguageIdentificationEvent(std::move(event));
 }
 
-void CaptionHostImpl::OnSpeechRecognitionError() {
+void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionError() {
   CaptionController* caption_controller = GetCaptionController();
   if (caption_controller)
     caption_controller->OnError(this);
 }
 
-void CaptionHostImpl::RenderFrameDeleted(content::RenderFrameHost* frame_host) {
+void LiveCaptionSpeechRecognitionHost::RenderFrameDeleted(
+    content::RenderFrameHost* frame_host) {
   if (frame_host == frame_host_)
     frame_host_ = nullptr;
 }
 
-content::WebContents* CaptionHostImpl::GetWebContents() {
+content::WebContents* LiveCaptionSpeechRecognitionHost::GetWebContents() {
   if (!frame_host_)
     return nullptr;
   content::WebContents* web_contents =
@@ -80,7 +83,7 @@ content::WebContents* CaptionHostImpl::GetWebContents() {
   return web_contents;
 }
 
-CaptionController* CaptionHostImpl::GetCaptionController() {
+CaptionController* LiveCaptionSpeechRecognitionHost::GetCaptionController() {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents)
     return nullptr;

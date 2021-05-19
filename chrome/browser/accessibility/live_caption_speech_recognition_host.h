@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACCESSIBILITY_CAPTION_HOST_IMPL_H_
-#define CHROME_BROWSER_ACCESSIBILITY_CAPTION_HOST_IMPL_H_
+#ifndef CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_SPEECH_RECOGNITION_HOST_H_
+#define CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_SPEECH_RECOGNITION_HOST_H_
 
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -18,19 +18,23 @@ namespace captions {
 class CaptionController;
 
 ///////////////////////////////////////////////////////////////////////////////
-// Caption Host Impl
+//  Live Caption Speech Recognition Host
 //
 //  A class that implements the Mojo interface
-//  SpeechRecognitionRecognizerClient. There exists one CaptionHostImpl per
-//  render frame.
+//  SpeechRecognitionRecognizerClient. There exists one
+//  LiveCaptionSpeechRecognitionHost per render frame.
 //
-class CaptionHostImpl : public media::mojom::SpeechRecognitionRecognizerClient,
-                        public content::WebContentsObserver {
+class LiveCaptionSpeechRecognitionHost
+    : public media::mojom::SpeechRecognitionRecognizerClient,
+      public content::WebContentsObserver {
  public:
-  explicit CaptionHostImpl(content::RenderFrameHost* frame_host);
-  CaptionHostImpl(const CaptionHostImpl&) = delete;
-  CaptionHostImpl& operator=(const CaptionHostImpl&) = delete;
-  ~CaptionHostImpl() override;
+  explicit LiveCaptionSpeechRecognitionHost(
+      content::RenderFrameHost* frame_host);
+  LiveCaptionSpeechRecognitionHost(const LiveCaptionSpeechRecognitionHost&) =
+      delete;
+  LiveCaptionSpeechRecognitionHost& operator=(
+      const LiveCaptionSpeechRecognitionHost&) = delete;
+  ~LiveCaptionSpeechRecognitionHost() override;
 
   // static
   static void Create(
@@ -64,4 +68,4 @@ class CaptionHostImpl : public media::mojom::SpeechRecognitionRecognizerClient,
 
 }  // namespace captions
 
-#endif  // CHROME_BROWSER_ACCESSIBILITY_CAPTION_HOST_IMPL_H_
+#endif  // CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_SPEECH_RECOGNITION_HOST_H_

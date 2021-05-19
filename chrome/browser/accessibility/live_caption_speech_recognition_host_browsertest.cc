@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/caption_host_impl.h"
+#include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -36,12 +36,14 @@ std::vector<base::Feature> RequiredFeatureFlags() {
 
 namespace captions {
 
-class CaptionHostImplTest : public InProcessBrowserTest {
+class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
  public:
-  CaptionHostImplTest() = default;
-  ~CaptionHostImplTest() override = default;
-  CaptionHostImplTest(const CaptionHostImplTest&) = delete;
-  CaptionHostImplTest& operator=(const CaptionHostImplTest&) = delete;
+  LiveCaptionSpeechRecognitionHostTest() = default;
+  ~LiveCaptionSpeechRecognitionHostTest() override = default;
+  LiveCaptionSpeechRecognitionHostTest(
+      const LiveCaptionSpeechRecognitionHostTest&) = delete;
+  LiveCaptionSpeechRecognitionHostTest& operator=(
+      const LiveCaptionSpeechRecognitionHostTest&) = delete;
 
   // InProcessBrowserTest overrides:
   void SetUp() override {
@@ -49,12 +51,13 @@ class CaptionHostImplTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
-  void CreateCaptionHostImpl(content::RenderFrameHost* frame_host) {
+  void CreateLiveCaptionSpeechRecognitionHost(
+      content::RenderFrameHost* frame_host) {
     mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient> remote;
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
         receiver;
     remote.Bind(receiver.InitWithNewPipeAndPassRemote());
-    CaptionHostImpl::Create(frame_host, std::move(receiver));
+    LiveCaptionSpeechRecognitionHost::Create(frame_host, std::move(receiver));
     remotes_.emplace(frame_host, std::move(remote));
   }
 
@@ -63,7 +66,8 @@ class CaptionHostImplTest : public InProcessBrowserTest {
                                            bool expected_success) {
     remotes_[frame_host]->OnSpeechRecognitionRecognitionEvent(
         media::mojom::SpeechRecognitionResult::New(text, /*final=*/true),
-        base::BindOnce(&CaptionHostImplTest::DispatchTranscriptionCallback,
+        base::BindOnce(&LiveCaptionSpeechRecognitionHostTest::
+                           DispatchTranscriptionCallback,
                        base::Unretained(this), expected_success));
   }
 
@@ -98,10 +102,11 @@ class CaptionHostImplTest : public InProcessBrowserTest {
       remotes_;
 };
 
-IN_PROC_BROWSER_TEST_F(CaptionHostImplTest, DestroysWithoutCrashing) {
+IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
+                       DestroysWithoutCrashing) {
   content::RenderFrameHost* frame_host =
       browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
-  CreateCaptionHostImpl(frame_host);
+  CreateLiveCaptionSpeechRecognitionHost(frame_host);
 
   SetLiveCaptionEnabled(true);
   OnSpeechRecognitionRecognitionEvent(
@@ -120,11 +125,11 @@ IN_PROC_BROWSER_TEST_F(CaptionHostImplTest, DestroysWithoutCrashing) {
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionHostImplTest,
+IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
                        OnSpeechRecognitionRecognitionEvent) {
   content::RenderFrameHost* frame_host =
       browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
-  CreateCaptionHostImpl(frame_host);
+  CreateLiveCaptionSpeechRecognitionHost(frame_host);
 
   SetLiveCaptionEnabled(true);
   OnSpeechRecognitionRecognitionEvent(frame_host,
@@ -140,20 +145,22 @@ IN_PROC_BROWSER_TEST_F(CaptionHostImplTest,
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionHostImplTest, OnLanguageIdentificationEvent) {
+IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
+                       OnLanguageIdentificationEvent) {
   content::RenderFrameHost* frame_host =
       browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
-  CreateCaptionHostImpl(frame_host);
+  CreateLiveCaptionSpeechRecognitionHost(frame_host);
 
   SetLiveCaptionEnabled(true);
   OnLanguageIdentificationEvent(
       frame_host, "en-US", media::mojom::ConfidenceLevel::kHighlyConfident);
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionHostImplTest, OnSpeechRecognitionError) {
+IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
+                       OnSpeechRecognitionError) {
   content::RenderFrameHost* frame_host =
       browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
-  CreateCaptionHostImpl(frame_host);
+  CreateLiveCaptionSpeechRecognitionHost(frame_host);
 
   SetLiveCaptionEnabled(true);
   OnSpeechRecognitionError(frame_host);

@@ -28,7 +28,7 @@ class PrefRegistrySyncable;
 namespace captions {
 
 class CaptionBubbleController;
-class CaptionHostImpl;
+class LiveCaptionSpeechRecognitionHost;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Controller
@@ -56,7 +56,7 @@ class CaptionController : public KeyedService,
   // transcription result was routed successfully. Transcriptions will halt if
   // this returns false.
   bool DispatchTranscription(
-      CaptionHostImpl* caption_host_impl,
+      LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host,
       const media::mojom::SpeechRecognitionResultPtr& result);
 
   void OnLanguageIdentificationEvent(
@@ -64,10 +64,12 @@ class CaptionController : public KeyedService,
 
   // Alerts the CaptionBubbleController that there is an error in the speech
   // recognition service.
-  void OnError(CaptionHostImpl* caption_host_impl);
+  void OnError(
+      LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host);
 
   // Alerts the CaptionBubbleController that the audio stream has ended.
-  void OnAudioStreamEnd(CaptionHostImpl* caption_host_impl);
+  void OnAudioStreamEnd(
+      LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host);
 
  private:
   friend class CaptionControllerFactory;

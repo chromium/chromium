@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/caption_controller_factory.h"
-#include "chrome/browser/accessibility/caption_host_impl.h"
+#include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -110,12 +110,13 @@ class CaptionControllerTest : public InProcessBrowserTest {
     return GetControllerForProfile(profile)->caption_bubble_controller_.get();
   }
 
-  CaptionHostImpl* GetCaptionHostImpl() {
-    if (!caption_host_impl_) {
-      caption_host_impl_ = std::make_unique<CaptionHostImpl>(
+  LiveCaptionSpeechRecognitionHost* GetLiveCaptionSpeechRecognitionHost() {
+    if (!live_caption_speech_recognition_host_) {
+      live_caption_speech_recognition_host_ = std::make_unique<
+          LiveCaptionSpeechRecognitionHost>(
           browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
     }
-    return caption_host_impl_.get();
+    return live_caption_speech_recognition_host_.get();
   }
 
   bool DispatchTranscription(std::string text) {
@@ -124,20 +125,22 @@ class CaptionControllerTest : public InProcessBrowserTest {
 
   bool DispatchTranscriptionToProfile(std::string text, Profile* profile) {
     return GetControllerForProfile(profile)->DispatchTranscription(
-        GetCaptionHostImpl(),
+        GetLiveCaptionSpeechRecognitionHost(),
         media::mojom::SpeechRecognitionResult::New(text, false /* is_final */));
   }
 
   void OnError() { OnErrorOnProfile(browser()->profile()); }
 
   void OnErrorOnProfile(Profile* profile) {
-    GetControllerForProfile(profile)->OnError(GetCaptionHostImpl());
+    GetControllerForProfile(profile)->OnError(
+        GetLiveCaptionSpeechRecognitionHost());
   }
 
   void OnAudioStreamEnd() { OnAudioStreamEndOnProfile(browser()->profile()); }
 
   void OnAudioStreamEndOnProfile(Profile* profile) {
-    GetControllerForProfile(profile)->OnAudioStreamEnd(GetCaptionHostImpl());
+    GetControllerForProfile(profile)->OnAudioStreamEnd(
+        GetLiveCaptionSpeechRecognitionHost());
   }
 
   bool HasBubbleController() {
@@ -177,7 +180,8 @@ class CaptionControllerTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  std::unique_ptr<CaptionHostImpl> caption_host_impl_;
+  std::unique_ptr<LiveCaptionSpeechRecognitionHost>
+      live_caption_speech_recognition_host_;
 };
 
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest, ProfilePrefsAreRegistered) {

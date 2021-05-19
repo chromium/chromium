@@ -10,7 +10,7 @@
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/accessibility/caption_host_impl.h"
+#include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -53,11 +53,12 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     return controller_.get();
   }
 
-  CaptionHostImpl* GetCaptionHostImpl() {
-    if (!caption_host_impl_)
-      caption_host_impl_ = std::make_unique<CaptionHostImpl>(
+  LiveCaptionSpeechRecognitionHost* GetLiveCaptionSpeechRecognitionHost() {
+    if (!live_caption_speech_recognition_host_)
+      live_caption_speech_recognition_host_ = std::make_unique<
+          LiveCaptionSpeechRecognitionHost>(
           browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
-    return caption_host_impl_.get();
+    return live_caption_speech_recognition_host_.get();
   }
 
   CaptionBubble* GetBubble() {
@@ -140,35 +141,38 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   bool OnPartialTranscription(std::string text) {
-    return OnPartialTranscription(text, GetCaptionHostImpl());
+    return OnPartialTranscription(text, GetLiveCaptionSpeechRecognitionHost());
   }
 
-  bool OnPartialTranscription(std::string text,
-                              CaptionHostImpl* caption_host_impl) {
+  bool OnPartialTranscription(
+      std::string text,
+      LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host) {
     return GetController()->OnTranscription(
-        caption_host_impl,
+        live_caption_speech_recognition_host,
         media::mojom::SpeechRecognitionResult::New(text, false));
   }
 
   bool OnFinalTranscription(std::string text) {
-    return OnFinalTranscription(text, GetCaptionHostImpl());
+    return OnFinalTranscription(text, GetLiveCaptionSpeechRecognitionHost());
   }
 
-  bool OnFinalTranscription(std::string text,
-                            CaptionHostImpl* caption_host_impl) {
+  bool OnFinalTranscription(
+      std::string text,
+      LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host) {
     return GetController()->OnTranscription(
-        caption_host_impl,
+        live_caption_speech_recognition_host,
         media::mojom::SpeechRecognitionResult::New(text, true));
   }
 
-  void OnError() { OnError(GetCaptionHostImpl()); }
+  void OnError() { OnError(GetLiveCaptionSpeechRecognitionHost()); }
 
-  void OnError(CaptionHostImpl* caption_host_impl) {
-    GetController()->OnError(caption_host_impl);
+  void OnError(
+      LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host) {
+    GetController()->OnError(live_caption_speech_recognition_host);
   }
 
   void OnAudioStreamEnd() {
-    GetController()->OnAudioStreamEnd(GetCaptionHostImpl());
+    GetController()->OnAudioStreamEnd(GetLiveCaptionSpeechRecognitionHost());
   }
 
   std::vector<ui::AXNodeData> GetAXLinesNodeData() {
@@ -199,7 +203,8 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<CaptionBubbleControllerViews> controller_;
-  std::unique_ptr<CaptionHostImpl> caption_host_impl_;
+  std::unique_ptr<LiveCaptionSpeechRecognitionHost>
+      live_caption_speech_recognition_host_;
 };
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsCaptionInBubble) {
@@ -342,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsAndHidesError) {
   OnError();
 
   // The error should not be visible on a different media stream.
-  auto media_1 = std::make_unique<CaptionHostImpl>(
+  auto media_1 = std::make_unique<LiveCaptionSpeechRecognitionHost>(
       browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
   OnPartialTranscription("Elephants are vegetarians.", media_1.get());
   EXPECT_TRUE(GetTitle()->GetVisible());
@@ -767,8 +772,9 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ChangeMedia) {
   // This test has two medias.
   // Media 0 has the text "Polar bears are the largest carnivores on land".
   // Media 1 has the text "A snail can sleep for two years".
-  CaptionHostImpl* media_0 = GetCaptionHostImpl();
-  auto media_1 = std::make_unique<CaptionHostImpl>(
+  LiveCaptionSpeechRecognitionHost* media_0 =
+      GetLiveCaptionSpeechRecognitionHost();
+  auto media_1 = std::make_unique<LiveCaptionSpeechRecognitionHost>(
       browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
 
   // Send final transcription from media 0.
@@ -845,7 +851,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ExpandsAndCollapses) {
   EXPECT_EQ(7 * line_height, GetLabel()->GetBoundsInScreen().height());
 
   // Switch media. The bubble should remain expanded.
-  auto media_1 = std::make_unique<CaptionHostImpl>(
+  auto media_1 = std::make_unique<LiveCaptionSpeechRecognitionHost>(
       browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
   OnPartialTranscription("Nearly all ants are female.", media_1.get());
   EXPECT_TRUE(GetCollapseButton()->GetVisible());
@@ -924,8 +930,9 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        AccessibleTextChangesWhenMediaChanges) {
-  CaptionHostImpl* media_0 = GetCaptionHostImpl();
-  auto media_1 = std::make_unique<CaptionHostImpl>(
+  LiveCaptionSpeechRecognitionHost* media_0 =
+      GetLiveCaptionSpeechRecognitionHost();
+  auto media_1 = std::make_unique<LiveCaptionSpeechRecognitionHost>(
       browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
 
   OnPartialTranscription("3 dogs survived the Titanic sinking.", media_0);

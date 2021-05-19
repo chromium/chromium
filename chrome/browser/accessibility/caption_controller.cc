@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/accessibility/caption_host_impl.h"
 #include "chrome/browser/accessibility/caption_util.h"
+#include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/caption_bubble_controller.h"
 #include "chrome/common/pref_names.h"
@@ -213,23 +213,27 @@ void CaptionController::UpdateAccessibilityCaptionHistograms() {
 }
 
 bool CaptionController::DispatchTranscription(
-    CaptionHostImpl* caption_host_impl,
+    LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host,
     const media::mojom::SpeechRecognitionResultPtr& result) {
   if (!caption_bubble_controller_)
     return false;
-  return caption_bubble_controller_->OnTranscription(caption_host_impl, result);
+  return caption_bubble_controller_->OnTranscription(
+      live_caption_speech_recognition_host, result);
 }
 
-void CaptionController::OnError(CaptionHostImpl* caption_host_impl) {
+void CaptionController::OnError(
+    LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host) {
   if (!caption_bubble_controller_)
     return;
-  caption_bubble_controller_->OnError(caption_host_impl);
+  caption_bubble_controller_->OnError(live_caption_speech_recognition_host);
 }
 
-void CaptionController::OnAudioStreamEnd(CaptionHostImpl* caption_host_impl) {
+void CaptionController::OnAudioStreamEnd(
+    LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host) {
   if (!caption_bubble_controller_)
     return;
-  caption_bubble_controller_->OnAudioStreamEnd(caption_host_impl);
+  caption_bubble_controller_->OnAudioStreamEnd(
+      live_caption_speech_recognition_host);
 }
 
 void CaptionController::OnLanguageIdentificationEvent(

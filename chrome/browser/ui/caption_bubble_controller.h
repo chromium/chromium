@@ -13,7 +13,7 @@
 
 namespace captions {
 
-class CaptionHostImpl;
+class LiveCaptionSpeechRecognitionHost;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble Controller
@@ -37,14 +37,16 @@ class CaptionBubbleController {
   // the transcription result was set on the caption bubble successfully.
   // Transcriptions will halt if this returns false.
   virtual bool OnTranscription(
-      CaptionHostImpl* caption_host_impl,
+      LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host,
       const media::mojom::SpeechRecognitionResultPtr& result) = 0;
 
   // Called when the speech service has an error.
-  virtual void OnError(CaptionHostImpl* caption_host_impl) = 0;
+  virtual void OnError(LiveCaptionSpeechRecognitionHost*
+                           live_caption_speech_recognition_host) = 0;
 
   // Called when the audio stream has ended.
-  virtual void OnAudioStreamEnd(CaptionHostImpl* caption_host_impl) = 0;
+  virtual void OnAudioStreamEnd(LiveCaptionSpeechRecognitionHost*
+                                    live_caption_speech_recognition_host) = 0;
 
   // Called when the caption style changes.
   virtual void UpdateCaptionStyle(
