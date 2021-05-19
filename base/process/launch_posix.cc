@@ -358,19 +358,27 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     // might do things like block waiting for threads that don't even exist
     // in the child.
 
-    // If a child process uses the readline library, the process block forever.
-    // In BSD like OSes including OS X it is safe to assign /dev/null as stdin.
-    // See http://crbug.com/56596.
-    base::ScopedFD null_fd(HANDLE_EINTR(open("/dev/null", O_RDONLY)));
-    if (!null_fd.is_valid()) {
-      RAW_LOG(ERROR, "Failed to open /dev/null");
-      _exit(127);
-    }
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+    // See comments on the ResetFDOwnership() declaration in
+    // base/files/scoped_file.h regarding why this is called early here.
+    subtle::ResetFDOwnership();
+#endif
 
-    int new_fd = HANDLE_EINTR(dup2(null_fd.get(), STDIN_FILENO));
-    if (new_fd != STDIN_FILENO) {
-      RAW_LOG(ERROR, "Failed to dup /dev/null for stdin");
-      _exit(127);
+    {
+      // If a child process uses the readline library, the process block
+      // forever. In BSD like OSes including OS X it is safe to assign /dev/null
+      // as stdin. See http://crbug.com/56596.
+      base::ScopedFD null_fd(HANDLE_EINTR(open("/dev/null", O_RDONLY)));
+      if (!null_fd.is_valid()) {
+        RAW_LOG(ERROR, "Failed to open /dev/null");
+        _exit(127);
+      }
+
+      int new_fd = HANDLE_EINTR(dup2(null_fd.get(), STDIN_FILENO));
+      if (new_fd != STDIN_FILENO) {
+        RAW_LOG(ERROR, "Failed to dup /dev/null for stdin");
+        _exit(127);
+      }
     }
 
     if (options.new_process_group) {
@@ -549,6 +557,12 @@ static bool GetAppOutputInternal(
       //
       // DANGER: no calls to malloc or locks are allowed from now on:
       // http://crbug.com/36678
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+      // See comments on the ResetFDOwnership() declaration in
+      // base/files/scoped_file.h regarding why this is called early here.
+      subtle::ResetFDOwnership();
+#endif
 
       // Obscure fork() rule: in the child, if you don't end up doing exec*(),
       // you call _exit() instead of exit(). This is because _exit() does not

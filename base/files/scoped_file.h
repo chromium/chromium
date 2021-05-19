@@ -26,11 +26,21 @@ struct BASE_EXPORT ScopedFDCloseTraits : public ScopedGenericOwnershipTracking {
   static void Release(const ScopedGeneric<int, ScopedFDCloseTraits>&, int);
 };
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+// On ChromeOS and Linux we guard FD lifetime with a global table and hook into
+// libc close() to perform checks.
+struct BASE_EXPORT ScopedFDCloseTraits : public ScopedGenericOwnershipTracking {
+#else
 struct BASE_EXPORT ScopedFDCloseTraits {
+#endif
   static int InvalidValue() {
     return -1;
   }
   static void Free(int fd);
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+  static void Acquire(const ScopedGeneric<int, ScopedFDCloseTraits>&, int);
+  static void Release(const ScopedGeneric<int, ScopedFDCloseTraits>&, int);
+#endif
 };
 #endif
 
@@ -43,6 +53,36 @@ struct ScopedFILECloser {
 };
 
 }  // namespace internal
+
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+namespace subtle {
+
+// Enables or disables enforcement of FD ownership as tracked by ScopedFD
+// objects. Enforcement is disabled by default since it proves unwieldy in some
+// test environments, but tracking is always done. It's best to enable this as
+// early as possible in a process's lifetime.
+void BASE_EXPORT EnableFDOwnershipEnforcement(bool enabled);
+
+// Resets ownership state of all FDs. The only permissible use of this API is
+// in a forked child process between the fork() and a subsequent exec() call.
+//
+// For one issue, it is common to mass-close most open FDs before calling
+// exec(), to avoid leaking FDs into the new executable's environment. For
+// processes which have enabled FD ownership enforcement, this reset operation
+// is necessary before performing such closures.
+//
+// Furthermore, fork()+exec() may be used in a multithreaded context, and
+// because fork() is not atomic, the FD ownership state in the child process may
+// be inconsistent with the actual set of opened file descriptors once fork()
+// returns in the child process.
+//
+// It is therefore especially important to call this ASAP after fork() in the
+// child process if any FD manipulation will be done prior to the subsequent
+// exec call.
+void BASE_EXPORT ResetFDOwnership();
+
+}  // namespace subtle
+#endif
 
 // -----------------------------------------------------------------------------
 
@@ -63,6 +103,12 @@ typedef ScopedGeneric<int, internal::ScopedFDCloseTraits> ScopedFD;
 
 // Automatically closes |FILE*|s.
 typedef std::unique_ptr<FILE, internal::ScopedFILECloser> ScopedFILE;
+
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+// Queries the ownership status of an FD, i.e. whether it is currently owned by
+// a ScopedFD in the calling process.
+bool BASE_EXPORT IsFDOwned(int fd);
+#endif  // defined(OS_CHROMEOS) || defined(OS_LINUX)
 
 }  // namespace base
 

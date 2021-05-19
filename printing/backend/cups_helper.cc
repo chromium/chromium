@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -598,18 +597,21 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
     return false;
   }
 
-  ppd_file_t* ppd = ppdOpenFd(ppd_fd.get());
+  // We release ownership of `ppd_fd` here because ppdOpenFd() assumes ownership
+  // of it in all but one case (see below).
+  int unowned_ppd_fd = ppd_fd.release();
+  ppd_file_t* ppd = ppdOpenFd(unowned_ppd_fd);
   if (!ppd) {
     int line = 0;
     ppd_status_t ppd_status = ppdLastError(&line);
     LOG(ERROR) << "Failed to open PDD file: error " << ppd_status << " at line "
                << line << ", " << ppdErrorString(ppd_status);
-    if (ppd_status != PPD_FILE_OPEN_ERROR) {
-      // When the error is not from opening the file then the CUPS library
-      // internals will have already closed the file descriptor.  It is
-      // important to not close the file a second time (when ScopedFD destructor
-      // fires), so we release the descriptor prior to that.
-      ignore_result(ppd_fd.release());
+    if (ppd_status == PPD_FILE_OPEN_ERROR) {
+      // Normally ppdOpenFd assumes ownership of the file descriptor we give it,
+      // regardless of success or failure. The one exception is when it fails
+      // with PPD_FILE_OPEN_ERROR. In that case ownership is retained by the
+      // caller, so we must explicitly close it.
+      close(unowned_ppd_fd);
     }
     return false;
   }
@@ -693,10 +695,6 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
   }
 
   ppdClose(ppd);
-  // The CUPS library internals close the file descriptor upon successfully
-  // reading it.  Explicitly release the `ScopedFD` to prevent a crash caused
-  // by a bad file descriptor.
-  ignore_result(ppd_fd.release());
 
   *printer_info = caps;
   return true;

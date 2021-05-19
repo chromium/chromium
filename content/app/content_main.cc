@@ -62,6 +62,10 @@
 #include "base/posix/global_descriptors.h"
 #endif
 
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#include "base/files/scoped_file.h"
+#endif
+
 #if defined(OS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "content/app/mac_init.h"
@@ -302,6 +306,10 @@ int RunContentProcess(const ContentMainParams& params,
     autorelease_pool = std::make_unique<base::mac::ScopedNSAutoreleasePool>();
     content_main_params.autorelease_pool = autorelease_pool.get();
     InitializeMac();
+#endif
+
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+    base::subtle::EnableFDOwnershipEnforcement(true);
 #endif
 
     mojo::core::Configuration mojo_config;

@@ -1280,6 +1280,7 @@ component("base") {
       "files/file_path_watcher_linux.cc",
       "files/file_path_watcher_linux.h",
       "files/file_util_linux.cc",
+      "files/scoped_file_linux.cc",
       "process/internal_linux.cc",
       "process/internal_linux.h",
       "process/memory_linux.cc",
@@ -3326,7 +3327,10 @@ test("base_unittests") {
   }
 
   if (is_linux || is_chromeos) {
-    sources += [ "debug/proc_maps_linux_unittest.cc" ]
+    sources += [
+      "debug/proc_maps_linux_unittest.cc",
+      "files/scoped_file_linux_unittest.cc",
+    ]
   }
 
   if (is_mac) {

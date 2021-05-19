@@ -109,6 +109,12 @@ bool CloseMultipleNowOrOnExecUsingFDDir(int min_fd, int preserve_fd) {
 }  // namespace
 
 void CloseMultipleNowOrOnExec(int fd, int preserve_fd) {
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  // See comments on the ResetFDOwnership() declaration in
+  // base/files/scoped_file.h regarding why this is called here.
+  base::subtle::ResetFDOwnership();
+#endif
+
   if (CloseMultipleNowOrOnExecUsingFDDir(fd, preserve_fd)) {
     return;
   }
