@@ -137,7 +137,11 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   FRIEND_TEST_ALL_PREFIXES(MediaStreamAudioProcessorTest,
                            TestAgcEnableDefaultAgc1);
   FRIEND_TEST_ALL_PREFIXES(MediaStreamAudioProcessorTest,
+                           TestAgcEnableExperimentalAgc1);
+  FRIEND_TEST_ALL_PREFIXES(MediaStreamAudioProcessorTest,
                            TestAgcEnableHybridAgc);
+  FRIEND_TEST_ALL_PREFIXES(MediaStreamAudioProcessorTest,
+                           TestAgcEnableHybridAgcDryRun);
   FRIEND_TEST_ALL_PREFIXES(MediaStreamAudioProcessorTest,
                            TestAgcEnableHybridAgcSimdNotAllowed);
 

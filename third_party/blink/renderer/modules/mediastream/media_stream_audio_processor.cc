@@ -71,6 +71,31 @@ bool Allow48kHzApmProcessing() {
       ::features::kWebRtcAllow48kHzProcessingOnArm);
 }
 
+absl::optional<WebRtcHybridAgcParams> GetWebRtcHybridAgcParams() {
+  if (!base::FeatureList::IsEnabled(::features::kWebRtcHybridAgc)) {
+    return absl::nullopt;
+  }
+  return WebRtcHybridAgcParams{
+      .dry_run = base::GetFieldTrialParamByFeatureAsBool(
+          ::features::kWebRtcHybridAgc, "dry_run", false),
+      .vad_reset_period_ms = base::GetFieldTrialParamByFeatureAsInt(
+          ::features::kWebRtcHybridAgc, "vad_reset_period_ms", 1500),
+      .adjacent_speech_frames_threshold =
+          base::GetFieldTrialParamByFeatureAsInt(
+              ::features::kWebRtcHybridAgc, "adjacent_speech_frames_threshold",
+              12),
+      .max_gain_change_db_per_second = base::GetFieldTrialParamByFeatureAsInt(
+          ::features::kWebRtcHybridAgc, "max_gain_change_db_per_second", 3),
+      .max_output_noise_level_dbfs = base::GetFieldTrialParamByFeatureAsInt(
+          ::features::kWebRtcHybridAgc, "max_output_noise_level_dbfs", -50),
+      .sse2_allowed = base::GetFieldTrialParamByFeatureAsBool(
+          ::features::kWebRtcHybridAgc, "sse2_allowed", true),
+      .avx2_allowed = base::GetFieldTrialParamByFeatureAsBool(
+          ::features::kWebRtcHybridAgc, "avx2_allowed", true),
+      .neon_allowed = base::GetFieldTrialParamByFeatureAsBool(
+          ::features::kWebRtcHybridAgc, "neon_allowed", true)};
+}
+
 constexpr int kBuffersPerSecond = 100;  // 10 ms per buffer.
 
 }  // namespace
@@ -547,18 +572,31 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
   config.Set<webrtc::ExperimentalNs>(new webrtc::ExperimentalNs(
       properties.goog_experimental_noise_suppression));
 
+  // TODO(bugs.webrtc.org/7494): Move logic below in ConfigAutomaticGainControl.
+  // Retrieve the Hybrid AGC experiment parameters.
+  // The hybrid AGC setup, that is AGC1 analog and AGC2 adaptive digital,
+  // requires `goog_auto_gain_control` and `goog_experimental_auto_gain_control`
+  // to be both active.
+  absl::optional<WebRtcHybridAgcParams> hybrid_agc_params;
+  if (properties.goog_auto_gain_control &&
+      properties.goog_experimental_auto_gain_control) {
+    hybrid_agc_params = GetWebRtcHybridAgcParams();
+  }
   // If the experimental AGC is enabled, check for overridden config params.
   if (properties.goog_experimental_auto_gain_control) {
     auto startup_min_volume = Platform::Current()->GetAgcStartupMinimumVolume();
-    auto* experimental_agc =
-        new webrtc::ExperimentalAgc(true, startup_min_volume.value_or(0));
+    auto* experimental_agc = new webrtc::ExperimentalAgc(
+        /*enabled=*/true, startup_min_volume.value_or(0));
+    // Disable the AGC1 adaptive digital controller if the hybrid AGC is enabled
+    // and it's not running in dry-run mode.
     experimental_agc->digital_adaptive_disabled =
-        base::FeatureList::IsEnabled(::features::kWebRtcHybridAgc);
-
+        hybrid_agc_params.has_value() && !hybrid_agc_params->dry_run;
     config.Set<webrtc::ExperimentalAgc>(experimental_agc);
 #if BUILDFLAG(IS_CHROMECAST)
   } else {
-    config.Set<webrtc::ExperimentalAgc>(new webrtc::ExperimentalAgc(false));
+    // Do not use the analog controller.
+    config.Set<webrtc::ExperimentalAgc>(
+        new webrtc::ExperimentalAgc(/*enabled=*/false));
 #endif  // BUILDFLAG(IS_CHROMECAST)
   }
 
@@ -597,51 +635,10 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
                            audio_processing_platform_config_json,
                            &gain_control_compression_gain_db);
 
-  if (properties.goog_auto_gain_control ||
-      properties.goog_experimental_auto_gain_control) {
-    absl::optional<blink::AdaptiveGainController2Properties> agc2_properties;
-    if (properties.goog_experimental_auto_gain_control &&
-        base::FeatureList::IsEnabled(::features::kWebRtcHybridAgc)) {
-      DCHECK(properties.goog_auto_gain_control)
-          << "Cannot enable hybrid AGC when AGC is disabled.";
-      agc2_properties = blink::AdaptiveGainController2Properties{};
-      agc2_properties->vad_probability_attack =
-          base::GetFieldTrialParamByFeatureAsDouble(
-              ::features::kWebRtcHybridAgc, "vad_probability_attack", 0.3);
-      agc2_properties->use_peaks_not_rms =
-          base::GetFieldTrialParamByFeatureAsBool(::features::kWebRtcHybridAgc,
-                                                  "use_peaks_not_rms", false);
-      agc2_properties->level_estimator_speech_frames_threshold =
-          base::GetFieldTrialParamByFeatureAsInt(
-              ::features::kWebRtcHybridAgc,
-              "level_estimator_speech_frames_threshold", 6);
-      agc2_properties->initial_saturation_margin_db =
-          base::GetFieldTrialParamByFeatureAsInt(
-              ::features::kWebRtcHybridAgc, "initial_saturation_margin", 20);
-      agc2_properties->extra_saturation_margin_db =
-          base::GetFieldTrialParamByFeatureAsInt(::features::kWebRtcHybridAgc,
-                                                 "extra_saturation_margin", 5);
-      agc2_properties->gain_applier_speech_frames_threshold =
-          base::GetFieldTrialParamByFeatureAsInt(
-              ::features::kWebRtcHybridAgc,
-              "gain_applier_speech_frames_threshold", 6);
-      agc2_properties->max_gain_change_db_per_second =
-          base::GetFieldTrialParamByFeatureAsInt(
-              ::features::kWebRtcHybridAgc, "max_gain_change_db_per_second", 3);
-      agc2_properties->max_output_noise_level_dbfs =
-          base::GetFieldTrialParamByFeatureAsInt(
-              ::features::kWebRtcHybridAgc, "max_output_noise_level_dbfs", -55);
-      agc2_properties->sse2_allowed = base::GetFieldTrialParamByFeatureAsBool(
-          ::features::kWebRtcHybridAgc, "sse2_allowed", true);
-      agc2_properties->avx2_allowed = base::GetFieldTrialParamByFeatureAsBool(
-          ::features::kWebRtcHybridAgc, "avx2_allowed", true);
-      agc2_properties->neon_allowed = base::GetFieldTrialParamByFeatureAsBool(
-          ::features::kWebRtcHybridAgc, "neon_allowed", true);
-    }
-    blink::ConfigAutomaticGainControl(properties, agc2_properties,
-                                      gain_control_compression_gain_db,
-                                      apm_config);
-  }
+  // Set up gain control functionalities.
+  blink::ConfigAutomaticGainControl(properties, hybrid_agc_params,
+                                    gain_control_compression_gain_db,
+                                    apm_config);
 
   if (goog_typing_detection) {
     // TODO(xians): Remove this |typing_detector_| after the typing suppression
