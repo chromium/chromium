@@ -191,7 +191,6 @@ scoped_refptr<NGTableBorders> NGTableBorders::ComputeTableBorders(
     return table_borders;
 
   NGTableGroupedChildren grouped_children(table);
-  bool hide_empty_cells = table_style.EmptyCells() == EEmptyCells::kHide;
   WritingDirectionMode table_writing_direction =
       table.Style().GetWritingDirection();
 
@@ -221,11 +220,6 @@ scoped_refptr<NGTableBorders> NGTableBorders::ComputeTableBorders(
             table_column_count, NGTableAlgorithmHelpers::ComputeMaxColumn(
                                     tabulator.CurrentColumn(), cell_colspan,
                                     table.Style().IsFixedTableLayout()));
-        // https://stackoverflow.com/questions/18758373/why-do-the-css-property-border-collapse-and-empty-cells-conflict
-        if (hide_empty_cells && !To<NGBlockNode>(cell).FirstChild()) {
-          tabulator.ProcessCell(cell);
-          continue;
-        }
         if (!found_multispan_cells) {
           table_borders->MergeBorders(
               table_row_index, tabulator.CurrentColumn(),
@@ -258,10 +252,6 @@ scoped_refptr<NGTableBorders> NGTableBorders::ComputeTableBorders(
         for (NGBlockNode cell = To<NGBlockNode>(row.FirstChild()); cell;
              cell = To<NGBlockNode>(cell.NextSibling())) {
           tabulator.FindNextFreeColumn();
-          if (hide_empty_cells && !To<NGBlockNode>(cell).FirstChild()) {
-            tabulator.ProcessCell(cell);
-            continue;
-          }
           table_borders->MergeBorders(
               table_row_index, tabulator.CurrentColumn(),
               cell.TableCellRowspan(), cell.TableCellColspan(), cell.Style(),
