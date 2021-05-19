@@ -162,17 +162,17 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
   // See https://w3c.github.io/webappsec-permissions-policy/ for more
   // information on permissions policies and allowing cross-origin iframes
   // to have particular permissions.
-  //
-  // TODO(enne): This code causes a user activation, so can't check that below
-  // like other tests.  Figure out why this is and try to clear it / address it.
   EXPECT_TRUE(ExecJs(tab, R"(const frame = document.getElementById('test');
-    frame.setAttribute('allow', 'window-placement');)"));
+    frame.setAttribute('allow', 'window-placement');)",
+                     content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   GURL subframe_url(https_test_server()->GetURL("b.test", "/title1.html"));
   content::NavigateIframeToURL(tab, /*iframe_id=*/"test", subframe_url);
 
   content::RenderFrameHost* child = ChildFrameAt(tab->GetMainFrame(), 0);
   ASSERT_TRUE(child);
+  EXPECT_FALSE(tab->GetMainFrame()->HasTransientUserActivation());
+  EXPECT_FALSE(child->GetMainFrame()->HasTransientUserActivation());
 
   permissions::PermissionRequestManager* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(tab);
@@ -181,6 +181,8 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
       permissions::PermissionRequestManager::ACCEPT_ALL);
   EXPECT_EQ("granted", EvalJs(child, kGetScreens,
                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(tab->GetMainFrame()->HasTransientUserActivation());
+  EXPECT_TRUE(child->GetMainFrame()->HasTransientUserActivation());
 }
 
 }  // namespace
