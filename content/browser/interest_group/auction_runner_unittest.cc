@@ -575,9 +575,9 @@ class AuctionRunnerTest : public testing::Test, public AuctionRunner::Delegate {
     Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
 
-    GURL ad_url;
-    GURL bidder_report_url;
-    GURL seller_report_url;
+    absl::optional<GURL> ad_url;
+    absl::optional<GURL> bidder_report_url;
+    absl::optional<GURL> seller_report_url;
     std::vector<std::string> errors;
 
     // Metadata about `bidder1` and `bidder2`, pulled from the
@@ -693,18 +693,19 @@ class AuctionRunnerTest : public testing::Test, public AuctionRunner::Delegate {
     return result_;
   }
 
-  void OnAuctionComplete(const GURL& ad_url,
-                         const GURL& bidder_report_url,
-                         const GURL& seller_report_url,
-                         const std::vector<std::string>& errors) {
+  void OnAuctionComplete(AuctionRunner* auction_runner,
+                         absl::optional<GURL> ad_url,
+                         absl::optional<GURL> bidder_report_url,
+                         absl::optional<GURL> seller_report_url,
+                         std::vector<std::string> errors) {
     DCHECK(auction_run_loop_);
     DCHECK(!auction_complete_);
 
     auction_complete_ = true;
-    result_.ad_url = ad_url;
-    result_.bidder_report_url = bidder_report_url;
-    result_.seller_report_url = seller_report_url;
-    result_.errors = errors;
+    result_.ad_url = std::move(ad_url);
+    result_.bidder_report_url = std::move(bidder_report_url);
+    result_.seller_report_url = std::move(seller_report_url);
+    result_.errors = std::move(errors);
     result_.bidder1_bid_count = -1;
     result_.bidder1_prev_wins.clear();
     result_.bidder2_bid_count = -1;
@@ -888,9 +889,9 @@ TEST_F(AuctionRunnerTest, NoInterestGroups) {
           url::Origin::Create(GURL("https://publisher1.com")),
           url::Origin::Create(kSellerUrl)));
 
-  EXPECT_TRUE(result_.ad_url.is_empty());
-  EXPECT_TRUE(result_.seller_report_url.is_empty());
-  EXPECT_TRUE(result_.bidder_report_url.is_empty());
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.seller_report_url);
+  EXPECT_FALSE(result_.bidder_report_url);
   EXPECT_EQ(-1, result_.bidder1_bid_count);
   EXPECT_EQ(0u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(-1, result_.bidder2_bid_count);
@@ -923,10 +924,10 @@ TEST_F(AuctionRunnerTest, OneInterestGroup) {
                         url::Origin::Create(GURL("https://publisher1.com")),
                         url::Origin::Create(kSellerUrl)));
 
-  EXPECT_EQ("https://ad1.com/", result_.ad_url.spec());
-  EXPECT_EQ("https://reporting.example.com/", result_.seller_report_url.spec());
-  EXPECT_EQ("https://buyer-reporting.example.com/",
-            result_.bidder_report_url.spec());
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+  EXPECT_EQ(GURL("https://reporting.example.com/"), result_.seller_report_url);
+  EXPECT_EQ(GURL("https://buyer-reporting.example.com/"),
+            result_.bidder_report_url);
   EXPECT_EQ(6, result_.bidder1_bid_count);
   ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -958,10 +959,10 @@ TEST_F(AuctionRunnerTest, Basic) {
       R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   const Result& res = RunStandardAuction();
-  EXPECT_EQ("https://ad2.com/", res.ad_url.spec());
-  EXPECT_EQ("https://reporting.example.com/", res.seller_report_url.spec());
-  EXPECT_EQ("https://buyer-reporting.example.com/",
-            res.bidder_report_url.spec());
+  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://reporting.example.com/"), res.seller_report_url);
+  EXPECT_EQ(GURL("https://buyer-reporting.example.com/"),
+            res.bidder_report_url);
   EXPECT_EQ(6, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(6, res.bidder2_bid_count);
@@ -990,10 +991,10 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
       R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   const Result& res = RunStandardAuction();
-  EXPECT_EQ("https://ad1.com/", res.ad_url.spec());
-  EXPECT_EQ("https://reporting.example.com/", res.seller_report_url.spec());
-  EXPECT_EQ("https://buyer-reporting.example.com/",
-            res.bidder_report_url.spec());
+  EXPECT_EQ(GURL("https://ad1.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://reporting.example.com/"), res.seller_report_url);
+  EXPECT_EQ(GURL("https://buyer-reporting.example.com/"),
+            res.bidder_report_url);
   EXPECT_EQ(6, res.bidder1_bid_count);
   ASSERT_EQ(4u, res.bidder1_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -1029,10 +1030,10 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
       R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   const Result& res = RunStandardAuction();
-  EXPECT_EQ("https://ad1.com/", res.ad_url.spec());
-  EXPECT_EQ("https://reporting.example.com/", res.seller_report_url.spec());
-  EXPECT_EQ("https://buyer-reporting.example.com/",
-            res.bidder_report_url.spec());
+  EXPECT_EQ(GURL("https://ad1.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://reporting.example.com/"), res.seller_report_url);
+  EXPECT_EQ(GURL("https://buyer-reporting.example.com/"),
+            res.bidder_report_url);
   EXPECT_EQ(6, res.bidder1_bid_count);
   ASSERT_EQ(4u, res.bidder1_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -1060,9 +1061,9 @@ TEST_F(AuctionRunnerTest, NoBids) {
       R"({"l1":"a", "l2": "b", "extra":"c"})");
 
   const Result& res = RunStandardAuction();
-  EXPECT_TRUE(res.ad_url.is_empty());
-  EXPECT_TRUE(res.seller_report_url.is_empty());
-  EXPECT_TRUE(res.bidder_report_url.is_empty());
+  EXPECT_FALSE(res.ad_url);
+  EXPECT_FALSE(res.seller_report_url);
+  EXPECT_FALSE(res.bidder_report_url);
   EXPECT_EQ(5, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(5, res.bidder2_bid_count);
@@ -1094,9 +1095,9 @@ TEST_F(AuctionRunnerTest, NoBidMadeByScript) {
       R"({"l1":"a", "l2": "b", "extra":"c"})");
 
   const Result& res = RunStandardAuction();
-  EXPECT_TRUE(res.ad_url.is_empty());
-  EXPECT_TRUE(res.seller_report_url.is_empty());
-  EXPECT_TRUE(res.bidder_report_url.is_empty());
+  EXPECT_FALSE(res.ad_url);
+  EXPECT_FALSE(res.seller_report_url);
+  EXPECT_FALSE(res.bidder_report_url);
   EXPECT_EQ(5, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(5, res.bidder2_bid_count);
@@ -1134,9 +1135,9 @@ TEST_F(AuctionRunnerTest, SellerRejectsAll) {
       R"({"l1":"a", "l2": "b", "extra":"c"})");
 
   const Result& res = RunStandardAuction();
-  EXPECT_TRUE(res.ad_url.is_empty());
-  EXPECT_TRUE(res.seller_report_url.is_empty());
-  EXPECT_TRUE(res.bidder_report_url.is_empty());
+  EXPECT_FALSE(res.ad_url);
+  EXPECT_FALSE(res.seller_report_url);
+  EXPECT_FALSE(res.bidder_report_url);
   EXPECT_EQ(5, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(5, res.bidder2_bid_count);
@@ -1170,10 +1171,10 @@ TEST_F(AuctionRunnerTest, SellerRejectsOne) {
       R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   const Result& res = RunStandardAuction();
-  EXPECT_EQ("https://ad1.com/", res.ad_url.spec());
-  EXPECT_EQ("https://reporting.example.com/", res.seller_report_url.spec());
-  EXPECT_EQ("https://buyer-reporting.example.com/",
-            res.bidder_report_url.spec());
+  EXPECT_EQ(GURL("https://ad1.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://reporting.example.com/"), res.seller_report_url);
+  EXPECT_EQ(GURL("https://buyer-reporting.example.com/"),
+            res.bidder_report_url);
   EXPECT_EQ(6, res.bidder1_bid_count);
   ASSERT_EQ(4u, res.bidder1_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -1189,9 +1190,9 @@ TEST_F(AuctionRunnerTest, NoSellerScript) {
   // cancelled, too.
   url_loader_factory_.AddResponse(kSellerUrl.spec(), "", net::HTTP_NOT_FOUND);
   const Result& res = RunStandardAuction();
-  EXPECT_TRUE(res.ad_url.is_empty());
-  EXPECT_TRUE(res.seller_report_url.is_empty());
-  EXPECT_TRUE(res.bidder_report_url.is_empty());
+  EXPECT_FALSE(res.ad_url);
+  EXPECT_FALSE(res.seller_report_url);
+  EXPECT_FALSE(res.bidder_report_url);
 
   EXPECT_EQ(0, url_loader_factory_.NumPending());
   EXPECT_EQ(5, res.bidder1_bid_count);
@@ -1232,10 +1233,10 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
           url::Origin::Create(GURL("https://publisher1.com")),
           url::Origin::Create(kSellerUrl)));
 
-  EXPECT_EQ("https://ad2.com/", res.ad_url.spec());
-  EXPECT_EQ("https://reporting.example.com/", res.seller_report_url.spec());
-  EXPECT_EQ("https://buyer-reporting.example.com/",
-            res.bidder_report_url.spec());
+  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://reporting.example.com/"), res.seller_report_url);
+  EXPECT_EQ(GURL("https://buyer-reporting.example.com/"),
+            res.bidder_report_url);
   EXPECT_EQ(6, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(6, res.bidder2_bid_count);
@@ -1265,10 +1266,10 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
                                          MakeAuctionScript());
 
   const Result& res = RunStandardAuction();
-  EXPECT_EQ("https://ad2.com/", res.ad_url.spec());
-  EXPECT_EQ("https://reporting.example.com/", res.seller_report_url.spec());
-  EXPECT_EQ("https://buyer-reporting.example.com/",
-            res.bidder_report_url.spec());
+  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://reporting.example.com/"), res.seller_report_url);
+  EXPECT_EQ(GURL("https://buyer-reporting.example.com/"),
+            res.bidder_report_url);
   EXPECT_EQ(6, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(6, res.bidder2_bid_count);
@@ -1308,10 +1309,10 @@ TEST_F(AuctionRunnerTest, NoReportResultUrl) {
       R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   const Result& res = RunStandardAuction();
-  EXPECT_EQ("https://ad2.com/", res.ad_url.spec());
-  EXPECT_TRUE(res.seller_report_url.is_empty());
-  EXPECT_EQ("https://buyer-reporting.example.com/",
-            res.bidder_report_url.spec());
+  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+  EXPECT_FALSE(res.seller_report_url);
+  EXPECT_EQ(GURL("https://buyer-reporting.example.com/"),
+            res.bidder_report_url);
   EXPECT_EQ(6, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(6, res.bidder2_bid_count);
@@ -1345,9 +1346,9 @@ TEST_F(AuctionRunnerTest, NoReportWinUrl) {
       R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   const Result& res = RunStandardAuction();
-  EXPECT_EQ("https://ad2.com/", res.ad_url.spec());
-  EXPECT_EQ("https://reporting.example.com/", res.seller_report_url.spec());
-  EXPECT_TRUE(res.bidder_report_url.is_empty());
+  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://reporting.example.com/"), res.seller_report_url);
+  EXPECT_FALSE(res.bidder_report_url);
   EXPECT_EQ(6, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(6, res.bidder2_bid_count);
@@ -1381,9 +1382,9 @@ TEST_F(AuctionRunnerTest, NeitherReportUrl) {
       R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   const Result& res = RunStandardAuction();
-  EXPECT_EQ("https://ad2.com/", res.ad_url.spec());
-  EXPECT_TRUE(res.seller_report_url.is_empty());
-  EXPECT_TRUE(res.bidder_report_url.is_empty());
+  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+  EXPECT_FALSE(res.seller_report_url);
+  EXPECT_FALSE(res.bidder_report_url);
   EXPECT_EQ(6, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(6, res.bidder2_bid_count);
@@ -1430,10 +1431,9 @@ TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {
 
     auction_run_loop_->Run();
 
-    EXPECT_FALSE(result_.ad_url.is_valid());
-    EXPECT_TRUE(result_.ad_url.is_empty());
-    EXPECT_TRUE(result_.seller_report_url.is_empty());
-    EXPECT_TRUE(result_.bidder_report_url.is_empty());
+    EXPECT_FALSE(result_.ad_url);
+    EXPECT_FALSE(result_.seller_report_url);
+    EXPECT_FALSE(result_.bidder_report_url);
     EXPECT_EQ(5, result_.bidder1_bid_count);
     EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
     EXPECT_EQ(5, result_.bidder2_bid_count);
@@ -1509,8 +1509,8 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
       // Bidder2 won, Bidder1 crashed.
       auction_run_loop_->Run();
       EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
-      EXPECT_TRUE(result_.seller_report_url.is_empty());
-      EXPECT_TRUE(result_.bidder_report_url.is_empty());
+      EXPECT_FALSE(result_.seller_report_url);
+      EXPECT_FALSE(result_.bidder_report_url);
       EXPECT_EQ(6, result_.bidder1_bid_count);
       EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
       EXPECT_EQ(6, result_.bidder2_bid_count);
@@ -1568,8 +1568,8 @@ TEST_F(AuctionRunnerTest, LosingBidderCrashWhileScoring) {
 
   // Bidder2 won.
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
-  EXPECT_TRUE(result_.seller_report_url.is_empty());
-  EXPECT_TRUE(result_.bidder_report_url.is_empty());
+  EXPECT_FALSE(result_.seller_report_url);
+  EXPECT_FALSE(result_.bidder_report_url);
   EXPECT_EQ(6, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(6, result_.bidder2_bid_count);
@@ -1618,9 +1618,9 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileScoring) {
   auction_run_loop_->Run();
 
   // No bidder won, Bidder1 crashed.
-  EXPECT_TRUE(result_.ad_url.is_empty());
-  EXPECT_TRUE(result_.seller_report_url.is_empty());
-  EXPECT_TRUE(result_.bidder_report_url.is_empty());
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.seller_report_url);
+  EXPECT_FALSE(result_.bidder_report_url);
   EXPECT_EQ(5, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
@@ -1667,9 +1667,9 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   auction_run_loop_->Run();
 
   // No bidder won, Bidder1 crashed.
-  EXPECT_TRUE(result_.ad_url.is_empty());
-  EXPECT_TRUE(result_.seller_report_url.is_empty());
-  EXPECT_TRUE(result_.bidder_report_url.is_empty());
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.seller_report_url);
+  EXPECT_FALSE(result_.bidder_report_url);
   EXPECT_EQ(5, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
@@ -1758,9 +1758,9 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
     auction_run_loop_->Run();
 
     // No bidder won, seller crashed.
-    EXPECT_TRUE(result_.ad_url.is_empty());
-    EXPECT_TRUE(result_.seller_report_url.is_empty());
-    EXPECT_TRUE(result_.bidder_report_url.is_empty());
+    EXPECT_FALSE(result_.ad_url);
+    EXPECT_FALSE(result_.seller_report_url);
+    EXPECT_FALSE(result_.bidder_report_url);
     EXPECT_EQ(5, result_.bidder1_bid_count);
     EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
     EXPECT_EQ(5, result_.bidder2_bid_count);
@@ -1869,9 +1869,9 @@ TEST_F(AuctionRunnerTest, BadBid) {
     EXPECT_EQ(test_case.expected_error_message, TakeBadMessage());
 
     // No bidder won.
-    EXPECT_TRUE(result_.ad_url.is_empty());
-    EXPECT_TRUE(result_.seller_report_url.is_empty());
-    EXPECT_TRUE(result_.bidder_report_url.is_empty());
+    EXPECT_FALSE(result_.ad_url);
+    EXPECT_FALSE(result_.seller_report_url);
+    EXPECT_FALSE(result_.bidder_report_url);
     EXPECT_EQ(5, result_.bidder1_bid_count);
     EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
     EXPECT_EQ(5, result_.bidder2_bid_count);
@@ -1914,9 +1914,9 @@ TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
   EXPECT_EQ("Invalid seller report URL", TakeBadMessage());
 
   // No bidder won.
-  EXPECT_TRUE(result_.ad_url.is_empty());
-  EXPECT_TRUE(result_.seller_report_url.is_empty());
-  EXPECT_TRUE(result_.bidder_report_url.is_empty());
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.seller_report_url);
+  EXPECT_FALSE(result_.bidder_report_url);
   EXPECT_EQ(5, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
@@ -1959,9 +1959,9 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
   EXPECT_EQ("Invalid bidder report URL", TakeBadMessage());
 
   // No bidder won.
-  EXPECT_TRUE(result_.ad_url.is_empty());
-  EXPECT_TRUE(result_.seller_report_url.is_empty());
-  EXPECT_TRUE(result_.bidder_report_url.is_empty());
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.seller_report_url);
+  EXPECT_FALSE(result_.bidder_report_url);
   EXPECT_EQ(5, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);

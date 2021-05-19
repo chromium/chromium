@@ -11,7 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
-#include "content/browser/interest_group/ad_auction.h"
+#include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_sandbox_type.h"
 #include "content/browser/storage_partition_impl.h"
@@ -91,6 +91,40 @@ void FetchReport(network::mojom::URLLoaderFactory* url_loader_factory,
           std::move(simple_url_loader)));
 }
 
+bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config) {
+  // The seller origin has to be HTTPS and match the `decision_logic_url`
+  // origin.
+  if (config.seller.scheme() != url::kHttpsScheme ||
+      !config.decision_logic_url.SchemeIs(url::kHttpsScheme) ||
+      config.seller != url::Origin::Create(config.decision_logic_url)) {
+    return false;
+  }
+
+  if (!config.interest_group_buyers ||
+      config.interest_group_buyers->is_all_buyers()) {
+    return false;
+  }
+  DCHECK(config.interest_group_buyers->is_buyers());
+
+  // All interest group owners must be HTTPS.
+  for (const url::Origin& buyer : config.interest_group_buyers->get_buyers()) {
+    if (buyer.scheme() != url::kHttpsScheme)
+      return false;
+  }
+
+  // All buyer signals must be for listed buyers.
+  if (config.per_buyer_signals) {
+    for (const auto& it : config.per_buyer_signals.value()) {
+      if (!base::Contains(config.interest_group_buyers->get_buyers(),
+                          it.first)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
 }  // namespace
 
 AdAuctionServiceImpl::AdAuctionServiceImpl(
@@ -113,19 +147,51 @@ void AdAuctionServiceImpl::CreateMojoService(
 
 void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
                                         RunAdAuctionCallback callback) {
-  std::unique_ptr<AdAuction> auction = std::make_unique<AdAuction>(
-      this, std::move(config),
+  if (!IsAuctionValid(*config)) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  const url::Origin& frame_origin = origin();
+  BrowserContext* browser_context = render_frame_host()->GetBrowserContext();
+  // If the interest group API is not allowed for this seller do nothing.
+  if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
+          browser_context, frame_origin, config->seller.GetURL())) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  // Filter out buyers for whom the interest group API is not allowed.
+  std::vector<url::Origin> filtered_buyers;
+  const auto& buyers = config->interest_group_buyers->get_buyers();
+  std::copy_if(
+      buyers.begin(), buyers.end(), std::back_inserter(filtered_buyers),
+      [browser_context, &frame_origin](const url::Origin& buyer) {
+        return GetContentClient()->browser()->IsInterestGroupAPIAllowed(
+            browser_context, frame_origin, buyer.GetURL());
+      });
+
+  // If there are no buyers (either due to filtering, or in the original auction
+  // request), fail the auction.
+  if (filtered_buyers.empty()) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  // TODO(mmenke): This should be top frame origin, not frame origin.
+  auto browser_signals =
+      auction_worklet::mojom::BrowserSignals::New(frame_origin, config->seller);
+
+  std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
+      this,
+      static_cast<StoragePartitionImpl*>(
+          render_frame_host()->GetStoragePartition())
+          ->GetInterestGroupStorage(),
+      std::move(config), std::move(filtered_buyers), std::move(browser_signals),
+      frame_origin,
       base::BindOnce(&AdAuctionServiceImpl::OnAuctionComplete,
                      base::Unretained(this), std::move(callback)));
-  AdAuction* auction_ptr = auction.get();
   auctions_.insert(std::move(auction));
-  auction_ptr->StartAuction();
-}
-
-InterestGroupManager* AdAuctionServiceImpl::GetInterestGroupManager() {
-  return static_cast<StoragePartitionImpl*>(
-             render_frame_host()->GetStoragePartition())
-      ->GetInterestGroupStorage();
 }
 
 network::mojom::URLLoaderFactory*
@@ -186,16 +252,25 @@ AdAuctionServiceImpl::GetWorkletService() {
 
 void AdAuctionServiceImpl::OnAuctionComplete(
     RunAdAuctionCallback callback,
-    AdAuction* auction,
+    AuctionRunner* auction,
     absl::optional<GURL> render_url,
     absl::optional<GURL> bidder_report_url,
-    absl::optional<GURL> seller_report_url) {
+    absl::optional<GURL> seller_report_url,
+    std::vector<std::string> errors) {
+  // Delete the AuctionRunner. Since all arguments are passed by value, they're
+  // all safe to used after this has been done.
   auto auction_it = auctions_.find(auction);
   DCHECK(auction_it != auctions_.end());
   auctions_.erase(auction_it);
 
   if (auctions_.empty())
     auction_worklet_service_.reset();
+
+  // Forward debug information to devtools.
+  for (const std::string& error : errors) {
+    devtools_instrumentation::LogWorkletError(
+        static_cast<RenderFrameHostImpl*>(render_frame_host()), error);
+  }
 
   std::move(callback).Run(render_url);
 

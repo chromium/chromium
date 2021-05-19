@@ -25,7 +25,7 @@
 
 namespace content {
 
-class AdAuction;
+class AuctionRunner;
 class RenderFrameHost;
 
 // Implements the AdAuctionService service called by Blink code.
@@ -42,8 +42,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // blink::mojom::AdAuctionService.
   void RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
                     RunAdAuctionCallback callback) override;
-
-  InterestGroupManager* GetInterestGroupManager();
 
   // AuctionRunner::Delegate implementation:
   network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory() override;
@@ -65,15 +63,16 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
   // Deletes `auction`.
   void OnAuctionComplete(RunAdAuctionCallback callback,
-                         AdAuction* auction,
+                         AuctionRunner* auction,
                          absl::optional<GURL> render_url,
                          absl::optional<GURL> bidder_report_url,
-                         absl::optional<GURL> seller_report_url);
+                         absl::optional<GURL> seller_report_url,
+                         std::vector<std::string> errors);
 
   // This must be above `auction_worklet_service_`, since auctions may own
   // callbacks over the AuctionWorkletService pipe, and mojo pipes must be
   // destroyed before any callbacks that are bound to them.
-  std::set<std::unique_ptr<AdAuction>, base::UniquePtrComparator> auctions_;
+  std::set<std::unique_ptr<AuctionRunner>, base::UniquePtrComparator> auctions_;
 
   mojo::Remote<auction_worklet::mojom::AuctionWorkletService>
       auction_worklet_service_;

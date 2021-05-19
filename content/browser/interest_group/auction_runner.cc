@@ -447,7 +447,8 @@ void AuctionRunner::FailAuction() {
   DCHECK(callback_);
   ClosePipes();
 
-  std::move(callback_).Run(GURL(), GURL(), GURL(), errors_);
+  std::move(callback_).Run(this, absl::nullopt, absl::nullopt, absl::nullopt,
+                           errors_);
 }
 
 void AuctionRunner::FailAuctionWithError(std::string error) {
@@ -481,10 +482,9 @@ void AuctionRunner::ReportSuccess(const BidState* state) {
                                                     bidder->group->name);
   }
 
-  std::move(callback_).Run(
-      state->bid_result->render_url,
-      bidder_report_url_.has_value() ? *bidder_report_url_ : GURL(),
-      seller_report_url_.has_value() ? *seller_report_url_ : GURL(), errors_);
+  std::move(callback_).Run(this, state->bid_result->render_url,
+                           std::move(bidder_report_url_),
+                           std::move(seller_report_url_), std::move(errors_));
 }
 
 void AuctionRunner::ClosePipes() {
