@@ -108,6 +108,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Assistive.Disabled.MultiWord"
+    enum="IMEAssistiveDisabledReason" expires_after="2022-05-31">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The reason for multi word suggestions not being shown to users. Recorded
+    when the surrounding text could trigger multi word suggestions but the
+    feature was disabled. Only the first applicable reason in
+    IMEAssistiveDisabledReason enum is recorded per occurrence.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.Assistive.Disabled.PersonalInfo"
     enum="IMEAssistiveDisabledReason" expires_after="2021-09-19">
   <owner>myy@google.com</owner>
