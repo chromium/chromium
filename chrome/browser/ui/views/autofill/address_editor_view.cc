@@ -50,63 +50,44 @@ void AddressEditorView::SetTextInputFieldValueForTesting(
 
 void AddressEditorView::CreateEditorView() {
   text_fields_.clear();
-  constexpr int kRowHorizontalInsets = 16;
 
-  // The editor view is padded horizontally.
-  SetBorder(views::CreateEmptyBorder(0, kRowHorizontalInsets, 0,
-                                     kRowHorizontalInsets));
-
-  // All views have fixed size except the Field which stretches. The fixed
-  // padding at the end is computed so that Field views have a minimum of
-  // 176/272dp (short/long fields) as per spec.
-  // ______________________________________________________
-  // |Label | 16dp pad | Field (flex) |  Computed Padding |
-  // |______|__________|______________|___________________|
+  // Field views have a width of 196/260dp (short/long fields) as per spec.
+  // __________________________________
+  // |Label | 16dp pad | Field (flex) |
+  // |______|__________|______________|
   constexpr int kLabelWidth = 140;
-  constexpr int kDialogMinWidth = 512;
   // This is the horizontal padding between the label and the field.
   constexpr int kLabelInputFieldHorizontalPadding = 16;
-  constexpr int kShortFieldMinimumWidth = 176;
-  constexpr int kLongFieldMinimumWidth = 272;
+  constexpr int kShortFieldWidth = 196;
+  constexpr int kLongFieldWidth = 260;
 
   using ColumnSize = views::GridLayout::ColumnSize;
   views::GridLayout* editor_layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());
   // Column set for short fields.
-  views::ColumnSet* columns_short = editor_layout->AddColumnSet(0);
+  views::ColumnSet* columns_short = editor_layout->AddColumnSet(
+      /*id=*/static_cast<int>(EditorField::LengthHint::HINT_SHORT));
   columns_short->AddColumn(
       views::GridLayout::LEADING, views::GridLayout::CENTER,
       views::GridLayout::kFixedSize, ColumnSize::kFixed, kLabelWidth, 0);
   columns_short->AddPaddingColumn(views::GridLayout::kFixedSize,
                                   kLabelInputFieldHorizontalPadding);
-  // The field view column stretches.
   columns_short->AddColumn(views::GridLayout::LEADING,
-                           views::GridLayout::CENTER, 1.0,
-                           ColumnSize::kUsePreferred, 0, 0);
-  // The padding at the end is fixed, computed to make sure the short field
-  // maintains its minimum width.
-  int short_padding = kDialogMinWidth - kShortFieldMinimumWidth - kLabelWidth -
-                      (2 * kRowHorizontalInsets) -
-                      kLabelInputFieldHorizontalPadding;
-  columns_short->AddPaddingColumn(views::GridLayout::kFixedSize, short_padding);
+                           views::GridLayout::CENTER,
+                           views::GridLayout::kFixedSize, ColumnSize::kFixed,
+                           kShortFieldWidth, /*min_width=*/0);
 
   // Column set for long fields.
-  views::ColumnSet* columns_long = editor_layout->AddColumnSet(1);
+  views::ColumnSet* columns_long = editor_layout->AddColumnSet(
+      /*id=*/static_cast<int>(EditorField::LengthHint::HINT_LONG));
   columns_long->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
                           views::GridLayout::kFixedSize, ColumnSize::kFixed,
                           kLabelWidth, 0);
   columns_long->AddPaddingColumn(views::GridLayout::kFixedSize,
                                  kLabelInputFieldHorizontalPadding);
-  // The field view column stretches.
   columns_long->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                          1.0, ColumnSize::kUsePreferred, 0, 0);
-
-  // The padding at the end is fixed, computed to make sure the long field
-  // maintains its minimum width.
-  int long_padding = kDialogMinWidth - kLongFieldMinimumWidth - kLabelWidth -
-                     (2 * kRowHorizontalInsets) -
-                     kLabelInputFieldHorizontalPadding;
-  columns_long->AddPaddingColumn(views::GridLayout::kFixedSize, long_padding);
+                          views::GridLayout::kFixedSize, ColumnSize::kFixed,
+                          kLongFieldWidth, /*min_width=*/0);
 
   for (const auto& field : controller_->editor_fields()) {
     CreateInputField(editor_layout, field);
@@ -119,13 +100,12 @@ void AddressEditorView::CreateEditorView() {
 // +----------------------------------------------------------+
 views::View* AddressEditorView::CreateInputField(views::GridLayout* layout,
                                                  const EditorField& field) {
-  int column_set =
-      field.length_hint == EditorField::LengthHint::HINT_SHORT ? 0 : 1;
-
   // This is the top padding for every row.
   constexpr int kInputRowSpacing = 6;
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, column_set,
-                              views::GridLayout::kFixedSize, kInputRowSpacing);
+  layout->StartRowWithPadding(
+      views::GridLayout::kFixedSize,
+      /*column_set_id=*/static_cast<int>(field.length_hint),
+      views::GridLayout::kFixedSize, kInputRowSpacing);
 
   std::unique_ptr<views::Label> label =
       std::make_unique<views::Label>(field.label);
