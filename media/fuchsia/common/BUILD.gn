@@ -6,8 +6,13 @@ assert(is_fuchsia)
 
 source_set("common") {
   sources = [
+    "decrypting_sysmem_buffer_stream.cc",
+    "decrypting_sysmem_buffer_stream.h",
+    "passthrough_sysmem_buffer_stream.cc",
+    "passthrough_sysmem_buffer_stream.h",
     "stream_processor_helper.cc",
     "stream_processor_helper.h",
+    "sysmem_buffer_stream.h",
     "sysmem_client.cc",
     "sysmem_client.h",
     "vmo_buffer.cc",

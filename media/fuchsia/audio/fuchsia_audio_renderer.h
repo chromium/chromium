@@ -15,18 +15,20 @@
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_export.h"
 #include "media/base/time_source.h"
-#include "media/fuchsia/common/vmo_buffer_writer_queue.h"
+#include "media/fuchsia/common/sysmem_buffer_stream.h"
+#include "media/fuchsia/common/sysmem_client.h"
+#include "media/fuchsia/common/vmo_buffer.h"
 
 namespace media {
 
-class DecryptingDemuxerStream;
 class MediaLog;
 
 // AudioRenderer implementation that output audio to AudioConsumer interface on
 // Fuchsia. Unlike the default AudioRendererImpl it doesn't decode audio and
 // sends encoded stream directly to AudioConsumer provided by the platform.
 class MEDIA_EXPORT FuchsiaAudioRenderer : public AudioRenderer,
-                                          public TimeSource {
+                                          public TimeSource,
+                                          public SysmemBufferStream::Sink {
  public:
   FuchsiaAudioRenderer(MediaLog* media_log,
                        fidl::InterfaceHandle<fuchsia::media::AudioConsumer>
@@ -84,12 +86,14 @@ class MEDIA_EXPORT FuchsiaAudioRenderer : public AudioRenderer,
   // |volume_|.
   void UpdateVolume();
 
+  // Callback for input_buffer_collection_.AcquireBuffers().
+  void OnBuffersAcquired(
+      std::vector<VmoBuffer> buffers,
+      const fuchsia::sysmem::SingleBufferSettings& buffer_settings);
+
   // Initializes |stream_sink_|. Called during initialization and every time
   // configuration changes.
-  void InitializeStreamSink(const AudioDecoderConfig& config);
-
-  // Callback for DecryptingDemuxerStream::Initialize().
-  void OnDecryptorInitialized(PipelineStatus status);
+  void InitializeStreamSink();
 
   // Helpers to receive AudioConsumerStatus from the |audio_consumer_|.
   void RequestAudioConsumerStatus();
@@ -101,10 +105,8 @@ class MEDIA_EXPORT FuchsiaAudioRenderer : public AudioRenderer,
   void OnDemuxerStreamReadDone(DemuxerStream::Status status,
                                scoped_refptr<DecoderBuffer> buffer);
 
-  // Callbacks for VmoBufferWriterQueue.
-  void SendInputPacket(const DecoderBuffer* buffer,
-                       StreamProcessorHelper::IoPacket packet);
-  void ProcessEndOfStream();
+  // Sends the specified packet to |stream_sink_|.
+  void SendInputPacket(StreamProcessorHelper::IoPacket packet);
 
   // Result handler for StreamSink::SendPacket().
   void OnStreamSendDone(
@@ -134,7 +136,14 @@ class MEDIA_EXPORT FuchsiaAudioRenderer : public AudioRenderer,
   base::TimeDelta CurrentMediaTimeLocked()
       EXCLUSIVE_LOCKS_REQUIRED(timeline_lock_);
 
-  MediaLog* const media_log_;
+  // SysmemBufferStream::Sink implementation.
+  void OnSysmemBufferStreamBufferCollectionToken(
+      fuchsia::sysmem::BufferCollectionTokenPtr token) override;
+  void OnSysmemBufferStreamOutputPacket(
+      StreamProcessorHelper::IoPacket packet) override;
+  void OnSysmemBufferStreamEndOfStream() override;
+  void OnSysmemBufferStreamError() override;
+  void OnSysmemBufferStreamNoKey() override;
 
   // Handle for |audio_consumer_|. It's stored here until Initialize() is
   // called.
@@ -155,8 +164,6 @@ class MEDIA_EXPORT FuchsiaAudioRenderer : public AudioRenderer,
   // Initialize() completion callback.
   PipelineStatusCallback init_cb_;
 
-  std::unique_ptr<DecryptingDemuxerStream> decrypting_demuxer_stream_;
-
   // Indicates that StartPlaying() has been called. Note that playback doesn't
   // start until TimeSource::StartTicking() is called.
   bool renderer_started_ = false;
@@ -166,7 +173,18 @@ class MEDIA_EXPORT FuchsiaAudioRenderer : public AudioRenderer,
   base::TimeDelta last_packet_timestamp_ = base::TimeDelta::Min();
   base::OneShotTimer read_timer_;
 
-  VmoBufferWriterQueue input_queue_;
+  SysmemAllocatorClient sysmem_allocator_{"CrFuchsiaAudioRenderer"};
+  std::unique_ptr<SysmemCollectionClient> input_buffer_collection_;
+
+  std::unique_ptr<SysmemBufferStream> sysmem_buffer_stream_;
+
+  // VmoBuffers for the buffers |input_buffer_collection_|.
+  std::vector<VmoBuffer> input_buffers_;
+
+  // Packets produced before the |stream_sink_| is connected. They are sent as
+  // soon as input buffers are acquired and |stream_sink_| is connected in
+  // OnBuffersAcquired().
+  std::list<StreamProcessorHelper::IoPacket> delayed_packets_;
 
   // Lead time range requested by the |audio_consumer_|. Initialized to  the
   // [100ms, 500ms] until the initial AudioConsumerStatus is received.

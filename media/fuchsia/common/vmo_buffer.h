@@ -77,9 +77,14 @@ class MEDIA_EXPORT VmoBuffer {
   // invalidated.
   void FlushCache(size_t flush_offset, size_t flush_size, bool invalidate);
 
+  // Duplicates VMO.
+  zx::vmo Duplicate(bool writable);
+
  private:
   // Returns size of the mapped region.
   size_t mapped_size();
+
+  zx::vmo vmo_;
 
   uint8_t* base_address_ = nullptr;
 

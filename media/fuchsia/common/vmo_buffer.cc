@@ -99,6 +99,7 @@ bool VmoBuffer::Initialize(zx::vmo vmo,
     return false;
   }
 
+  vmo_ = std::move(vmo);
   base_address_ = reinterpret_cast<uint8_t*>(addr);
 
   return true;
@@ -152,6 +153,19 @@ void VmoBuffer::FlushCache(size_t flush_offset,
 
 size_t VmoBuffer::mapped_size() {
   return base::bits::Align(offset_ + size_, base::GetPageSize());
+}
+
+zx::vmo VmoBuffer::Duplicate(bool writable) {
+  zx_rights_t rights = ZX_RIGHT_DUPLICATE | ZX_RIGHT_TRANSFER | ZX_RIGHT_READ |
+                       ZX_RIGHT_MAP | ZX_RIGHT_GET_PROPERTY;
+  if (writable)
+    rights |= ZX_RIGHT_WRITE;
+
+  zx::vmo vmo;
+  zx_status_t status = vmo_.duplicate(rights, &vmo);
+  ZX_CHECK(status == ZX_OK, status) << "zx_handle_duplicate";
+
+  return vmo;
 }
 
 }  // namespace media
