@@ -42,6 +42,7 @@
 #include "build/build_config.h"
 #include "fuchsia/engine/fake_context.h"
 #include "fuchsia/engine/switches.h"
+#include "fuchsia/engine/web_instance_host/web_instance_host.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -157,7 +158,7 @@ class FakeSysLauncher : public fuchsia::sys::testing::Launcher_TestBase {
     // CreateContextParams from being mapped.
     // Launch the component via a fake manifest identical to the one used for
     // web instances, but which runs this test executable.
-    EXPECT_EQ(launch_info.url, ContextProviderImpl::kWebInstanceComponentUrl);
+    EXPECT_EQ(launch_info.url, cr_fuchsia::WebInstanceHost::kComponentUrl);
     launch_info.url =
         "fuchsia-pkg://fuchsia.com/web_engine_unittests#meta/"
         "web_engine_unittests_fake_instance.cmx";
@@ -329,18 +330,20 @@ class ContextProviderImplTest : public base::MultiProcessTest {
       fidl::InterfacePtr<fuchsia::web::Context>* context) {
     // Call a Context method and wait for it to invoke a listener call.
     base::RunLoop run_loop;
-    context->set_error_handler([&run_loop](zx_status_t status) {
-      run_loop.Quit();
-      ZX_LOG(ERROR, status) << " Context lost.";
-      ADD_FAILURE();
-    });
+    context->set_error_handler(
+        [quit_loop = run_loop.QuitClosure()](zx_status_t status) {
+          quit_loop.Run();
+          ZX_LOG(ERROR, status) << " Context lost.";
+          ADD_FAILURE();
+        });
 
     fuchsia::web::FramePtr frame_ptr;
-    frame_ptr.set_error_handler([&run_loop](zx_status_t status) {
-      run_loop.Quit();
-      ZX_LOG(ERROR, status) << " Frame lost.";
-      ADD_FAILURE();
-    });
+    frame_ptr.set_error_handler(
+        [quit_loop = run_loop.QuitClosure()](zx_status_t status) {
+          quit_loop.Run();
+          ZX_LOG(ERROR, status) << " Frame lost.";
+          ADD_FAILURE();
+        });
     (*context)->CreateFrame(frame_ptr.NewRequest());
 
     // Create a Frame and expect to see a navigation event.
@@ -360,10 +363,11 @@ class ContextProviderImplTest : public base::MultiProcessTest {
   void CheckContextUnresponsive(
       fidl::InterfacePtr<fuchsia::web::Context>* context) {
     base::RunLoop run_loop;
-    context->set_error_handler([&run_loop](zx_status_t status) {
-      run_loop.Quit();
-      EXPECT_EQ(status, ZX_ERR_PEER_CLOSED);
-    });
+    context->set_error_handler(
+        [quit_loop = run_loop.QuitClosure()](zx_status_t status) {
+          quit_loop.Run();
+          EXPECT_EQ(status, ZX_ERR_PEER_CLOSED);
+        });
 
     fuchsia::web::FramePtr frame;
     (*context)->CreateFrame(frame.NewRequest());
@@ -429,10 +433,11 @@ TEST_F(ContextProviderImplTest, CreateValidatesServiceDirectory) {
   fuchsia::web::CreateContextParams create_params;
   provider_ptr_->Create(std::move(create_params), context.NewRequest());
   base::RunLoop run_loop;
-  context.set_error_handler([&run_loop](zx_status_t status) {
-    run_loop.Quit();
-    EXPECT_EQ(status, ZX_ERR_INVALID_ARGS);
-  });
+  context.set_error_handler(
+      [quit_loop = run_loop.QuitClosure()](zx_status_t status) {
+        quit_loop.Run();
+        EXPECT_EQ(status, ZX_ERR_INVALID_ARGS);
+      });
   run_loop.Run();
 }
 
@@ -447,10 +452,11 @@ TEST_F(ContextProviderImplTest, CreateValidatesDataDirectory) {
           zx::channel(socket1.release())));
   provider_ptr_->Create(std::move(create_params), context.NewRequest());
   base::RunLoop run_loop;
-  context.set_error_handler([&run_loop](zx_status_t status) {
-    run_loop.Quit();
-    EXPECT_TRUE(status == ZX_ERR_PEER_CLOSED);
-  });
+  context.set_error_handler(
+      [quit_loop = run_loop.QuitClosure()](zx_status_t status) {
+        quit_loop.Run();
+        EXPECT_TRUE(status == ZX_ERR_PEER_CLOSED);
+      });
   run_loop.Run();
 }
 
@@ -465,10 +471,11 @@ TEST_F(ContextProviderImplTest, CreateValidatesDrmFlags) {
     *create_params.mutable_cdm_data_directory() = OpenCacheDirectory();
     provider_ptr_->Create(std::move(create_params), context.NewRequest());
     base::RunLoop run_loop;
-    context.set_error_handler([&run_loop](zx_status_t status) {
-      run_loop.Quit();
-      EXPECT_EQ(status, ZX_ERR_NOT_SUPPORTED);
-    });
+    context.set_error_handler(
+        [quit_loop = run_loop.QuitClosure()](zx_status_t status) {
+          quit_loop.Run();
+          EXPECT_EQ(status, ZX_ERR_NOT_SUPPORTED);
+        });
     run_loop.Run();
   }
 
@@ -481,10 +488,11 @@ TEST_F(ContextProviderImplTest, CreateValidatesDrmFlags) {
     *create_params.mutable_cdm_data_directory() = OpenCacheDirectory();
     provider_ptr_->Create(std::move(create_params), context.NewRequest());
     base::RunLoop run_loop;
-    context.set_error_handler([&run_loop](zx_status_t status) {
-      run_loop.Quit();
-      EXPECT_EQ(status, ZX_ERR_NOT_SUPPORTED);
-    });
+    context.set_error_handler(
+        [quit_loop = run_loop.QuitClosure()](zx_status_t status) {
+          quit_loop.Run();
+          EXPECT_EQ(status, ZX_ERR_NOT_SUPPORTED);
+        });
     run_loop.Run();
   }
 
@@ -499,11 +507,12 @@ TEST_F(ContextProviderImplTest, CreateValidatesDrmFlags) {
     *create_params.mutable_cdm_data_directory() = OpenCacheDirectory();
     provider_ptr_->Create(std::move(create_params), context.NewRequest());
     base::RunLoop run_loop;
-    context.set_error_handler([&run_loop](zx_status_t status) {
-      run_loop.Quit();
-      ZX_LOG(ERROR, status);
-      ADD_FAILURE();
-    });
+    context.set_error_handler(
+        [quit_loop = run_loop.QuitClosure()](zx_status_t status) {
+          quit_loop.Run();
+          ZX_LOG(ERROR, status);
+          ADD_FAILURE();
+        });
     // Spin the loop to allow CreateContext() to be handled, and the |context|
     // channel to be disconnected, in case of failure.
     run_loop.RunUntilIdle();
