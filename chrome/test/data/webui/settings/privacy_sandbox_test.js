@@ -121,6 +121,15 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
    */
   let testPrivacySandboxBrowserProxy;
 
+  function setDefaultFlocID() {
+    testPrivacySandboxBrowserProxy.setResultFor('getFlocId', Promise.resolve({
+      trialStatus: 'test-trial-status',
+      cohort: 'test-id',
+      nextUpdate: 'test-time',
+      canReset: true,
+    }));
+  }
+
   suiteSetup(function() {
     loadTimeData.overrideValues({
       privacySandboxSettings2Enabled: true,
@@ -134,12 +143,13 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
         TestBrowserProxy.fromClass(PrivacySandboxBrowserProxy);
     PrivacySandboxBrowserProxyImpl.instance_ = testPrivacySandboxBrowserProxy;
 
-    testPrivacySandboxBrowserProxy.setResultFor(
-        'getFlocId', Promise.resolve('test-id'));
+    setDefaultFlocID();
 
     page = /** @type {!PrivacySandboxAppElement} */
         (document.createElement('privacy-sandbox-app'));
     document.body.appendChild(page);
+
+    page.prefs = {generated: {floc_enabled: {value: true}}};
 
     return flushTasks();
   });
@@ -149,16 +159,44 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
   });
 
   test('flocId', async function() {
+    // The page should automatically retrieve the FLoC state when it is attached
+    // to the document.
     await testPrivacySandboxBrowserProxy.whenCalled('getFlocId');
-    assertEquals('test-id', page.$$('#flocId').textContent);
+    assertEquals(
+        'test-trial-status', page.$$('#flocStatus').textContent.trim());
+    assertEquals('test-id', page.$$('#flocId').textContent.trim());
+    assertEquals('test-time', page.$$('#flocUpdatedOn').textContent.trim());
+    assertFalse(page.$$('#resetFlocIdButton').disabled);
 
-    webUIListenerCallback('floc-id-changed', 'new-test-id');
+    // The page should listen for changes via a WebUI listener.
+    webUIListenerCallback('floc-id-changed', {
+      trialStatus: 'new-test-trial-status',
+      cohort: 'new-test-id',
+      nextUpdate: 'new-test-time',
+      canReset: false,
+    });
+
     await flushTasks();
-    assertEquals('new-test-id', page.$$('#flocId').textContent);
+    assertEquals(
+        'new-test-trial-status', page.$$('#flocStatus').textContent.trim());
+    assertEquals('new-test-id', page.$$('#flocId').textContent.trim());
+    assertEquals('new-test-time', page.$$('#flocUpdatedOn').textContent.trim());
+    assertTrue(page.$$('#resetFlocIdButton').disabled);
   });
 
   test('resetFlocId', function() {
     page.$$('#resetFlocIdButton').click();
     return testPrivacySandboxBrowserProxy.whenCalled('resetFlocId');
+  });
+
+  test('prefObserver', async function() {
+    await testPrivacySandboxBrowserProxy.whenCalled('getFlocId');
+    testPrivacySandboxBrowserProxy.resetResolver('getFlocId');
+
+    // When the FLoC generated preference is changed, the page should re-query
+    // for the FLoC id.
+    setDefaultFlocID();
+    page.set('prefs.generated.floc_enabled.value', false);
+    await testPrivacySandboxBrowserProxy.whenCalled('getFlocId');
   });
 });

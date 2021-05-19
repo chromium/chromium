@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/privacy_sandbox_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/federated_learning/floc_id_provider_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -24,12 +25,38 @@ class MockPrivacySandboxObserver : public PrivacySandboxSettings::Observer {
   MOCK_METHOD1(OnFlocDataAccessibleSinceUpdated, void(bool));
 };
 
+// Confirms that the |floc_id| dictionary provided matches the current FLoC
+// information for |profile|.
+void ValidateFlocId(const base::Value* floc_id, Profile* profile) {
+  auto* privacy_sandbox_settings =
+      PrivacySandboxSettingsFactory::GetForProfile(profile);
+  auto* floc_id_provider =
+      federated_learning::FlocIdProviderFactory::GetForProfile(profile);
+
+  ASSERT_TRUE(floc_id->is_dict());
+  EXPECT_EQ(
+      base::UTF16ToUTF8(privacy_sandbox_settings->GetFlocStatusForDisplay()),
+      *floc_id->FindStringPath("trialStatus"));
+  EXPECT_EQ(base::UTF16ToUTF8(privacy_sandbox_settings->GetFlocIdForDisplay()),
+            *floc_id->FindStringPath("cohort"));
+  EXPECT_EQ(
+      base::UTF16ToUTF8(PrivacySandboxSettings::GetFlocIdNextUpdateForDisplay(
+          floc_id_provider, profile->GetPrefs(), base::Time::Now())),
+      *floc_id->FindStringPath("nextUpdate"));
+  EXPECT_EQ(privacy_sandbox_settings->IsFlocIdResettable(),
+            floc_id->FindBoolPath("canReset"));
+}
+
 }  // namespace
 
 namespace settings {
 
 class PrivacySandboxHandlerTest : public testing::Test {
  public:
+  PrivacySandboxHandlerTest()
+      : browser_task_environment_(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(web_contents_.get());
@@ -74,9 +101,7 @@ TEST_F(PrivacySandboxHandlerTest, GetFlocId) {
   EXPECT_EQ(kCallbackId, data.arg1()->GetString());
   EXPECT_EQ("cr.webUIResponse", data.function_name());
   ASSERT_TRUE(data.arg2()->GetBool());
-  EXPECT_EQ(
-      base::UTF16ToUTF8(privacy_sandbox_settings()->GetFlocIdForDisplay()),
-      data.arg3()->GetString());
+  ValidateFlocId(data.arg3(), profile());
 }
 
 TEST_F(PrivacySandboxHandlerTest, ResetFlocId) {
@@ -97,9 +122,7 @@ TEST_F(PrivacySandboxHandlerTest, ResetFlocId) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
   EXPECT_EQ("floc-id-changed", data.arg1()->GetString());
-  EXPECT_EQ(
-      base::UTF16ToUTF8(privacy_sandbox_settings()->GetFlocIdForDisplay()),
-      data.arg2()->GetString());
+  ValidateFlocId(data.arg2(), profile());
 }
 
 }  // namespace settings

@@ -1266,11 +1266,14 @@
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_EXPLANATION" desc="Explanation of Federated Learning of Cohorts (FLoC) which appears at the top of the FLoC settings card">
     FLoC provides a privacy-preserving mechanism for interest-based ad selection.
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_STATUS" desc="The text used to label the user's current Federated Learning of Cohorts (FLoC) trial status">
+    Status
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_COHORT" desc="The text used to label the user's current Federated Learning of Cohorts (FLoC) cohort">
     FLoC ID
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_COHORT_UPDATED" desc="The text used to label when the user's current Federated Learning of Cohorts (FLoC) cohort was last updated">
-    Updated
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_COHORT_NEXT_UPDATE" desc="The text used to label when the user's current Federated Learning of Cohorts (FLoC) cohort will next be updated">
+    Next Update
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_RESET_COHORT" desc="The text used to label the button which allows a user to reset their Federated Learning of Cohorts (FLoC) cohort identifier">
     Reset ID

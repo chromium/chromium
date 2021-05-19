@@ -6,9 +6,21 @@
 import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
+/**
+ * Information about the user's current FLoC cohort identifier.
+ * @typedef {{trialStatus: string,
+ *            cohort: string,
+ *            nextUpdate: string,
+ *            canReset: boolean}}
+ */
+export let FlocIdentifier;
+
 /** @interface */
 export class PrivacySandboxBrowserProxy {
-  /** @return {!Promise<string>} The user's current FLoC cohort identifier. */
+  /**
+   * Gets the user's current FLoC cohort identifier information.
+   * @return {!Promise<!FlocIdentifier>}
+   */
   getFlocId() {}
 
   /** Resets the user's FLoC cohort identifier. */
