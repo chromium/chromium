@@ -996,7 +996,7 @@ HICON HWNDMessageHandler::GetSmallWindowIcon() const {
 LRESULT HWNDMessageHandler::OnWndProc(UINT message,
                                       WPARAM w_param,
                                       LPARAM l_param) {
-  TRACE_EVENT("ui", "HWNDMessageHandler::OnWndProc",
+  TRACE_EVENT("ui,toplevel", "HWNDMessageHandler::OnWndProc",
               [&](perfetto::EventContext ctx) {
                 perfetto::protos::pbzero::ChromeWindowHandleEventInfo* args =
                     ctx.event()->set_chrome_window_handle_event_info();
