@@ -10,7 +10,7 @@
 
 namespace web_app {
 
-#if !(defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX))
+#if !defined(OS_WIN)
 // Registers a protocol handler for the web app with the OS.
 void RegisterProtocolHandlersWithOs(
     const AppId& app_id,
@@ -19,17 +19,14 @@ void RegisterProtocolHandlersWithOs(
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
     base::OnceCallback<void(bool)> callback) {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), /*success=*/false));
+      FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
 }
 
-// Unregisters a protocol handler for the web app with the OS.
+// Unregisters protocol handlers for a web app with the OS.
 //
 // TODO(crbug.com/1174805): Add a callback as part of the protocol handling
 // unregistration flow.
-void UnregisterProtocolHandlersWithOs(
-    const AppId& app_id,
-    Profile* profile,
-    std::vector<apps::ProtocolHandlerInfo> protocol_handlers) {}
+void UnregisterProtocolHandlersWithOs(const AppId& app_id, Profile* profile) {}
 #endif
 
 }  // namespace web_app

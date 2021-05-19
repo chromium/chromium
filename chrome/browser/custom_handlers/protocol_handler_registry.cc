@@ -25,7 +25,6 @@
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 
 using content::BrowserThread;
 using content::ChildProcessSecurityPolicy;
@@ -118,30 +117,6 @@ void ProtocolHandlerRegistry::Delegate::CheckDefaultClientWithOS(
       ->StartCheckIsDefault(std::move(callback));
 }
 
-void ProtocolHandlerRegistry::Delegate::RegisterAppProtocolsWithOS(
-    const base::FilePath& app_profile_path,
-    const shell_integration::AppProtocolMap app_protocols,
-    base::OnceCallback<void(bool)> registration_complete_callback) {
-  shell_integration::AddAppProtocolClients(
-      app_protocols, app_profile_path,
-      std::move(registration_complete_callback));
-}
-
-void ProtocolHandlerRegistry::Delegate::DeregisterAppProtocolsWithOS(
-    const base::FilePath& app_profile_path,
-    const std::vector<std::string>& app_protocols) {
-  shell_integration::RemoveAppProtocolClients(app_protocols, app_profile_path);
-}
-
-void ProtocolHandlerRegistry::Delegate::CheckAppIsDefaultClientWithOS(
-    const std::string& app_id,
-    const base::FilePath& app_profile_path,
-    const std::string& protocol,
-    base::OnceCallback<void(bool)> check_complete_callback) {
-  shell_integration::CheckAppIsProtocolClient(
-      app_id, protocol, app_profile_path, std::move(check_complete_callback));
-}
-
 // ProtocolHandlerRegistry -----------------------------------------------------
 
 ProtocolHandlerRegistry::ProtocolHandlerRegistry(
@@ -191,50 +166,6 @@ void ProtocolHandlerRegistry::OnIgnoreRegisterProtocolHandler(
   IgnoreProtocolHandler(handler, USER);
   Save();
   NotifyChanged();
-}
-
-void ProtocolHandlerRegistry::RegisterAppProtocolHandlers(
-    const std::string& app_id,
-    const std::vector<apps::ProtocolHandlerInfo>& handler_infos) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  std::vector<std::string> app_protocols;
-
-  for (const auto& handler_info : handler_infos) {
-    ProtocolHandler handler = ProtocolHandler::CreateWebAppProtocolHandler(
-        handler_info.protocol, handler_info.url, app_id);
-    if (!handler.IsValid() || !RegisterProtocolHandler(handler, USER))
-      continue;
-
-    app_protocols.push_back(handler.protocol());
-
-    ProtocolHandler default_handler = GetHandlerFor(handler.protocol());
-    if (default_handler.IsEmpty()) {
-      SetDefaultImpl(handler);
-    }
-  }
-
-  UpdateAppProtocolsWithOS(app_protocols);
-
-  Save();
-  NotifyChanged();
-}
-
-void ProtocolHandlerRegistry::DeregisterAppProtocolHandlers(
-    const std::string& app_id,
-    const std::vector<apps::ProtocolHandlerInfo>& handler_infos) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  std::vector<ProtocolHandler> handlers;
-  for (const auto& handler_info : handler_infos) {
-    ProtocolHandler handler = ProtocolHandler::CreateWebAppProtocolHandler(
-        handler_info.protocol, handler_info.url, app_id);
-    if (HandlerExists(handler, &protocol_handlers_)) {
-      handlers.push_back(handler);
-    }
-  }
-
-  RemoveHandlers(handlers);
 }
 
 bool ProtocolHandlerRegistry::AttemptReplace(const ProtocolHandler& handler) {
@@ -331,15 +262,8 @@ void ProtocolHandlerRegistry::InitProtocolSettings() {
     for (ProtocolHandlerMap::const_iterator p = default_handlers_.begin();
          p != default_handlers_.end(); ++p) {
       const std::string& protocol = p->second.protocol();
-      if (p->second.web_app_id()) {
-        std::string app_id = p->second.web_app_id().value();
-        delegate_->CheckAppIsDefaultClientWithOS(
-            app_id, context_->GetPath(), protocol,
-            GetAppProtocolWorkerCallback({{protocol, app_id}}));
-      } else {
-        delegate_->CheckDefaultClientWithOS(
-            protocol, GetDefaultWebClientCallback(protocol));
-      }
+      delegate_->CheckDefaultClientWithOS(
+          protocol, GetDefaultWebClientCallback(protocol));
     }
   }
 }
@@ -520,82 +444,37 @@ bool ProtocolHandlerRegistry::IsHandledProtocol(
 }
 
 void ProtocolHandlerRegistry::RemoveHandler(const ProtocolHandler& handler) {
-  RemoveHandlers({handler});
-}
+  if (IsIgnored(handler)) {
+    RemoveIgnoredHandler(handler);
+    return;
+  }
 
-void ProtocolHandlerRegistry::RemoveHandlers(
-    const std::vector<ProtocolHandler>& handlers) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  std::vector<ProtocolHandler> erased_handlers;
-  std::vector<std::string> app_protocols_to_remove_from_os;
-
-  for (const auto& handler : handlers) {
-    if (IsIgnored(handler)) {
-      RemoveIgnoredHandler(handler);
-      continue;
-    }
-
-    ProtocolHandlerList& existing_handlers =
-        protocol_handlers_[handler.protocol()];
-    bool erase_success = false;
-    if (HandlerExists(handler, existing_handlers) &&
-        HandlerExists(handler, &user_protocol_handlers_)) {
-      EraseHandler(handler, &user_protocol_handlers_);
-      erase_success = true;
-      if (!HandlerExists(handler, &policy_protocol_handlers_))
-        EraseHandler(handler, &protocol_handlers_);
-    }
-
-    if (!erase_success)
-      continue;
-    else
-      erased_handlers.push_back(handler);
+  ProtocolHandlerList& handlers = protocol_handlers_[handler.protocol()];
+  bool erase_success = false;
+  if (HandlerExists(handler, handlers) &&
+      HandlerExists(handler, &user_protocol_handlers_)) {
+    EraseHandler(handler, &user_protocol_handlers_);
+    erase_success = true;
+    if (!HandlerExists(handler, &policy_protocol_handlers_))
+      EraseHandler(handler, &protocol_handlers_);
   }
-
-  std::vector<ProtocolHandler> updated_default_handlers;
-
-  // Choose new defaults for erased handlers that were default handlers.
-  for (const auto& erased_handler : erased_handlers) {
-    ProtocolHandlerList& existing_handlers =
-        protocol_handlers_[erased_handler.protocol()];
-    ProtocolHandler default_handler = GetHandlerFor(erased_handler.protocol());
-    if (default_handler == erased_handler || erased_handler.web_app_id()) {
-      // Removing the default handler for a protocol requires updating the
-      // default registration. If the default handler is a web app handler, its
-      // removal may require updating the the default registration as the
-      // protocol may no longer require disambiguation (i.e.: if a single app is
-      // left as a handler for a protocol, it should be registered with the OS
-      // instead).
-      if (!existing_handlers.empty()) {
-        updated_default_handlers.push_back(existing_handlers[0]);
-      } else {
-        default_handlers_.erase(erased_handler.protocol());
-      }
-    }
-
-    // TODO(1132105): Implement DeregisterExternalHandler so that websites can
-    // be unregistered with the OS. Alternatively, expand
-    // DeregisterAppProtocolsWithOS's scope to work with non-app protocols.
-    if (!IsHandledProtocol(erased_handler.protocol())) {
-      delegate_->DeregisterExternalHandler(erased_handler.protocol());
-    }
-
-    if (GetHandlerFor(erased_handler.protocol()).IsEmpty() &&
-        erased_handler.web_app_id()) {
-      // Web app protocols are removed from the OS when the protocol no longer
-      // has a default handler.
-      app_protocols_to_remove_from_os.push_back(erased_handler.protocol());
+  auto q = default_handlers_.find(handler.protocol());
+  if (erase_success && q != default_handlers_.end() && q->second == handler) {
+    // Make the new top handler in the list the default.
+    if (!handlers.empty()) {
+      // NOTE We pass a copy because SetDefault() modifies handlers.
+      SetDefault(ProtocolHandler(handlers[0]));
+    } else {
+      default_handlers_.erase(q);
     }
   }
 
-  SetDefaults(updated_default_handlers);
-  if (!app_protocols_to_remove_from_os.empty())
-    delegate_->DeregisterAppProtocolsWithOS(context_->GetPath(),
-                                            app_protocols_to_remove_from_os);
-
+  if (erase_success && !IsHandledProtocol(handler.protocol())) {
+    delegate_->DeregisterExternalHandler(handler.protocol());
+  }
   Save();
-  if (!erased_handlers.empty())
+  if (erase_success)
     NotifyChanged();
 }
 
@@ -714,43 +593,18 @@ ProtocolHandlerRegistry::GetHandlerList(
 }
 
 void ProtocolHandlerRegistry::SetDefault(const ProtocolHandler& handler) {
-  SetDefaults({handler});
-}
-
-void ProtocolHandlerRegistry::SetDefaults(
-    const std::vector<ProtocolHandler>& handlers) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  for (const auto& handler : handlers) {
-    SetDefaultImpl(handler);
-  }
-
-  if (is_loading_)
-    return;
-
-  // Separate site handlers from web app handlers so that web app handlers can
-  // be registered to the OS in a batch operation.
-  std::vector<std::string> app_protocols;
-  for (const auto& handler : handlers) {
-    if (handler.web_app_id()) {
-      app_protocols.push_back(handler.protocol());
-    } else {
-      delegate_->RegisterWithOSAsDefaultClient(
-          handler.protocol(), GetDefaultWebClientCallback(handler.protocol()));
-    }
-  }
-
-  UpdateAppProtocolsWithOS(app_protocols);
-
-  Save();
-  NotifyChanged();
-}
-
-void ProtocolHandlerRegistry::SetDefaultImpl(const ProtocolHandler& handler) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const std::string& protocol = handler.protocol();
+  ProtocolHandlerMap::const_iterator p = default_handlers_.find(protocol);
+  // If we're not loading, and we are setting a default for a new protocol,
+  // register with the OS.
+  if (!is_loading_ && p == default_handlers_.end())
+    delegate_->RegisterWithOSAsDefaultClient(
+        protocol, GetDefaultWebClientCallback(protocol));
   default_handlers_.erase(protocol);
   default_handlers_.insert(std::make_pair(protocol, handler));
+
   PromoteHandler(handler);
 }
 
@@ -913,30 +767,6 @@ void ProtocolHandlerRegistry::EraseHandler(const ProtocolHandler& handler,
   list->erase(std::find(list->begin(), list->end(), handler));
 }
 
-void ProtocolHandlerRegistry::UpdateAppProtocolsWithOS(
-    const std::vector<std::string>& protocols) {
-  if (protocols.empty())
-    return;
-
-  shell_integration::AppProtocolMap app_protocols;
-
-  for (const auto& protocol : protocols) {
-    ProtocolHandler default_handler = GetHandlerFor(protocol);
-    ProtocolHandlerList handlers = protocol_handlers_[protocol];
-    // If other handlers exist for the protocol, the protocol will be
-    // registered for disambiguation (i.e.: the browser will be registered
-    // with the OS as the handler instead of the app).
-    if (handlers.size() == 1 && handlers[0] == default_handler)
-      app_protocols[protocol] = default_handler.web_app_id();
-    else
-      app_protocols[protocol] = absl::nullopt;
-  }
-
-  delegate_->RegisterAppProtocolsWithOS(
-      context_->GetPath(), app_protocols,
-      GetAppProtocolWorkerCallback(app_protocols));
-}
-
 void ProtocolHandlerRegistry::OnSetAsDefaultProtocolClientFinished(
     const std::string& protocol,
     shell_integration::DefaultWebClientState state) {
@@ -962,22 +792,4 @@ ProtocolHandlerRegistry::GetDefaultWebClientCallback(
   return base::BindOnce(
       &ProtocolHandlerRegistry::OnSetAsDefaultProtocolClientFinished,
       weak_ptr_factory_.GetWeakPtr(), protocol);
-}
-
-void ProtocolHandlerRegistry::OnAppProtocolOperationFinished(
-    const shell_integration::AppProtocolMap& app_protocols,
-    bool registration_success) {
-  // Clear if the protocol could not be registered
-  if (ShouldRemoveHandlersNotInOS() && !registration_success) {
-    for (const auto& app_protocol_pair : app_protocols)
-      ClearDefault(app_protocol_pair.first);
-  }
-}
-
-base::OnceCallback<void(bool)>
-ProtocolHandlerRegistry::GetAppProtocolWorkerCallback(
-    const shell_integration::AppProtocolMap& app_protocols) {
-  return base::BindOnce(
-      &ProtocolHandlerRegistry::OnAppProtocolOperationFinished,
-      weak_ptr_factory_.GetWeakPtr(), app_protocols);
 }

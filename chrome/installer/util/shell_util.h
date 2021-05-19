@@ -227,8 +227,48 @@ class ShellUtil {
     std::wstring app_name;
   };
 
+  // Details about a Windows application, to be entered into the registry for
+  // the purpose of file associations.
+  struct ApplicationInfo {
+    ApplicationInfo();
+    ApplicationInfo(ApplicationInfo&& other) noexcept;
+    ~ApplicationInfo();
+
+    // The ProgId used by Windows for file associations with this application.
+    // Must not be empty or start with a '.'.
+    std::wstring prog_id;
+    // The friendly name, and the path of the icon that will be used for files
+    // of these types when associated with this application by default. (They
+    // are NOT the name/icon that will represent the application under the Open
+    // With menu.)
+    std::wstring file_type_name;
+    base::FilePath file_type_icon_path;
+    int file_type_icon_index = 0;
+    // The command to execute when opening a file via this association. It
+    // should contain "%1" (to tell Windows to pass the filename as an
+    // argument).
+    // TODO(mgiuca): |command_line| should be a base::CommandLine.
+    std::wstring command_line;
+    // The AppUserModelId used by Windows 8 for this application. Distinct from
+    // |prog_id|.
+    std::wstring app_id;
+
+    // User-visible details about this application. Any of these may be empty.
+    std::wstring application_name;
+    base::FilePath application_icon_path;
+    int application_icon_index = 0;
+    std::wstring application_description;
+    std::wstring publisher_name;
+
+    // The CLSID for the application's DelegateExecute handler. May be empty.
+    std::wstring delegate_clsid;
+  };
+
   // Relative path of the URL Protocol registry entry (prefixed with '\').
   static const wchar_t* kRegURLProtocol;
+
+  // Registry key under which web app protocol handler prog_ids are stored.
+  static const wchar_t* kRegAppProtocolHandlers;
 
   // Relative path of DefaultIcon registry entry (prefixed with '\').
   static const wchar_t* kRegDefaultIcon;
@@ -239,6 +279,9 @@ class ShellUtil {
   // Relative path of shell open command in Windows registry
   // (i.e. \\shell\\open\\command).
   static const wchar_t* kRegShellOpen;
+
+  // Relative path of registry key under which applications need to register.
+  static const wchar_t* kRegSoftware;
 
   // Relative path of registry key under which applications need to register
   // to control Windows Start menu links.
@@ -363,6 +406,13 @@ class ShellUtil {
   // http://msdn.microsoft.com/library/windows/desktop/dd391573.aspx).
   static std::wstring FormatIconLocation(const base::FilePath& icon_path,
                                          int icon_index);
+
+  // Returns the pair <|icon_path|,|icon_index|> given a properly formatted icon
+  // location. The input should be formatted by FormatIconLocation above,
+  // or follow one of the formats specified in
+  // http://msdn.microsoft.com/library/windows/desktop/dd391573.aspx.
+  static absl::optional<std::pair<base::FilePath, int>> ParseIconLocation(
+      const std::wstring& argument);
 
   // This method returns the command to open URLs/files using chrome. Typically
   // this command is written to the registry under shell\open\command key.
@@ -705,7 +755,7 @@ class ShellUtil {
   // HKCU\SOFTWARE\classes\<prog_id> capable of handling file type /
   // protocol associations.
   //
-  // |prog_id| is the ProgId used by Windows to uniquely identity this
+  // |prog_id| is the ProgId used by Windows to uniquely identify this
   // application. Must not be empty or start with a '.'.
   // |shell_open_command_line| is the command to execute when opening the app
   // via association.
@@ -726,32 +776,54 @@ class ShellUtil {
   // Removes all entries of an application at HKCU\SOFTWARE\classes\<prog_id>.
   static bool DeleteApplicationClass(const std::wstring& prog_id);
 
+  // Returns application details for HKCU\SOFTWARE\classes\|prog_id|. The
+  // returned instance's members will be empty if not found.
+  static ApplicationInfo GetApplicationInfoForProgId(
+      const std::wstring& prog_id);
+
   // Returns the app name and file associations registered for a particular
   // application in the Windows registry. If there is no entry in the registry
   // for |prog_id|, nothing will be returned.
   static FileAssociationsAndAppName GetFileAssociationsAndAppName(
       const std::wstring& prog_id);
 
-  // For each association in |protocol_associations|, the web app is designated
-  // as the non-default handler for the corresponding protocol. For protocols
-  // uncontested by other handlers on the OS, the app will be promoted to
-  // default handler.
+  // For each protocol in |protocols|, the web app represented by |prog_id| is
+  // designated as the non-default handler for the corresponding protocol. For
+  // protocols uncontested by other handlers on the OS, the app will be
+  // promoted to default handler.
   static bool AddAppProtocolAssociations(
-      const ProtocolAssociations& protocol_associations,
-      const base::FilePath& chrome_exe);
-
-  // Returns whether |app_progid| is registered to handle |protocol| within the
-  // browser's protocol associations.
-  static bool DoesAppProtocolAssociationExist(const std::wstring& protocol,
-                                              const std::wstring& app_progid,
-                                              const base::FilePath& chrome_exe);
-
-  // For each protocol in |protocols|, the corresponding app handler registered
-  // within the browser's protocol associations is removed.
-  static bool RemoveAppProtocolAssociations(
       const std::vector<std::wstring>& protocols,
+      const std::wstring& prog_id);
+
+  // Registers a set of protocols for a particular application in the Windows
+  // registry.
+  //
+  // This method requires write access to HKLM (prior to Win8).
+  // If write to HKLM is required, but fails, and:
+  // - |elevate_if_not_admin| is true:
+  //   tries to launch setup.exe with admin privileges (by prompting the user
+  //   with a UAC) to do these tasks.
+  // - |elevate_if_not_admin| is false:
+  //   adds the ProgId entries to HKCU. These entries will not make the app show
+  //   in Default Programs but they are still useful because the app can be
+  //   registered to run when the user clicks on a protocol link.
+  //
+  // |protocols| is the set of protocols to register. Must not be empty.
+  // |prog_id| is the ProgId used by Windows for protocol associations with this
+  // application. Must not be empty or start with a '.'.
+  // |chrome_exe|: the full path to chrome.exe.
+  // |elevate_if_not_admin| if true will make this method try alternate methods
+  // as described above.
+  static bool RegisterApplicationForProtocols(
+      const std::vector<std::wstring>& protocols,
+      const std::wstring& prog_id,
       const base::FilePath& chrome_exe,
       bool elevate_if_not_admin);
+
+  // Removes all protocol associations for a particular web app from the Windows
+  // registry.
+  static bool RemoveAppProtocolAssociations(const std::wstring& prog_id,
+                                            bool elevate_if_not_admin);
 
   // Returns the browser's ProgId for the current install.
   static std::wstring GetProgIdForBrowser(const base::FilePath& chrome_exe);

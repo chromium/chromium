@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -86,40 +87,37 @@ std::wstring GetAppNameExtensionForProfile(const base::FilePath& profile_path) {
   return app_name_extension;
 }
 
-void UpdateAppRegistration(const web_app::AppId& app_id,
+bool UpdateAppRegistration(const web_app::AppId& app_id,
                            const std::wstring& app_name,
                            const base::FilePath& profile_path,
                            const std::wstring& prog_id,
-                           const std::wstring& app_name_extension,
-                           base::OnceCallback<void(bool)> callback) {
+                           const std::wstring& app_name_extension) {
   if (!base::DeleteFile(ShellUtil::GetApplicationPathForProgId(prog_id))) {
     web_app::RecordRegistration(
         web_app::RegistrationResult::kFailToDeleteExistingRegistration);
-    std::move(callback).Run(false);
-    return;
+    return false;
   }
 
   std::wstring user_visible_app_name(app_name);
   user_visible_app_name.append(app_name_extension);
 
+  base::FilePath web_app_path(web_app::GetOsIntegrationResourcesDirectoryForApp(
+      profile_path, app_id, GURL()));
   absl::optional<base::FilePath> app_launcher_path =
-      web_app::CreateAppLauncherFile(
-          app_name, app_name_extension,
-          web_app::GetOsIntegrationResourcesDirectoryForApp(profile_path,
-                                                            app_id, GURL()));
+      web_app::CreateAppLauncherFile(app_name, app_name_extension,
+                                     web_app_path);
   if (!app_launcher_path) {
-    std::move(callback).Run(false);
-    return;
+    return false;
   }
 
   base::CommandLine app_launch_cmd = web_app::GetAppLauncherCommand(
       app_id, app_launcher_path.value(), profile_path);
   base::FilePath icon_path = web_app::internals::GetIconFilePath(
-      app_launcher_path.value(), base::AsString16(app_name));
+      web_app_path, base::AsString16(app_name));
 
   ShellUtil::AddApplicationClass(prog_id, app_launch_cmd, user_visible_app_name,
                                  app_name, icon_path);
-  std::move(callback).Run(true);
+  return true;
 }
 
 bool AppNameHasProfileExtension(const std::wstring& app_name,
@@ -198,14 +196,18 @@ base::FilePath GetAppSpecificLauncherFilename(const std::wstring& app_name) {
 // can not be changed.
 std::wstring GetProgIdForApp(const base::FilePath& profile_path,
                              const AppId& app_id) {
-  std::wstring prog_id = install_static::GetBaseAppId();
-  std::string app_specific_part(
-      base::WideToUTF8(profile_path.BaseName().value()));
-  app_specific_part.append(app_id);
-  uint32_t hash = base::PersistentHash(app_specific_part);
-  prog_id.push_back(L'.');
-  prog_id.append(base::ASCIIToWide(base::NumberToString(hash)));
-  return prog_id;
+  // On system-level Win7 installs of the browser we need a user specific
+  // part to differentiate HKLM entries from different Windows profiles.
+  std::wstring user_specific_part;
+  ShellUtil::GetUserSpecificRegistrySuffix(&user_specific_part);
+
+  const uint32_t hash = base::PersistentHash(
+      base::StrCat({base::WideToUTF8(profile_path.BaseName().value()), app_id,
+                    base::WideToUTF8(user_specific_part)}));
+
+  return base::UTF16ToWide(
+      base::StrCat({base::AsStringPiece16(install_static::GetBaseAppId()), u".",
+                    base::NumberToString16(hash)}));
 }
 
 absl::optional<base::FilePath> CreateAppLauncherFile(
@@ -311,12 +313,12 @@ void CheckAndUpdateExternalInstallations(
     updated_extension = std::wstring();
   }
 
-  base::ThreadPool::PostTask(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&UpdateAppRegistration, app_id, updated_name,
                      external_installation_profile_path,
-                     external_installation_prog_id, updated_extension,
-                     std::move(callback)));
+                     external_installation_prog_id, updated_extension),
+      std::move(callback));
 }
 
 // Record UMA metric for the result of file handler registration.

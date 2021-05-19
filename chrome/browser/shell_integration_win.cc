@@ -44,7 +44,6 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/web_applications/components/web_app_handler_registration_utils_win.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut_win.h"
 #include "chrome/browser/win/settings_app_monitor.h"
@@ -577,98 +576,6 @@ bool SetAsDefaultProtocolClient(const std::string& protocol) {
 
   VLOG(1) << "Chrome registered as default handler for " << protocol << ".";
   return true;
-}
-
-void AddAppProtocolClients(const AppProtocolMap& app_protocols,
-                           const base::FilePath& profile_path,
-                           AppProtocolWorkerCallback protocol_worker_callback) {
-  auto set_app_as_protocol_client_task = base::BindOnce(
-      [](const AppProtocolMap& app_protocols,
-         const base::FilePath& profile_path) {
-        base::FilePath chrome_exe;
-        if (!base::PathService::Get(base::FILE_EXE, &chrome_exe))
-          return false;
-
-        std::vector<std::pair<std::wstring, std::wstring>>
-            protocol_association_pairs;
-        protocol_association_pairs.reserve(app_protocols.size());
-
-        for (const auto& protocol_pair : app_protocols) {
-          std::wstring protocol = base::UTF8ToWide(protocol_pair.first);
-          const absl::optional<std::string>& app_id = protocol_pair.second;
-          // A protocol with no app id (absl::nullopt) will be handled by the
-          // browser for disambiguation.
-          std::wstring handler_progid =
-              app_id.has_value()
-                  ? web_app::GetProgIdForApp(profile_path, app_id.value())
-                  : ShellUtil::GetProgIdForBrowser(chrome_exe);
-
-          protocol_association_pairs.emplace_back(protocol, handler_progid);
-        }
-
-        ShellUtil::ProtocolAssociations protocol_associations(
-            std::move(protocol_association_pairs));
-        return ShellUtil::AddAppProtocolAssociations(protocol_associations,
-                                                     chrome_exe);
-      },
-      app_protocols, profile_path);
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, std::move(set_app_as_protocol_client_task),
-      std::move(protocol_worker_callback));
-}
-
-void RemoveAppProtocolClients(const std::vector<std::string>& protocols,
-                              const base::FilePath& profile_path) {
-  auto delete_protocol_registration = base::BindOnce(
-      [](const std::vector<std::string>& protocols,
-         const base::FilePath& profile_path) {
-        // TODO(http://crbug.com/1019239): RemoveAppProtocolClients will remove
-        // all registrations across all profiles. profile_path will be used once
-        // multi-profile support is added.
-        base::FilePath chrome_exe;
-        if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-          return;
-        }
-
-        std::vector<std::wstring> wstring_protocols;
-        wstring_protocols.reserve(protocols.size());
-
-        for (const auto& protocol : protocols) {
-          wstring_protocols.push_back(base::UTF8ToWide(protocol));
-        }
-
-        ShellUtil::RemoveAppProtocolAssociations(wstring_protocols, chrome_exe,
-                                                 /*elevate_if_not_admin=*/true);
-      },
-      protocols, profile_path);
-
-  base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                             std::move(delete_protocol_registration));
-}
-
-void CheckAppIsProtocolClient(
-    const std::string& app_id,
-    const std::string& protocol,
-    const base::FilePath& profile_path,
-    AppProtocolWorkerCallback protocol_worker_callback) {
-  auto check_app_is_protocol_client_task = base::BindOnce(
-      [](const std::string& app_id, const std::string& protocol,
-         const base::FilePath& profile_path) {
-        std::wstring prog_id = web_app::GetProgIdForApp(profile_path, app_id);
-        base::FilePath chrome_exe;
-        if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-          return false;
-        }
-        return ShellUtil::DoesAppProtocolAssociationExist(
-            base::UTF8ToWide(protocol), prog_id, chrome_exe);
-      },
-      app_id, protocol, profile_path);
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      std::move(check_app_is_protocol_client_task),
-      std::move(protocol_worker_callback));
 }
 
 DefaultWebClientSetPermission GetDefaultWebClientSetPermission() {
