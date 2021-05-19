@@ -396,7 +396,7 @@ TEST_F(SetFormFieldValueActionTest, KeyboardInputHasExpectedCallChain) {
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(
       mock_web_controller_,
-      ClickOrTapElement(ClickType::CLICK, EqualsElement(expected_element), _))
+      ClickOrTapElement(ClickType::TAP, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(mock_web_controller_,
               SendKeyboardInput(UTF8ToUnicode(keyboard_input), _,
