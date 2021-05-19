@@ -140,8 +140,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             BackKeyBehaviorDelegate backKeyBehavior, SearchEngineLogoUtils searchEngineLogoUtils,
             @NonNull Runnable launchAssistanceSettingsAction,
-            @NonNull PageInfoAction pageInfoAction, @NonNull Callback<Profile> spareRendererCreator,
-            @NonNull Callback<Tab> bringTabToFrontCallback,
+            @NonNull PageInfoAction pageInfoAction, @NonNull Callback<Tab> bringTabToFrontCallback,
             @NonNull SaveOfflineButtonState saveOfflineButtonState, @NonNull OmniboxUma omniboxUma,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState) {
@@ -169,7 +168,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mAutocompleteCoordinator = new AutocompleteCoordinator(mLocationBarLayout, this, this,
                 mUrlCoordinator, activityLifecycleDispatcher, modalDialogManagerSupplier,
                 activityTabSupplier, shareDelegateSupplier, locationBarDataProvider,
-                spareRendererCreator, bringTabToFrontCallback, tabWindowManagerSupplier,
+                profileObservableSupplier, bringTabToFrontCallback, tabWindowManagerSupplier,
                 bookmarkState);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,

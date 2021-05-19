@@ -152,7 +152,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
 
     public AutocompleteMediator(@NonNull Context context, @NonNull AutocompleteDelegate delegate,
             @NonNull UrlBarEditingTextStateProvider textProvider,
-            @NonNull AutocompleteController autocompleteController,
             @NonNull PropertyModel listPropertyModel, @NonNull Handler handler,
             @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
@@ -169,15 +168,13 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mAutocomplete = autocompleteController;
-        mAutocomplete.setOnSuggestionsReceivedListener(this);
         mHandler = handler;
         mDataProvider = locationBarDataProvider;
         mBringTabToFrontCallback = bringTabToFrontCallback;
         mTabWindowManagerSupplier = tabWindowManagerSupplier;
         mSuggestionModels = mListPropertyModel.get(SuggestionListProperties.SUGGESTION_MODELS);
-        mDropdownViewInfoListBuilder = new DropdownItemViewInfoListBuilder(
-                mAutocomplete, activityTabSupplier, bookmarkState);
+        mDropdownViewInfoListBuilder =
+                new DropdownItemViewInfoListBuilder(activityTabSupplier, bookmarkState);
         mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
         mDropdownViewInfoListManager = new DropdownItemViewInfoListManager(mSuggestionModels);
     }
@@ -201,7 +198,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     public void destroy() {
         if (mAutocomplete != null) {
             stopAutocomplete(false);
-            mAutocomplete.destroy();
+            mAutocomplete.removeOnSuggestionsReceivedListener(this);
         }
         mDropdownViewInfoListBuilder.destroy();
         if (mLifecycleDispatcher != null) {
@@ -387,7 +384,13 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * @param profile The profile to be used.
      */
     void setAutocompleteProfile(Profile profile) {
-        mAutocomplete.setProfile(profile);
+        if (mAutocomplete != null) {
+            stopAutocomplete(true);
+            mAutocomplete.removeOnSuggestionsReceivedListener(this);
+        }
+        mAutocomplete = AutocompleteControllerFactory.getController(profile);
+
+        mAutocomplete.addOnSuggestionsReceivedListener(this);
         mDropdownViewInfoListBuilder.setProfile(profile);
     }
 
@@ -924,18 +927,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             mAutocomplete.start(mDataProvider.getProfile(), mDataProvider.getCurrentUrl(),
                     mDataProvider.getPageClassification(false), query, -1, false, null, false);
         }
-    }
-
-    /**
-     * Sets the autocomplete controller for the location bar.
-     *
-     * @param controller The controller that will handle autocomplete/omnibox suggestions.
-     * @note Only used for testing.
-     */
-    public void setAutocompleteControllerForTest(AutocompleteController controller) {
-        if (mAutocomplete != null) stopAutocomplete(true);
-        mAutocomplete = controller;
-        mDropdownViewInfoListBuilder.setAutocompleteControllerForTest(controller);
     }
 
     /**

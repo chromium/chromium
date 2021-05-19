@@ -18,6 +18,7 @@ import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -63,10 +64,12 @@ import java.util.List;
  * Coordinator that handles the interactions with the autocomplete system.
  */
 public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextChangeListener {
-    private final ViewGroup mParent;
-    private OmniboxQueryTileCoordinator mQueryTileCoordinator;
-    private AutocompleteMediator mMediator;
-    private OmniboxSuggestionsDropdown mDropdown;
+    private final @NonNull ViewGroup mParent;
+    private final @NonNull ObservableSupplier<Profile> mProfileSupplier;
+    private final @NonNull Callback<Profile> mProfileChangeCallback;
+    private final @NonNull OmniboxQueryTileCoordinator mQueryTileCoordinator;
+    private final @NonNull AutocompleteMediator mMediator;
+    private @Nullable OmniboxSuggestionsDropdown mDropdown;
 
     public AutocompleteCoordinator(@NonNull ViewGroup parent,
             @NonNull AutocompleteDelegate delegate,
@@ -77,7 +80,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             @NonNull Supplier<Tab> activityTabSupplier,
             @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull LocationBarDataProvider locationBarDataProvider,
-            @NonNull Callback<Profile> spareRendererCreator,
+            @NonNull ObservableSupplier<Profile> profileObservableSupplier,
             @NonNull Callback<Tab> bringToForegroundCallback,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState) {
@@ -93,10 +96,9 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
 
         mQueryTileCoordinator = new OmniboxQueryTileCoordinator(context, this::onTileSelected);
         mMediator = new AutocompleteMediator(context, delegate, urlBarEditingTextProvider,
-                new AutocompleteController(spareRendererCreator), listModel, new Handler(),
-                lifecycleDispatcher, modalDialogManagerSupplier, activityTabSupplier,
-                shareDelegateSupplier, locationBarDataProvider, bringToForegroundCallback,
-                tabWindowManagerSupplier, bookmarkState);
+                listModel, new Handler(), lifecycleDispatcher, modalDialogManagerSupplier,
+                activityTabSupplier, shareDelegateSupplier, locationBarDataProvider,
+                bringToForegroundCallback, tabWindowManagerSupplier, bookmarkState);
         mMediator.initDefaultProcessors(mQueryTileCoordinator::setTiles);
 
         listModel.set(SuggestionListProperties.OBSERVER, mMediator);
@@ -107,6 +109,10 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
         LazyConstructionPropertyMcp.create(listModel, SuggestionListProperties.VISIBLE,
                 viewProvider, SuggestionListViewBinder::bind);
 
+        mProfileSupplier = profileObservableSupplier;
+        mProfileChangeCallback = this::setAutocompleteProfile;
+        mProfileSupplier.addObserver(mProfileChangeCallback);
+
         // https://crbug.com/966227 Set initial layout direction ahead of inflating the suggestions.
         updateSuggestionListLayoutDirection();
     }
@@ -115,10 +121,9 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
      * Clean up resources used by this class.
      */
     public void destroy() {
+        mProfileSupplier.removeObserver(mProfileChangeCallback);
         mQueryTileCoordinator.destroy();
-        mQueryTileCoordinator = null;
         mMediator.destroy();
-        mMediator = null;
     }
 
     private ViewProvider<SuggestionListViewHolder> createViewProvider(
@@ -234,6 +239,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
      * Updates the profile used for generating autocomplete suggestions.
      * @param profile The profile to be used.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void setAutocompleteProfile(Profile profile) {
         mMediator.setAutocompleteProfile(profile);
         mQueryTileCoordinator.setProfile(profile);
@@ -386,12 +392,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public OmniboxSuggestionsDropdown getSuggestionsDropdownForTest() {
         return mDropdown;
-    }
-
-    /** @param controller The instance of AutocompleteController to be used. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public void setAutocompleteControllerForTest(AutocompleteController controller) {
-        mMediator.setAutocompleteControllerForTest(controller);
     }
 
     /** @return The current receiving OnSuggestionsReceived events. */

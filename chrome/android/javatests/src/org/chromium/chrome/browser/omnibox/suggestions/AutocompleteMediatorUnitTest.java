@@ -57,6 +57,7 @@ import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -208,10 +209,17 @@ public class AutocompleteMediatorUnitTest {
         mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
         mListModel.set(SuggestionListProperties.SUGGESTION_MODELS, mSuggestionModels);
 
+        AutocompleteControllerFactory.setControllerForTesting(mAutocompleteController);
+        // clang-format off
         mMediator = new AutocompleteMediator(ContextUtils.getApplicationContext(),
-                mAutocompleteDelegate, mTextStateProvider, mAutocompleteController, mListModel,
+                mAutocompleteDelegate, mTextStateProvider, mListModel,
                 mHandler, mLifecycleDispatcher, () -> mModalDialogManager, null, null,
                 mLocationBarDataProvider, tab -> {}, null, url -> false);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mMediator.setAutocompleteProfile(mProfile);
+        });
+        // clang-format on
         mMediator.getDropdownItemViewInfoListBuilderForTest().registerSuggestionProcessor(
                 mMockProcessor);
         mMediator.getDropdownItemViewInfoListBuilderForTest().setHeaderProcessorForTest(

@@ -24,6 +24,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -50,9 +52,14 @@ public class IncognitoProfileDestroyerIntegrationTest {
     @Mock
     ProfileManager.Observer mMockProfileManagerObserver;
 
+    @Mock
+    AutocompleteController mAutocompleteController;
+
     @Before
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
+
+        AutocompleteControllerFactory.setControllerForTesting(mAutocompleteController);
 
         mActivityTestRule.startMainActivityOnBlankPage();
         ProfileManager.addObserver(mMockProfileManagerObserver);

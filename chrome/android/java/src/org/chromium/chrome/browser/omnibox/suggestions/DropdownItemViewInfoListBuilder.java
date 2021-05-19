@@ -53,7 +53,6 @@ class DropdownItemViewInfoListBuilder {
 
     private final @NonNull List<SuggestionProcessor> mPriorityOrderedSuggestionProcessors;
     private final @NonNull Supplier<Tab> mActivityTabSupplier;
-    private @NonNull AutocompleteController mAutocompleteController;
 
     private @Nullable HeaderProcessor mHeaderProcessor;
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
@@ -65,11 +64,10 @@ class DropdownItemViewInfoListBuilder {
     private boolean mEnableAdaptiveSuggestionsCount;
     private boolean mBuiltListHasFullyConcealedElements;
 
-    DropdownItemViewInfoListBuilder(AutocompleteController controller,
+    DropdownItemViewInfoListBuilder(
             @NonNull Supplier<Tab> tabSupplier, BookmarkState bookmarkState) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
         mDropdownHeight = DROPDOWN_HEIGHT_UNKNOWN;
-        mAutocompleteController = controller;
         mActivityTabSupplier = tabSupplier;
         mBookmarkState = bookmarkState;
     }
@@ -360,14 +358,5 @@ class DropdownItemViewInfoListBuilder {
         }
         assert false : "No default handler for suggestions";
         return null;
-    }
-
-    /**
-     * Change the AutocompleteController instance that will be used by this class.
-     *
-     * @param controller New AutocompleteController to use.
-     */
-    void setAutocompleteControllerForTest(@NonNull AutocompleteController controller) {
-        mAutocompleteController = controller;
     }
 }

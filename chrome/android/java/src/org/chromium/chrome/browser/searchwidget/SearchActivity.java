@@ -179,6 +179,7 @@ public class SearchActivity extends AsyncInitializationActivity
             loadUrl(url, transition, postDataType, postData);
             return true;
         };
+        // clang-format off
         mLocationBarCoordinator = new LocationBarCoordinator(mSearchBox, anchorView,
                 mProfileSupplier, PrivacyPreferencesManagerImpl.getInstance(),
                 mSearchBoxDataProvider, null, new WindowDelegate(getWindow()), getWindowAndroid(),
@@ -187,9 +188,10 @@ public class SearchActivity extends AsyncInitializationActivity
                 getLifecycleDispatcher(), overrideUrlLoadingDelegate, /*backKeyBehavior=*/this,
                 SearchEngineLogoUtils.getInstance(), /*launchAssistanceSettingsAction=*/() -> {},
                 /*pageInfoAction=*/(tab, permission) -> {},
-                /*spareRendererCreator=*/(profile) -> {}, IntentHandler::bringTabToFront,
+                IntentHandler::bringTabToFront,
                 /*saveOfflineButtonState=*/(tab) -> false, /*omniboxUma*/(url, transition) -> {},
                 TabWindowManagerSingleton::getInstance, /*bookmarkState=*/(url) -> false);
+        // clang-format on
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         mLocationBarCoordinator.getOmniboxStub().addUrlFocusChangeListener(this);

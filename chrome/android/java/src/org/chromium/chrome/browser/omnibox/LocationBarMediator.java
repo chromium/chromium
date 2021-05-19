@@ -856,7 +856,6 @@ class LocationBarMediator
 
     private void setProfile(Profile profile) {
         if (profile == null || !mNativeInitialized) return;
-        mAutocompleteCoordinator.setAutocompleteProfile(profile);
         mOmniboxPrerender.initializeForProfile(profile);
 
         mLocationBarLayout.setShowIconsWhenUrlFocused(

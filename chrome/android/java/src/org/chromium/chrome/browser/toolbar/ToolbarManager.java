@@ -39,7 +39,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
@@ -541,7 +540,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     new BackKeyBehaviorDelegate() {}, SearchEngineLogoUtils.getInstance(),
                     () -> AutofillAssistantPreferenceFragment.launchSettings(mActivity),
                     toolbarPageInfo::show,
-                    WarmupManager.getInstance()::createSpareRenderProcessHost,
                     IntentHandler::bringTabToFront, DownloadUtils::isAllowedToDownloadPage,
                     NewTabPageUma::recordOmniboxNavigation, TabWindowManagerSingleton::getInstance,
                     (url) -> mBookmarkBridgeSupplier.hasValue()
@@ -908,7 +906,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     || mLocationBar.getOmniboxStub().isUrlBarFocused()) {
                 return;
             }
-            setUrlBarFocus(true, OmniboxFocusReason.FOCUS_ON_NEW_TAB);
+            // Note: this is executed during native initialization.
+            // Defer Omnibox focus, giving Autocomplete time to finish initialization.
+            mHandler.post(() -> setUrlBarFocus(true, OmniboxFocusReason.FOCUS_ON_NEW_TAB));
             if (shouldShowCursorInLocationBar()) {
                 mLocationBar.showUrlBarCursorWithoutFocusAnimations();
             }

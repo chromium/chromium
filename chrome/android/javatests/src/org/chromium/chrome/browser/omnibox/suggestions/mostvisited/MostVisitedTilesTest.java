@@ -4,6 +4,12 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.mostvisited;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+
 import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
 import android.view.View;
@@ -18,6 +24,10 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -29,15 +39,17 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBar;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerFactory;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionView;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.OmniboxTestUtils.TestAutocompleteController;
 import org.chromium.chrome.test.util.WaitForFocusHelper;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.omnibox.AutocompleteMatch.NavsuggestTile;
@@ -81,10 +93,19 @@ public class MostVisitedTilesTest {
     public final BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
+    @Mock
+    private Profile mProfile;
+
+    @Mock
+    private AutocompleteController mController;
+
+    @Captor
+    private ArgumentCaptor<AutocompleteController.OnSuggestionsReceivedListener> mListener;
+
     private ChromeTabbedActivity mActivity;
     private UrlBar mUrlBar;
     private LocationBarLayout mLocationBarLayout;
-    private TestAutocompleteController mController;
+
     private AutocompleteCoordinator mAutocomplete;
     private EmbeddedTestServer mTestServer;
     private Tab mTab;
@@ -96,6 +117,7 @@ public class MostVisitedTilesTest {
 
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
         sActivityTestRule.waitForActivityNativeInitializationComplete();
         mActivity = sActivityTestRule.getActivity();
         mLocationBarLayout = mActivity.findViewById(R.id.location_bar);
@@ -108,9 +130,15 @@ public class MostVisitedTilesTest {
         ChromeTabUtils.waitForTabPageLoaded(mTab, null);
 
         // Set up a fake AutocompleteController that will supply the suggestions.
-        mController = new OmniboxTestUtils.TestAutocompleteController(
-                mAutocomplete.getSuggestionsReceivedListenerForTest());
-        mAutocomplete.setAutocompleteControllerForTest(mController);
+        AutocompleteControllerFactory.setControllerForTesting(mController);
+
+        // clang-format off
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mAutocomplete.setAutocompleteProfile(mProfile);
+        });
+        // clang-format on
+
+        verify(mController).addOnSuggestionsReceivedListener(mListener.capture());
 
         setUpSuggestionsToShow();
         focusOmniboxAndWaitForSuggestions();
@@ -160,7 +188,12 @@ public class MostVisitedTilesTest {
         autocompleteResult.getGroupsDetails().put(
                 1, new AutocompleteResult.GroupDetails("See also", false));
 
-        mController.addAutocompleteResult(PAGE_URL, PAGE_URL, autocompleteResult);
+        doAnswer(invocation -> {
+            mListener.getValue().onSuggestionsReceived(autocompleteResult, PAGE_URL);
+            return null;
+        })
+                .when(mController)
+                .startZeroSuggest(any(), eq(PAGE_URL), any(), anyInt(), any());
     }
 
     private void focusOmniboxAndWaitForSuggestions() {
