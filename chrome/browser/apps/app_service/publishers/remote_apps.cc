@@ -96,17 +96,19 @@ void RemoteApps::LoadIcon(const std::string& app_id,
     icon_image = delegate_->GetPlaceholderIcon(app_id, size_hint_in_dip);
   }
 
-  if (!icon_image.isNull()) {
-    icon->icon_type = icon_type;
-    icon->uncompressed = icon_image;
-    icon->is_placeholder_icon = is_placeholder_icon;
-    IconEffects icon_effects = (icon_type == mojom::IconType::kStandard)
-                                   ? IconEffects::kCrOsStandardIcon
-                                   : IconEffects::kResizeAndPad;
-    apps::ApplyIconEffects(icon_effects, size_hint_in_dip, &icon->uncompressed);
+  if (icon_image.isNull()) {
+    std::move(callback).Run(std::move(icon));
+    return;
   }
 
-  std::move(callback).Run(std::move(icon));
+  icon->icon_type = icon_type;
+  icon->uncompressed = icon_image;
+  icon->is_placeholder_icon = is_placeholder_icon;
+  IconEffects icon_effects = (icon_type == mojom::IconType::kStandard)
+                                 ? IconEffects::kCrOsStandardIcon
+                                 : IconEffects::kResizeAndPad;
+  apps::ApplyIconEffects(icon_effects, size_hint_in_dip, std::move(icon),
+                         std::move(callback));
 }
 
 void RemoteApps::Launch(const std::string& app_id,

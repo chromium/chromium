@@ -78,6 +78,21 @@ void CompleteWithCompressed(apps::mojom::Publisher::LoadIconCallback callback,
   std::move(callback).Run(std::move(iv));
 }
 
+void UpdateIconImage(apps::mojom::Publisher::LoadIconCallback callback,
+                     apps::mojom::IconValuePtr iv) {
+  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon) &&
+      iv->icon_type == apps::mojom::IconType::kCompressed) {
+    iv->uncompressed.MakeThreadSafe();
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&apps::EncodeImageToPngBytes, iv->uncompressed,
+                       /*rep_icon_scale=*/1.0f),
+        base::BindOnce(&CompleteWithCompressed, std::move(callback)));
+    return;
+  }
+  std::move(callback).Run(std::move(iv));
+}
+
 void OnArcAppIconCompletelyLoaded(
     apps::mojom::IconType icon_type,
     int32_t size_hint_in_dip,
@@ -126,8 +141,10 @@ void OnArcAppIconCompletelyLoaded(
         iv->uncompressed = icon->image_skia();
       }
       if (icon_effects != apps::IconEffects::kNone) {
-        apps::ApplyIconEffects(icon_effects, size_hint_in_dip,
-                               &iv->uncompressed);
+        apps::ApplyIconEffects(
+            icon_effects, size_hint_in_dip, std::move(iv),
+            base::BindOnce(&UpdateIconImage, std::move(callback)));
+        return;
       }
       break;
     }
@@ -136,17 +153,7 @@ void OnArcAppIconCompletelyLoaded(
       break;
   }
 
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon) &&
-      icon_type == apps::mojom::IconType::kCompressed) {
-    iv->uncompressed.MakeThreadSafe();
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&apps::EncodeImageToPngBytes, iv->uncompressed,
-                       /*rep_icon_scale=*/1.0f),
-        base::BindOnce(&CompleteWithCompressed, std::move(callback)));
-    return;
-  }
-  std::move(callback).Run(std::move(iv));
+  UpdateIconImage(std::move(callback), std::move(iv));
 }
 
 void UpdateAppPermissions(

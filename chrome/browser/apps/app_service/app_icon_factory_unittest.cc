@@ -1111,8 +1111,12 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_StandardEffect) {
   }
 
   gfx::ImageSkia converted_image = ConvertSquareBitmapsToImageSkia(
-      icon_bitmaps, /*icon_effects=*/apps::IconEffects::kCrOsStandardIcon,
+      icon_bitmaps,
+      /*icon_effects=*/apps::IconEffects::kCrOsStandardBackground |
+          apps::IconEffects::kCrOsStandardMask,
       /*size_hint_in_dip=*/32);
+
+  EnsureRepresentationsLoaded(converted_image);
 
   const std::vector<ui::ScaleFactor>& scale_factors =
       ui::GetSupportedScaleFactors();
@@ -1122,14 +1126,14 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_StandardEffect) {
     const float scale = ui::GetScaleForScaleFactor(scale_factors[i]);
     ASSERT_TRUE(converted_image.HasRepresentation(scale));
 
-    // No colour in the upper left corner.
+    // No color in the upper left corner.
     EXPECT_FALSE(
         converted_image.GetRepresentation(scale).GetBitmap().getColor(0, 0));
 
+    // Has color in the center.
     const SquareSizePx center_px = sizes_px[i] / 2;
-    EXPECT_EQ(colors[i],
-              converted_image.GetRepresentation(scale).GetBitmap().getColor(
-                  center_px, center_px));
+    EXPECT_TRUE(converted_image.GetRepresentation(scale).GetBitmap().getColor(
+        center_px, center_px));
   }
 }
 

@@ -119,11 +119,12 @@ gfx::ImageSkia ConvertSquareBitmapsToImageSkia(
     int size_hint_in_dip);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Modifies |image_skia| to apply icon post-processing effects like badging and
+// Modifies |iv| to apply icon post-processing effects like badging and
 // desaturation to gray.
 void ApplyIconEffects(IconEffects icon_effects,
                       int size_hint_in_dip,
-                      gfx::ImageSkia* image_skia);
+                      apps::mojom::IconValuePtr iv,
+                      apps::mojom::Publisher::LoadIconCallback callback);
 
 // Loads an icon from an extension.
 void LoadIconFromExtension(apps::mojom::IconType icon_type,

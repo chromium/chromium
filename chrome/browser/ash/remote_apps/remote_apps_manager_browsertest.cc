@@ -35,6 +35,7 @@
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -301,8 +302,24 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
       base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)
           ? apps::IconEffects::kCrOsStandardIcon
           : apps::IconEffects::kResizeAndPad;
-  apps::ApplyIconEffects(icon_effects, 64, &icon);
-  CheckIconsEqual(icon, item->GetDefaultIcon());
+
+  base::RunLoop run_loop;
+  apps::mojom::IconValuePtr output_data = apps::mojom::IconValue::New();
+  apps::mojom::IconValuePtr iv = apps::mojom::IconValue::New();
+  iv->icon_type = apps::mojom::IconType::kStandard;
+  iv->uncompressed = icon;
+  iv->is_placeholder_icon = true;
+  apps::ApplyIconEffects(icon_effects, 64, std::move(iv),
+                         base::BindOnce(
+                             [](apps::mojom::IconValuePtr* result,
+                                base::OnceClosure load_app_icon_callback,
+                                apps::mojom::IconValuePtr icon) {
+                               *result = std::move(icon);
+                               std::move(load_app_icon_callback).Run();
+                             },
+                             &output_data, run_loop.QuitClosure()));
+  run_loop.Run();
+  CheckIconsEqual(output_data->uncompressed, item->GetDefaultIcon());
 }
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddAppError) {
