@@ -1,0 +1,12 @@
+Tests MIME type sniffing of fetch response
+Request to http://test1.com/, type: Document
+http://test1.com/, reported MIME type: image/jpeg
+Request to http://test2.com/, type: Document
+http://test2.com/, reported MIME type: text/plain
+Request to http://test3.com/, type: Document
+http://test3.com/, reported MIME type: text/plain
+Request to http://test4.com/, type: Document
+http://test4.com/, reported MIME type: image/jpeg
+Request to http://test5.com/, type: Document
+http://test5.com/, reported MIME type: image/png
+
