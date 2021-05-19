@@ -35,7 +35,17 @@ readable and writable properties and constructing a model with them. The
 properties (and a simple factory method for the model) are located in the static
 `AccountSelectionProperties` class.
 
-The details of the model will be added in follow up patches.
+The model contains writable and readable properties. The readable properties are
+guaranteed to never change for the lifetime of the Account Selection component:
+
+ * **DISMISS_HANDLER** which is the listener that reacts to the view being
+  dismissed. The mediator implements this.
+
+The writable properties change over the course of the components lifetime:
+
+ * **VISIBLE** which will trigger the component to render the bottom sheet or
+   hide it, if it was visible.
+
 
 ## Controller
 

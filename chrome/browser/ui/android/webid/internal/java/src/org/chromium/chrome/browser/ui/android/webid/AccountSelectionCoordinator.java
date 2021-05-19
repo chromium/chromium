@@ -17,7 +17,8 @@ import java.util.List;
  */
 public class AccountSelectionCoordinator implements AccountSelectionComponent {
     private final AccountSelectionMediator mMediator = new AccountSelectionMediator();
-    private final PropertyModel mModel = AccountSelectionProperties.createDefaultModel();
+    private final PropertyModel mModel =
+            AccountSelectionProperties.createDefaultModel(mMediator::onDismissed);
 
     @Override
     public void initialize(Context context, BottomSheetController sheetController,

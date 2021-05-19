@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.VISIBLE;
+
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -23,5 +26,19 @@ class AccountSelectionMediator {
         mModel = model;
     }
 
-    void showAccounts(String url, List<Account> accounts) {}
+    void showAccounts(String url, List<Account> accounts) {
+        mModel.set(VISIBLE, true);
+        // TODO (majidvp): Set the SHEET_ITEMS and show the view.
+    }
+
+    void onAccountSelected(Account account) {
+        mModel.set(VISIBLE, false);
+        mDelegate.onAccountSelected(account);
+    }
+
+    void onDismissed(@StateChangeReason int reason) {
+        if (!mModel.get(VISIBLE)) return;
+        mModel.set(VISIBLE, false);
+        mDelegate.onDismissed();
+    }
 }

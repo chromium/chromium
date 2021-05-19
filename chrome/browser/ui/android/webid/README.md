@@ -29,6 +29,18 @@ part of the public interface as defined in `AccountSelectionComponent`
 This folder contains a separate [README](internal/README.md) that explains in
 detail how the architecture looks like and how to extend the component further.
 
+#### junit/
+
+Contains Robolectric tests that test the delegate of the component. These tests
+run without emulator which means that they are incredibly fast but cannot
+instantiate or verify Android Views. The public build and run target is
+`chrome_junit_tests`. Run them with:
+
+``` bash
+./out/<OutDirectory>/bin/run_chrome_junit_tests -f*AccountSelection*
+```
+
+
 ## Example usage
 
 ``` java
