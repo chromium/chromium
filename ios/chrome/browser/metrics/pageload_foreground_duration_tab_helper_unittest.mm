@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/metrics/pageload_foreground_duration_tab_helper.h"
 
+#import <UIKit/UIKit.h>
+
 #include "components/ukm/ios/ukm_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"

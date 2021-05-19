@@ -7,8 +7,6 @@
 
 #include <string>
 
-#import <UIKit/UIKit.h>
-
 namespace web {
 
 // Enum type specifying a user agent's type.

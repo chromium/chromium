@@ -24,6 +24,7 @@ class RefCountedMemory;
 
 class GURL;
 
+@protocol UITraitEnvironment;
 @class UIWebView;
 @class NSString;
 
