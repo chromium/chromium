@@ -32552,6 +32552,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3915" label="ClientHintsPrefersColorScheme"/>
   <int value="3916" label="OverscrollBehaviorWillBeFixed"/>
   <int value="3917" label="ControlledWorkerWillBeUncontrolled"/>
+  <int value="3918" label="ARIATouchpassthroughAttribute"/>
+  <int value="3919" label="ARIAVirtualcontentAttribute"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

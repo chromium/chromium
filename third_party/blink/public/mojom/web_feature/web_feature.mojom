@@ -3230,6 +3230,8 @@ enum WebFeature {
   kClientHintsPrefersColorScheme = 3915,
   kOverscrollBehaviorWillBeFixed = 3916,
   kControlledWorkerWillBeUncontrolled = 3917,
+  kARIATouchpassthroughAttribute = 3918,
+  kARIAVirtualcontentAttribute = 3919,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
