@@ -51,14 +51,14 @@ specific_include_rules = {
     "+device/fido/authenticator_selection_criteria.h",
     "+device/fido/fido_constants.h",
     "+device/fido/fido_types.h",
-    "+third_party/blink/public/mojom/webauthn/authenticator.mojom.h",
+    "+third_party/blink/public/mojom/webauthn",
   ],
   "(test_)?internal_authenticator\.h": [
     "+device/fido/fido_constants.h",
-    "+third_party/blink/public/mojom/webauthn/authenticator.mojom.h",
+    "+third_party/blink/public/mojom/webauthn",
   ],
   "autofill_driver\.h": [
-    "+third_party/blink/public/mojom/webauthn/internal_authenticator.mojom.h"
+    "+third_party/blink/public/mojom/webauthn",
   ],
   "test_autofill_driver\.h": [
     "+components/autofill/content/browser/content_autofill_driver.h"

@@ -17,7 +17,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 #include "url/origin.h"
 
 class SkBitmap;

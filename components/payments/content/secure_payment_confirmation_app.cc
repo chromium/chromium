@@ -28,6 +28,7 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_descriptor.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/url_constants.h"
 
 namespace payments {

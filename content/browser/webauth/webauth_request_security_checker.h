@@ -9,8 +9,9 @@
 
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
+
+class GURL;
 
 namespace url {
 class Origin;

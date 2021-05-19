@@ -15,7 +15,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/authenticator_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.h"
+#include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-forward.h"
 
 namespace device {
 class FidoDiscoveryFactory;

@@ -18,7 +18,7 @@
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "device/fido/fido_constants.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 
 namespace autofill {
 
