@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -51,6 +52,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -458,13 +460,20 @@ class DomDistillerTabUtilsBrowserTestInsecureContent
     if (!DistillerJavaScriptWorldIdIsSet()) {
       SetDistillerJavaScriptWorldId(content::ISOLATED_WORLD_ID_CONTENT_END);
     }
-    ASSERT_TRUE(https_server_->Start());
-    ASSERT_TRUE(https_server_expired_->Start());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kEnableDomDistiller);
     command_line->AppendSwitch(switches::kAllowInsecureLocalhost);
+
+    // Distilled documents are placed in the `public` address space, whence they
+    // cannot load subresources from the `local` address space. See also:
+    // https://bit.ly/3v0MsaY. This prevents distilled documents from loading
+    // images from localhost. Instruct the browser to treat the HTTPS server as
+    // `public` to avoid this.
+    command_line->AppendSwitchASCII(
+        network::switches::kIpAddressSpaceOverrides,
+        base::StrCat({https_server_->host_port_pair().ToString(), "=public"}));
   }
 
   void CheckImageWidthById(content::WebContents* contents,
@@ -479,17 +488,24 @@ class DomDistillerTabUtilsBrowserTestInsecureContent
   DomDistillerTabUtilsBrowserTestInsecureContent() {
     feature_list_.InitWithFeatures({dom_distiller::kReaderMode},
                                    {blink::features::kMixedContentAutoupgrade});
-  }
 
-  void SetUpInProcessBrowserTestFixture() override {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+
     https_server_expired_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_expired_->SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
     https_server_expired_->ServeFilesFromSourceDirectory(
         GetChromeTestDataDir());
+
+    StartServers();
+  }
+
+  // Constructor helper: ASSERT_* macros can only be used in `void` functions.
+  void StartServers() {
+    ASSERT_TRUE(https_server_->Start());
+    ASSERT_TRUE(https_server_expired_->Start());
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;

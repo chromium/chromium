@@ -227,7 +227,8 @@ class CorsRfc1918BrowserTestBase : public ContentBrowserTest {
  protected:
   // Allows subclasses to construct instances with different features enabled.
   explicit CorsRfc1918BrowserTestBase(
-      const std::vector<base::Feature>& enabled_features)
+      const std::vector<base::Feature>& enabled_features,
+      const std::vector<base::Feature>& disabled_features)
       : insecure_local_server_(net::EmbeddedTestServer::TYPE_HTTP,
                                network::mojom::IPAddressSpace::kLocal,
                                GetTestDataFilePath()),
@@ -246,7 +247,7 @@ class CorsRfc1918BrowserTestBase : public ContentBrowserTest {
         secure_public_server_(net::EmbeddedTestServer::TYPE_HTTPS,
                               network::mojom::IPAddressSpace::kPublic,
                               GetTestDataFilePath()) {
-    feature_list_.InitWithFeatures(enabled_features, {});
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void SetUpOnMainThread() override {
@@ -300,8 +301,10 @@ class CorsRfc1918BrowserTest : public CorsRfc1918BrowserTestBase {
  public:
   CorsRfc1918BrowserTest()
       : CorsRfc1918BrowserTestBase(
-            {features::kBlockInsecurePrivateNetworkRequests,
-             features::kWarnAboutSecurePrivateNetworkRequests}) {}
+            {
+                features::kWarnAboutSecurePrivateNetworkRequests,
+            },
+            {}) {}
 };
 
 // Test with insecure private network requests blocked, including navigations.
@@ -309,17 +312,23 @@ class CorsRfc1918BrowserTestBlockNavigations
     : public CorsRfc1918BrowserTestBase {
  public:
   CorsRfc1918BrowserTestBlockNavigations()
-      : CorsRfc1918BrowserTestBase({
-            features::kBlockInsecurePrivateNetworkRequests,
-            features::kWarnAboutSecurePrivateNetworkRequests,
-            features::kBlockInsecurePrivateNetworkRequestsForNavigations,
-        }) {}
+      : CorsRfc1918BrowserTestBase(
+            {
+                features::kWarnAboutSecurePrivateNetworkRequests,
+                features::kBlockInsecurePrivateNetworkRequestsForNavigations,
+            },
+            {}) {}
 };
 
 // Test with insecure private network requests allowed.
 class CorsRfc1918BrowserTestNoBlocking : public CorsRfc1918BrowserTestBase {
  public:
-  CorsRfc1918BrowserTestNoBlocking() : CorsRfc1918BrowserTestBase({}) {}
+  CorsRfc1918BrowserTestNoBlocking()
+      : CorsRfc1918BrowserTestBase(
+            {},
+            {
+                features::kBlockInsecurePrivateNetworkRequests,
+            }) {}
 };
 
 // This test verifies that when the right feature is enabled, iframe requests:

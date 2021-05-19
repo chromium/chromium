@@ -144,8 +144,14 @@ std::map<WebFeature, int> GetAddressSpaceFeatureBucketCounts(
 //  - specification: https://wicg.github.io/private-network-access.
 //  - feature browsertests in content/: RenderFrameHostImplTest.
 //
-class PrivateNetworkAccessBrowserTest : public InProcessBrowserTest {
+class PrivateNetworkAccessBrowserTestBase : public InProcessBrowserTest {
  public:
+  PrivateNetworkAccessBrowserTestBase(
+      std::vector<base::Feature> enabled_features,
+      std::vector<base::Feature> disabled_features) {
+    features_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -173,17 +179,32 @@ class PrivateNetworkAccessBrowserTest : public InProcessBrowserTest {
     return server;
   }
 
- private:
+ protected:
   void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+class PrivateNetworkAccessWithFeatureDisabledBrowserTest
+    : public PrivateNetworkAccessBrowserTestBase {
+ public:
+  PrivateNetworkAccessWithFeatureDisabledBrowserTest()
+      : PrivateNetworkAccessBrowserTestBase(
+            {},
+            {
+                features::kBlockInsecurePrivateNetworkRequests,
+            }) {}
 };
 
 // This test verifies that no feature is counted for the initial navigation from
 // a new tab to a page served by localhost.
 //
 // Regression test for https://crbug.com/1134601.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
                        DoesNotRecordAddressSpaceFeatureForInitialNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -200,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 // TODO(crbug.com/1129326): Revisit this once the story around top-level
 // navigations is closer to being resolved. Counting these events will help
 // decide what to do.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
                        DoesNotRecordAddressSpaceFeatureForRegularNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -216,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 // space loads a resource from the local network, the correct WebFeature is
 // use-counted.
 // Disabled, as explained in https://crbug.com/1143206
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
                        DISABLED_RecordsAddressSpaceFeatureForFetch) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -237,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 // address space loads a resource from the local network, the correct WebFeature
 // is use-counted.
 IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTest,
+    PrivateNetworkAccessWithFeatureDisabledBrowserTest,
     DISABLED_RecordsAddressSpaceFeatureForFetchInNonSecureContext) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -259,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(
 // about:blank, no address space feature is recorded. It serves as a basis for
 // comparison with the following tests, which test behavior with iframes.
 IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTest,
+    PrivateNetworkAccessWithFeatureDisabledBrowserTest,
     DoesNotRecordAddressSpaceFeatureForAboutBlankNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -282,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(
 // This test verifies that when a non-secure context served from the public
 // address space loads a child frame from the local network, the correct
 // WebFeature is use-counted.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
                        RecordsAddressSpaceFeatureForChildNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -314,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 // address space loads a grand-child frame from the local network, the correct
 // WebFeature is use-counted. If inheritance did not work correctly, the
 // intermediate about:blank frame might confuse the address space logic.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
                        RecordsAddressSpaceFeatureForGrandchildNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -349,33 +370,31 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 }
 
 class PrivateNetworkAccessWithFeatureEnabledBrowserTest
-    : public PrivateNetworkAccessBrowserTest {
+    : public PrivateNetworkAccessBrowserTestBase {
  public:
-  PrivateNetworkAccessWithFeatureEnabledBrowserTest() {
-    std::vector<base::Feature> enabled_features = {
-        features::kBlockInsecurePrivateNetworkRequests,
-        dom_distiller::kReaderMode,
-    };
-    std::vector<base::Feature> disabled_features;
-    features_.InitWithFeatures(enabled_features, disabled_features);
-  }
+  PrivateNetworkAccessWithFeatureEnabledBrowserTest()
+      : PrivateNetworkAccessBrowserTestBase(
+            {
+                features::kBlockInsecurePrivateNetworkRequests,
+                dom_distiller::kReaderMode,
+            },
+            {}) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrivateNetworkAccessBrowserTestBase::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kEnableDomDistiller);
   }
 
  private:
   void SetUpOnMainThread() override {
+    PrivateNetworkAccessBrowserTestBase::SetUpOnMainThread();
     // The distiller needs to run in an isolated environment. For tests we
     // can simply use the last value available.
     if (!dom_distiller::DistillerJavaScriptWorldIdIsSet()) {
       dom_distiller::SetDistillerJavaScriptWorldId(
           content::ISOLATED_WORLD_ID_CONTENT_END);
     }
-    host_resolver()->AddRule("*", "127.0.0.1");
   }
-
-  base::test::ScopedFeatureList features_;
 };
 
 // This test verifies that private network requests that are blocked result in
