@@ -39,24 +39,31 @@ class Background {
   ARGBColor color_;
 };
 
+// Represents the different supported text alignment. Keep this enum in sync with its Java
+// counterpart of the same name.
+enum class TextAlignment { kInvalid = 0, kStart = 1, kCenter = 2, kEnd = 3 };
+
 // Parameters dictating how to display text.
 class TextStyle {
  public:
   explicit TextStyle(const std::string& font_name,
                      ARGBColor font_color,
                      uint16_t weight,
-                     bool all_caps);
+                     bool all_caps,
+                     TextAlignment alignment);
 
   const std::string font_name() const { return font_name_; }
   ARGBColor font_color() const { return font_color_; }
   uint16_t weight() const { return weight_; }
   bool all_caps() const { return all_caps_; }
+  TextAlignment alignment() const { return alignment_; }
 
  private:
   std::string font_name_;
   ARGBColor font_color_;
   uint16_t weight_;
   bool all_caps_;
+  TextAlignment alignment_;
 };
 
 // Parameters to control the appearance of the elements in a note's footer.

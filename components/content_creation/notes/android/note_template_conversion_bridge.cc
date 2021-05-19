@@ -25,7 +25,8 @@ ScopedJavaLocalRef<jobject> CreateJavaTextStyle(JNIEnv* env,
                                                 const TextStyle& text_style) {
   return Java_NoteTemplateConversionBridge_createTextStyle(
       env, ConvertUTF8ToJavaString(env, text_style.font_name()),
-      text_style.font_color(), text_style.weight(), text_style.all_caps());
+      text_style.font_color(), text_style.weight(), text_style.all_caps(),
+      static_cast<uint16_t>(text_style.alignment()));
 }
 
 ScopedJavaLocalRef<jobject> CreateJavaFooterStyle(

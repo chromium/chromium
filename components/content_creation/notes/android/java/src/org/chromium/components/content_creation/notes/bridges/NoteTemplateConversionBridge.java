@@ -12,6 +12,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.components.content_creation.notes.models.Background;
 import org.chromium.components.content_creation.notes.models.FooterStyle;
 import org.chromium.components.content_creation.notes.models.NoteTemplate;
+import org.chromium.components.content_creation.notes.models.TextAlignment;
 import org.chromium.components.content_creation.notes.models.TextStyle;
 
 import java.util.ArrayList;
@@ -39,8 +40,9 @@ public class NoteTemplateConversionBridge {
 
     @CalledByNative
     private static TextStyle createTextStyle(
-            String fontName, @ColorInt int fontColor, int weight, boolean allCaps) {
-        return new TextStyle(fontName, fontColor, weight, allCaps);
+            String fontName, @ColorInt int fontColor, int weight, boolean allCaps, int alignment) {
+        return new TextStyle(
+                fontName, fontColor, weight, allCaps, TextAlignment.fromInteger(alignment));
     }
 
     @CalledByNative

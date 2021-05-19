@@ -14,12 +14,15 @@ public class TextStyle {
     public final @ColorInt int fontColor;
     public final int weight;
     public final boolean allCaps;
+    public final TextAlignment alignment;
 
     /** Constructor. */
-    public TextStyle(String fontName, @ColorInt int fontColor, int weight, boolean allCaps) {
+    public TextStyle(String fontName, @ColorInt int fontColor, int weight, boolean allCaps,
+            TextAlignment alignment) {
         this.fontName = fontName;
         this.fontColor = fontColor;
         this.weight = weight;
         this.allCaps = allCaps;
+        this.alignment = alignment;
     }
 }

@@ -59,7 +59,7 @@ NoteTemplate GetClassicTemplate() {
       Background(/*color=*/kGrey900Color),
       TextStyle(kSourceSerifProFontName,
                 /*font_color=*/kWhiteColor, k700Weight,
-                /*all_caps=*/false),
+                /*all_caps=*/false, TextAlignment::kStart),
       /*footer_style=*/CreateDarkBackgroundFooterStyle());
 }
 
@@ -70,7 +70,7 @@ NoteTemplate GetFreshTemplate() {
       Background(/*color=*/kGreen50Color),
       TextStyle(kSourceSerifProFontName,
                 /*font_color=*/kGreen900Color, k400Weight,
-                /*all_caps=*/false),
+                /*all_caps=*/false, TextAlignment::kStart),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
 
@@ -82,7 +82,7 @@ NoteTemplate GetPowerfulTemplate() {
       Background(/*color=*/kYellow400Color),
       TextStyle(kRobotoCondensedFontName,
                 /*font_color=*/kBlackColor, k400Weight,
-                /*all_caps=*/true),
+                /*all_caps=*/true, TextAlignment::kStart),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
 
@@ -95,7 +95,7 @@ NoteTemplate GetImpactfulTemplate() {
       Background(/*color=*/kGrey200Color),
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kBlackColor, k400Weight,
-                /*all_caps=*/true),
+                /*all_caps=*/true, TextAlignment::kCenter),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
 
@@ -107,7 +107,7 @@ NoteTemplate GetMonochromeTemplate() {
       Background(/*color=*/kBlackColor),
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kWhiteColor, k400Weight,
-                /*all_caps=*/true),
+                /*all_caps=*/true, TextAlignment::kCenter),
       /*footer_style=*/CreateDarkBackgroundFooterStyle());
 }
 
@@ -119,7 +119,7 @@ NoteTemplate GetBoldTemplate() {
       Background(/*color=*/kWhiteColor),
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kBlackColor, k400Weight,
-                /*all_caps=*/true),
+                /*all_caps=*/true, TextAlignment::kCenter),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
 

@@ -13,6 +13,7 @@ android_library("java") {
     "java/src/org/chromium/components/content_creation/notes/models/Background.java",
     "java/src/org/chromium/components/content_creation/notes/models/FooterStyle.java",
     "java/src/org/chromium/components/content_creation/notes/models/NoteTemplate.java",
+    "java/src/org/chromium/components/content_creation/notes/models/TextAlignment.java",
     "java/src/org/chromium/components/content_creation/notes/models/TextStyle.java",
   ]
 
