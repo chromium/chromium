@@ -279,6 +279,12 @@ bool SharedContextState::InitializeGrContext(
   if (gpu_preferences.force_max_texture_size)
     options.fMaxTextureSizeOverride = gpu_preferences.force_max_texture_size;
 
+  if (base::FeatureList::IsEnabled(features::kReduceOpsTaskSplitting)) {
+    options.fReduceOpsTaskSplitting = GrContextOptions::Enable::kYes;
+  } else {
+    options.fReduceOpsTaskSplitting = GrContextOptions::Enable::kNo;
+  }
+
   if (gr_context_type_ == GrContextType::kGL) {
     DCHECK(context_->IsCurrent(nullptr));
     bool use_version_es2 = false;

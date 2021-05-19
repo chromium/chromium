@@ -214,6 +214,10 @@ const base::Feature kEnableGrShaderCacheForVulkan{
 const base::Feature kEnableVkPipelineCache{"EnableVkPipelineCache",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable Skia reduceOpsTaskSplitting to reduce render passes.
+const base::Feature kReduceOpsTaskSplitting{
+    "ReduceOpsTaskSplitting", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsUsingVulkan() {
 #if defined(OS_ANDROID)
   // Force on if Vulkan feature is enabled from command line.
