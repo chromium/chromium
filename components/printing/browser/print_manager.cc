@@ -24,9 +24,8 @@ void PrintManager::RenderFrameDeleted(
 
 void PrintManager::DidGetPrintedPagesCount(int32_t cookie,
                                            uint32_t number_pages) {
-  if (!IsValidCookie(cookie) || number_pages == 0)
-    return;
-
+  DCHECK_GT(cookie, 0);
+  DCHECK_GT(number_pages, 0u);
   number_pages_ = number_pages;
 }
 
