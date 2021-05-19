@@ -2,7 +2,7 @@
 
 As part of supporting a Chromium runtime for chromecast (as defined below), the
 `CmaBackendProxy` class and related code contained in the
-[`chromecast/media/cma/backend/proxy/`](https://source.chromium.org/chromium/chromium/src/+/master:chromecast/media/cma/backend/proxy/)
+[`chromecast/media/cma/backend/proxy/`](https://source.chromium.org/chromium/chromium/src/+/main:chromecast/media/cma/backend/proxy/)
 directory was added. This infrastructure exists to proxy audio data across the
 CastRuntimeAudioChannel gRPC Service without impacting local playback of video
 or audio media, and requires significant complexity in order to do so. This
@@ -16,15 +16,15 @@ onboarding process.
 ## Existing Chromecast Media Pipeline
 
 The chromecast pipeline, as exists today in Chromium's
-[`chromecast/`](https://source.chromium.org/chromium/chromium/src/+/master:chromecast/)
+[`chromecast/`](https://source.chromium.org/chromium/chromium/src/+/main:chromecast/)
 directory, is rather complex, so only the high-level will be discussed here.
 When playing out media, an implementation of the
-[`MediaPipelineBackend`](https://source.chromium.org/chromium/chromium/src/+/master:chromecast/public/media/media_pipeline_backend.h;l=36?q=mediapipelinebackend&ss=chromium%2Fchromium%2Fsrc:chromecast%2F)
+[`MediaPipelineBackend`](https://source.chromium.org/chromium/chromium/src/+/main:chromecast/public/media/media_pipeline_backend.h;l=36?q=mediapipelinebackend&ss=chromium%2Fchromium%2Fsrc:chromecast%2F)
 API will be created, and this will be wrapped by a platform-specific (e.g.
 Android, Fuchsia, Desktop, etc…)
-[`CmaBackend`](https://source.chromium.org/chromium/chromium/src/+/master:chromecast/media/api/cma_backend.h;l=24?q=cmabackend&sq=&ss=chromium%2Fchromium%2Fsrc:chromecast%2F)
+[`CmaBackend`](https://source.chromium.org/chromium/chromium/src/+/main:chromecast/media/api/cma_backend.h;l=24?q=cmabackend&sq=&ss=chromium%2Fchromium%2Fsrc:chromecast%2F)
 as
-[exists today](https://source.chromium.org/chromium/chromium/src/+/master:chromecast/media/cma/backend/)
+[exists today](https://source.chromium.org/chromium/chromium/src/+/main:chromecast/media/cma/backend/)
 in the Chromium repo. The `CmaBackend` will create an `AudioDecoder` and
 `VideoDecoder` instance as needed, which is responsible for operations such as
 playback control, queueing up media playout, and decrypting DRM (if needed),
@@ -65,7 +65,7 @@ The pipeline can be roughly divided into two parts:
    data it receives to the platform-specific `MediaPipelineBackend`, resulting
    in playout of the local device's speakers .
 -  Audio Data Proxying, or how the audio data is streamed across the
-   [CastRuntimeAudioChannel](https://source.chromium.org/chromium/chromium/src/+/master:third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_decoder_service.proto;l=231?q=castruntimeaudiochannel&sq=&ss=chromium%2Fchromium%2Fsrc)
+   [CastRuntimeAudioChannel](https://source.chromium.org/chromium/chromium/src/+/main:third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_decoder_service.proto;l=231?q=castruntimeaudiochannel&sq=&ss=chromium%2Fchromium%2Fsrc)
    gRPC Service in parallel to the local playout,
 
 Both can be summarized in this
@@ -84,7 +84,7 @@ be discussed further. The AudioDecoder is more interesting - there are 3
 audio data will pass - two `proxy` specific and the delegated backend's decoder.
 In processing order, they are:
 
-1. [`MultizoneAudioDecoderProxy`](https://source.chromium.org/chromium/chromium/src/+/master:chromecast/media/cma/backend/proxy/multizone_audio_decoder_proxy.h):
+1. [`MultizoneAudioDecoderProxy`](https://source.chromium.org/chromium/chromium/src/+/main:chromecast/media/cma/backend/proxy/multizone_audio_decoder_proxy.h):
    This class is the starting-point for sending data over the
    CastRuntimeAudioChannel gRPC, using the pipeline described in the [following
    section](#heading=h.gkcc76texr45).
@@ -117,7 +117,7 @@ The `MultizoneAudioDecoderProxy`, as mentioned above, functions to proxy data
 across the CastRuntimeAudioChannel gRPC channel. The pipeline used to do uses
 the following classes,  in order:
 
-1. [`MultizoneAudioDecoderProxyImpl`](https://source.chromium.org/chromium/chromium/src/+/master:chromecast/media/cma/backend/proxy/multizone_audio_decoder_proxy_impl.h):
+1. [`MultizoneAudioDecoderProxyImpl`](https://source.chromium.org/chromium/chromium/src/+/main:chromecast/media/cma/backend/proxy/multizone_audio_decoder_proxy_impl.h):
    As mentioned above, all `CmaBackend::AudioDecoder` methods call into here
    first, as well as methods corresponding to the public calls on `CmaBackend`.
    This class mostly acts as a pass-through, immediately calling into the below
@@ -125,7 +125,7 @@ the following classes,  in order:
    class adds a bit of complexity, in that it assigns Buffer Ids to PushBuffer
    calls, to be used for audio timing synchronization between both sides of the
    CastRuntimeAudioChannel gRPC channel.
-1. [`ProxyCallTranslator`](https://source.chromium.org/chromium/chromium/src/+/master:chromecast/media/cma/backend/proxy/proxy_call_translator.h):
+1. [`ProxyCallTranslator`](https://source.chromium.org/chromium/chromium/src/+/main:chromecast/media/cma/backend/proxy/proxy_call_translator.h):
    As the name suggests, this class exists to convert between the
    media-pipeline understood types, as called into the above layer, with those
    supported by CastRuntimeAudioChannel gRPC.To this end, `PushBufferQueue`
@@ -137,7 +137,7 @@ the following classes,  in order:
    threading assumptions made by the above and below classes, such as how data
    returned by the below layer must be processed on the correct thread in the
    above layer.
-1. [`CastRuntimeAudioChannelBroker`](https://source.chromium.org/chromium/chromium/src/+/master:chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_broker.h):
+1. [`CastRuntimeAudioChannelBroker`](https://source.chromium.org/chromium/chromium/src/+/main:chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_broker.h):
    Implementations of this abstract class take the CastRuntimeAudioChannel gRPC
    types supplied by the above, then use them to make calls against the gRPC
    Service.
@@ -151,6 +151,6 @@ introduced to customize the functionality of this pipeline:
 
 This flag enables or disables support for sending data across the
 CastRuntimeAudioChannel. When enabled, the
-[`CmaBackendFactoryImpl`](https://source.chromium.org/chromium/chromium/src/+/master:chromecast/media/cma/backend/cma_backend_factory_impl.cc;l=32)
+[`CmaBackendFactoryImpl`](https://source.chromium.org/chromium/chromium/src/+/main:chromecast/media/cma/backend/cma_backend_factory_impl.cc;l=32)
 class will wrap the implementation-specific `CmaBackend` with a
 `CmaBackendProxy` instance, as described above. This flag defaults to `False`.
