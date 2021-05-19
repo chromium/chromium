@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 
+#include <string>
+
 namespace app_list {
 
 // Interface for a ranker.
@@ -21,7 +23,7 @@ class Ranker {
 
   // Called each time a new search session begins, eg. when the user types a
   // character.
-  virtual void Start() {}
+  virtual void Start(const std::u16string& query) {}
 
   // Called each time a search provider sets new results. Passed the |provider|
   // type that triggered this call, and all |results| received so far for this

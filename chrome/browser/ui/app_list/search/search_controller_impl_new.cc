@@ -25,7 +25,11 @@
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
+#include "chrome/browser/ui/app_list/search/ranking/category_ranker.h"
+#include "chrome/browser/ui/app_list/search/ranking/filtering_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
+#include "chrome/browser/ui/app_list/search/ranking/score_normalizing_ranker.h"
+#include "chrome/browser/ui/app_list/search/ranking/top_match_ranker.h"
 #include "chrome/browser/ui/app_list/search/search_metrics_observer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/chip_ranker.h"
@@ -88,7 +92,10 @@ SearchControllerImplNew::SearchControllerImplNew(
 SearchControllerImplNew::~SearchControllerImplNew() {}
 
 void SearchControllerImplNew::InitializeRankers() {
-  // Unused
+  ranker_->AddRanker(std::make_unique<ScoreNormalizingRanker>(profile_));
+  ranker_->AddRanker(std::make_unique<TopMatchRanker>());
+  ranker_->AddRanker(std::make_unique<CategoryRanker>(profile_));
+  ranker_->AddRanker(std::make_unique<FilteringRanker>());
 }
 
 void SearchControllerImplNew::Start(const std::u16string& query) {
@@ -107,7 +114,7 @@ void SearchControllerImplNew::Start(const std::u16string& query) {
 
   last_query_ = query;
   results_.clear();
-  ranker_->Start();
+  ranker_->Start(query);
   for (const auto& provider : providers_)
     provider->Start(query);
 }
@@ -188,13 +195,26 @@ void SearchControllerImplNew::SetResults(
         result->SetDisplayType(ash::SearchResultDisplayType::kList);
       }
 
-      all_results.push_back(result.get());
+      // Filter out results with negative relevance, which is the rankers'
+      // signal that a result should not be displayed at all.
+      if (result->relevance() > 0.0) {
+        all_results.push_back(result.get());
+      }
     }
   }
   std::sort(all_results.begin(), all_results.end(),
             [](const ChromeSearchResult* a, const ChromeSearchResult* b) {
               return a->relevance() > b->relevance();
             });
+
+  // TODO(crbug.com/1199206): Remove this debug output once we no longer need to
+  // inspect launcher scores so closely, and before the categorical search flag
+  // is enabled for any users.
+  LOG(ERROR) << "(categorical search) updating results to:";
+  for (const auto* result : all_results) {
+    LOG(ERROR) << "(categorical search) - " << result->relevance() << "  "
+               << result->id();
+  }
 
   model_updater_->PublishSearchResults(all_results);
 }

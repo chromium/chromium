@@ -26,7 +26,7 @@ class CategoryRanker : public Ranker {
   CategoryRanker& operator=(const CategoryRanker&) = delete;
 
   // Ranker:
-  void Start() override;
+  void Start(const std::u16string& query) override;
   void Rank(ResultsMap& results, ProviderType provider) override;
   void Train(const LaunchData& launch) override;
 

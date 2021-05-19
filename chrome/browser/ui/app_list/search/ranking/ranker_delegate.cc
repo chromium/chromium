@@ -11,9 +11,9 @@ RankerDelegate::RankerDelegate(Profile* profile,
 
 RankerDelegate::~RankerDelegate() {}
 
-void RankerDelegate::Start() {
+void RankerDelegate::Start(const std::u16string& query) {
   for (auto& ranker : rankers_)
-    ranker->Start();
+    ranker->Start(query);
 }
 
 void RankerDelegate::Rank(ResultsMap& results, ProviderType provider) {

@@ -6,19 +6,16 @@
 
 #include <vector>
 
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/ranking/constants.h"
+#include "chrome/browser/ui/app_list/search/ranking/util.h"
 
 namespace app_list {
 namespace {
 
-// The maximum number of top matches to show.
-constexpr size_t kNumTopMatches = 3u;
-
-// The score threshold before we consider a result a top match.
-constexpr double kTopMatchThreshold = 0.9;
-
-// The score added to a results relevance to make it a top match.
-constexpr double kScoreBoost = 1000.0;
+constexpr char16_t kTopMatchDetails[] = u"(top match) ";
 
 // Returns true if the |type| provider's results should never be a top match.
 bool ShouldIgnoreProvider(ProviderType type) {
@@ -26,6 +23,7 @@ bool ShouldIgnoreProvider(ProviderType type) {
       // Low-intent providers:
     case ProviderType::kPlayStoreReinstallApp:
     case ProviderType::kPlayStoreApp:
+    case ProviderType::kAssistantText:
       // Deprecated providers:
     case ProviderType::kLauncher:
     case ProviderType::kAnswerCard:
@@ -66,11 +64,10 @@ void TopMatchRanker::Rank(ResultsMap& results, ProviderType provider) {
   std::vector<std::pair<ChromeSearchResult*, double>> top_results;
   for (const auto& type_results : results) {
     for (const auto& result : type_results.second) {
-      const double current_score = result->relevance();
-      if (current_score >= kScoreBoost)
-        result->set_relevance(current_score - kScoreBoost);
-      if (current_score >= kTopMatchThreshold)
-        top_results.push_back({result.get(), current_score});
+      if (result->relevance() >= kTopMatchScoreBoost)
+        result->set_relevance(result->relevance() - kTopMatchScoreBoost);
+      if (result->relevance() >= kTopMatchThreshold)
+        top_results.push_back({result.get(), result->relevance()});
     }
   }
 
@@ -81,7 +78,12 @@ void TopMatchRanker::Rank(ResultsMap& results, ProviderType provider) {
   // Apply a score boost to at most the top |kNumTopMatches| results.
   for (int i = 0; i < std::min(kNumTopMatches, top_results.size()); ++i) {
     const double current_score = top_results[i].second;
-    top_results[i].first->set_relevance(kScoreBoost + current_score);
+    top_results[i].first->set_relevance(kTopMatchScoreBoost + current_score);
+
+    // TODO(crbug.com/1199206): This adds some debug information to the result
+    // details. Remove once we have explicit categories in the UI.
+    const auto details = RemoveDebugPrefix(top_results[i].first->details());
+    top_results[i].first->SetDetails(base::StrCat({kTopMatchDetails, details}));
   }
 }
 
