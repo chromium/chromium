@@ -9060,7 +9060,14 @@ TEST_F(WebFrameSwapTest, SwapMainFrameWithPageScaleReset) {
 
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
   MainFrame()->Swap(remote_frame);
-  WebView()->DidAttachRemoteMainFrame();
+
+  mojo::AssociatedRemote<mojom::blink::RemoteMainFrameHost> main_frame_host;
+  ignore_result(main_frame_host.BindNewEndpointAndPassDedicatedReceiver());
+  WebView()->DidAttachRemoteMainFrame(
+      main_frame_host.Unbind(),
+      mojo::AssociatedRemote<mojom::blink::RemoteMainFrame>()
+          .BindNewEndpointAndPassDedicatedReceiver());
+
   EXPECT_EQ(1.0, WebView()->PageScaleFactor());
 }
 
@@ -9792,11 +9799,7 @@ class TestRemoteMainFrameHostForWindowClose : public FakeRemoteMainFrameHost {
 
 class RemoteWindowCloseTest : public WebFrameTest {
  public:
-  RemoteWindowCloseTest() {
-    remote_main_frame_host_.Init(
-        remote_frame_client_.GetRemoteAssociatedInterfaces());
-  }
-
+  RemoteWindowCloseTest() = default;
   ~RemoteWindowCloseTest() override = default;
 
   frame_test_helpers::TestWebRemoteFrameClient* remote_frame_client() {
@@ -9804,6 +9807,10 @@ class RemoteWindowCloseTest : public WebFrameTest {
   }
 
   bool Closed() const { return remote_main_frame_host_.remote_window_closed(); }
+
+  TestRemoteMainFrameHostForWindowClose* remote_main_frame_host() {
+    return &remote_main_frame_host_;
+  }
 
  private:
   TestRemoteMainFrameHostForWindowClose remote_main_frame_host_;
@@ -9817,7 +9824,10 @@ TEST_F(RemoteWindowCloseTest, WindowOpenRemoteClose) {
   // Create a remote window that will be closed later in the test.
   frame_test_helpers::WebViewHelper popup;
   popup.InitializeRemote(remote_frame_client(), nullptr, nullptr);
-  popup.GetWebView()->DidAttachRemoteMainFrame();
+  popup.GetWebView()->DidAttachRemoteMainFrame(
+      remote_main_frame_host()->BindNewAssociatedRemote(),
+      mojo::AssociatedRemote<mojom::blink::RemoteMainFrame>()
+          .BindNewEndpointAndPassDedicatedReceiver());
 
   LocalFrame* local_frame = main_web_view.LocalMainFrame()->GetFrame();
   RemoteFrame* remote_frame = popup.RemoteMainFrame()->GetFrame();

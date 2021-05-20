@@ -102,8 +102,6 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
   mojom::blink::RemoteFrameHost& GetRemoteFrameHostRemote();
 
-  AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces();
-
   RemoteFrameView* View() const override;
 
   RemoteFrameClient* Client() const;
@@ -220,7 +218,9 @@ class CORE_EXPORT RemoteFrame final : public Frame,
       mojom::blink::TextAutosizerPageInfoPtr page_info) override;
 
   // Indicate that this frame was attached as a MainFrame.
-  void WasAttachedAsRemoteMainFrame();
+  void WasAttachedAsRemoteMainFrame(
+      mojo::PendingAssociatedReceiver<mojom::blink::RemoteMainFrame>
+          main_frame);
 
   RemoteFrameToken GetRemoteFrameToken() const {
     return GetFrameToken().GetAs<RemoteFrameToken>();
@@ -252,9 +252,6 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   static void BindToReceiver(
       RemoteFrame* frame,
       mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver);
-  static void BindToMainFrameReceiver(
-      RemoteFrame* frame,
-      mojo::PendingAssociatedReceiver<mojom::blink::RemoteMainFrame> receiver);
 
   Member<RemoteFrameView> view_;
   RemoteSecurityContext security_context_;

@@ -89,7 +89,8 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     int render_view_routing_id,
     int parent_routing_id,
     blink::mojom::FrameReplicationStatePtr replicated_state,
-    const base::UnguessableToken& devtools_frame_token) {
+    const base::UnguessableToken& devtools_frame_token,
+    mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
   RenderFrameProxy* parent = nullptr;
   if (parent_routing_id != MSG_ROUTING_NONE) {
     parent = RenderFrameProxy::FromRoutingID(parent_routing_id);
@@ -120,7 +121,9 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
 
     // The WebRemoteFrame created here was already attached to the Page as its
     // main frame, so we can call WebView's DidAttachRemoteMainFrame().
-    web_view->DidAttachRemoteMainFrame();
+    web_view->DidAttachRemoteMainFrame(
+        std::move(remote_main_frame_interfaces->main_frame_host),
+        std::move(remote_main_frame_interfaces->main_frame));
   } else {
     // Create a frame under an existing parent. The parent is always expected
     // to be a RenderFrameProxy, because navigations initiated by local frames
@@ -284,11 +287,8 @@ bool RenderFrameProxy::OnMessageReceived(const IPC::Message& msg) {
 void RenderFrameProxy::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
-  if (interface_name == blink::mojom::RemoteFrame::Name_) {
+  if (interface_name == blink::mojom::RemoteFrame::Name_)
     associated_interfaces_.TryBindInterface(interface_name, &handle);
-  } else if (interface_name == blink::mojom::RemoteMainFrame::Name_) {
-    associated_interfaces_.TryBindInterface(interface_name, &handle);
-  }
 }
 
 bool RenderFrameProxy::Send(IPC::Message* message) {

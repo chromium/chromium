@@ -74,6 +74,8 @@ class CONTENT_EXPORT RenderFrameProxyHost
  public:
   using CreatedCallback = base::RepeatingCallback<void(RenderFrameProxyHost*)>;
   using DeletedCallback = base::RepeatingCallback<void(RenderFrameProxyHost*)>;
+  using BindRemoteFrameCallback =
+      base::RepeatingCallback<void(RenderFrameProxyHost*)>;
 
   static RenderFrameProxyHost* FromID(int process_id, int routing_id);
   static RenderFrameProxyHost* FromFrameToken(
@@ -87,6 +89,11 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // Sets a callback to be called whenever any RenderFrameProxyHost is deleted.
   static void SetDeletedCallbackForTesting(
       const DeletedCallback& deleted_callback);
+
+  // Sets a callback to be called whenever mojo connections to any
+  // RenderFrameProxyHost is bound and transferred.
+  static void SetBindRemoteFrameCallbackForTesting(
+      const BindRemoteFrameCallback& bind_callback);
 
   RenderFrameProxyHost(SiteInstance* site_instance,
                        scoped_refptr<RenderViewHostImpl> render_view_host,
@@ -222,7 +229,15 @@ class CONTENT_EXPORT RenderFrameProxyHost
   blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfacesTesting();
   bool IsInertForTesting();
 
+  mojo::PendingAssociatedReceiver<blink::mojom::RemoteMainFrame>
+  BindRemoteMainFrameReceiverForTesting();
+
   const blink::RemoteFrameToken& GetFrameToken() const { return frame_token_; }
+
+  // Bind mojo endpoints of the RemoteMainFrame in blink and pass unbound
+  // corresponding endpoints. The corresponding endpoints should be transferred
+  // and bound in blink.
+  mojom::RemoteMainFrameInterfacesPtr BindAndPassRemoteMainFrameInterfaces();
 
  private:
   // These interceptor need access to frame_host_receiver_for_testing().
@@ -240,6 +255,10 @@ class CONTENT_EXPORT RenderFrameProxyHost
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
   blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces();
+
+  // Invalidate the mojo connections between this RenderFrameProxyHost and its
+  // associated instances in renderer.
+  void InvalidateMojoConnection();
 
   // Needed for tests to be able to swap the implementation and intercept calls.
   mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>&

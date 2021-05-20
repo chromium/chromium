@@ -466,8 +466,9 @@ bool RenderViewHostImpl::CreateRenderView(
         std::move(local_frame_params));
   } else {
     params->main_frame = mojom::CreateMainFrameUnion::NewRemoteParams(
-        mojom::CreateRemoteMainFrameParams::New(main_rfph->GetFrameToken(),
-                                                proxy_route_id));
+        mojom::CreateRemoteMainFrameParams::New(
+            main_rfph->GetFrameToken(), proxy_route_id,
+            main_rfph->BindAndPassRemoteMainFrameInterfaces()));
   }
 
   params->session_storage_namespace_id =

@@ -1040,11 +1040,9 @@ class FakeRemoteMainFrame : public blink::mojom::RemoteMainFrame {
   FakeRemoteMainFrame() = default;
   ~FakeRemoteMainFrame() override = default;
 
-  void Init(blink::AssociatedInterfaceProvider* provider) {
-    provider->OverrideBinderForTesting(
-        blink::mojom::RemoteMainFrame::Name_,
-        base::BindRepeating(&FakeRemoteMainFrame::BindFrameHostReceiver,
-                            base::Unretained(this)));
+  void Init(
+      mojo::PendingAssociatedReceiver<blink::mojom::RemoteMainFrame> receiver) {
+    receiver_.Bind(std::move(receiver));
   }
 
   // blink::mojom::RemoteMainFrame overrides:
@@ -1052,12 +1050,6 @@ class FakeRemoteMainFrame : public blink::mojom::RemoteMainFrame {
       blink::mojom::TextAutosizerPageInfoPtr page_info) override {}
 
  private:
-  void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
-    receiver_.Bind(
-        mojo::PendingAssociatedReceiver<blink::mojom::RemoteMainFrame>(
-            std::move(handle)));
-  }
-
   mojo::AssociatedReceiver<blink::mojom::RemoteMainFrame> receiver_{this};
 };
 
@@ -1067,14 +1059,14 @@ class FakeRemoteMainFrame : public blink::mojom::RemoteMainFrame {
 class UpdateTextAutosizerInfoProxyObserver {
  public:
   UpdateTextAutosizerInfoProxyObserver() {
-    RenderFrameProxyHost::SetCreatedCallbackForTesting(
+    RenderFrameProxyHost::SetBindRemoteFrameCallbackForTesting(
         base::BindRepeating(&UpdateTextAutosizerInfoProxyObserver::
-                                RenderFrameProxyHostCreatedCallback,
+                                RemoteFrameInterfacesBoundCallback,
                             base::Unretained(this)));
   }
   ~UpdateTextAutosizerInfoProxyObserver() {
-    RenderFrameProxyHost::SetCreatedCallbackForTesting(
-        RenderFrameProxyHost::CreatedCallback());
+    RenderFrameProxyHost::SetBindRemoteFrameCallbackForTesting(
+        RenderFrameProxyHost::BindRemoteFrameCallback());
   }
 
   const blink::mojom::TextAutosizerPageInfo& TextAutosizerPageInfo(
@@ -1086,7 +1078,7 @@ class UpdateTextAutosizerInfoProxyObserver {
   class Remote : public FakeRemoteMainFrame {
    public:
     explicit Remote(RenderFrameProxyHost* proxy) {
-      Init(proxy->GetRemoteAssociatedInterfacesTesting());
+      Init(proxy->BindRemoteMainFrameReceiverForTesting());
     }
     void UpdateTextAutosizerPageInfo(
         blink::mojom::TextAutosizerPageInfoPtr page_info) override {
@@ -1100,7 +1092,7 @@ class UpdateTextAutosizerInfoProxyObserver {
     blink::mojom::TextAutosizerPageInfo page_info_;
   };
 
-  void RenderFrameProxyHostCreatedCallback(RenderFrameProxyHost* proxy_host) {
+  void RemoteFrameInterfacesBoundCallback(RenderFrameProxyHost* proxy_host) {
     remote_frames_[proxy_host] = std::make_unique<Remote>(proxy_host);
   }
 
@@ -6217,13 +6209,23 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(ExecJs(
       root, "document.body.removeChild(document.querySelector('iframe'));"));
 
+  auto remote_main_frame_interfaces = mojom::RemoteMainFrameInterfaces::New();
+  mojo::AssociatedRemote<blink::mojom::RemoteMainFrame> main_frame;
+  remote_main_frame_interfaces->main_frame =
+      main_frame.BindNewEndpointAndPassReceiver();
+
+  mojo::AssociatedRemote<blink::mojom::RemoteMainFrameHost> main_frame_host;
+  ignore_result(main_frame_host.BindNewEndpointAndPassReceiver());
+  remote_main_frame_interfaces->main_frame_host = main_frame_host.Unbind();
+
   // Send the message to create a proxy for B's new child frame in A.  This
   // used to crash, as parent_routing_id refers to a proxy that doesn't exist
   // anymore.
   agent_scheduling_group_a->CreateFrameProxy(
       blink::RemoteFrameToken(), new_routing_id, absl::nullopt, view_routing_id,
       parent_routing_id, blink::mojom::FrameReplicationState::New(),
-      base::UnguessableToken::Create());
+      base::UnguessableToken::Create(),
+      std::move(remote_main_frame_interfaces));
 
   // Ensure the subframe is detached in the browser process.
   observer.Wait();

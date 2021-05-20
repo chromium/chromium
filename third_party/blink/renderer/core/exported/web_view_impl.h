@@ -137,7 +137,11 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // WebView methods:
   void DidAttachLocalMainFrame() override;
   void DidDetachLocalMainFrame() override;
-  void DidAttachRemoteMainFrame() override;
+  void DidAttachRemoteMainFrame(
+      CrossVariantMojoAssociatedRemote<
+          mojom::blink::RemoteMainFrameHostInterfaceBase>,
+      CrossVariantMojoAssociatedReceiver<
+          mojom::blink::RemoteMainFrameInterfaceBase>) override;
   void DidDetachRemoteMainFrame() override;
   void SetNoStatePrefetchClient(WebNoStatePrefetchClient*) override;
   WebSettings* GetSettings() override;

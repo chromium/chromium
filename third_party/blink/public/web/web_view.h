@@ -36,6 +36,7 @@
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-shared.h"
@@ -139,7 +140,12 @@ class WebView {
   virtual void DidDetachLocalMainFrame() = 0;
 
   // Called to inform WebViewImpl that a remote main frame has been attached.
-  virtual void DidAttachRemoteMainFrame() = 0;
+  // Associated channels should be passed and bound.
+  virtual void DidAttachRemoteMainFrame(
+      CrossVariantMojoAssociatedRemote<mojom::RemoteMainFrameHostInterfaceBase>
+          main_frame_host,
+      CrossVariantMojoAssociatedReceiver<mojom::RemoteMainFrameInterfaceBase>
+          main_frame) = 0;
 
   // Called to inform WebViewImpl that a remote main frame has been detached.
   virtual void DidDetachRemoteMainFrame() = 0;

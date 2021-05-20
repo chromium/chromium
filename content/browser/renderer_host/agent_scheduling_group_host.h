@@ -99,7 +99,8 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
       int32_t view_routing_id,
       int32_t parent_routing_id,
       blink::mojom::FrameReplicationStatePtr replicated_state,
-      const base::UnguessableToken& devtools_frame_token);
+      const base::UnguessableToken& devtools_frame_token,
+      mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces);
 
   void ReportNoBinderForInterface(const std::string& error);
 

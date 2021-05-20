@@ -793,7 +793,9 @@ class CONTENT_EXPORT RenderFrameImpl
   void Unload(int proxy_routing_id,
               bool is_loading,
               blink::mojom::FrameReplicationStatePtr replicated_frame_state,
-              const blink::RemoteFrameToken& frame_token) override;
+              const blink::RemoteFrameToken& frame_token,
+              mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
+      override;
   void Delete(mojom::FrameDeleteIntention intent) override;
   void BlockRequests() override;
   void ResumeBlockedRequests() override;

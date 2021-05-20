@@ -16,6 +16,7 @@
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "content/browser/renderer_host/data_transfer_util.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
+#include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -277,8 +278,16 @@ bool TestRenderViewHost::CreateRenderView(
   // When the RenderViewHost has a main frame host attached, the RenderView
   // in the renderer creates the main frame along with it. We mimic that here by
   // creating the mojo connections and calling RenderFrameCreated().
-  RenderFrameHostImpl* main_frame = RenderFrameHostImpl::FromID(
-      GetProcess()->GetID(), main_frame_routing_id_);
+  RenderFrameHostImpl* main_frame = nullptr;
+  RenderFrameProxyHost* proxy_host = nullptr;
+  if (main_frame_routing_id_ != MSG_ROUTING_NONE) {
+    main_frame = RenderFrameHostImpl::FromID(GetProcess()->GetID(),
+                                             main_frame_routing_id_);
+  } else {
+    proxy_host =
+        RenderFrameProxyHost::FromID(GetProcess()->GetID(), proxy_route_id);
+  }
+
   DCHECK_EQ(!!main_frame, is_active());
   if (main_frame) {
     // Pretend that we started a renderer process and created the renderer Frame
@@ -298,7 +307,13 @@ bool TestRenderViewHost::CreateRenderView(
 
     // This also initializes the RenderWidgetHost attached to the frame.
     main_frame->RenderFrameCreated();
+  } else {
+    // Pretend that mojo connections of the RemoteFrame is transferred to
+    // renderer process and bound in blink.
+    ignore_result(proxy_host->BindRemoteMainFrameReceiverForTesting());
+    proxy_host->SetRenderFrameProxyCreated(true);
   }
+
   opener_frame_token_ = opener_frame_token;
   DCHECK(IsRenderViewLive());
   return true;
