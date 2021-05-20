@@ -447,6 +447,14 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
     return text_fragment_layout_object.GetFirstLetterPseudoElement() ||
            !text_fragment_layout_object.IsRemainingTextLayoutObject();
   }
+  if (auto* next = text_layout_object->NextSibling()) {
+    if (IsA<FirstLetterPseudoElement>(next->GetNode())) {
+      // This |Text| node is not a first-letter part, but it may be changed.
+      // So, we should rebuild first-letter part and remaining part.
+      // See FirstLetterPseudoElementTest.AppendDataToSpace
+      return true;
+    }
+  }
   return false;
 }
 

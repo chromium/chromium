@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -51,6 +52,8 @@ void ToSimpleLayoutTree(std::ostream& ostream,
     ostream << *node;
   else
     ostream << "(anonymous)";
+  if (auto* layout_text_fragment = DynamicTo<LayoutTextFragment>(layout_object))
+    ostream << " (" << layout_text_fragment->GetText() << ")";
   ostream << std::endl;
   for (auto* child = layout_object.SlowFirstChild(); child;
        child = child->NextSibling()) {
