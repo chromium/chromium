@@ -9,6 +9,7 @@
 // <include src="../screens/oobe/enable_debugging.js">
 // <include src="../oobe_welcome_dialog.js">
 // <include src="../oobe_welcome.js">
+// <include src="../os_install.js">
 // <include src="../screens/oobe/oobe_network.js">
 // <include src="../screens/oobe/oobe_eula.js">
 // <include src="../oobe_update.js">

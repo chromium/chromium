@@ -183,6 +183,10 @@ cr.define('cr.ui.login.debug', function() {
       ],
     },
     {
+      id: 'os-install',
+      kind: ScreenKind.OTHER,
+    },
+    {
       id: 'debugging',
       kind: ScreenKind.OTHER,
     },

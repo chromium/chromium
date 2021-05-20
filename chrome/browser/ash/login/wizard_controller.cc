@@ -145,6 +145,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/offline_login_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
+#include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
@@ -717,6 +718,9 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnParentalHandoffScreenExit,
                           weak_factory_.GetWeakPtr())));
 
+  append(std::make_unique<OsInstallScreen>(
+      oobe_ui->GetView<OsInstallScreenHandler>()));
+
   return result;
 }
 
@@ -910,6 +914,10 @@ void WizardController::ShowEduCoexistenceLoginScreen() {
 
 void WizardController::ShowParentalHandoffScreen() {
   SetCurrentScreen(GetScreen(ParentalHandoffScreenView::kScreenId));
+}
+
+void WizardController::ShowOsInstallScreen() {
+  SetCurrentScreen(GetScreen(OsInstallScreenView::kScreenId));
 }
 
 void WizardController::ShowActiveDirectoryPasswordChangeScreen(
@@ -1115,8 +1123,7 @@ void WizardController::OnWelcomeScreenExit(WelcomeScreen::Result result) {
       ShowEnableDebuggingScreen();
       return;
     case WelcomeScreen::Result::START_OS_INSTALL:
-      // TODO(b/182386612): show OS installation screen once it's implemented.
-      NOTIMPLEMENTED();
+      AdvanceToScreen(OsInstallScreenView::kScreenId);
       return;
     case WelcomeScreen::Result::NEXT:
       ShowNetworkScreen();
@@ -1908,7 +1915,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == ActiveDirectoryLoginView::kScreenId ||
              screen_id == SignInFatalErrorView::kScreenId ||
              screen_id == LocaleSwitchView::kScreenId ||
-             screen_id == OfflineLoginView::kScreenId) {
+             screen_id == OfflineLoginView::kScreenId ||
+             screen_id == OsInstallScreenView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();

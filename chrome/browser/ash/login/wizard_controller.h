@@ -49,6 +49,7 @@
 #include "chrome/browser/ash/login/screens/multidevice_setup_screen.h"
 #include "chrome/browser/ash/login/screens/network_screen.h"
 #include "chrome/browser/ash/login/screens/offline_login_screen.h"
+#include "chrome/browser/ash/login/screens/os_install_screen.h"
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 #include "chrome/browser/ash/login/screens/parental_handoff_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
@@ -284,6 +285,7 @@ class WizardController {
   void ShowPackagedLicenseScreen();
   void ShowEduCoexistenceLoginScreen();
   void ShowParentalHandoffScreen();
+  void ShowOsInstallScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();

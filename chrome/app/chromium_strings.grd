@@ -1109,6 +1109,10 @@ Chromium is unable to recover your settings.
         <message name="IDS_OOBE_WELCOME_START_OS_INSTALL" desc="Label for button shown on the OOBE welcome screen to show the OS installation screens">
           Install Chromium OS
         </message>
+
+        <message name="IDS_OS_INSTALL_SCREEN_INTRO_TITLE" desc="Title of the introduction page in the OS install screen">
+          Install Chromium OS
+        </message>
       </if>
 
       <!-- Welcome page (chrome://welcome) strings -->
