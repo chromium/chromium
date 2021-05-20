@@ -1098,7 +1098,7 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
 
  private:
   int num_set_rlz_ping_sent_ = 0;
-  bool default_result_;
+  bool default_result_ = false;
   DISALLOW_COPY_AND_ASSIGN(TestDebugDaemonClient);
 };
 
