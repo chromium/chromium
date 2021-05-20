@@ -8,6 +8,8 @@
 
 #include "base/auto_reset.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
+#include "gpu/config/gpu_finch_features.h"
 
 namespace viz {
 
@@ -197,6 +199,21 @@ bool DisplayScheduler::OnBeginFrame(const BeginFrameArgs& args) {
   return true;
 }
 
+int DisplayScheduler::MaxPendingSwaps() const {
+#if defined(OS_ANDROID)
+  if (::features::IncreaseBufferCountForHighFrameRate() &&
+      max_pending_swaps_ == 4) {
+    // Interval for 120hz with some delta for margin of error.
+    constexpr base::TimeDelta k120HzInterval =
+        base::TimeDelta::FromMicroseconds(8500);
+    if (current_begin_frame_args_.interval > k120HzInterval) {
+      return 2;
+    }
+  }
+#endif
+  return max_pending_swaps_;
+}
+
 void DisplayScheduler::SetNeedsOneBeginFrame(bool needs_draw) {
   // If we are not currently observing BeginFrames because needs_draw_ is false,
   // we will stop observing again after one BeginFrame in AttemptDrawAndSwap().
@@ -278,7 +295,7 @@ DisplayScheduler::DesiredBeginFrameDeadlineMode() const {
     return BeginFrameDeadlineMode::kImmediate;
   }
 
-  if (pending_swaps_ >= max_pending_swaps_) {
+  if (pending_swaps_ >= MaxPendingSwaps()) {
     TRACE_EVENT_INSTANT0("viz", "Swap throttled", TRACE_EVENT_SCOPE_THREAD);
     return BeginFrameDeadlineMode::kLate;
   }
@@ -369,7 +386,7 @@ bool DisplayScheduler::AttemptDrawAndSwap() {
   begin_frame_deadline_task_time_ = base::TimeTicks();
 
   if (ShouldDraw()) {
-    if (pending_swaps_ < max_pending_swaps_)
+    if (pending_swaps_ < MaxPendingSwaps())
       return DrawAndSwap();
   } else {
     // We are going idle, so reset expectations.
@@ -402,7 +419,7 @@ void DisplayScheduler::DidFinishFrame(bool did_draw) {
 
 void DisplayScheduler::DidSwapBuffers() {
   pending_swaps_++;
-  if (pending_swaps_ == max_pending_swaps_)
+  if (pending_swaps_ >= MaxPendingSwaps())
     begin_frame_source_->SetIsGpuBusy(true);
 
   uint32_t swap_id = next_swap_id_++;

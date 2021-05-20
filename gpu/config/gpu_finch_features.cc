@@ -11,6 +11,7 @@
 #if defined(OS_ANDROID)
 #include "base/android/android_image_reader_compat.h"
 #include "base/android/build_info.h"
+#include "base/android/sys_utils.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
@@ -94,6 +95,15 @@ const base::Feature kLimitAImageReaderMaxSizeToOne{
 const base::FeatureParam<std::string> kLimitAImageReaderMaxSizeToOneBlocklist{
     &kLimitAImageReaderMaxSizeToOne, "LimitAImageReaderMaxSizeToOneBlocklist",
     "MIBOX"};
+
+// Increase number of buffers and pipeline depth for high frame rate devices.
+const base::Feature kIncreaseBufferCountForHighFrameRate{
+    "IncreaseBufferCountForHighFrameRate", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::FeatureParam<std::string>
+    kDisableIncreaseBufferCountForHighFrameRate{
+        &kIncreaseBufferCountForHighFrameRate,
+        "DisableIncreaseBufferCountForHighFrameRate", ""};
 #endif
 
 // Enable GPU Rasterization by default. This can still be overridden by
@@ -330,6 +340,23 @@ bool IsWebViewZeroCopyVideoEnabled() {
 
   return !(FieldIsInBlocklist(base::android::BuildInfo::GetInstance()->model(),
                               kWebViewZeroCopyVideoBlocklist.Get()));
+}
+
+bool IncreaseBufferCountForHighFrameRate() {
+  // TODO(crbug.com/1211332): We don't have a way to dynamically adjust number
+  // of buffers. So these checks, espeically the RAM one, is to limit the impact
+  // of more buffers to devices that can handle them.
+  // 8GB of ram with large margin for error.
+  constexpr int RAM_8GB_CUTOFF = 7200 * 1024;
+  static bool increase =
+      base::android::BuildInfo::GetInstance()->sdk_int() >=
+          base::android::SdkVersion::SDK_VERSION_R &&
+      IsAndroidSurfaceControlEnabled() && IsAImageReaderEnabled() &&
+      base::android::SysUtils::AmountOfPhysicalMemoryKB() > RAM_8GB_CUTOFF &&
+      base::FeatureList::IsEnabled(kIncreaseBufferCountForHighFrameRate) &&
+      !IsDeviceBlocked(base::android::BuildInfo::GetInstance()->device(),
+                       kDisableIncreaseBufferCountForHighFrameRate.Get());
+  return increase;
 }
 
 #endif

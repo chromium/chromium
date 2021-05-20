@@ -134,6 +134,11 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
   capabilities_.preserve_buffer_content = true;
   capabilities_.only_invalidates_damage_rect = false;
   capabilities_.number_of_buffers = 3;
+#if defined(OS_ANDROID)
+  if (::features::IncreaseBufferCountForHighFrameRate()) {
+    capabilities_.number_of_buffers = 5;
+  }
+#endif
   capabilities_.orientation_mode = OutputSurface::OrientationMode::kHardware;
 
   // Force the number of max pending frames to one when the switch

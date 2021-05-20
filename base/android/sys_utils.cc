@@ -25,6 +25,12 @@ bool SysUtils::IsCurrentlyLowMemory() {
   return Java_SysUtils_isCurrentlyLowMemory(env);
 }
 
+// static
+int SysUtils::AmountOfPhysicalMemoryKB() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_SysUtils_amountOfPhysicalMemoryKB(env);
+}
+
 // Logs the number of minor / major page faults to tracing (and also the time to
 // collect) the metrics. Does nothing if tracing is not enabled.
 static void JNI_SysUtils_LogPageFaultCountToTracing(JNIEnv* env) {

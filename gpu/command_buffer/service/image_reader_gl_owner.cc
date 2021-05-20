@@ -66,6 +66,8 @@ uint32_t NumRequiredMaxImages(TextureOwner::Mode mode) {
   if (IsSurfaceControl(mode) ||
       mode == TextureOwner::Mode::kAImageReaderInsecureMultithreaded) {
     DCHECK(!features::LimitAImageReaderMaxSizeToOne());
+    if (features::IncreaseBufferCountForHighFrameRate())
+      return 5;
     return 3;
   }
   return features::LimitAImageReaderMaxSizeToOne() ? 1 : 2;
