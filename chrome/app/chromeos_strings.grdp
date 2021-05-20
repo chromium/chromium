@@ -1983,7 +1983,13 @@
     Unlock
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_ENTER_PIN_TITLE" desc="Settings > Internet > Network details > Lock/unlock SIM card: Title for enter PIN dialog.">
-    Enter SIM PIN
+    Enter PIN
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_ENTER_PIN_DESCRIPTION" desc="Settings > Internet > Network details > Lock/unlock SIM card: Description for enter PIN dialog.">
+    Anyone using this device will need to enter the PIN to connect to this mobile network
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_ENTER_PIN_DESCRIPTION_TEXT_LABEL" desc="Settings > Internet > Network details > Lock/unlock SIM card: Label for the text input.">
+    Enter at least 4 numbers
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_CHANGE_PIN_TITLE" desc="Settings > Internet > Network details > Lock/unlock SIM card: Title for change PIN dialog.">
     Change SIM PIN

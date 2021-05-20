@@ -36,6 +36,11 @@ Polymer({
       value: false,
     },
 
+    invalid: {
+      type: Boolean,
+      value: false,
+    },
+
     showPolicyIndicator_: {
       type: Boolean,
       value: false,

@@ -73,6 +73,13 @@ Polymer({
       observer: 'updateSubmitButtonEnabled_',
     },
 
+    /** @private */
+    hasErrorText_: {
+      type: Boolean,
+      computed: 'computeHasErrorText_(error_, deviceState)',
+      reflectToAttribute: true,
+    },
+
     /**
      * Error, if defined, that error_ should be set as the next time deviceState
      * updates.
@@ -526,7 +533,10 @@ Polymer({
     return true;
   },
 
-  /** @private */
+  /**
+   * @return {string}
+   * @private
+   */
   getErrorMsg_() {
     if (this.error_ === ErrorType.NONE) {
       return '';
@@ -561,5 +571,25 @@ Polymer({
     return this.i18n(errorStringId, retriesLeft);
   },
 
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeHasErrorText_() {
+    return !!this.getErrorMsg_();
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getPinEntrySubtext_() {
+    const errorMessage = this.getErrorMsg_();
+    if (errorMessage) {
+      return errorMessage;
+    }
+
+    return this.i18n('networkSimEnterPinSubtext');
+  },
 });
 })();
