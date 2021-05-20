@@ -17,6 +17,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -282,12 +283,6 @@ const long AccessibilityTreeFormatterUia::properties_[] = {
     UIA_Selection2ItemCountPropertyId,                  // 30172
     UIA_HeadingLevelPropertyId,                         // 30173
 };
-
-// Without this pragma, GCC returns a "declaration requires an exit-time
-// destructor" warning since this is a global map. This warning is not a problem
-// in this case and needs to be muted to complete the build.
-#pragma GCC diagnostic ignored "-Wexit-time-destructors"
-std::map<long, std::string> custom_properties_map_;
 
 const long AccessibilityTreeFormatterUia::patterns_[] = {
     UIA_SelectionPatternId,       // 10001
@@ -894,11 +889,17 @@ void AccessibilityTreeFormatterUia::AddWindowProperties(
   }
 }
 
+std::map<long, std::string>&
+AccessibilityTreeFormatterUia::GetCustomPropertiesMap() const {
+  static base::NoDestructor<std::map<long, std::string>> custom_properties_map;
+  return *custom_properties_map;
+}
+
 void AccessibilityTreeFormatterUia::AddCustomProperties(
     IUIAutomationElement* node,
     base::DictionaryValue* dict) const {
   // Custom properties need to be added separately.
-  for (const auto& property : custom_properties_map_) {
+  for (const auto& property : GetCustomPropertiesMap()) {
     base::win::ScopedVariant variant;
     if (SUCCEEDED(
             node->GetCurrentPropertyValue(property.first, variant.Receive()))) {
@@ -911,8 +912,8 @@ std::string AccessibilityTreeFormatterUia::GetPropertyName(
     long property_id) const {
   // We cannot infer the property name from a custom property id, so we get it
   // from the map we created manually in `BuildCustomPropertiesMap()`.
-  auto property = custom_properties_map_.find(property_id);
-  if (property != custom_properties_map_.end())
+  auto property = GetCustomPropertiesMap().find(property_id);
+  if (property != GetCustomPropertiesMap().end())
     return property->second;
 
   return UiaIdentifierToCondensedString(property_id);
@@ -1127,7 +1128,7 @@ void AccessibilityTreeFormatterUia::BuildCacheRequests() {
 }
 
 void AccessibilityTreeFormatterUia::BuildCustomPropertiesMap() {
-  custom_properties_map_.insert(
+  GetCustomPropertiesMap().insert(
       {ui::UiaRegistrarWin::GetInstance().GetVirtualContentPropertyId(),
        "VirtualContent"});
 }
@@ -1148,7 +1149,7 @@ std::string AccessibilityTreeFormatterUia::ProcessTreeForOutput(
     ProcessPropertyForOutput(GetPropertyName(i), dict, line);
 
   // Custom properties.
-  for (const auto& i : custom_properties_map_)
+  for (const auto& i : GetCustomPropertiesMap())
     ProcessPropertyForOutput(GetPropertyName(i.first), dict, line);
 
   // Patterns.

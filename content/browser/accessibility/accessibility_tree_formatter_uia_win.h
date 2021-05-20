@@ -104,6 +104,8 @@ class AccessibilityTreeFormatterUia : public ui::AXTreeFormatterBase {
   void ProcessValueForOutput(const std::string& name,
                              const base::Value* value,
                              std::string& line) const;
+  std::map<long, std::string>& GetCustomPropertiesMap() const;
+
   Microsoft::WRL::ComPtr<IUIAutomation> uia_;
   Microsoft::WRL::ComPtr<IUIAutomationCacheRequest> element_cache_request_;
   Microsoft::WRL::ComPtr<IUIAutomationCacheRequest> children_cache_request_;
