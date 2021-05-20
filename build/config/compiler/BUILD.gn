@@ -698,9 +698,7 @@ config("compiler") {
       ldflags += [ "-Wl,-mllvm,-import-instr-limit=$import_instr_limit" ]
     }
 
-    # Whole-program devirtualization increases android libchrome.so size
-    # by ~100kb on arm32 and reduces it by ~108kb on arm64 instead.
-    # Tracked by llvm bug: https://bugs.llvm.org/show_bug.cgi?id=48245
+    # TODO(https://crbug.com/1211155): investigate why this isn't effective on arm32.
     if (!is_android || current_cpu == "arm64") {
       cflags += [ "-fwhole-program-vtables" ]
       if (!is_win) {
