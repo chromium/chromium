@@ -205,12 +205,6 @@
               [[i18n('networkListItemUnlock')]]
           </cr-button>
         </template>
-        <template is="dom-if" if="[[isCellularUnlockDialogOpen_]]" restamp>
-          <sim-lock-dialogs
-              is-dialog-open="{{isCellularUnlockDialogOpen_}}"
-              device-state="[[deviceState]]">
-          </sim-lock-dialogs>
-        </template>
         <template is="dom-if" if="[[shouldShowInstallButton_(
             isESimPendingProfile_, showButtons)]]" restamp>
           <cr-button id="installButton"
@@ -228,6 +222,12 @@
         </template>
       </div>
     </div>
+    <template is="dom-if" if="[[isCellularUnlockDialogOpen_]]" restamp>
+      <sim-lock-dialogs
+          is-dialog-open="{{isCellularUnlockDialogOpen_}}"
+          device-state="[[deviceState]]">
+      </sim-lock-dialogs>
+    </template>
   </template>
   <script src="network_list_item.js"></script>
 </dom-module>
