@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -323,8 +324,15 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                   apps::mojom::LaunchContainer::kLaunchContainerTab);
 }
 
+// Disabled due to flakiness on Linux bots. http://crbug.com/1207370
+#if defined(OS_LINUX)
+#define MAYBE_UnlimitedFileHandlersForChrome \
+  DISABLED_UnlimitedFileHandlersForChrome
+#else
+#define MAYBE_UnlimitedFileHandlersForChrome UnlimitedFileHandlersForChrome
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
-                       UnlimitedFileHandlersForChrome) {
+                       MAYBE_UnlimitedFileHandlersForChrome) {
   // We install more than |kMaxFileHandlers| file handlers.
   const unsigned kNumHandlers = 2 * web_app::kMaxFileHandlers + 1;
 
