@@ -176,6 +176,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.Canvas.ImageSmoothingQuality"
     enum="ImageSmoothingQuality" expires_after="2021-05-31">
+  <obsolete>
+    Removed in M92. This metric is added to do some research, and the research
+    is now completed.
+  </obsolete>
   <owner>fserb@chromium.org</owner>
   <owner>yiyix@chromium.org</owner>
   <summary>

@@ -662,9 +662,6 @@ void CanvasRenderingContext2DState::UpdateFilterQuality() const {
   if (!image_smoothing_enabled_) {
     UpdateFilterQualityWithSkFilterQuality(kNone_SkFilterQuality);
   } else {
-    base::UmaHistogramExactLinear("Blink.Canvas.ImageSmoothingQuality",
-                                  static_cast<int>(image_smoothing_quality_),
-                                  static_cast<int>(kLast_SkFilterQuality) + 1);
     UpdateFilterQualityWithSkFilterQuality(image_smoothing_quality_);
   }
 }
