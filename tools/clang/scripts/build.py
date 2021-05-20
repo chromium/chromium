@@ -1035,13 +1035,13 @@ def main():
         '-DANDROID=1']
       RunCommand(['cmake'] + android_args + [COMPILER_RT_DIR])
 
-      # We use ASan i686 build for fuzzing.
-      libs_want = ['lib/linux/libclang_rt.asan-{0}-android.so']
-      if target_arch in ['aarch64', 'arm']:
-        libs_want += [
-            'lib/linux/libclang_rt.ubsan_standalone-{0}-android.so',
-            'lib/linux/libclang_rt.profile-{0}-android.a',
-        ]
+      # We use ASan, UBSan, coverage, and PGO on the various Android targets.
+      # Only build HWASan for AArch64.
+      libs_want = [
+          'lib/linux/libclang_rt.asan-{0}-android.so',
+          'lib/linux/libclang_rt.ubsan_standalone-{0}-android.so',
+          'lib/linux/libclang_rt.profile-{0}-android.a',
+      ]
       if target_arch == 'aarch64':
         libs_want += ['lib/linux/libclang_rt.hwasan-{0}-android.so']
       libs_want = [lib.format(target_arch) for lib in libs_want]
