@@ -52,6 +52,7 @@ class NET_EXPORT CachingCertVerifier : public CertVerifier,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierTest, CacheHit);
+  FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierTest, CacheHitCTResultsCached);
   FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierTest, Visitor);
   FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierTest, AddsEntries);
   FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierTest, DifferentCACerts);

@@ -15,6 +15,7 @@
 #include "net/cert/x509_util.h"
 #include "net/log/net_log_with_source.h"
 #include "net/test/cert_test_util.h"
+#include "net/test/ct_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
@@ -73,6 +74,61 @@ TEST_F(CachingCertVerifierTest, CacheHit) {
   ASSERT_EQ(2u, verifier_.requests());
   ASSERT_EQ(1u, verifier_.cache_hits());
   ASSERT_EQ(1u, verifier_.GetCacheSize());
+}
+
+TEST_F(CachingCertVerifierTest, CacheHitCTResultsCached) {
+  base::FilePath certs_dir = GetTestCertsDirectory();
+  scoped_refptr<X509Certificate> test_cert(
+      ImportCertFromFile(certs_dir, "ok_cert.pem"));
+  ASSERT_TRUE(test_cert.get());
+
+  auto cert_verifier = std::make_unique<MockCertVerifier>();
+  // Mock the cert verification and CT verification results.
+  CertVerifyResult mock_result;
+  mock_result.cert_status = OK;
+  mock_result.verified_cert = test_cert;
+
+  scoped_refptr<ct::SignedCertificateTimestamp> sct;
+  ct::GetX509CertSCT(&sct);
+  SignedCertificateTimestampAndStatus sct_and_status(sct, ct::SCT_STATUS_OK);
+  SignedCertificateTimestampAndStatusList sct_list{sct_and_status};
+  mock_result.scts = sct_list;
+  cert_verifier->AddResultForCert(test_cert, mock_result, OK);
+
+  // We don't use verifier_ here because we needed to call AddResultForCert from
+  // the mock verifier.
+  CachingCertVerifier cache_verifier(std::move(cert_verifier));
+
+  int result;
+  CertVerifyResult verify_result;
+  TestCompletionCallback callback;
+  std::unique_ptr<CertVerifier::Request> request;
+
+  result = callback.GetResult(cache_verifier.Verify(
+      CertVerifier::RequestParams(test_cert, "www.example.com", 0,
+                                  /*ocsp_response=*/std::string(),
+                                  /*sct_list=*/std::string()),
+      &verify_result, callback.callback(), &request, NetLogWithSource()));
+  ASSERT_EQ(OK, result);
+  ASSERT_EQ(1u, verify_result.scts.size());
+  ASSERT_EQ(ct::SCT_STATUS_OK, verify_result.scts[0].status);
+  ASSERT_EQ(1u, cache_verifier.requests());
+  ASSERT_EQ(0u, cache_verifier.cache_hits());
+  ASSERT_EQ(1u, cache_verifier.GetCacheSize());
+
+  result = cache_verifier.Verify(
+      CertVerifier::RequestParams(test_cert, "www.example.com", 0,
+                                  /*ocsp_response=*/std::string(),
+                                  /*sct_list=*/std::string()),
+      &verify_result, callback.callback(), &request, NetLogWithSource());
+  // Synchronous completion.
+  ASSERT_EQ(OK, result);
+  ASSERT_FALSE(request);
+  ASSERT_EQ(1u, verify_result.scts.size());
+  ASSERT_EQ(ct::SCT_STATUS_OK, verify_result.scts[0].status);
+  ASSERT_EQ(2u, cache_verifier.requests());
+  ASSERT_EQ(1u, cache_verifier.cache_hits());
+  ASSERT_EQ(1u, cache_verifier.GetCacheSize());
 }
 
 // Tests the same server certificate with different intermediate CA
