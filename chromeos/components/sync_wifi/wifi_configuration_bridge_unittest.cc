@@ -372,7 +372,7 @@ TEST_F(WifiConfigurationBridgeTest, ApplySyncChangesOneAdd) {
 TEST_F(WifiConfigurationBridgeTest,
        ApplySyncChangesOneDeletion_DeletesDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kWifiSyncAllowDeletes);
+  feature_list.InitAndDisableFeature(features::kWifiSyncApplyDeletes);
   InitializeSyncStore();
 
   WifiConfigurationSpecifics entry =
@@ -411,7 +411,7 @@ TEST_F(WifiConfigurationBridgeTest,
 TEST_F(WifiConfigurationBridgeTest,
        ApplySyncChangesOneDeletion_DeletesEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kWifiSyncAllowDeletes);
+  feature_list.InitAndEnableFeature(features::kWifiSyncApplyDeletes);
   InitializeSyncStore();
 
   WifiConfigurationSpecifics entry =

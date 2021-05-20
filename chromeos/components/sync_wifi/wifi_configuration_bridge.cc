@@ -232,7 +232,7 @@ absl::optional<syncer::ModelError> WifiConfigurationBridge::ApplySyncChanges(
       if (it != entries_.end()) {
         entries_.erase(it);
         batch->DeleteData(change->storage_key());
-        if (!base::FeatureList::IsEnabled(features::kWifiSyncAllowDeletes)) {
+        if (!base::FeatureList::IsEnabled(features::kWifiSyncApplyDeletes)) {
           // Don't apply deletes to the local device.
           NET_LOG(EVENT) << "Ignoring delete request from sync server.";
           continue;

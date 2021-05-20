@@ -342,6 +342,8 @@ extern const base::Feature kWebApkGenerator;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWifiSyncAllowDeletes;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kWifiSyncApplyDeletes;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWifiSyncAndroid;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImeMozcProto;
