@@ -1998,7 +1998,7 @@
     Connect to this network to change SIM lock setting
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_TITLE" desc="Settings > Internet > Network details > Lock/unlock SIM card: Title for SIM locked dialog.">
-    SIM Card is locked
+    SIM card is locked
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_PUK_SUBTITLE" desc="Settings > Internet > Network details > Lock/unlock SIM card: Title informing the user to enter a PIN provided by the carrier in order unlock network">
     Enter the 8-digit PIN Unblocking Key provided by your carrier

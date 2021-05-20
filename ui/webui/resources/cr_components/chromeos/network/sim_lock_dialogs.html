@@ -25,17 +25,21 @@
         margin-bottom: 16px;
       }
 
-      #pinEntrySubtext {
+      .pinEntrySubtext {
         font-size: var(--cr-form-field-label-font-size);
         font-weight: 400;
         margin-top: -10px;
       }
 
-      :host([has-error-text_]) #pinEntrySubtext {
+      :host([has-error-text_]) .pinEntrySubtext {
         color: red;
       }
 
       #changePinOld {
+        margin-top: 24px;
+      }
+
+      #unlockPin {
         margin-top: 24px;
       }
     </style>
@@ -55,7 +59,7 @@
             invalid="[[hasErrorText_]]"
             aria-labeledby="pinEntrySubtext">
         </network-password-input>
-        <div id="pinEntrySubtext" aria-live="assertive">
+        <div class="pinEntrySubtext" aria-live="assertive">
           [[getPinEntrySubtext_(error_, deviceState)]]
         </div>
       </div>
@@ -122,12 +126,11 @@
       <div slot="body">
         <network-password-input id="unlockPin"
             value="{{pin_}}"
-            label="[[i18n('networkSimEnterPin')]]"
             on-enter="sendUnlockPin_"
             disabled="[[inProgress_]]">
         </network-password-input>
-        <div class="dialog-error" aria-live="assertive">
-          [[getErrorMsg_(error_, deviceState)]]
+        <div class="pinEntrySubtext" aria-live="assertive">
+          [[getPinEntrySubtext_(error_, deviceState)]]
         </div>
       </div>
       <div slot="button-container">
