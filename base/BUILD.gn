@@ -3693,6 +3693,7 @@ test("base_unittests") {
     }
 
     deps += [
+      "//third_party/perfetto/include/perfetto/trace_processor:storage",
       "//third_party/perfetto/protos/perfetto/trace:lite",
       "//third_party/perfetto/protos/perfetto/trace/interned_data:lite",
       "//third_party/perfetto/protos/perfetto/trace/track_event:lite",

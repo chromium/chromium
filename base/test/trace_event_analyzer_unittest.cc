@@ -406,7 +406,9 @@ TEST_F(TraceEventAnalyzerTest, StringPattern) {
   EXPECT_STREQ("no match", found[0]->name.c_str());
 }
 
-// Test that duration queries work.
+// Test that duration queries work. (BEGIN/END events aren't emitted by
+// Perfetto.)
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 TEST_F(TraceEventAnalyzerTest, BeginEndDuration) {
   ManualSetUp();
 
@@ -451,6 +453,7 @@ TEST_F(TraceEventAnalyzerTest, BeginEndDuration) {
   EXPECT_STREQ("name1", found[0]->name.c_str());
   EXPECT_STREQ("name3", found[1]->name.c_str());
 }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 // Test that duration queries work.
 TEST_F(TraceEventAnalyzerTest, CompleteDuration) {
@@ -493,7 +496,8 @@ TEST_F(TraceEventAnalyzerTest, CompleteDuration) {
   EXPECT_STREQ("name3", found[1]->name.c_str());
 }
 
-// Test AssociateBeginEndEvents
+// Test AssociateBeginEndEvents. (BEGIN/END events aren't emitted by Perfetto.)
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 TEST_F(TraceEventAnalyzerTest, BeginEndAssocations) {
   ManualSetUp();
 
@@ -517,8 +521,10 @@ TEST_F(TraceEventAnalyzerTest, BeginEndAssocations) {
   ASSERT_EQ(1u, found.size());
   EXPECT_STREQ("name2", found[0]->name.c_str());
 }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
-// Test MergeAssociatedEventArgs
+// Test MergeAssociatedEventArgs. (BEGIN/END events aren't emitted by Perfetto.)
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 TEST_F(TraceEventAnalyzerTest, MergeAssociatedEventArgs) {
   ManualSetUp();
 
@@ -545,6 +551,7 @@ TEST_F(TraceEventAnalyzerTest, MergeAssociatedEventArgs) {
   EXPECT_TRUE(found[0]->GetArgAsString("arg", &arg_actual));
   EXPECT_STREQ(arg_string, arg_actual.c_str());
 }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 // Test AssociateAsyncBeginEndEvents
 TEST_F(TraceEventAnalyzerTest, AsyncBeginEndAssocations) {

@@ -27,11 +27,21 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace perfetto {
+namespace trace_processor {
+class TraceProcessorStorage;
+}  // namespace trace_processor
+}  // namespace perfetto
+
 namespace base {
 class RefCountedString;
 
 template <typename T>
 class NoDestructor;
+
+namespace tracing {
+class PerfettoPlatform;
+}  // namespace tracing
 
 namespace trace_event {
 
@@ -41,6 +51,7 @@ class TraceBufferChunk;
 class TraceEvent;
 class TraceEventFilter;
 class TraceEventMemoryOverhead;
+class JsonStringOutputWriter;
 
 struct BASE_EXPORT TraceLogStatus {
   TraceLogStatus();
@@ -49,7 +60,11 @@ struct BASE_EXPORT TraceLogStatus {
   uint32_t event_count;
 };
 
-class BASE_EXPORT TraceLog : public MemoryDumpProvider {
+class BASE_EXPORT TraceLog :
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    public perfetto::TrackEventSessionObserver,
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    public MemoryDumpProvider {
  public:
   // Argument passed to TraceLog::SetEnabled.
   enum Mode : uint8_t {
@@ -91,8 +106,12 @@ class BASE_EXPORT TraceLog : public MemoryDumpProvider {
   // Returns true if TraceLog is enabled on recording mode.
   // Note: Returns false even if FILTERING_MODE is enabled.
   bool IsEnabled() {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    return perfetto::TrackEvent::IsEnabled();
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     AutoLock lock(lock_);
     return enabled_modes_ & RECORDING_MODE;
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   }
 
   // Returns a bitmap of enabled modes from TraceLog::Mode.
@@ -371,9 +390,11 @@ class BASE_EXPORT TraceLog : public MemoryDumpProvider {
   // sort index, ascending, then by their name, and then tid.
   void SetThreadSortIndex(PlatformThreadId thread_id, int sort_index);
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   // Allow setting an offset between the current TimeTicks time and the time
   // that should be reported.
   void SetTimeOffset(TimeDelta offset);
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   size_t GetObserverCountForTest() const;
 
@@ -391,6 +412,13 @@ class BASE_EXPORT TraceLog : public MemoryDumpProvider {
 
   // Replaces |logged_events_| with a new TraceBuffer for testing.
   void SetTraceBufferForTesting(std::unique_ptr<TraceBuffer> trace_buffer);
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  // perfetto::TrackEventSessionObserver implementation.
+  void OnSetup(const perfetto::DataSourceBase::SetupArgs&) override;
+  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
+  void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
  private:
   typedef unsigned int InternalTraceOptions;
@@ -464,6 +492,11 @@ class BASE_EXPORT TraceLog : public MemoryDumpProvider {
   void FlushInternal(const OutputCallback& cb,
                      bool use_worker_thread,
                      bool discard_events);
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  tracing::PerfettoPlatform* GetOrCreatePerfettoPlatform();
+  void OnTraceData(const char* data, size_t size, bool has_more);
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   // |generation| is used in the following callbacks to check if the callback
   // is called for the flush of the current |logged_events_|.
@@ -574,7 +607,15 @@ class BASE_EXPORT TraceLog : public MemoryDumpProvider {
   std::atomic<OnFlushFunction> on_flush_override_{nullptr};
   std::atomic<UpdateDurationFunction> update_duration_override_{nullptr};
 
-  FilterFactoryForTesting filter_factory_for_testing_;
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  std::unique_ptr<::base::tracing::PerfettoPlatform> perfetto_platform_;
+  std::unique_ptr<perfetto::TracingSession> tracing_session_;
+  std::unique_ptr<perfetto::trace_processor::TraceProcessorStorage>
+      trace_processor_;
+  std::unique_ptr<JsonStringOutputWriter> json_output_writer_;
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
+  FilterFactoryForTesting filter_factory_for_testing_ = nullptr;
 
 #if defined(OS_ANDROID)
   absl::optional<TraceConfig> atrace_startup_config_;
