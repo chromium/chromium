@@ -9,6 +9,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
@@ -117,6 +118,9 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
           web_contents_->GetBrowserContext());
   LoggerImpl* const logger = router->GetLogger();
   source->AddString("logData", logger->GetLogsAsJson());
+
+  source->AddBoolean("globalMediaControlsCastStartStop",
+                     GlobalMediaControlsCastStartStopEnabled());
 
   webui::SetupWebUIDataSource(
       source,

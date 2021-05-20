@@ -281,6 +281,7 @@ export class FeedbackUiElement extends PolymerElement {
       email: this.userEmail_,
       flow: chrome.feedbackPrivate.FeedbackFlow.REGULAR,
       categoryTag: 'dev',
+      systemInformation: this.getProductSpecificData_(),
     };
     if (this.attachLogs_) {
       feedback.attachedFile = {
@@ -354,6 +355,17 @@ export class FeedbackUiElement extends PolymerElement {
   /** @private */
   onLogsDialogOk_() {
     this.logsDialog_.close();
+  }
+
+  /** @private */
+  getProductSpecificData_() {
+    const data = [{
+      key: 'global_media_controls_cast_start_stop',
+      value: loadTimeData.getBoolean('globalMediaControlsCastStartStop') ?
+          'true' :
+          'false',
+    }];
+    return data;
   }
 
   /**
