@@ -154,6 +154,24 @@ class HistoryBackendTestDelegate : public HistoryBackend::Delegate {
   HistoryBackendTestBase* test_;
 };
 
+// Exposes some of `HistoryBackend`'s private methods.
+class TestHistoryBackend : public HistoryBackend {
+ public:
+  using HistoryBackend::AddPageVisit;
+  using HistoryBackend::DeleteAllHistory;
+  using HistoryBackend::DeleteFTSIndexDatabases;
+  using HistoryBackend::HistoryBackend;
+  using HistoryBackend::UpdateVisitDuration;
+
+  using HistoryBackend::db_;
+  using HistoryBackend::expirer_;
+  using HistoryBackend::favicon_backend_;
+  using HistoryBackend::recent_redirects_;
+
+ private:
+  ~TestHistoryBackend() override = default;
+};
+
 class HistoryBackendTestBase : public testing::Test {
  public:
   typedef std::vector<std::pair<ui::PageTransition, URLRow>> URLVisitedList;
@@ -246,7 +264,7 @@ class HistoryBackendTestBase : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   history::HistoryClientFakeBookmarks history_client_;
-  scoped_refptr<HistoryBackend> backend_;  // Will be NULL on init failure.
+  scoped_refptr<TestHistoryBackend> backend_;  // Will be NULL on init failure.
   std::unique_ptr<InMemoryHistoryBackend> mem_backend_;
   bool loaded_ = false;
 
@@ -258,7 +276,7 @@ class HistoryBackendTestBase : public testing::Test {
     if (!base::CreateNewTempDirectory(FILE_PATH_LITERAL("BackendTest"),
                                       &test_dir_))
       return;
-    backend_ = base::MakeRefCounted<HistoryBackend>(
+    backend_ = base::MakeRefCounted<TestHistoryBackend>(
         std::make_unique<HistoryBackendTestDelegate>(this),
         history_client_.CreateBackendClient(),
         base::ThreadTaskRunnerHandle::Get());
@@ -1941,7 +1959,7 @@ TEST_F(HistoryBackendTest, MigrationVisitSource) {
   base::FilePath new_history_file = new_history_path.Append(kHistoryFilename);
   ASSERT_TRUE(base::CopyFile(old_history_path, new_history_file));
 
-  backend_ = base::MakeRefCounted<HistoryBackend>(
+  backend_ = base::MakeRefCounted<TestHistoryBackend>(
       std::make_unique<HistoryBackendTestDelegate>(this),
       history_client_.CreateBackendClient(),
       base::ThreadTaskRunnerHandle::Get());
@@ -2488,7 +2506,7 @@ TEST_F(HistoryBackendTest, MigrationVisitDuration) {
   base::FilePath new_history_file = new_history_path.Append(kHistoryFilename);
   ASSERT_TRUE(base::CopyFile(old_history, new_history_file));
 
-  backend_ = base::MakeRefCounted<HistoryBackend>(
+  backend_ = base::MakeRefCounted<TestHistoryBackend>(
       std::make_unique<HistoryBackendTestDelegate>(this),
       history_client_.CreateBackendClient(),
       base::ThreadTaskRunnerHandle::Get());

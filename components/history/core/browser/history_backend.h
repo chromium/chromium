@@ -59,6 +59,7 @@ class HistoryBackendClient;
 class HistoryBackendDBBaseTest;
 class HistoryBackendObserver;
 class HistoryBackend;
+class TestHistoryBackend;
 class HistoryBackendTest;
 class HistoryDatabase;
 struct HistoryDatabaseParams;
@@ -576,95 +577,10 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
  private:
   friend class base::RefCountedThreadSafe<HistoryBackend>;
+  friend class TestHistoryBackend;
   friend class HistoryBackendTest;
   friend class HistoryBackendDBBaseTest;  // So the unit tests can poke our
                                           // innards.
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, DeleteAll);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, DeleteAllURLPreviouslyDeleted);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, DeleteAllThenAddData);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, AddPagesWithDetails);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, UpdateURLs);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, ImportedFaviconsTest);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, URLsNoLongerBookmarked);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, StripUsernamePasswordTest);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, AddPageVisitSource);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, AddPageVisitBackForward);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, AddPageVisitRedirectBackForward);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, AddPageVisitNotLastVisit);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           AddPageVisitFiresNotificationWithCorrectDetails);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, AddPageArgsSource);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, AddVisitsSource);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, GetMostRecentVisits);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, RemoveVisitsSource);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, RemoveVisitsTransitions);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, MigrationVisitSource);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           SetFaviconMappingsForPageAndRedirects);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           SetFaviconMappingsForPageAndRedirectsWithFragment);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           RecentRedirectsForClientRedirects);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           SetFaviconMappingsForPageDuplicates);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, SetFaviconsDeleteBitmaps);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, SetFaviconsReplaceBitmapData);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           SetFaviconsSameFaviconURLForTwoPages);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, SetFaviconsWithTwoPageURLs);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, SetOnDemandFaviconsForEmptyDB);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, SetOnDemandFaviconsForPageInDB);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, SetOnDemandFaviconsForIconInDB);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           UpdateFaviconMappingsAndFetchNoChange);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, MergeFaviconPageURLNotInDB);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, MergeFaviconPageURLInDB);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, MergeFaviconMaxFaviconsPerPage);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           MergeFaviconIconURLMappedToDifferentPageURL);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           MergeFaviconMaxFaviconBitmapsPerIconURL);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           MergeIdenticalFaviconDoesNotChangeLastUpdatedTime);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           FaviconChangedNotificationNewFavicon);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           FaviconChangedNotificationBitmapDataChanged);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           FaviconChangedNotificationIconMappingChanged);
-  FRIEND_TEST_ALL_PREFIXES(
-      HistoryBackendTest,
-      FaviconChangedNotificationIconMappingAndBitmapDataChanged);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           FaviconChangedNotificationsMergeCopy);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, NoFaviconChangedNotifications);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           UpdateFaviconMappingsAndFetchMultipleIconTypes);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, CloneFaviconMappingsForPages);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, GetFaviconsFromDBEmpty);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           GetFaviconsFromDBNoFaviconBitmaps);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           GetFaviconsFromDBSelectClosestMatch);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, GetFaviconsFromDBIconType);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, GetFaviconsFromDBExpired);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, GetFaviconsFromDBFallbackToHost);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           UpdateFaviconMappingsAndFetchNoDB);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, QueryFilteredURLs);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, TopHosts);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, TopHosts_ElidePortAndScheme);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, TopHosts_ElideWWW);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, TopHosts_OnlyLast30Days);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, TopHosts_MaxNumHosts);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, TopHosts_IgnoreUnusualURLs);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, GetCountsAndLastVisitForOrigins);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, UpdateVisitDuration);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, ExpireHistoryForTimes);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, DeleteFTSIndexDatabases);
-  FRIEND_TEST_ALL_PREFIXES(ProfileSyncServiceTypedUrlTest,
-                           ProcessUserChangeRemove);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, AnnotatedVisits);
 
   // Returns the name of the Favicons database.
   base::FilePath GetFaviconsFileName() const;
@@ -875,10 +791,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Tracks page transition types.
   VisitTracker tracker_;
-
-  // A boolean variable to track whether we have already purged obsolete segment
-  // data.
-  bool segment_queried_;
 
   // List of QueuedHistoryDBTasks to run;
   std::list<std::unique_ptr<QueuedHistoryDBTask>> queued_history_db_tasks_;

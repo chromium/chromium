@@ -258,7 +258,6 @@ HistoryBackend::HistoryBackend(
       scheduled_kill_db_(false),
       expirer_(this, backend_client.get(), task_runner),
       recent_redirects_(kMaxRedirectCount),
-      segment_queried_(false),
       backend_client_(std::move(backend_client)),
       task_runner_(task_runner) {
   DCHECK(delegate_);

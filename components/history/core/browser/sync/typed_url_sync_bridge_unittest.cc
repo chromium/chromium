@@ -142,7 +142,7 @@ void AddOldestVisit(ui::PageTransition transition,
   url->set_visit_count(visits->size());
 }
 
-// Create a new row object and the typed visit çorresponding with the time at
+// Create a new row object and the typed visit corresponding with the time at
 // `last_visit` in the `visits` vector.
 URLRow MakeTypedUrlRow(const std::string& url,
                        const std::string& title,
@@ -266,9 +266,9 @@ class TestHistoryBackendDelegate : public HistoryBackend::Delegate {
   DISALLOW_COPY_AND_ASSIGN(TestHistoryBackendDelegate);
 };
 
-class TestHistoryBackend : public HistoryBackend {
+class TestHistoryBackendForSync : public HistoryBackend {
  public:
-  TestHistoryBackend()
+  TestHistoryBackendForSync()
       : HistoryBackend(std::make_unique<TestHistoryBackendDelegate>(),
                        nullptr,
                        base::ThreadTaskRunnerHandle::Get()) {}
@@ -297,7 +297,7 @@ class TestHistoryBackend : public HistoryBackend {
   }
 
  private:
-  ~TestHistoryBackend() override {}
+  ~TestHistoryBackendForSync() override {}
 };
 
 }  // namespace
@@ -305,7 +305,7 @@ class TestHistoryBackend : public HistoryBackend {
 class TypedURLSyncBridgeTest : public testing::Test {
  public:
   void SetUp() override {
-    fake_history_backend_ = new TestHistoryBackend();
+    fake_history_backend_ = new TestHistoryBackendForSync();
     ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
     fake_history_backend_->Init(
         false, TestHistoryDatabaseParamsForPath(test_dir_.GetPath()));
@@ -517,7 +517,7 @@ class TypedURLSyncBridgeTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir test_dir_;
-  scoped_refptr<TestHistoryBackend> fake_history_backend_;
+  scoped_refptr<TestHistoryBackendForSync> fake_history_backend_;
   TypedURLSyncBridge* typed_url_sync_bridge_ = nullptr;
   NiceMock<MockModelTypeChangeProcessor> mock_processor_;
 };
