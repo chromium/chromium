@@ -2434,7 +2434,13 @@ config("minimal_symbols") {
   if (is_win) {
     # Functions, files, and line tables only.
     cflags = []
-    ldflags = [ "/DEBUG" ]
+
+    if (is_clang && use_lld && use_ghash) {
+      cflags += [ "-gcodeview-ghash" ]
+      ldflags = [ "/DEBUG:GHASH" ]
+    } else {
+      ldflags = [ "/DEBUG" ]
+    }
 
     # All configs using /DEBUG should include this:
     configs = [ ":win_pdbaltpath" ]
