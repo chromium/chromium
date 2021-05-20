@@ -596,14 +596,13 @@ A safer way to set up communication is:
 ```c++
 class MyHandler : public content::WebUIMessageHandler {
  public:
-  MyHandler() : observer_(this) {}
   void OnJavascriptAllowed() override {
-    observer_.Add(GetGlobalService());  // <-- DO THIS.
+    observation_.Observe(GetGlobalService());  // <-- DO THIS.
   }
   void OnJavascriptDisallowed() override {
-    observer_.RemoveAll();  // <-- AND THIS.
+    observation_.Reset();  // <-- AND THIS.
   }
-  ScopedObserver<MyHandler, GlobalService> observer_;  // <-- ALSO HANDY.
+  base::ScopedObservation<MyHandler, GlobalService> observation_{this};  // <-- ALSO HANDY.
 ```
 when a renderer has been created and the
 document has loaded enough to signal to the C++ that it's ready to respond to
@@ -635,7 +634,7 @@ Often, it makes sense to disconnect from observers in
 
 ```c++
 void OvenHandler::OnJavascriptDisallowed() {
-  scoped_oven_observer_.RemoveAll()
+  scoped_oven_observation_.Reset()
 }
 ```
 

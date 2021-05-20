@@ -351,7 +351,7 @@ They also have disadvantages:
 
 Some key classes in `//base`:
 
-* [ScopedObserver]
+* [base::ScopedObservation]
 * [ObserverList] and [CheckedObserver]
 * [Subscription] and [CallbackList]
 
@@ -394,7 +394,7 @@ should be a property on the framework object instead of a delegate method.
 [Callback]: ../../base/callback.h
 [CheckedObserver]: ../../base/observer_list_types.h
 [ObserverList]: ../../base/observer_list.h
-[ScopedObserver]: ../../base/scoped_observer.h
+[base::ScopedObservation]: ../../base/scoped_observation.h
 [Subscription]: ../../base/callback_list.h
 [URLRequestJobFactory::ProtocolHandler]: ../../net/url_request/url_request_job_factory.h
 [Unretained]: ../../base/bind.h
