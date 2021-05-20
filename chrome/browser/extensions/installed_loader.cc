@@ -239,6 +239,9 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
         // PendingExtensionManager that we'd still like to keep attempt to
         // re-download and reinstall it whenever the ExtensionService checks for
         // external updates.
+        LOG(ERROR) << "Expecting reinstall for extension id: "
+                   << extension->id()
+                   << " due to corruption detected in prior session.";
         pending_manager->ExpectReinstallForCorruption(
             extension->id(),
             PendingExtensionManager::PolicyReinstallReason::

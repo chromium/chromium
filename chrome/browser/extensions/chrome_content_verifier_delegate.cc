@@ -210,6 +210,13 @@ void ChromeContentVerifierDelegate::VerifyFailed(
 
   const VerifyInfo info = GetVerifyInfo(*extension);
 
+  SYSLOG(WARNING) << "Corruption detected in extension " << extension_id
+                  << " installed at: " << extension->path().value()
+                  << ", from webstore: " << info.is_from_webstore
+                  << ", corruption reason: " << reason
+                  << ", should be repaired: " << info.should_repair
+                  << ", extension location: " << extension->location();
+
   if (reason == ContentVerifyJob::MISSING_ALL_HASHES) {
     // If the failure was due to hashes missing, only "enforce_strict" would
     // disable the extension, but not "enforce".
@@ -247,10 +254,6 @@ void ChromeContentVerifierDelegate::VerifyFailed(
   if (info.should_repair) {
     if (pending_manager->IsReinstallForCorruptionExpected(extension_id))
       return;
-    SYSLOG(WARNING) << "Corruption detected in policy extension "
-                    << extension_id
-                    << " installed at: " << extension->path().value()
-                    << ", from webstore: " << info.is_from_webstore;
     pending_manager->ExpectReinstallForCorruption(
         extension_id,
         info.is_from_webstore ? PendingExtensionManager::PolicyReinstallReason::
@@ -265,11 +268,6 @@ void ChromeContentVerifierDelegate::VerifyFailed(
   }
 
   DCHECK(should_disable);
-  DLOG(WARNING) << "Disabling extension " << extension_id << " ('"
-                << extension->name()
-                << "') due to content verification failure. In tests you "
-                << "might want to use a ScopedIgnoreContentVerifierForTest "
-                << "instance to prevent this.";
   service->DisableExtension(extension_id, disable_reason::DISABLE_CORRUPTED);
   ExtensionPrefs::Get(context_)->IncrementPref(
       extensions::kCorruptedDisableCount);

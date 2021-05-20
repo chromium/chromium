@@ -60,7 +60,9 @@ bool PendingExtensionManager::Remove(const std::string& id) {
   if (base::Contains(expected_reinstalls_, id)) {
     base::TimeDelta latency = base::TimeTicks::Now() - expected_reinstalls_[id];
     base::UmaHistogramLongTimes("Extensions.CorruptPolicyExtensionResolved",
-                                latency);
+                             latency);
+    LOG(ERROR) << "Corrupted extension " << id << " reinstalled with latency "
+               << latency;
     expected_reinstalls_.erase(id);
   }
   PendingExtensionList::iterator iter;
