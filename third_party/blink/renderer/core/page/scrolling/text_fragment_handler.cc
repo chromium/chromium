@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor.h"
 
@@ -43,17 +44,16 @@ void TextFragmentHandler::RequestSelector(RequestSelectorCallback callback) {
 void TextFragmentHandler::GetExistingSelectors(
     GetExistingSelectorsCallback callback) {
   Vector<String> text_fragment_selectors;
-  TextFragmentAnchor* anchor(
-      static_cast<TextFragmentAnchor*>(GetTextFragmentSelectorGenerator()
-                                           ->GetFrame()
-                                           ->View()
-                                           ->GetFragmentAnchor()));
 
-  if (anchor) {
-    for (auto& finder : anchor->TextFragmentFinders()) {
-      if (finder->FirstMatch()) {
-        text_fragment_selectors.push_back(finder->GetSelector().ToString());
-      }
+  TextFragmentAnchor* anchor = GetTextFragmentAnchor();
+  if (!anchor) {
+    std::move(callback).Run(Vector<String>());
+    return;
+  }
+
+  for (auto& finder : anchor->TextFragmentFinders()) {
+    if (finder->FirstMatch()) {
+      text_fragment_selectors.push_back(finder->GetSelector().ToString());
     }
   }
 
@@ -90,28 +90,66 @@ void TextFragmentHandler::ExtractTextFragmentsMatches(
     ExtractTextFragmentsMatchesCallback callback) {
   DCHECK(
       base::FeatureList::IsEnabled(shared_highlighting::kSharedHighlightingV2));
-
   Vector<String> text_fragment_matches;
-  TextFragmentAnchor* anchor(
-      static_cast<TextFragmentAnchor*>(GetTextFragmentSelectorGenerator()
-                                           ->GetFrame()
-                                           ->View()
-                                           ->GetFragmentAnchor()));
 
-  if (anchor) {
-    for (auto& finder : anchor->TextFragmentFinders()) {
-      EphemeralRangeInFlatTree potential_match =
-          finder->FirstMatch()->ToEphemeralRange();
-      text_fragment_matches.push_back(PlainText(potential_match));
+  TextFragmentAnchor* anchor = GetTextFragmentAnchor();
+  if (!anchor) {
+    std::move(callback).Run(Vector<String>());
+    return;
+  }
+
+  for (auto& finder : anchor->TextFragmentFinders()) {
+    if (finder->FirstMatch()) {
+      text_fragment_matches.push_back(
+          PlainText(finder->FirstMatch()->ToEphemeralRange()));
     }
   }
 
   std::move(callback).Run(text_fragment_matches);
 }
 
+void TextFragmentHandler::ExtractFirstFragmentRect(
+    ExtractFirstFragmentRectCallback callback) {
+  DCHECK(
+      base::FeatureList::IsEnabled(shared_highlighting::kSharedHighlightingV2));
+  IntRect rect_in_viewport;
+
+  TextFragmentAnchor* anchor = GetTextFragmentAnchor();
+  if (!anchor || anchor->TextFragmentFinders().size() <= 0) {
+    std::move(callback).Run(gfx::Rect());
+    return;
+  }
+
+  for (auto& finder : anchor->TextFragmentFinders()) {
+    if (finder->FirstMatch() == nullptr) {
+      continue;
+    }
+
+    PhysicalRect bounding_box(
+        ComputeTextRect(finder->FirstMatch()->ToEphemeralRange()));
+    rect_in_viewport =
+        GetTextFragmentSelectorGenerator()->GetFrame()->View()->FrameToViewport(
+            EnclosingIntRect(bounding_box));
+    break;
+  }
+
+  std::move(callback).Run(gfx::Rect(rect_in_viewport));
+}
+
 void TextFragmentHandler::Trace(Visitor* visitor) const {
   visitor->Trace(text_fragment_selector_generator_);
   visitor->Trace(selector_producer_);
+}
+
+TextFragmentAnchor* TextFragmentHandler::GetTextFragmentAnchor() {
+  FragmentAnchor* fragmentAnchor = GetTextFragmentSelectorGenerator()
+                                       ->GetFrame()
+                                       ->View()
+                                       ->GetFragmentAnchor();
+  if (!fragmentAnchor || !fragmentAnchor->IsTextFragmentAnchor()) {
+    return nullptr;
+  }
+  return static_cast<TextFragmentAnchor*>(fragmentAnchor);
 }
 
 }  // namespace blink

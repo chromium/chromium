@@ -91,6 +91,8 @@ class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
     return text_fragment_finders_;
   }
 
+  bool IsTextFragmentAnchor() override { return true; }
+
  private:
   // Called when the search is finished. Reports metrics and activates the
   // element fragment anchor if we didn't find a match.

@@ -5,6 +5,8 @@
 [JavaPackage="org.chromium.blink.mojom"]
 module blink.mojom;
 
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
 // TextFragmentReceiver is used for requesting renderer to perform text fragment
 // operations on the main frame, mainly generating and removing fragments.
 // Implemented in renderer.
@@ -25,4 +27,7 @@ interface TextFragmentReceiver {
 
   // Request text fragment selectors for existing highlights.
   GetExistingSelectors() => (array<string> selectors);
+
+  // Request the first text fragment rectangle relative to the viewport
+  ExtractFirstFragmentRect() => (gfx.mojom.Rect bounds);
 };

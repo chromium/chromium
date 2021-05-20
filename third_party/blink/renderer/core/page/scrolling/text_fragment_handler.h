@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_TEXT_FRAGMENT_HANDLER_H_
 
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink.h"
+#include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector_generator.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
@@ -44,6 +45,11 @@ class CORE_EXPORT TextFragmentHandler final
   void ExtractTextFragmentsMatches(
       ExtractTextFragmentsMatchesCallback callback) override;
 
+  // Request the bounding rectangle, relative to the viewport, of the first
+  // found match. It will accept an empty rectangle if no matches are found.
+  void ExtractFirstFragmentRect(
+      ExtractFirstFragmentRectCallback callback) override;
+
   void Trace(Visitor*) const;
 
   TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator();
@@ -60,6 +66,8 @@ class CORE_EXPORT TextFragmentHandler final
       selector_producer_{this, nullptr};
 
   DISALLOW_COPY_AND_ASSIGN(TextFragmentHandler);
+
+  TextFragmentAnchor* GetTextFragmentAnchor();
 };
 
 }  // namespace blink

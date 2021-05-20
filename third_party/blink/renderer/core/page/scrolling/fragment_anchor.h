@@ -57,6 +57,8 @@ class CORE_EXPORT FragmentAnchor : public GarbageCollected<FragmentAnchor> {
   virtual bool Dismiss() = 0;
 
   virtual void Trace(Visitor*) const {}
+
+  virtual bool IsTextFragmentAnchor() = 0;
 };
 
 }  // namespace blink

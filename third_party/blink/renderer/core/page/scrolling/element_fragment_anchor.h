@@ -58,6 +58,8 @@ class CORE_EXPORT ElementFragmentAnchor final : public FragmentAnchor {
 
   void Trace(Visitor*) const override;
 
+  bool IsTextFragmentAnchor() override { return false; }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ElementFragmentAnchorTest,
                            AnchorRemovedBeforeBeginFrameCrash);
