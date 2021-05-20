@@ -18,7 +18,6 @@ namespace base {
 class TickClock;
 }
 
-class GURL;
 struct TabRendererData;
 
 // View that displays the favicon, sad tab, throbber, and attention indicator
@@ -99,8 +98,8 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
                          const gfx::Rect& bounds);
   bool GetNonDefaultFavicon() const;
 
-  // Sets the icon. Depending on the URL the icon may be automatically themed.
-  void SetIcon(const GURL& url, const gfx::ImageSkia& favicon);
+  // Sets the icon.
+  void SetIcon(const gfx::ImageSkia& icon, bool should_themify_favicon);
 
   // For certain types of tabs the loading animation is not desired so the
   // caller can set inhibit_loading_animation to true. When false, the loading

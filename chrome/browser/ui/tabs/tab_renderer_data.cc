@@ -13,8 +13,30 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+
+namespace {
+
+bool ShouldThemifyFaviconForEntryUrl(const GURL& url) {
+  // Themify favicon for the default NTP and incognito NTP.
+  return url.SchemeIs(content::kChromeUIScheme) &&
+         (url.host_piece() == chrome::kChromeUINewTabPageHost ||
+          url.host_piece() == chrome::kChromeUINewTabHost);
+}
+
+bool ShouldThemifyFaviconForVisibleUrl(const GURL& visible_url) {
+  return visible_url.SchemeIs(content::kChromeUIScheme) &&
+         visible_url.host_piece() != chrome::kChromeUIAppLauncherPageHost &&
+         visible_url.host_piece() != chrome::kChromeUIHelpHost &&
+         visible_url.host_piece() != chrome::kChromeUIVersionHost &&
+         visible_url.host_piece() != chrome::kChromeUINetExportHost &&
+         visible_url.host_piece() != chrome::kChromeUINewTabHost;
+}
+
+}  // namespace
 
 // static
 TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
@@ -45,6 +67,13 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
   data.blocked = model->IsTabBlocked(index);
   data.should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
   data.alert_state = chrome::GetTabAlertStatesForContents(contents);
+
+  content::NavigationEntry* entry =
+      contents->GetController().GetLastCommittedEntry();
+  data.should_themify_favicon =
+      (entry && ShouldThemifyFaviconForEntryUrl(entry->GetURL())) ||
+      ShouldThemifyFaviconForVisibleUrl(contents->GetVisibleURL());
+
   return data;
 }
 

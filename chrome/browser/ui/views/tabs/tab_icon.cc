@@ -41,16 +41,6 @@ namespace {
 constexpr int kAttentionIndicatorRadius = 3;
 constexpr int kLoadingAnimationStrokeWidthDp = 2;
 
-// Returns whether the favicon for the given URL should be colored according to
-// the browser theme.
-bool ShouldThemifyFaviconForUrl(const GURL& url) {
-  return url.SchemeIs(content::kChromeUIScheme) &&
-         url.host_piece() != chrome::kChromeUIAppLauncherPageHost &&
-         url.host_piece() != chrome::kChromeUIHelpHost &&
-         url.host_piece() != chrome::kChromeUIVersionHost &&
-         url.host_piece() != chrome::kChromeUINetExportHost;
-}
-
 bool NetworkStateIsAnimated(TabNetworkState network_state) {
   return network_state != TabNetworkState::kNone &&
          network_state != TabNetworkState::kError;
@@ -109,7 +99,7 @@ void TabIcon::SetData(const TabRendererData& data) {
   const bool was_showing_load = GetShowingLoadingAnimation();
 
   inhibit_loading_animation_ = data.should_hide_throbber;
-  SetIcon(data.visible_url, data.favicon);
+  SetIcon(data.favicon, data.should_themify_favicon);
   SetNetworkState(data.network_state);
   SetCrashed(data.IsCrashed());
   has_tab_renderer_data_ = true;
@@ -361,7 +351,7 @@ bool TabIcon::GetNonDefaultFavicon() const {
                                    favicon::GetDefaultFavicon().AsImageSkia());
 }
 
-void TabIcon::SetIcon(const GURL& url, const gfx::ImageSkia& icon) {
+void TabIcon::SetIcon(const gfx::ImageSkia& icon, bool should_themify_favicon) {
   // Detect when updating to the same icon. This avoids re-theming and
   // re-painting.
   if (favicon_.BackedBySameObjectAs(icon))
@@ -369,7 +359,7 @@ void TabIcon::SetIcon(const GURL& url, const gfx::ImageSkia& icon) {
 
   favicon_ = icon;
 
-  if (!GetNonDefaultFavicon() || ShouldThemifyFaviconForUrl(url)) {
+  if (!GetNonDefaultFavicon() || should_themify_favicon) {
     themed_favicon_ = ThemeImage(icon);
   } else {
     themed_favicon_ = gfx::ImageSkia();
