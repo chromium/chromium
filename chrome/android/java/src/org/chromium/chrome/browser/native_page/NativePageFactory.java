@@ -86,7 +86,7 @@ public class NativePageFactory {
             mBottomSheetController = sheetController;
         }
 
-        protected NativePage buildNewTabPage(Tab tab) {
+        protected NativePage buildNewTabPage(Tab tab, String url) {
             NativePageHost nativePageHost = new TabShim(tab, mActivity);
             if (tab.isIncognito()) return new IncognitoNewTabPage(mActivity, nativePageHost);
 
@@ -94,7 +94,7 @@ public class NativePageFactory {
                     mActivity.getActivityTabProvider(), mActivity.getSnackbarManager(),
                     mActivity.getLifecycleDispatcher(), mActivity.getTabModelSelector(),
                     mActivity.isTablet(), mUma.get(), ColorUtils.inNightMode(mActivity),
-                    nativePageHost, tab, mBottomSheetController,
+                    nativePageHost, tab, url, mBottomSheetController,
                     mActivity.getShareDelegateSupplier(), mActivity.getWindowAndroid());
         }
 
@@ -173,7 +173,7 @@ public class NativePageFactory {
                 page = candidatePage;
                 break;
             case NativePageType.NTP:
-                page = getBuilder().buildNewTabPage(tab);
+                page = getBuilder().buildNewTabPage(tab, url);
                 break;
             case NativePageType.BOOKMARKS:
                 page = getBuilder().buildBookmarksPage(tab);

@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.FeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -50,10 +51,11 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
         /**
          * Creates the {@link FeedSurfaceCoordinator} for the specified mode.
          * @param isInNightMode Whether or not the feed surface is going to display in night mode.
+         * @param launchOrigin Where the feed was launched from.
          * @return The {@link FeedSurfaceCoordinator}.
          */
-        FeedSurfaceCoordinator createFeedSurfaceCoordinator(
-                boolean isInNightMode, boolean isPlaceholderShown);
+        FeedSurfaceCoordinator createFeedSurfaceCoordinator(boolean isInNightMode,
+                boolean isPlaceholderShown, @NewTabPageLaunchOrigin int launchOrigin);
     }
 
     /**
@@ -89,10 +91,11 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
                 containerPropertyModel, parentView, ExploreSurfaceViewBinder::bind);
         mFeedSurfaceCreator = new FeedSurfaceCreator() {
             @Override
-            public FeedSurfaceCoordinator createFeedSurfaceCoordinator(
-                    boolean isInNightMode, boolean isPlaceholderShown) {
+            public FeedSurfaceCoordinator createFeedSurfaceCoordinator(boolean isInNightMode,
+                    boolean isPlaceholderShown, @NewTabPageLaunchOrigin int launchOrigin) {
                 return internalCreateFeedSurfaceCoordinator(mHasHeader, isInNightMode,
-                        isPlaceholderShown, bottomSheetController, scrollableContainerDelegate);
+                        isPlaceholderShown, bottomSheetController, scrollableContainerDelegate,
+                        launchOrigin);
             }
         };
     }
@@ -120,7 +123,8 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
     private FeedSurfaceCoordinator internalCreateFeedSurfaceCoordinator(boolean hasHeader,
             boolean isInNightMode, boolean isPlaceholderShown,
             BottomSheetController bottomSheetController,
-            ScrollableContainerDelegate scrollableContainerDelegate) {
+            ScrollableContainerDelegate scrollableContainerDelegate,
+            @NewTabPageLaunchOrigin int launchOrigin) {
         if (mExploreSurfaceNavigationDelegate == null) {
             mExploreSurfaceNavigationDelegate =
                     new ExploreSurfaceNavigationDelegate(mParentTabSupplier);
@@ -144,7 +148,7 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
                 new FeedSurfaceCoordinator(mActivity, mSnackbarManager, mWindowAndroid, null, null,
                         sectionHeaderView, isInNightMode, this, mExploreSurfaceNavigationDelegate,
                         profile, isPlaceholderShown, bottomSheetController, mShareDelegateSupplier,
-                        scrollableContainerDelegate, mTabModelSelector);
+                        scrollableContainerDelegate, mTabModelSelector, launchOrigin);
         feedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
         return feedSurfaceCoordinator;
         // TODO(crbug.com/982018): Customize surface background for incognito and dark mode.

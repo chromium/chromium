@@ -4,19 +4,131 @@
 
 package org.chromium.chrome.browser.feed;
 
-import org.junit.Assert;
+import static junit.framework.Assert.assertEquals;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.when;
+
+import android.app.Activity;
+
+import androidx.recyclerview.widget.RecyclerView;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.feed.shared.FeedFeatures;
+import org.chromium.chrome.browser.feed.v2.FeedStream;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
+import org.chromium.chrome.browser.ntp.cards.SignInPromo;
+import org.chromium.chrome.browser.ntp.snippets.SectionHeaderListProperties;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Tests for {@link FeedSurfaceMediator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Features.EnableFeatures({ChromeFeatureList.WEB_FEED})
 public class FeedSurfaceMediatorTest {
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
+    // Mocked JNI.
+    @Mock
+    private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
+    @Mock
+    private WebFeedBridge.Natives mWebFeedBridgeJniMock;
+
+    @Mock
+    private FeedSurfaceCoordinator mFeedSurfaceCoordinator;
+    @Mock
+    private IdentityServicesProvider mIdentityService;
+    @Mock
+    private NativePageNavigationDelegate mPageNavigationDelegate;
+    @Mock
+    private PrefChangeRegistrar mPrefChangeRegistrar;
+    @Mock
+    private PrefService mPrefService;
+    @Mock
+    private Profile mProfileMock;
+    @Mock
+    private SigninManager mSigninManager;
+    @Mock
+    private IdentityManager mIdentityManager;
+    @Mock
+    private TemplateUrlService mUrlService;
+    @Mock
+    private FeedStream mStream;
+
+    private Activity mActivity;
+    private FeedSurfaceMediator mFeedSurfaceMediator;
+
+    @Before
+    public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
+        mocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
+
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_UI)).thenReturn(true);
+        when(mWebFeedBridgeJniMock.isWebFeedSubscriber()).thenReturn(true);
+        when(mIdentityService.getSigninManager(any(Profile.class))).thenReturn(mSigninManager);
+        when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
+        when(mFeedSurfaceCoordinator.getRecyclerView()).thenReturn(new RecyclerView(mActivity));
+        when(mFeedSurfaceCoordinator.getStream()).thenReturn(null, mStream);
+        when(mFeedSurfaceCoordinator.createFeedStream(anyBoolean())).thenReturn(mStream);
+        ObservableSupplierImpl<Boolean> hasUnreadContent = new ObservableSupplierImpl<>();
+        hasUnreadContent.set(false);
+        when(mStream.hasUnreadContent()).thenReturn(hasUnreadContent);
+
+        FeedSurfaceMediator.setPrefForTest(mPrefChangeRegistrar, mPrefService);
+        FeedFeatures.setFakePrefsForTest(mPrefService);
+        Profile.setLastUsedProfileForTesting(mProfileMock);
+        IdentityServicesProvider.setInstanceForTests(mIdentityService);
+        TemplateUrlServiceFactory.setInstanceForTesting(mUrlService);
+        SignInPromo.setDisablePromoForTests(true);
+    }
+
+    @After
+    public void tearDown() {
+        if (mFeedSurfaceMediator != null) mFeedSurfaceMediator.destroy();
+        FeedSurfaceMediator.setPrefForTest(null, null);
+        FeedFeatures.setFakePrefsForTest(null);
+        Profile.setLastUsedProfileForTesting(null);
+        IdentityServicesProvider.setInstanceForTests(null);
+        TemplateUrlServiceFactory.setInstanceForTesting(null);
+        SignInPromo.setDisablePromoForTests(false);
+    }
+
     @Test
     public void testSerializeScrollState() {
         FeedSurfaceMediator.ScrollState state = new FeedSurfaceMediator.ScrollState();
@@ -28,15 +140,39 @@ public class FeedSurfaceMediatorTest {
         FeedSurfaceMediator.ScrollState deserializedState =
                 FeedSurfaceMediator.ScrollState.fromJson(state.toJson());
 
-        Assert.assertEquals(2, deserializedState.position);
-        Assert.assertEquals(4, deserializedState.lastPosition);
-        Assert.assertEquals(50, deserializedState.offset);
-        Assert.assertEquals(5, deserializedState.tabId);
-        Assert.assertEquals(state.toJson(), deserializedState.toJson());
+        assertEquals(2, deserializedState.position);
+        assertEquals(4, deserializedState.lastPosition);
+        assertEquals(50, deserializedState.offset);
+        assertEquals(5, deserializedState.tabId);
+        assertEquals(state.toJson(), deserializedState.toJson());
     }
 
     @Test
     public void testScrollStateFromInvalidJson() {
-        Assert.assertEquals(null, FeedSurfaceMediator.ScrollState.fromJson("{{=xcg"));
+        assertEquals(null, FeedSurfaceMediator.ScrollState.fromJson("{{=xcg"));
+    }
+
+    @Test
+    public void updateContent_openingTabIdFollowing() {
+        PropertyModel sectionHeaderModel = SectionHeaderListProperties.create();
+        mFeedSurfaceMediator = new FeedSurfaceMediator(mFeedSurfaceCoordinator, mActivity, null,
+                mPageNavigationDelegate, sectionHeaderModel,
+                FeedSurfaceCoordinator.StreamTabId.FOLLOWING);
+        mFeedSurfaceMediator.updateContent();
+
+        assertEquals(FeedSurfaceCoordinator.StreamTabId.FOLLOWING,
+                sectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
+    }
+
+    @Test
+    public void updateContent_openingTabIdForYou() {
+        PropertyModel sectionHeaderModel = SectionHeaderListProperties.create();
+        mFeedSurfaceMediator = new FeedSurfaceMediator(mFeedSurfaceCoordinator, mActivity, null,
+                mPageNavigationDelegate, sectionHeaderModel,
+                FeedSurfaceCoordinator.StreamTabId.FOR_YOU);
+        mFeedSurfaceMediator.updateContent();
+
+        assertEquals(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
+                sectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
     }
 }

@@ -73,7 +73,7 @@ class WebFeedDialogCoordinator {
             secondaryButtonText = mContext.getString(R.string.close);
             buttonClickCallback = dismissalCause -> {
                 if (dismissalCause.equals(DialogDismissalCause.POSITIVE_BUTTON_CLICKED)) {
-                    feedLauncher.openFeed();
+                    feedLauncher.openFollowingFeed();
                 }
             };
         } else {

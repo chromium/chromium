@@ -11,6 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -1009,7 +1010,7 @@ public class StartSurfaceMediatorUnitTest {
 
         mediator.setOverviewState(StartSurfaceState.SHOWING_HOMEPAGE);
         mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);
-        when(mFeedSurfaceCreator.createFeedSurfaceCoordinator(anyBoolean(), anyBoolean()))
+        when(mFeedSurfaceCreator.createFeedSurfaceCoordinator(anyBoolean(), anyBoolean(), anyInt()))
                 .thenReturn(mFeedSurfaceCoordinator);
         mediator.showOverview(false);
         mainTabGridController.verify(mMainTabGridController).showOverview(eq(false));
@@ -1024,7 +1025,7 @@ public class StartSurfaceMediatorUnitTest {
 
         FeedSurfaceCoordinator feedSurfaceCoordinator = mock(FeedSurfaceCoordinator.class);
         assertNotEquals(mFeedSurfaceCoordinator, feedSurfaceCoordinator);
-        when(mFeedSurfaceCreator.createFeedSurfaceCoordinator(anyBoolean(), anyBoolean()))
+        when(mFeedSurfaceCreator.createFeedSurfaceCoordinator(anyBoolean(), anyBoolean(), anyInt()))
                 .thenReturn(feedSurfaceCoordinator);
         mediator.setOverviewState(StartSurfaceState.SHOWING_PREVIOUS);
         mediator.showOverview(false);
@@ -1131,7 +1132,7 @@ public class StartSurfaceMediatorUnitTest {
 
         mediator.setOverviewState(StartSurfaceState.SHOWING_HOMEPAGE);
         mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);
-        when(mFeedSurfaceCreator.createFeedSurfaceCoordinator(anyBoolean(), anyBoolean()))
+        when(mFeedSurfaceCreator.createFeedSurfaceCoordinator(anyBoolean(), anyBoolean(), anyInt()))
                 .thenReturn(mFeedSurfaceCoordinator);
         mediator.showOverview(false);
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));

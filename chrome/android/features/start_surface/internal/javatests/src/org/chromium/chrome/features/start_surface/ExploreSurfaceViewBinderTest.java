@@ -35,6 +35,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -85,7 +86,7 @@ public class ExploreSurfaceViewBinderTest {
                             mActivityTestRule.getActivity().getTabModelSelector());
             mFeedSurfaceCoordinator =
                     mExploreSurfaceCoordinator.getFeedSurfaceCreator().createFeedSurfaceCoordinator(
-                            false, /* isPlaceholderShown= */ false);
+                            false, /* isPlaceholderShown= */ false, NewTabPageLaunchOrigin.UNKNOWN);
             mFeedSurfaceView = mFeedSurfaceCoordinator.getView();
         });
     }

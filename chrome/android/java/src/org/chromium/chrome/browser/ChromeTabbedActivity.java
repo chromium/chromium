@@ -116,7 +116,9 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
+import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelperSupplier;
@@ -651,8 +653,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             getTabModelSelector(), getBrowserControlsManager(),
                             getSnackbarManager(), getShareDelegateSupplier(),
                             getToolbarManager()::getOmniboxStub, getTabContentManager(),
-                            getModalDialogManager(), /* chromeActivityNativeDelegate= */ this,
-                            getLifecycleDispatcher(), getTabCreatorManagerSupplier().get(),
+                            getModalDialogManager(),
+                            /* chromeActivityNativeDelegate= */ this, getLifecycleDispatcher(),
+                            getTabCreatorManagerSupplier().get(),
                             getMenuOrKeyboardActionController(),
                             getMultiWindowModeStateDispatcher());
                 }
@@ -1778,7 +1781,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getWindow().getDecorView(), this, mOverviewModeBehaviorSupplier,
                 mBookmarkBridgeSupplier,
                 ()
-                        -> getTabCreator(/*incognito=*/false).launchNTP(),
+                        -> getTabCreator(/*incognito=*/false)
+                                   .launchUrl(NewTabPageUtils.encodeNtpUrl(
+                                                      NewTabPageLaunchOrigin.WEB_FEED),
+                                           TabLaunchType.FROM_CHROME_UI),
                 getModalDialogManager(), getSnackbarManager(), new WebFeedBridge());
     }
 
@@ -1804,10 +1810,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (StartSurfaceConfiguration.isStartSurfaceEnabled()) {
             overviewNTPCreator = new ChromeTabCreator.OverviewNTPCreator() {
                 @Override
-                public boolean handleCreateNTPIfNeeded(
-                        boolean isNTP, boolean incognito, Tab parentTab) {
+                public boolean handleCreateNTPIfNeeded(boolean isNTP, boolean incognito,
+                        Tab parentTab, @NewTabPageLaunchOrigin int launchOrigin) {
                     boolean shouldShowStart =
-                            showStartSurfaceHomeForNTP(isNTP, incognito, parentTab);
+                            showStartSurfaceHomeForNTP(isNTP, incognito, parentTab, launchOrigin);
                     if (shouldShowStart) {
                         mStartSurfaceParentTabSupplier.set(parentTab);
                     }
@@ -2237,10 +2243,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
+    private void showOverview(@StartSurfaceState int state) {
+        showOverview(state, NewTabPageLaunchOrigin.UNKNOWN);
+    }
+
     // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
     // two different things, we actual can split this into two methods: showOverview() and
     // showStartSurface(state). Let's do some auditing and clean up before perform the actual split.
-    private void showOverview(@StartSurfaceState int state) {
+    private void showOverview(
+            @StartSurfaceState int state, @NewTabPageLaunchOrigin int launchOrigin) {
         assert (state == StartSurfaceState.SHOWING_TABSWITCHER
                 || state == StartSurfaceState.SHOWING_HOMEPAGE
                 || state == StartSurfaceState.SHOWING_PREVIOUS
@@ -2256,7 +2267,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             if (StartSurfaceConfiguration.shouldHideStartSurfaceWithAccessibilityOn()) {
                 state = StartSurfaceState.SHOWING_TABSWITCHER;
             }
-            mStartSurfaceSupplier.get().getController().setOverviewState(state);
+            mStartSurfaceSupplier.get().getController().setOverviewState(state, launchOrigin);
         }
 
         if (mOverviewModeController == null) return;
@@ -2294,7 +2305,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      * surface, or open a new tab with the omnibox get focused, depending on the value of
      * {@link StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB}.
      */
-    private boolean showStartSurfaceHomeForNTP(boolean isNTP, boolean incognito, Tab parentTab) {
+    private boolean showStartSurfaceHomeForNTP(boolean isNTP, boolean incognito, Tab parentTab,
+            @NewTabPageLaunchOrigin int launchOrigin) {
         if (!isNTP
                 || !ReturnToChromeExperimentsUtil.shouldShowStartSurfaceHomeAsNTP(
                         incognito, isTablet())) {
@@ -2304,14 +2316,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         getTabModelSelector().selectModel(incognito);
         if (StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB.getValue()) {
             Runnable emptyTabCloseCallback = isInOverviewMode() ? () -> {
-                showOverview(StartSurfaceState.SHOWING_PREVIOUS);
+                showOverview(StartSurfaceState.SHOWING_PREVIOUS, launchOrigin);
             } : null;
             ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurfaceAsNewTab(null,
                     PageTransition.AUTO_TOPLEVEL, incognito, parentTab, getCurrentTabModel(),
                     emptyTabCloseCallback);
         } else if (TabUiFeatureUtilities.supportInstantStart(isTablet())
                 || (getTabModelSelector().isTabStateInitialized() && isLayoutManagerCreated())) {
-            showOverview(StartSurfaceState.SHOWING_HOMEPAGE);
+            showOverview(StartSurfaceState.SHOWING_HOMEPAGE, launchOrigin);
         }
         return true;
     }

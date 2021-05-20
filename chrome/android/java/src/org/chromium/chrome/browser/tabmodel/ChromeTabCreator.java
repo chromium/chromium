@@ -22,6 +22,8 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFact
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.init.StartupTabPreloader;
+import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
@@ -54,9 +56,11 @@ public class ChromeTabCreator extends TabCreator {
          * @param isNTP Whether tab with NTP should be created.
          * @param isIncognito Whether tab is created in incognito.
          * @param parentTab The parent tab of the tab creation.
+         * @param launchOrigin The {@link NewTabPageLaunchOrigin} that launched the NTP.
          * @return Whether NTP creation was handled.
          */
-        boolean handleCreateNTPIfNeeded(boolean isNTP, boolean isIncognito, Tab parentTab);
+        boolean handleCreateNTPIfNeeded(boolean isNTP, boolean isIncognito, Tab parentTab,
+                @NewTabPageLaunchOrigin int launchOrigin);
 
         /**
          * Called before the Tab's initialization.
@@ -147,7 +151,8 @@ public class ChromeTabCreator extends TabCreator {
             int position, Intent intent) {
         if (mOverviewNTPCreator != null
                 && mOverviewNTPCreator.handleCreateNTPIfNeeded(
-                        UrlUtilities.isNTPUrl(loadUrlParams.getUrl()), mIncognito, parent)) {
+                        UrlUtilities.isNTPUrl(loadUrlParams.getUrl()), mIncognito, parent,
+                        NewTabPageUtils.decodeOriginFromNtpUrl(loadUrlParams.getUrl()))) {
             return null;
         }
         try {

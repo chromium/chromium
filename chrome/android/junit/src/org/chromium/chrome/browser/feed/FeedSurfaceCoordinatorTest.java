@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.feed.v2.FeedStreamJni;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
+import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderListProperties;
@@ -162,7 +163,7 @@ public class FeedSurfaceCoordinatorTest {
     @Mock
     private IdentityManager mIdentityManager;
     @Mock
-    private PrefChangeRegistrar mPrefChangeRegistar;
+    private PrefChangeRegistrar mPrefChangeRegistrar;
     @Mock
     private PrefService mPrefService;
     @Mock
@@ -192,7 +193,7 @@ public class FeedSurfaceCoordinatorTest {
         SignInPromo.setDisablePromoForTests(true);
 
         // Preferences to enable feed.
-        FeedSurfaceMediator.setPrefForTest(mPrefChangeRegistar, mPrefService);
+        FeedSurfaceMediator.setPrefForTest(mPrefChangeRegistrar, mPrefService);
         FeedFeatures.setFakePrefsForTest(mPrefService);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
@@ -217,7 +218,7 @@ public class FeedSurfaceCoordinatorTest {
         mCoordinator = new FeedSurfaceCoordinator(mActivity, mSnackbarManager, mWindowAndroid,
                 mSnapHelper, null, mSectionHeaderView, false, new TestSurfaceDelegate(),
                 mPageNavigationDelegate, mProfileMock, false, mBottomSheetController,
-                mShareDelegateSupplier, null, mTabModelSelector);
+                mShareDelegateSupplier, null, mTabModelSelector, NewTabPageLaunchOrigin.UNKNOWN);
 
         mLayoutManager = new FakeLinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -280,5 +281,17 @@ public class FeedSurfaceCoordinatorTest {
         // After startup, coordinator should be active, but feed should not be bound.
         assertEquals(true, mCoordinator.isActive());
         assertEquals(false, ((FeedStream) mCoordinator.getStream()).getBoundStatusForTest());
+    }
+
+    @Test
+    public void testGetTabIdFromLaunchOrigin_webFeed() {
+        assertEquals(FeedSurfaceCoordinator.StreamTabId.FOLLOWING,
+                mCoordinator.getTabIdFromLaunchOrigin(NewTabPageLaunchOrigin.WEB_FEED));
+    }
+
+    @Test
+    public void testGetTabIdFromLaunchOrigin_unknown() {
+        assertEquals(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
+                mCoordinator.getTabIdFromLaunchOrigin(NewTabPageLaunchOrigin.UNKNOWN));
     }
 }

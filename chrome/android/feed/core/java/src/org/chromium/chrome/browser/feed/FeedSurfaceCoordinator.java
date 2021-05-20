@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.feed.v2.NativeViewListRenderer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
+import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.ntp.ScrollListener;
 import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
@@ -139,6 +141,12 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
     private @Nullable HeaderIphScrollListener mHeaderIphScrollListener;
 
+    @IntDef({StreamTabId.FOR_YOU, StreamTabId.FOLLOWING})
+    public @interface StreamTabId {
+        int FOR_YOU = 0;
+        int FOLLOWING = 1;
+    };
+
     /**
      * Provides the additional capabilities needed for the container view.
      */
@@ -229,6 +237,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
      * @param isPlaceholderShownInitially Whether the placeholder is shown initially.
      * @param bottomSheetController The bottom sheet controller.
      * @param shareDelegateSupplier The supplier for the share delegate used to share articles.
+     * @param launchOrigin The origin of what launched the feed.
      */
     public FeedSurfaceCoordinator(Activity activity, SnackbarManager snackbarManager,
             WindowAndroid windowAndroid, @Nullable SnapScrollHelper snapScrollHelper,
@@ -238,7 +247,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             boolean isPlaceholderShownInitially, BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Nullable ScrollableContainerDelegate externalScrollableContainerDelegate,
-            TabModelSelector tabModelSelector) {
+            TabModelSelector tabModelSelector, @NewTabPageLaunchOrigin int launchOrigin) {
         FeedSurfaceTracker.getInstance().initServiceBridge();
         mActivity = activity;
         mSnackbarManager = snackbarManager;
@@ -284,8 +293,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         }
 
         // Mediator should be created before any Stream changes.
-        mMediator = new FeedSurfaceMediator(
-                this, mActivity, snapScrollHelper, mPageNavigationDelegate, mSectionHeaderModel);
+        mMediator =
+                new FeedSurfaceMediator(this, mActivity, snapScrollHelper, mPageNavigationDelegate,
+                        mSectionHeaderModel, getTabIdFromLaunchOrigin(launchOrigin));
         // Creates streams, initiates content changes.
         mMediator.updateContent();
         FeedSurfaceTracker.getInstance().trackSurface(this);
@@ -398,6 +408,23 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     /** Restores the UI to a previously saved state. */
     public void restoreInstanceState(String state) {
         mMediator.restoreSavedInstanceState(state);
+    }
+
+    /** Sets the {@link StreamTabId} of the feed given a {@link NewTabPageLaunchOrigin}. */
+    public void setTabIdFromLaunchOrigin(@NewTabPageLaunchOrigin int launchOrigin) {
+        mMediator.setTabId(getTabIdFromLaunchOrigin(launchOrigin));
+    }
+
+    /**
+     * Gets the appropriate {@link StreamTabId} for the given {@link NewTabPageLaunchOrigin}.
+     *
+     * <p>If coming from a Web Feed button, open the following tab, otherwise open the for you tab.
+     */
+    @VisibleForTesting
+    @StreamTabId
+    int getTabIdFromLaunchOrigin(@NewTabPageLaunchOrigin int launchOrigin) {
+        return launchOrigin == NewTabPageLaunchOrigin.WEB_FEED ? StreamTabId.FOLLOWING
+                                                               : StreamTabId.FOR_YOU;
     }
 
     private RecyclerView setUpView() {

@@ -283,7 +283,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
      * @param browserControlsStateProvider {@link BrowserControlsStateProvider} to observe for
      *         offset changes.
      * @param activityTabProvider Provides the current active tab.
-     * @param snackbarManager {@link SnackBarManager} object.
+     * @param snackbarManager {@link SnackbarManager} object.
      * @param lifecycleDispatcher Activity lifecycle dispatcher.
      * @param tabModelSelector {@link TabModelSelector} object.
      * @param isTablet {@code true} if running on a Tablet device.
@@ -291,6 +291,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
      * @param isInNightMode {@code true} if the night mode setting is on.
      * @param nativePageHost The host that is showing this new tab page.
      * @param tab The {@link Tab} that contains this new tab page.
+     * @param url The URL that launched this new tab page.
      * @param bottomSheetController The controller for bottom sheets, used by the feed.
      * @param shareDelegateSupplier Supplies the Delegate used to open SharingHub.
      * @param windowAndroid
@@ -299,7 +300,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             Supplier<Tab> activityTabProvider, SnackbarManager snackbarManager,
             ActivityLifecycleDispatcher lifecycleDispatcher, TabModelSelector tabModelSelector,
             boolean isTablet, NewTabPageUma uma, boolean isInNightMode,
-            NativePageHost nativePageHost, Tab tab, BottomSheetController bottomSheetController,
+            NativePageHost nativePageHost, Tab tab, String url,
+            BottomSheetController bottomSheetController,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier, WindowAndroid windowAndroid) {
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
@@ -362,7 +364,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
         updateSearchProviderHasLogo();
         initializeMainView(activity, windowAndroid, snackbarManager, uma, isInNightMode,
-                bottomSheetController, shareDelegateSupplier, tabModelSelector);
+                bottomSheetController, shareDelegateSupplier, tabModelSelector, url);
 
         mBrowserControlsStateProvider = browserControlsStateProvider;
         getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
@@ -416,7 +418,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             SnackbarManager snackbarManager, NewTabPageUma uma, boolean isInNightMode,
             BottomSheetController bottomSheetController,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            TabModelSelector tabModelSelector) {
+            TabModelSelector tabModelSelector, String url) {
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
 
         LayoutInflater inflater = LayoutInflater.from(activity);
@@ -437,7 +439,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 profile,
                 /* isPlaceholderShownInitially= */ false, bottomSheetController,
                 shareDelegateSupplier, /* externalScrollableContainerDelegate= */ null,
-                tabModelSelector);
+                tabModelSelector, NewTabPageUtils.decodeOriginFromNtpUrl(url));
 
         // Record the timestamp at which the new tab page's construction started.
         uma.trackTimeToFirstDraw(mFeedSurfaceProvider.getView(), mConstructedTimeNs);

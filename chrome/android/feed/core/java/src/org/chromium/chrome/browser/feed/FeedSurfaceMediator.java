@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
+import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.ntp.ScrollListener;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
@@ -262,17 +263,19 @@ public class FeedSurfaceMediator
      * @param pageNavigationDelegate The {@link NativePageNavigationDelegate} that handles page
      *         navigation.
      * @param headerModel The {@link PropertyModel} that contains this mediator should work with.
+     * @param openingTabId The {@link FeedSurfaceCoordinator.StreamTabId} the feed should open to.
      */
     FeedSurfaceMediator(FeedSurfaceCoordinator coordinator, Context context,
             @Nullable SnapScrollHelper snapScrollHelper,
             @Nullable NativePageNavigationDelegate pageNavigationDelegate,
-            PropertyModel headerModel) {
+            PropertyModel headerModel, @FeedSurfaceCoordinator.StreamTabId int openingTabId) {
         mCoordinator = coordinator;
         mContext = context;
         mSnapScrollHelper = snapScrollHelper;
         mSigninManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
         mPageNavigationDelegate = pageNavigationDelegate;
+        mRestoreTabId = openingTabId;
 
         if (sTestPrefChangeRegistar != null) {
             mPrefChangeRegistrar = sTestPrefChangeRegistar;
@@ -382,6 +385,17 @@ public class FeedSurfaceMediator
         } else {
             mCurrentStream.restoreSavedInstanceState(state);
         }
+    }
+
+    /**
+     * Sets the current tab to {@code tabId}.
+     *
+     * <p>Called when the the mediator is already initialized in Start Surface, but the feed is
+     * being shown again with a different {@link NewTabPageLaunchOrigin}.
+     */
+    void setTabId(@FeedSurfaceCoordinator.StreamTabId int tabId) {
+        if (mTabToStreamMap.size() <= tabId) tabId = 0;
+        mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, tabId);
     }
 
     /**

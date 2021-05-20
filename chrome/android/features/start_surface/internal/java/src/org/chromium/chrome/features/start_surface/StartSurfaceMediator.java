@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensMetrics;
+import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -130,6 +131,8 @@ class StartSurfaceMediator
     private int mStartSurfaceState;
     @StartSurfaceState
     private int mPreviousStartSurfaceState;
+    @NewTabPageLaunchOrigin
+    private int mLaunchOrigin;
     @Nullable
     private TabModel mNormalTabModel;
     @Nullable
@@ -180,6 +183,7 @@ class StartSurfaceMediator
         mExcludeMVTiles = excludeMVTiles;
         mStartSurfaceSupplier = startSurfaceSupplier;
         mHadWarmStart = hadWarmStart;
+        mLaunchOrigin = NewTabPageLaunchOrigin.UNKNOWN;
 
         if (mPropertyModel != null) {
             assert mSurfaceMode == SurfaceMode.SINGLE_PANE;
@@ -354,7 +358,8 @@ class StartSurfaceMediator
     // two different things, audit the wording usage and see if we can rename this method to
     // setStartSurfaceState.
     @Override
-    public void setOverviewState(@StartSurfaceState int state) {
+    public void setOverviewState(
+            @StartSurfaceState int state, @NewTabPageLaunchOrigin int launchOrigin) {
         // TODO(crbug.com/1039691): Refactor into state and trigger to separate SHOWING and SHOWN
         // states.
 
@@ -413,11 +418,29 @@ class StartSurfaceMediator
         }
         notifyStateChange();
 
+        setLaunchOrigin(launchOrigin);
         // Metrics collection
         if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
             RecordUserAction.record("StartSurface.SinglePane.Home");
         } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
             RecordUserAction.record("StartSurface.SinglePane.Tabswitcher");
+        }
+    }
+
+    @Override
+    public void setOverviewState(@StartSurfaceState int state) {
+        setOverviewState(state, mLaunchOrigin);
+    }
+
+    private void setLaunchOrigin(@NewTabPageLaunchOrigin int launchOrigin) {
+        if (mLaunchOrigin == launchOrigin) return;
+        mLaunchOrigin = launchOrigin;
+        // If the FeedSurfaceCoordinator is already initialized, set the TabId.
+        if (mPropertyModel == null) return;
+        FeedSurfaceCoordinator feedSurfaceCoordinator =
+                mPropertyModel.get(FEED_SURFACE_COORDINATOR);
+        if (feedSurfaceCoordinator != null) {
+            feedSurfaceCoordinator.setTabIdFromLaunchOrigin(mLaunchOrigin);
         }
     }
 
@@ -506,7 +529,7 @@ class StartSurfaceMediator
             mIsIncognito = mTabModelSelector.isIncognitoSelected();
             mPropertyModel.set(IS_INCOGNITO, mIsIncognito);
 
-            // if OvervieModeState is NOT_SHOWN, default to SHOWING_TABSWITCHER. This should only
+            // if OverviewModeState is NOT_SHOWN, default to SHOWING_TABSWITCHER. This should only
             // happen when entering Start through SwipeDown gesture on URL bar.
             if (mStartSurfaceState == StartSurfaceState.NOT_SHOWN) {
                 mStartSurfaceState = StartSurfaceState.SHOWING_TABSWITCHER;
@@ -526,7 +549,8 @@ class StartSurfaceMediator
                     && mFeedSurfaceCreator != null) {
                 mPropertyModel.set(FEED_SURFACE_COORDINATOR,
                         mFeedSurfaceCreator.createFeedSurfaceCoordinator(
-                                ColorUtils.inNightMode(mContext), shouldShowFeedPlaceholder()));
+                                ColorUtils.inNightMode(mContext), shouldShowFeedPlaceholder(),
+                                mLaunchOrigin));
             }
             mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
@@ -706,7 +730,8 @@ class StartSurfaceMediator
                 && !mActivityStateChecker.isFinishingOrDestroyed()) {
             mPropertyModel.set(FEED_SURFACE_COORDINATOR,
                     mFeedSurfaceCreator.createFeedSurfaceCoordinator(
-                            ColorUtils.inNightMode(mContext), shouldShowFeedPlaceholder()));
+                            ColorUtils.inNightMode(mContext), shouldShowFeedPlaceholder(),
+                            mLaunchOrigin));
         }
 
         mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, isVisible);

@@ -96,7 +96,7 @@ public class NativePageFactoryTest {
         }
 
         @Override
-        public NativePage buildNewTabPage(Tab tab) {
+        public NativePage buildNewTabPage(Tab tab, String url) {
             return new MockNativePage(NativePageType.NTP);
         }
 

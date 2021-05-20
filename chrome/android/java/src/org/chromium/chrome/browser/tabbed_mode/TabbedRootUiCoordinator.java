@@ -52,6 +52,8 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -67,6 +69,7 @@ import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsService;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
@@ -476,7 +479,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     mAppMenuCoordinator.getAppMenuHandler(), mTabSupplier,
                     mToolbarManager.getMenuButtonView(),
                     ()
-                            -> mActivity.getTabCreator(/*incognito=*/false).launchNTP(),
+                            -> mActivity.getTabCreator(/*incognito=*/false)
+                                       .launchUrl(NewTabPageUtils.encodeNtpUrl(
+                                                          NewTabPageLaunchOrigin.WEB_FEED),
+                                               TabLaunchType.FROM_CHROME_UI),
                     mActivity.getModalDialogManager(), mActivity.getSnackbarManager(),
                     new WebFeedBridge());
         }

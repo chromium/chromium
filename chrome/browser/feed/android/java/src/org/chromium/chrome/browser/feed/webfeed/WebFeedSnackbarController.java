@@ -26,7 +26,7 @@ public class WebFeedSnackbarController {
      */
     @FunctionalInterface
     public interface FeedLauncher {
-        void openFeed();
+        void openFollowingFeed();
     }
 
     static final int SNACKBAR_DURATION_MS = (int) TimeUnit.SECONDS.toMillis(8);
@@ -100,7 +100,7 @@ public class WebFeedSnackbarController {
             SnackbarController snackbarController = new SnackbarController() {
                 @Override
                 public void onAction(Object actionData) {
-                    mFeedLauncher.openFeed();
+                    mFeedLauncher.openFollowingFeed();
                 }
             };
             showSnackbar(
