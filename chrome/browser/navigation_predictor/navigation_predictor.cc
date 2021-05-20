@@ -154,16 +154,18 @@ void NavigationPredictor::ReportNewAnchorElements(
     tracked_anchor_id_to_index_[anchor_id] = tracked_anchor_id_to_index_.size();
   }
 
-  NavigationPredictorKeyedService* service =
-      NavigationPredictorKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(
-              render_frame_host()->GetBrowserContext()));
-  DCHECK(service);
-  service->OnPredictionUpdated(
-      web_contents, document_url,
-      NavigationPredictorKeyedService::PredictionSource::
-          kAnchorElementsParsedFromWebPage,
-      new_predictions);
+  if (!new_predictions.empty()) {
+    NavigationPredictorKeyedService* service =
+        NavigationPredictorKeyedServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(
+                render_frame_host()->GetBrowserContext()));
+    DCHECK(service);
+    service->OnPredictionUpdated(
+        web_contents, document_url,
+        NavigationPredictorKeyedService::PredictionSource::
+            kAnchorElementsParsedFromWebPage,
+        new_predictions);
+  }
 }
 
 void NavigationPredictor::ReportAnchorElementClick(

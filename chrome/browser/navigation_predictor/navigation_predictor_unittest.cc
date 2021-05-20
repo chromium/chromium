@@ -164,6 +164,26 @@ TEST_F(NavigationPredictorTest, ReportNewAnchorElements) {
   EXPECT_EQ(0, data->MedianLinkLocation());
 }
 
+TEST_F(NavigationPredictorTest, ReportSameAnchorElementTwice) {
+  std::vector<blink::mojom::AnchorElementMetricsPtr> metrics;
+  metrics.push_back(CreateMetricsPtr());
+  uint32_t anchor_id = metrics[0]->anchor_id;
+  predictor_service()->ReportNewAnchorElements(std::move(metrics));
+  base::RunLoop().RunUntilIdle();
+  metrics.clear();
+
+  // Report the same anchor again, it should be ignored.
+  metrics.push_back(CreateMetricsPtr());
+  metrics[0]->anchor_id = anchor_id;
+  predictor_service()->ReportNewAnchorElements(std::move(metrics));
+  base::RunLoop().RunUntilIdle();
+
+  PageAnchorsMetricsObserver::AnchorsData::CreateForWebContents(web_contents());
+  PageAnchorsMetricsObserver::AnchorsData* data =
+      PageAnchorsMetricsObserver::AnchorsData::FromWebContents(web_contents());
+  EXPECT_EQ(1u, data->number_of_anchors_);
+}
+
 // Basic test to check the ReportNewAnchorElements method can be
 // called with multiple anchors at once.
 TEST_F(NavigationPredictorTest, ReportNewAnchorElementsMultipleAnchors) {
