@@ -5746,7 +5746,7 @@
       },
       'WebRTC Chromium Linux Tester': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
           # Set an alias for builder name used in perf dashboard.
           # Historically, webrtc perf tests had perf-id rather than builder
           # name to present their data in perf dashboard. As perf-id was
