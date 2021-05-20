@@ -74,7 +74,7 @@ others are pulled in from outside. They include:
 
 #### Test Batching
 
-The [`@Batch("group_name")`](https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/util/Batch.java)
+The [`@Batch("group_name")`](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/Batch.java)
 annotation is used to run all tests with the same batch group name in the same
 instrumentation invocation. In other words, the browser process is not
 restarted between these tests, and so any changes to global state, like
@@ -100,18 +100,18 @@ Several of the annotations are Android APIs from
  - [`@LargeTest`](https://developer.android.com/reference/android/support/test/filters/LargeTest.html) (timeout: **2 minutes**)
 
 A few additional size annotations are provided in
-[//base](https://chromium.googlesource.com/chromium/src/+/master/base):
+[//base](https://chromium.googlesource.com/chromium/src/+/main/base):
 
- - [`@EnormousTest`](https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/util/EnormousTest.java)
+ - [`@EnormousTest`](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/EnormousTest.java)
 (timeout: **5 minutes**) Typically used for tests that require WiFi.
- - [`@IntegrationTest`](https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/util/IntegrationTest.java)
+ - [`@IntegrationTest`](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/IntegrationTest.java)
 (timeout: **10 minutes**) Used for tests that run against real services.
- - [`@Manual`](https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/util/Manual.java)
+ - [`@Manual`](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/Manual.java)
 (timeout: **10 hours**) Used for manual tests.
 
 Beware that the timeout durations for these annotations are subject to
 change, though they rarely do. These values are defined
-[here](https://chromium.googlesource.com/chromium/src/+/master/build/android/pylib/local/device/local_device_instrumentation_test_run.py#20).
+[here](https://chromium.googlesource.com/chromium/src/+/main/build/android/pylib/local/device/local_device_instrumentation_test_run.py#20).
 
 #### Annotations that disable tests
 
@@ -120,7 +120,7 @@ Some are conditional, others are not.
 
 ##### Unconditional disabling
 
-[**@DisabledTest**](https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/util/DisabledTest.java)
+[**@DisabledTest**](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/DisabledTest.java)
 unconditionally disables a test.
 ```java
 @DisabledTest(
@@ -129,7 +129,7 @@ unconditionally disables a test.
 )
 ```
 
-[**@FlakyTest**](https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/util/FlakyTest.java)
+[**@FlakyTest**](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/FlakyTest.java)
 marks a test as flaky. This also unconditionally disables the test, though
 tests marked with **@FlakyTest** are explicitly run on some bots.
 ```java
@@ -162,7 +162,7 @@ permanently limit a test to specific configurations. It signifies that the test
 was not, is not, and will not be intended to run beyond those configurations.
 In both cases, conditional disabling manifests as a skipped test.
 
-[**@DisableIf.Build**](https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/util/DisableIf.java#25)
+[**@DisableIf.Build**](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/DisableIf.java#25)
 allows for conditional test disabling based on values in
 [`android.os.Build`](https://developer.android.com/reference/android/os/Build.html):
 
@@ -194,12 +194,12 @@ allows for conditional test disabling based on values in
 )
 ```
 
-[**@DisableIf.Device**](https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/util/DisableIf.java#40)
+[**@DisableIf.Device**](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/DisableIf.java#40)
 allows for conditional test disabling based on whether
 a device is a phone, a tablet, or a "large tablet" as determined by
-[org.chromium.ui.base.DeviceFormFactor](https://chromium.googlesource.com/chromium/src/+/master/ui/android/java/src/org/chromium/ui/base/DeviceFormFactor.java).
+[org.chromium.ui.base.DeviceFormFactor](https://chromium.googlesource.com/chromium/src/+/main/ui/android/java/src/org/chromium/ui/base/DeviceFormFactor.java).
 This is available to tests in
-[//ui](https://chromium.googlesource.com/chromium/src/+/master/ui/)
+[//ui](https://chromium.googlesource.com/chromium/src/+/main/ui/)
 or code that uses //ui.
 
 ```java
@@ -210,7 +210,7 @@ or code that uses //ui.
 )
 ```
 
-[**@Restriction**](https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/util/Restriction.java)
+[**@Restriction**](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/Restriction.java)
 currently allows for conditional test disabling based on device
 type, device performance, internet connectivity, whether Google Play Services is
 up to date, and whether the build was an official one.
@@ -246,7 +246,7 @@ up to date, and whether the build was an official one.
 )
 ```
 
-[**@MinAndroidSdkLevel**](https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/util/MinAndroidSdkLevel.java)
+[**@MinAndroidSdkLevel**](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/MinAndroidSdkLevel.java)
 is similar to **@Restriction** in purpose in that it's
 intended to permanently limit a test to only recent versions of Android.
 
@@ -262,13 +262,13 @@ intended to permanently limit a test to only recent versions of Android.
 
 Several annotations affect how a test is run in interesting or nontrivial ways.
 
-[**@CommandLineFlags.Add**](https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/util/CommandLineFlags.java#46)
+[**@CommandLineFlags.Add**](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/CommandLineFlags.java#46)
 and
-[**@CommandLineFlags.Remove**](https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/util/CommandLineFlags.java#58)
+[**@CommandLineFlags.Remove**](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/CommandLineFlags.java#58)
 manipulate Chrome's
 command-line flags on a per-test basis (i.e., the flags handled by
-[`org.chromium.base.CommandLine`](https://chromium.googlesource.com/chromium/src/+/master/base/android/java/src/org/chromium/base/CommandLine.java) and
-[`base::CommandLine`](https://chromium.googlesource.com/chromium/src/+/master/base/command_line.h)).
+[`org.chromium.base.CommandLine`](https://chromium.googlesource.com/chromium/src/+/main/base/android/java/src/org/chromium/base/CommandLine.java) and
+[`base::CommandLine`](https://chromium.googlesource.com/chromium/src/+/main/base/command_line.h)).
 
 ```java
 @CommandLineFlags.Add(
@@ -288,7 +288,7 @@ command-line flags on a per-test basis (i.e., the flags handled by
 
 #### Feature annotations
 
-[**@Feature**](https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/util/Feature.java)
+[**@Feature**](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/Feature.java)
 has been used inconsistently in Chromium to group tests across
 test cases according to the feature they're testing.
 

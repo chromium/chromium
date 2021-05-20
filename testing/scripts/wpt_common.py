@@ -72,7 +72,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             os.path.join(layout_test_results, 'full_results.json'),
             os.path.join(layout_test_results, 'full_results_jsonp.js'),
             # NOTE: Despite the name, this is actually a JSONP file.
-            # https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/tools/blinkpy/web_tests/controllers/manager.py;l=636;drc=3b93609b2498af0e9dc298f64e2b4f6204af68fa
+            # https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/blinkpy/web_tests/controllers/manager.py;l=636;drc=3b93609b2498af0e9dc298f64e2b4f6204af68fa
             os.path.join(layout_test_results, 'failing_results.json'),
         )
 
@@ -109,7 +109,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         self.fs.copyfile(self.wpt_output, full_results_json)
 
         # JSONP paddings need to be the same as
-        # https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/tools/blinkpy/web_tests/controllers/manager.py;l=629;drc=3b93609b2498af0e9dc298f64e2b4f6204af68fa
+        # https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/blinkpy/web_tests/controllers/manager.py;l=629;drc=3b93609b2498af0e9dc298f64e2b4f6204af68fa
         # Write to full_results.jsonp
         with self.fs.open_text_file_for_writing(full_results_jsonp) as f:
             f.write('ADD_FULL_RESULTS(')

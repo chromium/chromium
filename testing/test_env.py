@@ -185,7 +185,7 @@ def run_command_with_output(argv, stdoutfile, env=None, cwd=None):
   """Run command and stream its stdout/stderr to the console & |stdoutfile|.
 
   Also forward_signals to obey
-  https://chromium.googlesource.com/infra/luci/luci-py/+/master/appengine/swarming/doc/Bot.md#graceful-termination_aka-the-sigterm-and-sigkill-dance
+  https://chromium.googlesource.com/infra/luci/luci-py/+/main/appengine/swarming/doc/Bot.md#graceful-termination_aka-the-sigterm-and-sigkill-dance
 
   Returns:
     integer returncode of the subprocess.
@@ -212,7 +212,7 @@ def run_command(argv, env=None, cwd=None, log=True):
   """Run command and stream its stdout/stderr both to stdout.
 
   Also forward_signals to obey
-  https://chromium.googlesource.com/infra/luci/luci-py/+/master/appengine/swarming/doc/Bot.md#graceful-termination_aka-the-sigterm-and-sigkill-dance
+  https://chromium.googlesource.com/infra/luci/luci-py/+/main/appengine/swarming/doc/Bot.md#graceful-termination_aka-the-sigterm-and-sigkill-dance
 
   Returns:
     integer returncode of the subprocess.
@@ -228,7 +228,7 @@ def run_command_output_to_handle(argv, file_handle, env=None, cwd=None):
   """Run command and stream its stdout/stderr both to |file_handle|.
 
   Also forward_signals to obey
-  https://chromium.googlesource.com/infra/luci/luci-py/+/master/appengine/swarming/doc/Bot.md#graceful-termination_aka-the-sigterm-and-sigkill-dance
+  https://chromium.googlesource.com/infra/luci/luci-py/+/main/appengine/swarming/doc/Bot.md#graceful-termination_aka-the-sigterm-and-sigkill-dance
 
   Returns:
     integer returncode of the subprocess.
@@ -268,7 +268,7 @@ def forward_signals(procs):
   """Forwards unix's SIGTERM or win's CTRL_BREAK_EVENT to the given processes.
 
   This plays nicely with swarming's timeout handling. See also
-  https://chromium.googlesource.com/infra/luci/luci-py/+/master/appengine/swarming/doc/Bot.md#graceful-termination_aka-the-sigterm-and-sigkill-dance
+  https://chromium.googlesource.com/infra/luci/luci-py/+/main/appengine/swarming/doc/Bot.md#graceful-termination_aka-the-sigterm-and-sigkill-dance
 
   Args:
       procs: A list of subprocess.Popen objects representing child processes.

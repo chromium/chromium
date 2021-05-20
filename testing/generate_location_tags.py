@@ -7,7 +7,7 @@
 # pylint: disable=line-too-long
 #
 # For more on the tags, see
-# https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/resultdb/sink/proto/v1/location_tag.proto
+# https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/sink/proto/v1/location_tag.proto
 #
 # pylint: enable=line-too-long
 

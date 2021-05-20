@@ -6,7 +6,7 @@
 
 This script takes a list of json test results files, the format of which is
 described in
-https://chromium.googlesource.com/chromium/src/+/master/docs/testing/json_test_results_format.md.
+https://chromium.googlesource.com/chromium/src/+/main/docs/testing/json_test_results_format.md.
 For each file, it looks for test artifacts embedded in each test. It detects
 this by looking for the top level "artifact_type_info" key.
 

@@ -1041,7 +1041,7 @@ class BBJSONGenerator(object):
         assert isinstance(test, dict)
 
         # This assumes the recipe logic which prefers 'test' to 'isolate_name'
-        # https://source.chromium.org/chromium/chromium/tools/build/+/master:scripts/slave/recipe_modules/chromium_tests/generators.py;l=89;drc=14c062ba0eb418d3c4623dde41a753241b9df06b
+        # https://source.chromium.org/chromium/chromium/tools/build/+/main:scripts/slave/recipe_modules/chromium_tests/generators.py;l=89;drc=14c062ba0eb418d3c4623dde41a753241b9df06b
         # TODO(crbug.com/1035124): clean this up.
         isolate_name = test.get('test') or test.get('isolate_name') or key
         gn_entry = self.gn_isolate_map.get(isolate_name)

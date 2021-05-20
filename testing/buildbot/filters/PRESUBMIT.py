@@ -15,7 +15,7 @@ def _CheckFilterFileFormat(input_api, output_api):
   """This ensures all modified filter files are free of common syntax errors.
 
   See the following for the correct syntax of these files:
-  https://chromium.googlesource.com/chromium/src/+/master/testing/buildbot/filters/README.md#file-syntax
+  https://chromium.googlesource.com/chromium/src/+/main/testing/buildbot/filters/README.md#file-syntax
   As well as:
   https://bit.ly/chromium-test-list-format
   """
