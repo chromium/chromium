@@ -5,6 +5,7 @@
 package org.chromium.weblayer.test;
 
 import android.net.Uri;
+import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
@@ -18,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.weblayer.ContextMenuParams;
@@ -154,6 +156,10 @@ public class TabCallbackTest {
     @MinWebLayerVersion(88)
     @Test
     @SmallTest
+    @DisableIf.
+    Build(supported_abis_includes = "x86",
+          sdk_is_greater_than = Build.VERSION_CODES.P,
+          message = "https://crbug.com/1201813")
     public void testDownloadFromContextMenu() throws TimeoutException {
         ContextMenuParams params = runContextMenuTest("download.html");
         ;
@@ -170,6 +176,10 @@ public class TabCallbackTest {
     @MinWebLayerVersion(88)
     @Test
     @SmallTest
+    @DisableIf.
+    Build(supported_abis_includes = "x86",
+          sdk_is_greater_than = Build.VERSION_CODES.P,
+          message = "https://crbug.com/1201813")
     public void testDownloadFromContextMenuImg() throws TimeoutException {
         ContextMenuParams params = runContextMenuTest("img.html");
         ;
