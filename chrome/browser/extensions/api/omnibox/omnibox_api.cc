@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
@@ -94,9 +95,9 @@ std::string GetTemplateURLStringForExtension(const std::string& extension_id) {
 // static
 void ExtensionOmniboxEventRouter::OnInputStarted(
     Profile* profile, const std::string& extension_id) {
-  auto event = std::make_unique<Event>(
-      events::OMNIBOX_ON_INPUT_STARTED, omnibox::OnInputStarted::kEventName,
-      std::make_unique<base::ListValue>(), profile);
+  auto event = std::make_unique<Event>(events::OMNIBOX_ON_INPUT_STARTED,
+                                       omnibox::OnInputStarted::kEventName,
+                                       std::vector<base::Value>(), profile);
   EventRouter::Get(profile)
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
@@ -116,7 +117,7 @@ bool ExtensionOmniboxEventRouter::OnInputChanged(
 
   auto event = std::make_unique<Event>(events::OMNIBOX_ON_INPUT_CHANGED,
                                        omnibox::OnInputChanged::kEventName,
-                                       std::move(args), profile);
+                                       args->TakeList(), profile);
   event_router->DispatchEventToExtension(extension_id, std::move(event));
   return true;
 }
@@ -148,7 +149,7 @@ void ExtensionOmniboxEventRouter::OnInputEntered(
 
   auto event = std::make_unique<Event>(events::OMNIBOX_ON_INPUT_ENTERED,
                                        omnibox::OnInputEntered::kEventName,
-                                       std::move(args), profile);
+                                       args->TakeList(), profile);
   EventRouter::Get(profile)
       ->DispatchEventToExtension(extension_id, std::move(event));
 
@@ -161,9 +162,9 @@ void ExtensionOmniboxEventRouter::OnInputEntered(
 // static
 void ExtensionOmniboxEventRouter::OnInputCancelled(
     Profile* profile, const std::string& extension_id) {
-  auto event = std::make_unique<Event>(
-      events::OMNIBOX_ON_INPUT_CANCELLED, omnibox::OnInputCancelled::kEventName,
-      std::make_unique<base::ListValue>(), profile);
+  auto event = std::make_unique<Event>(events::OMNIBOX_ON_INPUT_CANCELLED,
+                                       omnibox::OnInputCancelled::kEventName,
+                                       std::vector<base::Value>(), profile);
   EventRouter::Get(profile)
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
@@ -177,7 +178,7 @@ void ExtensionOmniboxEventRouter::OnDeleteSuggestion(
 
   auto event = std::make_unique<Event>(events::OMNIBOX_ON_DELETE_SUGGESTION,
                                        omnibox::OnDeleteSuggestion::kEventName,
-                                       std::move(args), profile);
+                                       args->TakeList(), profile);
 
   EventRouter::Get(profile)->DispatchEventToExtension(extension_id,
                                                       std::move(event));

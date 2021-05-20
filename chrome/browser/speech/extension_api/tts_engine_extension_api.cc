@@ -5,8 +5,10 @@
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 
 #include <stddef.h>
+
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -241,39 +243,35 @@ void TtsExtensionEngine::Speak(content::TtsUtterance* utterance,
       Profile::FromBrowserContext(utterance->GetBrowserContext());
   extensions::EventRouter* event_router = EventRouter::Get(profile);
   const auto& engine_id = utterance->GetEngineId();
-  std::unique_ptr<extensions::Event> event;
-  if (event_router->ExtensionHasEventListener(engine_id,
-                                              tts_engine_events::kOnSpeak)) {
-    event = std::make_unique<extensions::Event>(
-        extensions::events::TTS_ENGINE_ON_SPEAK, tts_engine_events::kOnSpeak,
-        std::move(args), profile);
-  } else {
+  if (!event_router->ExtensionHasEventListener(engine_id,
+                                               tts_engine_events::kOnSpeak)) {
     // The extension removed its event listener after we processed the speak
     // call matching its voice.
     return;
   }
 
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::TTS_ENGINE_ON_SPEAK, tts_engine_events::kOnSpeak,
+      args->TakeList(), profile);
   event_router->DispatchEventToExtension(engine_id, std::move(event));
 }
 
 void TtsExtensionEngine::Stop(content::TtsUtterance* utterance) {
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
   Profile* profile =
       Profile::FromBrowserContext(utterance->GetBrowserContext());
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TTS_ENGINE_ON_STOP, tts_engine_events::kOnStop,
-      std::move(args), profile);
+      std::vector<base::Value>(), profile);
   EventRouter::Get(profile)->DispatchEventToExtension(utterance->GetEngineId(),
                                                       std::move(event));
 }
 
 void TtsExtensionEngine::Pause(content::TtsUtterance* utterance) {
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
   Profile* profile =
       Profile::FromBrowserContext(utterance->GetBrowserContext());
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TTS_ENGINE_ON_PAUSE, tts_engine_events::kOnPause,
-      std::move(args), profile);
+      std::vector<base::Value>(), profile);
   EventRouter* event_router = EventRouter::Get(profile);
   std::string id = utterance->GetEngineId();
   event_router->DispatchEventToExtension(id, std::move(event));
@@ -281,12 +279,11 @@ void TtsExtensionEngine::Pause(content::TtsUtterance* utterance) {
 }
 
 void TtsExtensionEngine::Resume(content::TtsUtterance* utterance) {
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
   Profile* profile =
       Profile::FromBrowserContext(utterance->GetBrowserContext());
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TTS_ENGINE_ON_RESUME, tts_engine_events::kOnResume,
-      std::move(args), profile);
+      std::vector<base::Value>(), profile);
   EventRouter* event_router = EventRouter::Get(profile);
   std::string id = utterance->GetEngineId();
   event_router->DispatchEventToExtension(id, std::move(event));

@@ -2076,8 +2076,10 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       auto event = std::make_unique<extensions::Event>(
           extensions::events::FOR_TEST,
           extensions::api::test::OnMessage::kEventName,
-          base::ListValue::From(base::JSONReader::ReadDeprecated(
-              R"([{"data": "preloadZip", "lastMessage": false}])")),
+          base::JSONReader::Read(
+              R"([{"data": "preloadZip", "lastMessage": false}])")
+              .value()
+              .TakeList(),
           profile());
       extensions::EventRouter::Get(profile())->DispatchEventToExtension(
           kZipArchiverId, std::move(event));

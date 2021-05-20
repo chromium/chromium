@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -39,7 +40,7 @@ void DispatchOnEmbedRequestedEventImpl(
   args->Append(std::move(app_embedding_request_data));
   auto event = std::make_unique<Event>(
       events::APP_RUNTIME_ON_EMBED_REQUESTED,
-      app_runtime::OnEmbedRequested::kEventName, std::move(args), context);
+      app_runtime::OnEmbedRequested::kEventName, args->TakeList(), context);
   EventRouter::Get(context)
       ->DispatchEventWithLazyListener(extension_id, std::move(event));
 
@@ -71,7 +72,7 @@ void DispatchOnLaunchedEventImpl(
   args->Append(std::move(launch_data));
   auto event = std::make_unique<Event>(events::APP_RUNTIME_ON_LAUNCHED,
                                        app_runtime::OnLaunched::kEventName,
-                                       std::move(args), context);
+                                       args->TakeList(), context);
   EventRouter::Get(context)
       ->DispatchEventWithLazyListener(extension_id, std::move(event));
   ExtensionPrefs::Get(context)
@@ -158,10 +159,9 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEvent(
 void AppRuntimeEventRouter::DispatchOnRestartedEvent(
     BrowserContext* context,
     const Extension* extension) {
-  std::unique_ptr<base::ListValue> arguments(new base::ListValue());
   auto event = std::make_unique<Event>(events::APP_RUNTIME_ON_RESTARTED,
                                        app_runtime::OnRestarted::kEventName,
-                                       std::move(arguments), context);
+                                       std::vector<base::Value>(), context);
   EventRouter::Get(context)
       ->DispatchEventToExtension(extension->id(), std::move(event));
 }

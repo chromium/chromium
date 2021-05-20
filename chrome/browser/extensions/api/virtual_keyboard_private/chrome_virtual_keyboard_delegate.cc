@@ -580,7 +580,7 @@ void ChromeVirtualKeyboardDelegate::DispatchConfigChangeEvent(
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::VIRTUAL_KEYBOARD_PRIVATE_ON_KEYBOARD_CONFIG_CHANGED,
-      keyboard_api::OnKeyboardConfigChanged::kEventName, std::move(event_args),
+      keyboard_api::OnKeyboardConfigChanged::kEventName, event_args->TakeList(),
       browser_context_);
   router->BroadcastEvent(std::move(event));
 }

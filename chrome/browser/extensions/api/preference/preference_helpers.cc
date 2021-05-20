@@ -150,7 +150,7 @@ void DispatchEventToExtensions(Profile* profile,
       std::unique_ptr<base::ListValue> args_copy(args->DeepCopy());
       auto event =
           std::make_unique<Event>(histogram_value, event_name,
-                                  std::move(args_copy), restrict_to_profile);
+                                  args_copy->TakeList(), restrict_to_profile);
       router->DispatchEventToExtension(extension->id(), std::move(event));
     }
   }

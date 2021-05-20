@@ -319,10 +319,10 @@ bool MimeHandlerViewGuest::PluginDoSave() {
   base::ListValue::ListStorage args;
   args.emplace_back(stream_->stream_url().spec());
 
-  auto event = std::make_unique<Event>(
-      events::MIME_HANDLER_PRIVATE_SAVE,
-      api::mime_handler_private::OnSave::kEventName,
-      std::make_unique<base::ListValue>(std::move(args)), browser_context());
+  auto event =
+      std::make_unique<Event>(events::MIME_HANDLER_PRIVATE_SAVE,
+                              api::mime_handler_private::OnSave::kEventName,
+                              std::move(args), browser_context());
   EventRouter* event_router = EventRouter::Get(browser_context());
   event_router->DispatchEventToExtension(extension_misc::kPdfExtensionId,
                                          std::move(event));

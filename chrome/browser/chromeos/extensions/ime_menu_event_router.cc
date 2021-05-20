@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/extensions/ime_menu_event_router.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/input_method_api.h"
@@ -44,7 +45,7 @@ void ExtensionImeMenuEventRouter::ImeMenuActivationChanged(bool activation) {
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(
       extensions::events::INPUT_METHOD_PRIVATE_ON_IME_MENU_ACTIVATION_CHANGED,
-      OnImeMenuActivationChanged::kEventName, std::move(args), context_);
+      OnImeMenuActivationChanged::kEventName, args->TakeList(), context_);
   router->BroadcastEvent(std::move(event));
 }
 
@@ -54,12 +55,10 @@ void ExtensionImeMenuEventRouter::ImeMenuListChanged() {
   if (!router->HasEventListener(OnImeMenuListChanged::kEventName))
     return;
 
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(
       extensions::events::INPUT_METHOD_PRIVATE_ON_IME_MENU_LIST_CHANGED,
-      OnImeMenuListChanged::kEventName, std::move(args), context_);
+      OnImeMenuListChanged::kEventName, std::vector<base::Value>(), context_);
   router->BroadcastEvent(std::move(event));
 }
 

@@ -672,7 +672,7 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
         PackPermissionSet(*changed);
     value->Append(permissions->ToValue());
     auto event = std::make_unique<Event>(histogram_value, event_name,
-                                         std::move(value), browser_context);
+                                         value->TakeList(), browser_context);
     event_router->DispatchEventToExtension(extension->id(), std::move(event));
   }
 

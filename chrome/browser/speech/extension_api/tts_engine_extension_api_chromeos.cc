@@ -210,5 +210,5 @@ void TtsExtensionEngineChromeOS::Play(extensions::EventRouter* event_router,
       engine_id, std::make_unique<extensions::Event>(
                      extensions::events::TTS_ENGINE_ON_SPEAK_WITH_AUDIO_STREAM,
                      tts_engine_events::kOnSpeakWithAudioStream,
-                     std::move(args), profile));
+                     args->TakeList(), profile));
 }

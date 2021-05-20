@@ -1110,18 +1110,6 @@ Event::Event(events::HistogramValue histogram_value,
 
 Event::Event(events::HistogramValue histogram_value,
              const std::string& event_name,
-             std::unique_ptr<base::ListValue> event_args,
-             BrowserContext* restrict_to_browser_context)
-    : Event(histogram_value,
-            event_name,
-            std::move(event_args),
-            restrict_to_browser_context,
-            GURL(),
-            EventRouter::USER_GESTURE_UNKNOWN,
-            EventFilteringInfo()) {}
-
-Event::Event(events::HistogramValue histogram_value,
-             const std::string& event_name,
              std::vector<base::Value> event_args,
              content::BrowserContext* restrict_to_browser_context,
              const GURL& event_url,
