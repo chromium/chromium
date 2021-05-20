@@ -89,8 +89,6 @@ SaveUpdateAddressProfileBubbleControllerImpl::GetOriginalProfile() const {
 
 void SaveUpdateAddressProfileBubbleControllerImpl::OnUserDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
-  set_bubble_view(nullptr);
-
   if (address_profile_save_prompt_callback_) {
     std::move(address_profile_save_prompt_callback_)
         .Run(decision, address_profile_);

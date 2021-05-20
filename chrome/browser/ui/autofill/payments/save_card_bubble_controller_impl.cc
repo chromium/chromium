@@ -264,8 +264,6 @@ bool SaveCardBubbleControllerImpl::ShouldRequestExpirationDateFromUser() const {
 
 void SaveCardBubbleControllerImpl::OnSaveButton(
     const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
-  set_bubble_view(nullptr);
-
   switch (current_bubble_type_) {
     case BubbleType::UPLOAD_SAVE: {
       DCHECK(!upload_save_card_prompt_callback_.is_null());
