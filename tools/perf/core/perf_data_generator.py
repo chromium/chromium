@@ -101,7 +101,9 @@ LIGHTWEIGHT_TESTERS = [
 ]
 
 # This is an opt-in list for builders which uses dynamic sharding.
-DYNAMIC_SHARDING_TESTERS = ['android-pixel2-perf-fyi', 'linux-perf-calibration']
+DYNAMIC_SHARDING_TESTERS = [
+    'android-pixel2-perf', 'android-pixel2-perf-fyi', 'linux-perf-calibration'
+]
 
 CALIBRATION_BUILDERS = {
     'linux-perf-calibration': {

@@ -32,12 +32,8 @@ TARGET_DEVICES = {
         'system_health.memory_mobile': 3,
     },
     'android-pixel2-perf': {
-        'system_health.common_mobile': {
-            # timeToFirstContentfulPaint
-            'browse:media:googleplaystore:2019': 10,
-            'load:social:pinterest:2019': 10,
-            'browse:media:facebook_photos:2019': 10
-        }
+        'system_health.common_mobile': 3,
+        'system_health.memory_mobile': 3,
     },
     'android-go-perf': {
         'system_health.common_mobile': {
