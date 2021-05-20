@@ -221,20 +221,17 @@ Tab::Tab(TabController* controller)
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
-  icon_ = new TabIcon;
-  AddChildView(icon_);
+  icon_ = AddChildView(std::make_unique<TabIcon>());
 
-  alert_indicator_ = new AlertIndicator(this);
-  AddChildView(alert_indicator_);
+  alert_indicator_ = AddChildView(std::make_unique<AlertIndicator>(this));
 
   // Unretained is safe here because this class outlives its close button, and
   // the controller outlives this Tab.
-  close_button_ = new TabCloseButton(
+  close_button_ = AddChildView(std::make_unique<TabCloseButton>(
       base::BindRepeating(&Tab::CloseButtonPressed, base::Unretained(this)),
       base::BindRepeating(&TabController::OnMouseEventInTab,
-                          base::Unretained(controller_)));
+                          base::Unretained(controller_))));
   close_button_->SetHasInkDropActionOnClick(true);
-  AddChildView(close_button_);
 
   tab_close_button_observer_ = std::make_unique<TabCloseButtonObserver>(
       this, close_button_, controller_);
