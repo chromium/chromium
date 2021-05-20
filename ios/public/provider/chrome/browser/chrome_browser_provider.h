@@ -19,6 +19,7 @@
 class AppDistributionProvider;
 class BrandedImageProvider;
 class BrowserURLRewriterProvider;
+class ModalsProvider;
 class DiscoverFeedProvider;
 class FullscreenProvider;
 class MailtoHandlerProvider;
@@ -159,6 +160,8 @@ class ChromeBrowserProvider {
 
   virtual TextZoomProvider* GetTextZoomProvider() const;
 
+  virtual ModalsProvider* GetModalsProvider() const;
+
   // Adds and removes observers.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -170,6 +173,7 @@ class ChromeBrowserProvider {
  private:
   base::ObserverList<Observer, true>::Unchecked observer_list_;
   std::unique_ptr<MailtoHandlerProvider> mailto_handler_provider_;
+  std::unique_ptr<ModalsProvider> modals_provider_;
   std::unique_ptr<TextZoomProvider> text_zoom_provider_;
 };
 

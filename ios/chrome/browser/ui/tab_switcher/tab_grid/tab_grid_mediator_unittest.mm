@@ -219,6 +219,10 @@ std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
   [self.items insertObject:itemID atIndex:toIndex];
 }
 
+- (void)dismissModals {
+  // No-op.
+}
+
 @end
 
 // Fake WebStateList delegate that attaches the required tab helper.

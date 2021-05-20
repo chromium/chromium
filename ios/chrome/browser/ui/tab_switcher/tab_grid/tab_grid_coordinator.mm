@@ -227,8 +227,8 @@
 }
 
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion {
-  // Recent tabs context menu may be presented on top of the tab grid.
-  [self.baseViewController.remoteTabsViewController dismissModals];
+  // A modal may be presented on top of the Recent Tabs or tab grid.
+  [self.baseViewController dismissModals];
   [self.actionSheetCoordinator stop];
   // History may be presented on top of the tab grid.
   if (self.historyCoordinator) {

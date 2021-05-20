@@ -157,6 +157,9 @@ enum class TabGridPageConfiguration {
 // has been closed.
 - (void)closeAllTabsConfirmationClosed;
 
+// Dismisses any modal UI which may be presented.
+- (void)dismissModals;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GRID_VIEW_CONTROLLER_H_

@@ -498,6 +498,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self configureButtonsForActiveAndCurrentPage];
 }
 
+- (void)dismissModals {
+  [self.regularTabsConsumer dismissModals];
+  [self.incognitoTabsConsumer dismissModals];
+  [self.remoteTabsViewController dismissModals];
+}
+
 #pragma mark - Public Properties
 
 - (id<GridConsumer>)regularTabsConsumer {

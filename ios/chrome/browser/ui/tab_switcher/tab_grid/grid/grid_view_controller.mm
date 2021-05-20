@@ -32,6 +32,8 @@
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/modals/modals_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -778,6 +780,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   [self updateVisibleCellZIndex];
   [self updateVisibleCellIdentifiers];
+}
+
+- (void)dismissModals {
+  ios::GetChromeBrowserProvider()
+      ->GetModalsProvider()
+      ->DismissModalsForCollectionView(self.collectionView);
 }
 
 #pragma mark - LayoutSwitcher

@@ -50,6 +50,9 @@
 // of that item might be.
 - (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)toIndex;
 
+// Dismisses any presented modal UI.
+- (void)dismissModals;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_CONSUMER_H_

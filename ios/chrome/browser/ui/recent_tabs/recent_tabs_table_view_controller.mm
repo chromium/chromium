@@ -67,6 +67,8 @@
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/modals/modals_provider.h"
 #import "ios/public/provider/chrome/browser/signin/signin_presenter.h"
 #import "ios/web/public/web_state.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -798,6 +800,10 @@ API_AVAILABLE(ios(13.0))
 
 - (void)dismissModals {
   [self.contextMenuCoordinator stop];
+
+  ios::GetChromeBrowserProvider()
+      ->GetModalsProvider()
+      ->DismissModalsForTableView(self.tableView);
 }
 
 #pragma mark - UITableViewDelegate
