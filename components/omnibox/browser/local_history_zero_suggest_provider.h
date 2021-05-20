@@ -45,9 +45,6 @@ class LocalHistoryZeroSuggestProvider : public AutocompleteProvider {
   LocalHistoryZeroSuggestProvider& operator=(
       const LocalHistoryZeroSuggestProvider&) = delete;
 
-  // Returns whether the primary account is available. No sync consent required.
-  bool IsSignedIn();
-
   // Queries the keyword search terms table of the in-memory URLDatabase for the
   // recent search terms submitted to the default search provider.
   void QueryURLDatabase(const AutocompleteInput& input);
