@@ -152,28 +152,25 @@ class BASE_EXPORT CommandLine {
   // The second override provides an optimized version to avoid inlining codegen
   // at every callsite to find the length of the constant and construct a
   // StringPiece.
-  bool HasSwitch(const StringPiece& switch_string) const;
+  bool HasSwitch(StringPiece switch_string) const;
   bool HasSwitch(const char switch_constant[]) const;
 
   // Returns the value associated with the given switch. If the switch has no
   // value or isn't present, this method returns the empty string.
   // Switch names must be lowercase.
-  std::string GetSwitchValueASCII(const StringPiece& switch_string) const;
-  FilePath GetSwitchValuePath(const StringPiece& switch_string) const;
-  StringType GetSwitchValueNative(const StringPiece& switch_string) const;
+  std::string GetSwitchValueASCII(StringPiece switch_string) const;
+  FilePath GetSwitchValuePath(StringPiece switch_string) const;
+  StringType GetSwitchValueNative(StringPiece switch_string) const;
 
   // Get a copy of all switches, along with their values.
   const SwitchMap& GetSwitches() const { return switches_; }
 
   // Append a switch [with optional value] to the command line.
   // Note: Switches will precede arguments regardless of appending order.
-  void AppendSwitch(const std::string& switch_string);
-  void AppendSwitchPath(const std::string& switch_string,
-                        const FilePath& path);
-  void AppendSwitchNative(const std::string& switch_string,
-                          StringPieceType value);
-  void AppendSwitchASCII(const std::string& switch_string,
-                         const std::string& value);
+  void AppendSwitch(StringPiece switch_string);
+  void AppendSwitchPath(StringPiece switch_string, const FilePath& path);
+  void AppendSwitchNative(StringPiece switch_string, StringPieceType value);
+  void AppendSwitchASCII(StringPiece switch_string, StringPiece value);
 
   // Removes the switch that matches |switch_key_without_prefix|, regardless of
   // prefix and value. If no such switch is present, this has no effect.
@@ -192,9 +189,9 @@ class BASE_EXPORT CommandLine {
   // properly such that it is interpreted as one argument to the target command.
   // AppendArg is primarily for ASCII; non-ASCII input is interpreted as UTF-8.
   // Note: Switches will precede arguments regardless of appending order.
-  void AppendArg(const std::string& value);
+  void AppendArg(StringPiece value);
   void AppendArgPath(const FilePath& value);
-  void AppendArgNative(const StringType& value);
+  void AppendArgNative(StringPieceType value);
 
   // Append the switches and arguments from another command line to this one.
   // If |include_program| is true, include |other|'s program as well.
@@ -202,7 +199,7 @@ class BASE_EXPORT CommandLine {
 
   // Insert a command before the current command.
   // Common for debuggers, like "gdb --args".
-  void PrependWrapper(const StringType& wrapper);
+  void PrependWrapper(StringPieceType wrapper);
 
 #if defined(OS_WIN)
   // Initialize by parsing the given command line string.

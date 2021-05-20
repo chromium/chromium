@@ -284,7 +284,7 @@ void CommandLine::SetProgram(const FilePath& program) {
 #endif
 }
 
-bool CommandLine::HasSwitch(const StringPiece& switch_string) const {
+bool CommandLine::HasSwitch(StringPiece switch_string) const {
   DCHECK_EQ(ToLowerASCII(switch_string), switch_string);
   return Contains(switches_, switch_string);
 }
@@ -293,8 +293,7 @@ bool CommandLine::HasSwitch(const char switch_constant[]) const {
   return HasSwitch(StringPiece(switch_constant));
 }
 
-std::string CommandLine::GetSwitchValueASCII(
-    const StringPiece& switch_string) const {
+std::string CommandLine::GetSwitchValueASCII(StringPiece switch_string) const {
   StringType value = GetSwitchValueNative(switch_string);
 #if defined(OS_WIN)
   if (!IsStringASCII(base::AsStringPiece16(value))) {
@@ -311,38 +310,37 @@ std::string CommandLine::GetSwitchValueASCII(
 #endif
 }
 
-FilePath CommandLine::GetSwitchValuePath(
-    const StringPiece& switch_string) const {
+FilePath CommandLine::GetSwitchValuePath(StringPiece switch_string) const {
   return FilePath(GetSwitchValueNative(switch_string));
 }
 
 CommandLine::StringType CommandLine::GetSwitchValueNative(
-    const StringPiece& switch_string) const {
+    StringPiece switch_string) const {
   DCHECK_EQ(ToLowerASCII(switch_string), switch_string);
   auto result = switches_.find(switch_string);
   return result == switches_.end() ? StringType() : result->second;
 }
 
-void CommandLine::AppendSwitch(const std::string& switch_string) {
+void CommandLine::AppendSwitch(StringPiece switch_string) {
   AppendSwitchNative(switch_string, StringType());
 }
 
-void CommandLine::AppendSwitchPath(const std::string& switch_string,
+void CommandLine::AppendSwitchPath(StringPiece switch_string,
                                    const FilePath& path) {
   AppendSwitchNative(switch_string, path.value());
 }
 
-void CommandLine::AppendSwitchNative(const std::string& switch_string,
+void CommandLine::AppendSwitchNative(StringPiece switch_string,
                                      CommandLine::StringPieceType value) {
 #if defined(OS_WIN)
   const std::string switch_key = ToLowerASCII(switch_string);
   StringType combined_switch_string(UTF8ToWide(switch_key));
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-  const std::string& switch_key = switch_string;
+  StringPiece switch_key = switch_string;
   StringType combined_switch_string(switch_key);
 #endif
   size_t prefix_length = GetSwitchPrefixLength(combined_switch_string);
-  base::InsertOrAssign(switches_, switch_key.substr(prefix_length),
+  base::InsertOrAssign(switches_, std::string(switch_key.substr(prefix_length)),
                        StringType(value));
   // Preserve existing switch prefixes in |argv_|; only append one if necessary.
   if (prefix_length == 0) {
@@ -355,8 +353,8 @@ void CommandLine::AppendSwitchNative(const std::string& switch_string,
   argv_.insert(argv_.begin() + begin_args_++, combined_switch_string);
 }
 
-void CommandLine::AppendSwitchASCII(const std::string& switch_string,
-                                    const std::string& value_string) {
+void CommandLine::AppendSwitchASCII(StringPiece switch_string,
+                                    StringPiece value_string) {
 #if defined(OS_WIN)
   AppendSwitchNative(switch_string, UTF8ToWide(value_string));
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
@@ -417,7 +415,7 @@ CommandLine::StringVector CommandLine::GetArgs() const {
   return args;
 }
 
-void CommandLine::AppendArg(const std::string& value) {
+void CommandLine::AppendArg(StringPiece value) {
 #if defined(OS_WIN)
   DCHECK(IsStringUTF8(value));
   AppendArgNative(UTF8ToWide(value));
@@ -432,8 +430,8 @@ void CommandLine::AppendArgPath(const FilePath& path) {
   AppendArgNative(path.value());
 }
 
-void CommandLine::AppendArgNative(const CommandLine::StringType& value) {
-  argv_.push_back(value);
+void CommandLine::AppendArgNative(StringPieceType value) {
+  argv_.push_back(StringType(value));
 }
 
 void CommandLine::AppendArguments(const CommandLine& other,
@@ -443,13 +441,15 @@ void CommandLine::AppendArguments(const CommandLine& other,
   AppendSwitchesAndArguments(other.argv());
 }
 
-void CommandLine::PrependWrapper(const CommandLine::StringType& wrapper) {
+void CommandLine::PrependWrapper(StringPieceType wrapper) {
   if (wrapper.empty())
     return;
   // Split the wrapper command based on whitespace (with quoting).
+  // StringPieceType does not currently work directly with StringTokenizerT.
   using CommandLineTokenizer =
       StringTokenizerT<StringType, StringType::const_iterator>;
-  CommandLineTokenizer tokenizer(wrapper, FILE_PATH_LITERAL(" "));
+  StringType wrapper_string(wrapper);
+  CommandLineTokenizer tokenizer(wrapper_string, FILE_PATH_LITERAL(" "));
   tokenizer.set_quote_chars(FILE_PATH_LITERAL("'\""));
   std::vector<StringType> wrapper_argv;
   while (tokenizer.GetNext())
@@ -638,7 +638,7 @@ void CommandLine::ParseAsSingleArgument(
     return;
   const StringPieceType arg = raw_command_line_string_.substr(arg_position);
   if (!arg.empty()) {
-    AppendArgNative(StringType(arg));
+    AppendArgNative(arg);
   }
 }
 #endif  // defined(OS_WIN)
