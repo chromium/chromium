@@ -2339,14 +2339,9 @@ TEST_P(AnimationCompositorAnimationsTest, Fragmented) {
         0% { transform: translateX(10px); }
         100% { transform: translateX(20px); }
       }
-      #target {
-        width: 10px;
-        height: 150px;
-        background: green;
-      }
     </style>
     <div style="columns: 2; height: 100px">
-      <div id="target" style="animation: move 1s infinite">
+      <div id="target" style="height: 150px; animation: move 1s infinite">
       </div>
     </div>
   )HTML");

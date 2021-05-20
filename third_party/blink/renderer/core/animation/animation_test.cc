@@ -137,9 +137,7 @@ class AnimationAnimationTestNoCompositing : public RenderingTest {
 
     RunDocumentLifecycle();
 
-    SetBodyInnerHTML(R"HTML(
-      <div id='target' style='width: 1px; height: 1px; background: green'></div>
-    )HTML");
+    SetBodyInnerHTML("<div id='target'></div>");
 
     MakeCompositedAnimation();
   }
@@ -2098,7 +2096,7 @@ TEST_F(AnimationAnimationTestCompositing,
   SetBodyInnerHTML(R"HTML(
     <style>
       #scroller { will-change: transform; overflow: scroll; width: 100px; height: 100px; }
-      #target { width: 100px; height: 200px; will-change: opacity; background: green;}
+      #target { width: 100px; height: 200px; will-change: opacity;}
       #spacer { width: 200px; height: 700px; }
     </style>
     <div id ='scroller'>
@@ -2402,7 +2400,7 @@ TEST_F(AnimationPendingAnimationsTest, PendingAnimationStartSynchronization) {
 TEST_F(AnimationPendingAnimationsTest,
        PendingAnimationCancelUnblocksSynchronizedStart) {
   RunDocumentLifecycle();
-  SetBodyInnerHTML("<div id='foo'>f</div><div id='bar'>b</div>");
+  SetBodyInnerHTML("<div id='foo'></div><div id='bar'></div>");
 
   Animation* animA = MakeAnimation("foo", kComposited);
   Animation* animB = MakeAnimation("bar", kNonComposited);
@@ -2421,7 +2419,7 @@ TEST_F(AnimationPendingAnimationsTest,
        PendingAnimationOnlySynchronizeStartsOfNewlyPendingAnimations) {
   RunDocumentLifecycle();
   SetBodyInnerHTML(
-      "<div id='foo'>f</div><div id='bar'>b</div><div id='baz'>z</div>");
+      "<div id='foo'></div><div id='bar'></div><div id='baz'></div>");
 
   Animation* animA = MakeAnimation("foo", kComposited);
   Animation* animB = MakeAnimation("bar", kNonComposited);
@@ -2576,110 +2574,6 @@ TEST_F(AnimationAnimationTestCompositing, ContentVisibleDisplayLockTest) {
   // Ensure that the animation has not been canceled even though display locked.
   EXPECT_EQ(1u, target->GetElementAnimations()->Animations().size());
   EXPECT_EQ(animation->playState(), "running");
-}
-
-TEST_F(AnimationAnimationTestCompositeAfterPaint, HiddenAnimationsDoNotTick) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      @keyframes anim {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-      #target {
-        width: 10px;
-        height: 10px;
-        background: rebeccapurple;
-        animation: anim 30s;
-      }
-    </style>
-    <div id="visibility" style="visibility: hidden;">
-      <div id="target"></div>
-    </div>
-  )HTML");
-
-  Element* target = GetElementById("target");
-  ElementAnimations* element_animations = target->GetElementAnimations();
-  ASSERT_EQ(1u, element_animations->Animations().size());
-  Animation* animation = element_animations->Animations().begin()->key;
-
-  RunDocumentLifecycle();
-
-  const PaintArtifactCompositor* paint_artifact_compositor =
-      GetDocument().View()->GetPaintArtifactCompositor();
-  ASSERT_TRUE(paint_artifact_compositor);
-
-  // The animation should run on main because compositor properties are missing.
-  EXPECT_EQ(
-      animation->CheckCanStartAnimationOnCompositor(paint_artifact_compositor),
-      CompositorAnimations::kCompositorPropertyAnimationsHaveNoEffect);
-  EXPECT_TRUE(animation->CompositorPropertyAnimationsHaveNoEffectForTesting());
-  EXPECT_TRUE(animation->AnimationHasNoEffectForTesting());
-
-  // The next effect change should be at the end because the animation does not
-  // tick while hidden.
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(30),
-                   animation->TimeToEffectChange().value());
-}
-
-TEST_F(AnimationAnimationTestCompositeAfterPaint,
-       HiddenAnimationsTickWhenVisible) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      @keyframes anim {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-      #target {
-        width: 10px;
-        height: 10px;
-        background: rebeccapurple;
-        animation: anim 30s;
-      }
-    </style>
-    <div id="visibility" style="visibility: hidden;">
-      <div id="target"></div>
-    </div>
-  )HTML");
-
-  Element* target = GetElementById("target");
-  ElementAnimations* element_animations = target->GetElementAnimations();
-  ASSERT_EQ(1u, element_animations->Animations().size());
-  Animation* animation = element_animations->Animations().begin()->key;
-
-  RunDocumentLifecycle();
-
-  const PaintArtifactCompositor* paint_artifact_compositor =
-      GetDocument().View()->GetPaintArtifactCompositor();
-  ASSERT_TRUE(paint_artifact_compositor);
-
-  // The animation should run on main because compositor properties are missing.
-  EXPECT_EQ(
-      animation->CheckCanStartAnimationOnCompositor(paint_artifact_compositor),
-      CompositorAnimations::kCompositorPropertyAnimationsHaveNoEffect);
-  EXPECT_TRUE(animation->CompositorPropertyAnimationsHaveNoEffectForTesting());
-  EXPECT_TRUE(animation->AnimationHasNoEffectForTesting());
-
-  // The next effect change should be at the end because the animation does not
-  // tick while hidden.
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(30),
-                   animation->TimeToEffectChange().value());
-
-  Element* visibility = GetElementById("visibility");
-  visibility->setAttribute(html_names::kStyleAttr, "visibility: visible;");
-  RunDocumentLifecycle();
-
-  // The animation should run on the compositor after the properties are
-  // created.
-  EXPECT_EQ(
-      animation->CheckCanStartAnimationOnCompositor(paint_artifact_compositor),
-      CompositorAnimations::kNoFailure);
-  EXPECT_FALSE(animation->CompositorPropertyAnimationsHaveNoEffectForTesting());
-  EXPECT_FALSE(animation->AnimationHasNoEffectForTesting());
-
-  // The next effect change should be at the end because the animation is
-  // running on the compositor.
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(30),
-                   animation->TimeToEffectChange().value());
 }
 
 }  // namespace blink

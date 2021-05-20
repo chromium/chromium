@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_deferred_image.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
-#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/modules/csspaint/native_paint_worklet_proxy_client.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
@@ -265,8 +264,6 @@ Animation* BackgroundColorPaintWorklet::GetAnimationIfCompositable(
 // static
 BackgroundColorPaintWorklet* BackgroundColorPaintWorklet::Create(
     LocalFrame& local_root) {
-  if (!WebLocalFrameImpl::FromFrame(local_root))
-    return nullptr;
   return MakeGarbageCollected<BackgroundColorPaintWorklet>(local_root);
 }
 
