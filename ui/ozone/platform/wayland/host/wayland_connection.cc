@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 #include <extended-drag-unstable-v1-client-protocol.h>
+#include <presentation-time-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
 
@@ -18,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
@@ -59,6 +61,7 @@
 namespace ui {
 
 namespace {
+
 // The maximum supported versions for a given interface.
 // The version bound will be the minimum of the value and the version
 // advertised by the server.
@@ -90,6 +93,32 @@ constexpr uint32_t kMinZwpPointerGesturesVersion = 1;
 // useful.
 constexpr uint32_t kMinGtkShell1Version = 3;
 constexpr uint32_t kMaxGtkShell1Version = 4;
+
+int64_t ConvertTimespecToMicros(const struct timespec& ts) {
+  // On 32-bit systems, the calculation cannot overflow int64_t.
+  // 2**32 * 1000000 + 2**64 / 1000 < 2**63
+  if (sizeof(ts.tv_sec) <= 4 && sizeof(ts.tv_nsec) <= 8) {
+    int64_t result = ts.tv_sec;
+    result *= base::Time::kMicrosecondsPerSecond;
+    result += (ts.tv_nsec / base::Time::kNanosecondsPerMicrosecond);
+    return result;
+  }
+  base::CheckedNumeric<int64_t> result(ts.tv_sec);
+  result *= base::Time::kMicrosecondsPerSecond;
+  result += (ts.tv_nsec / base::Time::kNanosecondsPerMicrosecond);
+  return result.ValueOrDie();
+}
+
+int64_t ConvertTimespecResultToMicros(uint32_t tv_sec_hi,
+                                      uint32_t tv_sec_lo,
+                                      uint32_t tv_nsec) {
+  base::CheckedNumeric<int64_t> result =
+      (static_cast<int64_t>(tv_sec_hi) << 32) + tv_sec_lo;
+  result *= base::Time::kMicrosecondsPerSecond;
+  result += (tv_nsec / base::Time::kNanosecondsPerMicrosecond);
+  return result.ValueOrDie();
+}
+
 }  // namespace
 
 WaylandConnection::WaylandConnection() = default;
@@ -373,6 +402,9 @@ void WaylandConnection::Global(void* data,
   static const zxdg_shell_v6_listener shell_v6_listener = {
       &WaylandConnection::PingV6,
   };
+  static const wp_presentation_listener presentation_listener = {
+      &WaylandConnection::ClockId,
+  };
 
   WaylandConnection* connection = static_cast<WaylandConnection*>(data);
   if (!connection->compositor_ && strcmp(interface, "wl_compositor") == 0) {
@@ -522,6 +554,8 @@ void WaylandConnection::Global(void* data,
       LOG(ERROR) << "Failed to bind wp_presentation";
       return;
     }
+    wp_presentation_add_listener(connection->presentation_.get(),
+                                 &presentation_listener, connection);
   } else if (!connection->viewporter_ &&
              (strcmp(interface, "wp_viewporter") == 0)) {
     connection->viewporter_ = wl::Bind<wp_viewporter>(
@@ -622,6 +656,38 @@ void WaylandConnection::Global(void* data,
   connection->ScheduleFlush();
 }
 
+base::TimeTicks WaylandConnection::ConvertPresentationTime(uint32_t tv_sec_hi,
+                                                           uint32_t tv_sec_lo,
+                                                           uint32_t tv_nsec) {
+  DCHECK(presentation());
+  // base::TimeTicks::Now() uses CLOCK_MONOTONIC, no need to convert clock
+  // domain if wp_presentation also uses it.
+  if (presentation_clk_id_ == CLOCK_MONOTONIC) {
+    return base::TimeTicks() +
+           base::TimeDelta::FromMicroseconds(
+               ConvertTimespecResultToMicros(tv_sec_hi, tv_sec_lo, tv_nsec));
+  }
+
+  struct timespec presentation_now;
+  base::TimeTicks now = base::TimeTicks::Now();
+  int ret = clock_gettime(presentation_clk_id_, &presentation_now);
+
+  if (ret < 0) {
+    presentation_now.tv_sec = 0;
+    presentation_now.tv_nsec = 0;
+    LOG(ERROR) << "Error: failure to read the wp_presentation clock "
+               << presentation_clk_id_ << ": '" << strerror(errno) << "' "
+               << errno;
+    return base::TimeTicks::Now();
+  }
+
+  int64_t delta_us =
+      ConvertTimespecResultToMicros(tv_sec_hi, tv_sec_lo, tv_nsec) -
+      ConvertTimespecToMicros(presentation_now);
+
+  return now + base::TimeDelta::FromMicroseconds(delta_us);
+}
+
 // static
 void WaylandConnection::GlobalRemove(void* data,
                                      wl_registry* registry,
@@ -664,6 +730,16 @@ void WaylandConnection::Ping(void* data, xdg_wm_base* shell, uint32_t serial) {
   WaylandConnection* connection = static_cast<WaylandConnection*>(data);
   xdg_wm_base_pong(shell, serial);
   connection->ScheduleFlush();
+}
+
+// static
+void WaylandConnection::ClockId(void* data,
+                                wp_presentation* shell_v6,
+                                uint32_t clk_id) {
+  DCHECK_EQ(base::TimeTicks::GetClock(),
+            base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
+  WaylandConnection* connection = static_cast<WaylandConnection*>(data);
+  connection->presentation_clk_id_ = clk_id;
 }
 
 }  // namespace ui
