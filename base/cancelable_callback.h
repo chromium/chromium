@@ -16,7 +16,7 @@
 // THREAD-SAFETY:
 //
 // Cancelable callback objects must be created on, posted to, cancelled on, and
-// destroyed on the same thread.
+// destroyed on the same SequencedTaskRunner.
 //
 //
 // EXAMPLE USAGE:
