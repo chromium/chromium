@@ -6,6 +6,7 @@
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/screen_enumeration/screen_enumeration.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -108,11 +109,19 @@ ScriptPromise GlobalScreenEnumeration::isMultiScreen(
     return ScriptPromise();
   }
 
+  auto* context = ExecutionContext::From(script_state);
+  if (!context->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kWindowPlacement)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Screen information is unavailable or access is not allowed.");
+    return ScriptPromise();
+  }
+
   // TODO(msw): Cache the backend connection.
   mojo::Remote<mojom::blink::ScreenEnumeration> backend;
-  ExecutionContext::From(script_state)
-      ->GetBrowserInterfaceBroker()
-      .GetInterface(backend.BindNewPipeAndPassReceiver());
+  context->GetBrowserInterfaceBroker().GetInterface(
+      backend.BindNewPipeAndPassReceiver());
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   auto* raw_backend = backend.get();

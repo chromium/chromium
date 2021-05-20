@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -15,6 +17,13 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/display/screen_base.h"
+#include "ui/display/test/scoped_screen_override.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/shell.h"
+#include "ui/display/test/display_manager_test_api.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -24,6 +33,19 @@ constexpr char kGetScreens[] = R"(
     return (await navigator.permissions.query({name:'window-placement'})).state;
   })();
 )";
+
+#if !defined(OS_WIN)
+// TODO(enne): Remove this in http://crbug.com/1205676
+constexpr char kDeprecatedIsMultiscreen[] = R"(
+  (async () => {
+    try {
+      return await window.isMultiScreen()
+    } catch (e) {
+      return 'error';
+    }
+  })();
+)";
+#endif  // !defined(OS_WIN)
 
 // Tests of WindowPlacementPermissionContext behavior.
 class WindowPlacementPermissionContextTest : public InProcessBrowserTest {
@@ -57,6 +79,40 @@ class WindowPlacementPermissionContextTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
+};
+
+class MultiscreenWindowPlacementPermissionContextTest
+    : public WindowPlacementPermissionContextTest {
+ public:
+  void SetScreenInstance() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Use the default, see SetUpOnMainThread.
+    WindowPlacementPermissionContextTest::SetScreenInstance();
+#else
+    screen_override_.emplace(&screen_);
+    screen_.display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
+                                      display::DisplayList::Type::PRIMARY);
+    screen_.display_list().AddDisplay({2, gfx::Rect(901, 100, 802, 802)},
+                                      display::DisplayList::Type::NOT_PRIMARY);
+    ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
+  void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // This has to happen later than SetScreenInstance as the ash shell
+    // does not exist yet.
+    display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+        .UpdateDisplay("100+100-801x802,901+100-802x802");
+    ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+#endif
+
+    WindowPlacementPermissionContextTest::SetUpOnMainThread();
+  }
+
+ private:
+  display::ScreenBase screen_;
+  absl::optional<display::test::ScopedScreenOverride> screen_override_;
 };
 
 // Tests user activation after dimissing and denying the permission request.
@@ -184,5 +240,93 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
   EXPECT_TRUE(tab->GetMainFrame()->HasTransientUserActivation());
   EXPECT_TRUE(child->GetMainFrame()->HasTransientUserActivation());
 }
+
+// TODO(enne): Windows assumes that display::GetScreen() is a ScreenWin
+// which is not true here.
+#if !defined(OS_WIN)
+
+// Verify that window.screen.isExtended returns true in a same-origin
+// iframe without the window placement permission policy allowed.
+IN_PROC_BROWSER_TEST_F(MultiscreenWindowPlacementPermissionContextTest,
+                       IsExtendedSameOriginAllow) {
+  const GURL url(https_test_server()->GetURL("a.test", "/iframe.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  content::RenderFrameHost* child = ChildFrameAt(tab->GetMainFrame(), 0);
+  ASSERT_TRUE(child);
+
+  EXPECT_EQ(true, EvalJs(tab, R"(window.screen.isExtended)",
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(true, EvalJs(child, R"(window.screen.isExtended)",
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // TODO(enne): Remove this in http://crbug.com/1205676
+  EXPECT_EQ(true, EvalJs(tab, kDeprecatedIsMultiscreen,
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(true, EvalJs(child, kDeprecatedIsMultiscreen,
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+}
+
+// Verify that window.screen.isExtended returns false in a cross-origin
+// iframe without the window placement permission policy allowed.
+IN_PROC_BROWSER_TEST_F(MultiscreenWindowPlacementPermissionContextTest,
+                       IsExtendedCrossOriginDeny) {
+  const GURL url(https_test_server()->GetURL("a.test", "/iframe.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL subframe_url(https_test_server()->GetURL("b.test", "/title1.html"));
+  content::NavigateIframeToURL(tab, /*iframe_id=*/"test", subframe_url);
+
+  content::RenderFrameHost* child = ChildFrameAt(tab->GetMainFrame(), 0);
+  ASSERT_TRUE(child);
+
+  EXPECT_EQ(true, EvalJs(tab, R"(window.screen.isExtended)",
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(false, EvalJs(child, R"(window.screen.isExtended)",
+                          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // TODO(enne): Remove this in http://crbug.com/1205676
+  EXPECT_EQ(true, EvalJs(tab, kDeprecatedIsMultiscreen,
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ("error", EvalJs(child, kDeprecatedIsMultiscreen,
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+}
+
+// Verify that window.screen.isExtended returns true in a cross-origin
+// iframe with the window placement permission policy allowed.
+IN_PROC_BROWSER_TEST_F(MultiscreenWindowPlacementPermissionContextTest,
+                       IsExtendedCrossOriginAllow) {
+  const GURL url(https_test_server()->GetURL("a.test", "/iframe.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // See https://w3c.github.io/webappsec-permissions-policy/ for more
+  // information on permissions policies and allowing cross-origin iframes
+  // to have particular permissions.
+  EXPECT_TRUE(ExecJs(tab, R"(const frame = document.getElementById('test');
+    frame.setAttribute('allow', 'window-placement');)",
+                     content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  GURL subframe_url(https_test_server()->GetURL("b.test", "/title1.html"));
+  content::NavigateIframeToURL(tab, /*iframe_id=*/"test", subframe_url);
+
+  content::RenderFrameHost* child = ChildFrameAt(tab->GetMainFrame(), 0);
+  ASSERT_TRUE(child);
+
+  EXPECT_EQ(true, EvalJs(tab, R"(window.screen.isExtended)",
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(true, EvalJs(child, R"(window.screen.isExtended)",
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // TODO(enne): Remove this in http://crbug.com/1205676
+  EXPECT_EQ(true, EvalJs(tab, kDeprecatedIsMultiscreen,
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(true, EvalJs(child, kDeprecatedIsMultiscreen,
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+}
+
+#endif  // !defined(OS_WIN)
 
 }  // namespace

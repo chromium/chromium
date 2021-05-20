@@ -166,6 +166,13 @@ bool Screen::isExtended() const {
   if (!DomWindow())
     return false;
   LocalFrame* frame = DomWindow()->GetFrame();
+
+  auto* context = GetExecutionContext();
+  if (!context->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kWindowPlacement)) {
+    return false;
+  }
+
   return GetScreenInfo(*frame).is_extended;
 }
 
