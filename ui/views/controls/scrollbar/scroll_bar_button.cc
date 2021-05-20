@@ -33,6 +33,8 @@ ScrollBarButton::ScrollBarButton(PressedCallback callback,
 ScrollBarButton::~ScrollBarButton() = default;
 
 gfx::Size ScrollBarButton::CalculatePreferredSize() const {
+  if (!GetWidget())
+    return gfx::Size();
   return GetNativeTheme()->GetPartSize(
       GetNativeThemePart(), GetNativeThemeState(), GetNativeThemeParams());
 }
@@ -49,6 +51,11 @@ void ScrollBarButton::OnMouseReleased(const ui::MouseEvent& event) {
 
 void ScrollBarButton::OnMouseCaptureLost() {
   repeater_.Stop();
+}
+
+void ScrollBarButton::OnThemeChanged() {
+  Button::OnThemeChanged();
+  PreferredSizeChanged();
 }
 
 void ScrollBarButton::PaintButtonContents(gfx::Canvas* canvas) {

@@ -51,6 +51,7 @@ class VIEWS_EXPORT ScrollBarButton : public Button {
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
+  void OnThemeChanged() override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
  private:

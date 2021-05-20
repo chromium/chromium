@@ -35,6 +35,7 @@ class ScrollBarThumb : public BaseScrollBarThumb {
 
  protected:
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
  private:
   ui::NativeTheme::ExtraParams GetNativeThemeParams() const;
@@ -50,6 +51,8 @@ ScrollBarThumb::ScrollBarThumb(ScrollBar* scroll_bar)
 ScrollBarThumb::~ScrollBarThumb() = default;
 
 gfx::Size ScrollBarThumb::CalculatePreferredSize() const {
+  if (!GetWidget())
+    return gfx::Size();
   return GetNativeTheme()->GetPartSize(
       GetNativeThemePart(), GetNativeThemeState(), GetNativeThemeParams());
 }
@@ -65,6 +68,11 @@ void ScrollBarThumb::OnPaint(gfx::Canvas* canvas) {
                                   : ui::NativeTheme::kScrollbarVerticalGripper;
   GetNativeTheme()->Paint(canvas->sk_canvas(), gripper_part, theme_state,
                           local_bounds, extra_params);
+}
+
+void ScrollBarThumb::OnThemeChanged() {
+  BaseScrollBarThumb::OnThemeChanged();
+  PreferredSizeChanged();
 }
 
 ui::NativeTheme::ExtraParams ScrollBarThumb::GetNativeThemeParams() const {
