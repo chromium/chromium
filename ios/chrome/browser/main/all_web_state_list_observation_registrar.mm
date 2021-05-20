@@ -19,9 +19,7 @@ AllWebStateListObservationRegistrar::AllWebStateListObservationRegistrar(
     Mode mode)
     : browser_list_(BrowserListFactory::GetForBrowserState(browser_state)),
       web_state_list_observer_(std::move(web_state_list_observer)),
-      scoped_observer_(
-          std::make_unique<ScopedObserver<WebStateList, WebStateListObserver>>(
-              web_state_list_observer_.get())),
+      scoped_observations_(web_state_list_observer_.get()),
       mode_(mode) {
   browser_list_->AddObserver(this);
 
@@ -30,13 +28,13 @@ AllWebStateListObservationRegistrar::AllWebStateListObservationRegistrar(
   // incognito browsers' WebStateLists.
   if (mode_ & Mode::REGULAR) {
     for (Browser* browser : browser_list_->AllRegularBrowsers()) {
-      scoped_observer_->Add(browser->GetWebStateList());
+      scoped_observations_.AddObservation(browser->GetWebStateList());
     }
   }
 
   if (mode_ & Mode::INCOGNITO) {
     for (Browser* browser : browser_list_->AllIncognitoBrowsers()) {
-      scoped_observer_->Add(browser->GetWebStateList());
+      scoped_observations_.AddObservation(browser->GetWebStateList());
     }
   }
 }
@@ -59,28 +57,28 @@ void AllWebStateListObservationRegistrar::OnBrowserAdded(
     const BrowserList* browser_list,
     Browser* browser) {
   if (mode_ & Mode::REGULAR)
-    scoped_observer_->Add(browser->GetWebStateList());
+    scoped_observations_.AddObservation(browser->GetWebStateList());
 }
 
 void AllWebStateListObservationRegistrar::OnIncognitoBrowserAdded(
     const BrowserList* browser_list,
     Browser* browser) {
   if (mode_ & Mode::INCOGNITO)
-    scoped_observer_->Add(browser->GetWebStateList());
+    scoped_observations_.AddObservation(browser->GetWebStateList());
 }
 
 void AllWebStateListObservationRegistrar::OnBrowserRemoved(
     const BrowserList* browser_list,
     Browser* browser) {
   if (mode_ & Mode::REGULAR)
-    scoped_observer_->Remove(browser->GetWebStateList());
+    scoped_observations_.RemoveObservation(browser->GetWebStateList());
 }
 
 void AllWebStateListObservationRegistrar::OnIncognitoBrowserRemoved(
     const BrowserList* browser_list,
     Browser* browser) {
   if (mode_ & Mode::INCOGNITO)
-    scoped_observer_->Remove(browser->GetWebStateList());
+    scoped_observations_.RemoveObservation(browser->GetWebStateList());
 }
 
 void AllWebStateListObservationRegistrar::OnBrowserListShutdown(
@@ -89,13 +87,13 @@ void AllWebStateListObservationRegistrar::OnBrowserListShutdown(
   // Stop observing all observed web state lists.
   if (mode_ & Mode::REGULAR) {
     for (Browser* browser : browser_list_->AllRegularBrowsers()) {
-      scoped_observer_->Remove(browser->GetWebStateList());
+      scoped_observations_.RemoveObservation(browser->GetWebStateList());
     }
   }
 
   if (mode_ & Mode::INCOGNITO) {
     for (Browser* browser : browser_list_->AllIncognitoBrowsers()) {
-      scoped_observer_->Remove(browser->GetWebStateList());
+      scoped_observations_.RemoveObservation(browser->GetWebStateList());
     }
   }
   // Stop observimg the browser list, and clear |browser_list_|.

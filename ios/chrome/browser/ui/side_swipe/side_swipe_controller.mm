@@ -8,7 +8,7 @@
 
 #include "base/feature_list.h"
 #import "base/ios/block_types.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/main/browser_observer.h"
@@ -95,8 +95,8 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
 
   // Scoped observer used to track registration of the WebStateObserverBridge.
-  std::unique_ptr<ScopedObserver<web::WebState, web::WebStateObserver>>
-      _scopedWebStateObserver;
+  std::unique_ptr<base::ScopedObservation<web::WebState, web::WebStateObserver>>
+      _scopedWebStateObservation;
 
   // Curtain over web view while waiting for it to load.
   UIView* _curtain;
@@ -183,12 +183,12 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
     _browser->GetWebStateList()->AddObserver(_webStateListObserver.get());
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
-    _scopedWebStateObserver =
-        std::make_unique<ScopedObserver<web::WebState, web::WebStateObserver>>(
-            _webStateObserverBridge.get());
-      _fullscreenController = FullscreenController::FromBrowser(self.browser);
+    _scopedWebStateObservation = std::make_unique<
+        base::ScopedObservation<web::WebState, web::WebStateObserver>>(
+        _webStateObserverBridge.get());
+    _fullscreenController = FullscreenController::FromBrowser(self.browser);
     if (self.activeWebState)
-      _scopedWebStateObserver->Add(self.activeWebState);
+      _scopedWebStateObservation->Observe(self.activeWebState);
   }
   return self;
 }
@@ -203,7 +203,7 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
     self.browser = nullptr;
   }
 
-  _scopedWebStateObserver.reset();
+  _scopedWebStateObservation.reset();
   _webStateObserverBridge.reset();
 }
 
@@ -709,9 +709,9 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
   // Track the new active WebState for navigation events. Also remove the old if
   // there was one.
   if (oldWebState)
-    _scopedWebStateObserver->Remove(oldWebState);
+    _scopedWebStateObservation->Reset();
   if (newWebState)
-    _scopedWebStateObserver->Add(newWebState);
+    _scopedWebStateObservation->Observe(newWebState);
 
   [self updateNavigationEdgeSwipeForWebState:newWebState];
 }

@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
@@ -31,8 +31,8 @@
 @interface LegacyTranslateInfobarMediator () <WebStateListObserving> {
   // WebStateList observers.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
-  std::unique_ptr<ScopedObserver<WebStateList, WebStateListObserver>>
-      _scopedWebStateListObserver;
+  std::unique_ptr<base::ScopedObservation<WebStateList, WebStateListObserver>>
+      _scopedWebStateListObservation;
 }
 
 // Presents and dismisses the language selection UI as well as the translate
@@ -194,15 +194,15 @@
 - (void)addWebStateListObserver {
   _webStateListObserverBridge =
       std::make_unique<WebStateListObserverBridge>(self);
-  _scopedWebStateListObserver =
-      std::make_unique<ScopedObserver<WebStateList, WebStateListObserver>>(
-          _webStateListObserverBridge.get());
-  _scopedWebStateListObserver->Add(self.webStateList);
+  _scopedWebStateListObservation = std::make_unique<
+      base::ScopedObservation<WebStateList, WebStateListObserver>>(
+      _webStateListObserverBridge.get());
+  _scopedWebStateListObservation->Observe(self.webStateList);
 }
 
 // Removes observer for WebStateList.
 - (void)removeWebStateListObserver {
-  _scopedWebStateListObserver.reset();
+  _scopedWebStateListObservation.reset();
   _webStateListObserverBridge.reset();
 }
 

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 
 #include "base/check_op.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
@@ -52,8 +52,9 @@ bool IsActiveOverlayRequestForNonCommittedHttpAuthentication(
 @interface BrowserContainerMediator () <OverlayPresenterObserving> {
   // Observer that listens for HTTP authentication dialog presentation.
   std::unique_ptr<OverlayPresenterObserver> _overlayPresenterObserver;
-  std::unique_ptr<ScopedObserver<OverlayPresenter, OverlayPresenterObserver>>
-      _scopedOverlayPresenterObserver;
+  std::unique_ptr<
+      base::ScopedObservation<OverlayPresenter, OverlayPresenterObserver>>
+      _scopedOverlayPresenterObservation;
 }
 // The Browser's WebStateList.
 @property(nonatomic, readonly) WebStateList* webStateList;
@@ -76,10 +77,10 @@ bool IsActiveOverlayRequestForNonCommittedHttpAuthentication(
     // Begin observing the OverlayPresenter.
     _overlayPresenterObserver =
         std::make_unique<OverlayPresenterObserverBridge>(self);
-    _scopedOverlayPresenterObserver = std::make_unique<
-        ScopedObserver<OverlayPresenter, OverlayPresenterObserver>>(
+    _scopedOverlayPresenterObservation = std::make_unique<
+        base::ScopedObservation<OverlayPresenter, OverlayPresenterObserver>>(
         _overlayPresenterObserver.get());
-    _scopedOverlayPresenterObserver->Add(overlayPresenter);
+    _scopedOverlayPresenterObservation->Observe(overlayPresenter);
     // Check whether an HTTP authentication dialog is shown for a page that does
     // not match the rendered contents.
     _showingAuthDialogForNonCommittedURL =
@@ -123,7 +124,7 @@ bool IsActiveOverlayRequestForNonCommittedHttpAuthentication(
 }
 
 - (void)overlayPresenterDestroyed:(OverlayPresenter*)presenter {
-  _scopedOverlayPresenterObserver = nullptr;
+  _scopedOverlayPresenterObservation = nullptr;
   _overlayPresenterObserver = nullptr;
 }
 

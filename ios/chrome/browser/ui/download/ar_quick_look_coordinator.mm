@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper_delegate.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -56,7 +56,7 @@ PresentQLPreviewController GetHistogramEnum(
                                       QLPreviewControllerDelegate> {
   // WebStateList observers.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
-  std::unique_ptr<ScopedObserver<WebStateList, WebStateListObserver>>
+  std::unique_ptr<base::ScopedObservation<WebStateList, WebStateListObserver>>
       _scopedWebStateListObserver;
   // Bridge to observe WebState from Objective-C.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
@@ -134,10 +134,10 @@ PresentQLPreviewController GetHistogramEnum(
 - (void)addWebStateListObserver {
   _webStateListObserverBridge =
       std::make_unique<WebStateListObserverBridge>(self);
-  _scopedWebStateListObserver =
-      std::make_unique<ScopedObserver<WebStateList, WebStateListObserver>>(
-          _webStateListObserverBridge.get());
-  _scopedWebStateListObserver->Add(self.webStateList);
+  _scopedWebStateListObserver = std::make_unique<
+      base::ScopedObservation<WebStateList, WebStateListObserver>>(
+      _webStateListObserverBridge.get());
+  _scopedWebStateListObserver->Observe(self.webStateList);
 }
 
 // Removes observer for WebStateList.

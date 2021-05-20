@@ -20,13 +20,8 @@
 #error "This file requires ARC support."
 #endif
 
-IOSTranslateInternalsHandler::IOSTranslateInternalsHandler()
-    : scoped_tab_helper_observer_(
-          std::make_unique<ScopedObserver<
-              language::IOSLanguageDetectionTabHelper,
-              language::IOSLanguageDetectionTabHelper::Observer>>(this)) {}
-
-IOSTranslateInternalsHandler::~IOSTranslateInternalsHandler() {}
+IOSTranslateInternalsHandler::IOSTranslateInternalsHandler() = default;
+IOSTranslateInternalsHandler::~IOSTranslateInternalsHandler() = default;
 
 translate::TranslateClient* IOSTranslateInternalsHandler::GetTranslateClient() {
   return ChromeIOSTranslateClient::FromWebState(web_ui()->GetWebState());
@@ -98,8 +93,8 @@ void IOSTranslateInternalsHandler::AddLanguageDetectionObserverForWebState(
     web::WebState* web_state) {
   language::IOSLanguageDetectionTabHelper* tab_helper =
       language::IOSLanguageDetectionTabHelper::FromWebState(web_state);
-  if (!scoped_tab_helper_observer_->IsObserving(tab_helper)) {
-    scoped_tab_helper_observer_->Add(tab_helper);
+  if (!scoped_tab_helper_observations_.IsObservingSource(tab_helper)) {
+    scoped_tab_helper_observations_.AddObservation(tab_helper);
   }
 }
 
@@ -107,7 +102,7 @@ void IOSTranslateInternalsHandler::RemoveLanguageDetectionObserverForWebState(
     web::WebState* web_state) {
   language::IOSLanguageDetectionTabHelper* tab_helper =
       language::IOSLanguageDetectionTabHelper::FromWebState(web_state);
-  scoped_tab_helper_observer_->Remove(tab_helper);
+  scoped_tab_helper_observations_.RemoveObservation(tab_helper);
 }
 
 IOSTranslateInternalsHandler::Observer::Observer(

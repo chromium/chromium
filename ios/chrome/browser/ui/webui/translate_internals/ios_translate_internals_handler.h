@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #include "components/translate/translate_internals/translate_internals_handler.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
@@ -85,10 +85,10 @@ class IOSTranslateInternalsHandler
   };
 
   std::unique_ptr<AllWebStateListObservationRegistrar> registrar_;
-  std::unique_ptr<
-      ScopedObserver<language::IOSLanguageDetectionTabHelper,
-                     language::IOSLanguageDetectionTabHelper::Observer>>
-      scoped_tab_helper_observer_;
+  base::ScopedMultiSourceObservation<
+      language::IOSLanguageDetectionTabHelper,
+      language::IOSLanguageDetectionTabHelper::Observer>
+      scoped_tab_helper_observations_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_TRANSLATE_INTERNALS_IOS_TRANSLATE_INTERNALS_HANDLER_H_

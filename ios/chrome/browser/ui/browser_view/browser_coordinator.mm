@@ -7,7 +7,7 @@
 #include <memory>
 
 #import "base/metrics/histogram_functions.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
@@ -226,8 +226,8 @@
 @implementation BrowserCoordinator {
   // Observers for WebStateList.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
-  std::unique_ptr<ScopedObserver<WebStateList, WebStateListObserver>>
-      _scopedWebStateListObserver;
+  std::unique_ptr<base::ScopedObservation<WebStateList, WebStateListObserver>>
+      _scopedWebStateListObservation;
 }
 
 #pragma mark - ChromeCoordinator
@@ -956,15 +956,15 @@
 - (void)addWebStateListObserver {
   _webStateListObserverBridge =
       std::make_unique<WebStateListObserverBridge>(self);
-  _scopedWebStateListObserver =
-      std::make_unique<ScopedObserver<WebStateList, WebStateListObserver>>(
-          _webStateListObserverBridge.get());
-  _scopedWebStateListObserver->Add(self.browser->GetWebStateList());
+  _scopedWebStateListObservation = std::make_unique<
+      base::ScopedObservation<WebStateList, WebStateListObserver>>(
+      _webStateListObserverBridge.get());
+  _scopedWebStateListObservation->Observe(self.browser->GetWebStateList());
 }
 
 // Removes observer for WebStateList.
 - (void)removeWebStateListObserver {
-  _scopedWebStateListObserver.reset();
+  _scopedWebStateListObservation.reset();
   _webStateListObserverBridge.reset();
 }
 
