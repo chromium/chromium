@@ -566,13 +566,28 @@ Polymer({
         assertNotReached();
     }
 
-    const retriesLeft = (this.deviceState && this.deviceState.simLockStatus) ?
-        this.deviceState.simLockStatus.retriesLeft :
-        0;
-    if (retriesLeft !== 1) {
+    // Invalid PIN errors show a separate string based on whether there is 1
+    // retry left or not.
+    const retriesLeft = this.getNumRetriesLeft_();
+    if (retriesLeft !== 1 &&
+        (this.error_ === ErrorType.INCORRECT_PIN ||
+         this.error_ === ErrorType.INVALID_PIN)) {
       errorStringId += 'Plural';
     }
+
     return this.i18n(errorStringId, retriesLeft);
+  },
+
+  /**
+   * @return {number}
+   * @private
+   */
+  getNumRetriesLeft_() {
+    if (!this.deviceState || !this.deviceState.simLockStatus) {
+      return 0;
+    }
+
+    return this.deviceState.simLockStatus.retriesLeft;
   },
 
   /**
@@ -635,6 +650,44 @@ Polymer({
     }
 
     return '';
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isPukInvalid_() {
+    return this.error_ === ErrorType.INCORRECT_PUK ||
+        this.error_ === ErrorType.INVALID_PUK;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getPukErrorMessage_() {
+    if (this.isPukInvalid_()) {
+      return this.getErrorMsg_();
+    }
+
+    return '';
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getPukWarningMessage_() {
+    if (this.isPukInvalid_()) {
+      const retriesLeft = this.getNumRetriesLeft_();
+      if (retriesLeft === 1) {
+        return this.i18n('networkSimPukDialogWarningWithFailure', retriesLeft);
+      }
+
+      return this.i18n('networkSimPukDialogWarningWithFailures', retriesLeft);
+    }
+
+    return this.i18n('networkSimPukDialogWarningNoFailures');
   },
 });
 })();

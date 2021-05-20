@@ -3,6 +3,7 @@
 <link rel="import" href="../../../cr_elements/cr_button/cr_button.html">
 <link rel="import" href="../../../cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="../../../cr_elements/icons.html">
+<link rel="import" href="../../../cr_elements/shared_style_css.html">
 <link rel="import" href="../../../html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
@@ -41,6 +42,23 @@
 
       #unlockPin {
         margin-top: 24px;
+      }
+
+      #puk-warning-container {
+        display: flex;
+        margin-bottom: 24px;
+        margin-top: 20px;
+      }
+
+      #puk-warning-icon {
+        --iron-icon-fill-color: var(--google-red-600);
+        --iron-icon-height: 24px;
+        --iron-icon-width: 24px;
+        margin-inline-end: 4px;
+      }
+
+      :host([has-error-text_]) #puk-warning-container {
+        color: var(--google-red-600);
       }
     </style>
     <!-- Enter PIN dialog -->
@@ -151,31 +169,41 @@
         close-text="[[i18n('close')]]">
       <div slot="title">[[i18n('networkSimLockedTitle')]]</div>
       <div slot="body">
-        <div>
+        <div id="puk-subtitle">
           [[i18n('networkSimPukDialogSubtitle')]]
+        </div>
+        <div id="puk-warning-container">
+          <template is="dom-if" if="[[hasErrorText_]]">
+            <iron-icon id="puk-warning-icon" icon="cellular-setup:warning">
+            </iron-icon>
+          </template>
+          <div aria-live="assertive">
+            [[getPukWarningMessage_(error_, deviceState)]]
+          </div>
         </div>
         <network-password-input id="unlockPuk"
             value="{{puk_}}"
             label="[[i18n('networkSimEnterPuk')]]"
-            disabled="[[inProgress_]]">
+            disabled="[[inProgress_]]"
+            invalid="[[isPukInvalid_(error_, deviceState)]]"
+            error-message="[[getPukErrorMessage_(error_, deviceState)]]"
+            allow-error-message>
         </network-password-input>
-        <div class="dialog-error" aria-live="assertive">
-          [[getErrorMsg_(error_, deviceState)]]
-        </div>
         <network-password-input id="unlockPin1"
             value="{{pin_new1_}}"
             label="[[i18n('networkSimEnterNewPin')]]"
-            disabled="[[inProgress_]]">
+            disabled="[[inProgress_]]"
+            allow-error-message>
         </network-password-input>
         <network-password-input id="unlockPin2"
             value="{{pin_new2_}}"
             label="[[i18n('networkSimReEnterNewPin')]]"
             on-enter="sendUnlockPuk_"
-            disabled="[[inProgress_]]">
+            disabled="[[inProgress_]]"
+            invalid="[[isSecondNewPinInvalid_(error_, deviceState)]]"
+            error-message="[[getSecondNewPinErrorMessage_(error_, deviceState)]]"
+            allow-error-message>
         </network-password-input>
-        <div class="dialog-error">
-          [[i18n('networkSimLockedWarning')]]
-        </div>
       </div>
       <div slot="button-container">
         <cr-button class="cancel-button" on-click="onCancel_">
@@ -183,7 +211,8 @@
         </cr-button>
         <cr-button class="action-button"
             on-click="sendUnlockPuk_"
-            disabled="[[!enterPukEnabled_]]">
+            disabled="[[!enterPukEnabled_]]"
+            aria-describedby="puk-subtitle">
           [[i18n('networkSimUnlock')]]
         </cr-button>
       </div>
