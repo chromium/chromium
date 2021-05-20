@@ -25,7 +25,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeImageBurnerClient
                  const std::string& to_path,
                  ErrorCallback error_callback) override;
   void SetEventHandlers(
-      const BurnFinishedHandler& burn_finished_handler,
+      BurnFinishedHandler burn_finished_handler,
       const BurnProgressUpdateHandler& burn_progress_update_handler) override;
   void ResetEventHandlers() override;
 

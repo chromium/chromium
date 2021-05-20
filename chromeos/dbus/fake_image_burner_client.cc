@@ -23,8 +23,7 @@ void FakeImageBurnerClient::BurnImage(const std::string& from_path,
                                       ErrorCallback error_callback) {}
 
 void FakeImageBurnerClient::SetEventHandlers(
-    const BurnFinishedHandler& burn_finished_handler,
-    const BurnProgressUpdateHandler& burn_progress_update_handler) {
-}
+    BurnFinishedHandler burn_finished_handler,
+    const BurnProgressUpdateHandler& burn_progress_update_handler) {}
 
 }  // namespace chromeos

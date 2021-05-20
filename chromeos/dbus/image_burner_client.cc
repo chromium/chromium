@@ -44,9 +44,9 @@ class ImageBurnerClientImpl : public ImageBurnerClient {
 
   // ImageBurnerClient override.
   void SetEventHandlers(
-      const BurnFinishedHandler& burn_finished_handler,
+      BurnFinishedHandler burn_finished_handler,
       const BurnProgressUpdateHandler& burn_progress_update_handler) override {
-    burn_finished_handler_ = burn_finished_handler;
+    burn_finished_handler_ = std::move(burn_finished_handler);
     burn_progress_update_handler_ = burn_progress_update_handler;
   }
 
@@ -97,8 +97,8 @@ class ImageBurnerClientImpl : public ImageBurnerClient {
       LOG(ERROR) << "Invalid signal: " << signal->ToString();
       return;
     }
-    if (!burn_finished_handler_.is_null())
-      burn_finished_handler_.Run(target_path, success, error);
+    if (burn_finished_handler_)
+      std::move(burn_finished_handler_).Run(target_path, success, error);
   }
 
   // Handles burn_progress_udpate signal and calls |handler|.

@@ -39,9 +39,9 @@ class ImageWriterFakeImageBurnerClient
   ~ImageWriterFakeImageBurnerClient() override = default;
 
   void SetEventHandlers(
-      const BurnFinishedHandler& burn_finished_handler,
+      BurnFinishedHandler burn_finished_handler,
       const BurnProgressUpdateHandler& burn_progress_update_handler) override {
-    burn_finished_handler_ = burn_finished_handler;
+    burn_finished_handler_ = std::move(burn_finished_handler);
     burn_progress_update_handler_ = burn_progress_update_handler;
   }
 

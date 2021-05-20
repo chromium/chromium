@@ -29,9 +29,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ImageBurnerClient : public DBusClient {
 
   // A callback to handle burn_finished signal.
   using BurnFinishedHandler =
-      base::RepeatingCallback<void(const std::string& target_path,
-                                   bool success,
-                                   const std::string& error)>;
+      base::OnceCallback<void(const std::string& target_path,
+                              bool success,
+                              const std::string& error)>;
 
   // A callback to handle burn_progress_update signal.
   using BurnProgressUpdateHandler =
@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ImageBurnerClient : public DBusClient {
   // |burn_progress_update_handler| is called when burn_progress_update signal
   // is received.
   virtual void SetEventHandlers(
-      const BurnFinishedHandler& burn_finished_handler,
+      BurnFinishedHandler burn_finished_handler,
       const BurnProgressUpdateHandler& burn_progress_update_handler) = 0;
 
   // Resets event handlers. After calling this method, nothing is done when
