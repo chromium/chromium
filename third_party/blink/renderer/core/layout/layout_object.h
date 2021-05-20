@@ -637,7 +637,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   }
   inline bool IsContainerForContainerQueries() const {
     NOT_DESTROYED();
-    return ShouldApplyLayoutContainment() &&
+    return ShouldApplyLayoutContainment() && ShouldApplyStyleContainment() &&
            (ShouldApplyInlineSizeContainment() ||
             ShouldApplyBlockSizeContainment());
   }

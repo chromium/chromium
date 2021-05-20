@@ -3361,7 +3361,7 @@ TEST_F(StyleEngineTest, UpdateStyleAndLayoutTreeForContainer) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       .container {
-        contain: layout size;
+        contain: layout size style;
       }
     </style>
     <div id="container1" class="container">
@@ -3420,7 +3420,7 @@ TEST_F(StyleEngineTest, ContainerQueriesContainmentNotApplying) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       .container {
-        contain: layout size;
+        contain: layout size style;
       }
     </style>
     <div id="container" class="container">
@@ -3469,7 +3469,7 @@ TEST_F(StyleEngineTest, ContainerQueriesContainmentNotApplying) {
 TEST_F(StyleEngineTest, PseudoElementContainerQueryRecalc) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
-      #container { contain: layout size }
+      #container { contain: layout size style }
       #container::before { content: " " }
       span::before { content: " " }
     </style>
@@ -3502,7 +3502,7 @@ TEST_F(StyleEngineTest, PseudoElementContainerQueryRecalc) {
 
 TEST_F(StyleEngineTest, MarkStyleDirtyFromContainerRecalc) {
   GetDocument().body()->setInnerHTML(R"HTML(
-    <div id="container" style="contain: layout size">
+    <div id="container" style="contain: layout size style">
       <input id="input" type="text" class="affected">
     </div>
   )HTML");

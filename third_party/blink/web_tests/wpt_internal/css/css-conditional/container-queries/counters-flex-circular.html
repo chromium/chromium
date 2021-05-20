@@ -1,5 +1,5 @@
 <!doctype html>
-<title>CSS Counters inside container affects container size via flex layout</title>
+<title>CSS Counters inside container should not affect container size via flex layout</title>
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/6213">
 <link rel="help" href="https://crbug.com/1199091">
 <link rel="stylesheet" href="/fonts/ahem.css">
@@ -18,7 +18,7 @@
     height: 100px;
   }
   #container {
-    contain: size layout;
+    contain: size layout style;
   }
   #item2 {
     flex-grow: 0;
@@ -30,10 +30,9 @@
     display: inline-block;
     content: counter(my-count);
   }
-  /* Circularity without style containment. If this query does not match, the
-     counter is a single 50px glyph which means item1/container will be 150px
-     which will make the query start matching. That means the counter will be
-     extended to two glyphs which will cause the query to no longer match. */
+  /* The counter-increment inside the container should not affect the size of
+     #item2 because of style containment. Otherwise we would have a
+     circularity. */
   @container (min-width: 125px) {
     #inner {
       counter-increment: my-count 10;

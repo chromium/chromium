@@ -131,7 +131,7 @@ TEST_F(ContainerQueryTest, ContainerQueryEvaluation) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #container {
-        contain: size layout;
+        contain: size layout style;
         width: 500px;
         height: 500px;
       }

@@ -1161,7 +1161,7 @@ TEST_F(StyleResolverTestCQ, DependsOnContainerQueries) {
 TEST_F(StyleResolverTestCQ, DependsOnContainerQueriesPseudo) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
-      main { contain: size layout; width: 100px; }
+      main { contain: size layout style; width: 100px; }
       #a::before { content: "before"; }
       @container (min-width: 0px) {
         #a::after { content: "after"; }
