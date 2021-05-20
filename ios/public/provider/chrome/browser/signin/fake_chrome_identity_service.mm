@@ -302,7 +302,11 @@ NSString* FakeChromeIdentityService::GetCachedHostedDomainForIdentity(
 absl::optional<bool>
 FakeChromeIdentityService::IsSubjectToMinorModeRestrictions(
     ChromeIdentity* identity) {
-  return absl::nullopt;
+  if (![identities_ containsObject:identity]) {
+    return absl::nullopt;
+  }
+  return absl::make_optional(
+      [identity.userEmail hasSuffix:kMinorModeIdentityEmailSuffix]);
 }
 
 void FakeChromeIdentityService::SetUpForIntegrationTests() {}
@@ -311,6 +315,18 @@ void FakeChromeIdentityService::AddManagedIdentities(NSArray* identitiesNames) {
   for (NSString* name in identitiesNames) {
     NSString* email =
         [NSString stringWithFormat:@"%@%@", name, kManagedIdentityEmailSuffix];
+    NSString* gaiaID = [NSString stringWithFormat:kIdentityGaiaIDFormat, name];
+    [identities_ addObject:[FakeChromeIdentity identityWithEmail:email
+                                                          gaiaID:gaiaID
+                                                            name:name]];
+  }
+}
+
+void FakeChromeIdentityService::AddMinorModeIdentities(
+    NSArray* identitiesNames) {
+  for (NSString* name in identitiesNames) {
+    NSString* email = [NSString
+        stringWithFormat:@"%@%@", name, kMinorModeIdentityEmailSuffix];
     NSString* gaiaID = [NSString stringWithFormat:kIdentityGaiaIDFormat, name];
     [identities_ addObject:[FakeChromeIdentity identityWithEmail:email
                                                           gaiaID:gaiaID

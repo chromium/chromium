@@ -76,6 +76,9 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   // Sets up the mock methods for integration tests.
   void SetUpForIntegrationTests();
 
+  // Adds the identities subject to minor mode restrictions given their name.
+  void AddMinorModeIdentities(NSArray* identitiesName);
+
   // Adds the managed identities given their name.
   void AddManagedIdentities(NSArray* identitiesName);
 

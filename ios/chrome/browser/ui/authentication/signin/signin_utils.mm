@@ -90,6 +90,7 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   if (auth_service->IsAuthenticated())
     return false;
 
+  // Used for testing purposes only.
   if (signin::ForceStartupSigninPromo())
     return true;
 
@@ -106,12 +107,21 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
     }
   }
 
+  ios::ChromeIdentityService* identity_service =
+      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+
   // Don't show the promo if there are no identities.
-  NSArray* identities =
-      ios::GetChromeBrowserProvider()
-          ->GetChromeIdentityService()
-          ->GetAllIdentitiesSortedForDisplay(browser_state->GetPrefs());
+  NSArray* identities = identity_service->GetAllIdentitiesSortedForDisplay(
+      browser_state->GetPrefs());
   if (identities.count == 0)
+    return false;
+
+  // Don't show the SSO promo if the default primary account is subject to
+  // minor mode restrictions.
+  absl::optional<bool> isSubjectToMinorModeRestrictions =
+      identity_service->IsSubjectToMinorModeRestrictions(identities[0]);
+  if (isSubjectToMinorModeRestrictions.has_value() &&
+      isSubjectToMinorModeRestrictions.value())
     return false;
 
   // The sign-in promo should be shown twice, even if no account has been added.

@@ -12,6 +12,9 @@ namespace ios {
 // Email suffix used for managed accounts.
 extern NSString* const kManagedIdentityEmailSuffix;
 
+// Email suffix used for accounts subject to minor mode restrictions.
+extern NSString* const kMinorModeIdentityEmailSuffix;
+
 }  // namespace ios
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_FAKE_CHROME_IDENTITY_SERVICE_CONSTANTS_H_
