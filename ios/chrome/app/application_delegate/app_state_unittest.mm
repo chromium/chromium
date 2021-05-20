@@ -98,6 +98,9 @@
     case InitStageBrowserObjectsForUI:
       [appState queueTransitionToNextInitStage];
       break;
+    case InitStageFirstRun:
+      [appState queueTransitionToNextInitStage];
+      break;
     case InitStageFinal:
       break;
   }
@@ -317,9 +320,9 @@ class AppStateTest : public BlockCleanupTest {
 
     handle_startup_swizzler_.reset(new ScopedBlockSwizzler(
         [UserActivityHandler class],
-        @selector
-        (handleStartupParametersWithTabOpener:
-                        connectionInformation:startupInformation:browserState:),
+        @selector(handleStartupParametersWithTabOpener:
+                                 connectionInformation:startupInformation
+                                                      :browserState:initStage:),
         handle_startup_swizzle_block_));
   }
 

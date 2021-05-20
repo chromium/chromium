@@ -99,7 +99,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
 // Handles the 3D touch application static items. Does nothing if in first run.
 + (BOOL)handleShortcutItem:(UIApplicationShortcutItem*)shortcutItem
      connectionInformation:(id<ConnectionInformation>)connectionInformation
-        startupInformation:(id<StartupInformation>)startupInformation;
+                 initStage:(InitStage)initStage;
 // Routes Universal 2nd Factor (U2F) callback to the correct Tab.
 + (void)routeU2FURL:(const GURL&)URL
        browserState:(ChromeBrowserState*)browserState;
@@ -114,7 +114,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                    tabOpener:(id<TabOpening>)tabOpener
        connectionInformation:(id<ConnectionInformation>)connectionInformation
           startupInformation:(id<StartupInformation>)startupInformation
-                browserState:(ChromeBrowserState*)browserState {
+                browserState:(ChromeBrowserState*)browserState
+                   initStage:(InitStage)initStage {
   NSURL* webpageURL = userActivity.webpageURL;
 
   if ([userActivity.activityType
@@ -168,7 +169,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                               tabOpener:tabOpener
                   connectionInformation:connectionInformation
                      startupInformation:startupInformation
-                           browserState:browserState];
+                           browserState:browserState
+                              initStage:initStage];
         });
       });
       return YES;
@@ -246,7 +248,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                                 tabOpener:tabOpener
                     connectionInformation:connectionInformation
                        startupInformation:startupInformation
-                                Incognito:NO];
+                                Incognito:NO
+                                initStage:initStage];
 
   } else if ([userActivity.activityType
                  isEqualToString:kSiriShortcutOpenInIncognito]) {
@@ -271,7 +274,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                                 tabOpener:tabOpener
                     connectionInformation:connectionInformation
                        startupInformation:startupInformation
-                                Incognito:YES];
+                                Incognito:YES
+                                initStage:initStage];
 
   } else {
     // Do nothing for unknown activity type.
@@ -283,7 +287,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                              tabOpener:tabOpener
                  connectionInformation:connectionInformation
                     startupInformation:startupInformation
-                          browserState:browserState];
+                          browserState:browserState
+                             initStage:initStage];
 }
 
 + (BOOL)continueUserActivityURL:(NSURL*)webpageURL
@@ -291,7 +296,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                       tabOpener:(id<TabOpening>)tabOpener
           connectionInformation:(id<ConnectionInformation>)connectionInformation
              startupInformation:(id<StartupInformation>)startupInformation
-                   browserState:(ChromeBrowserState*)browserState {
+                   browserState:(ChromeBrowserState*)browserState
+                      initStage:(InitStage)initStage {
   if (!webpageURL)
     return NO;
 
@@ -299,7 +305,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
   if (!webpageGURL.is_valid())
     return NO;
 
-  if (applicationIsActive && ![startupInformation isPresentingFirstRunUI]) {
+  if (applicationIsActive && initStage > InitStageFirstRun) {
     // The app is already active so the applicationDidBecomeActive: method will
     // never be called. Open the requested URL immediately.
     ApplicationModeForTabOpening targetMode =
@@ -377,8 +383,11 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
            connectionInformation:
                (id<ConnectionInformation>)connectionInformation
               startupInformation:(id<StartupInformation>)startupInformation
-                       Incognito:(BOOL)Incognito {
-  if (applicationIsActive && ![startupInformation isPresentingFirstRunUI]) {
+                       Incognito:(BOOL)Incognito
+                       initStage:(InitStage)initStage
+
+{
+  if (applicationIsActive && initStage > InitStageFirstRun) {
     // The app is already active so the applicationDidBecomeActive: method will
     // never be called. Open the requested URLs immediately.
     [self openMultipleTabsWithConnectionInformation:connectionInformation
@@ -407,11 +416,12 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                    (id<ConnectionInformation>)connectionInformation
                   startupInformation:(id<StartupInformation>)startupInformation
                    interfaceProvider:
-                       (id<BrowserInterfaceProvider>)interfaceProvider {
+                       (id<BrowserInterfaceProvider>)interfaceProvider
+                           initStage:(InitStage)initStage {
   BOOL handledShortcutItem =
       [UserActivityHandler handleShortcutItem:shortcutItem
                         connectionInformation:connectionInformation
-                           startupInformation:startupInformation];
+                                    initStage:initStage];
   BOOL isActive = [[UIApplication sharedApplication] applicationState] ==
                   UIApplicationStateActive;
   if (handledShortcutItem && isActive) {
@@ -420,7 +430,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                        connectionInformation:connectionInformation
                           startupInformation:startupInformation
                                 browserState:interfaceProvider.currentInterface
-                                                 .browserState];
+                                                 .browserState
+                                   initStage:initStage];
   }
   if (completionHandler) {
     completionHandler(handledShortcutItem);
@@ -458,11 +469,12 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                            (id<ConnectionInformation>)connectionInformation
                           startupInformation:
                               (id<StartupInformation>)startupInformation
-                                browserState:(ChromeBrowserState*)browserState {
+                                browserState:(ChromeBrowserState*)browserState
+                                   initStage:(InitStage)initStage {
   // Do not load the external URL if the user has not accepted the terms of
   // service. This corresponds to the case when the user installed Chrome,
   // has never launched it and attempts to open an external URL in Chrome.
-  if ([startupInformation isPresentingFirstRunUI]) {
+  if (initStage <= InitStageFirstRun) {
     return;
   }
 
@@ -576,8 +588,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
 
 + (BOOL)handleShortcutItem:(UIApplicationShortcutItem*)shortcutItem
      connectionInformation:(id<ConnectionInformation>)connectionInformation
-        startupInformation:(id<StartupInformation>)startupInformation {
-  if ([startupInformation isPresentingFirstRunUI])
+                 initStage:(InitStage)initStage {
+  if (initStage <= InitStageFirstRun)
     return NO;
 
   AppStartupParameters* startupParams = [[AppStartupParameters alloc]

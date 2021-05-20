@@ -38,7 +38,8 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
                 tabOpener:(id<TabOpening>)tabOpener
     connectionInformation:(id<ConnectionInformation>)connectionInformation
        startupInformation:(id<StartupInformation>)startupInformation
-              prefService:(PrefService*)prefService {
+              prefService:(PrefService*)prefService
+                initStage:(InitStage)initStage {
   NSURL* URL = options.URL;
   NSString* sourceApplication = options.sourceApplication;
 
@@ -57,7 +58,7 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
   UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartFromAppsHistogram, callerApp,
                             MOBILE_SESSION_CALLER_APP_COUNT);
 
-  if (startupInformation.isPresentingFirstRunUI) {
+  if (initStage == InitStageFirstRun) {
     UMA_HISTOGRAM_ENUMERATION("FirstRun.LaunchSource", [params launchSource],
                               first_run::LAUNCH_SIZE);
   } else if (applicationActive) {
@@ -136,7 +137,8 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
                                   tabOpener:tabOpener
                       connectionInformation:connectionInformation
                          startupInformation:startupInformation
-                                prefService:prefService];
+                                prefService:prefService
+                                  initStage:appState.initStage];
     [appState launchFromURLHandled:openURLResult];
   }
 }

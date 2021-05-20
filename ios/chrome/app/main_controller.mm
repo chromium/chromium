@@ -604,6 +604,12 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       [self startUpBrowserForegroundInitialization];
       [appState queueTransitionToNextInitStage];
       break;
+    case InitStageFirstRun:
+      // TODO(crbug.com/1178821): Move this to the FRE agent.
+      if (!ShouldPresentFirstRunExperience()) {
+        [appState queueTransitionToNextInitStage];
+      }
+      break;
     case InitStageFinal:
       break;
   }

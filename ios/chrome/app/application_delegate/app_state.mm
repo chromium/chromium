@@ -397,7 +397,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
         handleStartupParametersWithTabOpener:tabOpener
                        connectionInformation:connectionInformation
                           startupInformation:self.startupInformation
-                                browserState:currentInterface.browserState];
+                                browserState:currentInterface.browserState
+                                   initStage:self.initStage];
   } else if ([tabOpener shouldOpenNTPTabOnActivationOfBrowser:currentInterface
                                                                   .browser]) {
     // Opens an NTP if needed.

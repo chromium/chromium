@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
+
 @class AppState;
 @protocol ConnectionInformation;
 class PrefService;
@@ -25,7 +27,8 @@ class PrefService;
                 tabOpener:(id<TabOpening>)tabOpener
     connectionInformation:(id<ConnectionInformation>)connectionInformation
        startupInformation:(id<StartupInformation>)startupInformation
-              prefService:(PrefService*)prefService;
+              prefService:(PrefService*)prefService
+                initStage:(InitStage)initStage;
 
 // Handles open URL at application startup.
 + (void)handleLaunchOptions:(URLOpenerParams*)options

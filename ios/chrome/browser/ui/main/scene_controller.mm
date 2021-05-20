@@ -37,6 +37,7 @@
 #include "ios/chrome/app/application_mode.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
+#import "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
@@ -390,7 +391,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)handleExternalIntents {
-  if (self.sceneState.appState.startupInformation.isPresentingFirstRunUI ||
+  if (self.sceneState.appState.initStage <= InitStageFirstRun ||
       self.sceneState.presentingModalOverlay) {
     return;
   }
@@ -420,7 +421,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                  connectionInformation:self
                     startupInformation:self.sceneState.appState
                                            .startupInformation
-                     interfaceProvider:self.interfaceProvider];
+                     interfaceProvider:self.interfaceProvider
+                             initStage:self.sceneState.appState.initStage];
     }
 
     // See if this scene launched as part of a multiwindow URL opening.
@@ -457,7 +459,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                       tabOpener:self
           connectionInformation:self
              startupInformation:self.sceneState.appState.startupInformation
-                   browserState:self.currentInterface.browserState];
+                   browserState:self.currentInterface.browserState
+                      initStage:self.sceneState.appState.initStage];
     }
     self.sceneState.connectionOptions = nil;
   }
@@ -480,8 +483,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                        connectionInformation:self
                           startupInformation:self.sceneState.appState
                                                  .startupInformation
-                                browserState:self.currentInterface
-                                                 .browserState];
+                                browserState:self.currentInterface.browserState
+                                   initStage:self.sceneState.appState
+                                                 .initStage];
 
     // Show a toast if the browser is opened in an unexpected mode.
     if (self.startupParameters.isUnexpectedMode) {
@@ -595,7 +599,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                          tabOpener:self
              connectionInformation:self
                 startupInformation:self.sceneState.appState.startupInformation
-                 interfaceProvider:self.interfaceProvider];
+                 interfaceProvider:self.interfaceProvider
+                         initStage:self.sceneState.appState.initStage];
 }
 
 - (void)sceneState:(SceneState*)sceneState
@@ -606,7 +611,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   }
   BOOL sceneIsActive =
       self.sceneState.activationLevel >= SceneActivationLevelForegroundActive;
-  if (self.sceneState.appState.startupInformation.isPresentingFirstRunUI ||
+  // TODO(crbug.com/1210542): Review this stage threshold; works for now.
+  if (self.sceneState.appState.initStage <= InitStageFirstRun ||
       self.sceneState.presentingModalOverlay) {
     sceneIsActive = NO;
   }
@@ -626,7 +632,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                     tabOpener:self
         connectionInformation:self
            startupInformation:self.sceneState.appState.startupInformation
-                 browserState:self.currentInterface.browserState];
+                 browserState:self.currentInterface.browserState
+                    initStage:self.sceneState.appState.initStage];
   }
 
   if (sceneIsActive) {
@@ -662,7 +669,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // in one place.
 - (void)transitionToSceneActivationLevel:(SceneActivationLevel)level
                             appInitStage:(InitStage)appInitStage {
-  if (appInitStage < InitStageFinal) {
+  if (appInitStage < InitStageFirstRun) {
     // Nothing per-scene should happen before the app completes the global
     // setup, like executing Safe mode, or creating the main BrowserState.
     return;
@@ -1235,6 +1242,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)handleFirstRunUIWillFinish {
+  if (![self ignoreFirstRunStageForTesting]) {
+    DCHECK(self.sceneState.appState.initStage == InitStageFirstRun);
+  }
   DCHECK(self.sceneState.presentingFirstRunUI);
   _firstRunUIBlocker.reset();
   self.sceneState.presentingFirstRunUI = NO;
@@ -1242,9 +1252,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       removeObserver:self
                 name:kChromeFirstRunUIWillFinishNotification
               object:nil];
-  if (self.sceneState.activationLevel >= SceneActivationLevelForegroundActive) {
-    [self handleExternalIntents];
-  }
 }
 
 // Handles the notification that first run modal dialog UI completed.
@@ -1269,6 +1276,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     // the site requests location information.
     [[OmniboxGeolocationController sharedInstance]
         systemPromptSkippedForNewUser];
+  }
+  if (![self ignoreFirstRunStageForTesting]) {
+    [self.sceneState.appState queueTransitionToNextInitStage];
   }
 }
 
@@ -2883,7 +2893,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   DCHECK(URLsToOpen.count == URLContexts.count || URLContexts.count == 1);
   BOOL active =
       _sceneState.activationLevel >= SceneActivationLevelForegroundActive;
-  if (self.sceneState.appState.startupInformation.isPresentingFirstRunUI ||
+  // TODO(crbug.com/1210542): Review this stage threshold; works for now.
+  if (self.sceneState.appState.initStage <= InitStageFirstRun ||
       self.sceneState.presentingModalOverlay) {
     active = NO;
   }
@@ -2894,7 +2905,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                     tabOpener:self
         connectionInformation:self
            startupInformation:self.sceneState.appState.startupInformation
-                  prefService:self.currentInterface.browserState->GetPrefs()];
+                  prefService:self.currentInterface.browserState->GetPrefs()
+                    initStage:self.sceneState.appState.initStage];
   }
 }
 
@@ -3113,6 +3125,23 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
         self.mainInterface.browser->GetCommandDispatcher());
     [handler showLocationPermissionsFromViewController:self.mainInterface.bvc];
   }
+
+  if (![self ignoreFirstRunStageForTesting]) {
+    [self.sceneState.appState queueTransitionToNextInitStage];
+  }
+}
+
+#pragma mark - Test hooks
+
+// TODO(crbug.com/1178821): Move this to the FRE agent.
+// Determines whether the First Run stage has to be ignored because of
+// testing. When testing with first_run_egtest.mm, the First Run UI is
+// manually triggered after the browser is fully initialized, in which
+// case the code that assumes that the app is in the First Run stage when
+// showing the FRE has to be ignored to avoid unexepted failures (e.g., DCHECKs,
+// unexpected init stage transition).
+- (BOOL)ignoreFirstRunStageForTesting {
+  return tests_hook::DisableFirstRun();
 }
 
 #pragma mark - PolicyWatcherBrowserAgentObserving

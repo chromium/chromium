@@ -28,6 +28,9 @@ typedef NS_ENUM(NSUInteger, InitStage) {
   // The app is initializing the browser objects for the browser UI (e.g., the
   // browser state).
   InitStageBrowserObjectsForUI,
+  // The app is considering presenting the FRE UI. Will remain in that state
+  // when presenting the FRE.
+  InitStageFirstRun,
   // The final stage before being done with initialization. The label and
   // relative position (always last) of this enum item should not change.
   // The value may change when inserting enum items between Start and Final.

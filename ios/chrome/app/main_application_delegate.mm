@@ -347,7 +347,8 @@ const int kMainIntentCheckDelay = 1;
       connectionInformation:self.sceneController
          startupInformation:_startupInformation
                browserState:_mainController.interfaceProvider.currentInterface
-                                .browserState];
+                                .browserState
+                  initStage:_appState.initStage];
 }
 
 - (void)application:(UIApplication*)application
@@ -362,7 +363,8 @@ const int kMainIntentCheckDelay = 1;
                          tabOpener:_tabOpener
              connectionInformation:self.sceneController
                 startupInformation:_startupInformation
-                 interfaceProvider:_mainController.interfaceProvider];
+                 interfaceProvider:_mainController.interfaceProvider
+                         initStage:_appState.initStage];
 }
 
 #pragma mark Opening a URL-Specified Resource
@@ -393,7 +395,8 @@ const int kMainIntentCheckDelay = 1;
       connectionInformation:self.sceneController
          startupInformation:_startupInformation
                 prefService:_mainController.interfaceProvider.currentInterface
-                                .browserState->GetPrefs()];
+                                .browserState->GetPrefs()
+                  initStage:_appState.initStage];
 }
 
 #pragma mark - Testing methods
