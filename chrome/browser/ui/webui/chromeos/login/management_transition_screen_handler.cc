@@ -16,6 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/arc/arc_prefs.h"
 #include "components/login/localized_values_builder.h"
@@ -42,6 +43,9 @@ ManagementTransitionScreenHandler::~ManagementTransitionScreenHandler() {
 
 void ManagementTransitionScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
+  builder->Add("addingManagementTitle", IDS_ADDING_MANAGEMENT_TITLE);
+  builder->Add("addingManagementTitleUnknownAdmin",
+               IDS_ADDING_MANAGEMENT_TITLE_UNKNOWN_ADMIN);
   builder->Add("removingSupervisionTitle", IDS_REMOVING_SUPERVISION_TITLE);
   builder->Add("addingSupervisionTitle", IDS_ADDING_SUPERVISION_TITLE);
   builder->Add("managementTransitionIntroMessage",
@@ -107,9 +111,11 @@ void ManagementTransitionScreenHandler::Show() {
   ash::LoginScreen::Get()->SetIsFirstSigninStep(false);
 
   base::DictionaryValue data;
-  data.SetBoolean("isRemovingManagement",
-                  arc::GetSupervisionTransition(profile) ==
-                      arc::ArcSupervisionTransition::CHILD_TO_REGULAR);
+  data.SetInteger("arcTransition",
+                  static_cast<int>(arc::GetSupervisionTransition(profile)));
+  data.SetString(
+      "managementEntity",
+      chrome::GetAccountManagerIdentity(profile).value_or(std::string()));
   ShowScreenWithData(kScreenId, &data);
 }
 

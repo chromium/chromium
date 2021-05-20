@@ -21,18 +21,16 @@
       }
     </style>
     <oobe-adaptive-dialog id="managementTransitionDialog" role="dialog"
-        aria-label$="[[getDialogA11yTitle_(locale, isRemovingManagement_)]]"
+        aria-label$="[[getDialogTitle_(locale, isRemovingManagement_, isChildTransition_, managementEntity_)]]"
         for-step="progress">
+      <iron-icon slot="icon" icon="oobe-32:enterprise" aria-hidden="true"
+        hidden="[[isChildTransition_]]">
+      </iron-icon>
       <iron-icon slot="icon" src="chrome://oobe/supervision_icon.png"
-          aria-hidden="true">
+        aria-hidden="true" hidden="[[!isChildTransition_]]">
       </iron-icon>
       <h1 slot="title">
-        <div hidden="[[isRemovingManagement_]]">
-          [[i18nDynamic(locale,'addingSupervisionTitle')]]
-        </div>
-        <div hidden="[[!isRemovingManagement_]]">
-          [[i18nDynamic(locale,'removingSupervisionTitle')]]
-        </div>
+        [[getDialogTitle_(locale, isRemovingManagement_, isChildTransition_, managementEntity_)]]
       </h1>
       <div slot="subtitle">
         [[i18nDynamic(locale, 'managementTransitionIntroMessage')]]
@@ -46,8 +44,11 @@
     <oobe-adaptive-dialog id="managementTransitionErrorDialog" role="alert"
         aria-label$="[[i18nDynamic(locale,'managementTransitionErrorTitle')]]"
         for-step="error">
+      <iron-icon slot="icon" icon="oobe-32:enterprise" aria-hidden="true"
+        hidden="[[isChildTransition_]]">
+      </iron-icon>
       <iron-icon slot="icon" src="chrome://oobe/supervision_icon.png"
-          aria-hidden="true">
+        aria-hidden="true" hidden="[[!isChildTransition_]]">
       </iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'managementTransitionErrorTitle')]]

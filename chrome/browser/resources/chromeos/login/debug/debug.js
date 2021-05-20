@@ -757,21 +757,51 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'management-transition',
       kind: ScreenKind.OTHER,
-      handledSteps: 'progress',
+      handledSteps: 'progress,error',
       states: [
         {
-          id: 'adding',
+          id: 'add-supervision',
           trigger: (screen) => {
-            screen.setIsRemovingManagement(false);
+            screen.setArcTransition(2);
             screen.setUIStep('progress');
           },
         },
         {
-          id: 'removing',
+          id: 'remove-supervision',
           trigger: (screen) => {
-            screen.setIsRemovingManagement(true);
+            screen.setArcTransition(1);
             screen.setUIStep('progress');
           },
+        },
+        {
+          id: 'add-management',
+          trigger: (screen) => {
+            screen.setArcTransition(3);
+            screen.setManagementEntity('example.com');
+            screen.setUIStep('progress');
+          }
+        },
+        {
+          id: 'add-management-unknown-admin',
+          trigger: (screen) => {
+            screen.setArcTransition(3);
+            screen.setManagementEntity('');
+            screen.setUIStep('progress');
+          }
+        },
+        {
+          id: 'error-supervision',
+          trigger: (screen) => {
+            screen.setArcTransition(1);
+            screen.setUIStep('error');
+          }
+        },
+        {
+          id: 'error-management',
+          trigger: (screen) => {
+            screen.setArcTransition(3);
+            screen.setUIStep('error');
+          }
         },
       ],
     },

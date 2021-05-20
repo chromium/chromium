@@ -22,10 +22,12 @@
 #include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/session/arc_session_runner.h"
 #include "components/arc/session/arc_supervision_transition.h"
 #include "components/arc/test/fake_arc_session.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
@@ -43,12 +45,29 @@ const test::UIPath kErrorDialog = {kManagementTransitionId,
                                    "managementTransitionErrorDialog"};
 const test::UIPath kAcceptButton = {kManagementTransitionId, "accept-button"};
 
+struct TransitionScreenTestParams {
+  TransitionScreenTestParams(LoggedInUserMixin::LogInType pre_test_user_type,
+                             LoggedInUserMixin::LogInType test_user_type,
+                             bool use_managed_account = false)
+      : pre_test_user_type(pre_test_user_type),
+        test_user_type(test_user_type),
+        use_managed_account(use_managed_account) {}
+
+  LoggedInUserMixin::LogInType pre_test_user_type;
+  LoggedInUserMixin::LogInType test_user_type;
+  bool use_managed_account;
+};
+
 // Param returns the original user type.
 class ManagementTransitionScreenTest
     : public MixinBasedInProcessBrowserTest,
-      public testing::WithParamInterface<LoggedInUserMixin::LogInType> {
+      public testing::WithParamInterface<TransitionScreenTestParams> {
  public:
-  ManagementTransitionScreenTest() = default;
+  ManagementTransitionScreenTest() {
+    feature_list_.InitAndEnableFeature(
+        arc::kEnableUnmanagedToManagedTransitionFeature);
+  }
+
   ~ManagementTransitionScreenTest() override = default;
 
   // MixinBasedInProcessBrowserTest:
@@ -74,24 +93,47 @@ class ManagementTransitionScreenTest
     logged_in_user_mixin_.LogInUser(
         false /*issue_any_scope_token*/,
         content::IsPreTest() /*wait_for_active_session*/);
+
+    // Allow ARC by policy for managed users.
+    if (use_managed_account()) {
+      logged_in_user_mixin()
+          .GetUserPolicyMixin()
+          ->RequestPolicyUpdate()
+          ->policy_payload()
+          ->mutable_arcenabled()
+          ->set_value(true);
+    }
   }
 
-  // The tests simulate user type changes between regular and child user.
-  // This returns the intended user type after transition. GetParam() returns
-  // the initial user type.
   LoggedInUserMixin::LogInType GetTargetUserType() const {
-    return GetParam() == LoggedInUserMixin::LogInType::kRegular
-               ? LoggedInUserMixin::LogInType::kChild
-               : LoggedInUserMixin::LogInType::kRegular;
+    return content::IsPreTest() ? GetParam().pre_test_user_type
+                                : GetParam().test_user_type;
+  }
+
+  bool use_managed_account() { return GetParam().use_managed_account; }
+
+  absl::optional<AccountId> GetAccountId() {
+    if (use_managed_account()) {
+      return AccountId::FromUserEmailGaiaId(
+          FakeGaiaMixin::kEnterpriseUser1,
+          FakeGaiaMixin::kEnterpriseUser1GaiaId);
+    }
+
+    return absl::nullopt;
   }
 
  protected:
   LoggedInUserMixin& logged_in_user_mixin() { return logged_in_user_mixin_; }
 
  private:
-  LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, content::IsPreTest() ? GetParam() : GetTargetUserType(),
-      embedded_test_server(), this, false /*should_launch_browser*/};
+  LoggedInUserMixin logged_in_user_mixin_{&mixin_host_,
+                                          GetTargetUserType(),
+                                          embedded_test_server(),
+                                          this,
+                                          false /*should_launch_browser*/,
+                                          GetAccountId()};
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest,
@@ -168,10 +210,17 @@ IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest,
   logged_in_user_mixin().GetLoginManagerMixin()->WaitForActiveSession();
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ManagementTransitionScreenTest,
-                         testing::Values(LoggedInUserMixin::LogInType::kRegular,
-                                         LoggedInUserMixin::LogInType::kChild));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ManagementTransitionScreenTest,
+    testing::Values(
+        TransitionScreenTestParams(LoggedInUserMixin::LogInType::kChild,
+                                   LoggedInUserMixin::LogInType::kRegular),
+        TransitionScreenTestParams(LoggedInUserMixin::LogInType::kRegular,
+                                   LoggedInUserMixin::LogInType::kChild),
+        TransitionScreenTestParams(LoggedInUserMixin::LogInType::kRegular,
+                                   LoggedInUserMixin::LogInType::kRegular,
+                                   true /* use_managed_account */)));
 
 }  // namespace
 }  // namespace ash

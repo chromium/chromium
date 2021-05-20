@@ -4237,6 +4237,12 @@
   </message>
 
   <!-- Supervision transition OOBE screen. -->
+  <message name="IDS_ADDING_MANAGEMENT_TITLE" desc="Title of the management transition OOBE scree when user transitions to managed state. MANAGER can be a domain or an email address.">
+    Setting up management by <ph name="MANAGER">$1<ex>example.com</ex></ph>
+  </message>
+  <message name="IDS_ADDING_MANAGEMENT_TITLE_UNKNOWN_ADMIN" desc="Title of the management transition OOBE scree when user transitions to managed state and managment entity is unknown.">
+    Setting up management
+  </message>
   <message name="IDS_REMOVING_SUPERVISION_TITLE" desc="Title of the supervision transition OOBE screen when stopping supervision.">
     Stopping supervision...
   </message>
