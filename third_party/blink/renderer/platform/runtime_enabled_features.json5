@@ -116,6 +116,11 @@
       status: "stable",
     },
     {
+      name: "AccessibilityAriaTouchPassthrough",
+      status: "experimental",
+      origin_trial_feature_name: "AccessibilityAriaTouchPassthrough",
+    },
+    {
       name: "AccessibilityAriaVirtualContent",
       status: "experimental",
     },

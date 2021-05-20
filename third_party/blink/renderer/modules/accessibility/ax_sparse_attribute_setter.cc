@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/accessibility/ax_sparse_attribute_setter.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -21,6 +23,18 @@ void SetBoolAttribute(ax::mojom::blink::BoolAttribute attribute,
                       AXObject* object,
                       ui::AXNodeData* node_data,
                       const AtomicString& value) {
+  // Don't set kTouchPassthrough unless the feature is enabled in this
+  // context.
+  if (attribute == ax::mojom::blink::BoolAttribute::kTouchPassthrough) {
+    auto* context = object->AXObjectCache().GetDocument().GetExecutionContext();
+    if (RuntimeEnabledFeatures::AccessibilityAriaTouchPassthroughEnabled(
+            context)) {
+      UseCounter::Count(context, WebFeature::kAccessibilityTouchPassthroughSet);
+    } else {
+      return;
+    }
+  }
+
   // ARIA booleans are true if not "false" and not specifically undefined.
   bool is_true = !AccessibleNode::IsUndefinedAttrValue(value) &&
                  !EqualIgnoringASCIICase(value, "false");

@@ -56,6 +56,8 @@ void AccessibilityHitTestingBrowserTest::SetUpCommandLine(
       base::StringPrintf("%.2f", device_scale_factor));
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kEnableUseZoomForDSF, use_zoom_for_dsf ? "true" : "false");
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "AccessibilityAriaTouchPassthrough");
 }
 
 std::string AccessibilityHitTestingBrowserTest::TestPassToString::operator()(

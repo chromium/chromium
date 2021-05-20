@@ -32554,6 +32554,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3917" label="ControlledWorkerWillBeUncontrolled"/>
   <int value="3918" label="ARIATouchpassthroughAttribute"/>
   <int value="3919" label="ARIAVirtualcontentAttribute"/>
+  <int value="3920" label="AccessibilityTouchPassthroughSet"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
