@@ -117,6 +117,14 @@ TEST_F('PrintPreviewPagesSettingsTest', 'PagesDropdown', function() {
   this.runMochaTest(pages_settings_test.TestNames.PagesDropdown);
 });
 
+TEST_F('PrintPreviewPagesSettingsTest', 'NoParityOptions', function() {
+  this.runMochaTest(pages_settings_test.TestNames.NoParityOptions);
+});
+
+TEST_F('PrintPreviewPagesSettingsTest', 'ParitySelectionMemorized', function() {
+  this.runMochaTest(pages_settings_test.TestNames.ParitySelectionMemorized);
+});
+
 TEST_F('PrintPreviewPagesSettingsTest', 'ValidPageRanges', function() {
   this.runMochaTest(pages_settings_test.TestNames.ValidPageRanges);
 });

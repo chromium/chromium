@@ -13,6 +13,8 @@ pages_settings_test.suiteName = 'PagesSettingsTest';
 /** @enum {string} */
 pages_settings_test.TestNames = {
   PagesDropdown: 'pages dropdown',
+  NoParityOptions: 'no parity options',
+  ParitySelectionMemorized: 'parity selection memorized',
   ValidPageRanges: 'valid page ranges',
   InvalidPageRanges: 'invalid page ranges',
   NupChangesPages: 'nup changes pages',
@@ -82,7 +84,7 @@ suite(pages_settings_test.suiteName, function() {
   // Verifies that the pages setting updates correctly when the dropdown
   // changes.
   test(assert(pages_settings_test.TestNames.PagesDropdown), async () => {
-    pagesSection.pageCount = 3;
+    pagesSection.pageCount = 5;
 
     // Default value is all pages.
     const pagesSelect = pagesSection.$$('select');
@@ -91,8 +93,22 @@ suite(pages_settings_test.suiteName, function() {
     const pagesInput = pagesCrInput.inputElement;
 
     assertFalse(pagesSection.getSetting('ranges').setFromUi);
-    validateState([1, 2, 3], [], '', false);
+    validateState([1, 2, 3, 4, 5], [], '', false);
     assertFalse(customInputCollapse.opened);
+
+    // Set selection to odd pages.
+    await selectOption(
+        pagesSection, pagesSection.pagesValueEnum_.ODDS.toString());
+    assertFalse(customInputCollapse.opened);
+    validateState(
+        [1, 3, 5], [{from: 1, to: 1}, {from: 3, to: 3}, {from: 5, to: 5}], '',
+        false);
+
+    // Set selection to even pages.
+    await selectOption(
+        pagesSection, pagesSection.pagesValueEnum_.EVENS.toString());
+    assertFalse(customInputCollapse.opened);
+    validateState([2, 4], [{from: 2, to: 2}, {from: 4, to: 4}], '', false);
 
     // Set selection of pages 1 and 2.
     await selectOption(
@@ -107,7 +123,7 @@ suite(pages_settings_test.suiteName, function() {
     await selectOption(
         pagesSection, pagesSection.pagesValueEnum_.ALL.toString());
     assertFalse(customInputCollapse.opened);
-    validateState([1, 2, 3], [], '', false);
+    validateState([1, 2, 3, 4, 5], [], '', false);
 
     // Re-select custom. The previously entered value should be
     // restored.
@@ -118,9 +134,52 @@ suite(pages_settings_test.suiteName, function() {
 
     // Set a selection equal to the full page range. This should set ranges to
     // empty, so that reselecting "all" does not regenerate the preview.
-    await setCustomInput('1-3');
-    validateState([1, 2, 3], [], '', false);
+    await setCustomInput('1-5');
+    validateState([1, 2, 3, 4, 5], [], '', false);
   });
+
+  // Tests that the odd-only and even-only options are hidden when the document
+  // has only one page.
+  test(assert(pages_settings_test.TestNames.NoParityOptions), async () => {
+    pagesSection.pageCount = 1;
+
+    const oddOption =
+        pagesSection.$$(`[value="${pagesSection.pagesValueEnum_.ODDS}"]`);
+    assertTrue(oddOption.hidden);
+
+    const evenOption =
+        pagesSection.$$(`[value="${pagesSection.pagesValueEnum_.EVENS}"]`);
+    assertTrue(evenOption.hidden);
+  });
+
+  // Tests that the odd-only and even-only selections are preserved when the
+  // page counts change.
+  test(
+      assert(pages_settings_test.TestNames.ParitySelectionMemorized),
+      async () => {
+        const select = pagesSection.$$('select');
+
+        pagesSection.pageCount = 2;
+        assertEquals(pagesSection.pagesValueEnum_.ALL.toString(), select.value);
+
+        await selectOption(
+            pagesSection, pagesSection.pagesValueEnum_.ODDS.toString());
+        assertEquals(
+            pagesSection.pagesValueEnum_.ODDS.toString(), select.value);
+
+        let whenValueChanged =
+            eventToPromise('process-select-change', pagesSection);
+        pagesSection.pageCount = 1;
+        await whenValueChanged;
+        assertEquals(pagesSection.pagesValueEnum_.ALL.toString(), select.value);
+
+        whenValueChanged =
+            eventToPromise('process-select-change', pagesSection);
+        pagesSection.pageCount = 2;
+        await whenValueChanged;
+        assertEquals(
+            pagesSection.pagesValueEnum_.ODDS.toString(), select.value);
+      });
 
   // Tests that the page ranges set are valid for different user inputs.
   test(assert(pages_settings_test.TestNames.ValidPageRanges), async () => {

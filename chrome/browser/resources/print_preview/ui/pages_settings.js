@@ -9,6 +9,7 @@ import './print_preview_shared_css.js';
 import './settings_section.js';
 import '../strings.m.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -29,7 +30,9 @@ const PagesInputErrorState = {
 /** @enum {number} */
 const PagesValue = {
   ALL: 0,
-  CUSTOM: 1,
+  ODDS: 1,
+  EVENS: 2,
+  CUSTOM: 3,
 };
 
 /**
@@ -68,13 +71,6 @@ Polymer({
       computed: 'computeControlsDisabled_(disabled, hasError_)',
     },
 
-    /** @private {boolean} */
-    customSelected_: {
-      type: Boolean,
-      value: false,
-      observer: 'onCustomSelectedChange_',
-    },
-
     /** @private {number} */
     errorState_: {
       type: Number,
@@ -100,6 +96,13 @@ Polymer({
     rangesToPrint_: {
       type: Array,
       computed: 'computeRangesToPrint_(pagesToPrint_)',
+    },
+
+    /** @private {number} */
+    selection_: {
+      type: Number,
+      value: PagesValue.ALL,
+      observer: 'onSelectionChange_',
     },
 
     /**
@@ -131,6 +134,14 @@ Polymer({
   restoreLastInput_: true,
 
   /**
+   * Memorizes the user's last non-custom pages setting. Used when
+   * `PagesValue.ODDS` and `PagesValue.EVEN` become invalid due to a changed
+   * page count.
+   * @private {number}
+   */
+  resorationValue_: PagesValue.ALL,
+
+  /**
    * Initialize |selectedValue| in attached() since this doesn't observe
    * settings.pages, because settings.pages is not sticky.
    * @override
@@ -145,6 +156,15 @@ Polymer({
   },
 
   /**
+   * @param {number} value
+   * @private
+   */
+  setSelectedValue_(value) {
+    this.selectedValue = value.toString();
+    this.$$('select').dispatchEvent(new CustomEvent('change'));
+  },
+
+  /**
    * @param {!CustomEvent<string>} e Contains the new input value.
    * @private
    */
@@ -156,12 +176,12 @@ Polymer({
   },
 
   onProcessSelectChange(value) {
-    this.customSelected_ = value === PagesValue.CUSTOM.toString();
+    this.selection_ = parseInt(value, 10);
   },
 
   /** @private */
   onCollapseChanged_() {
-    if (this.customSelected_) {
+    if (this.selection_ === PagesValue.CUSTOM) {
       /** @type {!CrInputElement} */ (this.$.pageSettingsCustomInput)
           .inputElement.focus();
     }
@@ -182,11 +202,19 @@ Polymer({
    * @private
    */
   updatePagesToPrint_() {
-    if (!this.customSelected_) {
+    if (this.selection_ !== PagesValue.CUSTOM) {
       this.errorState_ = PagesInputErrorState.NO_ERROR;
-      this.pagesToPrint_ = this.pageCount ?
-          Array.from(new Array(this.pageCount).fill(0), (_, i) => i + 1) :
-          [];
+      if (!this.pageCount) {
+        this.pagesToPrint_ = [];
+        return;
+      }
+
+      const first = this.selection_ === PagesValue.EVENS ? 2 : 1;
+      const step = this.selection_ === PagesValue.ALL ? 1 : 2;
+      assert(first === 1 || this.pageCount !== 1);
+
+      const length = Math.floor(1 + (this.pageCount - first) / step);
+      this.pagesToPrint_ = Array.from({length}, (_, i) => step * i + first);
       return;
     } else if (this.inputString_ === '') {
       this.errorState_ = PagesInputErrorState.EMPTY;
@@ -356,7 +384,7 @@ Polymer({
 
   /** @private */
   onSelectBlur_(event) {
-    if (!this.customSelected_ ||
+    if (this.selection_ !== PagesValue.CUSTOM ||
         event.relatedTarget === this.$.pageSettingsCustomInput) {
       return;
     }
@@ -399,6 +427,14 @@ Polymer({
   },
 
   /**
+   * @return {boolean} Whether the document being printed has only one page.
+   * @private
+   */
+  isSinglePage_() {
+    return this.pageCount === 1;
+  },
+
+  /**
    * @return {boolean} Whether to hide the hint.
    * @private
    */
@@ -412,7 +448,15 @@ Polymer({
    * @private
    */
   inputDisabled_() {
-    return !this.customSelected_ || this.controlsDisabled_;
+    return this.selection_ !== PagesValue.CUSTOM || this.controlsDisabled_;
+  },
+
+  /**
+   * @return {boolean} Whether to display the custom input.
+   * @private
+   */
+  shouldShowInput_() {
+    return this.selection_ === PagesValue.CUSTOM;
   },
 
   /**
@@ -428,8 +472,9 @@ Polymer({
   },
 
   /** @private */
-  onCustomSelectedChange_() {
-    if ((this.customSelected_ && !this.restoreLastInput_) ||
+  onSelectionChange_() {
+    const customSelected = this.selection_ === PagesValue.CUSTOM;
+    if ((customSelected && !this.restoreLastInput_) ||
         this.errorState_ !== PagesInputErrorState.NO_ERROR) {
       this.restoreLastInput_ = true;
       this.inputString_ = '';
@@ -445,11 +490,23 @@ Polymer({
    * @private
    */
   onPageCountChange_(current, previous) {
+    // Remember non-custom page settings when the page count changes to 1, so
+    // they can be re-applied if the page count exceeds 1 again.
+    if (this.selection_ !== PagesValue.CUSTOM) {
+      if (current === 1) {
+        this.resorationValue_ = this.selection_;
+        this.setSelectedValue_(PagesValue.ALL);
+      } else if (previous === 1) {
+        assert(this.resorationValue_ !== PagesValue.CUSTOM);
+        this.setSelectedValue_(this.resorationValue_);
+      }
+    }
+
     // Reset the custom input to the new "all pages" value if it is equal to the
     // full page range and was either set automatically, or would become invalid
     // due to the page count change.
-    const resetCustom = this.customSelected_ && !!this.pagesToPrint_ &&
-        this.pagesToPrint_.length === previous &&
+    const resetCustom = this.selection_ === PagesValue.CUSTOM &&
+        !!this.pagesToPrint_ && this.pagesToPrint_.length === previous &&
         (current < previous || !this.restoreLastInput_);
 
     if (resetCustom) {

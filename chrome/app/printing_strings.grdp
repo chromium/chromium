@@ -50,6 +50,12 @@
     <message name="IDS_PRINT_PREVIEW_OPTION_ALL_PAGES" desc="Option to print all pages.">
       All
     </message>
+    <message name="IDS_PRINT_PREVIEW_OPTION_ODD_PAGES" desc="Option to print odd numbered pages only.">
+      Odd pages only
+    </message>
+    <message name="IDS_PRINT_PREVIEW_OPTION_EVEN_PAGES" desc="Option to print even numbered pages only.">
+      Even pages only
+    </message>
     <message name="IDS_PRINT_PREVIEW_OPTION_CUSTOM_PAGES" desc="Option to print custom pages.">
       Custom
     </message>
