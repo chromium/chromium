@@ -452,7 +452,7 @@ config("compiler") {
 
   # Linux-specific compiler flags setup.
   # ------------------------------------
-  if ((is_posix || is_fuchsia) && use_lld) {
+  if ((is_posix || is_fuchsia) && !is_apple && use_lld) {
     if (current_cpu == "arm64") {
       # Reduce the page size from 65536 in order to reduce binary size slightly
       # by shrinking the alignment gap between segments. This also causes all
