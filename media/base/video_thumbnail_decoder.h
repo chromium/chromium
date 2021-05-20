@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/media_export.h"
@@ -32,6 +31,8 @@ class MEDIA_EXPORT VideoThumbnailDecoder {
   VideoThumbnailDecoder(std::unique_ptr<VideoDecoder> decoder,
                         const VideoDecoderConfig& config,
                         std::vector<uint8_t> encoded_data);
+  VideoThumbnailDecoder(const VideoThumbnailDecoder&) = delete;
+  VideoThumbnailDecoder& operator=(const VideoThumbnailDecoder&) = delete;
   ~VideoThumbnailDecoder();
 
   // Starts to decode the video frame.
@@ -56,8 +57,6 @@ class MEDIA_EXPORT VideoThumbnailDecoder {
 
   VideoFrameCallback video_frame_callback_;
   base::WeakPtrFactory<VideoThumbnailDecoder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoThumbnailDecoder);
 };
 
 }  // namespace media

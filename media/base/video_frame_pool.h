@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/base/video_frame.h"
 
@@ -28,6 +27,8 @@ namespace media {
 class MEDIA_EXPORT VideoFramePool {
  public:
   VideoFramePool();
+  VideoFramePool(const VideoFramePool&) = delete;
+  VideoFramePool& operator=(const VideoFramePool&) = delete;
   ~VideoFramePool();
 
   // Returns a frame from the pool that matches the specified
@@ -53,8 +54,6 @@ class MEDIA_EXPORT VideoFramePool {
  private:
   class PoolImpl;
   scoped_refptr<PoolImpl> pool_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFramePool);
 };
 
 }  // namespace media

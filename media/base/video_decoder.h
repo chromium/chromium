@@ -5,7 +5,6 @@
 #ifndef MEDIA_BASE_VIDEO_DECODER_H_
 #define MEDIA_BASE_VIDEO_DECODER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/decode_status.h"
 #include "media/base/decoder.h"
@@ -39,6 +38,8 @@ class MEDIA_EXPORT VideoDecoder : public Decoder {
   using DecodeCB = base::OnceCallback<void(Status)>;
 
   VideoDecoder();
+  VideoDecoder(const VideoDecoder&) = delete;
+  VideoDecoder& operator=(const VideoDecoder&) = delete;
   ~VideoDecoder() override;
 
   // Initializes a VideoDecoder with the given |config|, executing the
@@ -129,9 +130,6 @@ class MEDIA_EXPORT VideoDecoder : public Decoder {
   // this should return the underlying type, if it is known, otherwise return
   // its own type.
   virtual VideoDecoderType GetDecoderType() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoder);
 };
 
 }  // namespace media

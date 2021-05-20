@@ -74,6 +74,10 @@ class RawAnnexBBuffer : public AnnexBBuffer {
       : annexb_buffer_(annexb_buffer),
         annexb_buffer_size_(annexb_buffer_size),
         annexb_buffer_offset_(0) {}
+  RawAnnexBBuffer() = delete;
+  RawAnnexBBuffer(const RawAnnexBBuffer&) = delete;
+  RawAnnexBBuffer& operator=(const RawAnnexBBuffer&) = delete;
+
   bool Reserve(size_t size) override {
     reserved_size_ = size;
     return size <= annexb_buffer_size_;
@@ -90,14 +94,16 @@ class RawAnnexBBuffer : public AnnexBBuffer {
   size_t annexb_buffer_size_;
   size_t annexb_buffer_offset_;
   size_t reserved_size_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(RawAnnexBBuffer);
 };
 
 class StringAnnexBBuffer : public AnnexBBuffer {
  public:
   explicit StringAnnexBBuffer(std::string* str_annexb_buffer)
       : str_annexb_buffer_(str_annexb_buffer) {}
+  StringAnnexBBuffer() = delete;
+  StringAnnexBBuffer(const StringAnnexBBuffer&) = delete;
+  StringAnnexBBuffer& operator=(const StringAnnexBBuffer&) = delete;
+
   bool Reserve(size_t size) override {
     str_annexb_buffer_->reserve(size);
     return true;
@@ -109,7 +115,6 @@ class StringAnnexBBuffer : public AnnexBBuffer {
 
  private:
   std::string* str_annexb_buffer_;
-  DISALLOW_IMPLICIT_CONSTRUCTORS(StringAnnexBBuffer);
 };
 
 template <typename NalSizeType>

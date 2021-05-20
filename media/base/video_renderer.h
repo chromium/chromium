@@ -6,7 +6,6 @@
 #define MEDIA_BASE_VIDEO_RENDERER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/time_source.h"
@@ -21,6 +20,8 @@ class RendererClient;
 class MEDIA_EXPORT VideoRenderer {
  public:
   VideoRenderer();
+  VideoRenderer(const VideoRenderer&) = delete;
+  VideoRenderer& operator=(const VideoRenderer&) = delete;
 
   // Stops all operations and fires all pending callbacks.
   virtual ~VideoRenderer();
@@ -69,9 +70,6 @@ class MEDIA_EXPORT VideoRenderer {
   // |latency_hint| may be nullopt to indicate the hint has been cleared
   // (restore UA default).
   virtual void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoRenderer);
 };
 
 }  // namespace media

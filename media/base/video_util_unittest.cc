@@ -9,7 +9,6 @@
 #include <cmath>
 #include <memory>
 
-#include "base/macros.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -151,7 +150,8 @@ class VideoUtilTest : public testing::Test {
         u_stride_(0),
         v_stride_(0) {
   }
-
+  VideoUtilTest(const VideoUtilTest&) = delete;
+  VideoUtilTest& operator=(const VideoUtilTest&) = delete;
   ~VideoUtilTest() override = default;
 
   void CreateSourceFrame(int width, int height,
@@ -187,8 +187,6 @@ class VideoUtilTest : public testing::Test {
   int v_stride_;
 
   scoped_refptr<VideoFrame> destination_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoUtilTest);
 };
 
 TEST_F(VideoUtilTest, GetPixelAspectRatio) {
@@ -408,15 +406,14 @@ class VideoUtilRotationTest
   VideoUtilRotationTest() {
     dest_.reset(new uint8_t[GetParam().width * GetParam().height]);
   }
-
-  virtual ~VideoUtilRotationTest() = default;
+  VideoUtilRotationTest(const VideoUtilRotationTest&) = delete;
+  VideoUtilRotationTest& operator=(const VideoUtilRotationTest&) = delete;
+  ~VideoUtilRotationTest() override = default;
 
   uint8_t* dest_plane() { return dest_.get(); }
 
  private:
   std::unique_ptr<uint8_t[]> dest_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoUtilRotationTest);
 };
 
 TEST_P(VideoUtilRotationTest, Rotate) {

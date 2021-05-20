@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -19,6 +18,8 @@ class VideoFramePool::PoolImpl
     : public base::RefCountedThreadSafe<VideoFramePool::PoolImpl> {
  public:
   PoolImpl();
+  PoolImpl(const PoolImpl&) = delete;
+  PoolImpl& operator=(const PoolImpl&) = delete;
 
   // See VideoFramePool::CreateFrame() for usage. Attempts to keep |frames_| in
   // LRU order by always pulling from the back of |frames_|.
@@ -65,8 +66,6 @@ class VideoFramePool::PoolImpl
 
   // |tick_clock_| is always a DefaultTickClock outside of testing.
   const base::TickClock* tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PoolImpl);
 };
 
 VideoFramePool::PoolImpl::PoolImpl()

@@ -6,7 +6,6 @@
 #define MEDIA_BASE_VIDEO_ENCODER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
 #include "media/base/video_codecs.h"
@@ -73,6 +72,8 @@ class MEDIA_EXPORT VideoEncoder {
   using StatusCB = base::OnceCallback<void(Status error)>;
 
   VideoEncoder();
+  VideoEncoder(const VideoEncoder&) = delete;
+  VideoEncoder& operator=(const VideoEncoder&) = delete;
   virtual ~VideoEncoder();
 
   // Initializes a VideoEncoder with the given |options|, executing the
@@ -117,9 +118,6 @@ class MEDIA_EXPORT VideoEncoder {
   // Requests all outputs for already encoded frames to be
   // produced via |output_cb| and calls |dene_cb| after that.
   virtual void Flush(StatusCB done_cb) = 0;
-
- protected:
-  DISALLOW_COPY_AND_ASSIGN(VideoEncoder);
 };
 
 }  // namespace media

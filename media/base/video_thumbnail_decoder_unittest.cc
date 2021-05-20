@@ -28,8 +28,11 @@ namespace {
 
 class VideoThumbnailDecoderTest : public testing::Test {
  public:
-  VideoThumbnailDecoderTest() {}
-  ~VideoThumbnailDecoderTest() override {}
+  VideoThumbnailDecoderTest() = default;
+  VideoThumbnailDecoderTest(const VideoThumbnailDecoderTest&) = delete;
+  VideoThumbnailDecoderTest& operator=(const VideoThumbnailDecoderTest&) =
+      delete;
+  ~VideoThumbnailDecoderTest() override = default;
 
  protected:
   void SetUp() override {
@@ -76,8 +79,6 @@ class VideoThumbnailDecoderTest : public testing::Test {
 
   // The video frame returned from the thumbnail decoder.
   scoped_refptr<VideoFrame> frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoThumbnailDecoderTest);
 };
 
 // Verifies a video frame can be delivered when decoder successfully created

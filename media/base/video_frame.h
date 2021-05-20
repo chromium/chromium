@@ -16,7 +16,6 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/hash/md5.h"
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -104,15 +103,20 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // the GPU Command Buffer and wait for it.
   class SyncTokenClient {
    public:
-    SyncTokenClient() {}
+    SyncTokenClient() = default;
+    SyncTokenClient(const SyncTokenClient&) = delete;
+    SyncTokenClient& operator=(const SyncTokenClient&) = delete;
+
     virtual void GenerateSyncToken(gpu::SyncToken* sync_token) = 0;
     virtual void WaitSyncToken(const gpu::SyncToken& sync_token) = 0;
 
    protected:
-    virtual ~SyncTokenClient() {}
-
-    DISALLOW_COPY_AND_ASSIGN(SyncTokenClient);
+    virtual ~SyncTokenClient() = default;
   };
+
+  VideoFrame() = delete;
+  VideoFrame(const VideoFrame&) = delete;
+  VideoFrame& operator=(const VideoFrame&) = delete;
 
   // Returns true if frame configuration is valid.
   static bool IsValidConfig(VideoPixelFormat format,
@@ -619,7 +623,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
              const gfx::Size& natural_size,
              base::TimeDelta timestamp,
              FrameControlType frame_control_type = FrameControlType::kNone);
-
   virtual ~VideoFrame();
 
   // Creates a summary of the configuration settings provided as parameters.
@@ -754,8 +757,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Allocation which makes up |data_| planes for self-allocated frames.
   std::unique_ptr<uint8_t, base::FreeDeleter> private_data_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(VideoFrame);
 };
 
 }  // namespace media
