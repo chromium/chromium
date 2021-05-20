@@ -373,6 +373,39 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DownloadDeviceData_Success) {
   EXPECT_EQ(kFakeIconUrl, manager()->GetIconUrl());
 }
 
+TEST_F(NearbyShareLocalDeviceDataManagerImplTest,
+       DownloadDeviceData_EmptyData) {
+  CreateManager();
+  EXPECT_FALSE(manager()->GetFullName());
+  EXPECT_FALSE(manager()->GetIconUrl());
+  EXPECT_TRUE(notifications().empty());
+
+  // The server returns empty strings for the full name and icon URL.
+  // GetFullName() and GetIconUrl() should return non-nullopt values even though
+  // they are trivial values.
+  DownloadDeviceData(CreateResponse("", ""));
+  EXPECT_EQ("", manager()->GetFullName());
+  EXPECT_EQ("", manager()->GetIconUrl());
+  EXPECT_EQ(1u, notifications().size());
+  EXPECT_EQ(ObserverNotification(/*did_device_name_change=*/false,
+                                 /*did_full_name_change=*/true,
+                                 /*did_icon_url_change=*/true),
+            notifications()[0]);
+
+  // Return empty strings again. Ensure that the trivial full name and icon URL
+  // values are not considered changed and no notification is sent.
+  DownloadDeviceData(CreateResponse("", ""));
+  EXPECT_EQ("", manager()->GetFullName());
+  EXPECT_EQ("", manager()->GetIconUrl());
+  EXPECT_EQ(1u, notifications().size());
+
+  // The data is persisted.
+  DestroyManager();
+  CreateManager();
+  EXPECT_EQ("", manager()->GetFullName());
+  EXPECT_EQ("", manager()->GetIconUrl());
+}
+
 TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DownloadDeviceData_Failure) {
   CreateManager();
   DownloadDeviceData(/*response=*/base::nullopt);
