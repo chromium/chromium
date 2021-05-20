@@ -30,7 +30,7 @@ bool ReportQueueProvider::IsEncryptedReportingPipelineEnabled() {
 
 // static
 const base::Feature ReportQueueProvider::kEncryptedReportingPipeline{
-    "EncryptedReportingPipeline", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EncryptedReportingPipeline", base::FEATURE_ENABLED_BY_DEFAULT};
 
 ReportQueueProvider::ReportQueueProvider()
     : create_request_queue_(SharedQueue<CreateReportQueueRequest>::Create()),

@@ -24,7 +24,7 @@ class EncryptionModuleInterface
   using PublicKeyId = int32_t;
 
   // Feature to enable/disable encryption.
-  // By default encryption is disabled, until server can support decryption.
+  // By default encryption is disabled.
   static const char kEncryptedReporting[];
 
   explicit EncryptionModuleInterface(
@@ -58,7 +58,6 @@ class EncryptionModuleInterface
   bool need_encryption_key() const;
 
   // Returns 'true' if |kEncryptedReporting| feature is enabled.
-  // To be removed once encryption becomes mandatory.
   static bool is_enabled();
 
  protected:

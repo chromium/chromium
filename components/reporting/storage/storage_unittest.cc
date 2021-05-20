@@ -511,6 +511,10 @@ class StorageTest
       decryptor_ = std::move(decryptor_result.ValueOrDie());
       // First creation of Storage would need key delivered.
       expect_to_need_key_ = true;
+    } else {
+      // Disable encryption.
+      scoped_feature_list_.InitFromCommandLine(
+          {}, {EncryptionModuleInterface::kEncryptedReporting});
     }
   }
 

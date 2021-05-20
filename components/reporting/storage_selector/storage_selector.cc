@@ -42,9 +42,9 @@ const base::Feature kProvideUploaderFeature{StorageSelector::kProvideUploader,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
-const char StorageSelector::kUseMissiveDaemon[] = "connect_misive_daemon";
+const char StorageSelector::kUseMissiveDaemon[] = "ConnectMissiveDaemon";
 // static
-const char StorageSelector::kProvideUploader[] = "provide_upload";
+const char StorageSelector::kProvideUploader[] = "ProvideUploader";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // static

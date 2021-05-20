@@ -165,7 +165,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecrypt) {
 TEST_F(EncryptionModuleTest, EncryptionDisabled) {
   constexpr char kTestString[] = "ABCDEF";
 
-  // Disable encryption.
+  // Disable encryption for this test.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitFromCommandLine(
       {}, {EncryptionModuleInterface::kEncryptedReporting});

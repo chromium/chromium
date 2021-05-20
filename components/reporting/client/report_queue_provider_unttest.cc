@@ -86,12 +86,6 @@ class MockReportQueueProvider : public ReportQueueProvider {
 
 class ReportQueueProviderTest : public ::testing::Test {
  protected:
-  void SetUp() override {
-    // Enable reporting.
-    scoped_feature_list_.InitAndEnableFeature(
-        reporting::ReportQueueProvider::kEncryptedReportingPipeline);
-  }
-
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
