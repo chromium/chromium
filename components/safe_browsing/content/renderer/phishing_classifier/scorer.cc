@@ -221,10 +221,20 @@ Scorer* Scorer::Create(const base::StringPiece& model_str,
 
   if (!model_str.empty()) {
     for (int i = 0; i < model.page_term_size(); ++i) {
+      if (model.page_term(i) < 0 || model.page_term(i) >= model.hashes().size())
+        return nullptr;
       scorer->page_terms_.insert(model.hashes(model.page_term(i)));
     }
     for (int i = 0; i < model.page_word_size(); ++i) {
       scorer->page_words_.insert(model.page_word(i));
+    }
+
+    for (const ClientSideModel::Rule& rule : model.rule()) {
+      for (int feature_index : rule.feature()) {
+        if (feature_index < 0 || feature_index >= model.hashes().size()) {
+          return nullptr;
+        }
+      }
     }
   }
 

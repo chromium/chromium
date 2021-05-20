@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 static_library("features") {
@@ -37,7 +38,7 @@ source_set("features_unittest") {
 # the protos in the same directory.  Those protos also need to import csd.proto
 # using a path from the source root, otherwise they won't compile.
 
-proto_library("csd_proto") {
+fuzzable_proto_library("csd_proto") {
   proto_in_dir = "//"
   sources = [ "proto/csd.proto" ]
 }
@@ -52,7 +53,7 @@ proto_library("realtimeapi_proto") {
   deps = [ ":csd_proto" ]
 }
 
-proto_library("client_model_proto") {
+fuzzable_proto_library("client_model_proto") {
   proto_in_dir = "//"
   sources = [ "proto/client_model.proto" ]
   deps = [ ":csd_proto" ]
