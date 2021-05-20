@@ -199,18 +199,11 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
                              closeButton:(BOOL)closeButton {
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  // The sign-in promo is not visible when showing illustrated empty states.
-  if (![ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(
-                                     grey_accessibilityID(kSigninPromoViewId),
-                                     grey_sufficientlyVisible(), nil)]
-        assertWithMatcher:grey_notNil()];
-  }
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
+
   switch (mode) {
     case SigninPromoViewModeNoAccounts:
     case SigninPromoViewModeSyncWithPrimaryAccount:
@@ -220,15 +213,11 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
           assertWithMatcher:grey_nil()];
       break;
     case SigninPromoViewModeSigninWithAccount:
-      if (![ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
-        [[EarlGrey
-            selectElementWithMatcher:grey_allOf(SecondarySignInButton(),
-                                                grey_sufficientlyVisible(),
-                                                nil)]
-            assertWithMatcher:grey_notNil()];
-      }
+      // TODO(crbug.com/1210846): Determine when the SecondarySignInButton
+      // should be present and assert that.
       break;
   }
+
   if (closeButton) {
     [[EarlGrey
         selectElementWithMatcher:grey_allOf(grey_accessibilityID(

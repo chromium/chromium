@@ -1021,10 +1021,6 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
   return webClientUserAgent == web::UserAgentType::MOBILE;
 }
 
-+ (BOOL)isIllustratedEmptyStatesEnabled {
-  return base::FeatureList::IsEnabled(kIllustratedEmptyStates);
-}
-
 + (BOOL)isNativeContextMenusEnabled {
   return IsNativeContextMenuEnabled();
 }

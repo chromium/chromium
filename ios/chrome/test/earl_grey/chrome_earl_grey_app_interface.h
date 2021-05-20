@@ -505,9 +505,6 @@
 // Returns whether the mobile version of the websites are requested by default.
 + (BOOL)isMobileModeByDefault WARN_UNUSED_RESULT;
 
-// Returns whether the illustrated empty states feature is enabled.
-+ (BOOL)isIllustratedEmptyStatesEnabled;
-
 // Returns whether the native context menus feature is enabled or not.
 + (BOOL)isNativeContextMenusEnabled;
 

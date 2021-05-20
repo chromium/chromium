@@ -169,24 +169,24 @@ class ScopedDisableTimerTracking {
 }
 
 - (void)assertHistoryHasNoEntries {
-  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kTableViewIllustratedEmptyViewID)]
-        assertWithMatcher:grey_notNil()];
+  // Make sure the empty state illustration, title and subtitle are present.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTableViewIllustratedEmptyViewID)]
+      assertWithMatcher:grey_notNil()];
 
-    id<GREYMatcher> noHistoryMessageMatcher = grey_allOf(
-        grey_text(l10n_util::GetNSString(IDS_IOS_HISTORY_EMPTY_TITLE)),
-        grey_sufficientlyVisible(), nil);
-    [[EarlGrey selectElementWithMatcher:noHistoryMessageMatcher]
-        assertWithMatcher:grey_notNil()];
-  } else {
-    id<GREYMatcher> noHistoryMessageMatcher =
-        grey_allOf(grey_text(l10n_util::GetNSString(IDS_HISTORY_NO_RESULTS)),
-                   grey_sufficientlyVisible(), nil);
-    [[EarlGrey selectElementWithMatcher:noHistoryMessageMatcher]
-        assertWithMatcher:grey_notNil()];
-  }
+  id<GREYMatcher> noHistoryTitleMatcher =
+      grey_allOf(grey_text(l10n_util::GetNSString(IDS_IOS_HISTORY_EMPTY_TITLE)),
+                 grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:noHistoryTitleMatcher]
+      assertWithMatcher:grey_notNil()];
 
+  id<GREYMatcher> noHistoryMessageMatcher = grey_allOf(
+      grey_text(l10n_util::GetNSString(IDS_IOS_HISTORY_EMPTY_MESSAGE)),
+      grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:noHistoryMessageMatcher]
+      assertWithMatcher:grey_notNil()];
+
+  // Make sure there are no history entry cells.
   id<GREYMatcher> historyEntryMatcher =
       grey_allOf(grey_kindOfClassName(@"TableViewURLCell"),
                  grey_sufficientlyVisible(), nil);

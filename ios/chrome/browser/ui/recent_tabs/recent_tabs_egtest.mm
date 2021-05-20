@@ -274,7 +274,7 @@ GURL TestPageURL() {
 }
 
 // Tests that there is a text cell in the Recently Closed section when it's
-// empty (Only with illustrated-empty-states flag enabled).
+// empty.
 - (void)testRecentlyClosedEmptyState {
   OpenRecentTabsPanel();
 
@@ -283,15 +283,11 @@ GURL TestPageURL() {
           grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabelId(
                          IDS_IOS_RECENT_TABS_RECENTLY_CLOSED_EMPTY),
                      grey_sufficientlyVisible(), nil)];
-  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
-    [detailTextCell assertWithMatcher:grey_notNil()];
-  } else {
-    [detailTextCell assertWithMatcher:grey_nil()];
-  }
+  [detailTextCell assertWithMatcher:grey_notNil()];
 }
 
-// Tests that the Signin promo is visible in the Other Devices section
-// (and with illustrated-empty-states enabled, there is the illustrated cell)
+// Tests that the Signin promo is visible in the Other Devices section and that
+// the illustrated cell is present.
 - (void)testOtherDevicesDefaultEmptyState {
   OpenRecentTabsPanel();
 
@@ -301,11 +297,7 @@ GURL TestPageURL() {
               grey_accessibilityID(
                   kRecentTabsOtherDevicesIllustratedCellAccessibilityIdentifier),
               grey_sufficientlyVisible(), nil)];
-  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
-    [illustratedCell assertWithMatcher:grey_notNil()];
-  } else {
-    [illustratedCell assertWithMatcher:grey_nil()];
-  }
+  [illustratedCell assertWithMatcher:grey_notNil()];
 
   // Scroll to sign-in promo, if applicable
   [[EarlGrey
