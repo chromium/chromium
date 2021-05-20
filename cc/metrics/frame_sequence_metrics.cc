@@ -69,7 +69,9 @@ bool ShouldReportForAnimation(FrameSequenceTrackerType sequence_type,
   if (sequence_type == FrameSequenceTrackerType::kCompositorAnimation)
     return thread_type == FrameSequenceMetrics::ThreadType::kCompositor;
 
-  if (sequence_type == FrameSequenceTrackerType::kMainThreadAnimation ||
+  if (sequence_type == FrameSequenceTrackerType::kCanvasAnimation ||
+      sequence_type == FrameSequenceTrackerType::kJSAnimation ||
+      sequence_type == FrameSequenceTrackerType::kMainThreadAnimation ||
       sequence_type == FrameSequenceTrackerType::kRAF)
     return thread_type == FrameSequenceMetrics::ThreadType::kMain;
 
