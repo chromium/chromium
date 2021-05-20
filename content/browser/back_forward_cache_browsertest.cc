@@ -7343,16 +7343,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // On windows, the expected value is off by ~20ms. In order to get the
 // feature out to canary, the test is disabled for WIN.
 // TODO(crbug.com/1022191): Fix this for Win.
-#if defined(OS_WIN)
-#define MAYBE_NavigationStart DISABLED_NavigationStart
-#else
-#define MAYBE_NavigationStart NavigationStart
-#endif
+// TODO(crbug.com/1211428): Flaky on other platforms.
 // Make sure we are exposing the duration between back navigation's
 // navigationStart and the page's original navigationStart through pageshow
 // event's timeStamp, and that we aren't modifying
 // performance.timing.navigationStart.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, MAYBE_NavigationStart) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DISABLED_NavigationStart) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/back_forward_cache/record_navigation_start_time_stamp.html"));
