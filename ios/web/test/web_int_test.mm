@@ -6,7 +6,7 @@
 
 #import "base/ios/block_types.h"
 #include "base/memory/ptr_util.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/common/uikit_ui_util.h"
@@ -94,8 +94,9 @@ bool WebIntTest::ExecuteBlockAndWaitForLoad(const GURL& url,
   DCHECK(block);
 
   IntTestWebStateObserver observer(url);
-  ScopedObserver<WebState, WebStateObserver> scoped_observer(&observer);
-  scoped_observer.Add(web_state());
+  base::ScopedObservation<WebState, WebStateObserver> scoped_observer(
+      &observer);
+  scoped_observer.Observe(web_state());
 
   block();
 

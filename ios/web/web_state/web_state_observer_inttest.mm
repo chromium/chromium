@@ -11,7 +11,7 @@
 #include "base/ios/ios_util.h"
 #import "base/ios/ns_error_util.h"
 #include "base/path_service.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -777,13 +777,13 @@ using test::WaitForWebViewContainingText;
 // WebStatePolicyDecider.
 class WebStateObserverTest : public WebIntTest {
  public:
-  WebStateObserverTest() : scoped_observer_(&observer_) {}
+  WebStateObserverTest() {}
 
   void SetUp() override {
     WebIntTest::SetUp();
 
     decider_ = std::make_unique<StrictMock<PolicyDeciderMock>>(web_state());
-    scoped_observer_.Add(web_state());
+    scoped_observation_.Observe(web_state());
 
     test_server_ = std::make_unique<EmbeddedTestServer>();
     test_server_->RegisterRequestHandler(
@@ -799,7 +799,7 @@ class WebStateObserverTest : public WebIntTest {
   }
 
   void TearDown() override {
-    scoped_observer_.RemoveAll();
+    scoped_observation_.Reset();
     WebIntTest::TearDown();
   }
 
@@ -809,7 +809,8 @@ class WebStateObserverTest : public WebIntTest {
   std::unique_ptr<EmbeddedTestServer> test_server_;
 
  private:
-  ScopedObserver<WebState, WebStateObserver> scoped_observer_;
+  base::ScopedObservation<WebState, WebStateObserver> scoped_observation_{
+      &observer_};
   ::testing::InSequence callbacks_sequence_checker_;
 
   DISALLOW_COPY_AND_ASSIGN(WebStateObserverTest);

@@ -5,7 +5,7 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #import "ios/web/navigation/navigation_context_impl.h"
 #include "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/test/fakes/crw_fake_web_state_observer.h"
@@ -31,16 +31,16 @@ class WebStateObserverBridgeTest : public PlatformTest {
   WebStateObserverBridgeTest()
       : observer_([[CRWFakeWebStateObserver alloc] init]),
         observer_bridge_(observer_),
-        scoped_observer_(&observer_bridge_),
         response_headers_(new net::HttpResponseHeaders(
             std::string(kRawResponseHeaders, sizeof(kRawResponseHeaders)))) {
-    scoped_observer_.Add(&fake_web_state_);
+    scoped_observation_.Observe(&fake_web_state_);
   }
 
   web::FakeWebState fake_web_state_;
   CRWFakeWebStateObserver* observer_;
   WebStateObserverBridge observer_bridge_;
-  ScopedObserver<WebState, WebStateObserver> scoped_observer_;
+  base::ScopedObservation<WebState, WebStateObserver> scoped_observation_{
+      &observer_bridge_};
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
 };
 

@@ -25,7 +25,7 @@ GlobalWebStateEventTracker::GlobalWebStateEventTracker() = default;
 GlobalWebStateEventTracker::~GlobalWebStateEventTracker() = default;
 
 void GlobalWebStateEventTracker::OnWebStateCreated(WebState* web_state) {
-  scoped_observer_.Add(web_state);
+  scoped_observations_.AddObservation(web_state);
 }
 
 void GlobalWebStateEventTracker::AddObserver(GlobalWebStateObserver* observer) {
@@ -62,7 +62,7 @@ void GlobalWebStateEventTracker::RenderProcessGone(WebState* web_state) {
 void GlobalWebStateEventTracker::WebStateDestroyed(WebState* web_state) {
   for (auto& observer : observer_list_)
     observer.WebStateDestroyed(web_state);
-  scoped_observer_.Remove(web_state);
+  scoped_observations_.RemoveObservation(web_state);
 }
 
 }  // namespace web

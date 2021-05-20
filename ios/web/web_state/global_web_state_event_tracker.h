@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ios/web/public/deprecated/global_web_state_observer.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
@@ -48,7 +48,8 @@ class GlobalWebStateEventTracker : public WebStateObserver {
   ~GlobalWebStateEventTracker() override;
 
   // ScopedObserver used to track registration with WebState.
-  ScopedObserver<WebState, WebStateObserver> scoped_observer_{this};
+  base::ScopedMultiSourceObservation<WebState, WebStateObserver>
+      scoped_observations_{this};
 
   // List of observers currently registered with the tracker.
   base::ObserverList<GlobalWebStateObserver, true>::Unchecked observer_list_;
