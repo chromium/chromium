@@ -215,7 +215,8 @@ WebFeedSubscriptionCoordinator::WebFeedSubscriptionCoordinator(
 }
 
 bool WebFeedSubscriptionCoordinator::IsSignedInAndWebFeedsEnabled() const {
-  return base::FeatureList::IsEnabled(kWebFeed) && feed_stream_->IsSignedIn();
+  return feed_stream_->IsEnabledAndVisible() &&
+         base::FeatureList::IsEnabled(kWebFeed) && feed_stream_->IsSignedIn();
 }
 
 WebFeedSubscriptionCoordinator::~WebFeedSubscriptionCoordinator() = default;

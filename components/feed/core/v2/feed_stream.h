@@ -33,6 +33,7 @@
 #include "components/feed/core/v2/web_feed_subscriptions/web_feed_index.h"
 #include "components/feed/core/v2/wire_response_translator.h"
 #include "components/offline_pages/task/task_queue.h"
+#include "components/prefs/pref_member.h"
 
 class PrefService;
 
@@ -271,6 +272,8 @@ class FeedStream : public FeedApi,
 
   bool ClearAllInProgress() const { return clear_all_in_progress_; }
 
+  bool IsEnabledAndVisible();
+
   base::WeakPtr<FeedStream> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -333,6 +336,7 @@ class FeedStream : public FeedApi,
   bool CanLogViews() const;
 
   void MaybeNotifyHasUnreadContent(const StreamType& stream_type);
+  void EnabledPreferencesChanged();
 
   Stream& GetStream(const StreamType& type);
   Stream* FindStream(const StreamType& type);
@@ -363,6 +367,10 @@ class FeedStream : public FeedApi,
   // Mutable state.
   RequestThrottler request_throttler_;
   base::TimeTicks signed_out_for_you_refreshes_until_;
+
+  BooleanPrefMember has_stored_data_;
+  BooleanPrefMember enable_snippets_;
+  BooleanPrefMember articles_list_visible_;
 
   // State loaded at startup:
   feedstore::Metadata metadata_;

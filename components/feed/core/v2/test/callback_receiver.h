@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -52,6 +53,9 @@ class CallbackReceiver : public internal::CallbackReceiverBase {
   }
   base::OnceCallback<void(T...)> Bind() {
     return base::BindOnce(&CallbackReceiver::Done, GetWeakPtr());
+  }
+  base::RepeatingCallback<void(T...)> BindRepeating() {
+    return base::BindRepeating(&CallbackReceiver::Done, GetWeakPtr());
   }
 
   void Clear() {
@@ -97,6 +101,10 @@ class CallbackReceiver<> : public internal::CallbackReceiverBase {
 
   base::OnceClosure Bind() {
     return base::BindOnce(&CallbackReceiverBase::Done, base::Unretained(this));
+  }
+  base::RepeatingClosure BindRepeating() {
+    return base::BindRepeating(&CallbackReceiverBase::Done,
+                               base::Unretained(this));
   }
 };
 

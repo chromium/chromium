@@ -357,7 +357,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   DisplayMetrics GetDisplayMetrics() override;
   std::string GetLanguageTag() override;
   bool IsAutoplayEnabled() override;
-  void ClearAll() override {}
+  void ClearAll() override;
   std::string GetSyncSignedInGaia() override;
   void PrefetchImage(const GURL& url) override;
   void RegisterExperiments(const Experiments& experiments) override {}
@@ -407,6 +407,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   base::test::ScopedFeatureList scoped_feature_list_;
   int prefetch_image_call_count_ = 0;
   std::vector<GURL> prefetched_images_;
+  base::RepeatingClosure on_clear_all_;
 };
 
 class FeedStreamTestForAllStreamTypes

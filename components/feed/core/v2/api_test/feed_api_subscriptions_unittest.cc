@@ -636,6 +636,20 @@ TEST_F(FeedApiSubscriptionsTest,
   ASSERT_EQ(0, network_.GetListRecommendedWebFeedsRequestCount());
 }
 
+TEST_F(
+    FeedApiSubscriptionsTest,
+    RecommendedAndFollowedWebFeedsAreNotFetchedAfterStartupWhenFeedIsDisabled) {
+  profile_prefs_.SetBoolean(feed::prefs::kEnableSnippets, false);
+  SetUpWithDefaultConfig();
+
+  // Wait until the delayed task would normally run, verify no request is made.
+  task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
+                                  base::TimeDelta::FromSeconds(1));
+  WaitForIdleTaskQueue();
+  EXPECT_EQ(0, network_.GetListRecommendedWebFeedsRequestCount());
+  EXPECT_EQ(0, network_.GetListFollowedWebFeedsRequestCount());
+}
+
 TEST_F(FeedApiSubscriptionsTest, RecommendedWebFeedsAreFetchedAfterStartup) {
   SetUpWithDefaultConfig();
   InjectRecommendedWebFeedsResponse({MakeWireWebFeed("cats")});

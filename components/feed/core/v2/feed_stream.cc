@@ -116,6 +116,14 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
   static WireResponseTranslator default_translator;
   wire_response_translator_ = &default_translator;
 
+  base::RepeatingClosure preference_change_callback =
+      base::BindRepeating(&FeedStream::EnabledPreferencesChanged, GetWeakPtr());
+  enable_snippets_.Init(prefs::kEnableSnippets, profile_prefs,
+                        preference_change_callback);
+  articles_list_visible_.Init(prefs::kArticlesListVisible, profile_prefs,
+                              preference_change_callback);
+  has_stored_data_.Init(feed::prefs::kHasStoredData, profile_prefs);
+
   web_feed_subscription_coordinator_ =
       std::make_unique<WebFeedSubscriptionCoordinator>(profile_prefs, this);
 
@@ -124,6 +132,7 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
   task_queue_.AddTask(std::make_unique<WaitForStoreInitializeTask>(
       store_, this,
       base::BindOnce(&FeedStream::InitializeComplete, base::Unretained(this))));
+  EnabledPreferencesChanged();
 }
 
 FeedStream::~FeedStream() = default;
@@ -204,6 +213,10 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
         feedstore::StreamTypeFromId(stream_data.stream_id());
     if (stream_type.IsValid())
       MaybeNotifyHasUnreadContent(stream_type);
+  }
+
+  if (!IsEnabledAndVisible() && has_stored_data_.GetValue()) {
+    ClearAll();
   }
 }
 
@@ -394,7 +407,7 @@ void FeedStream::UnloadModelIfNoSurfacesAttachedTask(
 }
 
 bool FeedStream::IsArticlesListVisible() {
-  return profile_prefs_->GetBoolean(prefs::kArticlesListVisible);
+  return articles_list_visible_.GetValue();
 }
 
 std::string FeedStream::GetClientInstanceId() const {
@@ -402,7 +415,17 @@ std::string FeedStream::GetClientInstanceId() const {
 }
 
 bool FeedStream::IsFeedEnabledByEnterprisePolicy() {
-  return profile_prefs_->GetBoolean(prefs::kEnableSnippets);
+  return enable_snippets_.GetValue();
+}
+
+bool FeedStream::IsEnabledAndVisible() {
+  return IsArticlesListVisible() && IsFeedEnabledByEnterprisePolicy();
+}
+
+void FeedStream::EnabledPreferencesChanged() {
+  // Assume there might be stored data if the Feed is ever enabled.
+  if (IsEnabledAndVisible())
+    has_stored_data_.SetValue(true);
 }
 
 void FeedStream::LoadMore(const FeedStreamSurface& surface,
@@ -895,6 +918,7 @@ void FeedStream::ClearAll() {
 
 void FeedStream::FinishClearAll() {
   // Clear any experiments stored.
+  has_stored_data_.SetValue(false);
   feed::prefs::SetExperiments({}, *profile_prefs_);
   feed::prefs::ClearClientInstanceId(*profile_prefs_);
   upload_criteria_.Clear();

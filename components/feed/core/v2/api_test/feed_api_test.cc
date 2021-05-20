@@ -669,6 +669,10 @@ std::string FeedApiTest::GetLanguageTag() {
 bool FeedApiTest::IsAutoplayEnabled() {
   return false;
 }
+void FeedApiTest::ClearAll() {
+  if (on_clear_all_)
+    on_clear_all_.Run();
+}
 void FeedApiTest::PrefetchImage(const GURL& url) {
   prefetched_images_.push_back(url);
   prefetch_image_call_count_++;

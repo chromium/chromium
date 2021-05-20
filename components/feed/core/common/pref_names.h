@@ -74,6 +74,9 @@ extern const char kEnableWebFeedFollowIntroDebug[];
 extern const char kReliabilityLoggingIdSalt[];
 // Whether the user has subscribed to a web feed.
 extern const char kIsWebFeedSubscriber[];
+// Whether the Feed may have data stored, which should be deleted if the Feed
+// is ever turned off.
+extern const char kHasStoredData[];
 
 }  // namespace prefs
 
