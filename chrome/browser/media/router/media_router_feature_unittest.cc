@@ -61,6 +61,8 @@ class MediaRouterEnabledTest : public ::testing::Test {
   MediaRouterEnabledTest(const MediaRouterEnabledTest&) = delete;
   ~MediaRouterEnabledTest() override = default;
   MediaRouterEnabledTest& operator=(const MediaRouterEnabledTest&) = delete;
+  void SetUp() override { ClearMediaRouterStoredPrefsForTesting(); }
+  void TearDown() override { ClearMediaRouterStoredPrefsForTesting(); }
 
  protected:
   content::BrowserTaskEnvironment test_environment;

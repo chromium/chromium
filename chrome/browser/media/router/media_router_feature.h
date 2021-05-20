@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_MEDIA_ROUTER_FEATURE_H_
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
+#include "extensions/buildflags/buildflags.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -18,6 +20,12 @@ namespace media_router {
 
 // Returns true if Media Router is enabled for |context|.
 bool MediaRouterEnabled(content::BrowserContext* context);
+
+#if defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
+// Clears stored prefs so they don't leak between tests running in the same
+// process.
+void ClearMediaRouterStoredPrefsForTesting();
+#endif  // defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !defined(OS_ANDROID)
 

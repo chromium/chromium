@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
@@ -39,6 +40,7 @@ class MediaRouterUIServiceFactoryUnitTest : public testing::Test {
 
   void SetUp() override {
     TestingProfile::Builder builder;
+    ClearMediaRouterStoredPrefsForTesting();
     // MediaRouterUIService instantiates MediaRouterActionController, which
     // requires ToolbarActionsModel.
     builder.AddTestingFactory(
@@ -48,6 +50,8 @@ class MediaRouterUIServiceFactoryUnitTest : public testing::Test {
                               base::BindRepeating(&MockMediaRouter::Create));
     profile_ = builder.Build();
   }
+
+  void TearDown() override { ClearMediaRouterStoredPrefsForTesting(); }
 
   static std::unique_ptr<KeyedService> BuildFakeToolBarActionsModel(
       content::BrowserContext* context) {
@@ -75,7 +79,7 @@ TEST_F(MediaRouterUIServiceFactoryUnitTest, CreateService) {
 TEST_F(MediaRouterUIServiceFactoryUnitTest,
        DoNotCreateActionControllerWhenDisabled) {
   profile_->GetTestingPrefService()->SetManagedPref(
-      prefs::kEnableMediaRouter, std::make_unique<base::Value>(false));
+      ::prefs::kEnableMediaRouter, std::make_unique<base::Value>(false));
   std::unique_ptr<MediaRouterUIService> service(
       static_cast<MediaRouterUIService*>(
           MediaRouterUIServiceFactory::GetInstance()->BuildServiceInstanceFor(
@@ -97,7 +101,7 @@ TEST_F(MediaRouterUIServiceFactoryUnitTest, DisablingMediaRouting) {
   EXPECT_CALL(mock_observer, OnServiceDisabled).Times(testing::Exactly(1));
 
   profile_->GetTestingPrefService()->SetManagedPref(
-      prefs::kEnableMediaRouter, std::make_unique<base::Value>(false));
+      ::prefs::kEnableMediaRouter, std::make_unique<base::Value>(false));
   EXPECT_EQ(nullptr, service->action_controller());
   service->RemoveObserver(&mock_observer);
 }
