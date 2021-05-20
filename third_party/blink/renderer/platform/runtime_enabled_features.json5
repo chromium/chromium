@@ -1199,6 +1199,10 @@
       status: "stable"
     },
     {
+      name: "LayoutNGTextCombine",
+      depends_on: ["LayoutNG"],
+    },
+    {
       name: "LayoutNGTextControl",
       depends_on: ["EditingNG"],
       status: "stable",
