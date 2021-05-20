@@ -13,7 +13,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -82,7 +81,6 @@ void VulkanSwapChain::Destroy() {
 
   WaitUntilPostSubBufferAsyncFinished();
 
-#if !defined(OS_FUCHSIA)
   if (UNLIKELY(!pending_semaphores_queue_.empty())) {
     auto* fence_helper = device_queue_->GetFenceHelper();
     fence_helper->EnqueueCleanupTaskForSubmittedWork(base::BindOnce(
@@ -99,7 +97,6 @@ void VulkanSwapChain::Destroy() {
         std::move(pending_semaphores_queue_)));
     pending_semaphores_queue_.clear();
   }
-#endif  // !defined(OS_FUCHSIA)
 
   DCHECK(!is_writing_);
   DestroySwapImages();
@@ -199,11 +196,9 @@ bool VulkanSwapChain::InitializeSwapChain(
     // Reuse |post_sub_buffer_task_runner_| and |pending_semaphores_queue_|
     // from the |old_swap_chain|.
     post_sub_buffer_task_runner_ = old_swap_chain->post_sub_buffer_task_runner_;
-#if !defined(OS_FUCHSIA)
     pending_semaphores_queue_ =
         std::move(old_swap_chain->pending_semaphores_queue_);
     old_swap_chain->pending_semaphores_queue_.clear();
-#endif  // !defined(OS_FUCHSIA)
   }
 
   VkSwapchainKHR new_swap_chain = VK_NULL_HANDLE;
@@ -478,7 +473,6 @@ void VulkanSwapChain::WaitUntilPostSubBufferAsyncFinished() {
 
 bool VulkanSwapChain::GetOrCreateSemaphores(VkSemaphore* acquire_semaphore,
                                             VkSemaphore* present_semaphore) {
-#if !defined(OS_FUCHSIA)
   // When pending semaphores are more than |num_images() * 2|, we will
   // assume the semaphores at the front of the queue has been signaled
   // and can be reused (because it is impossible there are more than
@@ -493,7 +487,6 @@ bool VulkanSwapChain::GetOrCreateSemaphores(VkSemaphore* acquire_semaphore,
     *present_semaphore = semaphores.present_semaphore;
     return true;
   }
-#endif  // !defined(OS_FUCHSIA)
 
   VkDevice device = device_queue_->GetVulkanDevice();
   *acquire_semaphore = CreateSemaphore(device);
@@ -518,14 +511,7 @@ void VulkanSwapChain::ReturnSemaphores(VkSemaphore acquire_semaphore,
   if (acquire_semaphore == VK_NULL_HANDLE)
     return;
 
-#if defined(OS_FUCHSIA)
-  // TODO(penghuang): Reuse semaphores on Fuchsia.
-  VkDevice device = device_queue_->GetVulkanDevice();
-  vkDestroySemaphore(device, acquire_semaphore, /*pAllocator=*/nullptr);
-  vkDestroySemaphore(device, present_semaphore, /*pAllocator=*/nullptr);
-#else
   pending_semaphores_queue_.push_back({acquire_semaphore, present_semaphore});
-#endif
 }
 
 VulkanSwapChain::ScopedWrite::ScopedWrite(VulkanSwapChain* swap_chain)
