@@ -13,6 +13,9 @@
 // Informs the consumer of the data.
 - (void)setupModalViewControllerWithData:(NSDictionary*)data;
 
+// Informs the consumer if the edit is done for updating the profile.
+- (void)setIsEditForUpdate:(BOOL)isEditForUpdate;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_INFOBAR_EDIT_ADDRESS_PROFILE_MODAL_CONSUMER_H_

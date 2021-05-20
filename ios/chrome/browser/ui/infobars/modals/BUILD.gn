@@ -35,6 +35,7 @@ source_set("modals") {
     ":public",
     "//base",
     "//components/autofill/core/common:features",
+    "//components/strings",
     "//components/translate/core/browser",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/infobars:public",

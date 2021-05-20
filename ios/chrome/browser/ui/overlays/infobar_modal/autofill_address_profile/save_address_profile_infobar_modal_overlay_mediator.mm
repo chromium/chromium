@@ -73,6 +73,8 @@ using save_address_profile_infobar_modal_responses::EditedProfileSaveAction;
   if (!_editAddressConsumer || !config)
     return;
 
+  [_editAddressConsumer setIsEditForUpdate:config->IsUpdateModal()];
+
   [_editAddressConsumer
       setupModalViewControllerWithData:config->GetProfileInfo()];
 }

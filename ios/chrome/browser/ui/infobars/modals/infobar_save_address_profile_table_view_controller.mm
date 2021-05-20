@@ -7,6 +7,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
@@ -126,11 +127,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   self.navigationController.navigationBar.prefersLargeTitles = NO;
 
-  // TODO(crbug.com/1167062): Replace with proper localized string.
   if (self.isUpdateModal) {
-    self.navigationItem.title = @"Update Address";
+    self.navigationItem.title =
+        l10n_util::GetNSString(IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
   } else {
-    self.navigationItem.title = @"Save Address";
+    self.navigationItem.title =
+        l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
   }
 
   [self loadModel];
@@ -277,8 +279,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addSectionWithIdentifier:SectionIdentifierUpdateModalNewFields];
 
   if (showOld) {
-    // TODO(crbug.com/1167062): Use i18n strings.
-    [model setHeader:[self updateHeaderWithText:@"New"]
+    [model setHeader:
+               [self
+                   updateHeaderWithText:
+                       l10n_util::GetNSString(
+                           IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_NEW_VALUES_SECTION_LABEL)]
         forSectionWithIdentifier:SectionIdentifierUpdateModalNewFields];
   }
   for (NSNumber* type in self.profileDataDiff) {
@@ -295,8 +300,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // Old
     [model addSectionWithIdentifier:SectionIdentifierUpdateModalOldFields];
 
-    // TODO(crbug.com/1167062): Use i18n strings.
-    [model setHeader:[self updateHeaderWithText:@"Old"]
+    [model setHeader:
+               [self
+                   updateHeaderWithText:
+                       l10n_util::GetNSString(
+                           IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OLD_VALUES_SECTION_LABEL)]
         forSectionWithIdentifier:SectionIdentifierUpdateModalOldFields];
     for (NSNumber* type in self.profileDataDiff) {
       if ([self.profileDataDiff[type][1] length] > 0) {
@@ -357,11 +365,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
       initWithType:ItemTypeAddressProfileSaveUpdateButton];
   saveUpdateButton.textAlignment = NSTextAlignmentNatural;
 
-  // TODO(crbug.com/1167062): Use i18n strings.
   if (self.isUpdateModal) {
-    saveUpdateButton.buttonText = @"Update";
+    saveUpdateButton.buttonText = l10n_util::GetNSString(
+        IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
   } else {
-    saveUpdateButton.buttonText = @"Save";
+    saveUpdateButton.buttonText = l10n_util::GetNSString(
+        IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
   }
 
   saveUpdateButton.enabled = !self.currentAddressProfileSaved;

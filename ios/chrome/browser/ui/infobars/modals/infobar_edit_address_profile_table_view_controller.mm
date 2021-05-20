@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/stl_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
@@ -54,6 +55,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // All the data to be displayed in the edit dialog.
 @property(nonatomic, strong) NSMutableDictionary* profileData;
 
+// Yes, if the edit is done for updating the profile.
+@property(nonatomic, assign) BOOL isEditForUpdate;
+
 @end
 
 @implementation InfobarEditAddressProfileTableViewController
@@ -93,8 +97,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.navigationItem.leftBarButtonItem = cancelButton;
   self.navigationController.navigationBar.prefersLargeTitles = NO;
 
-  // TODO(crbug.com/1167062): Replace with proper localized string.
-  self.navigationItem.title = @"Test Edit Address";
+  if (self.isEditForUpdate) {
+    self.navigationItem.title =
+        l10n_util::GetNSString(IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
+  } else {
+    self.navigationItem.title =
+        l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
+  }
 
   self.tableView.allowsSelectionDuringEditing = YES;
 
@@ -132,8 +141,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewTextButtonItem* saveButton =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeSaveButton];
   saveButton.textAlignment = NSTextAlignmentNatural;
-  // TODO(crbug.com/1167062): Replace with proper localized string.
-  saveButton.buttonText = @"Test Save";
+  if (self.isEditForUpdate) {
+    saveButton.buttonText = l10n_util::GetNSString(
+        IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+  } else {
+    saveButton.buttonText = l10n_util::GetNSString(
+        IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+  }
   saveButton.disableButtonIntrinsicWidth = YES;
   [model addItem:saveButton toSectionWithIdentifier:SectionIdentifierButton];
 }
@@ -167,6 +181,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)setupModalViewControllerWithData:(NSDictionary*)data {
   self.profileData = [NSMutableDictionary dictionaryWithDictionary:data];
   [self.tableView reloadData];
+}
+
+- (void)setIsEditForUpdate:(BOOL)isEditForUpdate {
+  _isEditForUpdate = isEditForUpdate;
 }
 
 #pragma mark - UITableViewDelegate
