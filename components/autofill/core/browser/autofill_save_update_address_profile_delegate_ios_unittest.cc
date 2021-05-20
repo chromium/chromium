@@ -9,7 +9,9 @@
 #include "base/test/mock_callback.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -37,8 +39,12 @@ TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest, TestSaveAddressStrings) {
       profile, /*original_profile=*/nullptr, /*locale=*/"en-US",
       callback.Get());
 
-  EXPECT_EQ(delegate->GetMessageActionText(), std::u16string(u"Save..."));
-  EXPECT_EQ(delegate->GetMessageText(), std::u16string(u"Save Address?"));
+  EXPECT_EQ(delegate->GetMessageActionText(),
+            l10n_util::GetStringUTF16(
+                IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION));
+  EXPECT_EQ(
+      delegate->GetMessageText(),
+      l10n_util::GetStringUTF16(IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_TITLE));
   EXPECT_EQ(delegate->GetDescription(),
             std::u16string(u"John H. Doe, 666 Erebus St."));
 }
@@ -54,8 +60,12 @@ TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest,
   auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
       profile, &original_profile, /*locale=*/"en-US", callback.Get());
 
-  EXPECT_EQ(delegate->GetMessageActionText(), std::u16string(u"Update..."));
-  EXPECT_EQ(delegate->GetMessageText(), std::u16string(u"Update Address?"));
+  EXPECT_EQ(delegate->GetMessageActionText(),
+            l10n_util::GetStringUTF16(
+                IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_PRIMARY_ACTION));
+  EXPECT_EQ(
+      delegate->GetMessageText(),
+      l10n_util::GetStringUTF16(IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_TITLE));
   EXPECT_EQ(delegate->GetDescription(),
             std::u16string(u"John Doe, 666 Erebus St."));
 }
