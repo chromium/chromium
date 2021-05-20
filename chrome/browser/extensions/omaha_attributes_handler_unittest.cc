@@ -13,6 +13,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/test/extension_state_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -59,113 +60,88 @@ TEST_F(OmahaAttributesHandlerUnitTest, DisableRemotelyForPolicyViolation) {
   InitializeGoodInstalledExtensionService();
   service()->Init();
 
-  const ExtensionSet& enabled_extensions = registry()->enabled_extensions();
-  const ExtensionSet& disabled_extensions = registry()->disabled_extensions();
+  ExtensionStateTester state_tester(profile());
 
-  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
 
   base::Value attributes(base::Value::Type::DICTIONARY);
   attributes.SetBoolKey("_policy_violation", true);
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
-  EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_TRUE(disabled_extensions.Contains(kTestExtensionId));
-
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
+      kTestExtensionId, disable_reason::DISABLE_GREYLIST));
   EXPECT_TRUE(blocklist_prefs::HasOmahaBlocklistState(
       kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
       prefs));
-  EXPECT_EQ(disable_reason::DISABLE_GREYLIST,
-            prefs->GetDisableReasons(kTestExtensionId));
 
   // Remove extensions from greylist.
   attributes.SetBoolKey("_policy_violation", false);
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
-  EXPECT_FALSE(blocklist_prefs::HasOmahaBlocklistState(
-      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
-      ExtensionPrefs::Get(profile())));
-  EXPECT_EQ(disable_reason::DISABLE_NONE,
-            prefs->GetDisableReasons(kTestExtensionId));
 
+  // The extension is re-enabled.
+  EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
   EXPECT_FALSE(blocklist_prefs::HasOmahaBlocklistState(
       kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
       prefs));
-
-  // The extension is re-enabled.
-  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_FALSE(disabled_extensions.Contains(kTestExtensionId));
 }
 
 TEST_F(OmahaAttributesHandlerUnitTest, DisableRemotelyForPotentiallyUws) {
   InitializeGoodInstalledExtensionService();
   service()->Init();
 
-  const ExtensionSet& enabled_extensions = registry()->enabled_extensions();
-  const ExtensionSet& disabled_extensions = registry()->disabled_extensions();
+  ExtensionStateTester state_tester(profile());
 
-  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
 
   base::Value attributes(base::Value::Type::DICTIONARY);
   attributes.SetBoolKey("_potentially_uws", true);
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
-  EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_TRUE(disabled_extensions.Contains(kTestExtensionId));
-
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
+      kTestExtensionId, disable_reason::DISABLE_GREYLIST));
   EXPECT_TRUE(blocklist_prefs::HasOmahaBlocklistState(
       kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
       prefs));
-  EXPECT_EQ(disable_reason::DISABLE_GREYLIST,
-            prefs->GetDisableReasons(kTestExtensionId));
 
   // Remove extensions from greylist.
   attributes.SetBoolKey("_potentially_uws", false);
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
-  EXPECT_FALSE(blocklist_prefs::HasOmahaBlocklistState(
-      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
-      prefs));
-  EXPECT_EQ(disable_reason::DISABLE_NONE,
-            prefs->GetDisableReasons(kTestExtensionId));
-
-  EXPECT_FALSE(blocklist_prefs::HasOmahaBlocklistState(
-      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
-      prefs));
 
   // The extension is re-enabled.
-  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_FALSE(disabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
+  EXPECT_FALSE(blocklist_prefs::HasOmahaBlocklistState(
+      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+      prefs));
 }
 
 TEST_F(OmahaAttributesHandlerUnitTest, MultipleGreylistStates) {
   InitializeGoodInstalledExtensionService();
   service()->Init();
 
-  const ExtensionSet& enabled_extensions = registry()->enabled_extensions();
-  const ExtensionSet& disabled_extensions = registry()->disabled_extensions();
+  ExtensionStateTester state_tester(profile());
 
-  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
 
   base::Value attributes(base::Value::Type::DICTIONARY);
   attributes.SetBoolKey("_policy_violation", true);
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
-  EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_TRUE(disabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
+      kTestExtensionId, disable_reason::DISABLE_GREYLIST));
 
   // Now user enables kTestExtensionId.
   service()->EnableExtension(kTestExtensionId);
-
-  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_FALSE(disabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
 
   // Another greylist state is added to Omaha attribute.
   attributes.SetBoolKey("_potentially_uws", true);
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   // The extension should be disabled again.
-  EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_TRUE(disabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
+      kTestExtensionId, disable_reason::DISABLE_GREYLIST));
 
   // Remove extensions from the first greylist state.
   attributes.SetBoolKey("_policy_violation", false);
@@ -174,41 +150,32 @@ TEST_F(OmahaAttributesHandlerUnitTest, MultipleGreylistStates) {
   // The extension should still be disabled, because it is still in the
   // potentially unwanted state.
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
-  EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_TRUE(disabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
+      kTestExtensionId, disable_reason::DISABLE_GREYLIST));
   EXPECT_FALSE(blocklist_prefs::HasOmahaBlocklistState(
       kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
       prefs));
   EXPECT_TRUE(blocklist_prefs::HasOmahaBlocklistState(
       kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
       prefs));
-  EXPECT_EQ(disable_reason::DISABLE_GREYLIST,
-            prefs->GetDisableReasons(kTestExtensionId));
 
   // Remove the other greylist state.
   attributes.SetBoolKey("_potentially_uws", false);
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   // The extension is re-enabled.
-  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_FALSE(disabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
   EXPECT_FALSE(blocklist_prefs::HasOmahaBlocklistState(
       kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
       prefs));
-  EXPECT_EQ(disable_reason::DISABLE_NONE,
-            prefs->GetDisableReasons(kTestExtensionId));
 }
 
 TEST_F(OmahaAttributesHandlerUnitTest, KeepDisabledWhenMalwareRemoved) {
   InitializeGoodInstalledExtensionService();
   service()->Init();
 
-  const ExtensionSet& enabled_extensions = registry()->enabled_extensions();
-  const ExtensionSet& blocklisted_extensions =
-      registry()->blocklisted_extensions();
-
-  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_FALSE(blocklisted_extensions.Contains(kTestExtensionId));
+  ExtensionStateTester state_tester(profile());
+  EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
 
   base::Value attributes(base::Value::Type::DICTIONARY);
   attributes.SetBoolKey("_malware", true);
@@ -216,8 +183,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, KeepDisabledWhenMalwareRemoved) {
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
-  EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_TRUE(blocklisted_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(state_tester.ExpectBlocklisted(kTestExtensionId));
   EXPECT_EQ(disable_reason::DISABLE_REMOTELY_FOR_MALWARE |
                 disable_reason::DISABLE_GREYLIST,
             prefs->GetDisableReasons(kTestExtensionId));
@@ -227,11 +193,9 @@ TEST_F(OmahaAttributesHandlerUnitTest, KeepDisabledWhenMalwareRemoved) {
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   // The extension is not enabled because the policy violation bit is not
-  // cleared.
-  EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_FALSE(blocklisted_extensions.Contains(kTestExtensionId));
-  EXPECT_EQ(disable_reason::DISABLE_GREYLIST,
-            prefs->GetDisableReasons(kTestExtensionId));
+  // cleared, but it is no longer blocklisted (instead just disabled).
+  EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
+      kTestExtensionId, disable_reason::DISABLE_GREYLIST));
 }
 
 // Test suite to test Omaha attribute handler when features are disabled.
@@ -253,17 +217,14 @@ TEST_F(OmahaAttributesHandlerWithFeatureDisabledUnitTest,
   InitializeGoodInstalledExtensionService();
   service()->Init();
 
-  const ExtensionSet& enabled_extensions = registry()->enabled_extensions();
-  const ExtensionSet& disabled_extensions = registry()->disabled_extensions();
-
   base::Value attributes(base::Value::Type::DICTIONARY);
   attributes.SetBoolKey("_policy_violation", true);
   attributes.SetBoolKey("_potentially_uws", true);
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   // Since the flag is disabled, we don't expect the extension to be affected.
-  EXPECT_TRUE(enabled_extensions.Contains(kTestExtensionId));
-  EXPECT_FALSE(disabled_extensions.Contains(kTestExtensionId));
+  ExtensionStateTester state_tester(profile());
+  EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
   EXPECT_FALSE(blocklist_prefs::HasOmahaBlocklistState(
       kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
       ExtensionPrefs::Get(profile())));

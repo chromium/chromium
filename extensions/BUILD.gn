@@ -115,6 +115,8 @@ static_library("test_support") {
     "test/background_page_watcher.h",
     "test/extension_background_page_waiter.cc",
     "test/extension_background_page_waiter.h",
+    "test/extension_state_tester.cc",
+    "test/extension_state_tester.h",
     "test/extension_test_message_listener.cc",
     "test/extension_test_message_listener.h",
     "test/extension_test_notification_observer.cc",
