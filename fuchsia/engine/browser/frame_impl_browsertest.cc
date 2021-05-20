@@ -72,6 +72,7 @@ const char kPopupParentPath[] = "/popup_parent.html";
 const char kPopupRedirectPath[] = "/popup_child.html";
 const char kPopupMultiplePath[] = "/popup_multiple.html";
 const char kVisibilityPath[] = "/visibility.html";
+const char kWaitSizePath[] = "/wait-size.html";
 const char kPage1Title[] = "title 1";
 const char kPage2Title[] = "title 2";
 const char kPage3Title[] = "websql not available";
@@ -1327,6 +1328,116 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, PostMessagePassMessagePort) {
     EXPECT_EQ("ack ping", StringFromMemBufferOrDie(receiver->data()));
     EXPECT_TRUE(post_result->is_response());
   }
+}
+
+// TODO(crbug.com/1058247): Re-enable this test on Arm64 when femu is available
+// for that architecture. This test requires Vulkan and Scenic to properly
+// signal the Views visibility.
+#if defined(ARCH_CPU_ARM_FAMILY)
+#define MAYBE_SetPageScale DISABLED_SetPageScale
+#else
+#define MAYBE_SetPageScale SetPageScale
+#endif
+IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
+  fuchsia::web::FramePtr frame = CreateFrame();
+
+  auto view_tokens = scenic::ViewTokenPair::New();
+  frame->CreateView(std::move(view_tokens.view_token));
+
+  // Attach the View to a Presenter, the page should be visible.
+  auto presenter = base::ComponentContextForProcess()
+                       ->svc()
+                       ->Connect<::fuchsia::ui::policy::Presenter>();
+  presenter.set_error_handler(
+      [](zx_status_t) { ADD_FAILURE() << "Presenter disconnected."; });
+  presenter->PresentOrReplaceView(std::move(view_tokens.view_holder_token),
+                                  nullptr);
+
+  fuchsia::web::NavigationControllerPtr controller;
+  frame->GetNavigationController(controller.NewRequest());
+
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+  GURL url = embedded_test_server()->GetURL(kWaitSizePath);
+
+  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+      controller.get(), fuchsia::web::LoadUrlParams(), url.spec()));
+  navigation_listener_.RunUntilUrlAndTitleEquals(url, "done");
+
+  absl::optional<base::Value> default_dpr =
+      cr_fuchsia::ExecuteJavaScript(frame.get(), "window.devicePixelRatio");
+  ASSERT_TRUE(default_dpr);
+
+  // Update scale and verify that devicePixelRatio is updated accordingly.
+  const float kZoomInScale = 1.5;
+  frame->SetPageScale(kZoomInScale);
+
+  absl::optional<base::Value> scaled_dpr =
+      cr_fuchsia::ExecuteJavaScript(frame.get(), "window.devicePixelRatio");
+  ASSERT_TRUE(scaled_dpr);
+
+  EXPECT_NEAR(scaled_dpr->GetDouble() / default_dpr->GetDouble(), kZoomInScale,
+              1e-6);
+
+  // Navigate to the same page on http://localhost. This is a different site,
+  // so it will be loaded in a new renderer process. Page scale value should be
+  // preserved.
+  GURL url2 = embedded_test_server()->GetURL("localhost", kWaitSizePath);
+  EXPECT_NE(url.host(), url2.host());
+  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+      controller.get(), fuchsia::web::LoadUrlParams(), url2.spec()));
+  navigation_listener_.RunUntilUrlAndTitleEquals(url2, "done");
+
+  absl::optional<base::Value> dpr_after_navigation =
+      cr_fuchsia::ExecuteJavaScript(frame.get(), "window.devicePixelRatio");
+  ASSERT_TRUE(scaled_dpr);
+
+  EXPECT_EQ(dpr_after_navigation, scaled_dpr);
+
+  // Reset the scale to 1.0 (default) and verify that reported DPR is equal to
+  // the same as when the frame was created.
+  frame->SetPageScale(1.0);
+  absl::optional<base::Value> dpr_after_reset =
+      cr_fuchsia::ExecuteJavaScript(frame.get(), "window.devicePixelRatio");
+  ASSERT_TRUE(dpr_after_reset);
+
+  EXPECT_EQ(dpr_after_reset.value(), default_dpr.value());
+
+  // Zoom out by setting scale to 0.5.
+  const float kZoomOutScale = 0.5;
+  frame->SetPageScale(kZoomOutScale);
+
+  absl::optional<base::Value> zoomed_out_dpr =
+      cr_fuchsia::ExecuteJavaScript(frame.get(), "window.devicePixelRatio");
+  ASSERT_TRUE(zoomed_out_dpr);
+
+  EXPECT_NEAR(zoomed_out_dpr->GetDouble() / default_dpr->GetDouble(),
+              kZoomOutScale, 1e-6);
+
+  // Create another frame. Verify that the scale factor is not applied to the
+  // new frame.
+  cr_fuchsia::TestNavigationListener navigation_listener2;
+  fuchsia::web::FramePtr frame2 =
+      WebEngineBrowserTest::CreateFrame(&navigation_listener2);
+
+  view_tokens = scenic::ViewTokenPair::New();
+  frame2->CreateView(std::move(view_tokens.view_token));
+
+  presenter->PresentOrReplaceView(std::move(view_tokens.view_holder_token),
+                                  nullptr);
+
+  fuchsia::web::NavigationControllerPtr controller2;
+  frame2->GetNavigationController(controller2.NewRequest());
+  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+      controller2.get(), fuchsia::web::LoadUrlParams(), url.spec()));
+  navigation_listener2.RunUntilUrlAndTitleEquals(url, "done");
+
+  absl::optional<base::Value> frame2_dpr =
+      cr_fuchsia::ExecuteJavaScript(frame2.get(), "window.devicePixelRatio");
+  ASSERT_TRUE(frame2_dpr);
+
+  EXPECT_EQ(frame2_dpr.value(), default_dpr.value());
 }
 
 // Send a MessagePort to the content, then perform bidirectional messaging

@@ -23,6 +23,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/message_port_provider.h"
 #include "content/public/browser/navigation_entry.h"
@@ -30,6 +31,7 @@
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/renderer_preferences_util.h"
@@ -53,6 +55,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/logging/logging_utils.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/compositor.h"
@@ -581,6 +584,15 @@ void FrameImpl::MaybeStartCastStreaming(
       std::move(cast_streaming_receiver));
 }
 
+void FrameImpl::UpdateRenderViewZoomLevel(
+    content::RenderViewHost* render_view_host) {
+  content::HostZoomMap* host_zoom_map =
+      content::HostZoomMap::GetForWebContents(web_contents_.get());
+  host_zoom_map->SetTemporaryZoomLevel(
+      render_view_host->GetProcess()->GetID(), render_view_host->GetRoutingID(),
+      blink::PageZoomFactorToZoomLevel(page_scale_));
+}
+
 void FrameImpl::CreateView(fuchsia::ui::views::ViewToken view_token) {
   scenic::ViewRefPair view_ref_pair = scenic::ViewRefPair::New();
   CreateViewWithViewRef(std::move(view_token),
@@ -948,6 +960,19 @@ void FrameImpl::SetPreferredTheme(fuchsia::settings::ThemeType theme) {
                                      base::Unretained(this)));
 }
 
+void FrameImpl::SetPageScale(float scale) {
+  if (scale <= 0.0) {
+    LOG(ERROR) << "SetPageScale() called with nonpositive scale.";
+    CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
+    return;
+  }
+
+  if (scale == page_scale_)
+    return;
+  page_scale_ = scale;
+  UpdateRenderViewZoomLevel(web_contents_->GetRenderViewHost());
+}
+
 void FrameImpl::ForceContentDimensions(
     std::unique_ptr<fuchsia::ui::gfx::vec2> web_dips) {
   if (!web_dips) {
@@ -959,7 +984,7 @@ void FrameImpl::ForceContentDimensions(
 
   gfx::Size web_dips_converted(web_dips->x, web_dips->y);
   if (web_dips_converted.IsEmpty()) {
-    LOG(WARNING) << "Rejecting zero-area size for ForceContentDimensions().";
+    LOG(ERROR) << "Rejecting zero-area size for ForceContentDimensions().";
     CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
     return;
   }
@@ -1146,8 +1171,17 @@ void FrameImpl::DidFinishLoad(content::RenderFrameHost* render_frame_host,
 void FrameImpl::RenderFrameCreated(content::RenderFrameHost* frame_host) {
   // The top-level frame is given a transparent background color.
   // GetView() is guaranteed to be non-null until |frame_host| teardown.
-  if (frame_host == web_contents()->GetMainFrame())
+  if (frame_host == web_contents()->GetMainFrame()) {
     frame_host->GetView()->SetBackgroundColor(SK_AlphaTRANSPARENT);
+  }
+}
+
+void FrameImpl::RenderViewHostChanged(content::RenderViewHost* old_host,
+                                      content::RenderViewHost* new_host) {
+  // UpdateRenderViewZoomLevel() sets temporary zoom level for the current
+  // RenderView. It needs to be called again whenever main RenderView is
+  // changed.
+  UpdateRenderViewZoomLevel(new_host);
 }
 
 void FrameImpl::DidFirstVisuallyNonEmptyPaint() {
