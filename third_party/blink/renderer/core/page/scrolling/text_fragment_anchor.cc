@@ -156,20 +156,34 @@ TextFragmentAnchor* TextFragmentAnchor::TryCreateFragmentDirective(
   if (!frame.GetDocument()->GetFragmentDirective())
     return nullptr;
 
-  // The security checks only impact observable events like scrolling to the
-  // text fragment. Highlighting the text fragment is non-observable and thus
-  // can safely be done in those cases as well. More details available at
-  // https://wicg.github.io/ScrollToTextFragment/#restricting-the-text-fragment
-  if (!CheckSecurityRestrictionsForScrolling(frame))
-    should_scroll = false;
-
   Vector<TextFragmentSelector> selectors;
-
   if (!ParseTextDirective(frame.GetDocument()->GetFragmentDirective(),
                           &selectors)) {
     UseCounter::Count(frame.GetDocument(),
                       WebFeature::kInvalidFragmentDirective);
     return nullptr;
+  }
+
+  // The security checks only impact observable events like scrolling to the
+  // text fragment. Highlighting the text fragment is non-observable and thus
+  // can safely be done in those cases as well. More details available at
+  // https://wicg.github.io/ScrollToTextFragment/#restricting-the-text-fragment
+  if (!CheckSecurityRestrictionsForScrolling(frame)) {
+    should_scroll = false;
+  } else if (!should_scroll) {
+    if (frame.Loader().GetDocumentLoader() &&
+        !frame.Loader().GetDocumentLoader()->NavigationScrollAllowed()) {
+      // We want to record a use counter whenever a text-fragment is blocked by
+      // ForceLoadAtTop.  If we passed security checks but |should_scroll| was
+      // passed in false, we must have calculated |block_fragment_scroll| in
+      // FragmentLoader::ProcessFragment. This can happen in one of two cases:
+      //   1) Blocked by ForceLoadAtTop - what we want to measure
+      //   2) Blocked because we're restoring from history. However, in this
+      //      case we'd not pass security restrictions because we filter out
+      //      history navigations.
+      UseCounter::Count(frame.GetDocument(),
+                        WebFeature::kTextFragmentBlockedByForceLoadAtTop);
+    }
   }
 
   return MakeGarbageCollected<TextFragmentAnchor>(selectors, frame,

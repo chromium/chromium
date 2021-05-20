@@ -1758,4 +1758,79 @@ TEST_F(TextFragmentAnchorMetricsTest, NoForceLoadAtTopUseCounter) {
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kForceLoadAtTop));
 }
 
+// Tests that we correctly record the "TextFragmentBlockedByForceLoadAtTop" use
+// counter, that is, only when a text fragment appears and would otherwise have
+// been invoked but was blocked by DocumentPolicy.
+TEST_F(TextFragmentAnchorMetricsTest,
+       TextFragmentBlockedByForceLoadAtTopUseCounter) {
+  // ForceLoadAtTop is effective but TextFragmentBlocked isn't recorded because
+  // there is no text fragment.
+  {
+    SimRequest::Params params;
+    params.response_http_headers.insert("Document-Policy", "force-load-at-top");
+    SimRequest request("https://example.com/test.html", "text/html", params);
+    LoadURL("https://example.com/test.html");
+    request.Complete(R"HTML(
+      <!DOCTYPE html>
+      <p>This is a test page</p>
+    )HTML");
+    RunAsyncMatchingTasks();
+
+    // Render two frames to handle the async step added by the beforematch
+    // event.
+    Compositor().BeginFrame();
+    BeginEmptyFrame();
+
+    ASSERT_TRUE(GetDocument().IsUseCounted(WebFeature::kForceLoadAtTop));
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kTextFragmentBlockedByForceLoadAtTop));
+  }
+
+  // This time there was a text fragment along with the DocumentPolicy so we
+  // record TextFragmentBlocked.
+  {
+    SimRequest::Params params;
+    params.response_http_headers.insert("Document-Policy", "force-load-at-top");
+    SimRequest request("https://example.com/test2.html#:~:text=foo",
+                       "text/html", params);
+    LoadURL("https://example.com/test2.html#:~:text=foo");
+    request.Complete(R"HTML(
+      <!DOCTYPE html>
+      <p>This is a test page</p>
+    )HTML");
+    RunAsyncMatchingTasks();
+
+    // Render two frames to handle the async step added by the beforematch
+    // event.
+    Compositor().BeginFrame();
+    BeginEmptyFrame();
+
+    ASSERT_TRUE(GetDocument().IsUseCounted(WebFeature::kForceLoadAtTop));
+    EXPECT_TRUE(GetDocument().IsUseCounted(
+        WebFeature::kTextFragmentBlockedByForceLoadAtTop));
+  }
+
+  // Ensure that an unblocked text fragment doesn't cause recording the
+  // TextFragmentBlocked counter.
+  {
+    SimRequest request("https://example.com/test3.html#:~:text=foo",
+                       "text/html");
+    LoadURL("https://example.com/test3.html#:~:text=foo");
+    request.Complete(R"HTML(
+      <!DOCTYPE html>
+      <p>This is a test page</p>
+    )HTML");
+    RunAsyncMatchingTasks();
+
+    // Render two frames to handle the async step added by the beforematch
+    // event.
+    Compositor().BeginFrame();
+    BeginEmptyFrame();
+
+    ASSERT_FALSE(GetDocument().IsUseCounted(WebFeature::kForceLoadAtTop));
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kTextFragmentBlockedByForceLoadAtTop));
+  }
+}
+
 }  // namespace blink

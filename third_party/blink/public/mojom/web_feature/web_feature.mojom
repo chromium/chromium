@@ -3233,6 +3233,7 @@ enum WebFeature {
   kARIATouchpassthroughAttribute = 3918,
   kARIAVirtualcontentAttribute = 3919,
   kAccessibilityTouchPassthroughSet = 3920,
+  kTextFragmentBlockedByForceLoadAtTop = 3921,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
