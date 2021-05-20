@@ -574,7 +574,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
           base::StrCat({"log-", severity}));
       last_sent_event_id_ = log[i].id;
     }
-    if (!list.empty()) {
+    if (!list.GetList().empty()) {
       MaybeCallJavascript("updateEventLog", std::move(list));
     }
   }
@@ -612,7 +612,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
       service_log_file_inode_ = response.first;
       last_sent_line_number_ = 0;
     }
-    if (!response.second.empty()) {
+    if (!response.second.GetList().empty()) {
       last_sent_line_number_ += response.second.GetList().size();
       MaybeCallJavascript("updateServiceLog", std::move(response.second));
     }
