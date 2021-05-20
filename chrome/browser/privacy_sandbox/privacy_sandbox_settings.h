@@ -13,6 +13,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -172,6 +173,9 @@ class PrivacySandboxSettings : public KeyedService,
   // Clear-Site-Data header, as it's restricted to a specific site.
   void OnCookiesCleared();
 
+  // Called when a preference relevant to the the Privacy Sandbox is changed.
+  void OnPrivacySandboxPrefChanged();
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -295,6 +299,8 @@ class PrivacySandboxSettings : public KeyedService,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observer_{this};
+
+  PrefChangeRegistrar user_prefs_registrar_;
 
   // A manual record of whether policy_service_ is being observerd.
   // Unfortunately PolicyService does not support scoped observers.

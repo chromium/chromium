@@ -53,6 +53,11 @@ class MockFlocIdProvider : public federated_learning::FlocIdProvider {
   MOCK_METHOD(base::Time, GetApproximateNextComputeTime, (), (const, override));
 };
 
+class MockPrivacySandboxObserver : public PrivacySandboxSettings::Observer {
+ public:
+  MOCK_METHOD(void, OnFlocDataAccessibleSinceUpdated, (bool), (override));
+};
+
 // Define an additional content setting value to simulate an unmanaged default
 // content setting.
 const ContentSetting kNoSetting = static_cast<ContentSetting>(-1);
@@ -1131,6 +1136,37 @@ TEST_F(PrivacySandboxSettingsTest, SetFlocPrefEnabled) {
   privacy_sandbox_settings()->SetFlocPrefEnabled(true);
   EXPECT_TRUE(profile()->GetTestingPrefService()->GetBoolean(
       prefs::kPrivacySandboxFlocEnabled));
+}
+
+TEST_F(PrivacySandboxSettingsTest, OnPrivacySandboxPrefChanged) {
+  // When either the main Privacy Sandbox pref, or the FLoC pref, are changed
+  // the FLoC ID should be reset.
+  MockPrivacySandboxObserver mock_privacy_sandbox_observer;
+  privacy_sandbox_settings()->AddObserver(&mock_privacy_sandbox_observer);
+  EXPECT_CALL(mock_privacy_sandbox_observer,
+              OnFlocDataAccessibleSinceUpdated(/*reset_compute_timer=*/true));
+
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxApisEnabled, false);
+  testing::Mock::VerifyAndClearExpectations(&mock_privacy_sandbox_observer);
+
+  EXPECT_CALL(mock_privacy_sandbox_observer,
+              OnFlocDataAccessibleSinceUpdated(/*reset_compute_timer=*/true));
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, false);
+  testing::Mock::VerifyAndClearExpectations(&mock_privacy_sandbox_observer);
+
+  EXPECT_CALL(mock_privacy_sandbox_observer,
+              OnFlocDataAccessibleSinceUpdated(/*reset_compute_timer=*/true));
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, true);
+  testing::Mock::VerifyAndClearExpectations(&mock_privacy_sandbox_observer);
+
+  EXPECT_CALL(mock_privacy_sandbox_observer,
+              OnFlocDataAccessibleSinceUpdated(/*reset_compute_timer=*/true));
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxApisEnabled, true);
+  testing::Mock::VerifyAndClearExpectations(&mock_privacy_sandbox_observer);
 }
 
 TEST_F(PrivacySandboxSettingsTest, ReconciliationOutcome) {

@@ -183,6 +183,17 @@ PrivacySandboxSettings::PrivacySandboxSettings(
   if (IsCookiesClearOnExitEnabled(host_content_settings_map_))
     OnCookiesCleared();
 
+  // Register observers for the Privacy Sandbox & FLoC preferences.
+  user_prefs_registrar_.Init(pref_service_);
+  user_prefs_registrar_.Add(
+      prefs::kPrivacySandboxApisEnabled,
+      base::BindRepeating(&PrivacySandboxSettings::OnPrivacySandboxPrefChanged,
+                          base::Unretained(this)));
+  user_prefs_registrar_.Add(
+      prefs::kPrivacySandboxFlocEnabled,
+      base::BindRepeating(&PrivacySandboxSettings::OnPrivacySandboxPrefChanged,
+                          base::Unretained(this)));
+
   // On first entering the privacy sandbox experiment, users may have the
   // privacy sandbox disabled (or "reconciled") based on their current cookie
   // settings (e.g. blocking 3P cookies). Depending on the state of the sync
@@ -398,6 +409,15 @@ void PrivacySandboxSettings::SetPrivacySandboxEnabled(bool enabled) {
 
 void PrivacySandboxSettings::OnCookiesCleared() {
   SetFlocDataAccessibleFromNow(/*reset_calculate_timer=*/false);
+}
+
+void PrivacySandboxSettings::OnPrivacySandboxPrefChanged() {
+  // Any change of the two observed prefs should be accompanied by a
+  // reset of the FLoC cohort. Technically this only needs to occur on the
+  // transition from FLoC being effectively disabled to effectively enabled,
+  // but performing it on every pref change achieves the same user visible
+  // behavior, and is much simpler.
+  ResetFlocId();
 }
 
 void PrivacySandboxSettings::AddObserver(Observer* observer) {
