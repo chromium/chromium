@@ -36,6 +36,8 @@ const char* const kLoginXkbLayoutIds[] = {
 
 """
 
+from __future__ import print_function
+
 import fileinput
 import re
 import sys
@@ -78,7 +80,7 @@ def CreateEngineHeader(login_xkb_layout_ids):
 
 def main(argv):
   if len(argv) != 3:
-    print 'Usage: gen_input_methods.py [input_methods.txt] [output]'
+    print('Usage: gen_input_methods.py [input_methods.txt] [output]')
     sys.exit(1)
   login_xkb_layout_ids = []
   for line in fileinput.input(sys.argv[1]):
