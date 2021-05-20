@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/time/time.h"
 #include "chrome/browser/password_manager/chrome_biometric_authenticator.h"
 #include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
@@ -52,6 +53,9 @@ class BiometricAuthenticatorAndroid : public ChromeBiometricAuthenticator {
 
  private:
   ~BiometricAuthenticatorAndroid() override;
+
+  // Time of last successful re-auth. nullopt if there hasn't been an auth yet.
+  absl::optional<base::TimeTicks> last_good_auth_timestamp_;
 
   // Callback to be executed after the authentication completes.
   AuthenticateCallback callback_;

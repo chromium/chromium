@@ -75,7 +75,11 @@ enum class BiometricAuthFinalResult {
   // Recorded when the auth fails after Chrome cancelled it.
   kFailedAndCanceled = 6,
 
-  kMaxValue = kFailedAndCanceled,
+  // Recorded if an authentication was requested within 60s of the previous
+  // successful authentication.
+  kAuthStillValid = 7,
+
+  kMaxValue = kAuthStillValid,
 };
 
 // This interface encapsulates operations related to biometric authentication.

@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "chrome/browser/password_manager/android/jni_headers/BiometricAuthenticatorBridge_jni.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/biometric_authenticator.h"
@@ -34,6 +35,8 @@ using password_manager::BiometricsAvailability;
 using password_manager::UiCredential;
 
 namespace {
+
+constexpr unsigned int kAuthValidSeconds = 60;
 
 bool IsSuccessfulResult(BiometricAuthUIResult result) {
   return result == BiometricAuthUIResult::kSuccessWithUnknownMethod ||
@@ -114,7 +117,14 @@ void BiometricAuthenticatorAndroid::Authenticate(
 
   base::UmaHistogramEnumeration(
       "PasswordManager.BiometricAuthPwdFill.AuthRequester", requester);
-
+  if (last_good_auth_timestamp_.has_value() &&
+      base::TimeTicks::Now() - last_good_auth_timestamp_.value() <
+          base::TimeDelta::FromSeconds(kAuthValidSeconds)) {
+    LogAuthResult(password_manager::BiometricAuthFinalResult::kAuthStillValid);
+    std::move(callback_).Run(/*success=*/true);
+    requester_ = absl::nullopt;
+    return;
+  }
   Java_BiometricAuthenticatorBridge_authenticate(AttachCurrentThread(),
                                                  java_object_);
 }
@@ -144,6 +154,11 @@ void BiometricAuthenticatorAndroid::OnAuthenticationCompleted(JNIEnv* env,
     }
     return;
   }
+
+  if (success) {
+    last_good_auth_timestamp_ = base::TimeTicks::Now();
+  }
+
   LogAuthResult(MapUIResultToFinal(ui_result));
   std::move(callback_).Run(success);
   requester_ = absl::nullopt;
