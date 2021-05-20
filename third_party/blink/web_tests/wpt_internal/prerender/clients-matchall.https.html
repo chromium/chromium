@@ -3,32 +3,17 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
 <body>
 <script>
-
-async function unregisterServiceWorker(scope) {
-  const registration = await navigator.serviceWorker.getRegistration(scope);
-  if (!registration)
-    return;
-  return registration.unregister();
-}
-
-function getNewestWorker(registration) {
-  if (registration.installing)
-    return registration.installing;
-  if (registration.waiting)
-    return registration.waiting;
-  if (registration.active)
-    return registration.active;
-}
 
 promise_test(async t => {
   const workerUrl = 'resources/clients-matchall-service-worker.js';
   const pageUrl = 'resources/prerendered-page.html';
 
   // Start a service worker.
-  await unregisterServiceWorker(workerUrl);
-  const registration = await navigator.serviceWorker.register(workerUrl);
+  const registration =
+      await service_worker_unregister_and_register(t, workerUrl, workerUrl);
   t.add_cleanup(_ => registration.unregister());
 
   // Observe the message from a prerendered page.
@@ -49,7 +34,7 @@ promise_test(async t => {
   // Clients#matchAll().
   const message = await new Promise(resolve => {
     navigator.serviceWorker.onmessage = resolve;
-    getNewestWorker(registration).postMessage('invoke clients.matchAll()');
+    get_newest_worker(registration).postMessage('invoke clients.matchAll()');
   });
 
   assert_array_equals(
