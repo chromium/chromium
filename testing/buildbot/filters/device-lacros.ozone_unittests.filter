@@ -1,2 +1,0 @@
-# TODO(crbug.com/1204707) Enable following tests on lacros.
--*/WaylandInputMethodContextTest.*

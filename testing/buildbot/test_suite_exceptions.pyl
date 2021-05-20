@@ -2343,15 +2343,6 @@
       },
     },
   },
-  'ozone_unittests_amd64-generic': {
-    'modifications': {
-      'lacros-amd64-generic-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/device-lacros.ozone_unittests.filter',
-        ],
-      },
-    },
-  },
   'perfetto_unittests': {
     'remove_from': [
       # TODO(crbug.com/931138): Fix permission issue when creating tmp files

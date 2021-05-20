@@ -224,10 +224,7 @@ source_set("net_unittests_filters") {
 }
 
 source_set("ozone_unittests_filters") {
-  data = [
-    "//testing/buildbot/filters/chromeos.ozone_unittests.filter",
-    "//testing/buildbot/filters/device-lacros.ozone_unittests.filter",
-  ]
+  data = [ "//testing/buildbot/filters/chromeos.ozone_unittests.filter" ]
 }
 
 source_set("sandbox_linux_unittests_filters") {
