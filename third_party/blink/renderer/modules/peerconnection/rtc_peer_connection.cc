@@ -1938,16 +1938,18 @@ ScriptPromise RTCPeerConnection::addIceCandidate(
     return ScriptPromise();
   }
 
+  if (candidate->hasCandidate() && candidate->candidate().IsEmpty()) {
+    // Temporary mitigation to avoid throwing an exception when candidate is
+    // empty or nothing was passed.
+    // TODO(crbug.com/978582): Remove this mitigation when the WebRTC layer
+    // handles the empty candidate field or the null candidate correctly.
+    return ScriptPromise::CastUndefined(script_state);
+  }
+
   RTCIceCandidatePlatform* platform_candidate =
       ConvertToRTCIceCandidatePlatform(ExecutionContext::From(script_state),
                                        candidate);
 
-  // Temporary mitigation to avoid throwing an exception when candidate is
-  // empty or nothing was passed.
-  // TODO(crbug.com/978582): Remove this mitigation when the WebRTC layer
-  // handles the empty candidate field or the null candidate correctly.
-  if (platform_candidate->Candidate().IsEmpty())
-    return ScriptPromise::CastUndefined(script_state);
 
   if (IsIceCandidateMissingSdpMidAndMLineIndex(candidate)) {
     exception_state.ThrowTypeError(
