@@ -180,7 +180,6 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
         builder.with(DownloadLocationDialogProperties.SHOW_SUBTITLE, true);
         builder.with(DownloadLocationDialogProperties.DONT_SHOW_AGAIN_CHECKBOX_SHOWN,
                 !mLocationDialogManaged);
-
         switch (mDialogType) {
             case DownloadLocationDialogType.LOCATION_FULL:
                 builder.with(DownloadLocationDialogProperties.TITLE,
@@ -207,7 +206,6 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
                         mContext.getString(R.string.download_location_name_too_long));
                 break;
             case DownloadLocationDialogType.LOCATION_SUGGESTION:
-                assert !mLocationDialogManaged;
                 builder.with(DownloadLocationDialogProperties.TITLE, getDefaultTitle());
                 builder.with(DownloadLocationDialogProperties.SHOW_LOCATION_AVAILABLE_SPACE, true);
                 assert mTotalBytes > 0;

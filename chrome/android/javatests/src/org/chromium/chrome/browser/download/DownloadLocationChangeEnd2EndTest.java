@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -162,6 +163,27 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
         startDownload(/*hasSDCard=*/false);
 
         // Ensure download is done, no download location dialog should show to interact with user.
+        Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(currentCallCount));
+        mDownloadTestRule.deleteFilesInDownloadDirectory(new String[] {TEST_FILE});
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Downloads"})
+    @Policies.Add({ @Policies.Item(key = "PromptForDownloadLocation", string = "true") })
+    public void testShowDialogWithoutSDCardWithPolicy() {
+        startDownload(/*hasSDCard=*/false);
+        CriteriaHelper.pollUiThread(
+                () -> mDownloadTestRule.getActivity().getModalDialogManager().isShowing());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Downloads"})
+    @Policies.Add({ @Policies.Item(key = "PromptForDownloadLocation", string = "false") })
+    public void testNoDialogWithSDCardWithPolicy() {
+        int currentCallCount = mDownloadTestRule.getChromeDownloadCallCount();
+        startDownload(/*hasSDCard=*/true);
         Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(currentCallCount));
         mDownloadTestRule.deleteFilesInDownloadDirectory(new String[] {TEST_FILE});
     }
