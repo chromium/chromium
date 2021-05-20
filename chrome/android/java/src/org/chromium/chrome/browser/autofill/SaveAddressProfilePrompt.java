@@ -39,6 +39,7 @@ public class SaveAddressProfilePrompt {
     private final View mDialogView;
     private final EditorDialog mEditorDialog;
     private final AddressEditor mAddressEditor;
+    private boolean mEditorClosingPending;
 
     /**
      * Save prompt to confirm saving an address profile imported from a form submission.
@@ -66,6 +67,7 @@ public class SaveAddressProfilePrompt {
         mDialogModel = builder.build();
 
         mEditorDialog = new EditorDialog(activity, /*deleteRunnable=*/null, browserProfile);
+        mEditorDialog.setShouldTriggerDoneCallbackBeforeCloseAnimation(true);
         mAddressEditor = new AddressEditor(AddressEditor.Purpose.AUTOFILL_SETTINGS,
                 /*saveToDisk=*/false);
         mAddressEditor.setEditorDialog(mEditorDialog);
@@ -159,11 +161,13 @@ public class SaveAddressProfilePrompt {
      */
     @CalledByNative
     private void dismiss() {
-        if (mEditorDialog.isShowing()) mEditorDialog.dismiss();
+        // Do not dismiss the editor if closing is pending to not abort the animation.
+        if (!mEditorClosingPending && mEditorDialog.isShowing()) mEditorDialog.dismiss();
         mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
     }
 
     private void onEdited(AutofillAddress autofillAddress) {
+        mEditorClosingPending = true;
         mController.onUserEdited(autofillAddress.getProfile());
         mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.ACTION_ON_CONTENT);
     }
