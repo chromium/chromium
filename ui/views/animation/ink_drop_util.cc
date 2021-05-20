@@ -54,9 +54,8 @@ gfx::Transform GetTransformSubpixelCorrection(const gfx::Transform& transform,
 }
 
 bool UsingPlatformHighContrastInkDrop(const View* view) {
-  const ui::NativeTheme* theme = view->GetNativeTheme();
-  return theme &&
-         theme->GetDefaultSystemColorScheme() ==
+  return view->GetWidget() &&
+         view->GetNativeTheme()->GetDefaultSystemColorScheme() ==
              ui::NativeTheme::ColorScheme::kPlatformHighContrast &&
          base::FeatureList::IsEnabled(
              features::kEnablePlatformHighContrastInkDrop);

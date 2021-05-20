@@ -150,26 +150,26 @@ TEST_F(LabelButtonTest, FocusBehavior) {
 
 TEST_F(LabelButtonTest, Init) {
   const std::u16string text(u"abc");
-  TestLabelButton button(text);
+  button_->SetText(text);
 
-  EXPECT_TRUE(button.GetImage(Button::STATE_NORMAL).isNull());
-  EXPECT_TRUE(button.GetImage(Button::STATE_HOVERED).isNull());
-  EXPECT_TRUE(button.GetImage(Button::STATE_PRESSED).isNull());
-  EXPECT_TRUE(button.GetImage(Button::STATE_DISABLED).isNull());
+  EXPECT_TRUE(button_->GetImage(Button::STATE_NORMAL).isNull());
+  EXPECT_TRUE(button_->GetImage(Button::STATE_HOVERED).isNull());
+  EXPECT_TRUE(button_->GetImage(Button::STATE_PRESSED).isNull());
+  EXPECT_TRUE(button_->GetImage(Button::STATE_DISABLED).isNull());
 
-  EXPECT_EQ(text, button.GetText());
+  EXPECT_EQ(text, button_->GetText());
 
   ui::AXNodeData accessible_node_data;
-  button.GetAccessibleNodeData(&accessible_node_data);
+  button_->GetAccessibleNodeData(&accessible_node_data);
   EXPECT_EQ(ax::mojom::Role::kButton, accessible_node_data.role);
   EXPECT_EQ(text, accessible_node_data.GetString16Attribute(
                       ax::mojom::StringAttribute::kName));
 
-  EXPECT_FALSE(button.GetIsDefault());
-  EXPECT_EQ(Button::STATE_NORMAL, button.GetState());
+  EXPECT_FALSE(button_->GetIsDefault());
+  EXPECT_EQ(Button::STATE_NORMAL, button_->GetState());
 
-  EXPECT_EQ(button.image()->parent(), &button);
-  EXPECT_EQ(button.label()->parent(), &button);
+  EXPECT_EQ(button_->image()->parent(), button_);
+  EXPECT_EQ(button_->label()->parent(), button_);
 }
 
 TEST_F(LabelButtonTest, Label) {

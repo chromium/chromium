@@ -21,6 +21,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/events/base_event_utils.h"
@@ -59,7 +60,7 @@ namespace views {
 
 namespace {
 
-// EmptyMenuMenuItem ---------------------------------------------------------
+// EmptyMenuMenuItem ----------------------------------------------------------
 
 // EmptyMenuMenuItem is used when a menu has no menu items. EmptyMenuMenuItem
 // is itself a MenuItemView, but it uses a different ID so that it isn't
@@ -83,6 +84,38 @@ class EmptyMenuMenuItem : public MenuItemView {
  private:
   DISALLOW_COPY_AND_ASSIGN(EmptyMenuMenuItem);
 };
+
+// VerticalSeparator ----------------------------------------------------------
+
+class VerticalSeparator : public Separator {
+ public:
+  METADATA_HEADER(VerticalSeparator);
+  VerticalSeparator();
+  VerticalSeparator(const VerticalSeparator&) = delete;
+  VerticalSeparator& operator=(const VerticalSeparator&) = delete;
+  ~VerticalSeparator() override = default;
+
+  // Separator:
+  void OnThemeChanged() override;
+};
+
+VerticalSeparator::VerticalSeparator() {
+  SetFocusBehavior(FocusBehavior::NEVER);
+  const MenuConfig& config = MenuConfig::instance();
+  SetPreferredSize(
+      gfx::Size(config.actionable_submenu_vertical_separator_width,
+                config.actionable_submenu_vertical_separator_height));
+  SetCanProcessEventsWithinSubtree(false);
+}
+
+void VerticalSeparator::OnThemeChanged() {
+  Separator::OnThemeChanged();
+  SetColor(GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_MenuSeparatorColor));
+}
+
+BEGIN_METADATA(VerticalSeparator, Separator)
+END_METADATA
 
 }  // namespace
 
@@ -819,18 +852,8 @@ void MenuItemView::Init(MenuItemView* parent,
     radio_check_image_view_->SetCanProcessEventsWithinSubtree(false);
   }
 
-  if (type_ == Type::kActionableSubMenu) {
-    vertical_separator_ = AddChildView(std::make_unique<Separator>());
-    vertical_separator_->SetVisible(true);
-    vertical_separator_->SetFocusBehavior(FocusBehavior::NEVER);
-    const MenuConfig& config = MenuConfig::instance();
-    vertical_separator_->SetColor(GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_MenuSeparatorColor));
-    vertical_separator_->SetPreferredSize(
-        gfx::Size(config.actionable_submenu_vertical_separator_width,
-                  config.actionable_submenu_vertical_separator_height));
-    vertical_separator_->SetCanProcessEventsWithinSubtree(false);
-  }
+  if (type_ == Type::kActionableSubMenu)
+    vertical_separator_ = AddChildView(std::make_unique<VerticalSeparator>());
 
   if (submenu_arrow_image_view_)
     submenu_arrow_image_view_->SetVisible(HasSubmenu());

@@ -2482,13 +2482,10 @@ void View::AddChildViewAtImpl(View* view, int index) {
   }
 
   // Remove |view| from its parent, if any.
-  Widget* old_widget = nullptr;
-  ui::NativeTheme* old_theme = nullptr;
-  if (parent) {
-    old_widget = view->GetWidget();
-    old_theme = old_widget ? view->GetNativeTheme() : nullptr;
+  Widget* old_widget = view->GetWidget();
+  ui::NativeTheme* old_theme = old_widget ? view->GetNativeTheme() : nullptr;
+  if (parent)
     parent->DoRemoveChildView(view, true, false, this);
-  }
 
   view->parent_ = this;
 #if DCHECK_IS_ON()
@@ -2520,11 +2517,8 @@ void View::AddChildViewAtImpl(View* view, int index) {
   if (HasLayoutManager())
     GetLayoutManager()->ViewAdded(this, view);
 
-  if (widget) {
-    const ui::NativeTheme* new_theme = view->GetNativeTheme();
-    if (new_theme != old_theme)
-      view->PropagateThemeChanged();
-  }
+  if (widget && (view->GetNativeTheme() != old_theme))
+    view->PropagateThemeChanged();
 
   ViewHierarchyChangedDetails details(true, this, view, parent);
 
