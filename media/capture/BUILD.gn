@@ -329,6 +329,7 @@ component("capture_lib") {
     deps += [
       "//ash/constants",
       "//build/config/linux/libdrm",
+      "//chromeos/components/sensors:sensors",
       "//chromeos/dbus/power",
       "//components/chromeos_camera:mojo_mjpeg_decode_accelerator",
       "//components/chromeos_camera/common",

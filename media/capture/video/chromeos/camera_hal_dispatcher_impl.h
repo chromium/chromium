@@ -14,6 +14,7 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/observer_list_types.h"
 #include "base/synchronization/lock.h"
@@ -113,12 +114,18 @@ class CAPTURE_EXPORT CameraPrivacySwitchObserver
 // /var/run/camera3.sock.  CameraHalServer and CameraHalClients connect to the
 // unix domain socket to create the initial Mojo connections with the
 // CameraHalDisptcherImpl, and CameraHalDispatcherImpl then creates and
-// dispaches the Mojo channels between CameraHalServer and CameraHalClients to
+// dispatches the Mojo channels between CameraHalServer and CameraHalClients to
 // establish direct Mojo connections between the CameraHalServer and the
 // CameraHalClients.
 //
 // For general documentation about the CameraHalDispater Mojo interface see the
 // comments in mojo/cros_camera_service.mojom.
+//
+// On ChromeOS the video capture service must run in the browser process,
+// because parts of the code depend on global objects that are only available in
+// the Browser process. Therefore, CameraHalDispatcherImpl must run in the
+// browser process as well.
+// See https://crbug.com/891961.
 class CAPTURE_EXPORT CameraHalDispatcherImpl final
     : public cros::mojom::CameraHalDispatcher,
       public cros::mojom::CameraHalServerCallbacks,
@@ -177,6 +184,10 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void GetJpegEncodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>
           jea_receiver) final;
+  void RegisterSensorClientWithToken(
+      mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> client,
+      const base::UnguessableToken& auth_token,
+      RegisterSensorClientWithTokenCallback callback) final;
 
   // CameraHalServerCallbacks implementations.
   void CameraDeviceActivityChange(int32_t camera_id,
@@ -229,6 +240,11 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void OnCameraHalServerConnectionError();
   void OnCameraHalClientConnectionError(CameraClientObserver* client);
 
+  void RegisterSensorClientWithTokenOnUIThread(
+      mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> client,
+      const base::UnguessableToken& auth_token,
+      RegisterSensorClientWithTokenCallback callback);
+
   void StopOnProxyThread();
 
   void OnTraceLogEnabledOnProxyThread();
@@ -241,6 +257,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   base::Thread proxy_thread_;
   base::Thread blocking_io_thread_;
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> proxy_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> blocking_io_task_runner_;
 
@@ -274,6 +291,8 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   scoped_refptr<base::ObserverListThreadSafe<CameraPrivacySwitchObserver>>
       privacy_switch_observers_;
+
+  base::WeakPtrFactory<CameraHalDispatcherImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CameraHalDispatcherImpl);
 };

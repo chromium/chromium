@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/constants/ash_features.h",
+  "+chromeos/components/sensors",
   "+chromeos/dbus",
   "+components/chromeos_camera",
   "+third_party/libsync",

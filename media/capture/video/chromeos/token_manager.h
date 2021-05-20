@@ -20,6 +20,8 @@ namespace media {
 class CAPTURE_EXPORT TokenManager {
  public:
   static constexpr char kServerTokenPath[] = "/run/camera_tokens/server/token";
+  static constexpr char kServerSensorClientTokenPath[] =
+      "/run/camera_tokens/server/sensor_client_token";
   static constexpr char kTestClientTokenPath[] =
       "/run/camera_tokens/testing/token";
   static constexpr std::array<cros::mojom::CameraClientType, 3>
@@ -31,6 +33,7 @@ class CAPTURE_EXPORT TokenManager {
   ~TokenManager();
 
   bool GenerateServerToken();
+  bool GenerateServerSensorClientToken();
 
   bool GenerateTestClientToken();
 
@@ -41,6 +44,7 @@ class CAPTURE_EXPORT TokenManager {
   void UnregisterPluginVmToken(const base::UnguessableToken& token);
 
   bool AuthenticateServer(const base::UnguessableToken& token);
+  bool AuthenticateServerSensorClient(const base::UnguessableToken& token);
 
   // Authenticates client with the given |type| and |token|. When |type| is
   // cros::mojom::CameraClientType::UNKNOWN, it tries to figure out the actual

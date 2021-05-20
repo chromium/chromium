@@ -74,6 +74,21 @@ SensorHalDispatcher::SensorHalDispatcher() {
                           base::Unretained(this)));
 }
 
+base::UnguessableToken SensorHalDispatcher::GetTokenForTrustedClient() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto token = base::UnguessableToken::Create();
+  client_token_set_.insert(token);
+  return token;
+}
+
+bool SensorHalDispatcher::AuthenticateClient(
+    const base::UnguessableToken& token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return client_token_set_.find(token) != client_token_set_.end();
+}
+
 SensorHalDispatcher::~SensorHalDispatcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
