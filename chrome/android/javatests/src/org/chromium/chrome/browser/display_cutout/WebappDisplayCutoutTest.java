@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -51,6 +52,7 @@ public class WebappDisplayCutoutTest {
     @Test
     @LargeTest
     @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = WebDisplayMode.FULLSCREEN)
+    @DisabledTest(message = "Flaky test - see: https://crbug.com/1211064")
     public void testViewportFitWebapp_Fullscreen() throws TimeoutException {
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
 
