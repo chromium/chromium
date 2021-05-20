@@ -36,8 +36,26 @@ by a child template that "extends" this file.
     {% if channel in ['default'] %}
         <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
     {% endif %}
+
+    <!--
+      TODO(b/183501112): Remove this condition when always building against the S SDK.
+    -->
+    {% if target_sdk_version == 'S' or target_sdk_version|int >= 31 %}
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30"/>
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30"/>
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <!--
+      Bluetooth scanning is used to implement the Web Bluetooth API, which is
+      not intended to allow sites to derive location and so can accept a
+      filtered view of devices.
+    -->
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_SCAN"
+                            android:usesPermissionFlags="neverForLocation"/>
+    {% else %}
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH"/>
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADMIN"/>
+    {% endif %}
+
     <uses-permission-sdk-23 android:name="android.permission.READ_CONTACTS"/>
     <uses-permission-sdk-23 android:name="android.permission.REORDER_TASKS"/>
     <uses-permission-sdk-23 android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>

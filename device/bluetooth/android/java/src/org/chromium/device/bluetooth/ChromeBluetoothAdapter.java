@@ -12,10 +12,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.ParcelUuid;
 import android.util.SparseArray;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNIAdditionalImport;
@@ -212,6 +214,21 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
      * are on.
      */
     private boolean canScan() {
+        if (mAdapter == null) {
+            return false;
+        }
+
+        // TODO(b/183501112): Remove the targetsAtLeastS() check and replace these permission
+        // strings with the actual Manifest constants once Chrome starts compiling against the S
+        // SDK.
+        if (BuildInfo.targetsAtLeastS() && BuildInfo.isAtLeastS()) {
+            Context context = mAdapter.getContext();
+            return context.checkCallingOrSelfPermission("android.permission.BLUETOOTH_SCAN")
+                    == PackageManager.PERMISSION_GRANTED
+                    && context.checkCallingOrSelfPermission("android.permission.BLUETOOTH_CONNECT")
+                    == PackageManager.PERMISSION_GRANTED;
+        }
+
         LocationUtils locationUtils = LocationUtils.getInstance();
         return locationUtils.hasAndroidLocationPermission()
                 && locationUtils.isSystemLocationSettingEnabled();

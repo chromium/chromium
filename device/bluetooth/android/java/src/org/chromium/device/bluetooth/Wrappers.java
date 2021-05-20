@@ -25,6 +25,7 @@ import android.os.Build;
 import android.os.ParcelUuid;
 import android.util.SparseArray;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -121,16 +122,27 @@ class Wrappers {
                 return null;
             }
 
-            final boolean hasPermissions =
-                    ContextUtils.getApplicationContext().checkCallingOrSelfPermission(
-                            Manifest.permission.BLUETOOTH)
-                            == PackageManager.PERMISSION_GRANTED
-                    && ContextUtils.getApplicationContext().checkCallingOrSelfPermission(
-                               Manifest.permission.BLUETOOTH_ADMIN)
-                            == PackageManager.PERMISSION_GRANTED;
-            if (!hasPermissions) {
-                Log.w(TAG, "BluetoothAdapterWrapper.create failed: Lacking Bluetooth permissions.");
-                return null;
+            // In Android Q and earlier the BLUETOOTH and BLUETOOTH_ADMIN permissions must be
+            // granted in the manifest. In Android S and later the BLUETOOTH_SCAN and
+            // BLUETOOTH_CONNECT permissions can be requested at runtime after fetching the default
+            // adapter.
+            //
+            // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts compiling
+            // against the S SDK.
+            if (!BuildInfo.targetsAtLeastS() || !BuildInfo.isAtLeastS()) {
+                final boolean hasPermission =
+                        ContextUtils.getApplicationContext().checkCallingOrSelfPermission(
+                                "android.permission.BLUETOOTH")
+                                == PackageManager.PERMISSION_GRANTED
+                        && ContextUtils.getApplicationContext().checkCallingOrSelfPermission(
+                                   "android.permission.BLUETOOTH_ADMIN")
+                                == PackageManager.PERMISSION_GRANTED;
+
+                if (!hasPermission) {
+                    Log.w(TAG,
+                            "BluetoothAdapterWrapper.create failed: Lacking Bluetooth permissions.");
+                    return null;
+                }
             }
 
             // Only Low Energy currently supported, see BluetoothAdapterAndroid class note.

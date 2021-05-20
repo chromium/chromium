@@ -24,6 +24,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -118,14 +119,14 @@ public class BluetoothChooserDialog
 
     // The type of link that is shown within the dialog.
     @IntDef({LinkType.EXPLAIN_BLUETOOTH, LinkType.ADAPTER_OFF, LinkType.ADAPTER_OFF_HELP,
-            LinkType.REQUEST_LOCATION_PERMISSION, LinkType.REQUEST_LOCATION_SERVICES,
+            LinkType.REQUEST_PERMISSIONS, LinkType.REQUEST_LOCATION_SERVICES,
             LinkType.NEED_LOCATION_PERMISSION_HELP, LinkType.RESTART_SEARCH})
     @Retention(RetentionPolicy.SOURCE)
     public @interface LinkType {
         int EXPLAIN_BLUETOOTH = 0;
         int ADAPTER_OFF = 1;
         int ADAPTER_OFF_HELP = 2;
-        int REQUEST_LOCATION_PERMISSION = 3;
+        int REQUEST_PERMISSIONS = 3;
         int REQUEST_LOCATION_SERVICES = 4;
         int NEED_LOCATION_PERMISSION_HELP = 5;
         int RESTART_SEARCH = 6;
@@ -253,68 +254,76 @@ public class BluetoothChooserDialog
         // The chooser might have been closed during the request.
         if (mNativeBluetoothChooserDialogPtr == 0) return;
 
-        for (int i = 0; i < permissions.length; i++) {
-            if (permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                if (checkLocationServicesAndPermission()) {
-                    mItemChooserDialog.clear();
-                    Natives jni = BluetoothChooserDialogJni.get();
-                    jni.restartSearch(mNativeBluetoothChooserDialogPtr);
-                }
-                return;
-            }
+        if (checkLocationServicesAndPermission()) {
+            mItemChooserDialog.clear();
+            Natives jni = BluetoothChooserDialogJni.get();
+            jni.restartSearch(mNativeBluetoothChooserDialogPtr);
         }
-        // If the location permission is not present, leave the currently-shown message in place.
     }
 
     // Returns true if Location Services is on and Chrome has permission to see the user's location.
     private boolean checkLocationServicesAndPermission() {
-        final boolean havePermission =
-                mWindowAndroid.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION);
-        final boolean locationServicesOn =
-                LocationUtils.getInstance().isSystemLocationSettingEnabled();
+        final boolean havePermission = hasSystemPermissions(mWindowAndroid);
 
-        if (!havePermission
-                && !mWindowAndroid.canRequestPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+        // Location services are not required on Android S+ to use Bluetooth if the application has
+        // Nearby Devices permission and has set the neverForLocation flag on the BLUETOOTH_SCAN
+        // permission in its manifest.
+        boolean needsLocationServices = false;
+        // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts compiling
+        // against the S SDK.
+        if (!BuildInfo.targetsAtLeastS() || !BuildInfo.isAtLeastS()) {
+            needsLocationServices = !LocationUtils.getInstance().isSystemLocationSettingEnabled();
+        }
+
+        if (!havePermission && !canRequestSystemPermissions(mWindowAndroid)) {
             // Immediately close the dialog because the user has asked Chrome not to request the
-            // location permission.
+            // necessary permissions.
             finishDialog(BluetoothChooserEvent.DENIED_PERMISSION, "");
             return false;
         }
 
         // Compute the message to show the user.
         final SpanInfo permissionSpan = new SpanInfo("<permission_link>", "</permission_link>",
-                createLinkSpan(LinkType.REQUEST_LOCATION_PERMISSION));
+                createLinkSpan(LinkType.REQUEST_PERMISSIONS));
         final SpanInfo servicesSpan = new SpanInfo("<services_link>", "</services_link>",
                 createLinkSpan(LinkType.REQUEST_LOCATION_SERVICES));
-        final SpannableString needLocationMessage;
+        final SpannableString needPermissionMessage;
         if (havePermission) {
-            if (locationServicesOn) {
-                // We don't need to request anything.
-                return true;
-            } else {
-                needLocationMessage = SpanApplier.applySpans(
+            if (needsLocationServices) {
+                needPermissionMessage = SpanApplier.applySpans(
                         mActivity.getString(R.string.bluetooth_need_location_services_on),
                         servicesSpan);
+            } else {
+                // We don't need to request anything.
+                return true;
             }
         } else {
-            if (locationServicesOn) {
-                needLocationMessage = SpanApplier.applySpans(
-                        mActivity.getString(R.string.bluetooth_need_location_permission),
-                        permissionSpan);
-            } else {
-                needLocationMessage = SpanApplier.applySpans(
+            if (needsLocationServices) {
+                needPermissionMessage = SpanApplier.applySpans(
                         mActivity.getString(
                                 R.string.bluetooth_need_location_permission_and_services_on),
                         permissionSpan, servicesSpan);
+            } else {
+                // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts
+                // compiling against the S SDK.
+                if (BuildInfo.targetsAtLeastS() && BuildInfo.isAtLeastS()) {
+                    needPermissionMessage = SpanApplier.applySpans(
+                            mActivity.getString(R.string.bluetooth_need_nearby_devices_permission),
+                            permissionSpan);
+                } else {
+                    needPermissionMessage = SpanApplier.applySpans(
+                            mActivity.getString(R.string.bluetooth_need_location_permission),
+                            permissionSpan);
+                }
             }
         }
 
-        SpannableString needLocationStatus = SpanApplier.applySpans(
+        SpannableString needPermissionStatus = SpanApplier.applySpans(
                 mActivity.getString(R.string.bluetooth_need_location_permission_help),
                 new SpanInfo("<link>", "</link>",
                         createLinkSpan(LinkType.NEED_LOCATION_PERMISSION_HELP)));
 
-        mItemChooserDialog.setErrorState(needLocationMessage, needLocationStatus);
+        mItemChooserDialog.setErrorState(needPermissionMessage, needPermissionStatus);
         return false;
     }
 
@@ -346,11 +355,22 @@ public class BluetoothChooserDialog
             case LinkType.ADAPTER_OFF_HELP:
                 jni.showBluetoothAdapterOffLink(mNativeBluetoothChooserDialogPtr);
                 break;
-            case LinkType.REQUEST_LOCATION_PERMISSION:
+            case LinkType.REQUEST_PERMISSIONS:
                 mItemChooserDialog.setIgnorePendingWindowFocusChangeForClose(true);
-                mWindowAndroid.requestPermissions(
-                        new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
-                        BluetoothChooserDialog.this);
+                // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts
+                // compiling against the S SDK.
+                if (BuildInfo.targetsAtLeastS() && BuildInfo.isAtLeastS()) {
+                    // TODO(b/183501112): Replace these permission strings with the actual Manifest
+                    // constants once Chrome starts compiling against the S SDK.
+                    mWindowAndroid.requestPermissions(
+                            new String[] {"android.permission.BLUETOOTH_SCAN",
+                                    "android.permission.BLUETOOTH_CONNECT"},
+                            BluetoothChooserDialog.this);
+                } else {
+                    mWindowAndroid.requestPermissions(
+                            new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                            BluetoothChooserDialog.this);
+                }
                 break;
             case LinkType.REQUEST_LOCATION_SERVICES:
                 mItemChooserDialog.setIgnorePendingWindowFocusChangeForClose(true);
@@ -372,11 +392,36 @@ public class BluetoothChooserDialog
         view.invalidate();
     }
 
+    private static boolean hasSystemPermissions(WindowAndroid windowAndroid) {
+        // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts compiling
+        // against the S SDK.
+        if (BuildInfo.targetsAtLeastS() && BuildInfo.isAtLeastS()) {
+            // TODO(b/183501112): Replace these permission strings with the actual Manifest
+            // constants once Chrome starts compiling against the S SDK.
+            return windowAndroid.hasPermission("android.permission.BLUETOOTH_SCAN")
+                    && windowAndroid.hasPermission("android.permission.BLUETOOTH_CONNECT");
+        }
+
+        return windowAndroid.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+    }
+
+    private static boolean canRequestSystemPermissions(WindowAndroid windowAndroid) {
+        // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts compiling
+        // against the S SDK.
+        if (BuildInfo.targetsAtLeastS() && BuildInfo.isAtLeastS()) {
+            // TODO(b/183501112): Replace these permission strings with the actual Manifest
+            // constants once Chrome starts compiling against the S SDK.
+            return windowAndroid.canRequestPermission("android.permission.BLUETOOTH_SCAN")
+                    && windowAndroid.canRequestPermission("android.permission.BLUETOOTH_CONNECT");
+        }
+
+        return windowAndroid.canRequestPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+    }
+
     @CalledByNative
     private static BluetoothChooserDialog create(WindowAndroid windowAndroid, String origin,
             int securityLevel, long nativeBluetoothChooserDialogPtr) {
-        if (!windowAndroid.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                && !windowAndroid.canRequestPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+        if (!hasSystemPermissions(windowAndroid) && !canRequestSystemPermissions(windowAndroid)) {
             // If we can't even ask for enough permission to scan for Bluetooth devices, don't open
             // the dialog.
             return null;

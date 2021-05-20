@@ -1863,6 +1863,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_BLUETOOTH_NEED_LOCATION_PERMISSION_HELP" desc="The status message to get more information about why Chrome needs the Location permission in order to scan for Bluetooth devices.">
         <ph name="BEGIN_LINK">&lt;link&gt;</ph>Get help<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
+      <message name="IDS_BLUETOOTH_NEED_NEARBY_DEVICES_PERMISSION" desc="The message to show when scanning cannot start because Chrome needs the Nearby devices permission in order for Android to return any Bluetooth devices from a scan.">
+        Chrome needs permission to scan for nearby devices. <ph name="BEGIN_LINK">&lt;permission_link&gt;</ph>Update permissions<ph name="END_LINK">&lt;/permission_link&gt;</ph>.
+      </message>
       <message name="IDS_BLUETOOTH_DEVICE_CONNECTED" desc="Content description for the connected icon next to connected Bluetooth devices.">
         Connected Device
       </message>
