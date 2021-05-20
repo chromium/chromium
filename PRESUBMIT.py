@@ -976,27 +976,6 @@ _BANNED_CPP_FUNCTIONS = (
 # * Sequence of strings to show when the pattern matches.
 _DEPRECATED_MOJO_TYPES = (
     (
-      r'/\bmojo::AssociatedBinding\b',
-      (
-        'mojo::AssociatedBinding<Interface> is deprecated.',
-        'Use mojo::AssociatedReceiver<Interface> instead.',
-      ),
-    ),
-    (
-      r'/\bmojo::AssociatedBindingSet\b',
-      (
-        'mojo::AssociatedBindingSet<Interface> is deprecated.',
-        'Use mojo::AssociatedReceiverSet<Interface> instead.',
-      ),
-    ),
-    (
-      r'/\bmojo::AssociatedInterfacePtr\b',
-      (
-        'mojo::AssociatedInterfacePtr<Interface> is deprecated.',
-        'Use mojo::AssociatedRemote<Interface> instead.',
-      ),
-    ),
-    (
       r'/\bmojo::AssociatedInterfacePtrInfo\b',
       (
         'mojo::AssociatedInterfacePtrInfo<Interface> is deprecated.',
@@ -1008,20 +987,6 @@ _DEPRECATED_MOJO_TYPES = (
       (
         'mojo::AssociatedInterfaceRequest<Interface> is deprecated.',
         'Use mojo::PendingAssociatedReceiver<Interface> instead.',
-      ),
-    ),
-    (
-      r'/\bmojo::Binding\b',
-      (
-        'mojo::Binding<Interface> is deprecated.',
-        'Use mojo::Receiver<Interface> instead.',
-      ),
-    ),
-    (
-      r'/\bmojo::BindingSet\b',
-      (
-        'mojo::BindingSet<Interface> is deprecated.',
-        'Use mojo::ReceiverSet<Interface> instead.',
       ),
     ),
     (
@@ -1050,58 +1015,6 @@ _DEPRECATED_MOJO_TYPES = (
       (
         'mojo::MakeRequest is deprecated.',
         'Use mojo::Remote::BindNewPipeAndPassReceiver() instead.',
-      ),
-    ),
-    (
-      r'/\bmojo::MakeRequestAssociatedWithDedicatedPipe\b',
-      (
-        'mojo::MakeRequest is deprecated.',
-        'Use mojo::AssociatedRemote::'
-        'BindNewEndpointAndPassDedicatedReceiver() instead.',
-      ),
-    ),
-    (
-      r'/\bmojo::MakeStrongBinding\b',
-      (
-        'mojo::MakeStrongBinding is deprecated.',
-        'Either migrate to mojo::UniqueReceiverSet, if possible, or use',
-        'mojo::MakeSelfOwnedReceiver() instead.',
-      ),
-    ),
-    (
-      r'/\bmojo::MakeStrongAssociatedBinding\b',
-      (
-        'mojo::MakeStrongAssociatedBinding is deprecated.',
-        'Either migrate to mojo::UniqueAssociatedReceiverSet, if possible, or',
-        'use mojo::MakeSelfOwnedAssociatedReceiver() instead.',
-      ),
-    ),
-    (
-      r'/\bmojo::StrongAssociatedBinding\b',
-      (
-        'mojo::StrongAssociatedBinding<Interface> is deprecated.',
-        'Use mojo::MakeSelfOwnedAssociatedReceiver<Interface> instead.',
-      ),
-    ),
-    (
-      r'/\bmojo::StrongBinding\b',
-      (
-        'mojo::StrongBinding<Interface> is deprecated.',
-        'Use mojo::MakeSelfOwnedReceiver<Interface> instead.',
-      ),
-    ),
-    (
-      r'/\bmojo::StrongAssociatedBindingSet\b',
-      (
-        'mojo::StrongAssociatedBindingSet<Interface> is deprecated.',
-        'Use mojo::UniqueAssociatedReceiverSet<Interface> instead.',
-      ),
-    ),
-    (
-      r'/\bmojo::StrongBindingSet\b',
-      (
-        'mojo::StrongBindingSet<Interface> is deprecated.',
-        'Use mojo::UniqueReceiverSet<Interface> instead.',
       ),
     ),
 )
