@@ -64,7 +64,7 @@ ReadLaterToolbarButton::ReadLaterToolbarButton(Browser* browser)
           true)) {
   contents_wrapper_->ReloadWebContents();
 
-  SetVectorIcon(kReadLaterIcon);
+  SetVectorIcons(kSidePanelIcon, kSidePanelTouchIcon);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE));
 }
 

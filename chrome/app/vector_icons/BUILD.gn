@@ -97,6 +97,8 @@ aggregate_vector_icons("chrome_vector_icons") {
     "scrolling_tabstrip_trailing.icon",
     "security.icon",
     "send_tab_to_self.icon",
+    "side_panel.icon",
+    "side_panel_touch.icon",
     "sign_out.icon",
     "signin_button_drop_down_arrow.icon",
     "smartphone.icon",
