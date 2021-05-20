@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/service_sandbox_type.h"
@@ -22,6 +23,13 @@
 namespace printing {
 
 namespace {
+
+// Histogram name for capturing if any printer drivers were encountered that
+// required fallback to workaround an access-denied error.  Determining if this
+// happens in the wild would be the impetus to pursue further efforts to
+// identify and possibly better rectify such cases.
+constexpr char kPrintBackendRequiresElevatedPrivilegeHistogramName[] =
+    "Printing.PrintBackend.DriversRequiringElevatedPrivilegeEncountered";
 
 // Amount of idle time to wait before resetting the connection to the service.
 constexpr base::TimeDelta kResetOnIdleTimeout =
@@ -36,29 +44,39 @@ PrintBackendServiceManager::PrintBackendServiceManager() = default;
 PrintBackendServiceManager::~PrintBackendServiceManager() = default;
 
 bool PrintBackendServiceManager::ShouldSandboxPrintBackendService() const {
-  return sandbox_service_;
+  return is_sandboxed_service_;
 }
 
 const mojo::Remote<printing::mojom::PrintBackendService>&
 PrintBackendServiceManager::GetService(const std::string& locale,
                                        const std::string& printer_name) {
-  // Value of `sandbox_service_` will be referenced during the service launch
-  // by `ShouldSandboxPrintBackendService()` if the service is started via
-  // `content::ServiceProcessHost::Launch()`.
-  sandbox_service_ = !PrinterDriverRequiresElevatedPrivilege(printer_name);
+  // Value of `is_sandboxed_service_` will be referenced during the service
+  // launch by `ShouldSandboxPrintBackendService()` if the service is started
+  // via `content::ServiceProcessHost::Launch()`.
+  is_sandboxed_service_ = !PrinterDriverRequiresElevatedPrivilege(printer_name);
 
   if (sandboxed_service_remote_for_test_) {
     // The presence of a sandboxed remote for testing signals a testing
     // environment.  If no unsandboxed test service was provided for fallback
     // processing then use the sandboxed one for that as well.
-    if (!sandbox_service_ && unsandboxed_service_remote_for_test_)
+    if (!is_sandboxed_service_ && unsandboxed_service_remote_for_test_)
       return *unsandboxed_service_remote_for_test_;
 
     return *sandboxed_service_remote_for_test_;
   }
 
   RemotesMap& remote =
-      sandbox_service_ ? sandboxed_remotes_ : unsandboxed_remotes_;
+      is_sandboxed_service_ ? sandboxed_remotes_ : unsandboxed_remotes_;
+
+  // On the first print make note that so far no drivers have required fallback.
+  static bool first_print = true;
+  if (first_print) {
+    DCHECK(is_sandboxed_service_);
+    first_print = false;
+    base::UmaHistogramBoolean(
+        kPrintBackendRequiresElevatedPrivilegeHistogramName, /*sample=*/false);
+  }
+
   std::string remote_id;
 #if defined(OS_WIN)
   // Windows drivers are not thread safe.  Use a process per driver to prevent
@@ -77,7 +95,7 @@ PrintBackendServiceManager::GetService(const std::string& locale,
   mojo::Remote<printing::mojom::PrintBackendService>& service = iter->second;
   if (!service) {
     VLOG(1) << "Launching print backend "
-            << (sandbox_service_ ? "sandboxed" : "unsandboxed") << " for '"
+            << (is_sandboxed_service_ ? "sandboxed" : "unsandboxed") << " for '"
             << remote_id << "'";
     content::ServiceProcessHost::Launch(
         service.BindNewPipeAndPassReceiver(),
@@ -89,9 +107,9 @@ PrintBackendServiceManager::GetService(const std::string& locale,
     // process crashes) then we will drop our handle to the remote.
     // Safe to use base::Unretained(this) since `this` is a global singleton
     // which never goes away.
-    service.set_disconnect_handler(
-        base::BindOnce(&PrintBackendServiceManager::OnRemoteDisconnected,
-                       base::Unretained(this), sandbox_service_, remote_id));
+    service.set_disconnect_handler(base::BindOnce(
+        &PrintBackendServiceManager::OnRemoteDisconnected,
+        base::Unretained(this), is_sandboxed_service_, remote_id));
 
     // TODO(crbug.com/809738) Interactions with the service should be expected
     // as long as any Print Preview dialogs are open (and there could be more
@@ -106,7 +124,7 @@ PrintBackendServiceManager::GetService(const std::string& locale,
     service.set_idle_handler(
         kResetOnIdleTimeout,
         base::BindRepeating(&PrintBackendServiceManager::OnIdleTimeout,
-                            base::Unretained(this), sandbox_service_,
+                            base::Unretained(this), is_sandboxed_service_,
                             remote_id));
 
     // Initialize the new service for the desired locale.
@@ -151,7 +169,12 @@ void PrintBackendServiceManager::SetPrinterDriverRequiresElevatedPrivilege(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   VLOG(1) << "Destination '" << printer_name
           << "' requires elevated privileges.";
-  drivers_requiring_elevated_privilege_.emplace(printer_name);
+  if (drivers_requiring_elevated_privilege_.emplace(printer_name).second &&
+      drivers_requiring_elevated_privilege_.size() == 1) {
+    // First time we've detected a problem for any driver.
+    base::UmaHistogramBoolean(
+        kPrintBackendRequiresElevatedPrivilegeHistogramName, /*sample=*/true);
+  }
 }
 
 void PrintBackendServiceManager::SetServiceForTesting(

@@ -83,7 +83,7 @@ class PrintBackendServiceManager {
   RemotesMap unsandboxed_remotes_;
 
   // Track if next service started should be sandboxed.
-  bool sandbox_service_ = true;
+  bool is_sandboxed_service_ = true;
 
   // Set of printer drivers which require elevated permissions to operate.
   // It is expected that most print drivers will succeed with the preconfigured
