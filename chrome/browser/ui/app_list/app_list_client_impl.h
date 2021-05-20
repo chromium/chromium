@@ -50,7 +50,8 @@ class AppListClientImpl
   // ash::AppListClient:
   void OnAppListControllerDestroyed() override;
   void StartSearch(const std::u16string& trimmed_query) override;
-  void OpenSearchResult(const std::string& result_id,
+  void OpenSearchResult(int profile_id,
+                        const std::string& result_id,
                         ash::AppListSearchResultType result_type,
                         int event_flags,
                         ash::AppListLaunchedFrom launched_from,

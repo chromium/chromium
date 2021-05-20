@@ -98,6 +98,7 @@ void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
 }
 
 void AppListClientImpl::OpenSearchResult(
+    int profile_id,
     const std::string& result_id,
     ash::AppListSearchResultType result_type,
     int event_flags,
@@ -107,6 +108,10 @@ void AppListClientImpl::OpenSearchResult(
     bool launch_as_default) {
   if (!search_controller_)
     return;
+
+  auto requested_model_updater_iter = profile_model_mappings_.find(profile_id);
+  DCHECK(requested_model_updater_iter != profile_model_mappings_.end());
+  DCHECK_EQ(current_model_updater_, requested_model_updater_iter->second);
 
   ChromeSearchResult* result = search_controller_->FindSearchResult(result_id);
   if (!result)

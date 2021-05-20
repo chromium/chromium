@@ -1384,7 +1384,7 @@ void AppListControllerImpl::OpenSearchResult(
   }
 
   if (client_) {
-    client_->OpenSearchResult(result_id, result_type, event_flags,
+    client_->OpenSearchResult(profile_id_, result_id, result_type, event_flags,
                               launched_from, launch_type, suggestion_index,
                               launch_as_default);
   }
