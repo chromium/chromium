@@ -656,7 +656,6 @@
       'V8 Blink Linux': 'release_bot_blink',
       'V8 Blink Linux Debug': 'release_bot_blink_v8_debug',
       'V8 Blink Linux Future': 'release_bot_blink',
-      'V8 Blink Linux Layout NG': 'release_bot_blink',
       'V8 Blink Mac': 'release_bot_blink',
       'V8 Blink Win': 'release_bot_blink',
       'V8 Linux GN': 'release_bot',

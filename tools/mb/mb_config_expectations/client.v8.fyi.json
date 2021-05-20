@@ -107,15 +107,6 @@
       "use_goma": true
     }
   },
-  "V8 Blink Linux Layout NG": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "use_goma": true
-    }
-  },
   "V8 Blink Mac": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",
