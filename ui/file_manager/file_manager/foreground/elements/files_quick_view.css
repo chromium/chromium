@@ -84,8 +84,8 @@ dialog#delete-confirm-dialog::backdrop {
 }
 
 :host-context(html[dir='rtl']) #contentPanel[metadata-box-active] {
-  margin-inline-end: auto;
-  margin-inline-start: 320px;
+  margin-inline-end: 320px;
+  margin-inline-start: auto;
 }
 
 #innerContentPanel {
