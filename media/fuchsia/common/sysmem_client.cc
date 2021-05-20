@@ -27,6 +27,8 @@ SysmemCollectionClient::SysmemCollectionClient(
 
 SysmemCollectionClient::~SysmemCollectionClient() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (collection_)
+    collection_->Close();
 }
 
 void SysmemCollectionClient::Initialize(
@@ -60,12 +62,19 @@ void SysmemCollectionClient::Initialize(
       fit::bind_member(this, &SysmemCollectionClient::OnSyncComplete));
 }
 
-void SysmemCollectionClient::CreateSharedToken(GetSharedTokenCB cb) {
+void SysmemCollectionClient::CreateSharedToken(
+    GetSharedTokenCB cb,
+    base::StringPiece debug_client_name,
+    uint64_t debug_client_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(collection_token_);
 
   fuchsia::sysmem::BufferCollectionTokenPtr token;
   collection_token_->Duplicate(ZX_RIGHT_SAME_RIGHTS, token.NewRequest());
+
+  if (!debug_client_name.empty()) {
+    token->SetDebugClientInfo(std::string(debug_client_name), debug_client_id);
+  }
 
   sync_completion_closures_.push_back(
       base::BindOnce(std::move(cb), std::move(token)));

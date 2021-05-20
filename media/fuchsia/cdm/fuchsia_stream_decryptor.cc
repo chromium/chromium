@@ -145,7 +145,7 @@ void FuchsiaStreamDecryptor::Reset() {
   waiting_for_key_ = false;
 }
 
-void FuchsiaStreamDecryptor::AllocateOutputBuffers(
+void FuchsiaStreamDecryptor::OnStreamProcessorAllocateOutputBuffers(
     const fuchsia::media::StreamBufferConstraints& stream_constraints) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -172,25 +172,25 @@ void FuchsiaStreamDecryptor::AllocateOutputBuffers(
                                         "CrFuchsiaStreamDecryptorOutput");
 }
 
-void FuchsiaStreamDecryptor::OnProcessEos() {
+void FuchsiaStreamDecryptor::OnStreamProcessorEndOfStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sink_->OnSysmemBufferStreamEndOfStream();
 }
 
-void FuchsiaStreamDecryptor::OnOutputFormat(
+void FuchsiaStreamDecryptor::OnStreamProcessorOutputFormat(
     fuchsia::media::StreamOutputFormat format) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void FuchsiaStreamDecryptor::OnOutputPacket(
+void FuchsiaStreamDecryptor::OnStreamProcessorOutputPacket(
     StreamProcessorHelper::IoPacket packet) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sink_->OnSysmemBufferStreamOutputPacket(std::move(packet));
 }
 
-void FuchsiaStreamDecryptor::OnNoKey() {
+void FuchsiaStreamDecryptor::OnStreamProcessorNoKey() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!waiting_for_key_);
 
@@ -206,6 +206,11 @@ void FuchsiaStreamDecryptor::OnNoKey() {
 
   waiting_for_key_ = true;
   sink_->OnSysmemBufferStreamNoKey();
+}
+
+void FuchsiaStreamDecryptor::OnStreamProcessorError() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  OnError();
 }
 
 void FuchsiaStreamDecryptor::OnError() {

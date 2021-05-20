@@ -108,9 +108,9 @@ void VmoBufferWriterQueue::PumpPackets() {
 
     bool buffer_end = current_buffer->bytes_left() == 0;
 
-    auto packet = StreamProcessorHelper::IoPacket::CreateInput(
-        buffer_index, bytes_filled, current_buffer->buffer->timestamp(),
-        buffer_end,
+    auto packet = StreamProcessorHelper::IoPacket(
+        buffer_index, /*offset=*/0, bytes_filled,
+        current_buffer->buffer->timestamp(), buffer_end,
         base::BindOnce(&VmoBufferWriterQueue::ReleaseBuffer,
                        weak_factory_.GetWeakPtr(), buffer_index));
 

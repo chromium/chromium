@@ -48,7 +48,10 @@ class SysmemCollectionClient {
   // Creates one shared token to be shared with other participants and returns
   // it asynchronously, when it's safe to pass it (i.e. after Sync()). Must be
   // called before Initialize().
-  void CreateSharedToken(GetSharedTokenCB cb);
+  void CreateSharedToken(
+      GetSharedTokenCB cb,
+      base::StringPiece debug_client_name = base::StringPiece(),
+      uint64_t debug_client_id = 0);
 
   // Initializes the collection with the given name and constraints.
   void Initialize(fuchsia::sysmem::BufferCollectionConstraints constraints,

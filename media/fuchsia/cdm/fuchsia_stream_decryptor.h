@@ -55,13 +55,17 @@ class MEDIA_EXPORT FuchsiaStreamDecryptor
 
  private:
   // StreamProcessorHelper::Client overrides.
-  void AllocateOutputBuffers(
+  void OnStreamProcessorAllocateOutputBuffers(
       const fuchsia::media::StreamBufferConstraints& stream_constraints) final;
-  void OnProcessEos() final;
-  void OnOutputFormat(fuchsia::media::StreamOutputFormat format) final;
-  void OnOutputPacket(StreamProcessorHelper::IoPacket packet) final;
-  void OnNoKey() final;
-  void OnError() final;
+  void OnStreamProcessorEndOfStream() final;
+  void OnStreamProcessorOutputFormat(
+      fuchsia::media::StreamOutputFormat format) final;
+  void OnStreamProcessorOutputPacket(
+      StreamProcessorHelper::IoPacket packet) final;
+  void OnStreamProcessorNoKey() final;
+  void OnStreamProcessorError() final;
+
+  void OnError();
 
   void OnInputBuffersAcquired(
       std::vector<VmoBuffer> buffers,

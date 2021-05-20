@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "media/base/timestamp_constants.h"
 
 namespace media {
 
@@ -27,36 +28,23 @@ StreamProcessorHelper::IoPacket::IoPacket(size_t index,
       offset_(offset),
       size_(size),
       timestamp_(timestamp),
-      unit_end_(unit_end),
-      destroy_cb_(std::move(destroy_cb)) {}
+      unit_end_(unit_end) {
+  destroy_callbacks_.push_front(std::move(destroy_cb));
+}
 
-StreamProcessorHelper::IoPacket::~IoPacket() = default;
+StreamProcessorHelper::IoPacket::~IoPacket() {
+  for (auto& cb : destroy_callbacks_) {
+    std::move(cb).Run();
+  }
+}
 
 StreamProcessorHelper::IoPacket::IoPacket(IoPacket&&) = default;
 StreamProcessorHelper::IoPacket& StreamProcessorHelper::IoPacket::operator=(
     IoPacket&&) = default;
 
-// static
-StreamProcessorHelper::IoPacket StreamProcessorHelper::IoPacket::CreateInput(
-    size_t index,
-    size_t size,
-    base::TimeDelta timestamp,
-    bool unit_end,
-    base::OnceClosure destroy_cb) {
-  return IoPacket(index, 0 /* offset */, size, timestamp, unit_end,
-                  std::move(destroy_cb));
-}
-
-// static
-StreamProcessorHelper::IoPacket StreamProcessorHelper::IoPacket::CreateOutput(
-    size_t index,
-    size_t offset,
-    size_t size,
-    base::TimeDelta timestamp,
-    bool unit_end,
-    base::OnceClosure destroy_cb) {
-  return IoPacket(index, offset, size, timestamp, unit_end,
-                  std::move(destroy_cb));
+void StreamProcessorHelper::IoPacket::AddOnDestroyClosure(
+    base::OnceClosure closure) {
+  destroy_callbacks_.push_front(std::move(closure));
 }
 
 StreamProcessorHelper::StreamProcessorHelper(
@@ -160,7 +148,7 @@ void StreamProcessorHelper::OnStreamFailed(uint64_t stream_lifetime_ordinal,
     // Always reset the stream since the current one has failed.
     Reset();
 
-    client_->OnNoKey();
+    client_->OnStreamProcessorNoKey();
     return;
   }
 
@@ -226,7 +214,7 @@ void StreamProcessorHelper::OnOutputConstraints(
   output_buffer_constraints_ =
       std::move(*output_constraints.mutable_buffer_constraints());
 
-  client_->AllocateOutputBuffers(output_buffer_constraints_);
+  client_->OnStreamProcessorAllocateOutputBuffers(output_buffer_constraints_);
 }
 
 void StreamProcessorHelper::OnOutputFormat(
@@ -244,7 +232,7 @@ void StreamProcessorHelper::OnOutputFormat(
     return;
   }
 
-  client_->OnOutputFormat(std::move(output_format));
+  client_->OnStreamProcessorOutputFormat(std::move(output_format));
 }
 
 void StreamProcessorHelper::OnOutputPacket(fuchsia::media::Packet output_packet,
@@ -276,12 +264,12 @@ void StreamProcessorHelper::OnOutputPacket(fuchsia::media::Packet output_packet,
 
   auto buffer_index = output_packet.buffer_index();
   auto packet_index = output_packet.header().packet_index();
-  base::TimeDelta timestamp;
-  if (output_packet.has_timestamp_ish()) {
-    timestamp = base::TimeDelta::FromNanoseconds(output_packet.timestamp_ish());
-  }
+  base::TimeDelta timestamp =
+      output_packet.has_timestamp_ish()
+          ? base::TimeDelta::FromNanoseconds(output_packet.timestamp_ish())
+          : kNoTimestamp;
 
-  client_->OnOutputPacket(IoPacket::CreateOutput(
+  client_->OnStreamProcessorOutputPacket(IoPacket(
       buffer_index, output_packet.start_offset(),
       output_packet.valid_length_bytes(), timestamp,
       output_packet.known_end_access_unit(),
@@ -301,12 +289,12 @@ void StreamProcessorHelper::OnOutputEndOfStream(
   stream_lifetime_ordinal_ += 2;
   active_stream_ = false;
 
-  client_->OnProcessEos();
+  client_->OnStreamProcessorEndOfStream();
 }
 
 void StreamProcessorHelper::OnError() {
   processor_.Unbind();
-  client_->OnError();
+  client_->OnStreamProcessorError();
 }
 
 void StreamProcessorHelper::SetInputBufferCollectionToken(
