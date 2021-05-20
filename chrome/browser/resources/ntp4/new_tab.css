@@ -105,50 +105,6 @@ html[dir='rtl'] #attribution {
   transition: none !important;
 }
 
-/* Login Status. **************************************************************/
-
-#login-container {
-  background: transparent none;
-  border: none;
-  box-shadow: none;
-  color: inherit;
-  font: inherit;
-  /* Leave room for the scrollbar. */
-  margin-left: 13px;
-  margin-right: 13px;
-  margin-top: 5px;
-  padding: 0;
-  position: fixed;
-  right: 0;
-  text-align: right;
-  top: 0;
-  z-index: 10;
-}
-
-#login-container:not(.signed-in) {
-  cursor: pointer;
-}
-
-html[dir='rtl'] #login-container {
-  left: 0;
-  right: auto;
-}
-
-#login-container [is='action-link'] {
-  margin-inline-start: 0;
-}
-
-.login-status-icon {
-  background-position: right center;
-  background-repeat: no-repeat;
-  min-height: 27px;
-  padding-inline-end: 37px;
-}
-
-html[dir='rtl'] .login-status-icon {
-  background-position-x: left;
-}
-
 /* Trash. *********************************************************************/
 
 #trash {

@@ -8722,19 +8722,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Data was encrypted with your sync passphrase on
           <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. This doesn't include payment methods and addresses from Google Pay.
         </message>
-
-        <!-- Sync promo on chrome://apps -->
-        <if expr="not chromeos">
-          <message name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_HEADER" desc="The first line of the of the message shown in NTP when a user is not signed into sync.">
-            Not signed in to <ph name="SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph>
-          </message>
-          <message name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_SUB_HEADER" desc="The second line of the of the message shown in NTP when a user is not signed in to sync.">
-            (You're missing out&#8212;<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK">$1<ex>sign in</ex></ph>)
-          </message>
-          <message name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" desc="The linkified portion of the sync sign in promo on the NTP. Clicking this text allows the user to sign in to sync.">
-            sign in
-          </message>
-        </if>
       </if>
 
       <!-- Translate Bubble -->

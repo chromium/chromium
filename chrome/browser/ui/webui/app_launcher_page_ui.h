@@ -25,11 +25,6 @@ class AppLauncherPageUI : public content::WebUIController {
   static base::RefCountedMemory* GetFaviconResourceBytes(
       ui::ScaleFactor scale_factor);
 
-  // content::WebUIController:
-  bool OverrideHandleWebUIMessage(const GURL& source_url,
-                                  const std::string& message,
-                                  const base::ListValue& args) override;
-
  private:
   void OnHideWebStoreIconChanged();
 

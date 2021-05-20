@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
-#include "chrome/browser/ui/webui/app_launcher_login_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/ntp/app_icon_webui_handler.h"
 #include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
@@ -123,9 +122,6 @@ AppLauncherPageUI::AppLauncherPageUI(content::WebUI* web_ui)
       "bookmarkbarattached",
       prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar) ? "true" : "false");
 
-  source->AddBoolean("shouldShowSyncLogin",
-                     AppLauncherLoginHandler::ShouldShow(GetProfile()));
-
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   source->AddString("webStoreLink",
                     google_util::AppendGoogleLocaleParam(
@@ -200,18 +196,6 @@ base::RefCountedMemory* AppLauncherPageUI::GetFaviconResourceBytes(
       LoadDataResourceBytesForScale(IDR_BOOKMARK_BAR_APPS_SHORTCUT,
                                     scale_factor);
 }
-
-bool AppLauncherPageUI::OverrideHandleWebUIMessage(
-    const GURL& source_url,
-    const std::string& message,
-    const base::ListValue& args) {
-  if (message == "getApps" &&
-      AppLauncherLoginHandler::ShouldShow(GetProfile())) {
-    web_ui()->AddMessageHandler(std::make_unique<AppLauncherLoginHandler>());
-  }
-  return false;
-}
-
 
 Profile* AppLauncherPageUI::GetProfile() const {
   return Profile::FromWebUI(web_ui());

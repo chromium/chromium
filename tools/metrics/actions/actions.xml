@@ -23457,6 +23457,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromAppsPageLink">
+  <obsolete>
+    Deprecated as the apps page no longer has a sign-in link/promo.
+  </obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point

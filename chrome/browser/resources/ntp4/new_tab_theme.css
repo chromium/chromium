@@ -43,16 +43,6 @@ body {
   background-color: rgba($i18n{colorText}, 0.06);
 }
 
-/* Only change the background to a gradient when a promo is showing. */
-.showing-login-area #page-switcher-end:hover,
-.showing-login-area #page-switcher-end:focus,
-.showing-login-area #page-switcher-end.drag-target {
-  background: linear-gradient(
-      rgba($i18n{colorText}, 0) 0,
-      rgba($i18n{colorText}, .01) 60px,
-      rgba($i18n{colorText}, .06) 183px);
-}
-
 .tile-page-scrollbar {
   background-color: $i18n{colorTextLight};
 }

@@ -23,7 +23,6 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::ACCESS_POINT_SUPERVISED_USER,
     AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
     AccessPoint::ACCESS_POINT_EXTENSIONS,
-    AccessPoint::ACCESS_POINT_APPS_PAGE_LINK,
     AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
     AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER,
     AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
@@ -50,7 +49,6 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::ACCESS_POINT_MENU,
     AccessPoint::ACCESS_POINT_SETTINGS,
     AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
-    AccessPoint::ACCESS_POINT_APPS_PAGE_LINK,
     AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
     AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER,
     AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
@@ -97,8 +95,6 @@ class SigninMetricsTest : public ::testing::Test {
         return "ExtensionInstallBubble";
       case AccessPoint::ACCESS_POINT_EXTENSIONS:
         return "Extensions";
-      case AccessPoint::ACCESS_POINT_APPS_PAGE_LINK:
-        return "AppsPageLink";
       case AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
         return "BookmarkBubble";
       case AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:

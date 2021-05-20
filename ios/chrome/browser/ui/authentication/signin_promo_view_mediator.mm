@@ -54,7 +54,6 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_APPS_PAGE_LINK:
     case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
     case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
@@ -106,7 +105,6 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_APPS_PAGE_LINK:
     case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
     case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
@@ -160,7 +158,6 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_APPS_PAGE_LINK:
     case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
     case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
@@ -214,7 +211,6 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_APPS_PAGE_LINK:
     case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
     case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
@@ -260,7 +256,6 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_APPS_PAGE_LINK:
     case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
     case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
@@ -304,7 +299,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_APPS_PAGE_LINK:
     case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
     case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
