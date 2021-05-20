@@ -366,6 +366,9 @@ bool DiscardableSharedMemoryHeap::OnMemoryDump(
   total_dump->AddScalar("freelist_size",
                         base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                         freelist_size);
+  total_dump->AddScalar("freelist_size_dirty",
+                        base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                        dirty_freed_memory_page_count_ * base::GetPageSize());
   if (args.level_of_detail ==
       base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
     // These metrics (size and virtual size) are also reported by each

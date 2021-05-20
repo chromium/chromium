@@ -361,11 +361,14 @@ TEST(DiscardableSharedMemoryHeapTest, OnMemoryDumpTest) {
         "discardable/child_0x%" PRIXPTR, reinterpret_cast<uintptr_t>(&heap)));
     ASSERT_NE(nullptr, dump);
 
-    base::trace_event::MemoryAllocatorDump::Entry freelist("freelist_size",
-                                                           "bytes", 0);
+    base::trace_event::MemoryAllocatorDump::Entry freelist_size("freelist_size",
+                                                                "bytes", 0);
+    base::trace_event::MemoryAllocatorDump::Entry freelist_size_dirty(
+        "freelist_size_dirty", "bytes", 0);
     base::trace_event::MemoryAllocatorDump::Entry virtual_size("virtual_size",
                                                                "bytes", 0);
-    EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(freelist))));
+    EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(freelist_size))));
+    EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(freelist_size_dirty))));
     EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(virtual_size))));
   }
 
@@ -382,11 +385,14 @@ TEST(DiscardableSharedMemoryHeapTest, OnMemoryDumpTest) {
         "discardable/child_0x%" PRIXPTR, reinterpret_cast<uintptr_t>(&heap)));
     ASSERT_NE(nullptr, dump);
 
-    base::trace_event::MemoryAllocatorDump::Entry freelist("freelist_size",
-                                                           "bytes", 0);
+    base::trace_event::MemoryAllocatorDump::Entry freelist_size("freelist_size",
+                                                                "bytes", 0);
+    base::trace_event::MemoryAllocatorDump::Entry freelist_size_dirty(
+        "freelist_size_dirty", "bytes", 0);
     base::trace_event::MemoryAllocatorDump::Entry virtual_size(
         "virtual_size", "bytes", block_size);
-    EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(freelist))));
+    EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(freelist_size))));
+    EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(freelist_size_dirty))));
     EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(virtual_size))));
   }
 
