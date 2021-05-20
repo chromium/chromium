@@ -41,165 +41,91 @@ TouchPassthroughManager::~TouchPassthroughManager() {
 
 void TouchPassthroughManager::OnTouchStart(
     const gfx::Point& point_in_frame_pixels) {
-  // Enqueue the touch start event, to be processed based on the results
-  // of the hit test.
-  HitTestAndEnqueueEventOfType(EventType::kPress, point_in_frame_pixels);
+  if (is_passthrough_) {
+    // This shouldn't happen, but if we do ever get a touch start when
+    // we thought we were already passing through, we should reset our state.
+    NOTREACHED();
+    OnTouchEnd();
+  }
+
+  // Keep track of the current state.
+  is_touch_down_ = true;
+
+  // Perform a hit test to determine if this event is within a touch
+  // passthrough region. Use an incrementing ID for each hit test so
+  // that any callbacks that are received late can be ignored.
+  hit_test_id_++;
+  SendHitTest(point_in_frame_pixels,
+              base::BindOnce(&TouchPassthroughManager::OnHitTestResult,
+                             weak_ptr_factory_.GetWeakPtr(), hit_test_id_,
+                             base::TimeTicks::Now(), point_in_frame_pixels));
 }
 
 void TouchPassthroughManager::OnTouchMove(
     const gfx::Point& point_in_frame_pixels) {
-  // Enqueue the touch move event, to be processed based on the results
-  // of the hit test.
-  HitTestAndEnqueueEventOfType(EventType::kMove, point_in_frame_pixels);
+  DCHECK(is_touch_down_);
+
+  if (is_passthrough_)
+    SimulateMove(point_in_frame_pixels, base::TimeTicks::Now());
 }
 
 void TouchPassthroughManager::OnTouchEnd() {
-  // A touch end doesn't require a hit test, so enqueue it and then
-  // try to process pending events now. It may not get processed right
-  // away if the previous events were waiting on a hit test.
-  EnqueueEventOfType(EventType::kRelease, /* pending = */ false, {});
-  ProcessPendingEvents();
-}
+  DCHECK(is_touch_down_);
+  is_touch_down_ = false;
 
-void TouchPassthroughManager::HitTestAndEnqueueEventOfType(
-    TouchPassthroughManager::EventType type,
-    const gfx::Point& point_in_frame_pixels) {
-  // Enqueue one event struct. The rest of the details will get filled
-  // in after the hit test by |OnHitTestResult|.
-  int event_id =
-      EnqueueEventOfType(type, /* pending = */ true, point_in_frame_pixels);
-  SendHitTest(point_in_frame_pixels,
-              base::BindOnce(&TouchPassthroughManager::OnHitTestResult,
-                             weak_ptr_factory_.GetWeakPtr(), event_id));
-}
-
-int TouchPassthroughManager::EnqueueEventOfType(
-    EventType type,
-    bool pending,
-    const gfx::Point& point_in_frame_pixels) {
-  int event_id = next_event_id_;
-  next_event_id_++;
-  auto event = std::make_unique<TouchPassthroughEvent>();
-  event->pending = pending;
-  event->type = type;
-  event->time = base::TimeTicks::Now();
-  event->location = point_in_frame_pixels;
-  id_to_event_[event_id] = std::move(event);
-  return event_id;
+  if (is_passthrough_) {
+    SimulateRelease(base::TimeTicks::Now());
+    is_passthrough_ = false;
+  }
 }
 
 void TouchPassthroughManager::OnHitTestResult(
-    int event_id,
+    int hit_test_id,
+    base::TimeTicks event_time,
+    gfx::Point location,
     BrowserAccessibilityManager* hit_manager,
     int hit_node_id) {
-  // Exit if this event is no longer in our queue.
-  // TODO(dmazzoni): add timeouts so that if a hit test result doesn't
-  // come back quickly we don't wait on it forever; that will trigger a
-  // real scenario where we could get a callback but the event isn't in
-  // the queue.
-  auto iter = id_to_event_.find(event_id);
-  if (iter == id_to_event_.end())
+  // Ignore the result if it arrived too late to do something about it.
+  if (hit_test_id != hit_test_id_)
     return;
 
-  TouchPassthroughEvent* event = iter->second.get();
-  DCHECK(event);
-
-  // Store the tree ID and node ID if the hit test result landed on a
-  // passthrough node.
-  BrowserAccessibility* hit_node =
-      GetTouchPassthroughNode(hit_manager, hit_node_id);
-  if (hit_node) {
-    event->tree_id = hit_manager->GetTreeID();
-    event->node_id = hit_node->GetId();
-  }
-
-  // This node is no longer pending. Try to process pending events.
-  event->pending = false;
-  ProcessPendingEvents();
-}
-
-void TouchPassthroughManager::ProcessPendingEvents() {
-  // Start with the tail of the queue - the last one in that hasn't been
-  // processed yet - and keep processing events that are ready.
-  while (current_event_id_ < next_event_id_) {
-    // Peek at the front of the queue.
-    auto iter = id_to_event_.find(current_event_id_);
-    DCHECK(iter != id_to_event_.end());
-
-    // If it's not ready, return. |ProcessPendingEvents| will be called
-    // again when a hit test comes back.
-    if (iter->second->pending)
-      return;
-
-    // Pop it off the queue and process it.
-    std::unique_ptr<TouchPassthroughEvent> event = std::move(iter->second);
-    id_to_event_.erase(iter);
-    current_event_id_++;
-    ProcessPendingEvent(std::move(event));
-  }
-}
-
-void TouchPassthroughManager::ProcessPendingEvent(
-    std::unique_ptr<TouchPassthroughEvent> event) {
-  // This function is called once for each event in the queue, in the
-  // order the events were originally generated, but after the hit test
-  // result is available. That allows us to process the nodes based on
-  // some simple logic to determine if events need to be passed through
-  // or not.
-
-  // If it's a release event and we're currently passing through a touch
-  // down, pass through a touch release.
-  if (is_touch_down_ && (event->type == EventType::kRelease)) {
-    SimulateRelease(event->time);
-    is_touch_down_ = false;
-    return;
-  }
-
-  // If the node ID is different, the user moved from one passthrough
-  // region to a different one. Send a cancel touch event for the
-  // previous passthrough region, but then keep going.
-  if (is_touch_down_ && (event->tree_id != current_tree_id_ ||
-                         event->node_id != current_node_id_)) {
-    SimulateCancel(event->time);
-    is_touch_down_ = false;
-  }
-
-  // If the current touch is no longer within a passthrough region, we're
-  // done.
-  if (event->tree_id == ui::AXTreeIDUnknown())
+  // If it's not a touch passthrough node, we're done.
+  if (!IsTouchPassthroughNode(hit_manager, hit_node_id))
     return;
 
-  // We're in a passthrough region. Send either a touch down or touch move.
-  current_tree_id_ = event->tree_id;
-  current_node_id_ = event->node_id;
+  // If touch is no longer down, we need to just esnd a tap.
   if (!is_touch_down_) {
-    is_touch_down_ = true;
-    SimulatePress(event->location, event->time);
-  } else {
-    SimulateMove(event->location, event->time);
+    SimulatePress(location, event_time);
+    SimulateRelease(event_time);
+    return;
   }
+
+  // Otherwise, send a press and set a flag to keep passing through
+  // events.
+  SimulatePress(location, event_time);
+  is_passthrough_ = true;
 }
 
-BrowserAccessibility* TouchPassthroughManager::GetTouchPassthroughNode(
+bool TouchPassthroughManager::IsTouchPassthroughNode(
     BrowserAccessibilityManager* hit_manager,
     int hit_node_id) {
   // Given the result of a hit test, walk up the tree to determine if
   // this node or an ancestor has the passthrough bit set.
   if (!hit_manager)
-    return nullptr;
+    return false;
 
   BrowserAccessibility* hit_node = hit_manager->GetFromID(hit_node_id);
   if (!hit_node)
-    return nullptr;
+    return false;
 
   while (hit_node) {
     if (hit_node->GetData().GetBoolAttribute(
             ax::mojom::BoolAttribute::kTouchPassthrough))
-      return hit_node;
+      return true;
     hit_node = hit_node->PlatformGetParent();
   }
 
-  return nullptr;
+  return false;
 }
 
 void TouchPassthroughManager::CreateTouchDriverIfNeeded() {
@@ -224,7 +150,7 @@ void TouchPassthroughManager::CancelTouchesAndDestroyTouchDriver() {
   if (!touch_driver_)
     return;
 
-  if (is_touch_down_) {
+  if (is_passthrough_) {
     touch_driver_->Cancel(kSyntheticTouchIndex);
     touch_driver_->DispatchEvent(gesture_target_, base::TimeTicks::Now());
   }
@@ -249,12 +175,6 @@ void TouchPassthroughManager::SimulateMove(const gfx::Point& point,
   DCHECK(touch_driver_);
   gfx::Point css_point = ToCSSPoint(point);
   touch_driver_->Move(css_point.x(), css_point.y(), kSyntheticTouchIndex);
-  touch_driver_->DispatchEvent(gesture_target_, time);
-}
-
-void TouchPassthroughManager::SimulateCancel(const base::TimeTicks& time) {
-  DCHECK(touch_driver_);
-  touch_driver_->Cancel(kSyntheticTouchIndex);
   touch_driver_->DispatchEvent(gesture_target_, time);
 }
 

@@ -84,14 +84,6 @@ class TestTouchPassthroughManager : public TouchPassthroughManager {
         base::StringPrintf("Move %d, %d", point.x(), point.y()));
   }
 
-  void SimulateCancel(const base::TimeTicks& time) override {
-    EXPECT_TRUE(button_down_);
-    EXPECT_GE(time, previous_time_);
-    previous_time_ = time;
-    button_down_ = false;
-    event_log_.push_back("Cancel");
-  }
-
   void SimulateRelease(const base::TimeTicks& time) override {
     EXPECT_TRUE(button_down_);
     EXPECT_GE(time, previous_time_);
@@ -143,8 +135,9 @@ TEST_F(TouchPassthroughManagerTest, DragOutOfPassthroughRegion) {
   manager.OnTouchStart(gfx::Point(105, 105));
   manager.OnTouchMove(gfx::Point(105, 95));
   manager.OnTouchEnd();
-  EXPECT_THAT(manager.event_log(), ContainerEq(std::vector<std::string>{
-                                       "Press 105, 105", "Cancel"}));
+  EXPECT_THAT(manager.event_log(),
+              ContainerEq(std::vector<std::string>{"Press 105, 105",
+                                                   "Move 105, 95", "Release"}));
 }
 
 TEST_F(TouchPassthroughManagerTest, DragIntoPassthroughRegion) {
@@ -154,9 +147,7 @@ TEST_F(TouchPassthroughManagerTest, DragIntoPassthroughRegion) {
   manager.OnTouchMove(gfx::Point(110, 110));
   manager.OnTouchMove(gfx::Point(120, 120));
   manager.OnTouchEnd();
-  EXPECT_THAT(manager.event_log(),
-              ContainerEq(std::vector<std::string>{
-                  "Press 110, 110", "Move 120, 120", "Release"}));
+  EXPECT_THAT(manager.event_log(), ContainerEq(std::vector<std::string>{}));
 }
 
 TEST_F(TouchPassthroughManagerTest, DragBetweenPassthroughRegions) {
@@ -168,7 +159,7 @@ TEST_F(TouchPassthroughManagerTest, DragBetweenPassthroughRegions) {
   manager.OnTouchEnd();
   EXPECT_THAT(manager.event_log(),
               ContainerEq(std::vector<std::string>{
-                  "Press 110, 180", "Move 110, 190", "Cancel", "Press 110, 210",
+                  "Press 110, 180", "Move 110, 190", "Move 110, 210",
                   "Move 110, 220", "Release"}));
 }
 
