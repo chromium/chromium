@@ -1325,6 +1325,13 @@ void TabStrip::AddTabAt(int model_index, TabRendererData data, bool is_active) {
     else if (profile->IsIncognitoProfile())
       base::UmaHistogramCounts100("Tab.Count.Incognito", GetTabCount());
   }
+
+  if (new_tab_button_pressed_start_time_.has_value()) {
+    base::UmaHistogramTimes(
+        "TabStrip.TimeToCreateNewTabFromPress",
+        base::TimeTicks::Now() - new_tab_button_pressed_start_time_.value());
+    new_tab_button_pressed_start_time_.reset();
+  }
 }
 
 void TabStrip::MoveTab(int from_model_index,
@@ -2642,6 +2649,8 @@ std::map<tab_groups::TabGroupId, TabGroupHeader*> TabStrip::GetGroupHeaders() {
 }
 
 void TabStrip::NewTabButtonPressed(const ui::Event& event) {
+  new_tab_button_pressed_start_time_ = base::TimeTicks::Now();
+
   base::RecordAction(base::UserMetricsAction("NewTab_Button"));
   UMA_HISTOGRAM_ENUMERATION("Tab.NewTab", TabStripModel::NEW_TAB_BUTTON,
                             TabStripModel::NEW_TAB_ENUM_COUNT);

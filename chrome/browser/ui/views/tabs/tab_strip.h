@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
@@ -726,6 +727,9 @@ class TabStrip : public views::View,
 
   // Time of the last mouse move event.
   base::TimeTicks last_mouse_move_time_;
+
+  // Used to track the time needed to create a new tab from the new tab button.
+  absl::optional<base::TimeTicks> new_tab_button_pressed_start_time_;
 
   // Used for seek time metrics from the time the mouse enters the tabstrip.
   absl::optional<base::TimeTicks> mouse_entered_tabstrip_time_;
