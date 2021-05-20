@@ -3192,9 +3192,6 @@ crbug.com/626703 [ Win ] external/wpt/resource-timing/cross-origin-start-end-tim
 crbug.com/626703 [ Win ] external/wpt/websockets/Create-url-with-space.any.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/plz-dedicated-worker/external/wpt/resource-timing/cross-origin-start-end-time-with-redirects.html [ Failure ]
 
-# this test blocks import due to an issue with rebaselining it (crbug.com/1205249)
-crbug.com/1205249 [ Linux ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
-
 ### See crbug.com/891427 comment near the top of this file:
 crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-block-margins-2.html [ Failure ]
 crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-008.html [ Failure ]
@@ -6476,15 +6473,11 @@ crbug.com/1205673 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-snap
 crbug.com/1200134 [ Linux ] fast/gradients/unprefixed-repeating-gradient-color-hint.html [ Pass Failure ]
 
 # Sheriff 2021-05-05
-crbug.com/1205780 [ Win7 ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
-crbug.com/1205780 [ Mac10.14 ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
-crbug.com/1205780 [ Mac10.15 ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure Pass ]
 crbug.com/1205796 [ Mac10.12 ] external/wpt/html/dom/idlharness.https.html?include=HTML.* [ Failure ]
 crbug.com/1205796 [ Mac10.14 ] external/wpt/html/dom/idlharness.https.html?include=HTML.* [ Failure ]
 crbug.com/1206019 [ Linux ] http/tests/devtools/sources/snippet-module.js [ Failure ]
 
 # Blink_web_tests 2021-05-06
-crbug.com/1205669 [ Mac10.13 ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
 crbug.com/1205669 [ Mac10.13 ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-global-alpha.html [ Pass Timeout ]
 crbug.com/1205669 [ Mac10.13 ] external/wpt/fetch/api/idlharness.any.sharedworker.html [ Failure ]
 crbug.com/1205669 [ Mac10.13 ] external/wpt/gamepad/idlharness.https.window.html [ Failure ]

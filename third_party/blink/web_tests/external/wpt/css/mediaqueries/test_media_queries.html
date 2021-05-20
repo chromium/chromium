@@ -32,13 +32,13 @@ function run() {
 
     function should_apply(q) {
       test(function() {
-        assert_true(query_applies(q), q + " should apply");
+        assert_true(query_applies(q));
       }, "subtest_" + ++testNum);
     }
 
     function should_not_apply(q) {
       test(function() {
-        assert_false(query_applies(q), q + " should not apply");
+        assert_false(query_applies(q));
       }, "subtest_" + ++testNum);
     }
 
