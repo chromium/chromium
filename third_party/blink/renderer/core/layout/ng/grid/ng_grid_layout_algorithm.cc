@@ -656,8 +656,8 @@ SetIterator GetSetIteratorForItem(
   return track_collection.GetSetIterator(set_indices.begin, set_indices.end);
 }
 
-LayoutUnit GetLogicalBaseline(const GridTrackSizingDirection track_direction,
-                              const NGBoxFragment& fragment,
+LayoutUnit GetLogicalBaseline(const NGBoxFragment& fragment,
+                              const GridTrackSizingDirection track_direction,
                               const WritingMode writing_mode) {
   const auto child_writing_mode =
       fragment.GetWritingDirection().GetWritingMode();
@@ -798,10 +798,11 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
   //  - We'll need to do a full layout for tables.
   //  - We'll need special logic for replaced elements.
   //  - We'll need to respect the aspect-ratio when appropriate.
+  LayoutUnit baseline_shim;
   auto BlockContributionSize = [&]() -> LayoutUnit {
     DCHECK(!is_parallel_with_track_direction);
-
     scoped_refptr<const NGLayoutResult> result;
+
     if (!is_parallel && space.AvailableSize().inline_size == kIndefiniteSize) {
       // If we are orthogonal grid-item, resolving against an indefinite size,
       // set our inline-size to our max content-contribution size.
@@ -816,27 +817,26 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     } else {
       result = node.Layout(space);
     }
+
     NGBoxFragment fragment(
         item_style.GetWritingDirection(),
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
 
-    LayoutUnit contribution = fragment.BlockSize();
     if (grid_item.IsBaselineAlignedForDirection(track_direction)) {
-      const LayoutUnit baseline = GetLogicalBaseline(
-          track_direction, fragment,
-          ConstraintSpace().GetWritingDirection().GetWritingMode());
-
       // The item's baseline alignment impacts the item's contribution as the
       // difference between the track's baseline and the item's baseline.
-      contribution +=
-          (grid_geometry.Baseline(grid_item, track_direction) - baseline);
+      baseline_shim =
+          grid_geometry.Baseline(grid_item, track_direction) -
+          GetLogicalBaseline(
+              fragment, track_direction,
+              ConstraintSpace().GetWritingDirection().GetWritingMode());
 
-      // Subtract out margins so they don't get added a second time at the end
-      // of NGGridLayoutAlgorithm::ContributionSizeForGridItem.
-      contribution -=
+      // Subtract out the start margin so it doesn't get added a second time at
+      // the end of |NGGridLayoutAlgorithm::ContributionSizeForGridItem|.
+      baseline_shim -=
           is_for_columns ? margins.inline_start : margins.block_start;
     }
-    return contribution;
+    return fragment.BlockSize() + baseline_shim;
   };
 
   const LayoutUnit clamped_margin_sum =
@@ -941,22 +941,23 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
             const LayoutUnit border_padding_sum =
                 is_parallel_with_track_direction ? border_padding.InlineSum()
                                                  : border_padding.BlockSum();
-            DCHECK_GE(contribution, border_padding_sum);
+            DCHECK_GE(contribution, baseline_shim + border_padding_sum);
 
             // The stretch fit into a given size is that size, minus the box’s
             // computed margins, border, and padding in the given dimension,
             // flooring at zero so that the inner size is not negative.
-            spanned_tracks_definite_max_size -=
-                std::min(spanned_tracks_definite_max_size,
-                         clamped_margin_sum + border_padding_sum);
+            spanned_tracks_definite_max_size =
+                (spanned_tracks_definite_max_size - baseline_shim -
+                 clamped_margin_sum - border_padding_sum)
+                    .ClampNegativeToZero();
 
-            // Add border and padding (margins will be added later) back to the
-            // contribution, since we don't want the outer size of the minimum
-            // size to overflow its grid area; these are already accounted for
-            // in the current value of |contribution|.
-            spanned_tracks_definite_max_size += border_padding_sum;
+            // Add the baseline shim, border, and padding (margins will be added
+            // later) back to the contribution, since we don't want the outer
+            // size of the minimum size to overflow its grid area; these are
+            // already accounted for in the current value of |contribution|.
             contribution =
-                std::min(contribution, spanned_tracks_definite_max_size);
+                std::min(contribution, spanned_tracks_definite_max_size +
+                                           baseline_shim + border_padding_sum);
           }
           break;
         }
@@ -1483,7 +1484,7 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
                                                          : margins.block_start;
     LayoutUnit baseline =
         margin + GetLogicalBaseline(
-                     track_direction, fragment,
+                     fragment, track_direction,
                      ConstraintSpace().GetWritingDirection().GetWritingMode());
 
     grid_geometry->UpdateBaseline(grid_item, baseline, track_direction);
@@ -2889,6 +2890,11 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
 void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
                                            const GridGeometry& grid_geometry,
                                            LayoutUnit block_size) {
+  const auto& container_style = Style();
+  const auto& container_space = ConstraintSpace();
+  const auto container_writing_direction =
+      container_space.GetWritingDirection();
+
   // |grid_items| is in DOM order to ensure proper painting order, but
   // determining the grid's baseline is prioritized based on grid order. The
   // baseline of the grid is determined by the first grid item with baseline
@@ -2908,41 +2914,33 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
     const NGConstraintSpace space = CreateConstraintSpaceForLayout(
         grid_geometry, grid_item, &containing_grid_area);
 
+    const auto& item_style = grid_item.node.Style();
+    const auto margins = ComputeMarginsFor(space, item_style, container_space);
+
     scoped_refptr<const NGLayoutResult> result = grid_item.node.Layout(space);
     const auto& physical_fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
-    NGBoxFragment logical_fragment(grid_item.node.Style().GetWritingDirection(),
+    NGBoxFragment logical_fragment(item_style.GetWritingDirection(),
                                    physical_fragment);
 
     auto BaselineOffset =
         [&](GridTrackSizingDirection track_direction) -> LayoutUnit {
-      const auto margins =
-          ComputeMarginsFor(space, grid_item.node.Style(), ConstraintSpace());
-      LayoutUnit baseline_offset = (track_direction == kForRows)
-                                       ? margins.block_start
-                                       : margins.inline_start;
       if (grid_item.IsBaselineAlignedForDirection(track_direction)) {
         // The baseline offset is the difference between the grid item's
         // baseline and its track baseline.
-        const LayoutUnit item_baseline = GetLogicalBaseline(
-            track_direction, logical_fragment,
-            ConstraintSpace().GetWritingDirection().GetWritingMode());
-        baseline_offset =
-            grid_geometry.Baseline(grid_item, track_direction) - item_baseline;
+        return grid_geometry.Baseline(grid_item, track_direction) -
+               GetLogicalBaseline(logical_fragment, track_direction,
+                                  container_writing_direction.GetWritingMode());
       }
-      return baseline_offset;
+      return (track_direction == kForColumns) ? margins.inline_start
+                                              : margins.block_start;
     };
 
-    const auto& item_style = grid_item.node.Style();
-    const auto margins =
-        ComputeMarginsFor(space, item_style, ConstraintSpace());
     LayoutUnit inline_baseline_offset = BaselineOffset(kForColumns);
     LayoutUnit block_baseline_offset = BaselineOffset(kForRows);
 
     // Apply the grid-item's alignment (if any).
-    NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                           physical_fragment);
-    const auto& container_style = Style();
+    NGBoxFragment fragment(container_writing_direction, physical_fragment);
     containing_grid_area.offset += LogicalOffset(
         AlignmentOffset(containing_grid_area.size.inline_size,
                         fragment.InlineSize(), margins.inline_start,
@@ -2954,6 +2952,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
                         margins.block_end, block_baseline_offset,
                         grid_item.block_axis_alignment,
                         container_style.JustifyItems().Overflow()));
+
     // Grid is special in that %-based offsets resolve against the grid-area.
     // Determine the relative offset here (instead of in the builder). This is
     // safe as grid *also* has special inflow-bounds logic (otherwise this
@@ -2961,13 +2960,13 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
     absl::optional<LogicalOffset> relative_offset = LogicalOffset();
     if (item_style.GetPosition() == EPosition::kRelative) {
       *relative_offset += ComputeRelativeOffsetForBoxFragment(
-          physical_fragment, ConstraintSpace().GetWritingDirection(),
+          physical_fragment, container_writing_direction,
           containing_grid_area.size);
     }
 
     container_builder_.AddResult(*result, containing_grid_area.offset,
                                  relative_offset);
-    NGBlockNode(grid_item.node).StoreMargins(ConstraintSpace(), margins);
+    NGBlockNode(grid_item.node).StoreMargins(container_space, margins);
 
     // Compares GridArea objects in row-major grid order for baseline
     // precedence. Returns 'true' if |a| < |b| and 'false' otherwise.
@@ -2978,7 +2977,6 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
           b.rows.IntegerSpan() > 1 || b.columns.IntegerSpan() > 1) {
         return false;
       }
-
       return (a.rows < b.rows) || (a.rows == b.rows && (a.columns < b.columns));
     };
 
