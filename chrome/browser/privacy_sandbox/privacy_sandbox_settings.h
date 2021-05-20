@@ -79,6 +79,11 @@ class PrivacySandboxSettings : public KeyedService,
   // which case no history is eligible.
   base::Time FlocDataAccessibleSince() const;
 
+  // Returns a description of FLoC ready for display to the user. Correctly
+  // takes into account the FLoC feature parameters when determining the number
+  // of days between cohort calculations.
+  std::u16string GetFlocDescriptionForDisplay() const;
+
   // Returns the current FLoC cohort identifier for the associated profile in
   // string format suitable for direct display to the user. If the cohort is
   // not valid, the appropriate descriptive string is returned instead.

@@ -1523,12 +1523,19 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
             IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION1_PHASE2,
             base::ASCIIToUTF16(features::kPrivacySandboxSettingsURL.Get())));
 
-    html_source->AddString(
-        "privacySandboxPageFlocExplanation",
+    // The complete FLoC explanation string must be built from two strings,
+    // one provided by the Privacy Sandbox service, and one with a URL
+    // replacement based on a feature parameter.
+    std::u16string floc_explanation =
+        PrivacySandboxSettingsFactory::GetForProfile(profile)
+            ->GetFlocDescriptionForDisplay() +
+        u" " +  // Whitespace is a valid separator w.r.t l10n.
         l10n_util::GetStringFUTF16(
-            IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_EXPLANATION,
+            IDS_SETTINGS_PRIVACY_SANDBOX_FLOC_TRIAL_ACTIVE,
             base::ASCIIToUTF16(
-                features::kPrivacySandboxSettings2FlocURL.Get())));
+                features::kPrivacySandboxSettings2FlocURL.Get()));
+    html_source->AddString("privacySandboxPageFlocExplanation",
+                           floc_explanation);
 
     // The FLoC compute frequency string is constant through the life of the
     // profile, and so the relevant string can be injected here, rather than

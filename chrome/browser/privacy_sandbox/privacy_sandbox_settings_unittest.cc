@@ -898,6 +898,35 @@ TEST_F(PrivacySandboxSettingsTest, FlocDataAccessibleSince) {
             privacy_sandbox_settings()->FlocDataAccessibleSince());
 }
 
+TEST_F(PrivacySandboxSettingsTest, GetFlocDescriptionForDisplay) {
+  // Check that the returned FLoC description correctly takes into account the
+  // time between FLoC recomputes.
+  std::map<std::string, std::u16string> param_to_expected_string = {
+      {"1h", l10n_util::GetPluralStringFUTF16(
+                 IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION, 0)},
+      {"23h", l10n_util::GetPluralStringFUTF16(
+                  IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION, 0)},
+      {"24h", l10n_util::GetPluralStringFUTF16(
+                  IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION, 1)},
+      {"25h", l10n_util::GetPluralStringFUTF16(
+                  IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION, 1)},
+      {"60h", l10n_util::GetPluralStringFUTF16(
+                  IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION, 3)},
+      {"167h", l10n_util::GetPluralStringFUTF16(
+                   IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION, 7)},
+      {"168h", l10n_util::GetPluralStringFUTF16(
+                   IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION, 7)}};
+
+  for (const auto& param_expected : param_to_expected_string) {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        federated_learning::kFederatedLearningOfCohorts,
+        {{"update_interval", param_expected.first}});
+    EXPECT_EQ(param_expected.second,
+              privacy_sandbox_settings()->GetFlocDescriptionForDisplay());
+    feature_list()->Reset();
+  }
+}
+
 TEST_F(PrivacySandboxSettingsTest, GetFlocIdForDisplay) {
   // Check that the cohort identifier is correctly converted to a string when
   // available.

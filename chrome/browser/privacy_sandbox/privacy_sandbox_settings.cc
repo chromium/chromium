@@ -238,6 +238,13 @@ base::Time PrivacySandboxSettings::FlocDataAccessibleSince() const {
   return pref_service_->GetTime(prefs::kPrivacySandboxFlocDataAccessibleSince);
 }
 
+std::u16string PrivacySandboxSettings::GetFlocDescriptionForDisplay() const {
+  return l10n_util::GetPluralStringFUTF16(
+      IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION,
+      GetNumberOfDaysRoundedAboveOne(
+          federated_learning::kFlocIdScheduledUpdateInterval.Get()));
+}
+
 std::u16string PrivacySandboxSettings::GetFlocIdForDisplay() const {
   DCHECK(PrivacySandboxSettingsFunctional());
 
