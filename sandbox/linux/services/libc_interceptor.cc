@@ -114,7 +114,7 @@ void WriteTimeStruct(base::Pickle* pickle, const struct tm& time) {
 }
 
 // See
-// https://chromium.googlesource.com/chromium/src/+/master/docs/linux/zygote.md
+// https://chromium.googlesource.com/chromium/src/+/main/docs/linux/zygote.md
 void ProxyLocaltimeCallToBrowser(time_t input,
                                  struct tm* output,
                                  char* timezone_out,
