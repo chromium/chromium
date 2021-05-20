@@ -64,6 +64,7 @@ include_rules = [
     "+cc/trees/paint_holding_commit_trigger.h",
     "+cc/trees/ukm_manager.h",
     "+components/performance_manager/public/mojom/coordination_unit.mojom-blink.h",
+    "+components/performance_manager/public/mojom/web_memory.mojom-blink.h",
     "+gpu/config/gpu_feature_info.h",
     "-inspector/v8",
     "+inspector/v8/public",

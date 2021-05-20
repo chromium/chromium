@@ -20,6 +20,8 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/timing/measure_memory/local_web_memory_measurer.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -49,6 +51,8 @@ constexpr const char* kMemoryTypeJavaScript = "JavaScript";
 constexpr const char* kMemoryTypeShared = "Shared";
 constexpr const char* kScopeCrossOriginAggregated = "cross-origin-aggregated";
 constexpr const char* kScopeDedicatedWorker = "DedicatedWorker";
+constexpr const char* kScopeServiceWorker = "ServiceWorkerGlobalScope";
+constexpr const char* kScopeSharedWorker = "SharedWorkerGlobalScope";
 constexpr const char* kScopeWindow = "Window";
 
 }  // anonymous namespace
@@ -82,32 +86,43 @@ enum class ApiStatus {
   kNotAvailableDueToResourceCoordinator,
 };
 
-ApiStatus CheckMeasureMemoryAvailability(LocalDOMWindow* window) {
+ApiStatus CheckMeasureMemoryAvailability() {
   if (!base::FeatureList::IsEnabled(
           features::kWebMeasureMemoryViaPerformanceManager)) {
     return ApiStatus::kNotAvailableDueToFlag;
   }
-  if (!window) {
-    return ApiStatus::kNotAvailableDueToDetachedContext;
-  }
-  LocalFrame* local_frame = window->GetFrame();
-  if (!local_frame) {
-    return ApiStatus::kNotAvailableDueToDetachedContext;
-  }
-
-  DCHECK(window->CrossOriginIsolatedCapability() ||
-         local_frame->GetSettings()->GetWebSecurityEnabled());
-
-  // We need DocumentResourceCoordinator to query PerformanceManager.
-  if (!window->document()) {
-    return ApiStatus::kNotAvailableDueToDetachedContext;
-  }
-
-  if (!window->document()->GetResourceCoordinator()) {
+  if (!RuntimeEnabledFeatures::PerformanceManagerInstrumentationEnabled()) {
     return ApiStatus::kNotAvailableDueToResourceCoordinator;
   }
-
   return ApiStatus::kAvailable;
+}
+
+bool IsAttached(ExecutionContext* execution_context) {
+  auto* window = To<LocalDOMWindow>(execution_context);
+  return window && window->GetFrame() && window->document();
+}
+
+void StartMemoryMeasurement(LocalDOMWindow* window,
+                            MeasureMemoryController* controller,
+                            WebMemoryMeasurement::Mode mode) {
+  Document* document = window->document();
+  document->GetResourceCoordinator()->OnWebMemoryMeasurementRequested(
+      mode, WTF::Bind(&MeasureMemoryController::MeasurementComplete,
+                      WrapPersistent(controller)));
+}
+
+void StartMemoryMeasurement(WorkerGlobalScope* worker,
+                            MeasureMemoryController* controller,
+                            WebMemoryMeasurement::Mode mode) {
+  DCHECK(worker->IsSharedWorkerGlobalScope() ||
+         worker->IsServiceWorkerGlobalScope());
+  WebMemoryAttribution::Scope attribution_scope =
+      worker->IsServiceWorkerGlobalScope()
+          ? WebMemoryAttribution::Scope::kServiceWorker
+          : WebMemoryAttribution::Scope::kSharedWorker;
+  LocalWebMemoryMeasurer::StartMeasurement(worker->GetIsolate(), mode,
+                                           controller, attribution_scope,
+                                           worker->Url().GetString());
 }
 
 }  // anonymous namespace
@@ -115,8 +130,14 @@ ApiStatus CheckMeasureMemoryAvailability(LocalDOMWindow* window) {
 ScriptPromise MeasureMemoryController::StartMeasurement(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  switch (auto status = CheckMeasureMemoryAvailability(
-              LocalDOMWindow::From(script_state))) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  DCHECK(execution_context->CrossOriginIsolatedCapability());
+  ApiStatus status = CheckMeasureMemoryAvailability();
+  if (status == ApiStatus::kAvailable && execution_context->IsWindow() &&
+      !IsAttached(execution_context)) {
+    status = ApiStatus::kNotAvailableDueToDetachedContext;
+  }
+  switch (status) {
     case ApiStatus::kAvailable:
       break;
     case ApiStatus::kNotAvailableDueToFlag:
@@ -152,11 +173,14 @@ ScriptPromise MeasureMemoryController::StartMeasurement(
   auto* impl = MakeGarbageCollected<MeasureMemoryController>(
       base::PassKey<MeasureMemoryController>(), isolate, context,
       promise_resolver);
-  Document* document = LocalDOMWindow::From(script_state)->document();
-  document->GetResourceCoordinator()->OnWebMemoryMeasurementRequested(
-      measurement_mode, WTF::Bind(&MeasureMemoryController::MeasurementComplete,
-                                  WrapPersistent(impl)));
 
+  if (execution_context->IsWindow()) {
+    StartMemoryMeasurement(To<LocalDOMWindow>(execution_context), impl,
+                           measurement_mode);
+  } else {
+    StartMemoryMeasurement(To<WorkerGlobalScope>(execution_context), impl,
+                           measurement_mode);
+  }
   return ScriptPromise(script_state, promise_resolver->GetPromise());
 }
 
@@ -186,6 +210,10 @@ WTF::AtomicString ConvertScope(WebMemoryAttribution::Scope scope) {
       return kScopeWindow;
     case Scope::kCrossOriginAggregated:
       return kScopeCrossOriginAggregated;
+    case Scope::kServiceWorker:
+      return kScopeServiceWorker;
+    case Scope::kSharedWorker:
+      return kScopeSharedWorker;
   }
 }
 

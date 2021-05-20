@@ -30,9 +30,10 @@ struct WebMemoryAttribution {
   // Specifies the scope (or type) of the context.
   enum Scope {
     kCrossOriginAggregated, // Dummy scope for cross-origin iframes.
-    kDedicatedWorker,
     kWindow,
-    // TODO(1085129): Add worker scopes once they are implemented.
+    kDedicatedWorker,
+    kServiceWorker,
+    kSharedWorker
   };
   Scope scope;
   // The current URL of the context. It is null for cross-origin contexts.
