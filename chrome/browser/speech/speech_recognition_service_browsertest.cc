@@ -25,6 +25,7 @@
 #include "content/public/browser/audio_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "media/audio/audio_device_description.h"
 #include "media/audio/wav_audio_handler.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
