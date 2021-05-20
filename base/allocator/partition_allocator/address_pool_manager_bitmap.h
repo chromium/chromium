@@ -8,6 +8,7 @@
 #include <array>
 #include <atomic>
 #include <bitset>
+#include <limits>
 
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -30,11 +31,18 @@ class BASE_EXPORT AddressPoolManagerBitmap {
   static constexpr uint64_t kGiB = 1024 * 1024 * 1024ull;
   static constexpr uint64_t kAddressSpaceSize = 4ull * kGiB;
 
+  // If !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT),
   // BRP pool includes only normal buckets. Despite normal buckets operate at
   // the 2MB super page granularity, we need to lower granularity down to
   // partition page level to eliminate the guard pages at the ends. This is
   // needed so that pointers immediately past an allocation that immediately
   // precede a super page in BRP pool don't accidentally fall into that pool.
+  // If BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT), BRP pool includes both normal
+  // buckets and direct-maps. Because of the guard pages, we still need to use
+  // PartitionPageSize(). c.f. GetDirectMapMetadataAndGuardPagesSize().
+  // As long as DirectMapAllocationGranularity() is no smaller than
+  // PageAllocationGranularity(), which it is, we don't need to decrease
+  // the bitmap granularity any further.
   static constexpr size_t kBitShiftOfBRPPoolBitmap = PartitionPageShift();
   static constexpr size_t kBytesPer1BitOfBRPPoolBitmap = PartitionPageSize();
   static constexpr size_t kGuardOffsetOfBRPPoolBitmap = 1;

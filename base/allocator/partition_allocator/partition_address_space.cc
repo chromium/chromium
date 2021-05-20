@@ -82,6 +82,20 @@ void PartitionAddressSpace::Init() {
   SetSystemPagesAccess(actual_address, kSuperPageSize, PageInaccessible);
 #endif
 
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+  // Allocate the BRP pool offset table in the BRP pool.
+  void* requested_offset_table_address = reinterpret_cast<void*>(
+      brp_pool_base_address_ + kBRPPoolSize - kBRPPoolOffsetTableSize);
+  void* actual_offset_table_address =
+      internal::AddressPoolManager::GetInstance()->Reserve(
+          brp_pool_, requested_offset_table_address, kBRPPoolOffsetTableSize);
+  PA_CHECK(requested_offset_table_address == actual_offset_table_address)
+      << "ReservationStartOffsetTable is required to be allocated in the end "
+         "of the BRPPool";
+  RecommitSystemPages(actual_offset_table_address, kBRPPoolOffsetTableSize,
+                      PageReadWrite, PageUpdatePermissions);
+#endif
+
   PA_DCHECK(reserved_base_address_ + properties.size == current);
 }
 

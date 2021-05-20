@@ -48,6 +48,9 @@ static_assert(
 struct DeferredUnmap {
   void* ptr = nullptr;
   size_t size = 0;
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+  bool use_brp_pool = false;
+#endif
 
   // In most cases there is no page to unmap and ptr == nullptr. This function
   // is inlined to avoid the overhead of a function call in the common case.

@@ -133,11 +133,15 @@ struct BackupRefPtrImpl {
     // This allows us to make a stronger assertion that if
     // IsManagedByPartitionAllocBRPPool returns true for a valid pointer,
     // it must be at least partition page away from the beginning of a super
-    // page.
+    // page. This, however, can't be easily checked for direct maps, where a
+    // pointer on a consecutive super page may easily land in its first
+    // partition page.
+#if !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
     if (ret) {
       DCHECK(reinterpret_cast<uintptr_t>(ptr) % kSuperPageSize >=
              PartitionPageSize());
     }
+#endif
 
     return ret;
   }

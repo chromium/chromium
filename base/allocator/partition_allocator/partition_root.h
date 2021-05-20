@@ -400,7 +400,16 @@ struct BASE_EXPORT PartitionRoot {
     // - The first few system pages are the partition page in which the super
     // page metadata is stored.
     // - We add a trailing guard page (one system page will suffice).
+#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+    // On 32-bit systems, we need PartitionPageSize() guard pages at both the
+    // beginning and the end of each direct-map allocated memory. This is needed
+    // for the BRP pool bitmap which excludes guard pages and operates at
+    // PartitionPageSize() granularity. This is the same as normal buckets
+    // allocations.
+    return PartitionPageSize() + PartitionPageSize();
+#else
     return PartitionPageSize() + SystemPageSize();
+#endif
   }
 
   static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
@@ -783,6 +792,18 @@ PartitionAllocGetSlotSpanForSizeQuery(void* ptr) {
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+ALWAYS_INLINE void* PartitionAllocGetDirectMapSlotStart(void* ptr) {
+  auto* offset_ptr = ReservationOffsetPointer(reinterpret_cast<uintptr_t>(ptr));
+  if (LIKELY(*offset_ptr == NotInDirectMapOffsetTag()))
+    return nullptr;
+  // TODO(tasak): optimize this function. i.e. GetReservationStart calls
+  // ReservationOffsetPointer again.
+  return reinterpret_cast<void*>(GetReservationStart(ptr) +
+                                 PartitionPageSize());
+}
+#endif
+
 // Gets the pointer to the beginning of the allocated slot.
 //
 // This isn't a general purpose function, it is used specifically for obtaining
@@ -805,6 +826,11 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
 
   internal::DCheckIfManagedByPartitionAllocBRPPool(ptr);
 
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+  void* directmap_slot_start = PartitionAllocGetDirectMapSlotStart(ptr);
+  if (UNLIKELY(directmap_slot_start))
+    return directmap_slot_start;
+#endif
   auto* slot_span =
       internal::PartitionAllocGetSlotSpanForSizeQuery<internal::ThreadSafe>(
           ptr);
@@ -841,6 +867,16 @@ ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(void* ptr, ptrdiff_t delta) {
       reinterpret_cast<char*>(ptr) - kPartitionPastAllocationAdjustment;
 
   internal::DCheckIfManagedByPartitionAllocBRPPool(adjusted_ptr);
+
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+  void* directmap_old_slot_start =
+      PartitionAllocGetDirectMapSlotStart(adjusted_ptr);
+  if (UNLIKELY(directmap_old_slot_start)) {
+    void* new_slot_start = PartitionAllocGetDirectMapSlotStart(
+        reinterpret_cast<char*>(ptr) + delta);
+    return directmap_old_slot_start == new_slot_start;
+  }
+#endif
   auto* slot_span =
       internal::PartitionAllocGetSlotSpanForSizeQuery<internal::ThreadSafe>(
           adjusted_ptr);
@@ -1082,7 +1118,9 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (allow_ref_count) {
+#if !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
     if (LIKELY(!IsDirectMappedBucket(slot_span->bucket))) {
+#endif  // !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
       auto* ref_count = internal::PartitionRefCountPointer(slot_start);
       // If there are no more references to the allocation, it can be freed
       // immediately. Otherwise, defer the operation and zap the memory to turn
@@ -1092,7 +1130,9 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 
       if (UNLIKELY(!(ref_count->ReleaseFromAllocator())))
         return;
+#if !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
     }
+#endif  // !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -1505,9 +1545,13 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   }
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-  bool is_direct_mapped = raw_size > kMaxBucketed;
+  bool should_init_ref_count = allow_ref_count
+#if !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+                               && !(raw_size > kMaxBucketed)
+#endif
+      ;
   // LIKELY: Direct mapped allocations are large and rare.
-  if (allow_ref_count && LIKELY(!is_direct_mapped)) {
+  if (LIKELY(should_init_ref_count)) {
     new (internal::PartitionRefCountPointer(slot_start))
         internal::PartitionRefCount();
   }

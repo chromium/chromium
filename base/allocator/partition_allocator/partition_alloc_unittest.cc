@@ -2989,7 +2989,94 @@ TEST_F(PartitionAllocTest, RefCountRealloc) {
   }
 }
 
-#endif
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+
+TEST_F(PartitionAllocTest, ReservationOffset) {
+  // For normal buckets, offsets should be 0.
+  void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
+  EXPECT_TRUE(ptr);
+  uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
+  EXPECT_EQ(internal::NotInDirectMapOffsetTag(),
+            *internal::ReservationOffsetPointer(ptr_as_uintptr));
+  allocator.root()->Free(ptr);
+
+  // For direct-map,
+  size_t large_size = kSuperPageSize * 5 + PartitionPageSize() * .5f;
+  ptr = allocator.root()->Alloc(large_size, type_name);
+  EXPECT_TRUE(ptr);
+  ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
+  EXPECT_EQ(0U, *internal::ReservationOffsetPointer(ptr_as_uintptr));
+  EXPECT_EQ(
+      1U, *internal::ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize));
+  EXPECT_EQ(2U, *internal::ReservationOffsetPointer(ptr_as_uintptr +
+                                                    kSuperPageSize * 2));
+  EXPECT_EQ(3U, *internal::ReservationOffsetPointer(ptr_as_uintptr +
+                                                    kSuperPageSize * 3));
+  EXPECT_EQ(4U, *internal::ReservationOffsetPointer(ptr_as_uintptr +
+                                                    kSuperPageSize * 4));
+  EXPECT_EQ(5U, *internal::ReservationOffsetPointer(ptr_as_uintptr +
+                                                    kSuperPageSize * 5));
+
+  // In-place realloc doesn't affect the offsets.
+  void* new_ptr = allocator.root()->Realloc(ptr, large_size * .8, type_name);
+  EXPECT_EQ(new_ptr, ptr);
+  EXPECT_EQ(0U, *internal::ReservationOffsetPointer(ptr_as_uintptr));
+  EXPECT_EQ(
+      1U, *internal::ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize));
+  EXPECT_EQ(2U, *internal::ReservationOffsetPointer(ptr_as_uintptr +
+                                                    kSuperPageSize * 2));
+  EXPECT_EQ(3U, *internal::ReservationOffsetPointer(ptr_as_uintptr +
+                                                    kSuperPageSize * 3));
+  EXPECT_EQ(4U, *internal::ReservationOffsetPointer(ptr_as_uintptr +
+                                                    kSuperPageSize * 4));
+  EXPECT_EQ(5U, *internal::ReservationOffsetPointer(ptr_as_uintptr +
+                                                    kSuperPageSize * 5));
+
+  allocator.root()->Free(ptr);
+  // After free, the offsets must be 0.
+  EXPECT_EQ(internal::NotInDirectMapOffsetTag(),
+            *internal::ReservationOffsetPointer(ptr_as_uintptr));
+  EXPECT_EQ(
+      internal::NotInDirectMapOffsetTag(),
+      *internal::ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize));
+  EXPECT_EQ(
+      internal::NotInDirectMapOffsetTag(),
+      *internal::ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 2));
+  EXPECT_EQ(
+      internal::NotInDirectMapOffsetTag(),
+      *internal::ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 3));
+  EXPECT_EQ(
+      internal::NotInDirectMapOffsetTag(),
+      *internal::ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 4));
+  EXPECT_EQ(
+      internal::NotInDirectMapOffsetTag(),
+      *internal::ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 5));
+}
+
+TEST_F(PartitionAllocTest, GetReservationStart) {
+  size_t large_size = kSuperPageSize * 3 + PartitionPageSize() * .5f;
+  void* ptr = allocator.root()->Alloc(large_size, type_name);
+  EXPECT_TRUE(ptr);
+  void* slot_start = allocator.root()->AdjustPointerForExtrasSubtract(ptr);
+  uintptr_t reservation_start =
+      reinterpret_cast<uintptr_t>(slot_start) - PartitionPageSize();
+  EXPECT_EQ(0U, reservation_start & DirectMapAllocationGranularityOffsetMask());
+
+  for (char* p = static_cast<char*>(ptr); p < (char*)ptr + large_size; ++p) {
+    void* ptr2 =
+        reinterpret_cast<char*>(GetReservationStart(p)) + PartitionPageSize();
+    EXPECT_EQ(slot_start, ptr2);
+  }
+
+  EXPECT_EQ(reservation_start,
+            reinterpret_cast<uintptr_t>(GetReservationStart(slot_start)));
+
+  allocator.root()->Free(ptr);
+}
+
+#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
 
 // Test for crash http://crbug.com/1169003.
 #if defined(OS_ANDROID)

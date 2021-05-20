@@ -26,6 +26,63 @@ namespace internal {
 
 namespace {
 
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT) && \
+    !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+bool IsAllowedSuperPagesForBRPPool(const char* super_page,
+                                   const char* super_page_end) {
+  while (super_page < super_page_end) {
+    // If any blocked superpage is found inside the given memory region,
+    // the memory region is blocked.
+    if (!AddressPoolManagerBitmap::IsAllowedSuperPageForBRPPool(super_page))
+      return false;
+    super_page += kSuperPageSize;
+  }
+  return true;
+}
+
+char* ReserveSuperPagesAllowedForBRPPool(size_t requested_size) {
+  char* super_page = internal::AddressPoolManager::GetInstance()->Reserve(
+      GetBRPPool(), nullptr, requested_size);
+
+  constexpr int kMaxRandomAddressTries = 10;
+  for (int i = 0; i < kMaxRandomAddressTries; ++i) {
+    if (!super_page ||
+        IsAllowedSuperPagesForBRPPool(super_page, super_page + requested_size))
+      break;
+    AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+        GetBRPPool(), super_page, requested_size);
+    super_page = AddressPoolManager::GetInstance()->Reserve(
+        GetBRPPool(), nullptr, requested_size);
+  }
+
+  // If the allocation attempt succeeds, we will break out of the following
+  // loop immediately.
+  //
+  // Last resort: sequentially scan the whole 32-bit address space. The number
+  // of blocked super-pages should be very small, so we expect to practically
+  // never need to run the following code. Note that it may fail to find an
+  // available page, e.g., when it becomes available after the scan passes
+  // through it, but we accept the risk.
+  for (uintptr_t ptr = kSuperPageSize; ptr != 0; ptr += kSuperPageSize) {
+    if (!super_page ||
+        IsAllowedSuperPagesForBRPPool(super_page, super_page + requested_size))
+      break;
+    AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+        GetBRPPool(), super_page, requested_size);
+    super_page = AddressPoolManager::GetInstance()->Reserve(
+        GetBRPPool(), reinterpret_cast<void*>(ptr), requested_size);
+  }
+
+  if (super_page &&
+      !IsAllowedSuperPagesForBRPPool(super_page, super_page + requested_size)) {
+    AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+        GetBRPPool(), super_page, requested_size);
+    super_page = nullptr;
+  }
+  return super_page;
+}
+#endif
+
 template <bool thread_safe>
 SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     PartitionRoot<thread_safe>* root,
@@ -68,6 +125,10 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
   PartitionDirectMapExtent<thread_safe>* map_extent = nullptr;
   PartitionPage<thread_safe>* page = nullptr;
 
+  char* ptr = nullptr;
+  const size_t reserved_size =
+      PartitionRoot<thread_safe>::GetDirectMapReservedSize(raw_size);
+
   {
     // Getting memory for direct-mapped allocations doesn't interact with the
     // rest of the allocator, but takes a long time, as it involves several
@@ -90,18 +151,36 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 
     const size_t slot_size =
         PartitionRoot<thread_safe>::GetDirectMapSlotSize(raw_size);
-    const size_t reserved_size =
-        PartitionRoot<thread_safe>::GetDirectMapReservedSize(raw_size);
     const size_t map_size =
         reserved_size -
         PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
     PA_DCHECK(slot_size <= map_size);
 
-    char* ptr = nullptr;
+    pool_handle pool;
     // Allocate from GigaCage, from the non-BRP pool, because BackupRefPtr isn't
     // supported in direct maps.
-    ptr = internal::AddressPoolManager::GetInstance()->Reserve(
-        GetNonBRPPool(), nullptr, reserved_size);
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT) && \
+    !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+    if (root->UseBRPPool()) {
+      ptr = ReserveSuperPagesAllowedForBRPPool(reserved_size);
+      pool = GetBRPPool();
+    } else {
+      ptr = internal::AddressPoolManager::GetInstance()->Reserve(
+          GetNonBRPPool(), nullptr, reserved_size);
+      pool = GetNonBRPPool();
+    }
+#else  // !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT) ||
+       // defined(PA_HAS_64_BITS_POINTERS) || !BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+    pool = root->UseBRPPool() ? GetBRPPool() : GetNonBRPPool();
+#else
+    pool = GetNonBRPPool();
+#endif
+    ptr = internal::AddressPoolManager::GetInstance()->Reserve(pool, nullptr,
+                                                               reserved_size);
+#endif  // !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT) ||
+        // defined(PA_HAS_64_BITS_POINTERS) ||
+        // !BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
 
     if (UNLIKELY(!ptr)) {
       if (return_null)
@@ -119,8 +198,17 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
         reserved_size, std::memory_order_relaxed);
 
     char* const slot = ptr + PartitionPageSize();
-    RecommitSystemPages(ptr + SystemPageSize(), SystemPageSize(), PageReadWrite,
-                        PageUpdatePermissions);
+    RecommitSystemPages(
+        ptr + SystemPageSize(),
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && \
+    BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+        // Allocate 2 SystemPages, one for SuperPage metadata
+        // and the other for RefCount.
+        root->UseBRPPool() ? SystemPageSize() * 2 : SystemPageSize(),
+#else
+        SystemPageSize(),
+#endif
+        PageReadWrite, PageUpdatePermissions);
     // It is typically possible to map a large range of inaccessible pages, and
     // this is leveraged in multiple places, including the GigaCage. However,
     // this doesn't mean that we can commit all this memory.  For the vast
@@ -140,7 +228,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       }
 
       internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-          GetNonBRPPool(), ptr, reserved_size);
+          pool, ptr, reserved_size);
       return nullptr;
     }
 
@@ -182,6 +270,24 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
   }
 
   root->lock_.AssertAcquired();
+
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+  // TODO(tasak): If no lock is required, move the code inside
+  // ScopedUnlockGuard.
+  if (root->UseBRPPool()) {
+    uintptr_t ptr_start = reinterpret_cast<uintptr_t>(ptr);
+    uintptr_t ptr_end = ptr_start + reserved_size;
+    auto* offset_ptr = base::internal::ReservationOffsetPointer(ptr_start);
+    int offset = 0;
+    while (ptr_start < ptr_end) {
+      PA_DCHECK(offset_ptr < internal::EndOfReservationOffsetTable());
+      PA_DCHECK(offset < internal::NotInDirectMapOffsetTag());
+      *offset_ptr++ = offset++;
+      ptr_start += kSuperPageSize;
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+
   // Maintain the doubly-linked list of all direct mappings.
   map_extent->next_extent = root->direct_map_list;
   if (map_extent->next_extent)
@@ -397,6 +503,17 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
 #endif
   if (UNLIKELY(!super_page))
     return nullptr;
+
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+  if (root->UseBRPPool()) {
+    // The reservation offset table is used to see whether the given SuperPage
+    // is DirectMap allocated or not by comparing the table entry with
+    // NotInDirectMapOffsetTag (!=0). Since the SuperPage is not DirectMap
+    // allocated, the table entry must be NotInDirectMapOffsetTag.
+    *base::internal::ReservationOffsetPointer(reinterpret_cast<uintptr_t>(
+        super_page)) = base::internal::NotInDirectMapOffsetTag();
+  }
+#endif
 
   root->total_size_of_super_pages.fetch_add(kSuperPageSize,
                                             std::memory_order_relaxed);

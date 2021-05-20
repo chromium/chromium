@@ -236,6 +236,11 @@ AddressPoolManager::Pool::~Pool() = default;
 
 #else  // defined(PA_HAS_64_BITS_POINTERS)
 
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+uint16_t AddressPoolManager::reservation_offset_table_
+    [AddressPoolManager::kReservationOffsetTableSize] = {};
+#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+
 static_assert(
     kSuperPageSize % AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap ==
         0,
@@ -311,7 +316,8 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
               length / DirectMapAllocationGranularity());
   } else {
     PA_DCHECK(handle == kBRPPoolHandle);
-    PA_DCHECK(!(length & kSuperPageOffsetMask));
+    PA_DCHECK(
+        (length % AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap) == 0);
 
     // Make IsManagedByBRPPoolPool() return false when an address inside the
     // first or the last PartitionPageSize()-bytes block is given:
@@ -356,7 +362,9 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
                 length / DirectMapAllocationGranularity());
   } else {
     PA_DCHECK(handle == kBRPPoolHandle);
-    PA_DCHECK(!(length & kSuperPageOffsetMask));
+    PA_DCHECK(
+        (length % AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap) == 0);
+
     // Make IsManagedByBRPPoolPool() return false when an address inside the
     // first or the last PartitionPageSize()-bytes block is given.
     // (See MarkUsed comment)

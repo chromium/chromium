@@ -57,7 +57,22 @@ PartitionDirectUnmap(SlotSpanMetadata<thread_safe>* slot_span) {
   // Account for the mapping starting a partition page before the actual
   // allocation address.
   ptr -= PartitionPageSize();
+
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+  if (root->UseBRPPool()) {
+    uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
+    uintptr_t ptr_end = ptr_as_uintptr + reserved_size;
+    auto* offset_ptr = internal::ReservationOffsetPointer(ptr_as_uintptr);
+    while (ptr_as_uintptr < ptr_end) {
+      PA_DCHECK(offset_ptr < internal::EndOfReservationOffsetTable());
+      *offset_ptr++ = internal::NotInDirectMapOffsetTag();
+      ptr_as_uintptr += kSuperPageSize;
+    }
+  }
+  return {ptr, reserved_size, root->UseBRPPool()};
+#else
   return {ptr, reserved_size};
+#endif
 }
 
 template <bool thread_safe>
@@ -211,9 +226,13 @@ void SlotSpanMetadata<thread_safe>::DecommitIfPossible(
 
 void DeferredUnmap::Unmap() {
   PA_DCHECK(ptr && size > 0);
-  // Currently this function is only called for direct-mapped allocations,
-  // which always belong to the non-BRP pool.
-  // TODO(bartekn): Add a !"is in normal buckets" DCHECK.
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+  if (use_brp_pool) {
+    internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+        internal::GetBRPPool(), ptr, size);
+    return;
+  }
+#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
   PA_DCHECK(IsManagedByPartitionAllocNonBRPPool(ptr));
   internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
       internal::GetNonBRPPool(), ptr, size);

@@ -196,7 +196,7 @@ constexpr ALWAYS_INLINE size_t DirectMapAllocationGranularity() {
 // In 32-bit mode, address space is space is a scarce resource. Use the system
 // allocation granularity, which is the lowest possible address space allocation
 // unit. However, don't go below partition page size, so that GigaCage bitmaps
-// don't get too large.
+// don't get too large. See kBytesPer1BitOfBRPPoolBitmap.
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 DirectMapAllocationGranularity() {
   return std::max(PageAllocationGranularity(), PartitionPageSize());

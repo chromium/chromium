@@ -676,6 +676,9 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
     size_t decommit_size = current_slot_size - new_slot_size;
     DecommitSystemPagesForData(slot_start + new_slot_size, decommit_size,
                                PageUpdatePermissions);
+    // For BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT):
+    // Since the decommited system pages are still reserved, we don't need to
+    // change the entries for decommitted pages of the offset table.
   } else if (new_slot_size <=
              DirectMapExtent::FromSlotSpan(slot_span)->map_size) {
     // Grow within the actually allocated memory. Just need to make the
@@ -684,6 +687,10 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
     RecommitSystemPagesForData(slot_start + current_slot_size,
                                recommit_slot_size_growth,
                                PageUpdatePermissions);
+    // For BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT):
+    // The recommited system pages have been already reserved and all the
+    // entries (for map_size) have been already initialized when reserving the
+    // pages. So we don't need to change the entries of the offset table.
 
 #if DCHECK_IS_ON()
     memset(slot_start + current_slot_size, kUninitializedByte,

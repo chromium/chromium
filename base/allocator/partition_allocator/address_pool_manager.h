@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_ADDRESS_POOL_MANAGER_H_
 
 #include <bitset>
+#include <limits>
 
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
@@ -70,7 +71,53 @@ class BASE_EXPORT AddressPoolManager {
   static bool IsManagedByBRPPool(const void* address) {
     return AddressPoolManagerBitmap::IsManagedByBRPPool(address);
   }
-#endif
+
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+  static constexpr uint16_t kNotInDirectMap =
+      std::numeric_limits<uint16_t>::max();
+
+  // (For !defined(PA_HAS_64_BITS_POINTERS))
+  // reservation_offset_table_ is used to get the reservation start address
+  // when an address is given. Each entry of the table is prepared for each
+  // super page. When PartitionAlloc reserves an address space (its required
+  // alignment is SuperPageSize but its required size is not
+  // SuperPageSize-aligned),
+  //
+  // |<---------- SuperPage-aligned reserved size -------->|
+  // |<---------- Reserved size ------------------>|
+  // +----------+----------+-----+-----------+-----+ - - - +
+  // |SuperPage0|SuperPage1| ... |SuperPage K|SuperPage K+1|
+  // +----------+----------+-----+-----------+-----+ - - -.+
+  //                                         |<-X->|<--Y-->|
+  //
+  // the table entries for reserved SuperPages have the numbers of SuperPages
+  // between the reservation start and each reserved SuperPage:
+  // +----------+----------+-----+-----------+-------------+
+  // |Entry for |Entry for | ... |Entry for  |Entry for    |
+  // |SuperPage0|SuperPage1|     |SuperPage K|SuperPage K+1|
+  // +----------+----------+-----+-----------+-------------+
+  // |     0    |    1     | ... |     K     |   K + 1     |
+  // +----------+----------+-----+-----------+-------------+
+  // 65535 is used as a special number: "not used for direct-map allocation".
+  //
+  // So when we have an address Z, ((Z >> SuperPageShift) - (the entry for Z))
+  // << SuperPageShift is the reservation start when allocating an address space
+  // which contains Z.
+  //
+  // (*) Y is not used by PartitionAlloc until X is unreserved, because
+  // PartitionAlloc always uses SuperPageSize alignment when reserving address
+  // spaces. So we don't need to keep any offset for Y. GigaCage helps us to see
+  // whether the given address space is used by PA or not.
+  static uint16_t* ReservationOffsetTable() {
+    return reservation_offset_table_;
+  }
+
+  static const uint16_t* EndOfReservationOffsetTable() {
+    return reservation_offset_table_ + kReservationOffsetTableSize;
+  }
+
+#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+#endif  // !defined(PA_HAS_64_BITS_POINTERS)
 
  private:
   friend class AddressPoolManagerForTesting;
@@ -132,6 +179,20 @@ class BASE_EXPORT AddressPoolManager {
   static constexpr pool_handle kBRPPoolHandle = 2;
   friend internal::pool_handle GetNonBRPPool();
   friend internal::pool_handle GetBRPPool();
+
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+  // Allocation size is a multiple of DirectMapAllocationGranularity(), but
+  // alignment is kSuperPageSize.
+  static constexpr size_t kReservationOffsetTableSize =
+      4 * kGiB / kSuperPageSize;
+
+  static_assert(kReservationOffsetTableSize <
+                    std::numeric_limits<uint16_t>::max(),
+                "kReservationOffsetTableSize should be smaller than 65536.");
+
+  static uint16_t reservation_offset_table_[kReservationOffsetTableSize];
+#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
   friend struct base::LazyInstanceTraitsBase<AddressPoolManager>;
@@ -146,7 +207,47 @@ ALWAYS_INLINE internal::pool_handle GetNonBRPPool() {
 ALWAYS_INLINE internal::pool_handle GetBRPPool() {
   return AddressPoolManager::kBRPPoolHandle;
 }
-#endif
+
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+ALWAYS_INLINE constexpr uint16_t NotInDirectMapOffsetTag() {
+  return internal::AddressPoolManager::kNotInDirectMap;
+}
+
+ALWAYS_INLINE uint16_t* ReservationOffsetPointer(uintptr_t address) {
+  unsigned table_offset = address >> kSuperPageShift;
+  return internal::AddressPoolManager::ReservationOffsetTable() + table_offset;
+}
+
+ALWAYS_INLINE const uint16_t* EndOfReservationOffsetTable() {
+  return internal::AddressPoolManager::EndOfReservationOffsetTable();
+}
+
+ALWAYS_INLINE uintptr_t GetReservationStart(void* address) {
+  PA_DCHECK(internal::AddressPoolManager::IsManagedByBRPPool(address));
+  uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
+  uint16_t* offset_ptr = internal::ReservationOffsetPointer(ptr_as_uintptr);
+  PA_DCHECK(*offset_ptr != internal::NotInDirectMapOffsetTag());
+  uintptr_t reservation_start =
+      (ptr_as_uintptr & kSuperPageBaseMask) -
+      (static_cast<size_t>(*offset_ptr) << kSuperPageShift);
+  // Because the first
+  // internal::AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap *
+  // internal::AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap bytes
+  // of each reserved memory are used as guard pages,
+  // IsManagedByBRPPool(reservation_start) returns false. Need to use
+  // reservation_start + kBytesPer1BitOfBRPPoolBitmap *
+  // kGuardOffsetOfBRPPoolBitmap.
+  PA_DCHECK(internal::AddressPoolManager::IsManagedByBRPPool(reinterpret_cast<
+                                                             void*>(
+      reservation_start +
+      internal::AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap *
+          internal::AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap)));
+  PA_DCHECK(*internal::ReservationOffsetPointer(reservation_start) == 0);
+  return reservation_start;
+}
+
+#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+#endif  // !defined(PA_HAS_64_BITS_POINTERS)
 
 }  // namespace internal
 

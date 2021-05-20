@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <array>
+#include <limits>
 
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
@@ -112,6 +113,37 @@ class BASE_EXPORT PartitionAddressSpace {
     return brp_pool_base_address_;
   }
 
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+  static ALWAYS_INLINE uintptr_t BRPPoolEnd() {
+    return brp_pool_base_address_ + kBRPPoolSize;
+  }
+
+  static ALWAYS_INLINE uintptr_t BRPPoolOffset(uintptr_t address) {
+    return address & kBRPPoolOffsetMask;
+  }
+
+  static uint16_t* ReservationOffsetTable() {
+    return reinterpret_cast<uint16_t*>(BRPPoolEnd() - kBRPPoolOffsetTableSize);
+  }
+
+  static uint16_t* ReservationOffsetPointer(uintptr_t address) {
+    PA_DCHECK(IsInBRPPool(reinterpret_cast<const void*>(address)));
+    size_t table_index = BRPPoolOffset(address) >> kSuperPageShift;
+    PA_DCHECK(table_index < (kBRPPoolSize >> kSuperPageShift));
+    return ReservationOffsetTable() + table_index;
+  }
+
+  static const uint16_t* EndOfReservationOffsetTable() {
+    return reinterpret_cast<uint16_t*>(reinterpret_cast<uintptr_t>(
+        ReservationOffsetTable() +
+        internal::PartitionAddressSpace::kBRPPoolOffsetTableActualSize));
+  }
+
+  static constexpr uint16_t kNotInDirectMap =
+      std::numeric_limits<uint16_t>::max();
+
+#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+
   // PartitionAddressSpace is static_only class.
   PartitionAddressSpace() = delete;
   PartitionAddressSpace(const PartitionAddressSpace&) = delete;
@@ -158,6 +190,50 @@ class BASE_EXPORT PartitionAddressSpace {
   static constexpr std::array<size_t, 2> kPoolSizes = {kNonBRPPoolSize,
                                                        kBRPPoolSize};
 
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+  // (For defined(PA_HAS_64_BITS_POINTERS))
+  // The last SuperPage inside NonBRPPool is used as a table to get the
+  // reservation start address when an address inside of BRP pool is given. Each
+  // entry of the table is prepared for each super page (inside BRP pool):
+  //
+  //  |<------ reserved size (SuperPageSize-aligned) ------>|
+  //  +----------+----------+-------------------+-----------+
+  //  |SuperPage0|SuperPage1|        ...        |SuperPage K|
+  //  +----------+----------+-------------------+-----------+
+  //
+  // the table entries for reserved SuperPages have the numbers of SuperPages
+  // between the reservation start and each reserved SuperPage:
+  // +----------+----------+--------------------+-----------+
+  // |Entry for |Entry for |         ...        |Entry for  |
+  // |SuperPage0|SuperPage1|                    |SuperPage K|
+  // +----------+----------+--------------------+-----------+
+  // |     0    |    1     |         ...        |      K    |
+  // +----------+----------+--------------------+-----------+
+  // 65535 is used as a special number: "not used for direct-map allocation".
+  //
+  // So when we have an address Z, ((Z >> SuperPageShift) - (the entry for Z))
+  // << SuperPageShift is the reservation start when allocating an address space
+  // which contains Z.
+
+  // The size of the table is (kBRPPoolSize / kSuperPageSize) * sizeof(each
+  // table entry). Since kBRPPoolSize / kSuperPageSize < MAX_UINT16, each
+  // table entry is uint16_t. So the size is AlignUp((kBRPPoolSize /
+  // kSuperPageSize) * sizeof(uint16_t), kSuperPageSize).
+  static constexpr size_t kBRPPoolOffsetTableActualSize =
+      (kBRPPoolSize >> kSuperPageShift) * sizeof(uint16_t);
+  // TODO(tasak): Use bits::AlignUp after making the function support constexpr.
+  static constexpr size_t kBRPPoolOffsetTableSize =
+      (kBRPPoolOffsetTableActualSize + kSuperPageSize - 1) & kSuperPageBaseMask;
+
+  static_assert(kBRPPoolOffsetTableSize == kSuperPageSize,
+                "kBRPPoolOffsetTableSize should be equal to kSuperPageSize, "
+                "because the table should be as small as possible.");
+  static_assert((kBRPPoolSize >> kSuperPageShift) < kNotInDirectMap,
+                "Offsets should be smaller than kNotInDirectMap.");
+#else
+  static constexpr size_t kBRPPoolOffsetTableSize = 0;
+#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+
   static_assert(bits::IsPowerOfTwo(kNonBRPPoolSize) &&
                     bits::IsPowerOfTwo(kBRPPoolSize),
                 "Each pool size should be a power of two.");
@@ -188,6 +264,38 @@ ALWAYS_INLINE internal::pool_handle GetBRPPool() {
 }
 
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
+
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT) && defined(PA_HAS_64_BITS_POINTERS)
+ALWAYS_INLINE constexpr uint16_t NotInDirectMapOffsetTag() {
+  return internal::PartitionAddressSpace::kNotInDirectMap;
+}
+
+ALWAYS_INLINE uint16_t* ReservationOffsetPointer(uintptr_t address) {
+  return internal::PartitionAddressSpace::ReservationOffsetPointer(address);
+}
+
+ALWAYS_INLINE const uint16_t* EndOfReservationOffsetTable() {
+  return internal::PartitionAddressSpace::EndOfReservationOffsetTable();
+}
+
+ALWAYS_INLINE uintptr_t GetReservationStart(void* address) {
+  PA_DCHECK(internal::PartitionAddressSpace::IsInBRPPool(address));
+  uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
+  uint16_t* offset_ptr =
+      internal::PartitionAddressSpace::ReservationOffsetPointer(ptr_as_uintptr);
+  PA_DCHECK(*offset_ptr != internal::NotInDirectMapOffsetTag());
+  uintptr_t reservation_start =
+      (ptr_as_uintptr & kSuperPageBaseMask) -
+      (static_cast<size_t>(*offset_ptr) << kSuperPageShift);
+  PA_DCHECK(internal::PartitionAddressSpace::IsInBRPPool(
+      reinterpret_cast<void*>(reservation_start)));
+  PA_DCHECK(*internal::PartitionAddressSpace::ReservationOffsetPointer(
+                reservation_start) == 0);
+  return reservation_start;
+}
+
+#endif  //  BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT) &&
+        //  defined(PA_HAS_64_BITS_POINTERS)
 
 }  // namespace internal
 
