@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 
@@ -39,9 +39,9 @@ class PasswordCheckObserverBridge
 
  private:
   __weak id<PasswordCheckObserver> delegate_ = nil;
-  ScopedObserver<IOSChromePasswordCheckManager,
-                 IOSChromePasswordCheckManager::Observer>
-      password_check_manager_observer_{this};
+  base::ScopedObservation<IOSChromePasswordCheckManager,
+                          IOSChromePasswordCheckManager::Observer>
+      password_check_manager_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_PASSWORD_CHECK_OBSERVER_BRIDGE_H_

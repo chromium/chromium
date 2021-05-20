@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/password_manager/core/browser/ui/bulk_leak_check_service_adapter.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
@@ -156,18 +156,20 @@ class IOSChromePasswordCheckManager
   base::Time start_time_;
 
   // A scoped observer for |saved_passwords_presenter_|.
-  ScopedObserver<password_manager::SavedPasswordsPresenter,
-                 password_manager::SavedPasswordsPresenter::Observer>
+  base::ScopedObservation<password_manager::SavedPasswordsPresenter,
+                          password_manager::SavedPasswordsPresenter::Observer>
       observed_saved_passwords_presenter_{this};
 
   // A scoped observer for |insecure_credentials_manager_|.
-  ScopedObserver<password_manager::InsecureCredentialsManager,
-                 password_manager::InsecureCredentialsManager::Observer>
+  base::ScopedObservation<
+      password_manager::InsecureCredentialsManager,
+      password_manager::InsecureCredentialsManager::Observer>
       observed_insecure_credentials_manager_{this};
 
   // A scoped observer for the BulkLeakCheckService.
-  ScopedObserver<password_manager::BulkLeakCheckServiceInterface,
-                 password_manager::BulkLeakCheckServiceInterface::Observer>
+  base::ScopedObservation<
+      password_manager::BulkLeakCheckServiceInterface,
+      password_manager::BulkLeakCheckServiceInterface::Observer>
       observed_bulk_leak_check_service_{this};
 
   // Observers to listen to password check changes.

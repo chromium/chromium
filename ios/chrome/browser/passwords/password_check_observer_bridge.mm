@@ -13,7 +13,7 @@ PasswordCheckObserverBridge::PasswordCheckObserverBridge(
     IOSChromePasswordCheckManager* manager)
     : delegate_(delegate) {
   DCHECK(manager);
-  password_check_manager_observer_.Add(manager);
+  password_check_manager_observation_.Observe(manager);
 }
 
 PasswordCheckObserverBridge::~PasswordCheckObserverBridge() = default;

@@ -85,9 +85,10 @@ IOSChromePasswordCheckManager::IOSChromePasswordCheckManager(
           IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(
               browser_state),
           browser_state->GetPrefs()) {
-  observed_saved_passwords_presenter_.Add(&saved_passwords_presenter_);
-  observed_insecure_credentials_manager_.Add(&insecure_credentials_manager_);
-  observed_bulk_leak_check_service_.Add(
+  observed_saved_passwords_presenter_.Observe(&saved_passwords_presenter_);
+  observed_insecure_credentials_manager_.Observe(
+      &insecure_credentials_manager_);
+  observed_bulk_leak_check_service_.Observe(
       IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(browser_state));
 
   // Instructs the presenter and manager to initialize and build their caches.
