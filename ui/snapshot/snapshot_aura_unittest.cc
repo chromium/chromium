@@ -196,6 +196,9 @@ INSTANTIATE_TEST_SUITE_P(All, SnapshotAuraTest, ::testing::Bool());
 #if defined(OS_WIN) && !defined(NDEBUG)
 // https://crbug.com/852512
 #define MAYBE_FullScreenWindow DISABLED_FullScreenWindow
+#elif defined(OS_LINUX)
+// https://crbug.com/1143031
+#define MAYBE_FullScreenWindow DISABLED_FullScreenWindow
 #else
 #define MAYBE_FullScreenWindow FullScreenWindow
 #endif
