@@ -465,4 +465,7 @@
     <!-- Video tutorials dimensions -->
     <dimen name="video_tutorial_try_now_iph_ntp_searchbox_y_inset">6dp</dimen>
 
+    <!-- IPH shared highlighting builder padding top -->
+    <dimen name="iph_shared_highlighting_padding_top">120dp</dimen>
+
 </resources>

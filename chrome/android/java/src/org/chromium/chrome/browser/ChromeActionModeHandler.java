@@ -5,10 +5,14 @@
 package org.chromium.chrome.browser;
 
 import android.content.pm.ResolveInfo;
+import android.graphics.Rect;
+import android.os.Build;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -19,15 +23,19 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.content.R;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
@@ -154,7 +162,36 @@ public class ChromeActionModeHandler {
                     item.setVisible(false);
                 }
             }
+            if (menu.findItem(R.id.select_action_menu_share) != null
+                    && isFloatingActionMode(mode)) {
+                showShareIph();
+            }
             return res;
+        }
+
+        private void showShareIph() {
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SHARED_HIGHLIGHTING_V2)) {
+                return;
+            }
+            View view = mTab.getView();
+            int padding = view.getResources().getDimensionPixelSize(
+                    R.dimen.iph_shared_highlighting_padding_top);
+            Rect anchorRect = new Rect(view.getWidth() / 2, padding, view.getWidth() / 2, padding);
+            UserEducationHelper mUserEducationHelper =
+                    new UserEducationHelper(TabUtils.getActivity(mTab), new Handler());
+            mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(view.getResources(),
+                    FeatureConstants.SHARED_HIGHLIGHTING_BUILDER_FEATURE,
+                    R.string.iph_shared_highlighting_builder,
+                    R.string.iph_shared_highlighting_builder)
+                                                        .setAnchorRect(anchorRect)
+                                                        .setAnchorView(view)
+                                                        .setRemoveArrow(true)
+                                                        .build());
+        }
+
+        private boolean isFloatingActionMode(ActionMode mode) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false;
+            return mode.getType() == ActionMode.TYPE_FLOATING;
         }
 
         @Override

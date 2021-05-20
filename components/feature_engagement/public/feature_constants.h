@@ -99,6 +99,7 @@ extern const base::Feature kIPHPwaInstallAvailableFeature;
 extern const base::Feature kIPHShareScreenshotFeature;
 extern const base::Feature kIPHWebFeedFollowFeature;
 extern const base::Feature kIPHWebFeedPostFollowDialogFeature;
+extern const base::Feature kIPHSharedHighlightingBuilder;
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_IOS)
