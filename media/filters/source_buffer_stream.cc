@@ -673,7 +673,6 @@ bool SourceBufferStream::IsDtsMonotonicallyIncreasing(
     const BufferQueue& buffers) {
   DCHECK(!buffers.empty());
   DecodeTimestamp prev_dts = last_appended_buffer_decode_timestamp_;
-  bool prev_is_keyframe = last_appended_buffer_is_keyframe_;
   for (BufferQueue::const_iterator itr = buffers.begin();
        itr != buffers.end(); ++itr) {
     DecodeTimestamp current_dts = (*itr)->GetDecodeTimestamp();
@@ -706,7 +705,6 @@ bool SourceBufferStream::IsDtsMonotonicallyIncreasing(
     }
 
     prev_dts = current_dts;
-    prev_is_keyframe = current_is_keyframe;
   }
   return true;
 }
