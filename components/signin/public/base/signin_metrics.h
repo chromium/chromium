@@ -222,52 +222,51 @@ enum class AccountConsistencyPromoAction : int {
   // Promo is not shown as there are no accounts on device.
   SUPPRESSED_NO_ACCOUNTS = 0,
   // User has dismissed the promo by tapping back button.
-  DISMISSED_BACK,
+  DISMISSED_BACK = 1,
   // User has tapped |Add account to device| from expanded account list.
-  ADD_ACCOUNT_STARTED,
-  // User tapped the button from the expanded account list to open the incognito
-  // interstitial
-  // then confirmed opening the page in the incognito tab by tapping |Continue|
-  // in the incognito
-  // interstitial.
-  STARTED_INCOGNITO_SESSION,
+  ADD_ACCOUNT_STARTED = 2,
+
+  // Deprecated 05/2021, since the Incognito option has been removed from
+  // account picker bottomsheet.
+  // STARTED_INCOGNITO_SESSION = 3,
+
   // User has selected the default account and signed in with it
-  SIGNED_IN_WITH_DEFAULT_ACCOUNT,
+  SIGNED_IN_WITH_DEFAULT_ACCOUNT = 4,
   // User has selected one of the non default accounts and signed in with it.
-  SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT,
+  SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT = 5,
   // The promo was shown to user.
-  SHOWN,
+  SHOWN = 6,
   // Promo is not shown due to sign-in being disallowed either by an enterprise
   // policy
   // or by |Allow Chrome sign-in| toggle.
-  SUPPRESSED_SIGNIN_NOT_ALLOWED,
+  SUPPRESSED_SIGNIN_NOT_ALLOWED = 7,
   // User has added an account and signed in with this account.
   // When this metric is recorded, we won't record
   // SIGNED_IN_WITH_DEFAULT_ACCOUNT or
   // SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT.
-  SIGNED_IN_WITH_ADDED_ACCOUNT,
+  SIGNED_IN_WITH_ADDED_ACCOUNT = 8,
   // User has dismissed the promo by tapping on the scrim above the bottom
   // sheet.
-  DISMISSED_SCRIM,
+  DISMISSED_SCRIM = 9,
   // User has dismissed the promo by swiping down the bottom sheet.
-  DISMISSED_SWIPE_DOWN,
+  DISMISSED_SWIPE_DOWN = 10,
   // User has dismissed the promo by other means.
-  DISMISSED_OTHER,
+  DISMISSED_OTHER = 11,
   // The auth error screen was shown to the user.
-  AUTH_ERROR_SHOWN,
+  AUTH_ERROR_SHOWN = 12,
   // The generic error screen was shown to the user.
-  GENERIC_ERROR_SHOWN,
+  GENERIC_ERROR_SHOWN = 13,
   // User has dismissed the promo by tapping on the dismissal button in the
   // bottom sheet.
-  DISMISSED_BUTTON,
+  DISMISSED_BUTTON = 14,
   // User has completed the account addition flow triggered from the bottom
   // sheet.
-  ADD_ACCOUNT_COMPLETED,
+  ADD_ACCOUNT_COMPLETED = 15,
   // The bottom sheet was suppressed as the user hit consecutive active
   // dismissal limit.
-  SUPPRESSED_CONSECUTIVE_DISMISSALS,
+  SUPPRESSED_CONSECUTIVE_DISMISSALS = 16,
 
-  MAX,
+  MAX = 17,
 };
 
 // This class is used to record web sign-in events within 2 minutes after

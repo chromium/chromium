@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerProperties.AddAccountRowProperties;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
-import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerProperties.IncognitoAccountRowProperties;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerProperties.ItemType;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -35,7 +34,6 @@ class AccountPickerMediator {
     private final MVCListAdapter.ModelList mListModel;
     private final AccountPickerCoordinator.Listener mAccountPickerListener;
     private final ProfileDataCache mProfileDataCache;
-    private final boolean mShowIncognitoRow;
 
     private final AccountManagerFacade mAccountManagerFacade;
     private final AccountsChangeObserver mAccountsChangeObserver = this::updateAccounts;
@@ -43,11 +41,10 @@ class AccountPickerMediator {
 
     @MainThread
     AccountPickerMediator(Context context, MVCListAdapter.ModelList listModel,
-            AccountPickerCoordinator.Listener listener, boolean showIncognitoRow) {
+            AccountPickerCoordinator.Listener listener) {
         mListModel = listModel;
         mAccountPickerListener = listener;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
-        mShowIncognitoRow = showIncognitoRow;
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
         mAccountManagerFacade.addObserver(mAccountsChangeObserver);
@@ -86,14 +83,6 @@ class AccountPickerMediator {
         PropertyModel model =
                 AddAccountRowProperties.createModel(mAccountPickerListener::addAccount);
         mListModel.add(new MVCListAdapter.ListItem(ItemType.ADD_ACCOUNT_ROW, model));
-
-        // Add a "Go incognito mode" row
-        if (mShowIncognitoRow) {
-            PropertyModel incognitoModel = IncognitoAccountRowProperties.createModel(
-                    mAccountPickerListener::goIncognitoMode);
-            mListModel.add(
-                    new MVCListAdapter.ListItem(ItemType.INCOGNITO_ACCOUNT_ROW, incognitoModel));
-        }
     }
 
     private MVCListAdapter.ListItem createExistingAccountRowItem(

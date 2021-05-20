@@ -95,14 +95,6 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     }
 
     /**
-     * Notifies when the user clicked the "Go Incognito mode" button.
-     */
-    @Override
-    public void goIncognitoMode() {
-        mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.INCOGNITO_INTERSTITIAL);
-    }
-
-    /**
      * Notifies when user clicks the back-press button.
      *
      * @return true if the listener handles the back press, false if not.
@@ -115,14 +107,8 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
             mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE,
                     ViewState.COLLAPSED_ACCOUNT_LIST);
             return true;
-        } else if (viewState == ViewState.INCOGNITO_INTERSTITIAL) {
-            mModel.set(
-                    AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.EXPANDED_ACCOUNT_LIST);
-            return true;
-        } else {
-            // The bottom sheet will be dismissed for all other view states
-            return false;
         }
+        return false;
     }
 
     PropertyModel getModel() {

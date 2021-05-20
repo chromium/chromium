@@ -38,9 +38,6 @@
             android:id="@+id/account_picker_state_signin_in_progress"
             layout="@layout/account_picker_state_signin_in_progress" />
         <include
-            android:id="@+id/account_picker_state_incognito_interstitial"
-            layout="@layout/incognito_interstitial_bottom_sheet_view" />
-        <include
             android:id="@+id/account_picker_state_general_error"
             layout="@layout/account_picker_state_general_error" />
         <include

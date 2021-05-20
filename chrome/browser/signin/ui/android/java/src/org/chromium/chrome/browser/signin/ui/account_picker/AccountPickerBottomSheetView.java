@@ -28,7 +28,7 @@ import org.chromium.ui.widget.ButtonCompat;
  *
  * The bottom sheet shows a single account with a |Continue as ...| button by default, clicking
  * on the account will expand the bottom sheet to an account list together with other sign-in
- * options like "Add account" and "Go incognito mode".
+ * options like "Add account".
  */
 class AccountPickerBottomSheetView implements BottomSheetContent {
     /**
@@ -52,7 +52,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
             R.id.account_picker_header_title,
             R.id.account_picker_header_title,
             R.id.account_picker_signin_in_progress_title,
-            R.id.incognito_interstitial_title,
             R.id.account_picker_general_error_title,
             R.id.account_picker_auth_error_title,
     };
@@ -102,13 +101,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
      */
     RecyclerView getAccountListView() {
         return mAccountListView;
-    }
-
-    /**
-     * The incognito interstitial view when the user clicks on incognito mode option.
-     */
-    View getIncognitoInterstitialView() {
-        return mViewFlipper.getChildAt(ViewState.INCOGNITO_INTERSTITIAL);
     }
 
     /**
@@ -242,8 +234,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 viewFlipper, ViewState.EXPANDED_ACCOUNT_LIST, R.id.account_picker_state_expanded);
         checkViewFlipperChildIdAndViewStateMatch(viewFlipper, ViewState.SIGNIN_IN_PROGRESS,
                 R.id.account_picker_state_signin_in_progress);
-        checkViewFlipperChildIdAndViewStateMatch(viewFlipper, ViewState.INCOGNITO_INTERSTITIAL,
-                R.id.account_picker_state_incognito_interstitial);
         checkViewFlipperChildIdAndViewStateMatch(viewFlipper, ViewState.SIGNIN_GENERAL_ERROR,
                 R.id.account_picker_state_general_error);
         checkViewFlipperChildIdAndViewStateMatch(

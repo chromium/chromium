@@ -32,7 +32,6 @@ class AccountPickerBottomSheetProperties {
             ViewState.COLLAPSED_ACCOUNT_LIST,
             ViewState.EXPANDED_ACCOUNT_LIST,
             ViewState.SIGNIN_IN_PROGRESS,
-            ViewState.INCOGNITO_INTERSTITIAL,
             ViewState.SIGNIN_GENERAL_ERROR,
             ViewState.SIGNIN_AUTH_ERROR,
     })
@@ -59,7 +58,7 @@ class AccountPickerBottomSheetProperties {
 
         /**
          * When the account list is expanded, the user sees the account list of all the accounts
-         * on device and some additional rows like |Add account to device| and |Go incognito mode|.
+         * on device and an additional row like |Add account to device|.
          *
          * This state is reached from COLLAPSED_ACCOUNT_LIST by clicking the selected account of
          * the collapsed account list.
@@ -76,21 +75,12 @@ class AccountPickerBottomSheetProperties {
         int SIGNIN_IN_PROGRESS = 3;
 
         /**
-         * When the account list is expanded, the user sees the account list of all the accounts
-         * on device and some additional rows like |Add account to device| and |Go incognito mode|.
-         *
-         * This state can only be reached from EXPANDED_ACCOUNT_LIST and would represent that the
-         * user has clicked the "Go incognito mode" option.
-         */
-        int INCOGNITO_INTERSTITIAL = 4;
-
-        /**
          * When user cannot complete sign-in due to connectivity issues for example, the
          * general sign-in error screen will be shown.
          *
          * The state can be reached when an error appears during the sign-in process.
          */
-        int SIGNIN_GENERAL_ERROR = 5;
+        int SIGNIN_GENERAL_ERROR = 4;
 
         /**
          * When user cannot complete sign-in due to invalidate credential, the
@@ -98,7 +88,7 @@ class AccountPickerBottomSheetProperties {
          *
          * The state can be reached when an auth error appears during the sign-in process.
          */
-        int SIGNIN_AUTH_ERROR = 6;
+        int SIGNIN_AUTH_ERROR = 5;
     }
 
     // PropertyKeys for the selected account view when the account list is collapsed.

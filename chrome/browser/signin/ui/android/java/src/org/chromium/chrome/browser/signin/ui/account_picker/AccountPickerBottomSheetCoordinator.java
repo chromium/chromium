@@ -10,13 +10,8 @@ import android.view.View;
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialCoordinator;
-import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -61,25 +56,7 @@ public class AccountPickerBottomSheetCoordinator {
     @MainThread
     public AccountPickerBottomSheetCoordinator(Activity activity,
             BottomSheetController bottomSheetController,
-            AccountPickerDelegate accountPickerDelegate, TabModel regularTabModel,
-            TabCreator incognitoTabCreator, HelpAndFeedbackLauncher helpAndFeedbackLauncher,
-            boolean showIncognitoRow) {
-        this(activity, bottomSheetController, accountPickerDelegate,
-                new IncognitoInterstitialDelegate(
-                        activity, regularTabModel, incognitoTabCreator, helpAndFeedbackLauncher),
-                showIncognitoRow);
-    }
-
-    /**
-     * Constructs the AccountPickerBottomSheetCoordinator and shows the
-     * bottom sheet on the screen.
-     */
-    @VisibleForTesting
-    @MainThread
-    public AccountPickerBottomSheetCoordinator(Activity activity,
-            BottomSheetController bottomSheetController,
-            AccountPickerDelegate accountPickerDelegate,
-            IncognitoInterstitialDelegate incognitoInterstitialDelegate, boolean showIncognitoRow) {
+            AccountPickerDelegate accountPickerDelegate) {
         SigninPreferencesManager.getInstance().incrementAccountPickerBottomSheetShownCount();
         SigninMetricsUtils.logAccountConsistencyPromoAction(AccountConsistencyPromoAction.SHOWN);
         SigninMetricsUtils.logAccountConsistencyPromoShownCount(
@@ -88,18 +65,9 @@ public class AccountPickerBottomSheetCoordinator {
         mAccountPickerBottomSheetMediator = new AccountPickerBottomSheetMediator(
                 activity, accountPickerDelegate, this::dismissBottomSheet);
         mView = new AccountPickerBottomSheetView(activity, mAccountPickerBottomSheetMediator);
-        mAccountPickerCoordinator = new AccountPickerCoordinator(mView.getAccountListView(),
-                mAccountPickerBottomSheetMediator,
-                /* showIncognitoRow= */ showIncognitoRow);
+        mAccountPickerCoordinator = new AccountPickerCoordinator(
+                mView.getAccountListView(), mAccountPickerBottomSheetMediator);
 
-        if (showIncognitoRow) {
-            IncognitoInterstitialCoordinator incognitoInterstitialCoordinator =
-                    new IncognitoInterstitialCoordinator(mView.getIncognitoInterstitialView(),
-                            incognitoInterstitialDelegate, () -> {
-                                SigninMetricsUtils.logAccountConsistencyPromoAction(
-                                        AccountConsistencyPromoAction.STARTED_INCOGNITO_SESSION);
-                            });
-        }
         mBottomSheetController = bottomSheetController;
         PropertyModelChangeProcessor.create(mAccountPickerBottomSheetMediator.getModel(), mView,
                 AccountPickerBottomSheetViewBinder::bind);

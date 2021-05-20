@@ -38,8 +38,7 @@ public class AccountPickerDialogCoordinator {
     @MainThread
     public AccountPickerDialogCoordinator(Context context, Listener listener) {
         mAccountPickerView = inflateAccountPickerView(context);
-        mCoordinator = new AccountPickerCoordinator(mAccountPickerView, listener,
-                /* showIncognitoRow= */ false);
+        mCoordinator = new AccountPickerCoordinator(mAccountPickerView, listener);
         mDialogManager =
                 new ModalDialogManager(new AppModalPresenter(context), ModalDialogType.APP);
         mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)

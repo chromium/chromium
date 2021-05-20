@@ -86,26 +86,12 @@ public class AccountPickerMediatorTest {
     }
 
     @Test
-    public void testModelPopulatedWhenStartedFromWeb() {
+    public void testModelPopulation() {
         addAccount(ACCOUNT_EMAIL1, FULL_NAME1);
         addAccount(ACCOUNT_EMAIL2, "");
         mMediator = new AccountPickerMediator(
-                RuntimeEnvironment.application, mModelList, mListenerMock, true);
-        // ACCOUNT_NAME1, ACCOUNT_NAME2, ADD_ACCOUNT, INCOGNITO MODE.
-        Assert.assertEquals(4, mModelList.size());
-        checkItemForExistingAccountRow(0, ACCOUNT_EMAIL1, FULL_NAME1);
-        checkItemForExistingAccountRow(1, ACCOUNT_EMAIL2, "");
-        checkItemForAddAccountRow(2);
-        checkItemForIncognitoAccountRow(3);
-    }
-
-    @Test
-    public void testModelPopulatedWhenStartedFromSettings() {
-        addAccount(ACCOUNT_EMAIL1, FULL_NAME1);
-        addAccount(ACCOUNT_EMAIL2, "");
-        mMediator = new AccountPickerMediator(
-                RuntimeEnvironment.application, mModelList, mListenerMock, false);
-        // ACCOUNT_NAME1, ACCOUNT_NAME2, ADD_ACCOUNT
+                RuntimeEnvironment.application, mModelList, mListenerMock);
+        // ACCOUNT_NAME1, ACCOUNT_NAME2, ADD_ACCOUNT.
         Assert.assertEquals(3, mModelList.size());
         checkItemForExistingAccountRow(0, ACCOUNT_EMAIL1, FULL_NAME1);
         checkItemForExistingAccountRow(1, ACCOUNT_EMAIL2, "");
@@ -117,7 +103,7 @@ public class AccountPickerMediatorTest {
         addAccount(ACCOUNT_EMAIL1, FULL_NAME1);
         addAccount(ACCOUNT_EMAIL2, "");
         mMediator = new AccountPickerMediator(
-                RuntimeEnvironment.application, mModelList, mListenerMock, false);
+                RuntimeEnvironment.application, mModelList, mListenerMock);
         String fullName2 = "Full Name2";
         mFakeProfileDataSource.addProfileData(
                 new ProfileDataSource.ProfileData(ACCOUNT_EMAIL2, null, fullName2, null));
@@ -134,7 +120,7 @@ public class AccountPickerMediatorTest {
         final String fullName2 = "Full Name2";
         addAccount(ACCOUNT_EMAIL2, fullName2);
         mMediator = new AccountPickerMediator(
-                RuntimeEnvironment.application, mModelList, mListenerMock, false);
+                RuntimeEnvironment.application, mModelList, mListenerMock);
         mFakeProfileDataSource.removeProfileData(ACCOUNT_EMAIL1);
         // ACCOUNT_NAME1, ACCOUNT_NAME2, ADD_ACCOUNT
         Assert.assertEquals(3, mModelList.size());
@@ -162,14 +148,6 @@ public class AccountPickerMediatorTest {
         Assert.assertEquals(AccountPickerProperties.ItemType.ADD_ACCOUNT_ROW, item.type);
         item.model.get(AddAccountRowProperties.ON_CLICK_LISTENER).onClick(null);
         verify(mListenerMock).addAccount();
-    }
-
-    private void checkItemForIncognitoAccountRow(int position) {
-        MVCListAdapter.ListItem item = mModelList.get(position);
-        Assert.assertEquals(AccountPickerProperties.ItemType.INCOGNITO_ACCOUNT_ROW, item.type);
-        item.model.get(AccountPickerProperties.IncognitoAccountRowProperties.ON_CLICK_LISTENER)
-                .onClick(null);
-        verify(mListenerMock).goIncognitoMode();
     }
 
     private void addAccount(String accountName, String fullName) {
