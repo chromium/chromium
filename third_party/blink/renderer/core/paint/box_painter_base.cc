@@ -397,23 +397,14 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
 
 namespace {
 
-// Given the |size| that the whole image should draw at, and the input phase
+// Given the size that the whole image should draw at, and the input phase
 // requested by the content, and the space between repeated tiles, return a
-// rectangle with |size| and a location that respects the phase but is no more
-// than one size + space in magnitude. In practice, this means that if there is
-// no repeating the returned rect would contain the destination_offset
-// location. The destination_offset passed here must exactly match the location
-// of the subset in a following call to ComputeSubsetForBackground.
-FloatRect ComputePhaseForBackground(const FloatPoint& destination_offset,
-                                    const FloatSize& size,
-                                    const FloatPoint& phase,
-                                    const FloatSize& spacing) {
-  const FloatSize step_per_tile(size + spacing);
-  return FloatRect(
-      FloatPoint(
-          destination_offset.X() + fmodf(-phase.X(), step_per_tile.Width()),
-          destination_offset.Y() + fmodf(-phase.Y(), step_per_tile.Height())),
-      size);
+// phase that is no more than one size + space in magnitude.
+PhysicalOffset ComputePhaseForBackground(
+    const BackgroundImageGeometry& geometry) {
+  const PhysicalSize step_per_tile = geometry.TileSize() + geometry.SpaceSize();
+  return {IntMod(-geometry.Phase().left, step_per_tile.width),
+          IntMod(-geometry.Phase().top, step_per_tile.height)};
 }
 
 // Compute the image subset, in intrinsic image coordinates, that gets mapped
@@ -425,19 +416,18 @@ FloatRect ComputePhaseForBackground(const FloatPoint& destination_offset,
 // It is used to undo the offset added in ComputePhaseForBackground. The size
 // of requested subset should be the unsnapped size so that the computed
 // scale and location in the source image can be correctly determined.
-FloatRect ComputeSubsetForBackground(const FloatRect& phase_and_size,
-                                     const FloatRect& subset,
+FloatRect ComputeSubsetForBackground(const PhysicalRect& phase_and_size,
+                                     const PhysicalRect& subset,
                                      const FloatSize& intrinsic_size) {
   // TODO(schenney): Re-enable this after determining why it fails for
   // CAP, and maybe other cases.
   // DCHECK(phase_and_size.Contains(subset));
-
+  const PhysicalOffset offset_in_tile = subset.offset - phase_and_size.offset;
   const FloatSize scale(phase_and_size.Width() / intrinsic_size.Width(),
                         phase_and_size.Height() / intrinsic_size.Height());
-  return FloatRect((subset.X() - phase_and_size.X()) / scale.Width(),
-                   (subset.Y() - phase_and_size.Y()) / scale.Height(),
-                   subset.Width() / scale.Width(),
-                   subset.Height() / scale.Height());
+  return FloatRect(
+      offset_in_tile.left / scale.Width(), offset_in_tile.top / scale.Height(),
+      subset.Width() / scale.Width(), subset.Height() / scale.Height());
 }
 
 FloatRect SnapSourceRectIfNearIntegral(const FloatRect src_rect) {
@@ -469,15 +459,11 @@ FloatRect SnapSourceRectIfNearIntegral(const FloatRect src_rect) {
 //   sprite computation.
 void DrawTiledBackground(GraphicsContext& context,
                          Image* image,
-                         const FloatSize& unsnapped_subset_size,
-                         const FloatRect& snapped_paint_rect,
-                         const FloatPoint& phase,
-                         const FloatSize& tile_size,
+                         const BackgroundImageGeometry& geometry,
                          SkBlendMode op,
-                         const FloatSize& repeat_spacing,
                          bool has_filter_property,
                          RespectImageOrientationEnum respect_orientation) {
-  DCHECK(!tile_size.IsEmpty());
+  DCHECK(!geometry.TileSize().IsEmpty());
 
   // Use the intrinsic size of the image if it has one, otherwise force the
   // generated image to be the tile size.
@@ -497,22 +483,24 @@ void DrawTiledBackground(GraphicsContext& context,
       // scale that would be calculated in the |else| part.
       // We should probably support subpixel size here.
       intrinsic_tile_size.IsEmpty()) {
-    intrinsic_tile_size = tile_size;
+    intrinsic_tile_size = FloatSize(geometry.TileSize());
   } else {
-    scale = FloatSize(tile_size.Width() / intrinsic_tile_size.Width(),
-                      tile_size.Height() / intrinsic_tile_size.Height());
+    scale =
+        FloatSize(geometry.TileSize().width / intrinsic_tile_size.Width(),
+                  geometry.TileSize().height / intrinsic_tile_size.Height());
   }
 
-  const FloatRect one_tile_rect = ComputePhaseForBackground(
-      snapped_paint_rect.Location(), tile_size, phase, repeat_spacing);
+  const PhysicalOffset dest_phase =
+      geometry.SnappedDestRect().offset + ComputePhaseForBackground(geometry);
 
   // Check and see if a single draw of the image can cover the entire area we
   // are supposed to tile. The dest_rect_for_subset must use the same
   // location that was used in ComputePhaseForBackground and the unsnapped
   // destination rect in order to correctly evaluate the subset size and
   // location in the presence of border snapping and zoom.
-  FloatRect dest_rect_for_subset(snapped_paint_rect.Location(),
-                                 unsnapped_subset_size);
+  const PhysicalRect dest_rect_for_subset(geometry.SnappedDestRect().offset,
+                                          geometry.UnsnappedDestRect().size);
+  const PhysicalRect one_tile_rect(dest_phase, geometry.TileSize());
   if (one_tile_rect.Contains(dest_rect_for_subset)) {
     FloatRect visible_src_rect = ComputeSubsetForBackground(
         one_tile_rect, dest_rect_for_subset, intrinsic_tile_size);
@@ -527,9 +515,9 @@ void DrawTiledBackground(GraphicsContext& context,
           intrinsic_tile_size, visible_src_rect);
     }
 
-    context.DrawImage(image, Image::kSyncDecode, snapped_paint_rect,
-                      &visible_src_rect, has_filter_property, op,
-                      respect_orientation);
+    context.DrawImage(image, Image::kSyncDecode,
+                      FloatRect(geometry.SnappedDestRect()), &visible_src_rect,
+                      has_filter_property, op, respect_orientation);
     return;
   }
 
@@ -545,18 +533,23 @@ void DrawTiledBackground(GraphicsContext& context,
   //
   // So detect when we do not want to repeat and set the scale to round the
   // values in that dimension.
-  if (fabs(tile_size.Width() - snapped_paint_rect.Width()) <= 0.5) {
-    scale.SetWidth(snapped_paint_rect.Width() / intrinsic_tile_size.Width());
+  const PhysicalSize tile_dest_diff =
+      geometry.TileSize() - geometry.SnappedDestRect().size;
+  if (tile_dest_diff.width.Abs() <= 0.5f) {
+    scale.SetWidth(geometry.SnappedDestRect().Width() /
+                   intrinsic_tile_size.Width());
   }
-  if (fabs(tile_size.Height() - snapped_paint_rect.Height()) <= 0.5) {
-    scale.SetHeight(snapped_paint_rect.Height() / intrinsic_tile_size.Height());
+  if (tile_dest_diff.height.Abs() <= 0.5f) {
+    scale.SetHeight(geometry.SnappedDestRect().Height() /
+                    intrinsic_tile_size.Height());
   }
 
   // This call takes the unscaled image, applies the given scale, and paints
   // it into the snapped_dest_rect using phase from one_tile_rect and the
   // given repeat spacing. Note the phase is already scaled.
-  context.DrawImageTiled(image, snapped_paint_rect, tile_rect, scale,
-                         one_tile_rect.Location(), repeat_spacing, op,
+  context.DrawImageTiled(image, FloatRect(geometry.SnappedDestRect()),
+                         tile_rect, scale, FloatPoint(dest_phase),
+                         FloatSize(geometry.SpaceSize()), op,
                          respect_orientation);
 }
 
@@ -645,7 +638,7 @@ inline bool PaintFastBottomLayer(const Document* document,
   // tile. The border for painting images may not be the same as the color due
   // to optimizations for the image painting destination that avoid painting
   // under the border.
-  FloatRect image_tile;
+  PhysicalRect image_tile;
   FloatRoundedRect image_border;
   if (info.should_paint_image) {
     // Avoid image shaders when printing (poorly supported in PDF).
@@ -666,23 +659,17 @@ inline bool PaintFastBottomLayer(const Document* document,
 
       // Phase calculation uses the actual painted location, given by the
       // border-snapped destination rect.
-      image_tile = ComputePhaseForBackground(
-          FloatPoint(geometry.SnappedDestRect().offset),
-          FloatSize(geometry.TileSize()), FloatPoint(geometry.Phase()),
-          FloatSize(geometry.SpaceSize()));
+      image_tile = PhysicalRect(geometry.SnappedDestRect().offset +
+                                    ComputePhaseForBackground(geometry),
+                                geometry.TileSize());
 
-      // Force the image tile to LayoutUnit precision, which is the precision
-      // it was calculated in. This avoids bleeding due to values very close to
-      // integers.
-      // The test images/sprite-no-bleed.html fails on two of the sub-cases
-      // due to this rounding still not being enough to make the Contains check
-      // pass. The best way to fix this would be to remove the paint rect offset
-      // from the tile computation, because we effectively add it in
-      // ComputePhaseForBackground then remove it in ComputeSubsetForBackground.
-      image_tile =
-          FloatRect(PhysicalRect::FastAndLossyFromFloatRect(image_tile));
+      // Use FastAndLossyFromFloatRect when converting the image border rect.
+      // At this point it should have been derived from a snapped rectangle, so
+      // the conversion from float should be as precise as it can be.
+
       // We cannot optimize if the tile is misaligned.
-      if (!image_tile.Contains(image_border.Rect()))
+      if (!image_tile.Contains(
+              PhysicalRect::FastAndLossyFromFloatRect(image_border.Rect())))
         return false;
     }
   }
@@ -719,7 +706,7 @@ inline bool PaintFastBottomLayer(const Document* document,
   bool has_intrinsic_size = image->HasIntrinsicSize();
   const FloatSize intrinsic_tile_size =
       !has_intrinsic_size
-          ? image_tile.Size()
+          ? FloatSize(image_tile.size)
           : FloatSize(image->Size(info.respect_image_orientation));
 
   // Subset computation needs the same location as was used with
@@ -727,10 +714,10 @@ inline bool PaintFastBottomLayer(const Document* document,
   // size to correctly calculate sprite subsets in the presence of zoom. But if
   // this is a generated image sized according to the tile size (which is a
   // snapped value), use the snapped dest rect instead.
-  FloatRect dest_rect_for_subset(
-      FloatPoint(geometry.SnappedDestRect().offset),
-      !has_intrinsic_size ? FloatSize(geometry.SnappedDestRect().size)
-                          : FloatSize(geometry.UnsnappedDestRect().size));
+  const PhysicalRect dest_rect_for_subset(
+      geometry.SnappedDestRect().offset,
+      !has_intrinsic_size ? geometry.SnappedDestRect().size
+                          : geometry.UnsnappedDestRect().size);
   // Content providers almost always choose source pixels at integer locations,
   // so snap to integers. This is particuarly important for sprite maps.
   // Calculation up to this point, in LayoutUnits, can lead to small variations
@@ -898,10 +885,7 @@ void PaintFillLayerBackground(const Document* document,
         inspector_paint_image_event::Data, node, *info.image,
         FloatRect(image->Rect()), FloatRect(scrolled_paint_rect));
     DrawTiledBackground(
-        context, image, FloatSize(geometry.UnsnappedDestRect().size),
-        FloatRect(geometry.SnappedDestRect()), FloatPoint(geometry.Phase()),
-        FloatSize(geometry.TileSize()), composite_op,
-        FloatSize(geometry.SpaceSize()),
+        context, image, geometry, composite_op,
         node && node->ComputedStyleRef().HasFilterInducingProperty(),
         info.respect_image_orientation);
     if (node && info.image && info.image->IsImageResource()) {
