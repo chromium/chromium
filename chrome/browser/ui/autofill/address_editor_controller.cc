@@ -103,7 +103,19 @@ void AddressEditorController::UpdateEditorFields() {
 
 void AddressEditorController::SetProfileInfo(autofill::ServerFieldType type,
                                              const std::u16string& value) {
-  profile_to_edit_.SetInfo(type, value, locale_);
+  // Since the countries combobox contains the country names, not the country
+  // codes, and hence we should use SetInfo() to make sure they get converted to
+  // country codes.
+  if (type == autofill::ADDRESS_HOME_COUNTRY) {
+    profile_to_edit_.SetInfoWithVerificationStatus(
+        type, value, locale_,
+        autofill::structured_address::VerificationStatus::kUserVerified);
+    return;
+  }
+
+  profile_to_edit_.SetRawInfoWithVerificationStatus(
+      type, value,
+      autofill::structured_address::VerificationStatus::kUserVerified);
 }
 
 std::u16string AddressEditorController::GetProfileInfo(
