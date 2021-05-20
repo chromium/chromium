@@ -1171,8 +1171,7 @@ class TabListMediator {
                         new ShoppingPersistedTabDataFetcher(
                                 pseudoTab.getTab(), mPriceWelcomeMessageController));
             }
-            // TODO(crbug.com/1198277): Add flag to only enable store hours if flag enabled.
-            else if (StoreTrackingUtilities.isStoreHoursOnTabsEnabled()) {
+            if (StoreTrackingUtilities.isStoreHoursOnTabsEnabled()) {
                 mModel.get(index).model.set(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER,
                         new StorePersistedTabDataFetcher(pseudoTab.getTab()));
             }

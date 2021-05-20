@@ -122,6 +122,7 @@ proto_java_library("critical_persisted_tab_data_proto_java") {
   sources = [
     "$proto_path/critical_persisted_tab_data.proto",
     "$proto_path/shopping_persisted_tab_data.proto",
+    "$proto_path/store_persisted_tab_data.proto",
   ]
 }
 

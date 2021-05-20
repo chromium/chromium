@@ -243,7 +243,8 @@ class TabGridViewBinder {
                 model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER)
                         .fetch((storePersistedTabData) -> {
                             if (storePersistedTabData == null
-                                    || storePersistedTabData.getStoreHoursString().equals("")) {
+                                    || TextUtils.isEmpty(
+                                            storePersistedTabData.getStoreHoursString())) {
                                 storeHoursCardView.setVisibility(View.GONE);
                             } else {
                                 storeHoursCardView.setStoreHours(
