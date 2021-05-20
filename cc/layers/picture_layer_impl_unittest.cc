@@ -5834,6 +5834,24 @@ TEST_F(LegacySWPictureLayerImplTest, CompositedImageRasterOnChange) {
                               ->contents_scale_key());
 }
 
+TEST_F(LegacySWPictureLayerImplTest, CompositedImageRasterHighResScreen) {
+  gfx::Size layer_bounds(100, 100);
+  scoped_refptr<FakeRasterSource> pending_raster_source =
+      FakeRasterSource::CreateFilled(layer_bounds);
+
+  SetupPendingTree(pending_raster_source);
+
+  // Verify that device_scale=2.0 is handled correctly. The image is expected to
+  // be downscaled not more than 4x, so content scale is above 1.0.
+  gfx::Size image_size(500, 500);
+  pending_layer()->SetDirectlyCompositedImageSize(image_size);
+  SetupDrawPropertiesAndUpdateTiles(pending_layer(), 1.f, 2.f, 1.f);
+  EXPECT_FLOAT_EQ(1.25f, pending_layer()
+                             ->picture_layer_tiling_set()
+                             ->FindTilingWithResolution(HIGH_RESOLUTION)
+                             ->contents_scale_key());
+}
+
 TEST_F(LegacySWPictureLayerImplTest, CompositedImageRasterOptOutTransitions) {
   gfx::Size layer_bounds(6, 6);
   scoped_refptr<FakeRasterSource> pending_raster_source =

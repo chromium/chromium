@@ -1843,9 +1843,8 @@ void PictureLayerImpl::UpdateIdealScales() {
       gfx::Vector2dF(min_contents_scale, min_contents_scale));
   ideal_contents_scale_.SetToMin(
       gfx::Vector2dF(kMaxIdealContentsScale, kMaxIdealContentsScale));
-  ideal_source_scale_ = {
-      ideal_contents_scale_.x() / ideal_page_scale_ / ideal_device_scale_,
-      ideal_contents_scale_.y() / ideal_page_scale_ / ideal_device_scale_};
+  ideal_source_scale_ = {ideal_contents_scale_.x() / ideal_page_scale_,
+                         ideal_contents_scale_.y() / ideal_page_scale_};
 }
 
 void PictureLayerImpl::GetDebugBorderProperties(
