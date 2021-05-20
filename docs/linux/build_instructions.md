@@ -346,7 +346,8 @@ Instead of running `install-build-deps.sh` to install build dependencies, run:
 
 ```shell
 $ sudo pacman -S --needed python perl gcc gcc-libs bison flex gperf pkgconfig \
-nss alsa-lib glib2 gtk3 nspr ttf-ms-fonts freetype2 cairo dbus libgnome-keyring
+nss alsa-lib glib2 gtk3 nspr freetype2 cairo dbus libgnome-keyring \
+xorg-server-xvfb xorg-xdpyinfo
 ```
 
 For the optional packages on Arch Linux:
@@ -354,7 +355,6 @@ For the optional packages on Arch Linux:
 *   `php-cgi` is provided with `pacman`
 *   `wdiff` is not in the main repository but `dwdiff` is. You can get `wdiff`
     in AUR/`yaourt`
-*   `sun-java6-fonts` do not seem to be in main repository or AUR.
 
 ### Crostini (Debian based)
 
