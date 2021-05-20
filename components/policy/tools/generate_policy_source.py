@@ -1599,11 +1599,13 @@ def _WriteChromeOSPolicyAccessSource(policies, f, protobuf_type):
                                                                 protobuf_type))
   for policy in policies:
     if policy.policy_protobuf_type == protobuf_type:
-      f.write('  {key::k%s,\n'
-              '   &em::CloudPolicySettings::mutable_%s},\n' %
-              (policy.name, policy.name.lower()))
+      f.write(
+          '  {key::k%s,\n'
+          '   %s,\n'
+          '   &em::CloudPolicySettings::mutable_%s},\n' %
+          (policy.name, str(policy.per_profile).lower(), policy.name.lower()))
   # The list is nullptr-terminated.
-  f.write('  {nullptr, nullptr},\n' '};\n\n')
+  f.write('  {nullptr, false, nullptr},\n' '};\n\n')
 
 
 # Writes policy_constants.cc for use in Chrome OS.
