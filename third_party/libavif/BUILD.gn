@@ -11,6 +11,7 @@ source_set("libavif") {
     "src/src/alpha.c",
     "src/src/avif.c",
     "src/src/colr.c",
+    "src/src/diag.c",
     "src/src/io.c",
     "src/src/mem.c",
     "src/src/obu.c",
@@ -24,9 +25,7 @@ source_set("libavif") {
 
   # configs -= [ "//build/config/compiler:chromium_code" ]
   # configs += [ "//build/config/compiler:no_chromium_code" ]
-  include_dirs = [
-    "src/include/",
-  ]
+  include_dirs = [ "src/include/" ]
   defines = []
 
   deps = []

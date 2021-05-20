@@ -833,6 +833,10 @@ bool AVIFImageDecoder::UpdateDemuxer() {
     decoder_->ignoreXMP = AVIF_TRUE;
     decoder_->ignoreExif = AVIF_TRUE;
 
+    // Turn off libavif's 'clap' (clean aperture) property validation. (We do
+    // our own validation.)
+    decoder_->strictFlags &= ~AVIF_STRICT_CLAP_VALID;
+
     avif_io_.destroy = nullptr;
     avif_io_.read = ReadFromSegmentReader;
     avif_io_.write = nullptr;
