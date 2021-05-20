@@ -349,7 +349,7 @@ PhysicalRect FixedAttachmentPositioningArea(
     const LayoutBoxModelObject& obj,
     const LayoutBoxModelObject* container,
     const GlobalPaintFlags flags) {
-  // TODO(crbug.com/966142): We should consider ancestor with transform as the
+  // TODO(crbug.com/667006): We should consider ancestor with transform as the
   // fixed background container, instead of always the viewport.
   LocalFrameView* frame_view = obj.View()->GetFrameView();
   if (!frame_view)
