@@ -12,6 +12,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/wm/container_finder.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -24,6 +25,7 @@
 #include "components/full_restore/full_restore_utils.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -62,6 +64,12 @@ constexpr ShellWindowId kAppParentContainers[9] = {
 // FullRestoreService.
 constexpr AppType kSupportedAppTypes[3] = {
     AppType::BROWSER, AppType::CHROME_APP, AppType::ARC_APP};
+
+std::unique_ptr<full_restore::WindowInfo> GetWindowInfo(aura::Window* window) {
+  return g_read_window_callback_for_testing
+             ? g_read_window_callback_for_testing.Run(window)
+             : full_restore::GetWindowInfo(window);
+}
 
 // Returns the sibling of `window` that `window` should be stacked below based
 // on restored activation indices. Returns nullptr if `window` does not need
@@ -199,15 +207,38 @@ void FullRestoreController::OnTabletControllerDestroyed() {
 
 void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
   DCHECK(widget);
+
+  aura::Window* window = widget->GetNativeWindow();
+  if (window->GetProperty(full_restore::kParentToHiddenContainerKey))
+    return;
+
   UpdateAndObserveWindow(widget->GetNativeWindow());
 }
 
 void FullRestoreController::OnARCTaskReadyForUnparentedWindow(
     aura::Window* window) {
   DCHECK(window);
-  window->SetProperty(full_restore::kParentToHiddenContainerKey, false);
+  DCHECK(window->GetProperty(full_restore::kParentToHiddenContainerKey));
 
-  // TODO(crbug.com/1205148): Reparent and call `UpdateAndObserveWindow()`.
+  std::unique_ptr<full_restore::WindowInfo> window_info = GetWindowInfo(window);
+  if (window_info) {
+    const int desk_id = window_info->desk_id
+                            ? int{*window_info->desk_id}
+                            : aura::client::kUnassignedWorkspace;
+    window->SetProperty(aura::client::kWindowWorkspaceKey, desk_id);
+    window->SetProperty(aura::client::kVisibleOnAllWorkspacesKey,
+                        window_info->visible_on_all_workspaces.has_value());
+  }
+
+  // Now that the hidden container key is cleared,
+  // `aura::client::ParentWindowWithContext` should parent `window` to a valid
+  // desk container.
+  window->SetProperty(full_restore::kParentToHiddenContainerKey, false);
+  aura::client::ParentWindowWithContext(window,
+                                        /*context=*/window->GetRootWindow(),
+                                        window->GetBoundsInScreen());
+
+  UpdateAndObserveWindow(window);
 }
 
 void FullRestoreController::OnWindowStackingChanged(aura::Window* window) {

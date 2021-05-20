@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/autotest_desks_api.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/split_view_test_api.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
@@ -240,6 +241,13 @@ views::Widget* CreateExoWindow(const std::string& window_app_id) {
 
   views::Widget* widget = new views::Widget();
   widget->Init(std::move(params));
+
+  // Make the window resizeable.
+  widget->GetNativeWindow()->SetProperty(
+      aura::client::kResizeBehaviorKey,
+      aura::client::kResizeBehaviorCanResize |
+          aura::client::kResizeBehaviorCanMaximize);
+
   exo::SetShellApplicationId(widget->GetNativeWindow(), window_app_id);
   widget->Show();
   widget->Activate();
@@ -1021,11 +1029,23 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, RestoreArcApp) {
   int32_t session_id2 =
       ::full_restore::kArcSessionIdOffsetForRestoredLaunching + 1;
 
+  // Create some desks so we can test that the exo window is placed in the
+  // correct desk container after the task is created.
+  ash::AutotestDesksApi().CreateNewDesk();
+  ash::AutotestDesksApi().CreateNewDesk();
+  ash::AutotestDesksApi().CreateNewDesk();
+
   // Create the window to simulate the restoration for the app. The task id
   // needs to match the |window_app_id| arg of CreateExoWindow.
   int32_t kTaskId2 = 200;
   widget = CreateExoWindow("org.chromium.arc.200");
   window = widget->GetNativeWindow();
+
+  // The task is not ready, so the window is currently in a hidden container.
+  EXPECT_EQ(
+      ash::Shell::GetContainer(window->GetRootWindow(),
+                               ash::kShellWindowId_UnparentedControlContainer),
+      window->parent());
 
   VerifyObserver(window, /*launch_count=*/0, /*init_count=*/1);
   VerifyWindowProperty(window, kTaskId2,
@@ -1034,6 +1054,12 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, RestoreArcApp) {
 
   // Simulate creating the task for the restored window.
   CreateTask(app_id, kTaskId2, session_id2);
+
+  // Tests that after the task is created, the window is placed in the container
+  // associated with `kDeskId` (2), which is desk C.
+  EXPECT_EQ(ash::Shell::GetContainer(window->GetRootWindow(),
+                                     ash::kShellWindowId_DeskContainerC),
+            window->parent());
 
   VerifyObserver(window, /*launch_count=*/1, /*init_count=*/1);
   VerifyWindowProperty(window, kTaskId2, kTaskId1, /*hidden=*/false);
@@ -1048,6 +1074,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, RestoreArcApp) {
   ::full_restore::FullRestoreInfo::GetInstance()->RemoveObserver(
       test_full_restore_info_observer());
   StopInstance();
+
+  RemoveInactiveDesks();
 }
 
 // Test restoration with multiple ARC apps, when the ARC windows are created

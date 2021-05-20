@@ -12,6 +12,7 @@
 #include "ash/wm/always_on_top_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
@@ -90,6 +91,15 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
   } else {
     target_root = FindContainerRoot(bounds_in_screen);
   }
+
+  // For full restore, the window may be created before the associated full
+  // restore data can be retrieved. In this case, we will place it in a hidden
+  // container and will move it to a desk container when the full restore data
+  // can be retrieved. An example would be ARC windows, which can be created
+  // before their associated tasks are, which are required to retrieve full
+  // restore data.
+  if (window->GetProperty(full_restore::kParentToHiddenContainerKey))
+    return target_root->GetChildById(kShellWindowId_UnparentedControlContainer);
 
   switch (window->GetType()) {
     case aura::client::WINDOW_TYPE_NORMAL:

@@ -34,6 +34,7 @@
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/layout_manager.h"
 #include "ui/aura/window.h"
@@ -72,6 +73,13 @@ bool IsToplevelContainer(aura::Window* window) {
   // WindowState to manage its state.
   return IsActivatableShellWindowId(container_id) ||
          container_id == kShellWindowId_ArcVirtualKeyboardContainer;
+}
+
+// ARC windows will not be in a top level container until they are associated
+// with a task. We still want a WindowState created for these windows as they
+// will be moved to a top level container soon.
+bool IsTemporarilyHiddenForFullrestore(aura::Window* window) {
+  return window->GetProperty(full_restore::kParentToHiddenContainerKey);
 }
 
 // A tentative class to set the bounds on the window.
@@ -917,8 +925,13 @@ WindowState* WindowState::Get(aura::Window* window) {
 
   DCHECK(window->parent());
 
-  if (!IsToplevelContainer(window->parent()))
+  // WindowState is only for windows in top level container, unless they are
+  // temporarily hidden when launched by full restore. The will be reparented to
+  // a top level container soon, and need a WindowState.
+  if (!IsToplevelContainer(window->parent()) &&
+      !IsTemporarilyHiddenForFullrestore(window)) {
     return nullptr;
+  }
 
   state = new WindowState(window);
   window->SetProperty(kWindowStateKey, state);
