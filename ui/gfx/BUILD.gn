@@ -439,6 +439,8 @@ component("color_space") {
     "color_space_export.h",
     "display_color_spaces.cc",
     "display_color_spaces.h",
+    "hdr_static_metadata.cc",
+    "hdr_static_metadata.h",
     "icc_profile.cc",
     "icc_profile.h",
     "skia_color_space_util.cc",

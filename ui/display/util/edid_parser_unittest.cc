@@ -256,7 +256,7 @@ struct TestParams {
 
   base::flat_set<gfx::ColorSpace::PrimaryID> supported_color_primary_ids_;
   base::flat_set<gfx::ColorSpace::TransferID> supported_color_transfer_ids_;
-  absl::optional<EdidParser::Luminance> luminance_;
+  absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
 
   const unsigned char* edid_blob;
   size_t edid_blob_length;
@@ -459,7 +459,7 @@ struct TestParams {
      {gfx::ColorSpace::TransferID::BT709,
       gfx::ColorSpace::TransferID::SMPTEST2084,
       gfx::ColorSpace::TransferID::ARIB_STD_B67},
-     absl::optional<EdidParser::Luminance>({603.666, 530.095, 0.00454}),
+     absl::make_optional<gfx::HDRStaticMetadata>(603.666, 530.095, 0.00454),
      kHDRMetadata,
      kHDRMetadataLength},
 
@@ -525,13 +525,18 @@ TEST_P(EDIDParserTest, ParseEdids) {
   EXPECT_EQ(GetParam().supported_color_transfer_ids_,
             parser_.supported_color_transfer_ids());
 
-  const EdidParser::Luminance* luminance = parser_.luminance();
-  EXPECT_EQ(GetParam().luminance_.has_value(), luminance != nullptr);
-  if (GetParam().luminance_.has_value() && luminance) {
+  const gfx::HDRStaticMetadata* hdr_static_metadata =
+      parser_.hdr_static_metadata();
+  EXPECT_EQ(GetParam().hdr_static_metadata_.has_value(),
+            hdr_static_metadata != nullptr);
+  if (GetParam().hdr_static_metadata_.has_value() && hdr_static_metadata) {
     constexpr double epsilon = 0.001;
-    EXPECT_NEAR(GetParam().luminance_->max, luminance->max, epsilon);
-    EXPECT_NEAR(GetParam().luminance_->max_avg, luminance->max_avg, epsilon);
-    EXPECT_NEAR(GetParam().luminance_->min, luminance->min, epsilon);
+    EXPECT_NEAR(GetParam().hdr_static_metadata_->max, hdr_static_metadata->max,
+                epsilon);
+    EXPECT_NEAR(GetParam().hdr_static_metadata_->max_avg,
+                hdr_static_metadata->max_avg, epsilon);
+    EXPECT_NEAR(GetParam().hdr_static_metadata_->min, hdr_static_metadata->min,
+                epsilon);
   }
 }
 

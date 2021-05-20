@@ -19,6 +19,7 @@
 #include "ui/display/util/display_util_export.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_static_metadata.h"
 
 namespace display {
 
@@ -27,22 +28,6 @@ namespace display {
 // a few utility postprocessings.
 class DISPLAY_UTIL_EXPORT EdidParser {
  public:
-  // Reflects CEA 861.G-2018, Sec.7.5.13, "HDR Static Metadata Data Block"
-  // A value of 0.0 in any of this fields means that it's not indicated.
-  struct Luminance {
-    // "Desired Content Max Luminance Data. This is the content’s absolute peak
-    // luminance (in cd/m2) (likely only in a small area of the screen) that the
-    // display prefers for optimal content rendering."
-    double max;
-    // "Desired Content Max Frame-average Luminance. This is the content’s max
-    // frame-average luminance (in cd/m2) that the display prefers for optimal
-    // content rendering."
-    double max_avg;
-    // "Desired Content Min Luminance. This is the minimum value of the content
-    // (in cd/m2) that the display prefers for optimal content rendering."
-    double min;
-  };
-
   explicit EdidParser(const std::vector<uint8_t>& edid_blob);
   ~EdidParser();
 
@@ -64,8 +49,8 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   supported_color_transfer_ids() const {
     return supported_color_transfer_ids_;
   }
-  const Luminance* luminance() const {
-    return base::OptionalOrNullptr(luminance_);
+  const gfx::HDRStaticMetadata* hdr_static_metadata() const {
+    return base::OptionalOrNullptr(hdr_static_metadata_);
   }
   // Returns a 32-bit identifier for this display |manufacturer_id_| and
   // |product_id_|.
@@ -103,7 +88,7 @@ class DISPLAY_UTIL_EXPORT EdidParser {
 
   base::flat_set<gfx::ColorSpace::PrimaryID> supported_color_primary_ids_;
   base::flat_set<gfx::ColorSpace::TransferID> supported_color_transfer_ids_;
-  absl::optional<Luminance> luminance_;
+  absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
 
   DISALLOW_COPY_AND_ASSIGN(EdidParser);
 };
