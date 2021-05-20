@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -74,6 +73,8 @@ class BoostingVote {
 class BoostingVoteAggregator : public VoteObserver {
  public:
   BoostingVoteAggregator();
+  BoostingVoteAggregator(const BoostingVoteAggregator&) = delete;
+  BoostingVoteAggregator& operator=(const BoostingVoteAggregator&) = delete;
   ~BoostingVoteAggregator() override;
 
   // Both of these must be called in order for the aggregator to be setup
@@ -397,8 +398,6 @@ class BoostingVoteAggregator : public VoteObserver {
   // NodeData.
   ForwardEdges forward_edges_;
   ReverseEdges reverse_edges_;
-
-  DISALLOW_COPY_AND_ASSIGN(BoostingVoteAggregator);
 };
 
 }  // namespace execution_context_priority

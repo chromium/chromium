@@ -24,13 +24,13 @@ static const char kReason[] = "test reason";
 class LenientMockFrameNodeObserver : public FrameNode::ObserverDefaultImpl {
  public:
   LenientMockFrameNodeObserver() = default;
+  LenientMockFrameNodeObserver(const LenientMockFrameNodeObserver&) = delete;
+  LenientMockFrameNodeObserver& operator=(const LenientMockFrameNodeObserver&) =
+      delete;
   ~LenientMockFrameNodeObserver() override = default;
 
   MOCK_METHOD2(OnPriorityAndReasonChanged,
                void(const FrameNode*, const PriorityAndReason&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LenientMockFrameNodeObserver);
 };
 
 using MockFrameNodeObserver =
