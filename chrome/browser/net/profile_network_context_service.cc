@@ -840,7 +840,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 
   // Should be initialized with existing per-profile CORS access lists.
   network_context_params->cors_origin_access_list =
-      content::BrowserContext::GetSharedCorsOriginAccessList(profile_)
+      profile_->GetSharedCorsOriginAccessList()
           ->GetOriginAccessList()
           .CreateCorsOriginAccessPatternsList();
 

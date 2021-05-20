@@ -100,11 +100,6 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // The currently recommended practice is to make the methods in this section
   // non-virtual instance methods.
   //
-  // TODO(https://crbug.com/1179776): Finish converting the methods in this
-  // section into non-virtual instance methods.  (The old, abandoned practice
-  // was to make the methods in this section `static` and have them take
-  // `BrowserContext* self` as the first parameter.)
-  //
   // TODO(https://crbug.com/1179776): Consider moving these methods to
   // BrowserContext::Impl or (in the future) BrowserContextImpl class.
 
@@ -116,7 +111,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns BrowserContext specific external mount points. It may return
   // nullptr if the context doesn't have any BrowserContext specific external
   // mount points. Currently, non-nullptr value is returned only on ChromeOS.
-  static storage::ExternalMountPoints* GetMountPoints(BrowserContext* self);
+  storage::ExternalMountPoints* GetMountPoints();
 
   // Returns a BrowsingDataRemover that can schedule data deletion tasks
   // for this |context|.
@@ -207,18 +202,18 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
       blink::mojom::PushSubscriptionPtr old_subscription,
       base::OnceCallback<void(blink::mojom::PushEventStatus)> callback);
 
-  static void NotifyWillBeDestroyed(BrowserContext* self);
+  void NotifyWillBeDestroyed();
 
   // Ensures that the corresponding ResourceContext is initialized. Normally the
   // BrowserContext initializs the corresponding getters when its objects are
   // created, but if the embedder wants to pass the ResourceContext to another
   // thread before they use BrowserContext, they should call this to make sure
   // that the ResourceContext is ready.
-  static void EnsureResourceContextInitialized(BrowserContext* self);
+  void EnsureResourceContextInitialized();
 
   // Tells the HTML5 objects on this context to persist their session state
   // across the next restart.
-  static void SaveSessionState(BrowserContext* self);
+  void SaveSessionState();
 
   void SetDownloadManagerForTesting(
       std::unique_ptr<DownloadManager> download_manager);
@@ -231,8 +226,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // network::mojom::NetworkContextParams::cors_origin_access_list) and 2)
   // consulted by CORS-aware factories (e.g. passed when constructing
   // FileURLLoaderFactory).
-  static SharedCorsOriginAccessList* GetSharedCorsOriginAccessList(
-      BrowserContext* self);
+  SharedCorsOriginAccessList* GetSharedCorsOriginAccessList();
 
   // Shuts down the storage partitions associated to this browser context.
   // This must be called before the browser context is actually destroyed

@@ -30,7 +30,7 @@ WebviewBrowserContext::WebviewBrowserContext(
 }
 
 WebviewBrowserContext::~WebviewBrowserContext() {
-  BrowserContext::NotifyWillBeDestroyed(this);
+  NotifyWillBeDestroyed();
   ShutdownStoragePartitions();
   BrowserContextDependencyManager::GetInstance()->DestroyBrowserContextServices(
       this);

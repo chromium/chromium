@@ -561,7 +561,7 @@ class RestartTest : public BetterSessionRestoreTest {
   void Restart() {
     // Simulate restarting the browser, but let the test exit peacefully.
     for (auto* browser : *BrowserList::GetInstance()) {
-      content::BrowserContext::SaveSessionState(browser->profile());
+      browser->profile()->SaveSessionState();
       SessionDataServiceFactory::GetForProfile(browser->profile())
           ->SetForceKeepSessionState();
     }
@@ -731,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, PRE_CookiesClearedOnStartup) {
 
   // Disable cookie and storage deletion on shutdown to simulate the
   // process being killed before cleanup is finished.
-  content::BrowserContext::SaveSessionState(browser()->profile());
+  browser()->profile()->SaveSessionState();
 }
 
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, CookiesClearedOnStartup) {
@@ -748,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, PRE_LocalStorageClearedOnStartup) {
 
   // Disable cookie and storage deletion on shutdown to simulate the
   // process being killed before cleanup is finished.
-  content::BrowserContext::SaveSessionState(browser()->profile());
+  browser()->profile()->SaveSessionState();
 }
 
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, LocalStorageClearedOnStartup) {
@@ -778,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTestWithStartupDeletionDisabled,
 
   // Disable cookie and storage deletion handling on shutdown to simulate the
   // process being killed before cleanup is finished.
-  content::BrowserContext::SaveSessionState(browser()->profile());
+  browser()->profile()->SaveSessionState();
 }
 
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTestWithStartupDeletionDisabled,
@@ -797,7 +797,7 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTestWithStartupDeletionDisabled,
 
   // Disable cookie and storage deletion handling on shutdown to simulate the
   // process being killed before cleanup is finished.
-  content::BrowserContext::SaveSessionState(browser()->profile());
+  browser()->profile()->SaveSessionState();
 }
 
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTestWithStartupDeletionDisabled,

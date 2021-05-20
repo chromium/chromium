@@ -111,13 +111,10 @@ DownloadManager* BrowserContext::GetDownloadManager() {
   return impl()->GetDownloadManager();
 }
 
-// static
-storage::ExternalMountPoints* BrowserContext::GetMountPoints(
-    BrowserContext* self) {
-  return self->impl()->GetMountPoints();
+storage::ExternalMountPoints* BrowserContext::GetMountPoints() {
+  return impl()->GetMountPoints();
 }
 
-// static
 BrowsingDataRemover* BrowserContext::GetBrowsingDataRemover() {
   return impl()->GetBrowsingDataRemover();
 }
@@ -246,13 +243,11 @@ void BrowserContext::FirePushSubscriptionChangeEvent(
       std::move(old_subscription), std::move(callback));
 }
 
-// static
-void BrowserContext::NotifyWillBeDestroyed(BrowserContext* self) {
-  self->impl()->NotifyWillBeDestroyed();
+void BrowserContext::NotifyWillBeDestroyed() {
+  impl()->NotifyWillBeDestroyed();
 }
 
-// static
-void BrowserContext::EnsureResourceContextInitialized(BrowserContext* self) {
+void BrowserContext::EnsureResourceContextInitialized() {
   // This will be enough to tickle initialization of BrowserContext if
   // necessary, which initializes ResourceContext. The reason we don't call
   // ResourceContext::InitializeResourceContext() directly here is that
@@ -261,12 +256,11 @@ void BrowserContext::EnsureResourceContextInitialized(BrowserContext* self) {
   // end up rewriting the same value but this still causes a race condition.
   //
   // See http://crbug.com/115678.
-  self->GetDefaultStoragePartition();
+  GetDefaultStoragePartition();
 }
 
-// static
-void BrowserContext::SaveSessionState(BrowserContext* self) {
-  StoragePartition* storage_partition = self->GetDefaultStoragePartition();
+void BrowserContext::SaveSessionState() {
+  StoragePartition* storage_partition = GetDefaultStoragePartition();
 
   storage::DatabaseTracker* database_tracker =
       storage_partition->GetDatabaseTracker();
@@ -310,10 +304,8 @@ void BrowserContext::SetPermissionControllerForTesting(
       std::move(permission_controller));
 }
 
-// static
-SharedCorsOriginAccessList* BrowserContext::GetSharedCorsOriginAccessList(
-    BrowserContext* self) {
-  return self->impl()->shared_cors_origin_access_list();
+SharedCorsOriginAccessList* BrowserContext::GetSharedCorsOriginAccessList() {
+  return impl()->shared_cors_origin_access_list();
 }
 
 void BrowserContext::ShutdownStoragePartitions() {

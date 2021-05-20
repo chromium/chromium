@@ -61,7 +61,7 @@ HeadlessBrowserContextImpl::HeadlessBrowserContextImpl(
 HeadlessBrowserContextImpl::~HeadlessBrowserContextImpl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   SimpleKeyMap::GetInstance()->Dissociate(this);
-  NotifyWillBeDestroyed(this);
+  NotifyWillBeDestroyed();
 
   // Destroy all web contents before shutting down storage partitions.
   web_contents_map_.clear();

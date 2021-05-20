@@ -266,8 +266,7 @@ void SaveFileManager::SaveURL(SaveItemId save_item_id,
       factory = factory_remote.get();
     } else if (url.SchemeIsFile()) {
       factory_remote.Bind(FileURLLoaderFactory::Create(
-          context->GetPath(),
-          BrowserContext::GetSharedCorsOriginAccessList(context),
+          context->GetPath(), context->GetSharedCorsOriginAccessList(),
           base::TaskPriority::USER_VISIBLE));
       factory = factory_remote.get();
     } else if (url.SchemeIsFileSystem() && rfh) {

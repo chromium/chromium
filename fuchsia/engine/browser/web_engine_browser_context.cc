@@ -71,7 +71,7 @@ WebEngineBrowserContext::CreateIncognito() {
 
 WebEngineBrowserContext::~WebEngineBrowserContext() {
   SimpleKeyMap::GetInstance()->Dissociate(this);
-  NotifyWillBeDestroyed(this);
+  NotifyWillBeDestroyed();
 
   if (resource_context_) {
     content::GetIOThreadTaskRunner({})->DeleteSoon(

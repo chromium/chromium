@@ -60,9 +60,9 @@ void CorsOriginPatternSetter::Set(
   // Keep the per-profile access list up to date so that we can use this to
   // restore NetworkContext settings at anytime, e.g. on restarting the
   // network service.
-  content::BrowserContext::GetSharedCorsOriginAccessList(browser_context)
-      ->SetForOrigin(source_origin, std::move(allow_patterns),
-                     std::move(block_patterns), barrier_closure);
+  browser_context->GetSharedCorsOriginAccessList()->SetForOrigin(
+      source_origin, std::move(allow_patterns), std::move(block_patterns),
+      barrier_closure);
 }
 
 }  // namespace content

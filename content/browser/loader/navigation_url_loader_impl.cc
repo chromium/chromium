@@ -1241,11 +1241,10 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
   // Loading and rendering a web page after the user clicks a link.
   base::TaskPriority file_factory_priority = base::TaskPriority::USER_BLOCKING;
   non_network_url_loader_factories_.emplace(
-      url::kFileScheme,
-      FileURLLoaderFactory::Create(
-          browser_context_->GetPath(),
-          BrowserContext::GetSharedCorsOriginAccessList(browser_context_),
-          file_factory_priority));
+      url::kFileScheme, FileURLLoaderFactory::Create(
+                            browser_context_->GetPath(),
+                            browser_context_->GetSharedCorsOriginAccessList(),
+                            file_factory_priority));
 
 #if defined(OS_ANDROID)
   non_network_url_loader_factories_.emplace(url::kContentScheme,

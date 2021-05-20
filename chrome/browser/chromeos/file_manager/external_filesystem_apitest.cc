@@ -425,10 +425,9 @@ class LocalFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
 
   // FileSystemExtensionApiTestBase override.
   void AddTestMountPoint() override {
-    EXPECT_TRUE(
-        content::BrowserContext::GetMountPoints(profile())->RegisterFileSystem(
-            kLocalMountPointName, storage::kFileSystemTypeLocal,
-            storage::FileSystemMountOption(), mount_point_dir_));
+    EXPECT_TRUE(profile()->GetMountPoints()->RegisterFileSystem(
+        kLocalMountPointName, storage::kFileSystemTypeLocal,
+        storage::FileSystemMountOption(), mount_point_dir_));
     VolumeManager::Get(profile())->AddVolumeForTesting(
         mount_point_dir_, VOLUME_TYPE_TESTING, chromeos::DEVICE_TYPE_UNKNOWN,
         false /* read_only */);
@@ -456,10 +455,9 @@ class RestrictedFileSystemExtensionApiTest
 
   // FileSystemExtensionApiTestBase override.
   void AddTestMountPoint() override {
-    EXPECT_TRUE(
-        content::BrowserContext::GetMountPoints(profile())->RegisterFileSystem(
-            kRestrictedMountPointName, storage::kFileSystemTypeRestrictedLocal,
-            storage::FileSystemMountOption(), mount_point_dir_));
+    EXPECT_TRUE(profile()->GetMountPoints()->RegisterFileSystem(
+        kRestrictedMountPointName, storage::kFileSystemTypeRestrictedLocal,
+        storage::FileSystemMountOption(), mount_point_dir_));
     VolumeManager::Get(profile())->AddVolumeForTesting(
         mount_point_dir_, VOLUME_TYPE_TESTING, chromeos::DEVICE_TYPE_UNKNOWN,
         true /* read_only */);
@@ -663,10 +661,9 @@ class LocalAndDriveFileSystemExtensionApiTest
 
   // FileSystemExtensionApiTestBase override.
   void AddTestMountPoint() override {
-    EXPECT_TRUE(
-        content::BrowserContext::GetMountPoints(profile())->RegisterFileSystem(
-            kLocalMountPointName, storage::kFileSystemTypeLocal,
-            storage::FileSystemMountOption(), local_mount_point_dir_));
+    EXPECT_TRUE(profile()->GetMountPoints()->RegisterFileSystem(
+        kLocalMountPointName, storage::kFileSystemTypeLocal,
+        storage::FileSystemMountOption(), local_mount_point_dir_));
     VolumeManager::Get(profile())->AddVolumeForTesting(
         local_mount_point_dir_, VOLUME_TYPE_TESTING,
         chromeos::DEVICE_TYPE_UNKNOWN, false /* read_only */);

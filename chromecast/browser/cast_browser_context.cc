@@ -52,7 +52,7 @@ CastBrowserContext::CastBrowserContext()
 
 CastBrowserContext::~CastBrowserContext() {
   SimpleKeyMap::GetInstance()->Dissociate(this);
-  BrowserContext::NotifyWillBeDestroyed(this);
+  NotifyWillBeDestroyed();
   ShutdownStoragePartitions();
   content::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
                                                  resource_context_.release());

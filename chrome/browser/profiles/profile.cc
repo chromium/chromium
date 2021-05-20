@@ -457,7 +457,7 @@ void Profile::MaybeSendDestroyedNotification() {
   if (!sent_destroyed_notification_) {
     sent_destroyed_notification_ = true;
 
-    NotifyWillBeDestroyed(this);
+    NotifyWillBeDestroyed();
 
     for (auto& observer : observers_)
       observer.OnProfileWillBeDestroyed(this);

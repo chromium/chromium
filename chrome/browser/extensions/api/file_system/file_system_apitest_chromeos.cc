@@ -274,10 +274,9 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
     ASSERT_TRUE(base::CreateDirectory(mount_point_path));
     ASSERT_TRUE(
         base::CreateDirectory(mount_point_path.Append(kChildDirectory)));
-    ASSERT_TRUE(content::BrowserContext::GetMountPoints(browser()->profile())
-                    ->RegisterFileSystem(
-                        mount_point_name, storage::kFileSystemTypeLocal,
-                        storage::FileSystemMountOption(), mount_point_path));
+    ASSERT_TRUE(browser()->profile()->GetMountPoints()->RegisterFileSystem(
+        mount_point_name, storage::kFileSystemTypeLocal,
+        storage::FileSystemMountOption(), mount_point_path));
     VolumeManager* const volume_manager =
         VolumeManager::Get(browser()->profile());
     ASSERT_TRUE(volume_manager);

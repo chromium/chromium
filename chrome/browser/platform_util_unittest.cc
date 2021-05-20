@@ -54,7 +54,7 @@ class PlatformUtilTestContentBrowserClient : public ChromeContentBrowserClient {
       std::vector<std::unique_ptr<storage::FileSystemBackend>>*
           additional_backends) override {
     storage::ExternalMountPoints* external_mount_points =
-        content::BrowserContext::GetMountPoints(browser_context);
+        browser_context->GetMountPoints();
 
     // New FileSystemBackend that uses our MockSpecialStoragePolicy.
     additional_backends->push_back(
@@ -81,9 +81,9 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
         content::SetBrowserClientForTesting(content_browser_client_.get());
 
     // The test_directory needs to be mounted for it to be accessible.
-    content::BrowserContext::GetMountPoints(GetProfile())
-        ->RegisterFileSystem("test", storage::kFileSystemTypeLocal,
-                             storage::FileSystemMountOption(), test_directory);
+    GetProfile()->GetMountPoints()->RegisterFileSystem(
+        "test", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+        test_directory);
 
     // To test opening a file, we are going to register a mock extension that
     // handles .txt files. The extension doesn't actually need to exist due to

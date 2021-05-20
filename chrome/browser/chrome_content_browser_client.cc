@@ -3717,7 +3717,7 @@ void ChromeContentBrowserClient::GetAdditionalFileSystemBackends(
         additional_backends) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   storage::ExternalMountPoints* external_mount_points =
-      content::BrowserContext::GetMountPoints(browser_context);
+      browser_context->GetMountPoints();
   DCHECK(external_mount_points);
   auto backend = std::make_unique<chromeos::FileSystemBackend>(
       Profile::FromBrowserContext(browser_context),

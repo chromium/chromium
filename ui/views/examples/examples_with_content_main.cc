@@ -48,7 +48,7 @@ void ShowContentExampleWindow(ui::ViewsContentClient* views_content_client,
   // dlsym search path, which breaks (usually valid) assumptions made in
   // sandbox::InitLibcUrandomOverrides(). See http://crbug.com/374712.
   if (!browser_context) {
-    content::BrowserContext::SaveSessionState(nullptr);
+    browser_context->SaveSessionState();
     NOTREACHED();
   }
 }

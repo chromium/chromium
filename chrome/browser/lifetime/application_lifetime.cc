@@ -144,7 +144,7 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
   // TODO(beng): Can this use ProfileManager::GetLoadedProfiles instead?
   // TODO(crbug.com/1205798): Unset SaveSessionState if the restart fails.
   for (auto* browser : *BrowserList::GetInstance()) {
-    content::BrowserContext::SaveSessionState(browser->profile());
+    browser->profile()->SaveSessionState();
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
     auto* session_data_service =
         SessionDataServiceFactory::GetForProfile(browser->profile());

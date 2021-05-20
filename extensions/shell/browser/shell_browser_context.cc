@@ -21,7 +21,7 @@ ShellBrowserContext::ShellBrowserContext()
       storage_policy_(new ShellSpecialStoragePolicy) {}
 
 ShellBrowserContext::~ShellBrowserContext() {
-  content::BrowserContext::NotifyWillBeDestroyed(this);
+  NotifyWillBeDestroyed();
 }
 
 content::BrowserPluginGuestManager* ShellBrowserContext::GetGuestManager() {

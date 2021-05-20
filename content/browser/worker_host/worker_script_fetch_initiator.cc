@@ -230,8 +230,8 @@ WorkerScriptFetchInitiator::CreateFactoryBundle(
     non_network_factories.emplace(
         url::kFileScheme, FileURLLoaderFactory::Create(
                               storage_partition->browser_context()->GetPath(),
-                              BrowserContext::GetSharedCorsOriginAccessList(
-                                  storage_partition->browser_context()),
+                              storage_partition->browser_context()
+                                  ->GetSharedCorsOriginAccessList(),
                               file_factory_priority));
   }
 

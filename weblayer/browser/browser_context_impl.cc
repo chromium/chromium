@@ -124,7 +124,7 @@ BrowserContextImpl::BrowserContextImpl(ProfileImpl* profile_impl,
 }
 
 BrowserContextImpl::~BrowserContextImpl() {
-  NotifyWillBeDestroyed(this);
+  NotifyWillBeDestroyed();
 
   BrowserContextDependencyManager::GetInstance()->DestroyBrowserContextServices(
       this);

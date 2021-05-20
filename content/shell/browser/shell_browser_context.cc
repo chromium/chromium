@@ -59,7 +59,7 @@ ShellBrowserContext::ShellBrowserContext(bool off_the_record,
 }
 
 ShellBrowserContext::~ShellBrowserContext() {
-  NotifyWillBeDestroyed(this);
+  NotifyWillBeDestroyed();
 
   // The SimpleDependencyManager should always be passed after the
   // BrowserContextDependencyManager. This is because the KeyedService instances

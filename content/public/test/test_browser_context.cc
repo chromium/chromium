@@ -40,7 +40,7 @@ TestBrowserContext::~TestBrowserContext() {
       << "the BrowserTaskEnvironment instance.  "
       << BrowserThread::GetDCheckCurrentlyOnErrorMessage(BrowserThread::UI);
 
-  NotifyWillBeDestroyed(this);
+  NotifyWillBeDestroyed();
   ShutdownStoragePartitions();
 
   // Various things that were just torn down above post tasks to other

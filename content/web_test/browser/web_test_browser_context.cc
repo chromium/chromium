@@ -45,7 +45,7 @@ WebTestBrowserContext::WebTestBrowserContext(bool off_the_record)
 }
 
 WebTestBrowserContext::~WebTestBrowserContext() {
-  BrowserContext::NotifyWillBeDestroyed(this);
+  NotifyWillBeDestroyed();
 }
 
 DownloadManagerDelegate* WebTestBrowserContext::GetDownloadManagerDelegate() {

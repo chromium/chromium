@@ -137,7 +137,7 @@ scoped_refptr<storage::FileSystemContext> CreateFileSystemContext(
   scoped_refptr<storage::FileSystemContext> file_system_context =
       new storage::FileSystemContext(
           GetIOThreadTaskRunner({}).get(), g_fileapi_task_runner.Get().get(),
-          BrowserContext::GetMountPoints(browser_context),
+          browser_context->GetMountPoints(),
           browser_context->GetSpecialStoragePolicy(), quota_manager_proxy,
           std::move(additional_backends), url_request_auto_mount_handlers,
           profile_path, options);

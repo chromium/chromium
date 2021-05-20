@@ -173,7 +173,7 @@ AwBrowserContext::AwBrowserContext()
   form_database_service_ =
       std::make_unique<AwFormDatabaseService>(context_storage_path_);
 
-  EnsureResourceContextInitialized(this);
+  EnsureResourceContextInitialized();
 
   // This constructor is entered during the creation of ContentBrowserClient,
   // before browser threads are created. Therefore any checks to enforce
@@ -182,7 +182,7 @@ AwBrowserContext::AwBrowserContext()
 
 AwBrowserContext::~AwBrowserContext() {
   DCHECK_EQ(this, g_browser_context);
-  BrowserContext::NotifyWillBeDestroyed(this);
+  NotifyWillBeDestroyed();
   SimpleKeyMap::GetInstance()->Dissociate(this);
   ShutdownStoragePartitions();
 
