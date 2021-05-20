@@ -25,7 +25,7 @@ void LayoutShiftNormalization::AddInputTimeStamps(
 void LayoutShiftNormalization::AddNewLayoutShifts(
     const std::vector<page_load_metrics::mojom::LayoutShiftPtr>& new_shifts,
     base::TimeTicks current_time,
-    double cumulative_layout_shift_score) {
+    float cumulative_layout_shift_score) {
   if (new_shifts.empty() || normalized_cls_data_.data_tainted)
     return;
 
@@ -115,7 +115,7 @@ void LayoutShiftNormalization::UpdateSessionWindow(
     std::vector<std::pair<base::TimeTicks, double>>::const_iterator begin,
     std::vector<std::pair<base::TimeTicks, double>>::const_iterator end,
     std::vector<base::TimeTicks>& input_timestamps,
-    double& max_score,
+    float& max_score,
     uint32_t& count) {
   for (auto it = begin; it != end; ++it) {
     if ((it->first - session_window->last_time > gap) ||
@@ -156,8 +156,8 @@ void LayoutShiftNormalization::UpdateWindowCLS(
     std::vector<std::pair<base::TimeTicks, double>>::const_iterator
         first_non_stale,
     std::vector<std::pair<base::TimeTicks, double>>::const_iterator last,
-    double cumulative_layout_shift_score) {
-  double dummy_max = 0.0;
+    float cumulative_layout_shift_score) {
+  float dummy_max = 0.0;
   uint32_t dummy_count = 0;
   std::vector<base::TimeTicks> dummy_input_timestamps;
   // Update Sliding Windows.

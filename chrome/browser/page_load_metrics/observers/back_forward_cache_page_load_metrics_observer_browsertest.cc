@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Go back to A.
-  double next_score;
+  float next_score;
   {
     auto waiter = CreatePageLoadMetricsTestWaiter();
     waiter->AddPageExpectation(

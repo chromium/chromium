@@ -44,7 +44,7 @@ class LayoutShiftNormalizationTest : public testing::Test {
 
  private:
   page_load_metrics::LayoutShiftNormalization layout_shift_normalization_;
-  double cumulative_layoutshift_score_ = 0.0;
+  float cumulative_layoutshift_score_ = 0.0;
 };
 
 TEST_F(LayoutShiftNormalizationTest, MultipleShifts) {
