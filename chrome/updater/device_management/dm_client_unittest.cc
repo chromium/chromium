@@ -25,7 +25,7 @@
 #include "chrome/updater/device_management/dm_policy_builder_for_testing.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
 #include "chrome/updater/device_management/dm_storage.h"
-#include "chrome/updater/policy_manager.h"
+#include "chrome/updater/protos/omaha_settings.pb.h"
 #include "chrome/updater/unittest_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/update_client/network.h"
@@ -220,23 +220,20 @@ class DMPolicyFetchRequestCallbackHandler : public DMRequestCallbackHandler {
       EXPECT_EQ(info->public_key(), GetTestKey1()->GetPublicKeyString());
 
     if (result == DMClient::RequestResult::kSuccess) {
-      std::unique_ptr<PolicyManagerInterface> policy_manager =
-          storage_->GetOmahaPolicyManager();
-      EXPECT_NE(policy_manager, nullptr);
+      std::unique_ptr<::wireless_android_enterprise_devicemanagement::
+                          OmahaSettingsClientProto>
+          omaha_settings = storage_->GetOmahaPolicySettings();
+      EXPECT_NE(omaha_settings, nullptr);
 
       // Sample some of the policy values and check they are expected.
-      EXPECT_TRUE(policy_manager->IsManaged());
-      std::string proxy_mode;
-      EXPECT_TRUE(policy_manager->GetProxyMode(&proxy_mode));
-      EXPECT_EQ(proxy_mode, "pac_script");
-      int update_policy = 0;
-      EXPECT_TRUE(policy_manager->GetEffectivePolicyForAppUpdates(
-          kChromeAppId, &update_policy));
-      EXPECT_EQ(update_policy, kPolicyAutomaticUpdatesOnly);
-      std::string target_version_prefix;
-      EXPECT_TRUE(policy_manager->GetTargetVersionPrefix(
-          kChromeAppId, &target_version_prefix));
-      EXPECT_EQ(target_version_prefix, "81.");
+      EXPECT_EQ(omaha_settings->proxy_mode(), "pac_script");
+      const ::wireless_android_enterprise_devicemanagement::ApplicationSettings&
+          chrome_settings = omaha_settings->application_settings()[0];
+      EXPECT_EQ(chrome_settings.app_guid(), kChromeAppId);
+      EXPECT_EQ(chrome_settings.update(),
+                ::wireless_android_enterprise_devicemanagement::
+                    AUTOMATIC_UPDATES_ONLY);
+      EXPECT_EQ(chrome_settings.target_version_prefix(), "81.");
     }
 
     EXPECT_EQ(expected_validation_results_, validation_results);

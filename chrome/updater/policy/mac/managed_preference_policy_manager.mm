@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/mac/managed_preference_policy_manager.h"
+#include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
 
 #include <string>
 
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
-#include "chrome/updater/mac/managed_preference_policy_manager_impl.h"
-#include "chrome/updater/policy_manager.h"
+#include "chrome/updater/policy/mac/managed_preference_policy_manager_impl.h"
+#include "chrome/updater/policy/manager.h"
 
 namespace updater {
 

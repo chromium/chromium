@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/updater/mac/managed_preference_policy_manager_impl.h"
+#import "chrome/updater/policy/mac/managed_preference_policy_manager_impl.h"
 
 #include "base/mac/scoped_nsobject.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/policy_manager.h"
+#include "chrome/updater/policy/manager.h"
 
 // Constants for managed preference policy keys.
 static NSString* kGlobalPolicyKey = @"global";

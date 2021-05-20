@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "chrome/updater/policy_manager.h"
+#include "chrome/updater/policy/manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {

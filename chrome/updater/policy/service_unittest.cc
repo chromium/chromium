@@ -7,8 +7,8 @@
 #include <utility>
 #include <vector>
 
-#include "chrome/updater/policy_manager.h"
-#include "chrome/updater/policy_service.h"
+#include "chrome/updater/policy/manager.h"
+#include "chrome/updater/policy/service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {

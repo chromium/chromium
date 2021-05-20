@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
@@ -14,10 +15,13 @@
 #include "build/build_config.h"
 #include "chrome/updater/device_management/dm_message.h"
 
+namespace wireless_android_enterprise_devicemanagement {
+class OmahaSettingsClientProto;
+}
+
 namespace updater {
 
 class CachedPolicyInfo;
-class PolicyManagerInterface;
 
 // The token service interface defines how to serialize tokens.
 class TokenServiceInterface {
@@ -117,12 +121,13 @@ class DMStorage : public base::RefCountedThreadSafe<DMStorage> {
 
   // Creates a CachedPolicyInfo object and populates it with the public key
   // information loaded from file |policy_cache_root_|\CachedPolicyInfo.
-  std::unique_ptr<CachedPolicyInfo> GetCachedPolicyInfo();
+  std::unique_ptr<CachedPolicyInfo> GetCachedPolicyInfo() const;
 
-  // Creates a policy manager and populates it with the Omaha policies loaded
-  // from PolicyFetchResponse file within
+  // Returns the Omaha policy settings loaded from PolicyFetchResponse file in
   // |policy_cache_root_|\{Base64Encoded{kGoogleUpdatePolicyType}} directory.
-  std::unique_ptr<PolicyManagerInterface> GetOmahaPolicyManager();
+  std::unique_ptr<
+      ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto>
+  GetOmahaPolicySettings() const;
 
  private:
   friend class base::RefCountedThreadSafe<DMStorage>;

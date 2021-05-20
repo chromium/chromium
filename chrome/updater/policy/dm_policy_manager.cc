@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/device_management/dm_policy_manager.h"
+#include "chrome/updater/policy/dm_policy_manager.h"
 
 #include "base/enterprise_util.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/policy_manager.h"
+#include "chrome/updater/policy/manager.h"
 
 namespace updater {
 

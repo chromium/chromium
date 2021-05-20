@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/mac/managed_preference_policy_manager.h"
-
-#include <memory>
-
+#include "chrome/updater/policy/manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
 
-TEST(ManagedPreferencePolicyManagerTest, GetPolicyManager) {
-  EXPECT_NE(CreateManagedPreferencePolicyManager().get(), nullptr);
+TEST(PolicyManager, GetPolicyManager) {
+  std::unique_ptr<PolicyManagerInterface> policy_manager(GetPolicyManager());
+  ASSERT_TRUE(policy_manager->IsManaged());
 }
 
 }  // namespace updater

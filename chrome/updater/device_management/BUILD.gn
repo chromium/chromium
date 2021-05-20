@@ -16,8 +16,6 @@ source_set("device_management") {
     "dm_client.h",
     "dm_message.cc",
     "dm_message.h",
-    "dm_policy_manager.cc",
-    "dm_policy_manager.h",
     "dm_response_validator.cc",
     "dm_response_validator.h",
     "dm_storage.cc",
@@ -61,7 +59,6 @@ source_set("unittest") {
     "dm_message_unittest.cc",
     "dm_policy_builder_for_testing.cc",
     "dm_policy_builder_for_testing.h",
-    "dm_policy_manager_unittest.cc",
     "dm_response_validator_unittest.cc",
     "dm_storage_unittest.cc",
   ]

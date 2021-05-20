@@ -18,7 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/updater/action_handler.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/policy_service.h"
+#include "chrome/updater/policy/service.h"
 #include "chrome/updater/util.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/update_client_errors.h"

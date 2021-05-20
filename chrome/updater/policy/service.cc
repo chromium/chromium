@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/policy_service.h"
+#include "chrome/updater/policy/service.h"
 
 #include <algorithm>
 
@@ -13,9 +13,9 @@
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
-#include "chrome/updater/win/group_policy_manager.h"
+#include "chrome/updater/policy/win/group_policy_manager.h"
 #elif defined(OS_MAC)
-#include "chrome/updater/mac/managed_preference_policy_manager.h"
+#include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
 #endif
 
 namespace updater {

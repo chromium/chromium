@@ -102,8 +102,6 @@ source_set("lib") {
 
   sources = [
     "action_handler.cc",
-    "group_policy_manager.cc",
-    "group_policy_manager.h",
     "installer.cc",
     "installer.h",
     "net/net_util.cc",
@@ -161,6 +159,7 @@ source_set("lib") {
     "//chrome/updater/app/server/win:updater_idl_idl",
     "//chrome/updater/app/server/win:updater_internal_idl_idl",
     "//chrome/updater/app/server/win:updater_legacy_idl_idl",
+    "//chrome/updater/policy",
     "//components/update_client",
     "//url:url",
   ]
@@ -225,7 +224,6 @@ source_set("updater_tests") {
   testonly = true
 
   sources = [
-    "group_policy_manager_unittest.cc",
     "installer_unittest.cc",
     "net/network_unittest.cc",
     "net/proxy_configuration_unittest.cc",
