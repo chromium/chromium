@@ -482,7 +482,7 @@ const base::Feature kLanguageSettingsUpdate2{"LanguageSettingsUpdate2",
 // Enables notification of when a microphone-using app is launched while the
 // microphone is muted.
 const base::Feature kMicMuteNotifications{"MicMuteNotifications",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable the requirement of a minimum chrome version on the
 // device through the policy DeviceMinimumVersion. If the requirement is
