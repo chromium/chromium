@@ -1471,11 +1471,10 @@ void BrowserAutofillManager::OnCreditCardFetched(bool did_succeed,
 
   DCHECK(credit_card);
 
-  // If synced down card is a virtual card, show a manual fallback bubble for
-  // it in addition to filling the card.
-  if (credit_card->record_type() == CreditCard::VIRTUAL_CARD) {
-    client()->ShowVirtualCardManualFallbackBubble(credit_card, cvc);
-  }
+  // If synced down card is a virtual card, let the client know so that it can
+  // show the UI to help user to manually fill the form, if needed.
+  if (credit_card->record_type() == CreditCard::VIRTUAL_CARD)
+    client()->OnVirtualCardFetched(credit_card, cvc);
 
   FillCreditCardForm(credit_card_query_id_, credit_card_form_,
                      credit_card_field_, *credit_card, cvc);

@@ -31,6 +31,7 @@
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
@@ -684,10 +685,11 @@ void ChromeAutofillClient::ShowOfferNotificationIfApplicable(
 #endif
 }
 
-void ChromeAutofillClient::ShowVirtualCardManualFallbackBubble(
-    const CreditCard* credit_card,
-    const std::u16string& cvc) {
-#if !defined(OS_ANDROID)  // Desktop only
+void ChromeAutofillClient::OnVirtualCardFetched(const CreditCard* credit_card,
+                                                const std::u16string& cvc) {
+#if defined(OS_ANDROID)
+  (new AutofillSnackbarControllerImpl(web_contents()))->Show();
+#else
   VirtualCardManualFallbackBubbleControllerImpl::CreateForWebContents(
       web_contents());
   VirtualCardManualFallbackBubbleControllerImpl* controller =

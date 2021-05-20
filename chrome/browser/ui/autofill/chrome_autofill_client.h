@@ -150,8 +150,8 @@ class ChromeAutofillClient
   void HideAutofillPopup(PopupHidingReason reason) override;
   void ShowOfferNotificationIfApplicable(
       const AutofillOfferData* offer) override;
-  void ShowVirtualCardManualFallbackBubble(const CreditCard* card,
-                                           const std::u16string& cvc) override;
+  void OnVirtualCardFetched(const CreditCard* card,
+                            const std::u16string& cvc) override;
   bool IsAutofillAssistantShowing() override;
   bool IsAutocompleteEnabled() override;
   void PropagateAutofillPredictions(

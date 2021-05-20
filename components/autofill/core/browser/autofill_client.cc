@@ -66,11 +66,10 @@ void AutofillClient::ShowOfferNotificationIfApplicable(
   // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }
 
-void AutofillClient::ShowVirtualCardManualFallbackBubble(
-    const CreditCard* credit_card,
-    const std::u16string& cvc) {
+void AutofillClient::OnVirtualCardFetched(const CreditCard* credit_card,
+                                          const std::u16string& cvc) {
   // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop) implements this.
+  // ChromeAutofillClient (Chrome Desktop & Android) implements this.
 }
 
 bool AutofillClient::IsAutofillAssistantShowing() {
