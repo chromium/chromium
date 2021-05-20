@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import coverage
-import cStringIO
+import io
 import sys
 import unittest
 
@@ -23,7 +23,7 @@ def main():
     generate_buildbot_json_unittest)
   unittest.TextTestRunner(stream=FakeStream()).run(suite)
   cov.stop()
-  outf = cStringIO.StringIO()
+  outf = io.StringIO()
   percentage = cov.report(file=outf, show_missing=True)
   if int(percentage) != 100:
     print(outf.getvalue())

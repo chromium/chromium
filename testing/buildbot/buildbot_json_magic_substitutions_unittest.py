@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -63,7 +63,7 @@ def CreateConfigWithGpus(gpus):
 class GPUExpectedDeviceId(unittest.TestCase):
   def assertDeviceIdCorrectness(self, retval, device_ids):
     self.assertEqual(len(retval), 2 * len(device_ids))
-    for i in xrange(0, len(retval), 2):
+    for i in range(0, len(retval), 2):
       self.assertEqual(retval[i], '--expected-device-id')
     for d in device_ids:
       self.assertIn(d, retval)

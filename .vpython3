@@ -216,3 +216,15 @@ wheel: <
   name: "infra/python/wheels/atomicwrites-py2_py3"
   version: "version:1.3.0"
 >
+
+wheel: <
+  name: "infra/python/wheels/colorama-py2_py3"
+  version: "version:0.4.1"
+>
+
+# Used by:
+#   testing/buildbot/generate_buildbot_json_coveragetest.py
+wheel: <
+  name: "infra/python/wheels/coverage/${vpython_platform}"
+  version: "version:5.5"
+>

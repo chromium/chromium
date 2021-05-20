@@ -89,7 +89,7 @@ def GPUExpectedDeviceId(test_config):
     device_ids.add(device)
 
   retval = []
-  for device_id in device_ids:
+  for device_id in sorted(device_ids):
     retval.extend(['--expected-device-id', device_id])
   return retval
 

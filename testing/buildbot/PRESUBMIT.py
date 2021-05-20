@@ -11,33 +11,39 @@ for more details on the presubmit API built into depot_tools.
 
 def CommonChecks(input_api, output_api):
   commands = [
-    input_api.Command(
-      name='generate_buildbot_json', cmd=[
-        input_api.python_executable, 'generate_buildbot_json.py', '--check',
-        '--verbose'],
-      kwargs={}, message=output_api.PresubmitError),
-
-    input_api.Command(
-      name='generate_buildbot_json_unittest', cmd=[
-        input_api.python_executable, 'generate_buildbot_json_unittest.py'],
-      kwargs={}, message=output_api.PresubmitError),
-
-    input_api.Command(
-      name='generate_buildbot_json_coveragetest', cmd=[
-        input_api.python_executable, 'generate_buildbot_json_coveragetest.py'],
-      kwargs={}, message=output_api.PresubmitError),
-
-    input_api.Command(
-      name='buildbot_json_magic_substitutions_unittest', cmd=[
-        input_api.python_executable,
-        'buildbot_json_magic_substitutions_unittest.py',
-      ], kwargs={}, message=output_api.PresubmitError
-    ),
-
-    input_api.Command(
-      name='manage', cmd=[
-        input_api.python_executable, 'manage.py', '--check'],
-      kwargs={}, message=output_api.PresubmitError),
+      input_api.Command(name='generate_buildbot_json',
+                        cmd=[
+                            input_api.python3_executable,
+                            'generate_buildbot_json.py', '--check', '--verbose'
+                        ],
+                        kwargs={},
+                        message=output_api.PresubmitError),
+      input_api.Command(name='generate_buildbot_json_unittest',
+                        cmd=[
+                            input_api.python3_executable,
+                            'generate_buildbot_json_unittest.py'
+                        ],
+                        kwargs={},
+                        message=output_api.PresubmitError),
+      input_api.Command(name='generate_buildbot_json_coveragetest',
+                        cmd=[
+                            input_api.python3_executable,
+                            'generate_buildbot_json_coveragetest.py'
+                        ],
+                        kwargs={},
+                        message=output_api.PresubmitError),
+      input_api.Command(name='buildbot_json_magic_substitutions_unittest',
+                        cmd=[
+                            input_api.python3_executable,
+                            'buildbot_json_magic_substitutions_unittest.py',
+                        ],
+                        kwargs={},
+                        message=output_api.PresubmitError),
+      input_api.Command(
+          name='manage',
+          cmd=[input_api.python3_executable, 'manage.py', '--check'],
+          kwargs={},
+          message=output_api.PresubmitError),
   ]
   messages = []
 

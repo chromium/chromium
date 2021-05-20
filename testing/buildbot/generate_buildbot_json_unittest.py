@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -32,7 +32,7 @@ class TestCase(fake_filesystem_unittest.TestCase):
     self.args = generate_buildbot_json.BBJSONGenerator.parse_args([])
 
   def override_args(self, **kwargs):
-    for k, v in kwargs.iteritems():
+    for k, v in kwargs.items():
       setattr(self.args, k, v)
 
   def create_testing_buildbot_json_file(self, path, contents):
@@ -46,7 +46,7 @@ def dump_on_failure(fbb, dump=True):
   except:
     if dump:
       for l in fbb.printed_lines:
-        print l
+        print(l)
     raise
 
 class FakeBBGen(generate_buildbot_json.BBJSONGenerator):
@@ -77,7 +77,7 @@ class FakeBBGen(generate_buildbot_json.BBJSONGenerator):
         (infra_config_dir, 'generated/luci-milo.cfg'): luci_milo_cfg,
         (infra_config_dir, 'generated/luci-milo-dev.cfg'): '',
     }
-    for (d, filename), content in files.iteritems():
+    for (d, filename), content in files.items():
       if content is None:
         continue
       path = os.path.join(d, filename)
@@ -2189,48 +2189,48 @@ class UnitTest(TestCase):
   def test_bad_composition_test_suites_are_caught(self):
     fbb = FakeBBGen(self.args, COMPOSITION_GTEST_SUITE_WATERFALL,
                     BAD_COMPOSITION_TEST_SUITES, LUCI_MILO_CFG)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-                                 'compound_suites may not refer to.*'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'compound_suites may not refer to.*'):
       fbb.check_input_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
   def test_composition_test_suites_no_conflicts(self):
     fbb = FakeBBGen(self.args, COMPOSITION_GTEST_SUITE_WATERFALL,
                     CONFLICTING_COMPOSITION_TEST_SUITES, LUCI_MILO_CFG)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-                                 'Conflicting test definitions.*'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'Conflicting test definitions.*'):
       fbb.check_input_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
   def test_composition_test_suites_no_duplicate_names(self):
     fbb = FakeBBGen(self.args, COMPOSITION_GTEST_SUITE_WATERFALL,
                     DUPLICATES_COMPOSITION_TEST_SUITES, LUCI_MILO_CFG)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-                                 '.*may not duplicate basic test suite.*'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                '.*may not duplicate basic test suite.*'):
       fbb.check_input_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
   def test_unknown_test_suites_are_caught(self):
     fbb = FakeBBGen(self.args, UNKNOWN_TEST_SUITE_WATERFALL, FOO_TEST_SUITE,
                     LUCI_MILO_CFG)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-                                 'Test suite baz_tests from machine.*'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'Test suite baz_tests from machine.*'):
       fbb.check_input_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
   def test_unknown_test_suite_types_are_caught(self):
     fbb = FakeBBGen(self.args, UNKNOWN_TEST_SUITE_TYPE_WATERFALL,
                     FOO_TEST_SUITE, LUCI_MILO_CFG)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-                                 'Unknown test suite type foo_test_type.*'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'Unknown test suite type foo_test_type.*'):
       fbb.check_input_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
   def test_unrefed_test_suite_caught(self):
     fbb = FakeBBGen(self.args, FOO_GTESTS_WATERFALL, UNREFED_TEST_SUITE,
                     LUCI_MILO_CFG)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-                                 '.*unreferenced.*bar_tests.*'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                '.*unreferenced.*bar_tests.*'):
       fbb.check_input_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
@@ -2260,8 +2260,8 @@ class UnitTest(TestCase):
                     REUSING_TEST_WITH_DIFFERENT_NAME,
                     LUCI_MILO_CFG,
                     gn_isolate_map=GN_ISOLATE_MAP)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-                                 'Duplicate targets in isolate map files.*'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'Duplicate targets in isolate map files.*'):
       fbb.load_configuration_files()
 
   def test_load_multiple_isolate_map_files_without_duplicates(self):
@@ -2277,7 +2277,7 @@ class UnitTest(TestCase):
     isolate_map_2 = fbb.load_pyl_file('gn_isolate_map2.pyl')
     isolate_dict.update(isolate_map_1)
     isolate_dict.update(isolate_map_2)
-    self.assertEquals(isolate_dict, fbb.gn_isolate_map)
+    self.assertEqual(isolate_dict, fbb.gn_isolate_map)
 
   def test_gn_isolate_map_with_label_mismatch(self):
     fbb = FakeBBGen(self.args,
@@ -2285,9 +2285,9 @@ class UnitTest(TestCase):
                     FOO_TEST_SUITE,
                     LUCI_MILO_CFG,
                     gn_isolate_map=GN_ISOLATE_MAP_KEY_LABEL_MISMATCH)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-                                 'key name.*foo_test.*label.*'
-                                 'foo_test_tmp.*'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'key name.*foo_test.*label.*'
+                                'foo_test_tmp.*'):
       fbb.check_input_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
@@ -2297,9 +2297,10 @@ class UnitTest(TestCase):
                     FOO_TEST_SUITE,
                     LUCI_MILO_CFG,
                     gn_isolate_map=GN_ISOLATE_MAP_USING_IMPLICIT_NAME)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-                                 'Malformed.*//chrome/foo_test.*for key.*'
-                                 'foo_test.*'):
+    with self.assertRaisesRegex(
+        generate_buildbot_json.BBGenErr,
+        'Malformed.*//chrome/foo_test.*for key.*'
+        'foo_test.*'):
       fbb.check_input_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
@@ -2434,7 +2435,8 @@ class UnitTest(TestCase):
                     FOO_SCRIPT_SUITE,
                     LUCI_MILO_CFG,
                     exceptions=NO_BAR_TEST_EXCEPTIONS)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
+    with self.assertRaisesRegex(
+        generate_buildbot_json.BBGenErr,
         'Attempted to generate a script test on tester.*'):
       fbb.check_output_file_consistency(verbose=True)
 
@@ -2444,7 +2446,8 @@ class UnitTest(TestCase):
                     FOO_SCRIPT_SUITE,
                     LUCI_MILO_CFG,
                     exceptions=NO_BAR_TEST_EXCEPTIONS)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
+    with self.assertRaisesRegex(
+        generate_buildbot_json.BBGenErr,
         'Attempted to generate a script test on tester.*'):
       fbb.check_output_file_consistency(verbose=True)
 
@@ -2539,11 +2542,11 @@ class UnitTest(TestCase):
     with self.assertRaises(generate_buildbot_json.BBGenErr):
       fbb.check_output_file_consistency(verbose=True, dump=False)
     joined_lines = ' '.join(fbb.printed_lines)
-    self.assertRegexpMatches(
+    self.assertRegex(
         joined_lines, 'File chromium.test.json did not have the following'
         ' expected contents:.*')
-    self.assertRegexpMatches(joined_lines, '.*--- expected.*')
-    self.assertRegexpMatches(joined_lines, '.*\+\+\+ current.*')
+    self.assertRegex(joined_lines, '.*--- expected.*')
+    self.assertRegex(joined_lines, '.*\+\+\+ current.*')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
@@ -2562,8 +2565,8 @@ class UnitTest(TestCase):
                     FOO_TEST_SUITE,
                     LUCI_MILO_CFG,
                     exceptions=NONEXISTENT_REMOVAL)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-                                 'The following nonexistent machines.*'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'The following nonexistent machines.*'):
       fbb.check_input_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
@@ -2573,8 +2576,8 @@ class UnitTest(TestCase):
                     FOO_TEST_SUITE,
                     LUCI_MILO_CFG,
                     exceptions=NONEXISTENT_MODIFICATION)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-                                 'The following nonexistent machines.*'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'The following nonexistent machines.*'):
       fbb.check_input_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
@@ -2647,29 +2650,25 @@ class UnitTest(TestCase):
 
     fbb = FakeBBGen(self.args, TEST_SUITE_UNSORTED_WATERFALL_1,
                     TEST_SUITE_SORTED, LUCI_MILO_CFG_WATERFALL_SORTING)
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
         'The following files have invalid keys: waterfalls.pyl'):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = '\n'.join(fbb.printed_lines)
-    self.assertRegexpMatches(
-      joined_lines, '.*\+ chromium\..*test.*')
-    self.assertRegexpMatches(
-      joined_lines, '.*\- chromium\..*test.*')
+    self.assertRegex(joined_lines, '.*\+ chromium\..*test.*')
+    self.assertRegex(joined_lines, '.*\- chromium\..*test.*')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
     fbb = FakeBBGen(self.args, TEST_SUITE_UNSORTED_WATERFALL_2,
                     TEST_SUITE_SORTED, LUCI_MILO_CFG_WATERFALL_SORTING)
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
         'The following files have invalid keys: waterfalls.pyl'):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = ' '.join(fbb.printed_lines)
-    self.assertRegexpMatches(
-      joined_lines, '.*\+.*Fake Tester.*')
-    self.assertRegexpMatches(
-      joined_lines, '.*\-.*Fake Tester.*')
+    self.assertRegex(joined_lines, '.*\+.*Fake Tester.*')
+    self.assertRegex(joined_lines, '.*\-.*Fake Tester.*')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
@@ -2690,8 +2689,7 @@ class UnitTest(TestCase):
     with self.assertRaises(generate_buildbot_json.BBGenErr):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = ' '.join(fbb.printed_lines)
-    self.assertRegexpMatches(
-        joined_lines, '.*\- Fake Tester.*')
+    self.assertRegex(joined_lines, '.*\- Fake Tester.*')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
@@ -2712,10 +2710,8 @@ class UnitTest(TestCase):
     with self.assertRaises(generate_buildbot_json.BBGenErr):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = ' '.join(fbb.printed_lines)
-    self.assertRegexpMatches(
-        joined_lines, '.*\+ Fake Tester.*')
-    self.assertRegexpMatches(
-        joined_lines, '.*\- Fake Tester.*')
+    self.assertRegex(joined_lines, '.*\+ Fake Tester.*')
+    self.assertRegex(joined_lines, '.*\- Fake Tester.*')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
@@ -2736,10 +2732,8 @@ class UnitTest(TestCase):
     with self.assertRaises(generate_buildbot_json.BBGenErr):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = ' '.join(fbb.printed_lines)
-    self.assertRegexpMatches(
-        joined_lines, '.*\+ suite_.*')
-    self.assertRegexpMatches(
-        joined_lines, '.*\- suite_.*')
+    self.assertRegex(joined_lines, '.*\+ suite_.*')
+    self.assertRegex(joined_lines, '.*\- suite_.*')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
@@ -2759,10 +2753,8 @@ class UnitTest(TestCase):
       with self.assertRaises(generate_buildbot_json.BBGenErr):
         fbb.check_input_file_consistency(verbose=True)
       joined_lines = ' '.join(fbb.printed_lines)
-      self.assertRegexpMatches(
-          joined_lines, '.*\+ suite_.*')
-      self.assertRegexpMatches(
-          joined_lines, '.*\- suite_.*')
+      self.assertRegex(joined_lines, '.*\+ suite_.*')
+      self.assertRegex(joined_lines, '.*\- suite_.*')
       fbb.printed_lines = []
       self.assertFalse(fbb.printed_lines)
 
@@ -3488,10 +3480,8 @@ class MixinTests(TestCase):
     with self.assertRaises(generate_buildbot_json.BBGenErr):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = '\n'.join(fbb.printed_lines)
-    self.assertRegexpMatches(
-        joined_lines, '.*\+ ._mixin.*')
-    self.assertRegexpMatches(
-        joined_lines, '.*\- ._mixin.*')
+    self.assertRegex(joined_lines, '.*\+ ._mixin.*')
+    self.assertRegex(joined_lines, '.*\- ._mixin.*')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
@@ -3594,8 +3584,8 @@ class MixinTests(TestCase):
                     FOO_TEST_SUITE_WITH_MIXIN,
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-                                 '.*mixins are unreferenced.*'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                '.*mixins are unreferenced.*'):
       fbb.check_input_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
@@ -3634,51 +3624,48 @@ class MixinTests(TestCase):
                     FOO_TEST_SUITE,
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_DUPLICATED)
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
         'The following files have invalid keys: mixins.pyl'):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = '\n'.join(fbb.printed_lines)
-    self.assertRegexpMatches(
-        joined_lines, '.*\- builder_mixin')
+    self.assertRegex(joined_lines, '.*\- builder_mixin')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
   def test_no_duplicate_keys_basic_test_suite(self):
     fbb = FakeBBGen(self.args, FOO_GTESTS_WATERFALL, FOO_TEST_SUITE_NOT_SORTED,
                     LUCI_MILO_CFG)
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
         'The following files have invalid keys: test_suites.pyl'):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = '\n'.join(fbb.printed_lines)
-    self.assertRegexpMatches(joined_lines, '.*\- a_test')
-    self.assertRegexpMatches(joined_lines, '.*\+ a_test')
+    self.assertRegex(joined_lines, '.*\- a_test')
+    self.assertRegex(joined_lines, '.*\+ a_test')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
   def test_type_assert_printing_help(self):
     fbb = FakeBBGen(self.args, FOO_GTESTS_WATERFALL, TEST_SUITES_SYNTAX_ERROR,
                     LUCI_MILO_CFG)
-    with self.assertRaisesRegexp(
-        generate_buildbot_json.BBGenErr,
-        'Invalid \.pyl file \'test_suites.pyl\'.*'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'Invalid \.pyl file \'test_suites.pyl\'.*'):
       fbb.check_input_file_consistency(verbose=True)
-    self.assertEquals(
-        fbb.printed_lines, [
-          '== test_suites.pyl ==',
-          '<snip>',
-          '1 {',
-          "2   'basic_suites': {",
-          '--------------------------------------------------------------------'
-          '------------',
-          '3     3: {',
-          '-------^------------------------------------------------------------'
-          '------------',
-          "4       'suite_c': {},",
-          '5     },',
-          '<snip>',
-        ])
+    self.assertEqual(fbb.printed_lines, [
+        '== test_suites.pyl ==',
+        '<snip>',
+        '1 {',
+        "2   'basic_suites': {",
+        '--------------------------------------------------------------------'
+        '------------',
+        '3     3: {',
+        '-------^------------------------------------------------------------'
+        '------------',
+        "4       'suite_c': {},",
+        '5     },',
+        '<snip>',
+    ])
 
   def test_mixin_append_args(self):
     fbb = FakeBBGen(self.args,
@@ -3713,7 +3700,7 @@ class MixinTests(TestCase):
                     FOO_TEST_SUITE_WITH_ARGS,
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_APPEND_OTHER_KEYS_WITH_NAMED_CACHES)
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
         'Only named_caches is supported under swarming key in '
         '\$mixin_append, but there are: \[\'named_caches\', \'other_key\'\]'):
@@ -3726,9 +3713,8 @@ class MixinTests(TestCase):
                     FOO_TEST_SUITE_WITH_ARGS,
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_APPEND_NOT_LIST)
-    with self.assertRaisesRegexp(
-        generate_buildbot_json.BBGenErr,
-        'Key "args" in \$mixin_append must be a list.'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'Key "args" in \$mixin_append must be a list.'):
       fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
@@ -3738,7 +3724,7 @@ class MixinTests(TestCase):
                     FOO_TEST_SUITE,
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_APPEND_TO_SWARMING)
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
         'Cannot apply \$mixin_append to non-list "swarming".'):
       fbb.check_output_file_consistency(verbose=True)
@@ -4132,9 +4118,9 @@ TEST_QUERY_TESTS_PARAMS_FALSE_OUTPUT = ['bar_test']
 TEST_QUERY_TEST_OUTPUT = {}
 
 TEST_QUERY_TEST_BOTS_OUTPUT = [
-  "Fake Android M Tester",
-  "Fake Android L Tester",
-  "Fake Android K Tester"
+    "Fake Android K Tester",
+    "Fake Android L Tester",
+    "Fake Android M Tester",
 ]
 
 TEST_QUERY_TEST_BOTS_ISOLATED_SCRIPTS_OUTPUT = ['Fake Tester']
@@ -4769,8 +4755,8 @@ class ReplacementTests(TestCase):
                     FOO_TEST_SUITE,
                     LUCI_MILO_CFG,
                     exceptions=FOO_TEST_REPLACEMENTS_INVALID_KEY)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-        'Given replacement key *'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'Given replacement key *'):
       fbb.check_output_file_consistency(verbose=True)
 
   def test_replacement_invalid_key_not_found(self):
@@ -4779,8 +4765,8 @@ class ReplacementTests(TestCase):
                     FOO_TEST_SUITE_WITH_ARGS,
                     LUCI_MILO_CFG,
                     exceptions=FOO_TEST_REPLACEMENTS_REPLACE_VALUE)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-        'Could not find *'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'Could not find *'):
       fbb.check_output_file_consistency(verbose=True)
 
 
@@ -4859,8 +4845,8 @@ class MagicSubstitutionTests(TestCase):
   def test_invalid_function(self):
     fbb = FakeBBGen(self.args, FOO_GTESTS_WATERFALL,
                     FOO_TEST_SUITE_WITH_INVALID_MAGIC_ARGS, LUCI_MILO_CFG)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-        'Magic substitution function *'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'Magic substitution function *'):
       fbb.check_output_file_consistency(verbose=True)
 
 
@@ -5748,7 +5734,8 @@ class MatrixCompositionTests(TestCase):
     """
     fbb = FakeBBGen(self.args, MATRIX_GTEST_SUITE_WATERFALL,
                     MATRIX_COMPOUND_MISSING_IDENTIFIER, LUCI_MILO_CFG)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
+    with self.assertRaisesRegex(
+        generate_buildbot_json.BBGenErr,
         'Missing required identifier field in matrix compound suite*'):
       fbb.check_output_file_consistency(verbose=True)
 
@@ -5758,8 +5745,8 @@ class MatrixCompositionTests(TestCase):
     """
     fbb = FakeBBGen(self.args, MATRIX_GTEST_SUITE_WATERFALL,
                     MATRIX_MISMATCHED_SWARMING_LENGTH, LUCI_MILO_CFG)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-        'Error merging lists by key *'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'Error merging lists by key *'):
       fbb.check_output_file_consistency(verbose=True)
 
   def test_noexistent_ref(self):
@@ -5768,8 +5755,8 @@ class MatrixCompositionTests(TestCase):
     """
     fbb = FakeBBGen(self.args, MATRIX_GTEST_SUITE_WATERFALL,
                     MATRIX_REF_NONEXISTENT, LUCI_MILO_CFG)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-      'Unable to find reference to *'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'Unable to find reference to *'):
       fbb.check_output_file_consistency(verbose=True)
 
   def test_ref_to_composition(self):
@@ -5778,8 +5765,9 @@ class MatrixCompositionTests(TestCase):
     """
     fbb = FakeBBGen(self.args, MATRIX_GTEST_SUITE_WATERFALL,
                     MATRIX_COMPOUND_REF_COMPOSITION, LUCI_MILO_CFG)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-      'matrix_compound_suites may not refer to other *'):
+    with self.assertRaisesRegex(
+        generate_buildbot_json.BBGenErr,
+        'matrix_compound_suites may not refer to other *'):
       fbb.check_output_file_consistency(verbose=True)
 
   def test_ref_to_matrix(self):
@@ -5788,15 +5776,16 @@ class MatrixCompositionTests(TestCase):
     """
     fbb = FakeBBGen(self.args, MATRIX_GTEST_SUITE_WATERFALL,
                     MATRIX_COMPOSITION_REF_MATRIX, LUCI_MILO_CFG)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-      'matrix_compound_suites may not refer to other *'):
+    with self.assertRaisesRegex(
+        generate_buildbot_json.BBGenErr,
+        'matrix_compound_suites may not refer to other *'):
       fbb.check_output_file_consistency(verbose=True)
 
   def test_conflicting_names(self):
     fbb = FakeBBGen(self.args, MATRIX_GTEST_SUITE_WATERFALL,
                     MATRIX_COMPOUND_CONFLICTING_TEST_SUITES, LUCI_MILO_CFG)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-                                 'Conflicting test definitions.*'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'Conflicting test definitions.*'):
       fbb.check_input_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
@@ -5882,8 +5871,8 @@ class MatrixCompositionTests(TestCase):
     """Test targets with variants string ref, not defined in variants.pyl"""
     fbb = FakeBBGen(self.args, MATRIX_GTEST_SUITE_WATERFALL,
                     MATRIX_COMPOUND_VARIANTS_REF, LUCI_MILO_CFG)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-      'Missing variant definition for *'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'Missing variant definition for *'):
       fbb.check_output_file_consistency(verbose=True)
 
   def test_variants_pyl_all_unreferenced(self):
@@ -5895,8 +5884,8 @@ class MatrixCompositionTests(TestCase):
                     variants=MULTI_VARIANTS_FILE)
     # self.create_testing_buildbot_json_file(
     #     'chromium.test.json', MATRIX_COMPOUND_VARIANTS_REF_OUTPUT)
-    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-      'The following variants were unreferenced *'):
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'The following variants were unreferenced *'):
       fbb.check_input_file_consistency(verbose=True)
 
   def test_good_skylab_matrix_with_variants(self):
@@ -6031,10 +6020,10 @@ class SwarmingTests(TestCase):
     self.create_testing_buildbot_json_file('chromium.test.json',
                                            MAC_GTEST_WATERFALL_OUTPUT)
     fbb.check_input_file_consistency(verbose=True)
-    self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-                            'os and cpu',
-                            fbb.check_output_file_consistency,
-                            verbose=True)
+    self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                           'os and cpu',
+                           fbb.check_output_file_consistency,
+                           verbose=True)
     self.assertFalse(fbb.printed_lines)
 
   def test_mac_builder_with_no_cpu_dimension_in_isolated_script_fails(self):
@@ -6043,10 +6032,10 @@ class SwarmingTests(TestCase):
     self.create_testing_buildbot_json_file(
         'chromium.test.json', MAC_ISOLATED_SCRIPTS_WATERFALL_OUTPUT)
     fbb.check_input_file_consistency(verbose=True)
-    self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
-                            'os and cpu',
-                            fbb.check_output_file_consistency,
-                            verbose=True)
+    self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                           'os and cpu',
+                           fbb.check_output_file_consistency,
+                           verbose=True)
     self.assertFalse(fbb.printed_lines)
 
 

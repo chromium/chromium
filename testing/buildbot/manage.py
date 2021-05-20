@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -256,7 +256,7 @@ def process_file(mode, test_name, tests_location, filepath, ninja_targets,
   except ValueError as e:
     raise Error('Exception raised while checking %s: %s' % (filepath, e))
 
-  for builder, data in sorted(config.iteritems()):
+  for builder, data in sorted(config.items()):
     if builder in SKIP:
       # Oddities.
       continue
@@ -364,9 +364,9 @@ def print_convert(test_name, tests_location):
   print('')
   print('%d configs already ran on Swarming' % data['count_run_on_swarming'])
   print('%d used to run locally and were converted:' % data['count_run_local'])
-  for master, builders in sorted(data['local_configs'].iteritems()):
+  for builder_group, builders in sorted(data['local_configs'].items()):
     for builder in builders:
-      print('- %s: %s' % (master, builder))
+      print('- %s: %s' % (builder_group, builder))
   print('')
   print('Ran:')
   print('  ./manage.py --convert %s' % test_name)
@@ -383,7 +383,7 @@ def print_remaining(test_name, tests_location):
     if test_name not in tests_location:
       raise Error('Unknown test %s' % test_name)
     for config, builders in sorted(
-        tests_location[test_name]['local_configs'].iteritems()):
+        tests_location[test_name]['local_configs'].items()):
       print('%s:' % config)
       for builder in sorted(builders):
         print('  %s' % builder)
@@ -396,7 +396,7 @@ def print_remaining(test_name, tests_location):
         colorama.Fore.MAGENTA))
   total_local = 0
   total_swarming = 0
-  for name, location in sorted(tests_location.iteritems()):
+  for name, location in sorted(tests_location.items()):
     if not location['count_run_on_swarming']:
       c = colorama.Fore.RED
     elif location['count_run_local']:
