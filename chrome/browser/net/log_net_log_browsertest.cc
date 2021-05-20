@@ -59,7 +59,7 @@ class LogNetLogTest : public InProcessBrowserTest,
     // Ensure it has a "constants" property.
     base::DictionaryValue* constants;
     ASSERT_TRUE(main->GetDictionary("constants", &constants));
-    ASSERT_FALSE(constants->empty());
+    ASSERT_FALSE(constants->DictEmpty());
 
     // Ensure it has an "events" property.
     base::ListValue* events;
