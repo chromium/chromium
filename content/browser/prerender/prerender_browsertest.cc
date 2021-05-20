@@ -835,7 +835,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivatePageWithInnerContents) {
 }
 
 // Ensures that if we attempt to open a URL while prerendering with a window
-// disposition other than CURRENT_TAB, we
+// disposition other than CURRENT_TAB, we fail.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SuppressOpenURL) {
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
