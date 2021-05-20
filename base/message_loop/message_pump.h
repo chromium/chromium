@@ -140,7 +140,7 @@ class BASE_EXPORT MessagePump {
   //   for (;;) {
   //     bool did_native_work = false;
   //     {
-  //       auto scoped_do_work = state_->delegate->BeginWorkItem();
+  //       auto scoped_do_work_item = state_->delegate->BeginWorkItem();
   //       did_native_work = DoNativeWork();
   //     }
   //     if (should_quit_)

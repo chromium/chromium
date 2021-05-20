@@ -282,7 +282,7 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
       // current thread.
 
       // As in ProcessNextWindowsMessage().
-      auto scoped_do_work = run_state_->delegate->BeginWorkItem();
+      auto scoped_do_work_item = run_state_->delegate->BeginWorkItem();
       {
         TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("base"),
                      "MessagePumpForUI::WaitForWork GetQueueStatus");
@@ -462,7 +462,7 @@ bool MessagePumpForUI::ProcessNextWindowsMessage() {
     // (GetQueueStatus() itself not being expected to do work; it's fine to use
     // only one ScopedDoWorkItem for both calls -- we trace them independently
     // just in case internal work stalls).
-    auto scoped_do_work = run_state_->delegate->BeginWorkItem();
+    auto scoped_do_work_item = run_state_->delegate->BeginWorkItem();
 
     {
       // Individually trace ::GetQueueStatus and ::PeekMessage because sampling
@@ -527,7 +527,7 @@ bool MessagePumpForUI::ProcessMessageHelper(const MSG& msg) {
   if (msg.message == kMsgHaveWork && msg.hwnd == message_window_.hwnd())
     return ProcessPumpReplacementMessage();
 
-  auto scoped_do_work = run_state_->delegate->BeginWorkItem();
+  auto scoped_do_work_item = run_state_->delegate->BeginWorkItem();
 
   TRACE_EVENT("base,toplevel", "MessagePumpForUI DispatchMessage",
               [&](perfetto::EventContext ctx) {
@@ -568,7 +568,7 @@ bool MessagePumpForUI::ProcessPumpReplacementMessage() {
     // as a potential work item.
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("base"),
                  "MessagePumpForUI::ProcessPumpReplacementMessage PeekMessage");
-    auto scoped_do_work = run_state_->delegate->BeginWorkItem();
+    auto scoped_do_work_item = run_state_->delegate->BeginWorkItem();
     have_message = ::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) != FALSE;
   }
 
@@ -769,7 +769,7 @@ bool MessagePumpForIO::WaitForIOCompletion(DWORD timeout) {
   if (ProcessInternalIOItem(item))
     return true;
 
-  auto scoped_do_work = run_state_->delegate->BeginWorkItem();
+  auto scoped_do_work_item = run_state_->delegate->BeginWorkItem();
 
   TRACE_EVENT(
       "base,toplevel", "IOHandler::OnIOCompleted",
