@@ -471,6 +471,9 @@ extern const char kDesktopPWAsTabStripLinkCapturingDescription[];
 extern const char kDesktopPWAsRunOnOsLoginName[];
 extern const char kDesktopPWAsRunOnOsLoginDescription[];
 
+extern const char kDesktopPWAsSubAppsName[];
+extern const char kDesktopPWAsSubAppsDescription[];
+
 extern const char kDesktopPWAsProtocolHandlingName[];
 extern const char kDesktopPWAsProtocolHandlingDescription[];
 

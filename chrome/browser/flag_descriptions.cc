@@ -774,6 +774,12 @@ const char kDesktopPWAsRunOnOsLoginDescription[] =
     "Enable installed PWAs to be configured to automatically start when the OS "
     "user logs in.";
 
+const char kDesktopPWAsSubAppsName[] = "Desktop PWA Sub Apps";
+const char kDesktopPWAsSubAppsDescription[] =
+    "Enable installed PWAs to create shortcuts by installing their sub apps. "
+    "Prototype implementation of: "
+    "https://github.com/ivansandrk/multi-apps/blob/main/explainer.md";
+
 const char kDesktopPWAsProtocolHandlingName[] = "Desktop PWA Protocol handling";
 const char kDesktopPWAsProtocolHandlingDescription[] =
     "Enable web app manifests to declare protocol handling behavior."
