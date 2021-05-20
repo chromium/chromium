@@ -113,6 +113,10 @@ suite('PrivacySandbox_PrivacySandboxSettings2Disabled', function() {
     assertFalse(isChildVisible(page, '#flocCard'));
     assertFalse(isChildVisible(page, '#phase2SettingExplanation'));
   });
+
+  test('toggleClass', function() {
+    assertEquals('hr', page.$$('#apiToggleButton').className);
+  });
 });
 
 suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
@@ -210,5 +214,10 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
     assertFalse(isChildVisible(page, '#phase1SettingExplanation'));
     assertTrue(isChildVisible(page, '#flocCard'));
     assertTrue(isChildVisible(page, '#phase2SettingExplanation'));
+  });
+
+  test('toggleClass', function() {
+    assertEquals(
+        'hr updated-toggle-button', page.$$('#apiToggleButton').className);
   });
 });
