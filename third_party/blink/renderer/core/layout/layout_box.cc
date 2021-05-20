@@ -2547,8 +2547,8 @@ bool LayoutBox::GetBackgroundPaintedExtent(PhysicalRect& painted_extent) const {
     return true;
   }
 
-  if (!StyleRef().BackgroundLayers().GetImage() ||
-      StyleRef().BackgroundLayers().Next()) {
+  const FillLayer& fill_layer = StyleRef().BackgroundLayers();
+  if (!fill_layer.GetImage() || fill_layer.Next()) {
     painted_extent = background_rect;
     return true;
   }
@@ -2557,13 +2557,13 @@ bool LayoutBox::GetBackgroundPaintedExtent(PhysicalRect& painted_extent) const {
   // TODO(schenney): This function should be rethought as it's called during
   // and outside of the paint phase. Potentially returning different results at
   // different phases. crbug.com/732934
-  geometry.Calculate(nullptr, PaintPhase::kBlockBackground,
-                     kGlobalPaintNormalPhase, StyleRef().BackgroundLayers(),
+  geometry.Calculate(nullptr, PaintPhase::kBlockBackground, fill_layer,
                      background_rect);
-  if (geometry.HasNonLocalGeometry())
-    return false;
-  painted_extent = PhysicalRect(geometry.SnappedDestRect());
-  return true;
+  if (!geometry.HasNonLocalGeometry()) {
+    painted_extent = geometry.SnappedDestRect();
+    return true;
+  }
+  return false;
 }
 
 bool LayoutBox::BackgroundIsKnownToBeOpaqueInRect(

@@ -48,7 +48,6 @@ class BackgroundImageGeometry {
 
   void Calculate(const LayoutBoxModelObject* container,
                  PaintPhase,
-                 GlobalPaintFlags,
                  const FillLayer&,
                  const PhysicalRect& paint_rect);
 
@@ -148,7 +147,6 @@ class BackgroundImageGeometry {
 
   void ComputePositioningArea(const LayoutBoxModelObject*,
                               PaintPhase,
-                              GlobalPaintFlags,
                               const FillLayer&,
                               const PhysicalRect&,
                               PhysicalRect&,

@@ -50,13 +50,10 @@ LayoutUnit ComputeTilePhase(LayoutUnit position, LayoutUnit tile_extent) {
                      : LayoutUnit();
 }
 
-bool FixedBackgroundPaintsInLocalCoordinates(
-    const LayoutObject& obj,
-    const GlobalPaintFlags global_paint_flags) {
+bool FixedBackgroundPaintsInLocalCoordinates(const LayoutObject& obj) {
   const auto* view = DynamicTo<LayoutView>(obj);
   if (!view)
     return false;
-
   return !(view->GetBackgroundPaintLocation() &
            kBackgroundPaintInScrollingContents);
 }
@@ -347,8 +344,7 @@ namespace {
 
 PhysicalRect FixedAttachmentPositioningArea(
     const LayoutBoxModelObject& obj,
-    const LayoutBoxModelObject* container,
-    const GlobalPaintFlags flags) {
+    const LayoutBoxModelObject* container) {
   // TODO(crbug.com/667006): We should consider ancestor with transform as the
   // fixed background container, instead of always the viewport.
   LocalFrameView* frame_view = obj.View()->GetFrameView();
@@ -361,7 +357,7 @@ PhysicalRect FixedAttachmentPositioningArea(
   PhysicalRect rect(PhysicalOffset(),
                     PhysicalSize(layout_viewport->VisibleContentRect().Size()));
 
-  if (FixedBackgroundPaintsInLocalCoordinates(obj, flags))
+  if (FixedBackgroundPaintsInLocalCoordinates(obj))
     return rect;
 
   // The LayoutView is the only object that can paint a fixed background into
@@ -603,7 +599,6 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
 void BackgroundImageGeometry::ComputePositioningArea(
     const LayoutBoxModelObject* container,
     PaintPhase paint_phase,
-    GlobalPaintFlags flags,
     const FillLayer& fill_layer,
     const PhysicalRect& paint_rect,
     PhysicalRect& unsnapped_positioning_area,
@@ -614,7 +609,7 @@ void BackgroundImageGeometry::ComputePositioningArea(
     // No snapping for fixed attachment.
     SetHasNonLocalGeometry();
     unsnapped_positioning_area =
-        FixedAttachmentPositioningArea(*box_, container, flags);
+        FixedAttachmentPositioningArea(*box_, container);
     unsnapped_dest_rect_ = snapped_dest_rect_ = snapped_positioning_area =
         unsnapped_positioning_area;
   } else {
@@ -813,7 +808,6 @@ void BackgroundImageGeometry::CalculateFillTileSize(
 
 void BackgroundImageGeometry::Calculate(const LayoutBoxModelObject* container,
                                         PaintPhase paint_phase,
-                                        GlobalPaintFlags flags,
                                         const FillLayer& fill_layer,
                                         const PhysicalRect& paint_rect) {
   // Unsnapped positioning area is used to derive quantities
@@ -831,7 +825,7 @@ void BackgroundImageGeometry::Calculate(const LayoutBoxModelObject* container,
   PhysicalOffset snapped_box_offset;
 
   // This method also sets the destination rects.
-  ComputePositioningArea(container, paint_phase, flags, fill_layer, paint_rect,
+  ComputePositioningArea(container, paint_phase, fill_layer, paint_rect,
                          unsnapped_positioning_area, snapped_positioning_area,
                          unsnapped_box_offset, snapped_box_offset);
 

@@ -961,8 +961,7 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
   SkBlendMode composite_op = SkBlendMode::kSrcOver;
   absl::optional<ScopedInterpolationQuality> interpolation_quality_context;
   if (info.should_paint_image) {
-    geometry.Calculate(paint_info.PaintContainer(), paint_info.phase,
-                       paint_info.GetGlobalPaintFlags(), bg_layer,
+    geometry.Calculate(paint_info.PaintContainer(), paint_info.phase, bg_layer,
                        scrolled_paint_rect);
     image = info.image->GetImage(
         geometry.ImageClient(), geometry.ImageDocument(),
