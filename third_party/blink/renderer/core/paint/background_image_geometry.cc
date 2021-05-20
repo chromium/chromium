@@ -50,14 +50,6 @@ LayoutUnit ComputeTilePhase(LayoutUnit position, LayoutUnit tile_extent) {
                      : LayoutUnit();
 }
 
-bool FixedBackgroundPaintsInLocalCoordinates(const LayoutObject& obj) {
-  const auto* view = DynamicTo<LayoutView>(obj);
-  if (!view)
-    return false;
-  return !(view->GetBackgroundPaintLocation() &
-           kBackgroundPaintInScrollingContents);
-}
-
 PhysicalOffset AccumulatedScrollOffsetForFixedBackground(
     const LayoutBoxModelObject& object,
     const LayoutBoxModelObject* container) {
@@ -347,35 +339,32 @@ PhysicalRect FixedAttachmentPositioningArea(
     const LayoutBoxModelObject* container) {
   // TODO(crbug.com/667006): We should consider ancestor with transform as the
   // fixed background container, instead of always the viewport.
-  LocalFrameView* frame_view = obj.View()->GetFrameView();
+  const LocalFrameView* frame_view = obj.GetFrameView();
   if (!frame_view)
     return PhysicalRect();
 
-  ScrollableArea* layout_viewport = frame_view->LayoutViewport();
+  const ScrollableArea* layout_viewport = frame_view->LayoutViewport();
   DCHECK(layout_viewport);
 
   PhysicalRect rect(PhysicalOffset(),
                     PhysicalSize(layout_viewport->VisibleContentRect().Size()));
 
-  if (FixedBackgroundPaintsInLocalCoordinates(obj))
-    return rect;
-
-  // The LayoutView is the only object that can paint a fixed background into
-  // its scrolling contents layer, so it gets a special adjustment here.
-  if (auto* layout_view = DynamicTo<LayoutView>(obj)) {
-    if (obj.GetBackgroundPaintLocation() &
-        kBackgroundPaintInScrollingContents) {
-      rect.offset =
-          PhysicalOffsetToBeNoop(layout_view->ScrolledContentOffset());
-    }
+  if (const auto* layout_view = DynamicTo<LayoutView>(obj)) {
+    if (!(layout_view->GetBackgroundPaintLocation() &
+          kBackgroundPaintInScrollingContents))
+      return rect;
+    // The LayoutView is the only object that can paint a fixed background into
+    // its scrolling contents layer, so it gets a special adjustment here.
+    rect.offset = PhysicalOffsetToBeNoop(layout_view->ScrolledContentOffset());
   }
 
   rect.Move(AccumulatedScrollOffsetForFixedBackground(obj, container));
 
-  if (container) {
-    rect.Move(
-        -container->LocalToAbsolutePoint(PhysicalOffset(), kIgnoreTransforms));
-  }
+  if (!container)
+    return rect;
+
+  rect.Move(
+      -container->LocalToAbsolutePoint(PhysicalOffset(), kIgnoreTransforms));
 
   // By now we have converted the viewport rect to the border box space of
   // |container|, however |container| does not necessarily create a paint
@@ -385,12 +374,9 @@ PhysicalRect FixedAttachmentPositioningArea(
   // viewport rect from frame space to whatever space the current paint
   // context uses. However we can't always invoke geometry mapper because
   // there are at least one caller uses this before PrePaint phase.
-  if (container) {
-    DCHECK_GE(container->GetDocument().Lifecycle().GetState(),
-              DocumentLifecycle::kPrePaintClean);
-    rect.Move(container->FirstFragment().PaintOffset());
-  }
-
+  DCHECK_GE(container->GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
+  rect.Move(container->FirstFragment().PaintOffset());
   return rect;
 }
 
