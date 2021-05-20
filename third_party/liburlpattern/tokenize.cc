@@ -41,6 +41,217 @@ bool IsNameCodepoint(UChar32 c, bool first_codepoint) {
          c == 0x200c || c == 0x200d;
 }
 
+class Tokenizer {
+ public:
+  explicit Tokenizer(absl::string_view pattern) : pattern_(pattern) {
+    token_list_.reserve(pattern_.size());
+  }
+
+  absl::StatusOr<std::vector<Token>> Tokenize() {
+    while (index_ < pattern_.size()) {
+      NextAt(index_);
+      if (codepoint_ == '*') {
+        AddToken(TokenType::kAsterisk);
+        continue;
+      }
+
+      if (codepoint_ == '+' || codepoint_ == '?') {
+        AddToken(TokenType::kOtherModifier);
+        continue;
+      }
+
+      // Escape sequences always escape a single following character at the
+      // level of the pattern.
+      if (codepoint_ == '\\') {
+        if (index_ == (pattern_.size() - 1)) {
+          return absl::InvalidArgumentError(
+              absl::StrFormat("Trailing escape character at %d.", index_));
+        }
+        size_t escaped_i = next_index_;
+        Next();
+        AddToken(TokenType::kEscapedChar, next_index_, escaped_i);
+        continue;
+      }
+
+      if (codepoint_ == '{') {
+        AddToken(TokenType::kOpen);
+        continue;
+      }
+
+      if (codepoint_ == '}') {
+        AddToken(TokenType::kClose);
+        continue;
+      }
+
+      if (codepoint_ == ':') {
+        size_t pos = next_index_;
+        size_t name_start = pos;
+
+        // Iterate over codepoints until we find the first non-name codepoint.
+        while (pos < pattern_.size()) {
+          NextAt(pos);
+          if (!IsNameCodepoint(codepoint_, pos == name_start))
+            break;
+          pos = next_index_;
+        }
+
+        if (pos <= name_start) {
+          return absl::InvalidArgumentError(
+              absl::StrFormat("Missing parameter name at %d.", index_));
+        }
+
+        AddToken(TokenType::kName, pos, name_start);
+        continue;
+      }
+
+      if (codepoint_ == '(') {
+        size_t paren_nesting = 1;
+        size_t j = next_index_;
+        const size_t regex_start = next_index_;
+
+        while (j < pattern_.size()) {
+          NextAt(j);
+
+          if (!IsASCII(codepoint_)) {
+            return absl::InvalidArgumentError(absl::StrFormat(
+                "Invalid character 0x%02x at %d.", codepoint_, j));
+          }
+          if (j == regex_start && codepoint_ == '?') {
+            return absl::InvalidArgumentError(
+                absl::StrFormat("Regex cannot start with '?' at %d", j));
+          }
+
+          // This escape processing only handles single character escapes since
+          // we only need to understand escaped paren characters for our state
+          // processing.  The escape `\` character is propagated to the embedded
+          // regex expression.  This permits authors to write longer escape
+          // sequences such as `\x22` since the later characters will be
+          // propagated on subsequent loop iterations.
+          if (codepoint_ == '\\') {
+            if (j == (pattern_.size() - 1)) {
+              return absl::InvalidArgumentError(
+                  absl::StrFormat("Trailing escape character at %d.", j));
+            }
+            size_t escaped_j = next_index_;
+            Next();
+            if (!IsASCII(codepoint_)) {
+              return absl::InvalidArgumentError(absl::StrFormat(
+                  "Invalid character 0x%02x at %d.", codepoint_, escaped_j));
+            }
+            j = next_index_;
+            continue;
+          }
+
+          if (codepoint_ == ')') {
+            paren_nesting -= 1;
+            if (paren_nesting == 0) {
+              j = next_index_;
+              break;
+            }
+          } else if (codepoint_ == '(') {
+            paren_nesting += 1;
+            if (j == (pattern_.size() - 1)) {
+              return absl::InvalidArgumentError(
+                  absl::StrFormat("Unbalanced regex at %d.", j));
+            }
+            size_t tmp_j = next_index_;
+            Next();
+            // Require the the first character after an open paren is `?`.  This
+            // permits assertions, named capture groups, and non-capturing
+            // groups. It blocks, however, unnamed capture groups.
+            if (codepoint_ != '?') {
+              return absl::InvalidArgumentError(absl::StrFormat(
+                  "Unnamed capturing groups are not allowed at %d.", tmp_j));
+            }
+            next_index_ = tmp_j;
+          }
+
+          j = next_index_;
+        }
+
+        if (paren_nesting) {
+          return absl::InvalidArgumentError(
+              absl::StrFormat("Unbalanced regex at %d.", index_));
+        }
+
+        const size_t regex_length = j - regex_start - 1;
+        if (regex_length == 0) {
+          return absl::InvalidArgumentError(
+              absl::StrFormat("Missing regex at %d.", index_));
+        }
+
+        AddToken(TokenType::kRegex, j, regex_start, regex_length);
+        continue;
+      }
+
+      AddToken(TokenType::kChar);
+    }
+
+    AddToken(TokenType::kEnd, index_, index_);
+
+    return std::move(token_list_);
+  }
+
+ private:
+  // Read the codepoint at `next_index_` in `pattern_` and store it in
+  // `codepoint_`.  In addition, `next_index_` is updated to the codepoint to be
+  // read next.
+  void Next() {
+    U8_NEXT(pattern_.data(), next_index_, pattern_.size(), codepoint_);
+  }
+
+  // Read the codepoint at the specified `index` in `pattern_` and store it in
+  // `codepoint_`.  In addition, `next_index_` is updated to the codepoint to be
+  // read next.
+  void NextAt(size_t index) {
+    next_index_ = index;
+    Next();
+  }
+
+  // Append a Token to our list of the given `type` and with a value consisting
+  // of the codepoints in `pattern_` starting at `value_pos` with
+  // `value_length`. Update `index_` to `next_pos` automatically.
+  void AddToken(TokenType type,
+                size_t next_pos,
+                size_t value_pos,
+                size_t value_length) {
+    token_list_.emplace_back(type, index_,
+                             pattern_.substr(value_pos, value_length));
+    index_ = next_pos;
+  }
+
+  // Append a Token to our list of the given `type` and with a value consisting
+  // of the codepoints in `pattern_` starting at `value_pos`.  The value length
+  // is automatically computed as the difference between `next_pos` and
+  // `value_pos`. Update `index_` to `next_pos` automatically.
+  void AddToken(TokenType type, size_t next_pos, size_t value_pos) {
+    AddToken(type, next_pos, value_pos, next_pos - value_pos);
+  }
+
+  // Append a Token to our list of the given `type` and with a value consisting
+  // of the codepoints in `pattern_` starting at `index_`.  The value length
+  // is automatically computed as the difference between `next_index_` and
+  // `index_`. Update `index_` to `next_index_` automatically.
+  void AddToken(TokenType type) { AddToken(type, next_index_, index_); }
+
+  const absl::string_view pattern_;
+  std::vector<Token> token_list_;
+
+  // `index_` tracks our "current" byte index in the input string.  Typically
+  // this will be updated every time we commit a token to `token_list_`.  It may
+  // stay frozen in place if we have a sub-loop consuming a larger token like
+  // a named group or regex group.
+  size_t index_ = 0;
+
+  // The `next_index_` member is used to find the next UTF8 codepoint in the
+  // string.  This is used as both an input and output from the U8_NEXT()
+  // function.  We keep this separate from `index_` because there are many
+  // cases where we need to read ahead of the last token consumed.
+  size_t next_index_ = 0;
+
+  UChar32 codepoint_ = U_SENTINEL;
+};
+
 }  // namespace
 
 const char* TokenTypeToString(TokenType type) {
@@ -74,181 +285,8 @@ std::ostream& operator<<(std::ostream& o, Token token) {
 
 // Split the input pattern into a list of tokens.
 absl::StatusOr<std::vector<Token>> Tokenize(absl::string_view pattern) {
-  // Verify that all characters are valid before parsing.  This simplifies the
-  // following logic.
-  for (size_t i = 0; i < pattern.size(); ++i) {
-  }
-
-  std::vector<Token> token_list;
-  token_list.reserve(pattern.size());
-
-  size_t i = 0;
-  while (i < pattern.size()) {
-    size_t next_i = i;
-    UChar32 c = U_SENTINEL;
-    U8_NEXT(pattern.data(), next_i, pattern.size(), c);
-    if (c == '*') {
-      token_list.emplace_back(TokenType::kAsterisk, i,
-                              pattern.substr(i, next_i - i));
-      i = next_i;
-      continue;
-    }
-
-    if (c == '+' || c == '?') {
-      token_list.emplace_back(TokenType::kOtherModifier, i,
-                              pattern.substr(i, next_i - i));
-      i = next_i;
-      continue;
-    }
-
-    // Escape sequences always escape a single following character at the
-    // level of the pattern.
-    if (c == '\\') {
-      if (i == (pattern.size() - 1)) {
-        return absl::InvalidArgumentError(
-            absl::StrFormat("Trailing escape character at %d.", i));
-      }
-      size_t escaped_i = next_i;
-      U8_NEXT(pattern.data(), next_i, pattern.size(), c);
-      token_list.emplace_back(TokenType::kEscapedChar, i,
-                              pattern.substr(escaped_i, next_i - escaped_i));
-      i = next_i;
-      continue;
-    }
-
-    if (c == '{') {
-      token_list.emplace_back(TokenType::kOpen, i,
-                              pattern.substr(i, next_i - i));
-      i = next_i;
-      continue;
-    }
-
-    if (c == '}') {
-      token_list.emplace_back(TokenType::kClose, i,
-                              pattern.substr(i, next_i - i));
-      i = next_i;
-      continue;
-    }
-
-    if (c == ':') {
-      size_t pos = next_i;
-      size_t name_start = pos;
-      while (pos < pattern.size()) {
-        // Reads next unicode codepoint from utf8 sequence and automatically
-        // updates the position index.  Since we're not sure this is a valid
-        // codepoint yet, use |tmp_pos| for the position and only commit to
-        // it once we check validity.
-        size_t tmp_pos = pos;
-        UChar32 codepoint;
-        U8_NEXT(pattern.data(), tmp_pos, pattern.size(), codepoint);
-
-        if (!IsNameCodepoint(codepoint, pos == name_start))
-          break;
-
-        pos = tmp_pos;
-      }
-
-      if (pos <= name_start) {
-        return absl::InvalidArgumentError(
-            absl::StrFormat("Missing parameter name at %d.", i));
-      }
-      size_t name_length = pos - name_start;
-
-      token_list.emplace_back(TokenType::kName, i,
-                              pattern.substr(name_start, name_length));
-      i = pos;
-      continue;
-    }
-
-    if (c == '(') {
-      size_t paren_nesting = 1;
-      size_t j = next_i;
-      const size_t regex_start = j;
-
-      while (j < pattern.size()) {
-        size_t next_j = j;
-        U8_NEXT(pattern.data(), next_j, pattern.size(), c);
-
-        if (!IsASCII(c)) {
-          return absl::InvalidArgumentError(
-              absl::StrFormat("Invalid character 0x%02x at %d.", c, j));
-        }
-        if (j == regex_start && c == '?') {
-          return absl::InvalidArgumentError(
-              absl::StrFormat("Regex cannot start with '?' at %d", j));
-        }
-
-        // This escape processing only handles single character escapes since
-        // we only need to understand escaped paren characters for our state
-        // processing.  The escape `\` character is propagated to the embedded
-        // regex expression.  This permits authors to write longer escape
-        // sequences such as `\x22` since the later characters will be
-        // propagated on subsequent loop iterations.
-        if (c == '\\') {
-          if (j == (pattern.size() - 1)) {
-            return absl::InvalidArgumentError(
-                absl::StrFormat("Trailing escape character at %d.", j));
-          }
-          size_t escaped_j = next_j;
-          U8_NEXT(pattern.data(), next_j, pattern.size(), c);
-          if (!IsASCII(c)) {
-            return absl::InvalidArgumentError(absl::StrFormat(
-                "Invalid character 0x%02x at %d.", c, escaped_j));
-          }
-          j = next_j;
-          continue;
-        }
-
-        if (c == ')') {
-          paren_nesting -= 1;
-          if (paren_nesting == 0) {
-            j = next_j;
-            break;
-          }
-        } else if (c == '(') {
-          paren_nesting += 1;
-          if (j == (pattern.size() - 1)) {
-            return absl::InvalidArgumentError(
-                absl::StrFormat("Unbalanced regex at %d.", j));
-          }
-          size_t tmp_j = next_j;
-          U8_NEXT(pattern.data(), tmp_j, pattern.size(), c);
-          // Require the the first character after an open paren is `?`.  This
-          // permits assertions, named capture groups, and non-capturing groups.
-          // It blocks, however, unnamed capture groups.
-          if (c != '?') {
-            return absl::InvalidArgumentError(absl::StrFormat(
-                "Unnamed capturing groups are not allowed at %d.", next_j));
-          }
-        }
-
-        j = next_j;
-      }
-
-      if (paren_nesting) {
-        return absl::InvalidArgumentError(
-            absl::StrFormat("Unbalanced regex at %d.", i));
-      }
-
-      const size_t regex_length = j - regex_start - 1;
-      if (regex_length == 0) {
-        return absl::InvalidArgumentError(
-            absl::StrFormat("Missing regex at %d.", i));
-      }
-
-      token_list.emplace_back(TokenType::kRegex, i,
-                              pattern.substr(regex_start, regex_length));
-      i = j;
-      continue;
-    }
-
-    token_list.emplace_back(TokenType::kChar, i, pattern.substr(i, next_i - i));
-    i = next_i;
-  }
-
-  token_list.emplace_back(TokenType::kEnd, i, absl::string_view());
-
-  return token_list;
+  Tokenizer tokenizer(pattern);
+  return tokenizer.Tokenize();
 }
 
 }  // namespace liburlpattern
