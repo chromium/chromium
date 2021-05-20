@@ -12,22 +12,25 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/ui/webui/web_ui_test_handler.h"
+#include "chrome/test/base/devtools_listener.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/javascript_browser_test.h"
+#include "content/public/browser/devtools_agent_host_observer.h"
 
 namespace {
 class WebUITestMessageHandler;
-}
+class WebUICoverageObserver;
+}  // namespace
 
 namespace base {
 class Value;
-}
+}  // namespace base
 
 namespace content {
 class RenderFrameHost;
 class ScopedWebUIControllerFactoryRegistration;
 class WebUI;
-}
+}  // namespace content
 
 class TestChromeWebUIControllerFactory;
 
@@ -184,6 +187,8 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
   std::unique_ptr<TestChromeWebUIControllerFactory> test_factory_;
   std::unique_ptr<content::ScopedWebUIControllerFactoryRegistration>
       factory_registration_;
+
+  std::unique_ptr<WebUICoverageObserver> coverage_handler_;
 };
 
 class WebUIBrowserTest : public BaseWebUIBrowserTest {

@@ -15,6 +15,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_switches.h"
@@ -32,6 +33,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/js_test_api.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
+#include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/url_data_source.h"
@@ -137,6 +139,78 @@ class WebUITestMessageHandler : public content::WebUIMessageHandler,
   content::WebUI* GetWebUI() override { return web_ui(); }
 };
 
+class WebUICoverageObserver : public content::DevToolsAgentHostObserver {
+ public:
+  explicit WebUICoverageObserver(base::FilePath devtools_code_coverage_dir)
+      : devtools_code_coverage_dir_(devtools_code_coverage_dir) {
+    content::DevToolsAgentHost::AddObserver(this);
+  }
+
+  ~WebUICoverageObserver() override = default;
+
+  bool CoverageEnabled() { return !devtools_code_coverage_dir_.empty(); }
+
+  void CollectCoverage(const std::string& test_name) {
+    ASSERT_TRUE(CoverageEnabled());
+
+    content::DevToolsAgentHost::RemoveObserver(this);
+    content::RunAllTasksUntilIdle();
+
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath store = devtools_code_coverage_dir_.AppendASCII(
+        "webui_javascript_code_coverage");
+    coverage::DevToolsListener::SetupCoverageStore(store);
+
+    for (auto& agent : devtools_agent_) {
+      auto* host = agent.first;
+      if (agent.second->HasCoverage(host))
+        agent.second->GetCoverage(host, store, test_name);
+      agent.second->Detach(host);
+    }
+
+    content::DevToolsAgentHost::DetachAllClients();
+  }
+
+ protected:
+  // content::DevToolsAgentHostObserver
+  bool ShouldForceDevToolsAgentHostCreation() override {
+    return CoverageEnabled();
+  }
+
+  void DevToolsAgentHostCreated(content::DevToolsAgentHost* host) override {
+    CHECK(devtools_agent_.find(host) == devtools_agent_.end());
+
+    uint32_t process_id = base::GetUniqueIdForProcess().GetUnsafeValue();
+    devtools_agent_[host] =
+        std::make_unique<coverage::DevToolsListener>(host, process_id);
+  }
+
+  void DevToolsAgentHostAttached(content::DevToolsAgentHost* host) override {}
+
+  void DevToolsAgentHostNavigated(content::DevToolsAgentHost* host) override {
+    if (devtools_agent_.find(host) == devtools_agent_.end())
+      return;
+
+    devtools_agent_.find(host)->second->Navigated(host);
+  }
+
+  void DevToolsAgentHostDetached(content::DevToolsAgentHost* host) override {}
+
+  void DevToolsAgentHostCrashed(content::DevToolsAgentHost* host,
+                                base::TerminationStatus status) override {
+    ASSERT_TRUE(devtools_agent_.find(host) == devtools_agent_.end());
+  }
+
+ private:
+  using DevToolsAgentMap =  // agent hosts: have a unique devtools listener
+      std::map<content::DevToolsAgentHost*,
+               std::unique_ptr<coverage::DevToolsListener>>;
+  base::FilePath devtools_code_coverage_dir_;
+  DevToolsAgentMap devtools_agent_;
+
+  DISALLOW_COPY_AND_ASSIGN(WebUICoverageObserver);
+};
+
 }  // namespace
 
 BaseWebUIBrowserTest::~BaseWebUIBrowserTest() = default;
@@ -179,9 +253,15 @@ bool BaseWebUIBrowserTest::RunJavascriptTestF(bool is_async,
   args.push_back(base::Value(test_fixture));
   args.push_back(base::Value(test_name));
 
-  if (is_async)
-    return RunJavascriptAsyncTest("RUN_TEST_F", std::move(args));
-  return RunJavascriptTest("RUN_TEST_F", std::move(args));
+  bool result = is_async ? RunJavascriptAsyncTest("RUN_TEST_F", std::move(args))
+                         : RunJavascriptTest("RUN_TEST_F", std::move(args));
+
+  if (coverage_handler_ && coverage_handler_->CoverageEnabled()) {
+    const std::string& full_test_name = base::StrCat({test_fixture, test_name});
+    coverage_handler_->CollectCoverage(full_test_name);
+  }
+
+  return result;
 }
 
 bool BaseWebUIBrowserTest::RunJavascriptTest(const std::string& test_name) {
@@ -452,6 +532,13 @@ void BaseWebUIBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   // Enables the MojoJSTest bindings which are used for WebUI tests.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kEnableBlinkFeatures, "MojoJSTest");
+
+  if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage)) {
+    base::FilePath devtools_code_coverage_dir =
+        command_line->GetSwitchValuePath(switches::kDevtoolsCodeCoverage);
+    coverage_handler_ =
+        std::make_unique<WebUICoverageObserver>(devtools_code_coverage_dir);
+  }
 }
 
 void BaseWebUIBrowserTest::SetUpOnMainThread() {

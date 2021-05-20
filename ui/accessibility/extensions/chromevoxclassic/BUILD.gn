@@ -505,6 +505,8 @@ test("chromevox_tests") {
     "//chrome/browser/extensions/browsertest_util.h",
     "//chrome/browser/ui/webui/web_ui_test_handler.cc",
     "//chrome/browser/ui/webui/web_ui_test_handler.h",
+    "//chrome/test/base/devtools_listener.cc",
+    "//chrome/test/base/devtools_listener.h",
     "//chrome/test/base/extension_js_browser_test.cc",
     "//chrome/test/base/extension_js_browser_test.h",
     "//chrome/test/base/extension_load_waiter_one_shot.cc",
