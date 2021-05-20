@@ -137,6 +137,14 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       content::SessionStorageNamespace* session_storage_namespace,
       const gfx::Size& size);
 
+  // Adds a NoStatePrefetch that only allows for same origin requests (i.e.,
+  // requests that only redirect to the same origin).
+  std::unique_ptr<NoStatePrefetchHandle> AddSameOriginSpeculation(
+      const GURL& url,
+      content::SessionStorageNamespace* session_storage_namespace,
+      const gfx::Size& size,
+      const url::Origin& initiator_origin);
+
   std::unique_ptr<NoStatePrefetchHandle> AddPrerenderFromExternalRequest(
       const GURL& url,
       const content::Referrer& referrer,

@@ -51,6 +51,8 @@ std::string PrerenderHistograms::GetHistogramPrefix(Origin origin) {
       return "navigationpredictor";
     case ORIGIN_ISOLATED_PRERENDER:
       return "isolatedprerender";
+    case ORIGIN_SAME_ORIGIN_SPECULATION:
+      return "sameoriginspeculation";
     case ORIGIN_MAX:
       NOTREACHED();
       break;

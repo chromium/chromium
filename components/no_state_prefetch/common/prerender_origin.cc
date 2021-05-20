@@ -29,6 +29,7 @@ const char* kOriginNames[] = {
     "[Deprecated] Offline",
     "Navigation Predictor",
     "Isolated Prerender",
+    "Speculation Rules Same Origin Prerender",
     "Max",
 };
 static_assert(base::size(kOriginNames) == ORIGIN_MAX + 1,

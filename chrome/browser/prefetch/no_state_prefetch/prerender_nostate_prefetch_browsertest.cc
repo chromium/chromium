@@ -55,6 +55,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -273,6 +274,8 @@ class NoStatePrefetchBrowserTest
         command_line);
     command_line->AppendSwitchASCII(embedder_support::kOriginTrialPublicKey,
                                     kOriginTrialPublicKeyForTesting);
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "SpeculationRulesPrefetchProxy");
   }
 
   void SetUpOnMainThread() override {
@@ -1813,6 +1816,98 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrerenderNoSSLReferrer) {
   const std::string referrer =
       EvalJs(web_contents, "document.referrer").ExtractString();
   EXPECT_TRUE(referrer.empty());
+}
+
+// Test class to verify speculation hints for non-private same origin no state
+// prefetches.
+class SpeculationNoStatePrefetchBrowserTest
+    : public NoStatePrefetchBrowserTest {
+ public:
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kSpeculationRulesPrefetchProxy);
+    NoStatePrefetchBrowserTest::SetUp();
+  }
+
+  void InsertSpeculation(const GURL& prefetch_url,
+                         FinalStatus expected_final_status,
+                         bool should_navigate_away = false) {
+    std::string speculation_script = R"(
+      var script = document.createElement('script');
+      script.type = 'speculationrules';
+      script.text = `{)";
+    speculation_script.append(R"("prefetch_with_subresources": [{)");
+    speculation_script.append(R"("source": "list",
+          "urls": [)");
+
+    speculation_script.append("\"").append(prefetch_url.spec()).append("\"");
+
+    speculation_script.append(R"(]
+        }]
+      }`;
+      document.head.appendChild(script);)");
+    std::unique_ptr<TestPrerender> test_prerender =
+        no_state_prefetch_contents_factory()->ExpectNoStatePrefetchContents(
+            expected_final_status);
+    EXPECT_TRUE(ExecuteScript(GetActiveWebContents(), speculation_script));
+    if (should_navigate_away) {
+      ui_test_utils::NavigateToURL(
+          current_browser(), src_server()->GetURL("/defaultresponse?page"));
+    }
+    test_prerender->WaitForStop();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SpeculationNoStatePrefetchBrowserTest,
+                       SpeculationPrefetch) {
+  UseHttpsSrcServer();
+  ui_test_utils::NavigateToURL(
+      current_browser(), src_server()->GetURL("/defaultresponse?landing"));
+  InsertSpeculation(src_server()->GetURL(kPrefetchPage),
+                    FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
+  WaitForRequestCount(src_server()->GetURL(kPrefetchPage), 1);
+  WaitForRequestCount(src_server()->GetURL(kPrefetchScript), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SpeculationNoStatePrefetchBrowserTest,
+                       SpeculationDisallowsCrossOriginRedirect) {
+  UseHttpsSrcServer();
+  ui_test_utils::NavigateToURL(
+      current_browser(), src_server()->GetURL("/defaultresponse?landing"));
+  InsertSpeculation(
+      src_server()->GetURL("/server-redirect-307?" +
+                           src_server()->GetURL(kPrefetchPage).spec()),
+      FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
+  WaitForRequestCount(src_server()->GetURL(kPrefetchPage), 1);
+  WaitForRequestCount(src_server()->GetURL(kPrefetchScript), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SpeculationNoStatePrefetchBrowserTest,
+                       SpeculationAllowsSameOriginRedirectBlocked) {
+  UseHttpsSrcServer();
+  ui_test_utils::NavigateToURL(
+      current_browser(), src_server()->GetURL("/defaultresponse?landing"));
+  InsertSpeculation(src_server()->GetURL(
+                        "/server-redirect-307?" +
+                        embedded_test_server()->GetURL(kPrefetchPage).spec()),
+                    FINAL_STATUS_UNSUPPORTED_SCHEME);
+  EXPECT_EQ(0u, GetRequestCount(embedded_test_server()->GetURL(kPrefetchPage)));
+  EXPECT_EQ(0u,
+            GetRequestCount(embedded_test_server()->GetURL(kPrefetchScript)));
+}
+
+IN_PROC_BROWSER_TEST_F(SpeculationNoStatePrefetchBrowserTest,
+                       HungSpeculationTimedOutByNavigation) {
+  UseHttpsSrcServer();
+  GetNoStatePrefetchManager()->mutable_config().abandon_time_to_live =
+      base::TimeDelta::FromMilliseconds(500);
+  ui_test_utils::NavigateToURL(
+      current_browser(), src_server()->GetURL("/defaultresponse?landing"));
+  InsertSpeculation(src_server()->GetURL("/hung"), FINAL_STATUS_TIMED_OUT,
+                    /*should_navigate_away=*/true);
 }
 
 }  // namespace prerender

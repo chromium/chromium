@@ -15,6 +15,10 @@ namespace content {
 class RenderFrameHost;
 }  // namespace content
 
+namespace prerender {
+class NoStatePrefetchHandle;
+}
+
 class ChromeSpeculationHostDelegate : public content::SpeculationHostDelegate {
  public:
   explicit ChromeSpeculationHostDelegate(
@@ -34,6 +38,10 @@ class ChromeSpeculationHostDelegate : public content::SpeculationHostDelegate {
   // content::SpeculationHostImpl, which inherits content::FrameServiceBase,
   // owns `this`, so `this` can access `render_frame_host_` safely.
   content::RenderFrameHost& render_frame_host_;
+
+  // All on-going NoStatePrefetches
+  std::vector<std::unique_ptr<prerender::NoStatePrefetchHandle>>
+      same_origin_no_state_prefetches_;
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_CHROME_SPECULATION_HOST_DELEGATE_H_

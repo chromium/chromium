@@ -6,16 +6,27 @@
 
 #include "chrome/browser/prefetch/prefetch_proxy/chrome_speculation_host_delegate.h"
 
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 ChromeSpeculationHostDelegate::ChromeSpeculationHostDelegate(
     content::RenderFrameHost& render_frame_host)
     : render_frame_host_(render_frame_host) {}
 
-ChromeSpeculationHostDelegate::~ChromeSpeculationHostDelegate() = default;
+ChromeSpeculationHostDelegate::~ChromeSpeculationHostDelegate() {
+  for (auto& prefetch : same_origin_no_state_prefetches_) {
+    prefetch->OnNavigateAway();
+  }
+}
 
 void ChromeSpeculationHostDelegate::ProcessCandidates(
     std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
@@ -32,6 +43,8 @@ void ChromeSpeculationHostDelegate::ProcessCandidates(
   std::vector<GURL> private_prefetches;
   std::vector<GURL> private_prefetches_with_subresources;
 
+  std::vector<GURL> same_origin_prefetches_with_subresources;
+
   const url::Origin origin = render_frame_host_.GetLastCommittedOrigin();
 
   // Returns true if the given entry is processed. Being processed means this
@@ -42,6 +55,22 @@ void ChromeSpeculationHostDelegate::ProcessCandidates(
         bool private_prefetch =
             candidate->requires_anonymous_client_ip_when_cross_origin &&
             !origin.IsSameOriginWith(url::Origin::Create(candidate->url));
+        bool same_origin_prefetch =
+            url::Origin::Create(candidate->url).IsSameOriginWith(origin);
+
+        if (!private_prefetch && !same_origin_prefetch)
+          return false;
+
+        if (same_origin_prefetch) {
+          DCHECK(!private_prefetch);
+          if (candidate->action ==
+              blink::mojom::SpeculationAction::kPrefetchWithSubresources) {
+            same_origin_prefetches_with_subresources.push_back(candidate->url);
+            return true;
+          }
+          return false;
+        }
+
         if (!private_prefetch)
           return false;
         if (candidate->action ==
@@ -67,5 +96,28 @@ void ChromeSpeculationHostDelegate::ProcessCandidates(
     prefetch_proxy_tab_helper->PrefetchSpeculationCandidates(
         private_prefetches_with_subresources, private_prefetches,
         render_frame_host_.GetLastCommittedURL());
+  }
+
+  if (same_origin_prefetches_with_subresources.size() > 0) {
+    prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+        prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
+            render_frame_host_.GetBrowserContext());
+    if (!no_state_prefetch_manager) {
+      return;
+    }
+    content::SessionStorageNamespace* session_storage_namespace =
+        web_contents->GetController().GetDefaultSessionStorageNamespace();
+    gfx::Size size = web_contents->GetContainerBounds().size();
+    // The chrome implementation almost certainly only allows one NSP to start
+    // (500 ms limit), but treat all requests of this class as handled by
+    // chrome.
+    for (const auto& url : same_origin_prefetches_with_subresources) {
+      std::unique_ptr<prerender::NoStatePrefetchHandle> handle =
+          no_state_prefetch_manager->AddSameOriginSpeculation(
+              url, session_storage_namespace, size, origin);
+      if (handle) {
+        same_origin_no_state_prefetches_.push_back(std::move(handle));
+      }
+    }
   }
 }

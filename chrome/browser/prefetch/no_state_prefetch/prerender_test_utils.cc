@@ -33,6 +33,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/ppapi_test_utils.h"
 #include "net/base/load_flags.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "ppapi/shared_impl/ppapi_switches.h"
@@ -504,6 +505,7 @@ void PrerenderInProcessBrowserTest::UseHttpsSrcServer() {
   https_src_server_->RegisterRequestMonitor(base::BindRepeating(
       &PrerenderInProcessBrowserTest::MonitorResourceRequest,
       base::Unretained(this)));
+  net::test_server::RegisterDefaultHandlers(https_src_server_.get());
   CHECK(https_src_server_->Start());
 }
 

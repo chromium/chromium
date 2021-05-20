@@ -238,6 +238,18 @@ NoStatePrefetchManager::AddIsolatedPrerender(
 }
 
 std::unique_ptr<NoStatePrefetchHandle>
+NoStatePrefetchManager::AddSameOriginSpeculation(
+    const GURL& url,
+    content::SessionStorageNamespace* session_storage_namespace,
+    const gfx::Size& size,
+    const url::Origin& initiator_origin) {
+  // The preconnect fallback won't happen.
+  return AddPrerenderWithPreconnectFallback(
+      ORIGIN_SAME_ORIGIN_SPECULATION, url, content::Referrer(),
+      initiator_origin, gfx::Rect(size), session_storage_namespace);
+}
+
+std::unique_ptr<NoStatePrefetchHandle>
 NoStatePrefetchManager::AddPrerenderFromExternalRequest(
     const GURL& url,
     const content::Referrer& referrer,
@@ -940,9 +952,11 @@ void NoStatePrefetchManager::SkipNoStatePrefetchContentsAndMaybePreconnect(
   prerender_history_->AddEntry(entry);
   histograms_->RecordFinalStatus(origin, final_status);
 
-  if (origin == ORIGIN_ISOLATED_PRERENDER) {
+  if (origin == ORIGIN_ISOLATED_PRERENDER ||
+      origin == ORIGIN_SAME_ORIGIN_SPECULATION) {
     // Prefetch Proxy should not preconnect since that can't be done in a fully
-    // isolated way.
+    // isolated way. Same origin speculation should already have an open
+    // connection.
     return;
   }
 

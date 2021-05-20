@@ -1264,6 +1264,8 @@ static_library("browser") {
     "prefetch/no_state_prefetch/no_state_prefetch_link_manager_factory.h",
     "prefetch/no_state_prefetch/no_state_prefetch_manager_factory.cc",
     "prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h",
+    "prefetch/no_state_prefetch/no_state_prefetch_navigation_throttle.cc",
+    "prefetch/no_state_prefetch/no_state_prefetch_navigation_throttle.h",
     "prefetch/no_state_prefetch/no_state_prefetch_tab_helper.cc",
     "prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h",
     "prefetch/pref_names.cc",
