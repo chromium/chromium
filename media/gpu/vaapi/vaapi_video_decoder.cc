@@ -274,6 +274,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   profile_ = profile;
   color_space_ = config.color_space_info();
+  hdr_metadata_ = config.hdr_metadata();
   encryption_scheme_ = config.encryption_scheme();
   auto accel_status = CreateAcceleratedVideoDecoder();
   if (!accel_status.is_ok()) {
@@ -606,7 +607,7 @@ void VaapiVideoDecoder::SurfaceReady(scoped_refptr<VASurface> va_surface,
   const auto gfx_color_space = color_space.ToGfxColorSpace();
   if (gfx_color_space.IsValid())
     video_frame->set_color_space(gfx_color_space);
-
+  video_frame->set_hdr_metadata(hdr_metadata_);
   output_cb_.Run(std::move(video_frame));
 }
 
