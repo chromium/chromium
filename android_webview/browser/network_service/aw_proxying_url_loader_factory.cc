@@ -605,10 +605,11 @@ void InterceptedRequest::ResumeReadingBodyFromNet() {
 
 std::unique_ptr<AwContentsIoThreadClient>
 InterceptedRequest::GetIoThreadClient() {
-  if (request_.originated_from_service_worker) {
+  // |frame_tree_node_id_| is set to no kNoFrameTreeNodeId for service
+  // workers. |request_.originated_from_service_worker| is insufficient here
+  // because it is not set to true on browser side requested main scripts.
+  if (frame_tree_node_id_ == content::RenderFrameHost::kNoFrameTreeNodeId)
     return AwContentsIoThreadClient::GetServiceWorkerIoThreadClient();
-  }
-  DCHECK_NE(frame_tree_node_id_, content::RenderFrameHost::kNoFrameTreeNodeId);
   return AwContentsIoThreadClient::FromID(frame_tree_node_id_);
 }
 
