@@ -298,6 +298,15 @@ GoogleServiceAuthError IdentityManager::GetErrorStateOfRefreshTokenForAccount(
   return token_service_->GetAuthError(account_id);
 }
 
+absl::optional<AccountInfo> IdentityManager::FindExtendedAccountInfoByAccountId(
+    const CoreAccountId& account_id) const {
+  AccountInfo account_info =
+      account_tracker_service_->GetAccountInfo(account_id);
+  if (account_info.IsEmpty())
+    return absl::nullopt;
+  return account_info;
+}
+
 absl::optional<AccountInfo>
 IdentityManager::FindExtendedAccountInfoForAccountWithRefreshToken(
     const CoreAccountInfo& account_info) const {

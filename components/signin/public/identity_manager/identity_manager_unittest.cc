@@ -2156,6 +2156,26 @@ TEST_F(IdentityManagerTest,
             identity_manager_observer()->BatchChangeRecords().at(0).at(0));
 }
 
+// Checks that FindExtendedAccountInfoByAccountId() returns information about
+// the account if the account is found or nullopt if there are no accounts with
+// requested |account_id|.
+TEST_F(IdentityManagerTest, FindExtendedAccountInfoByAccountId) {
+  auto account_id =
+      identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail);
+
+  absl::optional<AccountInfo> maybe_account_info;
+  maybe_account_info = identity_manager()->FindExtendedAccountInfoByAccountId(
+      CoreAccountId("dummy_value"));
+  EXPECT_FALSE(maybe_account_info.has_value());
+
+  maybe_account_info =
+      identity_manager()->FindExtendedAccountInfoByAccountId(account_id);
+  EXPECT_TRUE(maybe_account_info.has_value());
+  EXPECT_EQ(account_id, maybe_account_info.value().account_id);
+  EXPECT_EQ(kTestEmail, maybe_account_info.value().email);
+  EXPECT_EQ(kTestGaiaId, maybe_account_info.value().gaia);
+}
+
 // Checks that FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId()
 // returns information about the account if the account is found or nullopt if
 // there are no accounts with requested |account_id|.

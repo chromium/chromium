@@ -112,6 +112,8 @@ const char kNtpChromeCartModuleDataParam[] = "NtpChromeCartModuleDataParam";
 const char kNtpChromeCartModuleAbandonedCartDiscountParam[] =
     "NtpChromeCartModuleAbandonedCartDiscountParam";
 const char kNtpDriveModuleDataParam[] = "NtpDriveModuleDataParam";
+const char kNtpDriveModuleManagedUsersOnlyParam[] =
+    "NtpDriveModuleManagedUsersOnlyParam";
 
 base::Time GetLocalHistoryRepeatableQueriesAgeThreshold() {
   const base::TimeDelta kLocalHistoryRepeatableQueriesAgeThreshold =

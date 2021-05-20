@@ -251,6 +251,12 @@ class IdentityManager : public KeyedService,
   GoogleServiceAuthError GetErrorStateOfRefreshTokenForAccount(
       const CoreAccountId& account_id) const;
 
+  // Returns extended information for account identified by |account_id|.
+  // The information will be returned if the information is available regardless
+  // of whether the refresh token is available for the account.
+  absl::optional<AccountInfo> FindExtendedAccountInfoByAccountId(
+      const CoreAccountId& account_id) const;
+
   // Returns extended information for account identified by |account_info|.
   // The information will be returned if the information is available and
   // refresh token is available for account.
