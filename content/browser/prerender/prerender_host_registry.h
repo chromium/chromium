@@ -5,9 +5,9 @@
 #ifndef CONTENT_BROWSER_PRERENDER_PRERENDER_HOST_REGISTRY_H_
 #define CONTENT_BROWSER_PRERENDER_PRERENDER_HOST_REGISTRY_H_
 
-#include <map>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
@@ -140,12 +140,11 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // Hosts that are not reserved for activation yet.
   // TODO(https://crbug.com/1132746): Expire prerendered contents if they are
   // not used for a while.
-  std::map<int, std::unique_ptr<PrerenderHost>>
+  base::flat_map<int, std::unique_ptr<PrerenderHost>>
       prerender_host_by_frame_tree_node_id_;
-  std::map<GURL, int> frame_tree_node_id_by_url_;
 
   // Hosts that are reserved for activation.
-  std::map<int, std::unique_ptr<PrerenderHost>>
+  base::flat_map<int, std::unique_ptr<PrerenderHost>>
       reserved_prerender_host_by_frame_tree_node_id_;
 
   // Hosts that are scheduled to be deleted asynchronously.

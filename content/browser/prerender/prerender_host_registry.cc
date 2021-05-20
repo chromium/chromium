@@ -40,6 +40,10 @@ int PrerenderHostRegistry::CreateAndStartHost(
     blink::mojom::PrerenderAttributesPtr attributes,
     RenderFrameHostImpl& initiator_render_frame_host) {
   DCHECK(attributes);
+  TRACE_EVENT2(
+      "navigation", "PrerenderHostRegistry::CreateAndStartHost", "attributes",
+      attributes, "initiator_origin",
+      initiator_render_frame_host.GetLastCommittedOrigin().GetURL().spec());
 
   // Ensure observers are notified that a trigger occurred.
   base::ScopedClosureRunner notify_trigger(
@@ -57,15 +61,10 @@ int PrerenderHostRegistry::CreateAndStartHost(
   }
 
   // Ignore prerendering requests for the same URL.
-  const GURL prerendering_url = attributes->url;
-  TRACE_EVENT2(
-      "navigation", "PrerenderHostRegistry::CreateAndStartHost", "attributes",
-      attributes, "initiator_origin",
-      initiator_render_frame_host.GetLastCommittedOrigin().GetURL().spec());
-
-  auto found = frame_tree_node_id_by_url_.find(prerendering_url);
-  if (found != frame_tree_node_id_by_url_.end())
-    return found->second;
+  for (auto& iter : prerender_host_by_frame_tree_node_id_) {
+    if (iter.second->GetInitialUrl() == attributes->url)
+      return iter.first;
+  }
 
   auto prerender_host = std::make_unique<PrerenderHost>(
       std::move(attributes), initiator_render_frame_host);
@@ -75,7 +74,6 @@ int PrerenderHostRegistry::CreateAndStartHost(
                         frame_tree_node_id));
   prerender_host_by_frame_tree_node_id_[frame_tree_node_id] =
       std::move(prerender_host);
-  frame_tree_node_id_by_url_[prerendering_url] = frame_tree_node_id;
   prerender_host_by_frame_tree_node_id_[frame_tree_node_id]
       ->StartPrerendering();
 
@@ -137,17 +135,18 @@ int PrerenderHostRegistry::ReserveHostToActivate(
   if (site_instance->GetRelatedActiveContentsCount() != 1u)
     return RenderFrameHost::kNoFrameTreeNodeId;
 
-  auto id_iter = frame_tree_node_id_by_url_.find(navigation_url);
-  if (id_iter == frame_tree_node_id_by_url_.end())
-    return RenderFrameHostImpl::kNoFrameTreeNodeId;
-  const int prerender_frame_tree_node_id = id_iter->second;
-  frame_tree_node_id_by_url_.erase(id_iter);
-
-  auto host_iter =
-      prerender_host_by_frame_tree_node_id_.find(prerender_frame_tree_node_id);
-  DCHECK(host_iter != prerender_host_by_frame_tree_node_id_.end());
-  std::unique_ptr<PrerenderHost> host = std::move(host_iter->second);
-  prerender_host_by_frame_tree_node_id_.erase(host_iter);
+  // Find an available host for the navigation URL.
+  std::unique_ptr<PrerenderHost> host;
+  for (auto iter = prerender_host_by_frame_tree_node_id_.begin();
+       iter != prerender_host_by_frame_tree_node_id_.end(); ++iter) {
+    if (iter->second->GetInitialUrl() == navigation_url) {
+      host = std::move(iter->second);
+      prerender_host_by_frame_tree_node_id_.erase(iter);
+      break;
+    }
+  }
+  if (!host)
+    return RenderFrameHost::kNoFrameTreeNodeId;
 
   // If the host is not ready for activation yet, destroys it and returns
   // an invalid id. This is because it is likely that the prerendered page is
@@ -156,6 +155,7 @@ int PrerenderHostRegistry::ReserveHostToActivate(
     return RenderFrameHost::kNoFrameTreeNodeId;
 
   // Reserve the host for activation.
+  const int prerender_frame_tree_node_id = host->frame_tree_node_id();
   auto result = reserved_prerender_host_by_frame_tree_node_id_.emplace(
       prerender_frame_tree_node_id, std::move(host));
   DCHECK(result.second);
@@ -223,14 +223,11 @@ PrerenderHostRegistry::GetPrerenderedMainFrames() {
 
 PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
     const GURL& prerendering_url) {
-  auto id_iter = frame_tree_node_id_by_url_.find(prerendering_url);
-  if (id_iter == frame_tree_node_id_by_url_.end())
-    return nullptr;
-  const int prerender_frame_tree_node_id = id_iter->second;
-  auto host_iter =
-      prerender_host_by_frame_tree_node_id_.find(prerender_frame_tree_node_id);
-  DCHECK(host_iter != prerender_host_by_frame_tree_node_id_.end());
-  return host_iter->second.get();
+  for (auto& iter : prerender_host_by_frame_tree_node_id_) {
+    if (iter.second->GetInitialUrl() == prerendering_url)
+      return iter.second.get();
+  }
+  return nullptr;
 }
 
 std::unique_ptr<PrerenderHost> PrerenderHostRegistry::AbandonHostInternal(
@@ -239,7 +236,6 @@ std::unique_ptr<PrerenderHost> PrerenderHostRegistry::AbandonHostInternal(
   if (found == prerender_host_by_frame_tree_node_id_.end())
     return nullptr;
   std::unique_ptr<PrerenderHost> prerender_host = std::move(found->second);
-  frame_tree_node_id_by_url_.erase(prerender_host->GetInitialUrl());
   prerender_host_by_frame_tree_node_id_.erase(found);
   return prerender_host;
 }
