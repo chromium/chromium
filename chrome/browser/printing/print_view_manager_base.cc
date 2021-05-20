@@ -316,11 +316,7 @@ void ScriptedPrintReply(mojom::PrintManagerHost::ScriptedPrintCallback callback,
     return;
   }
 
-  if (!params) {
-    // Fills |params| with initial values.
-    params = mojom::PrintPagesParams::New();
-    params->params = mojom::PrintParams::New();
-  }
+  DCHECK(params);
   std::move(callback).Run(std::move(params));
 }
 
