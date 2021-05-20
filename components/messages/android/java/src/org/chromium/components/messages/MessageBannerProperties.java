@@ -54,8 +54,7 @@ public class MessageBannerProperties {
     public static final WritableObjectPropertyKey<String> SECONDARY_ICON_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
     // Unit: milliseconds.
-    public static final WritableLongPropertyKey DISMISSAL_DURATION_EXTEND =
-            new WritableLongPropertyKey();
+    public static final WritableLongPropertyKey DISMISSAL_DURATION = new WritableLongPropertyKey();
     /**
      * The callback invoked when the message is dismissed. DismissReason is passed through the
      * callback's parameter.
@@ -77,7 +76,6 @@ public class MessageBannerProperties {
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {PRIMARY_BUTTON_TEXT,
             PRIMARY_BUTTON_CLICK_LISTENER, TITLE, DESCRIPTION, ICON, ICON_RESOURCE_ID,
             ICON_TINT_COLOR, SECONDARY_ICON, SECONDARY_ICON_RESOURCE_ID, SECONDARY_BUTTON_MENU_TEXT,
-            SECONDARY_ICON_CONTENT_DESCRIPTION, DISMISSAL_DURATION_EXTEND, TRANSLATION_X,
-            TRANSLATION_Y, ALPHA, ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION, ON_SECONDARY_ACTION,
-            ON_DISMISSED};
+            SECONDARY_ICON_CONTENT_DESCRIPTION, DISMISSAL_DURATION, TRANSLATION_X, TRANSLATION_Y,
+            ALPHA, ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION, ON_SECONDARY_ACTION, ON_DISMISSED};
 }

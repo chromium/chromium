@@ -130,7 +130,7 @@ public class SingleActionMessageTest {
     public void testAutoDismissDurationExtended() {
         MessageContainer container = new MessageContainer(sActivity, null);
         PropertyModel model = createBasicSingleActionMessageModel();
-        model.set(MessageBannerProperties.DISMISSAL_DURATION_EXTEND, 1000);
+        model.set(MessageBannerProperties.DISMISSAL_DURATION, 1000);
         long duration = 42;
         SingleActionMessage message =
                 new SingleActionMessage(container, model, mEmptyDismissCallback,

@@ -61,12 +61,12 @@ public class SingleActionMessage implements MessageStateHandler {
         mMaxTranslationSupplier = maxTranslationSupplier;
         mAnimatorStartCallback = animatorStartCallback;
 
-        long dismissalDurationExtend = mModel.getAllSetProperties().contains(
-                                               MessageBannerProperties.DISMISSAL_DURATION_EXTEND)
-                ? mModel.get(MessageBannerProperties.DISMISSAL_DURATION_EXTEND)
+        long dismissalDuration =
+                mModel.getAllSetProperties().contains(MessageBannerProperties.DISMISSAL_DURATION)
+                ? mModel.get(MessageBannerProperties.DISMISSAL_DURATION)
                 : 0;
 
-        mAutodismissDurationMs = () -> autodismissDurationProvider.get(dismissalDurationExtend);
+        mAutodismissDurationMs = () -> autodismissDurationProvider.get(dismissalDuration);
 
         mModel.set(
                 MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER, this::handlePrimaryAction);

@@ -11,6 +11,7 @@
     android:layout_width="match_parent"
     android:minHeight="@dimen/message_banner_height"
     android:layout_gravity="center_horizontal"
+    android:gravity="center_vertical"
     android:orientation="horizontal"
     android:layout_marginTop="@dimen/message_shadow_top_margin"
     android:layout_marginBottom="@dimen/message_shadow_bottom_margin"
@@ -25,12 +26,11 @@
 
     <ImageView
         android:id="@+id/message_icon"
+        app:tint="@color/default_icon_color_blue"
         android:paddingStart="@dimen/message_icon_padding"
         android:paddingEnd="@dimen/message_icon_padding"
-        app:tint="@color/default_icon_color_blue"
-        android:layout_weight="0"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="24dp"
         android:importantForAccessibility="no" />
 
     <LinearLayout

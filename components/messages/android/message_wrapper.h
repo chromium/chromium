@@ -47,12 +47,15 @@ class MessageWrapper {
   // translate from chromium resource_id to Android drawable resource_id.
   int GetIconResourceId();
   void SetIconResourceId(int resource_id);
+  // The icon is tinted to default_icon_color_blue by default.
+  // Call this method to display icons of original colors.
+  void DisableIconTint();
   int GetSecondaryIconResourceId();
   void SetSecondaryIconResourceId(int resource_id);
 
   void SetSecondaryActionCallback(base::OnceClosure callback);
 
-  void SetDurationExtension(long extension);
+  void SetDuration(long customDuration);
 
   // Following methods forward calls from java to provided callbacks.
   void HandleActionClick(JNIEnv* env);

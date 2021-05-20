@@ -98,6 +98,12 @@ public final class MessageWrapper {
     }
 
     @CalledByNative
+    void disableIconTint() {
+        mMessageProperties.set(
+                MessageBannerProperties.ICON_TINT_COLOR, MessageBannerProperties.TINT_NONE);
+    }
+
+    @CalledByNative
     @DrawableRes
     int getSecondaryIconResourceId() {
         return mMessageProperties.get(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID);
@@ -109,8 +115,8 @@ public final class MessageWrapper {
     }
 
     @CalledByNative
-    void setDurationExtension(long extension) {
-        mMessageProperties.set(MessageBannerProperties.DISMISSAL_DURATION_EXTEND, extension);
+    void setDuration(long customDuration) {
+        mMessageProperties.set(MessageBannerProperties.DISMISSAL_DURATION, customDuration);
     }
 
     @CalledByNative

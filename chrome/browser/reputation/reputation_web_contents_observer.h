@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_REPUTATION_REPUTATION_WEB_CONTENTS_OBSERVER_H_
 
 #include "base/callback_forward.h"
+#include "build/build_config.h"
 #include "chrome/browser/lookalikes/digital_asset_links_cross_validator.h"
 #include "chrome/browser/reputation/reputation_service.h"
 #include "chrome/browser/reputation/safety_tip_ui.h"
@@ -19,6 +20,10 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if defined(OS_ANDROID)
+#include "chrome/browser/reputation/safety_tip_message_delegate.h"
+#endif
 
 class Profile;
 
@@ -112,6 +117,10 @@ class ReputationWebContentsObserver
   bool reputation_check_pending_for_testing_;
 
   base::OnceClosure safety_tip_close_callback_for_testing_;
+
+#if defined(OS_ANDROID)
+  SafetyTipMessageDelegate delegate_;
+#endif
 
   std::unique_ptr<DigitalAssetLinkCrossValidator> digital_asset_link_validator_;
 

@@ -34,7 +34,8 @@ void LeaveSiteFromSafetyTip(content::WebContents* web_contents,
     navigated_to = GURL(kSafetyTipLeaveSiteUrl);
 
 #if defined(OS_ANDROID)
-    if (TabAndroid::FromWebContents(web_contents)->IsCustomTab()) {
+    TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
+    if (tab && tab->IsCustomTab()) {
       auto& controller = web_contents->GetController();
       // For CCTs, just go back if we can...
       if (controller.CanGoBack()) {
