@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.Long
 import org.chromium.chrome.browser.share.screenshot.EditorScreenshotSource;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.Toast;
 
 /**
  * LongScreenshotsMediator is responsible for retrieving the long screenshot Bitmaps via
@@ -63,7 +64,10 @@ public class LongScreenshotsMediator
                 if (status == EntryStatus.BITMAP_GENERATED) {
                     showAreaSelectionDialog(entry.getBitmap());
                 } else {
-                    // TODO(tgupta/kmilka): Handle the error case correctly.
+                    // TODO(crbug/1024586): Handle the error case properly: dismiss dialog?
+                    Toast.makeText(mActivity, R.string.sharing_long_screenshot_unknown_error,
+                                 Toast.LENGTH_LONG)
+                            .show();
                 }
             }
         });
@@ -123,20 +127,7 @@ public class LongScreenshotsMediator
         }
 
         LongScreenshotsEntry newEntry = mEntryManager.getNextEntry(mCurrentEntry.getId());
-        if (newEntry == null) {
-            return;
-        } else if (newEntry.getStatus() == EntryStatus.BOUNDS_BELOW_CAPTURE) {
-            // TODO(crbug/1153969): Disable the down button and show a toast
-            return;
-        }
-
-        mPendingEntry = newEntry;
-        // Next entry is already generated/available.
-        if (mPendingEntry.getStatus() == EntryStatus.BITMAP_GENERATED) {
-            onResult(EntryStatus.BITMAP_GENERATED);
-        } else {
-            mPendingEntry.setListener(this);
-        }
+        processNewEntry(newEntry);
     }
 
     public void areaSelectionUp(View view) {
@@ -147,10 +138,34 @@ public class LongScreenshotsMediator
         }
 
         LongScreenshotsEntry newEntry = mEntryManager.getPreviousEntry(mCurrentEntry.getId());
+        processNewEntry(newEntry);
+    }
+
+    // Performs postprocessing or error handling on new entry availability.
+    private void processNewEntry(LongScreenshotsEntry newEntry) {
         if (newEntry == null) {
             return;
-        } else if (newEntry.getStatus() == EntryStatus.BOUNDS_ABOVE_CAPTURE) {
-            // TODO(crbug/1153969): Disable the down button and show a toast
+        }
+        if (newEntry.getStatus() == EntryStatus.BOUNDS_ABOVE_CAPTURE) {
+            // TODO(crbug/1153969): Disable the up button.
+            Toast.makeText(
+                         mActivity, R.string.sharing_long_screenshot_reached_top, Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+
+        if (newEntry.getStatus() == EntryStatus.BOUNDS_BELOW_CAPTURE) {
+            // TODO(crbug/1153969): Disable the down button.
+            Toast.makeText(mActivity, R.string.sharing_long_screenshot_reached_bottom,
+                         Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+
+        if (newEntry.getStatus() == EntryStatus.INSUFFICIENT_MEMORY) {
+            Toast.makeText(mActivity, R.string.sharing_long_screenshot_memory_pressure,
+                         Toast.LENGTH_LONG)
+                    .show();
             return;
         }
 

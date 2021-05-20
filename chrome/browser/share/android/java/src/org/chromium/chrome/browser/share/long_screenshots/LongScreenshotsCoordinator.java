@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotCoordinator;
@@ -15,6 +16,7 @@ import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.widget.Toast;
 
 /**
  * Handles the long screenshot action in the Sharing Hub and launches the screenshot editor.
@@ -84,7 +86,9 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
         mMediator.capture(() -> {
             mScreenshot = mMediator.getScreenshot();
             if (mScreenshot == null) {
-                // TODO(crbug/1024586): Show error message
+                Toast.makeText(mActivity, R.string.sharing_long_screenshot_unknown_error,
+                             Toast.LENGTH_LONG)
+                        .show();
             } else {
                 super.handleScreenshot();
             }

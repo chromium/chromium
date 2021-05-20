@@ -31,14 +31,13 @@
             style="@style/ToolbarButton" />
 
         <TextView
-            android:id="@+id/qrcode_camera_error_text"
+            android:id="@+id/sharing_long_screenshot_dialog_title"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:layout_gravity="center_horizontal"
             android:text="@string/sharing_long_screenshot"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
-
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary.Light" />
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/done_button"
             android:contentDescription="@string/close"
@@ -59,10 +58,22 @@
         android:layout_height="1dp"
         android:layout_width="match_parent"/>
 
+    <TextView
+        android:id="@+id/sharing_long_screenshot_dialog_instructions"
+        android:background="@color/default_scrim_color"
+        android:layout_above="@id/divider"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="6dp"
+        android:gravity="center_horizontal"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/sharing_long_screenshot_instructions"
+        android:textAppearance="@style/TextAppearance.TextSmall.Primary.Light" />
+
     <FrameLayout
         android:id="@+id/bitmap_container"
-        android:background="@color/black_alpha_65"
-        android:layout_above="@id/divider"
+        android:background="@color/default_scrim_color"
+        android:layout_above="@id/sharing_long_screenshot_dialog_instructions"
         android:layout_alignParentTop="true"
         android:layout_width="match_parent"
         android:layout_height="0dp">

@@ -171,6 +171,7 @@ public class EntryManager {
      */
     private void updateGeneratorStatus(@EntryStatus int status) {
         mGeneratorStatus = status;
+
         if (status == EntryStatus.CAPTURE_COMPLETE) {
             for (LongScreenshotsEntry entry : mQueuedEntries) {
                 entry.generateBitmap();
