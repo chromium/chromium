@@ -129,51 +129,54 @@ std::string PreviousSaveCreditCardPromptUserDecisionToString(
 
 // Converts a server field type that can be edited in the settings to an enum
 // used for metrics.
-AutofillMetrics::EditedFieldTypeForMetrics ConvertEditedFieldTypeForMetrics(
-    ServerFieldType field_type) {
+AutofillMetrics::SettingsVisibleFieldTypeForMetrics
+ConvertSettingsVisibleFieldTypeForMetrics(ServerFieldType field_type) {
   switch (field_type) {
     case ServerFieldType::NAME_FULL:
-      return AutofillMetrics::EditedFieldTypeForMetrics::kName;
+      return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kName;
       break;
 
     case ServerFieldType::EMAIL_ADDRESS:
-      return AutofillMetrics::EditedFieldTypeForMetrics::kEmailAddress;
+      return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kEmailAddress;
       break;
 
     case ServerFieldType::PHONE_HOME_WHOLE_NUMBER:
-      return AutofillMetrics::EditedFieldTypeForMetrics::kPhoneNumber;
+      return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kPhoneNumber;
       break;
 
     case ServerFieldType::ADDRESS_HOME_CITY:
-      return AutofillMetrics::EditedFieldTypeForMetrics::kCity;
+      return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kCity;
       break;
 
     case ServerFieldType::ADDRESS_HOME_COUNTRY:
-      return AutofillMetrics::EditedFieldTypeForMetrics::kCountry;
+      return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kCountry;
       break;
 
     case ServerFieldType::ADDRESS_HOME_ZIP:
-      return AutofillMetrics::EditedFieldTypeForMetrics::kZip;
+      return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kZip;
       break;
 
     case ServerFieldType::ADDRESS_HOME_STATE:
-      return AutofillMetrics::EditedFieldTypeForMetrics::kState;
+      return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kState;
       break;
 
     case ServerFieldType::ADDRESS_HOME_STREET_ADDRESS:
-      return AutofillMetrics::EditedFieldTypeForMetrics::kStreetAddress;
+      return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::
+          kStreetAddress;
       break;
 
     case ServerFieldType::ADDRESS_HOME_DEPENDENT_LOCALITY:
-      return AutofillMetrics::EditedFieldTypeForMetrics::kDependentLocality;
+      return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::
+          kDependentLocality;
       break;
 
     case ServerFieldType::NAME_HONORIFIC_PREFIX:
-      return AutofillMetrics::EditedFieldTypeForMetrics::kHonorificPrefix;
+      return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::
+          kHonorificPrefix;
       break;
 
     default:
-      return AutofillMetrics::EditedFieldTypeForMetrics::kUndefined;
+      return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kUndefined;
       NOTREACHED();
       break;
   }
@@ -2690,8 +2693,9 @@ void AutofillMetrics::LogNewProfileImportDecision(
 }
 
 void AutofillMetrics::LogNewProfileEditedType(ServerFieldType edited_type) {
-  base::UmaHistogramEnumeration("Autofill.ProfileImport.NewProfileEditedType",
-                                ConvertEditedFieldTypeForMetrics(edited_type));
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.NewProfileEditedType",
+      ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
 }
 
 void AutofillMetrics::LogNewProfileNumberOfEditedFields(
@@ -2707,16 +2711,30 @@ void AutofillMetrics::LogProfileUpdateImportDecision(
                                 decision);
 }
 
+void AutofillMetrics::LogProfileUpdateAffectedType(
+    ServerFieldType affected_type) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.UpdateProfileAffectedType",
+      ConvertSettingsVisibleFieldTypeForMetrics(affected_type));
+}
+
 void AutofillMetrics::LogProfileUpdateEditedType(ServerFieldType edited_type) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.UpdateProfileEditedType",
-      ConvertEditedFieldTypeForMetrics(edited_type));
+      ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
 }
 
 void AutofillMetrics::LogUpdateProfileNumberOfEditedFields(
     int number_of_edited_fields) {
   base::UmaHistogramExactLinear(
       "Autofill.ProfileImport.UpdateProfileNumberOfEditedFields",
+      number_of_edited_fields, /*exclusive_max=*/15);
+}
+
+void AutofillMetrics::LogUpdateProfileNumberOfAffectedFields(
+    int number_of_edited_fields) {
+  base::UmaHistogramExactLinear(
+      "Autofill.ProfileImport.UpdateProfileNumberOfAffectedFields",
       number_of_edited_fields, /*exclusive_max=*/15);
 }
 
