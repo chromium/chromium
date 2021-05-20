@@ -26,6 +26,15 @@ class DownloadRequestMakerTest : public testing::Test {
       : mock_feature_extractor_(
             new testing::StrictMock<MockBinaryFeatureExtractor>()) {}
 
+  void TearDown() override {
+    // Destroying the profile triggers a call to leveldb_proto::
+    // ProtoDatabaseProvider::SetSharedDBDeleteObsoleteDelayForTesting, which
+    // can race with leveldb_proto::SharedProtoDatabase::OnDatabaseInit
+    // on another thread.  Allowing those tasks to complete before we destroy
+    // the profile should fix the race.
+    task_environment_.RunUntilIdle();
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
