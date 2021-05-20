@@ -57,20 +57,17 @@ different platforms.
 A `symbol_level = 0` `is_debug = false` `use_lld = true` x64 build produces
 a mostly-working Chromium.app, but there are open issues and missing features:
 
-- LLD's ARM support is very new
-  - relocations aren't handled correctly ([bug](https://llvm.org/PR49444))
-  - ad-hoc code signing only signs executables, not yet dylibs
-    ([in-progress patch](https://reviews.llvm.org/D97994)).
+- LLD's ARM support is fairly new
+  - Chromium crashes very early during startup ([bug](https://llvm.org/PR50411))
   - likely other bugs for `target_cpu="arm64"`
-- LLD produces bad debug info, and LLD-linked binaries don't yet show C++
-  source code in a debugger ([bug](https://llvm.org/PR48714)]
-- We haven't tried actually running any other binaries, so chances are many
-  other tests fail
+- Some tests fail, see mac-rel job on https://chromium-review.googlesource.com/c/chromium/src/+/2885356
+  - Two crashpad_tests fail
+    ([fixed upstream](https://reviews.llvm.org/rGb4ead2c37bcbb1f81919c68e2a2a227aac90f07c))
+  - LLD-linked Chromium fails to run on macOS 10.14 or earlier
+    ([bug](https://llvm.org/PR49800))
 - LLD doesn't yet implement `-dead_strip`, leading to many linker warnings
 - LLD doesn't yet implement deduplication (aka "ICF")
-- LLD doesn't yet call graph profile sort
-- LLD doesn't yet implement `-exported_symbol` or `-exported_symbols_list`,
-  leading to some linker warnings
+- LLD doesn't yet implement call graph profile sort
 
 ## Opting in
 
