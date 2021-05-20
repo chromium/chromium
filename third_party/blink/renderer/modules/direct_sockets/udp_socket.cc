@@ -27,7 +27,7 @@ UDPSocket::UDPSocket(ScriptPromiseResolver& resolver)
 
 UDPSocket::~UDPSocket() = default;
 
-mojo::PendingReceiver<network::mojom::blink::UDPSocket>
+mojo::PendingReceiver<blink::mojom::blink::DirectUDPSocket>
 UDPSocket::GetUDPSocketReceiver() {
   DCHECK(resolver_);
   return udp_socket_.BindNewPipeAndPassReceiver();

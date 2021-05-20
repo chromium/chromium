@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/udp_socket.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -37,7 +38,7 @@ class MODULES_EXPORT UDPSocket final
   UDPSocket& operator=(const UDPSocket&) = delete;
 
   // Called by NavigatorSocket when initiating a connection:
-  mojo::PendingReceiver<network::mojom::blink::UDPSocket>
+  mojo::PendingReceiver<blink::mojom::blink::DirectUDPSocket>
   GetUDPSocketReceiver();
   mojo::PendingRemote<network::mojom::blink::UDPSocketListener>
   GetUDPSocketListener();
@@ -63,7 +64,7 @@ class MODULES_EXPORT UDPSocket final
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
 
-  mojo::Remote<network::mojom::blink::UDPSocket> udp_socket_;
+  mojo::Remote<blink::mojom::blink::DirectUDPSocket> udp_socket_;
   mojo::Receiver<network::mojom::blink::UDPSocketListener>
       socket_listener_receiver_{this};
 };

@@ -25,23 +25,6 @@
 
 namespace blink {
 
-constexpr net::NetworkTrafficAnnotationTag kDirectSocketsTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("direct_sockets", R"(
-        semantics {
-          sender: "Direct Sockets API"
-          description: "Web app request to communicate with network device"
-          trigger: "User completes network connection dialog"
-          data: "Any data sent by web app"
-          destination: OTHER
-          destination_other: "Address entered by user in connection dialog"
-        }
-        policy {
-          cookies_allowed: NO
-          setting: "This feature cannot yet be controlled by settings."
-          policy_exception_justification: "To be implemented"
-        }
-      )");
-
 const char NavigatorSocket::kSupplementName[] = "NavigatorSocket";
 
 NavigatorSocket::NavigatorSocket(ExecutionContext* context)
@@ -148,7 +131,6 @@ ScriptPromise NavigatorSocket::openTCPSocket(ScriptState* script_state,
 
   service_remote_->OpenTcpSocket(
       CreateSocketOptions(*options),
-      net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
       pending->GetTCPSocketReceiver(), pending->GetTCPSocketObserver(),
       WTF::Bind(&NavigatorSocket::OnTcpOpen, WrapPersistent(this),
                 WrapPersistent(pending)));

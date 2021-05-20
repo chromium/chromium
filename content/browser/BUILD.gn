@@ -2738,6 +2738,8 @@ source_set("browser") {
       # The Direct Sockets API is not implemented on Android.
       "direct_sockets/direct_sockets_service_impl.cc",
       "direct_sockets/direct_sockets_service_impl.h",
+      "direct_sockets/direct_udp_socket_impl.cc",
+      "direct_sockets/direct_udp_socket_impl.h",
 
       # The Serial API is not implemented on Android.
       "serial/serial_service.cc",
