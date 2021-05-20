@@ -700,6 +700,7 @@ static_library("test_support") {
   sources = [
     "interaction/element_test_util.cc",
     "interaction/element_test_util.h",
+    "interaction/expect_call_in_scope.h",
     "resource/mock_resource_bundle_delegate.cc",
     "resource/mock_resource_bundle_delegate.h",
   ]

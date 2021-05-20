@@ -5,8 +5,6 @@
 #ifndef UI_BASE_INTERACTION_ELEMENT_TEST_UTIL_H_
 #define UI_BASE_INTERACTION_ELEMENT_TEST_UTIL_H_
 
-#include "base/test/mock_callback.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 
@@ -51,37 +49,6 @@ class TestElementOtherFramework : public TestElementBase {
 
 // Convenience typedef for unique pointers to test elements.
 using TestElementPtr = std::unique_ptr<TestElementBase>;
-
-// Require that a specific base::MockCallback (or callbacks) is called in a
-// specific order, inside a specific block of code.
-
-#define EXPECT_CALL_IN_SCOPE(Name, Call, Block) \
-  EXPECT_CALL(Name, Call).Times(1);             \
-  Block;                                        \
-  EXPECT_CALL(Name, Run).Times(0)
-
-#define EXPECT_CALLS_IN_SCOPE_2(Name1, Call1, Name2, Call2, Block) \
-  {                                                                \
-    testing::InSequence in_sequence;                               \
-    EXPECT_CALL(Name1, Call1).Times(1);                            \
-    EXPECT_CALL(Name2, Call2).Times(1);                            \
-  }                                                                \
-  Block;                                                           \
-  EXPECT_CALL(Name1, Run).Times(0);                                \
-  EXPECT_CALL(Name2, Run).Times(0)
-
-#define EXPECT_CALLS_IN_SCOPE_3(Name1, Call1, Name2, Call2, Name3, Call3, \
-                                Block)                                    \
-  {                                                                       \
-    testing::InSequence in_sequence;                                      \
-    EXPECT_CALL(Name1, Call1).Times(1);                                   \
-    EXPECT_CALL(Name2, Call2).Times(1);                                   \
-    EXPECT_CALL(Name3, Call3).Times(1);                                   \
-  }                                                                       \
-  Block;                                                                  \
-  EXPECT_CALL(Name1, Run).Times(0);                                       \
-  EXPECT_CALL(Name2, Run).Times(0);                                       \
-  EXPECT_CALL(Name3, Run).Times(0)
 
 }  // namespace ui
 

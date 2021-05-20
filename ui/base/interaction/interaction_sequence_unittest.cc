@@ -12,6 +12,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
 
 namespace ui {
 
@@ -22,18 +23,6 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier2);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier3);
 const ElementContext kTestContext1(1);
 const ElementContext kTestContext2(2);
-
-#define DECLARE_STEP_CALLBACK(Name)                           \
-  base::MockCallback<InteractionSequence::StepCallback> Name; \
-  EXPECT_CALL(Name, Run).Times(0)
-
-#define DECLARE_COMPLETED_CALLBACK(Name)                           \
-  base::MockCallback<InteractionSequence::CompletedCallback> Name; \
-  EXPECT_CALL(Name, Run).Times(0)
-
-#define DECLARE_ABORTED_CALLBACK(Name)                           \
-  base::MockCallback<InteractionSequence::AbortedCallback> Name; \
-  EXPECT_CALL(Name, Run).Times(0)
 
 }  // namespace
 
@@ -59,8 +48,8 @@ TEST(InteractionSequenceTest, ConstructAndDestructWithWithInitialElement) {
 }
 
 TEST(InteractionSequenceTest, StartAndDestruct) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
   TestElement element(kTestIdentifier1, kTestContext1);
   element.Show();
   auto tracker =
@@ -78,8 +67,8 @@ TEST(InteractionSequenceTest, StartAndDestruct) {
 }
 
 TEST(InteractionSequenceTest, StartFailsIfWithInitialElementNotVisible) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
   TestElement element(kTestIdentifier1, kTestContext1);
   auto tracker =
       InteractionSequence::Builder()
@@ -96,8 +85,8 @@ TEST(InteractionSequenceTest, StartFailsIfWithInitialElementNotVisible) {
 
 TEST(InteractionSequenceTest,
      StartFailsIfWithInitialElementNotVisibleIdentifierOnly) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
   TestElement element(kTestIdentifier1, kTestContext1);
   auto tracker =
       InteractionSequence::Builder()
@@ -119,8 +108,8 @@ TEST(InteractionSequenceTest,
 }
 
 TEST(InteractionSequenceTest, AbortIfWithInitialElementHiddenBeforeStart) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
   TestElementPtr element =
       std::make_unique<TestElement>(kTestIdentifier1, kTestContext1);
   element->Show();
@@ -140,8 +129,8 @@ TEST(InteractionSequenceTest, AbortIfWithInitialElementHiddenBeforeStart) {
 
 TEST(InteractionSequenceTest,
      AbortIfWithInitialElementHiddenBeforeStartIdentifierOnly) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
   TestElementPtr element =
       std::make_unique<TestElement>(kTestIdentifier1, kTestContext1);
   element->Show();
@@ -166,8 +155,8 @@ TEST(InteractionSequenceTest,
 }
 
 TEST(InteractionSequenceTest, HideWithInitialElementAborts) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
   TestElement element(kTestIdentifier1, kTestContext1);
   element.Show();
   auto tracker =
@@ -186,8 +175,8 @@ TEST(InteractionSequenceTest, HideWithInitialElementAborts) {
 
 TEST(InteractionSequenceTest,
      HideWithInitialElementDoesNotAbortIfMustRemainVisibleIsFalse) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
   TestElement element(kTestIdentifier1, kTestContext1);
   element.Show();
   auto tracker =
@@ -212,9 +201,9 @@ TEST(InteractionSequenceTest,
 }
 
 TEST(InteractionSequenceTest, TransitionOnActivated) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step);
   TestElement element(kTestIdentifier1, kTestContext1);
   element.Show();
   auto tracker =
@@ -237,9 +226,9 @@ TEST(InteractionSequenceTest, TransitionOnActivated) {
 }
 
 TEST(InteractionSequenceTest, TransitionOnElementShown) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -263,9 +252,9 @@ TEST(InteractionSequenceTest, TransitionOnElementShown) {
 }
 
 TEST(InteractionSequenceTest, TransitionFailsOnElementShownIfMustBeVisible) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -288,9 +277,9 @@ TEST(InteractionSequenceTest, TransitionFailsOnElementShownIfMustBeVisible) {
 }
 
 TEST(InteractionSequenceTest, TransitionOnSameElementHidden) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -320,9 +309,9 @@ TEST(InteractionSequenceTest, TransitionOnSameElementHidden) {
 }
 
 TEST(InteractionSequenceTest, TransitionOnOtherElementHidden) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -347,9 +336,9 @@ TEST(InteractionSequenceTest, TransitionOnOtherElementHidden) {
 }
 
 TEST(InteractionSequenceTest, TransitionOnOtherElementAlreadyHidden) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -372,9 +361,9 @@ TEST(InteractionSequenceTest, TransitionOnOtherElementAlreadyHidden) {
 }
 
 TEST(InteractionSequenceTest, FailOnOtherElementAlreadyHiddenIfMustBeVisible) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -397,9 +386,9 @@ TEST(InteractionSequenceTest, FailOnOtherElementAlreadyHiddenIfMustBeVisible) {
 }
 
 TEST(InteractionSequenceTest, NoWithInitialElementTransitionsOnActivation) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step);
   TestElement element(kTestIdentifier1, kTestContext1);
   element.Show();
   auto tracker =
@@ -423,9 +412,9 @@ TEST(InteractionSequenceTest, NoWithInitialElementTransitionsOnActivation) {
 }
 
 TEST(InteractionSequenceTest, NoWithInitialElementTransitionsOnShown) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step);
   TestElement element(kTestIdentifier1, kTestContext1);
   auto tracker =
       InteractionSequence::Builder()
@@ -447,10 +436,10 @@ TEST(InteractionSequenceTest, NoWithInitialElementTransitionsOnShown) {
 }
 
 TEST(InteractionSequenceTest, StepEndCallbackCalled) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step_start);
-  DECLARE_STEP_CALLBACK(step_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step_end);
   TestElement element(kTestIdentifier1, kTestContext1);
   element.Show();
   auto tracker =
@@ -476,11 +465,11 @@ TEST(InteractionSequenceTest, StepEndCallbackCalled) {
 }
 
 TEST(InteractionSequenceTest, StepEndCallbackCalledForInitialStep) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step_start);
-  DECLARE_STEP_CALLBACK(step_end);
-  DECLARE_STEP_CALLBACK(step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2);
   TestElement element(kTestIdentifier1, kTestContext1);
   element.Show();
   auto tracker =
@@ -506,12 +495,12 @@ TEST(InteractionSequenceTest, StepEndCallbackCalledForInitialStep) {
 }
 
 TEST(InteractionSequenceTest, MultipleStepsComplete) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step1_start);
-  DECLARE_STEP_CALLBACK(step1_end);
-  DECLARE_STEP_CALLBACK(step2_start);
-  DECLARE_STEP_CALLBACK(step2_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_end);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   TestElement element3(kTestIdentifier3, kTestContext1);
@@ -550,12 +539,12 @@ TEST(InteractionSequenceTest, MultipleStepsComplete) {
 }
 
 TEST(InteractionSequenceTest, MultipleStepsWithImmediateTransition) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step1_start);
-  DECLARE_STEP_CALLBACK(step1_end);
-  DECLARE_STEP_CALLBACK(step2_start);
-  DECLARE_STEP_CALLBACK(step2_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_end);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   TestElement element3(kTestIdentifier3, kTestContext1);
@@ -600,12 +589,12 @@ TEST(InteractionSequenceTest, MultipleStepsWithImmediateTransition) {
 }
 
 TEST(InteractionSequenceTest, CancelMidSequenceWhenViewHidden) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step1_start);
-  DECLARE_STEP_CALLBACK(step1_end);
-  DECLARE_STEP_CALLBACK(step2_start);
-  DECLARE_STEP_CALLBACK(step2_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_end);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   TestElement element3(kTestIdentifier3, kTestContext1);
@@ -649,12 +638,12 @@ TEST(InteractionSequenceTest, CancelMidSequenceWhenViewHidden) {
 }
 
 TEST(InteractionSequenceTest, DontCancelIfViewDoesNotNeedToRemainVisible) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step1_start);
-  DECLARE_STEP_CALLBACK(step1_end);
-  DECLARE_STEP_CALLBACK(step2_start);
-  DECLARE_STEP_CALLBACK(step2_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_end);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   TestElement element3(kTestIdentifier3, kTestContext1);
@@ -698,12 +687,12 @@ TEST(InteractionSequenceTest, DontCancelIfViewDoesNotNeedToRemainVisible) {
 
 TEST(InteractionSequenceTest,
      MultipleSequencesInDifferentContextsOneCompletes) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
-  DECLARE_ABORTED_CALLBACK(aborted2);
-  DECLARE_COMPLETED_CALLBACK(completed2);
-  DECLARE_STEP_CALLBACK(step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier1, kTestContext2);
   element1.Show();
@@ -746,12 +735,12 @@ TEST(InteractionSequenceTest,
 
 TEST(InteractionSequenceTest,
      MultipleSequencesInDifferentContextsBothComplete) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
-  DECLARE_ABORTED_CALLBACK(aborted2);
-  DECLARE_COMPLETED_CALLBACK(completed2);
-  DECLARE_STEP_CALLBACK(step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier1, kTestContext2);
   element1.Show();
@@ -800,10 +789,10 @@ TEST(InteractionSequenceTest,
 // sequence.
 
 TEST(InteractionSequenceTest, ShowDuringCallback) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step1_end);
-  DECLARE_STEP_CALLBACK(step2_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_start);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -835,10 +824,10 @@ TEST(InteractionSequenceTest, ShowDuringCallback) {
 }
 
 TEST(InteractionSequenceTest, HideDuringCallback) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step1_end);
-  DECLARE_STEP_CALLBACK(step2_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_start);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -871,10 +860,10 @@ TEST(InteractionSequenceTest, HideDuringCallback) {
 }
 
 TEST(InteractionSequenceTest, ActivateDuringCallbackDifferentView) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step1_end);
-  DECLARE_STEP_CALLBACK(step2_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_start);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -907,10 +896,10 @@ TEST(InteractionSequenceTest, ActivateDuringCallbackDifferentView) {
 }
 
 TEST(InteractionSequenceTest, ActivateDuringCallbackSameView) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step1_end);
-  DECLARE_STEP_CALLBACK(step2_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_start);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -942,8 +931,8 @@ TEST(InteractionSequenceTest, ActivateDuringCallbackSameView) {
 }
 
 TEST(InteractionSequenceTest, HideAfterActivateDoesntAbort) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   TestElement element3(kTestIdentifier3, kTestContext1);
@@ -981,8 +970,8 @@ TEST(InteractionSequenceTest, HideAfterActivateDoesntAbort) {
 }
 
 TEST(InteractionSequenceTest, HideDuringStepStartedCallbackAborts) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -1011,10 +1000,10 @@ TEST(InteractionSequenceTest, HideDuringStepStartedCallbackAborts) {
 }
 
 TEST(InteractionSequenceTest, HideDuringStepEndedCallbackAborts) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step2_start);
-  DECLARE_STEP_CALLBACK(step2_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_end);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -1045,9 +1034,9 @@ TEST(InteractionSequenceTest, HideDuringStepEndedCallbackAborts) {
 }
 
 TEST(InteractionSequenceTest, ElementHiddenDuringFinalStepStart) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step_end);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -1076,8 +1065,8 @@ TEST(InteractionSequenceTest, ElementHiddenDuringFinalStepStart) {
 }
 
 TEST(InteractionSequenceTest, ElementHiddenDuringFinalStepEnd) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -1102,8 +1091,8 @@ TEST(InteractionSequenceTest, ElementHiddenDuringFinalStepEnd) {
 }
 
 TEST(InteractionSequenceTest, ElementHiddenDuringStepEndDuringAbort) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -1139,9 +1128,9 @@ TEST(InteractionSequenceTest, ElementHiddenDuringStepEndDuringAbort) {
 }
 
 TEST(InteractionSequenceTest, SequenceDestroyedDuringInitialStepStartCallback) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step1_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_end);
   TestElement element1(kTestIdentifier1, kTestContext1);
   element1.Show();
 
@@ -1164,10 +1153,10 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringInitialStepStartCallback) {
 }
 
 TEST(InteractionSequenceTest, SequenceDestroyedDuringInitialStepEndCallback) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step2_start);
-  DECLARE_STEP_CALLBACK(step2_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_end);
   TestElement element1(kTestIdentifier1, kTestContext1);
   element1.Show();
 
@@ -1193,11 +1182,11 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringInitialStepEndCallback) {
 }
 
 TEST(InteractionSequenceTest, SequenceDestroyedDuringInitialStepAbort) {
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step1_start);
-  DECLARE_STEP_CALLBACK(step1_end);
-  DECLARE_STEP_CALLBACK(step2_start);
-  DECLARE_STEP_CALLBACK(step2_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_end);
   TestElement element1(kTestIdentifier1, kTestContext1);
   element1.Show();
 
@@ -1223,11 +1212,11 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringInitialStepAbort) {
 }
 
 TEST(InteractionSequenceTest, SequenceDestroyedDuringMidSequenceStepStart) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step1_end);
-  DECLARE_STEP_CALLBACK(step2_start);
-  DECLARE_STEP_CALLBACK(step2_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_end);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -1260,11 +1249,11 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringMidSequenceStepStart) {
 }
 
 TEST(InteractionSequenceTest, SequenceDestroyedDuringMidSequenceStepEnd) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step1_start);
-  DECLARE_STEP_CALLBACK(step2_start);
-  DECLARE_STEP_CALLBACK(step2_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_end);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -1298,11 +1287,11 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringMidSequenceStepEnd) {
 }
 
 TEST(InteractionSequenceTest, SequenceDestroyedDuringMidSequenceAbort) {
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step1_start);
-  DECLARE_STEP_CALLBACK(step1_end);
-  DECLARE_STEP_CALLBACK(step2_start);
-  DECLARE_STEP_CALLBACK(step2_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_end);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -1335,11 +1324,11 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringMidSequenceAbort) {
 }
 
 TEST(InteractionSequenceTest, SequenceDestroyedDuringFinalStepEnd) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step1_start);
-  DECLARE_STEP_CALLBACK(step1_end);
-  DECLARE_STEP_CALLBACK(step2_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_start);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();
@@ -1374,11 +1363,11 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringFinalStepEnd) {
 }
 
 TEST(InteractionSequenceTest, SequenceDestroyedDuringCompleted) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_STEP_CALLBACK(step1_start);
-  DECLARE_STEP_CALLBACK(step1_end);
-  DECLARE_STEP_CALLBACK(step2_start);
-  DECLARE_STEP_CALLBACK(step2_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_end);
   TestElement element1(kTestIdentifier1, kTestContext1);
   TestElement element2(kTestIdentifier2, kTestContext1);
   element1.Show();

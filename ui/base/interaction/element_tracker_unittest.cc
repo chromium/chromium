@@ -12,18 +12,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
 
 namespace ui {
 
 namespace {
-
-#define DECLARE_STRICT_CALLBACK(Name)                \
-  base::MockCallback<ElementTracker::Callback> Name; \
-  EXPECT_CALL(Name, Run).Times(0)
-
-#define DECLARE_LAX_CALLBACK(Name)                   \
-  base::MockCallback<ElementTracker::Callback> Name; \
-  EXPECT_CALL(Name, Run).Times(testing::AnyNumber())
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier2);
@@ -261,7 +254,7 @@ TEST(ElementTrackerTest, IsElementVisible) {
 }
 
 TEST(ElementTrackerTest, AddElementShownCallback) {
-  DECLARE_STRICT_CALLBACK(callback);
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
   auto subscription =
       ElementTracker::GetElementTracker()->AddElementShownCallback(
           kElementIdentifier1, kElementContext1, callback.Get());
@@ -282,7 +275,7 @@ TEST(ElementTrackerTest, AddElementShownCallback) {
 }
 
 TEST(ElementTrackerTest, AddElementActivatedCallback) {
-  DECLARE_STRICT_CALLBACK(callback);
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
   auto subscription =
       ElementTracker::GetElementTracker()->AddElementActivatedCallback(
           kElementIdentifier1, kElementContext1, callback.Get());
@@ -306,7 +299,7 @@ TEST(ElementTrackerTest, AddElementActivatedCallback) {
 }
 
 TEST(ElementTrackerTest, AddElementHiddenCallback) {
-  DECLARE_STRICT_CALLBACK(callback);
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
   auto subscription =
       ElementTracker::GetElementTracker()->AddElementHiddenCallback(
           kElementIdentifier1, kElementContext1, callback.Get());
@@ -339,7 +332,7 @@ TEST(ElementTrackerTest, CleanupAfterElementHidden) {
   e1->Show();
   EXPECT_EQ(1U, ElementTracker::GetElementTracker()->element_data_.size());
   {
-    DECLARE_STRICT_CALLBACK(callback);
+    UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
     auto subscription =
         ElementTracker::GetElementTracker()->AddElementShownCallback(
             kElementIdentifier1, kElementContext1, callback.Get());
@@ -357,7 +350,8 @@ TEST(ElementTrackerTest, CleanupAfterCallbacksRemoved) {
   // Add element shown callback. An element will be shown transiently during the
   // subscription.
   {
-    DECLARE_LAX_CALLBACK(callback);
+    base::MockCallback<ElementTracker::Callback> callback;
+    EXPECT_CALL(callback, Run).Times(testing::AnyNumber());
     auto subscription =
         ElementTracker::GetElementTracker()->AddElementShownCallback(
             kElementIdentifier1, kElementContext1, callback.Get());
@@ -371,7 +365,8 @@ TEST(ElementTrackerTest, CleanupAfterCallbacksRemoved) {
 
   // Add element activated callback.
   {
-    DECLARE_LAX_CALLBACK(callback);
+    base::MockCallback<ElementTracker::Callback> callback;
+    EXPECT_CALL(callback, Run).Times(testing::AnyNumber());
     auto subscription =
         ElementTracker::GetElementTracker()->AddElementActivatedCallback(
             kElementIdentifier1, kElementContext1, callback.Get());
@@ -381,7 +376,8 @@ TEST(ElementTrackerTest, CleanupAfterCallbacksRemoved) {
 
   // Add element hidden callback.
   {
-    DECLARE_LAX_CALLBACK(callback);
+    base::MockCallback<ElementTracker::Callback> callback;
+    EXPECT_CALL(callback, Run).Times(testing::AnyNumber());
     auto subscription =
         ElementTracker::GetElementTracker()->AddElementHiddenCallback(
             kElementIdentifier1, kElementContext1, callback.Get());
@@ -391,7 +387,8 @@ TEST(ElementTrackerTest, CleanupAfterCallbacksRemoved) {
 
   // Add and remove multiple callbacks.
   {
-    DECLARE_LAX_CALLBACK(callback);
+    base::MockCallback<ElementTracker::Callback> callback;
+    EXPECT_CALL(callback, Run).Times(testing::AnyNumber());
     auto sub1 = ElementTracker::GetElementTracker()->AddElementShownCallback(
         kElementIdentifier1, kElementContext1, callback.Get());
     auto sub2 =
@@ -412,7 +409,7 @@ TEST(ElementTrackerTest, CleanupAfterCallbacksRemoved) {
 TEST(ElementTrackerTest, RemoveCallbackDuringRemove) {
   TestElementPtr e1 =
       std::make_unique<TestElement>(kElementIdentifier1, kElementContext1);
-  DECLARE_STRICT_CALLBACK(callback);
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
   ElementTracker::Subscription subscription =
       ElementTracker::GetElementTracker()->AddElementHiddenCallback(
           e1->identifier(), e1->context(), callback.Get());
@@ -430,7 +427,7 @@ TEST(ElementTrackerTest, RemoveCallbackDuringRemove) {
 TEST(ElementTrackerTest, RemoveAndThenAddCallbackDuringRemove) {
   TestElementPtr e1 =
       std::make_unique<TestElement>(kElementIdentifier1, kElementContext1);
-  DECLARE_STRICT_CALLBACK(callback);
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
   ElementTracker::Subscription subscription =
       ElementTracker::GetElementTracker()->AddElementHiddenCallback(
           e1->identifier(), e1->context(), callback.Get());
@@ -450,7 +447,7 @@ TEST(ElementTrackerTest, RemoveAndThenAddCallbackDuringRemove) {
 TEST(ElementTrackerTest, RemoveAndThenAddDifferentCallbackDuringRemove) {
   TestElementPtr e1 =
       std::make_unique<TestElement>(kElementIdentifier1, kElementContext1);
-  DECLARE_STRICT_CALLBACK(callback);
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
   ElementTracker::Subscription subscription =
       ElementTracker::GetElementTracker()->AddElementHiddenCallback(
           e1->identifier(), e1->context(), callback.Get());
@@ -470,8 +467,8 @@ TEST(ElementTrackerTest, RemoveAndThenAddDifferentCallbackDuringRemove) {
 TEST(ElementTrackerTest, MultipleCallbacksForSameEvent) {
   TestElementPtr e1 =
       std::make_unique<TestElement>(kElementIdentifier1, kElementContext1);
-  DECLARE_STRICT_CALLBACK(callback);
-  DECLARE_STRICT_CALLBACK(callback2);
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback2);
   ElementTracker::Subscription subscription =
       ElementTracker::GetElementTracker()->AddElementHiddenCallback(
           e1->identifier(), e1->context(), callback.Get());

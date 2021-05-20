@@ -15,8 +15,8 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_types.h"
@@ -55,18 +55,6 @@ const char16_t kMenuItem1[] = u"Menu item";
 const char16_t kMenuItem2[] = u"Menu item 2";
 constexpr int kMenuID1 = 1;
 constexpr int kMenuID2 = 2;
-
-#define DECLARE_STEP_CALLBACK(Name)                               \
-  base::MockCallback<ui::InteractionSequence::StepCallback> Name; \
-  EXPECT_CALL(Name, Run).Times(0)
-
-#define DECLARE_COMPLETED_CALLBACK(Name)                               \
-  base::MockCallback<ui::InteractionSequence::CompletedCallback> Name; \
-  EXPECT_CALL(Name, Run).Times(0)
-
-#define DECLARE_ABORTED_CALLBACK(Name)                               \
-  base::MockCallback<ui::InteractionSequence::AbortedCallback> Name; \
-  EXPECT_CALL(Name, Run).Times(0)
 
 }  // namespace
 
@@ -194,8 +182,8 @@ class InteractionSequenceViewsTest : public ViewsTestBase {
 };
 
 TEST_F(InteractionSequenceViewsTest, DestructWithInitialViewAborts) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   auto* const starting_view = contents_->AddChildView(std::make_unique<View>());
   starting_view->SetProperty(kElementIdentifierKey, kTestElementID);
   auto tracker =
@@ -214,8 +202,8 @@ TEST_F(InteractionSequenceViewsTest, DestructWithInitialViewAborts) {
 }
 
 TEST_F(InteractionSequenceViewsTest, DestructWithInitialViewBeforeStartAborts) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   auto* const starting_view = contents_->AddChildView(std::make_unique<View>());
   starting_view->SetProperty(kElementIdentifierKey, kTestElementID);
   auto tracker =
@@ -233,8 +221,8 @@ TEST_F(InteractionSequenceViewsTest, DestructWithInitialViewBeforeStartAborts) {
 }
 
 TEST_F(InteractionSequenceViewsTest, WrongWithInitialViewDoesNotStartSequence) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   auto* const starting_view = contents_->AddChildView(std::make_unique<View>());
   starting_view->SetProperty(kElementIdentifierKey, kTestElementID);
   auto* const other_view = contents_->AddChildView(std::make_unique<View>());
@@ -255,11 +243,11 @@ TEST_F(InteractionSequenceViewsTest, WrongWithInitialViewDoesNotStartSequence) {
 
 TEST_F(InteractionSequenceViewsTest,
        SequenceNotCanceledDueToViewDestroyedIfRequirementChanged) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step2_start);
-  DECLARE_STEP_CALLBACK(step2_end);
-  DECLARE_STEP_CALLBACK(step3_start);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step2_start);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step2_end);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step3_start);
   auto* const starting_view = contents_->AddChildView(std::make_unique<View>());
   starting_view->SetProperty(kElementIdentifierKey, kTestElementID);
   auto tracker =
@@ -308,11 +296,11 @@ TEST_F(InteractionSequenceViewsTest,
 }
 
 TEST_F(InteractionSequenceViewsTest, TransitionToBubble) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
-  DECLARE_STEP_CALLBACK(step2);
-  DECLARE_STEP_CALLBACK(step3);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step2);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step3);
   auto tracker =
       ui::InteractionSequence::Builder()
           .SetAbortedCallback(aborted.Get())
@@ -359,11 +347,11 @@ TEST_F(InteractionSequenceViewsTest, TransitionToBubble) {
 }
 
 TEST_F(InteractionSequenceViewsTest, TransitionToBubbleThenAbort) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
-  DECLARE_STEP_CALLBACK(step2);
-  DECLARE_STEP_CALLBACK(step3);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step2);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step3);
   auto tracker =
       ui::InteractionSequence::Builder()
           .SetAbortedCallback(aborted.Get())
@@ -403,10 +391,10 @@ TEST_F(InteractionSequenceViewsTest, TransitionToBubbleThenAbort) {
 }
 
 TEST_F(InteractionSequenceViewsTest, TransitionToMenuAndViewMenuItem) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
-  DECLARE_STEP_CALLBACK(step2);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step2);
   auto tracker =
       ui::InteractionSequence::Builder()
           .SetAbortedCallback(aborted.Get())
@@ -439,11 +427,11 @@ TEST_F(InteractionSequenceViewsTest, TransitionToMenuAndViewMenuItem) {
 }
 
 TEST_F(InteractionSequenceViewsTest, TransitionToMenuThenCloseMenuToCancel) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
-  DECLARE_STEP_CALLBACK(step2);
-  DECLARE_STEP_CALLBACK(step3);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step2);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step3);
   auto tracker =
       ui::InteractionSequence::Builder()
           .SetAbortedCallback(aborted.Get())
@@ -485,10 +473,10 @@ TEST_F(InteractionSequenceViewsTest, TransitionToMenuThenCloseMenuToCancel) {
 // Menu button uses different event-handling architecture than standard Button,
 // so test it separately here.
 TEST_F(InteractionSequenceViewsTest, TransitionToMenuWithMenuButton) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
-  DECLARE_STEP_CALLBACK(step2);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step2);
   auto tracker =
       ui::InteractionSequence::Builder()
           .SetAbortedCallback(aborted.Get())
@@ -527,11 +515,11 @@ TEST_F(InteractionSequenceViewsTest, TransitionToMenuWithMenuButton) {
 // Mac menus is correctly communicated through ui::ElementTracker in the
 // following test.
 TEST_F(InteractionSequenceViewsTest, TransitionToMenuAndActivateMenuItem) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
-  DECLARE_STEP_CALLBACK(step2);
-  DECLARE_STEP_CALLBACK(step3);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step2);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step3);
   auto tracker =
       ui::InteractionSequence::Builder()
           .SetAbortedCallback(aborted.Get())
@@ -578,11 +566,11 @@ TEST_F(InteractionSequenceViewsTest, TransitionToMenuAndActivateMenuItem) {
 #endif  // !defined(OS_MAC)
 
 TEST_F(InteractionSequenceViewsTest, TransitionOnKeyboardMenuActivation) {
-  DECLARE_ABORTED_CALLBACK(aborted);
-  DECLARE_COMPLETED_CALLBACK(completed);
-  DECLARE_STEP_CALLBACK(step);
-  DECLARE_STEP_CALLBACK(step2);
-  DECLARE_STEP_CALLBACK(step3);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step2);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepCallback, step3);
   auto tracker =
       ui::InteractionSequence::Builder()
           .SetAbortedCallback(aborted.Get())
