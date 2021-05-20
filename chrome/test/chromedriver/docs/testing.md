@@ -28,7 +28,7 @@ out/Default/chromedriver_unittests
 These tests are maintained by the ChromeDriver team,
 and are intended to verify that ChromeDriver works correctly with Chrome.
 They are written in Python script, in
-[`test/run_py_tests.py`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/test/run_py_tests.py).
+[`test/run_py_tests.py`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/test/run_py_tests.py).
 We run these tests on the CQ (commit queue) on all desktop platforms,
 and plan to run them on Android as well in the future.
 
@@ -74,7 +74,7 @@ named `chromedriver_py_tests`.
 When running inside the CQ, the `--test-type=integration` option is passed to
 the `run_py_tests.py` command line. This has the following effects:
 * All tests listed in
-  [`_INTEGRATION_NEGATIVE_FILTER`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/test/run_py_tests.py?q=_INTEGRATION_NEGATIVE_FILTER)
+  [`_INTEGRATION_NEGATIVE_FILTER`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/test/run_py_tests.py?q=_INTEGRATION_NEGATIVE_FILTER)
   are skipped. Tests in this list should have comments indicating why they
   should be skipped in the CQ.
 * If there are a small number of test failures (no more than 10),
@@ -95,7 +95,7 @@ To run the tests, invoke `run_py_tests.py` with `--android-package=package_name`
 option, where `package_name` can be one of the following values:
 * `chrome_stable`: normal in-box Chrome that is installed by the system.
 * `chrome_beta`: Beta build of Chrome.
-* `chromium`: [Open source Chromium build](https://chromium.googlesource.com/chromium/src/+/master/docs/android_build_instructions.md).
+* `chromium`: [Open source Chromium build](https://chromium.googlesource.com/chromium/src/+/main/docs/android_build_instructions.md).
 
 There is future plan to [run these tests in the Chromium Commit
 Queue](https://crbug.com/813466).
@@ -111,7 +111,7 @@ https://github.com/SeleniumHQ/selenium/tree/master/java/client/test/org/openqa/s
 We compile these tests, and store them in a special repository at
 https://chromium.googlesource.com/chromium/deps/webdriver/.
 We use a Python script
-[`test/run_java_tests.py`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/test/run_java_tests.py)
+[`test/run_java_tests.py`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/test/run_java_tests.py)
 to drive these tests.
 
 Before running these tests, you need to do a one-time setup with the following
@@ -136,7 +136,7 @@ the ChromeDriver binary.
 
 If there are any test cases that fail or are flaky, and you can't fix them
 quickly, please add the test names to one of the filters in
-[`test_expectations`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/test/test_expectations)
+[`test_expectations`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/test/test_expectations)
 file in the same directory as `run_java_tests.py`.
 
 ## Web Platform Tests (WPT)
@@ -202,7 +202,7 @@ for the New Session command, use
 ## JavaScript Unit Tests
 
 All ChromeDriver JavaScript files in the
-[js](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/js/)
+[js](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/js/)
 directory have corresponding unit tests, stored in HTML files.
 These tests can be run in two ways:
 

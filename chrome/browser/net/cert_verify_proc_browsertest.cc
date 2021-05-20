@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifyProcNetLogBrowserTest, Test) {
   // Technically there is no guarantee that if the cert verifier is running out
   // of process that the netlog mojo messages will be delivered before the cert
   // verification mojo result. See:
-  // https://chromium.googlesource.com/chromium/src/+/master/docs/mojo_ipc_conversion.md#Ordering-Considerations
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/mojo_ipc_conversion.md#Ordering-Considerations
   // Hopefully this won't be flaky.
   base::RunLoop().RunUntilIdle();
   content::FlushNetworkServiceInstanceForTesting();

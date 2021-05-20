@@ -6,13 +6,13 @@ This module provides an API to check flags and switches from Java code.
 
 Feature flags and switches are used to control application behavior. They are
 extensive described in the
-[Configuration Documentation](https://chromium.googlesource.com/chromium/src/+/refs/heads/master/docs/configuration.md).
+[Configuration Documentation](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/configuration.md).
 
 ## Feature Flags
 
 Feature flags are declared in C++ as a `base::Feature`. How to declare them is
 covered in
-[Adding a new feature flag](https://chromium.googlesource.com/chromium/src/+/refs/heads/master/docs/how_to_add_your_feature_flag.md).
+[Adding a new feature flag](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/how_to_add_your_feature_flag.md).
 
 To check the flag state in native code, call
 `FeatureList::IsEnabled(kMyFeature))`.

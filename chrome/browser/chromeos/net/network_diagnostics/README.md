@@ -195,9 +195,9 @@ established a TLS connection to media hostnames.
 and failed to establish a TLS connection to media hostnames.
 
 [Network Health and Configuration]: https://docs.google.com/document/d/10DSy-jZXaRo9I9aq1UqERy76t7HkgGvInWk57pHEkzg
-[network_diagnostics.mojom]: https://source.chromium.org/chromium/chromium/src/+/master:chromeos/services/network_health/public/mojom/network_diagnostics.mojom?originalUrl=https:%2F%2Fcs.chromium.org%2F
-[NetworkHealthService]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/chromeos/net/network_health/network_health_service.h?originalUrl=https:%2F%2Fcs.chromium.org%2F
-[here]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/chromeos/net/network_diagnostics/
-[RoutineVerdict]: https://source.chromium.org/chromium/chromium/src/+/master:chromeos/services/network_health/public/mojom/network_diagnostics.mojom;l=12;drc=93304dcbcf58b0af39403af08928ea4e4ec28e6d?originalUrl=https:%2F%2Fcs.chromium.org%2F
+[network_diagnostics.mojom]: https://source.chromium.org/chromium/chromium/src/+/main:chromeos/services/network_health/public/mojom/network_diagnostics.mojom?originalUrl=https:%2F%2Fcs.chromium.org%2F
+[NetworkHealthService]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/chromeos/net/network_health/network_health_service.h?originalUrl=https:%2F%2Fcs.chromium.org%2F
+[here]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/chromeos/net/network_diagnostics/
+[RoutineVerdict]: https://source.chromium.org/chromium/chromium/src/+/main:chromeos/services/network_health/public/mojom/network_diagnostics.mojom;l=12;drc=93304dcbcf58b0af39403af08928ea4e4ec28e6d?originalUrl=https:%2F%2Fcs.chromium.org%2F
 [Design Doc]: https://docs.google.com/document/d/1d5EoPBlsomWQ4HzqejFPG4v1d2cvPSndj7nmCjNZSSc
 [src/platform2/diagnostics/mojo/network_diagnostics.mojom]: http://cs/chromeos_public/src/platform2/diagnostics/cros_healthd/network_diagnostics/

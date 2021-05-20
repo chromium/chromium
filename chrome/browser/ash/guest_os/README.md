@@ -1,7 +1,7 @@
 # Guest OS
 
 This directory contains code to interact with Chrome OS guest
-[VMs and containers](https://chromium.googlesource.com/chromiumos/docs/+/master/containers_and_vms.md)
+[VMs and containers](https://chromium.googlesource.com/chromiumos/docs/+/main/containers_and_vms.md)
 This directory includes code which is common to all VM types such as file
 sharing.
 

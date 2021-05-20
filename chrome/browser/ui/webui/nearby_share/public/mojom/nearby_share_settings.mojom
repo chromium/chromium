@@ -108,7 +108,7 @@ interface NearbyShareSettings {
 
 
 // Translated from the proto file (Contact.Identifier):
-// https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/nearby_sharing/proto/rpc_resources.proto
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/nearby_sharing/proto/rpc_resources.proto
 // A single contact identifier.
 union ContactIdentifier {
   string obfuscated_gaia;
@@ -117,7 +117,7 @@ union ContactIdentifier {
 };
 
 // Translated from the proto file (ContactRecord):
-// https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/nearby_sharing/proto/rpc_resources.proto
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/nearby_sharing/proto/rpc_resources.proto
 // A contact record from People backend.
 struct ContactRecord {
   // The stable id of this contact record.

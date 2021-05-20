@@ -47,7 +47,7 @@ if (android_channel != "default") {
   # AndroidManifest and its upstream target's .AndroidManifest.expected file
   # are as expected. Upstream targets having a "org.chromium.chrome" package
   # name will cause the comparison to output many unnecessary differences.
-  # See https://source.chromium.org/chromium/chromium/src/+/master:chrome/android/java/README.md
+  # See https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/README.md
   _default_package += "." + android_channel
 }
 

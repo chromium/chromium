@@ -6,7 +6,7 @@
 # running the test scripts.
 #
 # More information:
-# https://chromium.googlesource.com/infra/infra/+/master/doc/users/vpython.md
+# https://chromium.googlesource.com/infra/infra/+/main/doc/users/vpython.md
 python_version: "2.7"
 
 wheel: <

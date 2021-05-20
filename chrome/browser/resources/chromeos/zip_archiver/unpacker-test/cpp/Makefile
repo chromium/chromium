@@ -71,7 +71,7 @@ $(eval $(call NMF_RULE,$(TARGET),))
 # manually.
 # -disable-setuid-sandbox is optional, but otherwise it is necessary to set up
 # the sandbox for development. See
-# https://chromium.googlesource.com/chromium/src/+/master/docs/linux/suid_sandbox_development.md
+# https://chromium.googlesource.com/chromium/src/+/main/docs/linux/suid_sandbox_development.md
 .PHONY: tests_run
 tests_run: check_for_chrome all $(TEST_PAGE)
 	$(RUN_PY) -C $(CURDIR) -P $(TEST_PAGE_CONFIG) \

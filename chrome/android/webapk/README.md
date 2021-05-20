@@ -41,7 +41,7 @@ On Android, build
 On ChromeOS, build  
 //chrome/android/webapk/shell_apk:webapk
 
-Both can be customized via [shell_apk/manifest/bound_manifest_config.json](https://source.chromium.org/chromium/chromium/src/+/master:chrome/android/webapk/shell_apk/manifest/bound_manifest_config.json)
+Both can be customized via [shell_apk/manifest/bound_manifest_config.json](https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/webapk/shell_apk/manifest/bound_manifest_config.json)
 
 To make a locally built WebAPK launch Chrome in 'WebAPK mode':
 1) Set the --skip-webapk-verification Chrome command line flag

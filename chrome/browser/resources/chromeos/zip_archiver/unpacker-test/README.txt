@@ -5,5 +5,5 @@ Once the equivalend tests are added under zip_archiver/tests/, which runs as a
 part of browser_tests, files under this directory should be removed.
 
 If you want to run tests under this diretory, see:
-https://chromium.googlesource.com/apps/unpacker/+/master/README.md
+https://chromium.googlesource.com/apps/unpacker/+/main/README.md
 

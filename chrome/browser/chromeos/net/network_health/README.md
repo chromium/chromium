@@ -46,10 +46,10 @@ network events.
 
 [Design Doc]: https://docs.google.com/document/d/18ehcBF2iC1rZDo9AV79-qJ5KUfSGIUeqX0bLDRD3XHI/edit?usp=sharing&resourcekey=0-1mYPArwll_OTBaKgQ1qeDw
 [Network Health and Configuration]: https://docs.google.com/document/d/10DSy-jZXaRo9I9aq1UqERy76t7HkgGvInWk57pHEkzg
-[Network Diagnostic Routines]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/chromeos/net/network_diagnostics/README.md
-[Network Health telemetry]: https://source.chromium.org/chromium/chromium/src/+/master:chromeos/services/network_health/public/mojom/network_health.mojom
+[Network Diagnostic Routines]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/chromeos/net/network_diagnostics/README.md
+[Network Health telemetry]: https://source.chromium.org/chromium/chromium/src/+/main:chromeos/services/network_health/public/mojom/network_health.mojom
 [network_health.mojom]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/diagnostics/mojo/network_health.mojom
-[NetworkHealthService]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/chromeos/net/network_health/network_health_service.h
+[NetworkHealthService]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/chromeos/net/network_health/network_health_service.h
 [cros_healthd]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/diagnostics/cros_healthd/
 [adding]: https://chromium-review.googlesource.com/c/chromiumos/platform2/+/2627331/8/diagnostics/mojo/cros_healthd.mojom#465
 

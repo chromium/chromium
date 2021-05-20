@@ -39,7 +39,7 @@ class ChromeNoStatePrefetchContentsDelegate;
 // (or the equivalent on Android). The TabHelpers class allows specific classes
 // to attach the set of tab helpers that is used for tab contents.
 //
-// https://chromium.googlesource.com/chromium/src/+/master/docs/tab_helpers.md
+// https://chromium.googlesource.com/chromium/src/+/main/docs/tab_helpers.md
 //
 // TODO(avi): This list is rather large, and for most callers it's due to the
 // fact that they need tab helpers attached early to deal with arbitrary

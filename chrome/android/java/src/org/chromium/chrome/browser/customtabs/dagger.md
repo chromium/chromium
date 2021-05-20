@@ -116,10 +116,10 @@ For example, see the [RunningInChromeTest][7].
 Hopefully that should be enough to help you make changes to Custom Tabs code.
 If you need to do something more complicated, feel free to reach out to peconn@, either by email or by adding me on your code review.
 
-[1]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/android/java/src/org/chromium/chrome/browser/customtabs/dependency_injection/BaseCustomTabActivityModule.java
-[2]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/android/java/src/org/chromium/chrome/browser/dependency_injection/ChromeActivityCommonsModule.java
-[3]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/android/java/src/org/chromium/chrome/browser/dependency_injection/ChromeAppModule.java
-[4]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/android/java/src/org/chromium/chrome/browser/dependency_injection/ChromeAppComponent.java
-[5]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/android/java/src/org/chromium/chrome/browser/customtabs/dependency_injection/BaseCustomTabActivityComponent.java
-[6]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/android/javatests/src/org/chromium/chrome/browser/dependency_injection/ModuleOverridesRule.java
-[7]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/android/javatests/src/org/chromium/chrome/browser/browserservices/RunningInChromeTest.java
+[1]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/customtabs/dependency_injection/BaseCustomTabActivityModule.java
+[2]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/dependency_injection/ChromeActivityCommonsModule.java
+[3]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/dependency_injection/ChromeAppModule.java
+[4]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/dependency_injection/ChromeAppComponent.java
+[5]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/customtabs/dependency_injection/BaseCustomTabActivityComponent.java
+[6]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/javatests/src/org/chromium/chrome/browser/dependency_injection/ModuleOverridesRule.java
+[7]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/javatests/src/org/chromium/chrome/browser/browserservices/RunningInChromeTest.java

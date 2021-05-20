@@ -61,11 +61,11 @@ cleanup after you in 1 year.
 
 0. If the pref is also a policy, you will need to mark it deprecated as
    described in
-   [add_new_policy.md](https://chromium.googlesource.com/chromium/src/+/master/docs/enterprise/add_new_policy.md#deprecating-a-policy).
+   [add_new_policy.md](https://chromium.googlesource.com/chromium/src/+/main/docs/enterprise/add_new_policy.md#deprecating-a-policy).
    Deleting the pref logic (steps below) will need to wait a few milestones.
 
 1. Move the pref name declaration to the anonymous namespace of
-   [chrome/browser/prefs/browser_prefs.cc](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/prefs/browser_prefs.cc)
+   [chrome/browser/prefs/browser_prefs.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/prefs/browser_prefs.cc)
 1. Move registration code into `RegisterProfilePrefsForMigration()` or
    `RegisterLocalStatePrefsForMigration()` as appropriate.
 1. If the old registration code had the `SYNCABLE_PREF` flag, remove it now
@@ -90,7 +90,7 @@ therefore assume the migration has taken place if it's accessing the
 As per [deleting an old pref](#deleting-an-old-pref), if the old pref is also a
 policy, you will need to mark it deprecated for a few milestones first as
 described in
-[add_new_policy.md](https://chromium.googlesource.com/chromium/src/+/master/docs/enterprise/add_new_policy.md#deprecating-a-policy).
+[add_new_policy.md](https://chromium.googlesource.com/chromium/src/+/main/docs/enterprise/add_new_policy.md#deprecating-a-policy).
 
 Migration code will want to read the old pref using
 `base::PrefService::GetUserPrefValue()` (as opposed to

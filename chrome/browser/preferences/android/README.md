@@ -47,10 +47,10 @@ profile. If your preference should instead be associated with [local state][5]
 use PrefService and should instead create your own feature-specific JNI
 bridge to access the correct PrefService instance (see [`first_run_utils.cc`][6]).
 
-[0]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/preferences/SharedPreferencesManager.java
+[0]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/preferences/SharedPreferencesManager.java
 [1]: https://developer.android.com/reference/android/content/SharedPreferences
-[2]: https://source.chromium.org/chromium/chromium/src/+/master:components/prefs/android/java/src/org/chromium/components/prefs/PrefService.java
-[3]: https://chromium.googlesource.com/chromium/src/+/master/services/preferences/README.md
-[4]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/preferences/BUILD.gn;drc=4ae1b7be67cd9b470ebcc90f2747a9f31f155b00;l=28
+[2]: https://source.chromium.org/chromium/chromium/src/+/main:components/prefs/android/java/src/org/chromium/components/prefs/PrefService.java
+[3]: https://chromium.googlesource.com/chromium/src/+/main/services/preferences/README.md
+[4]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/preferences/BUILD.gn;drc=4ae1b7be67cd9b470ebcc90f2747a9f31f155b00;l=28
 [5]: https://www.chromium.org/developers/design-documents/preferences#TOC-Introduction
-[6]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/first_run/android/first_run_utils.cc
+[6]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/first_run/android/first_run_utils.cc

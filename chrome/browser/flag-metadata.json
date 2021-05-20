@@ -2,7 +2,7 @@
 // automatically expire flags, as part of the review process, and to clean up
 // flags that have become obsolete or unused. For more details, see:
 //
-//    https://chromium.googlesource.com/chromium/src/+/master/docs/flag_ownership.md
+//    https://chromium.googlesource.com/chromium/src/+/main/docs/flag_ownership.md
 //
 // This file is a list of json objects; each object contains these keys:
 //

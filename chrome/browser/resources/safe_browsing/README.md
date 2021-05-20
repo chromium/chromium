@@ -6,7 +6,7 @@ here, and stored in `download_file_types.asciipb`, will be both baked into
 Chrome released and pushable to Chrome between releases (via
 `FileTypePolicies` class).  http://crbug.com/596555
 
-Rendered version of this file: https://chromium.googlesource.com/chromium/src/+/master/chrome/browser/resources/safe_browsing/README.md
+Rendered version of this file: https://chromium.googlesource.com/chromium/src/+/main/chrome/browser/resources/safe_browsing/README.md
 
 
 ## Procedure for adding/modifying file type(s)

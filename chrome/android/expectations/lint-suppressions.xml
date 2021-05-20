@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
 Please refer to the lint doc for how to use this file and what should go in it:
-https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.md
+https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
 -->
 <lint>
   <!-- Ignore all lint errors in clank code. -->

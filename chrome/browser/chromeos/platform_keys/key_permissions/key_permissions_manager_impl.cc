@@ -154,11 +154,11 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
     case Mode::kMigratePermissionsFromPrefs: {
       // For more information about choosing |min| and |max| for the histogram,
       // please refer to:
-      // https://chromium.googlesource.com/chromium/src/tools/+/refs/heads/master/metrics/histograms/README.md#count-histograms_choosing-min-and-max
+      // https://chromium.googlesource.com/chromium/src/tools/+/refs/heads/main/metrics/histograms/README.md#count-histograms_choosing-min-and-max
       //
       // For more information about choosing the number of |buckets| for the
       // histogram, please refer to:
-      // https://chromium.googlesource.com/chromium/src/tools/+/refs/heads/master/metrics/histograms/README.md#count-histograms_choosing-number-of-buckets
+      // https://chromium.googlesource.com/chromium/src/tools/+/refs/heads/main/metrics/histograms/README.md#count-histograms_choosing-number-of-buckets
       base::UmaHistogramCustomTimes(
           kMigrationTimeHistogramName,
           /*sample=*/base::TimeTicks::Now() - update_start_time_,

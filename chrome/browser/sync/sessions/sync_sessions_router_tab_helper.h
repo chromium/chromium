@@ -25,7 +25,7 @@ class SyncSessionsWebContentsRouter;
 // these events to sessions sync.
 // A TabHelper is a WebContentsObserver tied to the top level WebContents for a
 // browser tab.
-// https://chromium.googlesource.com/chromium/src/+/master/docs/tab_helpers.md
+// https://chromium.googlesource.com/chromium/src/+/main/docs/tab_helpers.md
 class SyncSessionsRouterTabHelper
     : public content::WebContentsUserData<SyncSessionsRouterTabHelper>,
       public content::WebContentsObserver,
