@@ -107,7 +107,8 @@ class WidgetBoundsChangeWaiter final : public views::WidgetObserver {
 };
 
 // Ensure popups are opened in the available space of the opener's display.
-IN_PROC_BROWSER_TEST_P(PopupBrowserTest, OpenClampedToCurrentDisplay) {
+// TODO(crbug.com/1211516): Flaky.
+IN_PROC_BROWSER_TEST_P(PopupBrowserTest, DISABLED_OpenClampedToCurrentDisplay) {
   const auto display = GetDisplayNearestBrowser(browser());
   EXPECT_TRUE(display.work_area().Contains(browser()->window()->GetBounds()))
       << "The browser window should be contained by its display's work area";
