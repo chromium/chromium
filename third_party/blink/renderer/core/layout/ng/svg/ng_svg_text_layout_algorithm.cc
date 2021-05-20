@@ -811,7 +811,7 @@ void NGSVGTextLayoutAlgorithm::PositionOnPath(
               // Unlike the specification, we just set result[index].x/y to the
               // point along the path. The character is moved by an
               // AffineTransform produced from baseline_shift and inline_size/2.
-              // See |NGFragmentItem::BuildSVGTransformForBoundingBox()|.
+              // See |NGFragmentItem::BuildSVGTransformForTextPath()|.
               info.baseline_shift = horizontal_ ? *info.y : *info.x;
               info.x = point_tangent.point.X() * scaling_factor;
               info.y = point_tangent.point.Y() * scaling_factor;

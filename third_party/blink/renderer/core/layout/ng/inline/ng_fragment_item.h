@@ -481,7 +481,8 @@ class CORE_EXPORT NGFragmentItem {
   void RecalcInkOverflow(const NGInlineCursor& cursor,
                          PhysicalRect* self_and_contents_rect_out);
 
-  AffineTransform BuildSVGTransformForTextPath() const;
+  AffineTransform BuildSVGTransformForTextPath(
+      const AffineTransform& length_adjust) const;
   AffineTransform BuildSVGTransformForLengthAdjust() const;
 
   const LayoutObject* layout_object_;

@@ -526,8 +526,20 @@ bool NGFragmentItem::HasSVGTransformForBoundingBox() const {
   return Type() == kSVGText && svg_text_.data->angle != 0.0f;
 }
 
+// For non-<textPath>:
+//   length-adjust * translate(x, y) * rotate() * translate(-x, -y)
+// For <textPath>:
+//   translate(x, y) * rotate() * length-adjust * translate(-x, -y)
+//
+// (x, y) is the center of the rotation.  The center points of a non-<textPath>
+// character and a <textPath> character are different.
 AffineTransform NGFragmentItem::BuildSVGTransformForPaint() const {
   DCHECK_EQ(Type(), kSVGText);
+  if (svg_text_.data->in_text_path) {
+    if (svg_text_.data->angle == 0.0f)
+      return BuildSVGTransformForLengthAdjust();
+    return BuildSVGTransformForTextPath(BuildSVGTransformForLengthAdjust());
+  }
   AffineTransform transform = BuildSVGTransformForBoundingBox();
   AffineTransform length_adjust = BuildSVGTransformForLengthAdjust();
   if (!length_adjust.IsIdentity())
@@ -542,19 +554,26 @@ AffineTransform NGFragmentItem::BuildSVGTransformForLengthAdjust() const {
   AffineTransform scale_transform;
   float scale = svg_data.length_adjust_scale;
   if (scale != 1.0f) {
+    // Inline offset adjustment is not necessary if this works with textPath
+    // rotation.
+    const bool with_text_path_transform =
+        svg_data.in_text_path && svg_data.angle != 0.0f;
     // We'd like to scale only inline-size without moving inline position.
     if (is_horizontal) {
       float x = svg_data.rect.X();
-      scale_transform.SetMatrix(scale, 0, 0, 1, x - scale * x, 0);
+      scale_transform.SetMatrix(
+          scale, 0, 0, 1, with_text_path_transform ? 0 : x - scale * x, 0);
     } else {
       float y = svg_data.rect.Y();
-      scale_transform.SetMatrix(1, 0, 0, scale, 0, y - scale * y);
+      scale_transform.SetMatrix(1, 0, 0, scale, 0,
+                                with_text_path_transform ? 0 : y - scale * y);
     }
   }
   return scale_transform;
 }
 
-AffineTransform NGFragmentItem::BuildSVGTransformForTextPath() const {
+AffineTransform NGFragmentItem::BuildSVGTransformForTextPath(
+    const AffineTransform& length_adjust) const {
   DCHECK_EQ(Type(), kSVGText);
   const NGSVGFragmentData& svg_data = *svg_text_.data;
   DCHECK(svg_data.in_text_path);
@@ -581,12 +600,18 @@ AffineTransform NGFragmentItem::BuildSVGTransformForTextPath() const {
     x += font_data->GetFontMetrics().FixedDescent(font_baseline);
     transform.Translate(svg_data.baseline_shift, -svg_data.rect.Height() / 2);
   }
+  transform.Multiply(length_adjust);
   transform.SetE(transform.E() + x);
   transform.SetF(transform.F() + y);
   transform.Translate(-x, -y);
   return transform;
 }
 
+// This function returns:
+//   translate(x, y) * rotate() * translate(-x, -y)
+//
+// (x, y) is the center of the rotation.  The center points of a non-<textPath>
+// character and a <textPath> character are different.
 AffineTransform NGFragmentItem::BuildSVGTransformForBoundingBox() const {
   DCHECK_EQ(Type(), kSVGText);
   const NGSVGFragmentData& svg_data = *svg_text_.data;
@@ -594,7 +619,7 @@ AffineTransform NGFragmentItem::BuildSVGTransformForBoundingBox() const {
   if (svg_data.angle == 0.0f)
     return transform;
   if (svg_data.in_text_path)
-    return BuildSVGTransformForTextPath();
+    return BuildSVGTransformForTextPath(AffineTransform());
 
   transform.Rotate(svg_data.angle);
   const SimpleFontData* font_data =
