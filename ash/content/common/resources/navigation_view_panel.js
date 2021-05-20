@@ -109,7 +109,7 @@ export class NavigationViewPanelElement extends PolymerElement {
     Array.from(components).map((c) => {
       const functionCall = c[functionName];
       if (typeof functionCall === "function") {
-        functionCall({detail: params});
+        functionCall.call(c, {detail: params});
       }
     });
   }
