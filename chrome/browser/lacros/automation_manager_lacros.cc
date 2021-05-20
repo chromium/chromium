@@ -19,7 +19,7 @@ AutomationManagerLacros::AutomationManagerLacros() {
     return;
 
   impl->GetRemote<crosapi::mojom::AutomationFactory>()->BindAutomation(
-      automation_client_receiver_.BindNewPipeAndPassRemote(),
+      automation_client_receiver_.BindNewPipeAndPassRemoteWithVersion(),
       automation_remote_.BindNewPipeAndPassReceiver());
 
   extensions::AutomationEventRouter::GetInstance()->RegisterRemoteRouter(this);

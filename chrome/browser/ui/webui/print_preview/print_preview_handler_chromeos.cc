@@ -211,7 +211,7 @@ void PrintPreviewHandlerChromeOS::OnJavascriptAllowed() {
     LOG(ERROR) << "Local printer not available";
     return;
   }
-  local_printer_->AddObserver(receiver_.BindNewPipeAndPassRemote(),
+  local_printer_->AddObserver(receiver_.BindNewPipeAndPassRemoteWithVersion(),
                               base::DoNothing());
 #endif
 }

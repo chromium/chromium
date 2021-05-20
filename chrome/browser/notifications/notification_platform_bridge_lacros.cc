@@ -116,7 +116,7 @@ class NotificationPlatformBridgeLacros::RemoteNotificationDelegate
 
   mojo::PendingRemote<crosapi::mojom::NotificationDelegate>
   BindNotificationDelegate() {
-    return receiver_.BindNewPipeAndPassRemote();
+    return receiver_.BindNewPipeAndPassRemoteWithVersion();
   }
 
   // crosapi::mojom::NotificationDelegate:

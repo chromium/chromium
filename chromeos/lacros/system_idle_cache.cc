@@ -20,7 +20,7 @@ void SystemIdleCache::Start() {
   auto* lacros_service = chromeos::LacrosService::Get();
   CHECK(lacros_service->IsAvailable<crosapi::mojom::IdleService>());
   lacros_service->GetRemote<crosapi::mojom::IdleService>()->AddIdleInfoObserver(
-      receiver_.BindNewPipeAndPassRemote());
+      receiver_.BindNewPipeAndPassRemoteWithVersion());
 }
 
 base::TimeDelta SystemIdleCache::auto_lock_delay() const {

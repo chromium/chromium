@@ -16,7 +16,8 @@ TaskManagerLacros::TaskManagerLacros() {
     return;
   id_ = base::UnguessableToken::Create();
   service->GetRemote<crosapi::mojom::TaskManager>()
-      ->RegisterTaskManagerProvider(receiver_.BindNewPipeAndPassRemote(), id_);
+      ->RegisterTaskManagerProvider(
+          receiver_.BindNewPipeAndPassRemoteWithVersion(), id_);
 
   task_manager_controller_ =
       std::make_unique<task_manager::TaskManagerControllerLacros>();

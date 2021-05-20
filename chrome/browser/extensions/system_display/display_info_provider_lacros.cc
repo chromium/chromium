@@ -30,7 +30,8 @@ DisplayInfoProviderLacros::DisplayInfoProviderLacros() {
           static_cast<int>(crosapi::mojom::SystemDisplay::
                                kAddDisplayChangeObserverMinVersion)) {
     lacros_service->GetRemote<crosapi::mojom::SystemDisplay>()
-        ->AddDisplayChangeObserver(receiver_.BindNewPipeAndPassRemote());
+        ->AddDisplayChangeObserver(
+            receiver_.BindNewPipeAndPassRemoteWithVersion());
   }
 }
 

@@ -72,7 +72,7 @@ void WebAppsPublisherHost::Init() {
     }
 
     service->GetRemote<crosapi::mojom::AppPublisher>()->RegisterAppController(
-        receiver_.BindNewPipeAndPassRemote());
+        receiver_.BindNewPipeAndPassRemoteWithVersion());
     remote_publisher_ =
         service->GetRemote<crosapi::mojom::AppPublisher>().get();
   }

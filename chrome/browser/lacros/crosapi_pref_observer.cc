@@ -16,7 +16,7 @@ CrosapiPrefObserver::CrosapiPrefObserver(crosapi::mojom::PrefPath path,
     return;
   }
   lacros_service->GetRemote<crosapi::mojom::Prefs>()->AddObserver(
-      path, receiver_.BindNewPipeAndPassRemote());
+      path, receiver_.BindNewPipeAndPassRemoteWithVersion());
 }
 
 CrosapiPrefObserver::~CrosapiPrefObserver() = default;

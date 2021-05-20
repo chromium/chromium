@@ -33,7 +33,8 @@ void MetricsReportingObserver::Init() {
   // initial state above from lacros startup and the observer being added.
   lacros_service->BindMetricsReporting(
       metrics_reporting_remote_.BindNewPipeAndPassReceiver());
-  metrics_reporting_remote_->AddObserver(receiver_.BindNewPipeAndPassRemote());
+  metrics_reporting_remote_->AddObserver(
+      receiver_.BindNewPipeAndPassRemoteWithVersion());
 }
 
 void MetricsReportingObserver::OnMetricsReportingChanged(bool enabled) {
