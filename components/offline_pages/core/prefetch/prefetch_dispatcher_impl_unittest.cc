@@ -69,18 +69,9 @@ const char kThumbnailData[] = "thumbnail_data";
 const char kFaviconData[] = "favicon_data";
 const base::Time kRenderTime = base::Time::Now();
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL TestURL1() {
-  return GURL("https://www.chromium.org");
-}
-GURL TestURL2() {
-  return GURL("https://www.chromium.org/2");
-}
-
-PrefetchSuggestion TestSuggestion1() {
+PrefetchSuggestion TestSuggestion1(GURL url = GURL("http://www.news.com")) {
   PrefetchSuggestion suggestion;
-  suggestion.article_url = TestURL1();
+  suggestion.article_url = url;
   suggestion.article_title = "Article Title";
   suggestion.article_attribution = "From news.com";
   suggestion.article_snippet = "This is an article";
@@ -91,7 +82,7 @@ PrefetchSuggestion TestSuggestion1() {
 
 PrefetchSuggestion TestSuggestion2() {
   PrefetchSuggestion suggestion;
-  suggestion.article_url = TestURL2();
+  suggestion.article_url = GURL("http://www.fun.com");
   suggestion.article_title = "Second Title";
   suggestion.article_attribution = "From fun.com";
   suggestion.article_snippet = "More fun stuff";
@@ -562,7 +553,8 @@ TEST_F(PrefetchDispatcherTest,
 }
 
 TEST_F(PrefetchDispatcherTest, DispatcherReleasesBackgroundTask) {
-  PrefetchURL prefetch_url(kTestID, TestURL1(), std::u16string());
+  PrefetchURL prefetch_url(kTestID, GURL("https://www.chromium.org"),
+                           std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url));
   RunUntilIdle();
@@ -609,7 +601,8 @@ TEST_F(PrefetchDispatcherTest, DispatcherReleasesBackgroundTask) {
 }
 
 TEST_F(PrefetchDispatcherTest, RetryWithBackoffAfterFailedNetworkRequest) {
-  PrefetchURL prefetch_url(kTestID, TestURL1(), std::u16string());
+  PrefetchURL prefetch_url(kTestID, GURL("https://www.chromium.org"),
+                           std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url));
   RunUntilIdle();
@@ -618,7 +611,8 @@ TEST_F(PrefetchDispatcherTest, RetryWithBackoffAfterFailedNetworkRequest) {
   RunUntilIdle();
 
   // Trigger another request to make sure we have more work to do.
-  PrefetchURL prefetch_url2(kTestID, TestURL2(), std::u16string());
+  PrefetchURL prefetch_url2(kTestID, GURL("https://www.chromium.org/2"),
+                            std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url2));
   RunUntilIdle();
@@ -641,7 +635,8 @@ TEST_F(PrefetchDispatcherTest, RetryWithBackoffAfterFailedNetworkRequest) {
 }
 
 TEST_F(PrefetchDispatcherTest, RetryWithoutBackoffAfterFailedNetworkRequest) {
-  PrefetchURL prefetch_url(kTestID, TestURL1(), std::u16string());
+  PrefetchURL prefetch_url(kTestID, GURL("https://www.chromium.org"),
+                           std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url));
   RunUntilIdle();
@@ -650,7 +645,8 @@ TEST_F(PrefetchDispatcherTest, RetryWithoutBackoffAfterFailedNetworkRequest) {
   RunUntilIdle();
 
   // Trigger another request to make sure we have more work to do.
-  PrefetchURL prefetch_url2(kTestID, TestURL2(), std::u16string());
+  PrefetchURL prefetch_url2(kTestID, GURL("https://www.chromium.org/2"),
+                            std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url2));
 
@@ -672,7 +668,8 @@ TEST_F(PrefetchDispatcherTest, RetryWithoutBackoffAfterFailedNetworkRequest) {
 }
 
 TEST_F(PrefetchDispatcherTest, SuspendAfterFailedNetworkRequest) {
-  PrefetchURL prefetch_url(kTestID, TestURL1(), std::u16string());
+  PrefetchURL prefetch_url(kTestID, GURL("https://www.chromium.org"),
+                           std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url));
   RunUntilIdle();
@@ -681,7 +678,8 @@ TEST_F(PrefetchDispatcherTest, SuspendAfterFailedNetworkRequest) {
   RunUntilIdle();
 
   // Trigger another request to make sure we have more work to do.
-  PrefetchURL prefetch_url2(kTestID, TestURL2(), std::u16string());
+  PrefetchURL prefetch_url2(kTestID, GURL("https://www.chromium.org/2"),
+                            std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url2));
 
@@ -718,7 +716,8 @@ TEST_F(PrefetchDispatcherTest, SuspendAfterFailedNetworkRequest) {
 }
 
 TEST_F(PrefetchDispatcherTest, SuspendRemovedAfterNewBackgroundTask) {
-  PrefetchURL prefetch_url(kTestID, TestURL1(), std::u16string());
+  PrefetchURL prefetch_url(kTestID, GURL("https://www.chromium.org"),
+                           std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url));
   RunUntilIdle();
@@ -744,7 +743,8 @@ TEST_F(PrefetchDispatcherTest, SuspendRemovedAfterNewBackgroundTask) {
   EXPECT_EQ(nullptr, GetBackgroundTask());
 
   // Trigger another request to make sure we have more work to do.
-  PrefetchURL prefetch_url2(kTestID, TestURL2(), std::u16string());
+  PrefetchURL prefetch_url2(kTestID, GURL("https://www.chromium.org/2"),
+                            std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url2));
 
@@ -825,9 +825,10 @@ TEST_F(PrefetchDispatcherTest, ThumbnailImageFetch_SeveralThumbnailDownloads) {
 }
 
 TEST_F(PrefetchDispatcherTest, FeedNoNetworkRequestsAfterNewURLs) {
-  suggestions_provider_->SetSuggestions({TestSuggestion1()});
+  const GURL kUrl("https://www.chromium.org");
+  suggestions_provider_->SetSuggestions({TestSuggestion1(kUrl)});
 
-  PrefetchURL prefetch_url(kTestID, TestURL1(), std::u16string());
+  PrefetchURL prefetch_url(kTestID, kUrl, std::u16string());
   prefetch_service()->NewSuggestionsAvailable();
   RunUntilIdle();
 

@@ -44,16 +44,6 @@ const bool kPreferEarlier = true;
 const bool kPreferRetryCount = true;
 const int kBackgroundProcessingTimeBudgetSeconds = 170;
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL Url1() {
-  return GURL("https://google.com");
-}
-
-GURL Url2() {
-  return GURL("http://nytimes.com");
-}
-
 // Default request
 SavePageRequest EmptyRequest() {
   return SavePageRequest(0UL, GURL(""), ClientId("", ""), base::Time(), true);
@@ -231,10 +221,10 @@ TEST_F(PickRequestTaskTest, ChooseRequestWithHigherRetryCount) {
   MakePickRequestTask();
 
   base::Time creation_time = OfflineTimeNow();
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, creation_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time, kUserRequested);
   request2.set_completed_attempt_count(kAttemptCount);
 
   QueueRequests(request1, request2);
@@ -253,10 +243,10 @@ TEST_F(PickRequestTaskTest, ChooseRequestWithSameRetryCountButEarlier) {
   base::Time creation_time1 =
       OfflineTimeNow() - base::TimeDelta::FromSeconds(10);
   base::Time creation_time2 = OfflineTimeNow();
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time1,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, creation_time2,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time1, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time2, kUserRequested);
 
   QueueRequests(request1, request2);
 
@@ -278,10 +268,10 @@ TEST_F(PickRequestTaskTest, ChooseEarlierRequest) {
   base::Time creation_time1 =
       OfflineTimeNow() - base::TimeDelta::FromSeconds(10);
   base::Time creation_time2 = OfflineTimeNow();
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time1,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, creation_time2,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time1, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time2, kUserRequested);
   request2.set_completed_attempt_count(kAttemptCount);
 
   QueueRequests(request1, request2);
@@ -302,10 +292,10 @@ TEST_F(PickRequestTaskTest, ChooseSameTimeRequestWithHigherRetryCount) {
   MakePickRequestTask();
 
   base::Time creation_time = OfflineTimeNow();
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, creation_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time, kUserRequested);
   request2.set_completed_attempt_count(kAttemptCount);
 
   QueueRequests(request1, request2);
@@ -326,10 +316,10 @@ TEST_F(PickRequestTaskTest, ChooseRequestWithLowerRetryCount) {
   MakePickRequestTask();
 
   base::Time creation_time = OfflineTimeNow();
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, creation_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time, kUserRequested);
   request2.set_completed_attempt_count(kAttemptCount);
 
   QueueRequests(request1, request2);
@@ -352,10 +342,10 @@ TEST_F(PickRequestTaskTest, ChooseLaterRequest) {
   base::Time creation_time1 =
       OfflineTimeNow() - base::TimeDelta::FromSeconds(10);
   base::Time creation_time2 = OfflineTimeNow();
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time1,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, creation_time2,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time1, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time2, kUserRequested);
 
   QueueRequests(request1, request2);
 
@@ -372,10 +362,10 @@ TEST_F(PickRequestTaskTest, ChooseNonExpiredRequest) {
   base::Time expired_time =
       creation_time - base::TimeDelta::FromSeconds(
                           policy_->GetRequestExpirationTimeInSeconds() + 60);
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, expired_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           expired_time, kUserRequested);
 
   QueueRequests(request1, request2);
 
@@ -394,10 +384,10 @@ TEST_F(PickRequestTaskTest, ChooseRequestThatHasNotExceededStartLimit) {
   base::Time creation_time1 =
       OfflineTimeNow() - base::TimeDelta::FromSeconds(1);
   base::Time creation_time2 = OfflineTimeNow();
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time1,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, creation_time2,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time1, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time2, kUserRequested);
 
   // With default policy settings, we should choose the earlier request.
   // However, we will make the earlier reqeust exceed the limit.
@@ -420,10 +410,10 @@ TEST_F(PickRequestTaskTest, ChooseRequestThatHasNotExceededCompletionLimit) {
   base::Time creation_time1 =
       OfflineTimeNow() - base::TimeDelta::FromSeconds(1);
   base::Time creation_time2 = OfflineTimeNow();
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time1,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, creation_time2,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time1, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time2, kUserRequested);
 
   // With default policy settings, we should choose the earlier request.
   // However, we will make the earlier reqeust exceed the limit.
@@ -451,10 +441,10 @@ TEST_F(PickRequestTaskTest, ChooseRequestThatIsNotDisabled) {
   MakePickRequestTask();
 
   base::Time creation_time = OfflineTimeNow();
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, creation_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time, kUserRequested);
   request2.set_completed_attempt_count(kAttemptCount);
 
   // Add test requests on the Queue.
@@ -480,10 +470,10 @@ TEST_F(PickRequestTaskTest, ChoosePrioritizedRequests) {
   MakePickRequestTask();
 
   base::Time creation_time = OfflineTimeNow();
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, creation_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time, kUserRequested);
   // Since default policy prefer untried requests, make request1 the favorable
   // pick if no prioritized requests. But request2 is prioritized so it should
   // be picked.
@@ -521,10 +511,10 @@ TEST_F(PickRequestTaskTest, ChooseFromTwoPrioritizedRequests) {
   base::Time creation_time = OfflineTimeNow();
   base::Time older_creation_time =
       creation_time - base::TimeDelta::FromMinutes(10);
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, older_creation_time,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, creation_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           older_creation_time, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time, kUserRequested);
   request2.set_completed_attempt_count(kAttemptCount);
 
   // Add test requests on the Queue.

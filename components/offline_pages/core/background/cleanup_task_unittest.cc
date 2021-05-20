@@ -23,8 +23,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace offline_pages {
-
 namespace {
+
 // Data for request 1.
 const int64_t kRequestId1 = 17;
 const ClientId kClientId1("bookmark", "1234");
@@ -33,16 +33,6 @@ const int64_t kRequestId2 = 42;
 
 const ClientId kClientId2("bookmark", "5678");
 const bool kUserRequested = true;
-
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL Url1() {
-  return GURL("https://google.com");
-}
-
-GURL Url2() {
-  return GURL("http://nytimes.com");
-}
 
 // Default request
 SavePageRequest EmptyRequest() {
@@ -171,10 +161,10 @@ TEST_F(CleanupTaskTest, CleanupExpiredRequest) {
       creation_time - base::TimeDelta::FromSeconds(
                           policy()->GetRequestExpirationTimeInSeconds() + 10);
   // Request2 will be expired, request1 will be current.
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, expired_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           expired_time, kUserRequested);
   QueueRequests(request1, request2);
 
   // Initiate cleanup.
@@ -192,10 +182,10 @@ TEST_F(CleanupTaskTest, CleanupExpiredRequest) {
 TEST_F(CleanupTaskTest, CleanupStartCountExceededRequest) {
   base::Time creation_time = OfflineTimeNow();
   // Request2 will have an exceeded start count.
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, creation_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time, kUserRequested);
   request2.set_started_attempt_count(policy()->GetMaxStartedTries());
   QueueRequests(request1, request2);
 
@@ -214,10 +204,10 @@ TEST_F(CleanupTaskTest, CleanupStartCountExceededRequest) {
 TEST_F(CleanupTaskTest, CleanupCompletionCountExceededRequest) {
   base::Time creation_time = OfflineTimeNow();
   // Request2 will have an exceeded completion count.
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, creation_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time, kUserRequested);
   request2.set_completed_attempt_count(policy()->GetMaxCompletedTries());
   QueueRequests(request1, request2);
 
@@ -237,12 +227,12 @@ TEST_F(CleanupTaskTest, IgnoreRequestInProgress) {
   base::Time creation_time = OfflineTimeNow();
   // Both requests will have an exceeded completion count.
   // The first request will be marked as started.
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
   request1.set_completed_attempt_count(policy()->GetMaxCompletedTries());
   request1.MarkAttemptStarted(creation_time);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, creation_time,
-                           kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time, kUserRequested);
   request2.set_completed_attempt_count(policy()->GetMaxCompletedTries());
   QueueRequests(request1, request2);
 

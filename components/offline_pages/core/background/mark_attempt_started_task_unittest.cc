@@ -18,15 +18,10 @@
 
 namespace offline_pages {
 namespace {
+
 const int64_t kRequestId1 = 42;
 const int64_t kRequestId2 = 44;
 const ClientId kClientId1("download", "1234");
-
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL Url1() {
-  return GURL("http://example.com");
-}
 
 class MarkAttemptStartedTaskTest : public RequestQueueTaskTestBase {
  public:
@@ -48,8 +43,8 @@ class MarkAttemptStartedTaskTest : public RequestQueueTaskTestBase {
 
 void MarkAttemptStartedTaskTest::AddItemToStore() {
   base::Time creation_time = OfflineTimeNow();
-  SavePageRequest request_1(kRequestId1, Url1(), kClientId1, creation_time,
-                            true);
+  SavePageRequest request_1(kRequestId1, GURL("http://example.com"), kClientId1,
+                            creation_time, true);
   store_.AddRequest(
       request_1, RequestQueue::AddOptions(),
       base::BindOnce(&MarkAttemptStartedTaskTest::AddRequestDone));

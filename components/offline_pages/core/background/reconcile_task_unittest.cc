@@ -20,8 +20,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace offline_pages {
-
 namespace {
+
 // Data for request 1.
 const int64_t kRequestId1 = 17;
 const ClientId kClientId1("bookmark", "1234");
@@ -29,15 +29,6 @@ const ClientId kClientId1("bookmark", "1234");
 const int64_t kRequestId2 = 42;
 const ClientId kClientId2("bookmark", "5678");
 const bool kUserRequested = true;
-
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL Url1() {
-  return GURL("https://google.com");
-}
-GURL Url2() {
-  return GURL("http://nytimes.com");
-}
 
 class ReconcileTaskTest : public RequestQueueTaskTestBase {
  public:
@@ -118,11 +109,11 @@ void ReconcileTaskTest::MakeTask() {
 TEST_F(ReconcileTaskTest, Reconcile) {
   base::Time creation_time = OfflineTimeNow();
   // Request2 will be expired, request1 will be current.
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
   request1.set_request_state(SavePageRequest::RequestState::PAUSED);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, creation_time,
-                           kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time, kUserRequested);
   request2.set_request_state(SavePageRequest::RequestState::OFFLINING);
   QueueRequests(request1, request2);
 
@@ -153,11 +144,11 @@ TEST_F(ReconcileTaskTest, Reconcile) {
 TEST_F(ReconcileTaskTest, NothingToReconcile) {
   base::Time creation_time = OfflineTimeNow();
   // Request2 will be expired, request1 will be current.
-  SavePageRequest request1(kRequestId1, Url1(), kClientId1, creation_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
   request1.set_request_state(SavePageRequest::RequestState::PAUSED);
-  SavePageRequest request2(kRequestId2, Url2(), kClientId2, creation_time,
-                           kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time, kUserRequested);
   request2.set_request_state(SavePageRequest::RequestState::AVAILABLE);
   QueueRequests(request1, request2);
 

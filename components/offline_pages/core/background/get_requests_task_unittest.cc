@@ -18,20 +18,12 @@
 
 namespace offline_pages {
 namespace {
+
 const int64_t kRequestId1 = 42;
 const int64_t kRequestId2 = 44;
 
 const ClientId kClientId1("download", "1234");
 const ClientId kClientId2("download", "5678");
-
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL Url1() {
-  return GURL("http://example.com");
-}
-GURL Url2() {
-  return GURL("http://otherexample.com");
-}
 
 class GetRequestsTaskTest : public RequestQueueTaskTestBase {
  public:
@@ -63,13 +55,13 @@ class GetRequestsTaskTest : public RequestQueueTaskTestBase {
 
 void GetRequestsTaskTest::AddItemsToStore(RequestQueueStore* store) {
   base::Time creation_time = OfflineTimeNow();
-  SavePageRequest request_1(kRequestId1, Url1(), kClientId1, creation_time,
-                            true);
+  SavePageRequest request_1(kRequestId1, GURL("http://example.com"), kClientId1,
+                            creation_time, true);
   store->AddRequest(request_1, RequestQueue::AddOptions(),
                     base::BindOnce(&GetRequestsTaskTest::AddRequestDone));
   creation_time = OfflineTimeNow();
-  SavePageRequest request_2(kRequestId2, Url2(), kClientId2, creation_time,
-                            true);
+  SavePageRequest request_2(kRequestId2, GURL("http://otherexample.com"),
+                            kClientId2, creation_time, true);
   store->AddRequest(request_2, RequestQueue::AddOptions(),
                     base::BindOnce(&GetRequestsTaskTest::AddRequestDone));
   PumpLoop();

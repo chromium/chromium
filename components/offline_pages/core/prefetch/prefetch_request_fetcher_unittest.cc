@@ -19,16 +19,6 @@ using testing::SaveArg;
 
 namespace offline_pages {
 
-namespace {
-const char kTestMessage[] = "Testing";
-
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL TestURL() {
-  return GURL("http://example.org");
-}
-}  // namespace
-
 class PrefetchRequestFetcherTest : public PrefetchRequestTestBase {
  public:
   PrefetchRequestStatus RunFetcherWithNetError(net::Error net_error);
@@ -94,8 +84,8 @@ PrefetchRequestStatus PrefetchRequestFetcherTest::RunFetcher(
   base::MockCallback<PrefetchRequestFetcher::FinishedCallback> callback;
   std::unique_ptr<PrefetchRequestFetcher> fetcher =
       PrefetchRequestFetcher::CreateForPost(
-          TestURL(), kTestMessage, /*testing_header_value=*/"", empty_request_,
-          shared_url_loader_factory(), callback.Get());
+          GURL("http://example.org"), "Testing", /*testing_header_value=*/"",
+          empty_request_, shared_url_loader_factory(), callback.Get());
 
   PrefetchRequestStatus status;
   std::string data;

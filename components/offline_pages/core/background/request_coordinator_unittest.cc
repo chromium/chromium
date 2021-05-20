@@ -56,15 +56,6 @@ const bool kUserRequested = true;
 const int kAttemptCount = 1;
 const std::string kRequestOrigin("abc.xyz");
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL Url1() {
-  return GURL("http://universe.com/everything");
-}
-GURL Url2() {
-  return GURL("http://universe.com/toinfinityandbeyond");
-}
-
 class BoolCallbackResult {
  public:
   base::RepeatingCallback<void(bool)> Bind() {
@@ -327,7 +318,7 @@ class RequestCoordinatorTest : public testing::Test {
 
   int64_t SavePageLater() {
     RequestCoordinator::SavePageLaterParams params;
-    params.url = Url1();
+    params.url = GURL("http://universe.com/everything");
     params.client_id = kClientId1;
     params.user_requested = kUserRequested;
     params.request_origin = kRequestOrigin;
@@ -339,7 +330,7 @@ class RequestCoordinatorTest : public testing::Test {
   int64_t SavePageLaterWithAvailability(
       RequestCoordinator::RequestAvailability availability) {
     RequestCoordinator::SavePageLaterParams params;
-    params.url = Url1();
+    params.url = GURL("http://universe.com/everything");
     params.client_id = kClientId1;
     params.user_requested = kUserRequested;
     params.availability = availability;
@@ -524,15 +515,17 @@ void RequestCoordinatorTest::SendOfflinerDoneCallback(
 }
 
 SavePageRequest RequestCoordinatorTest::AddRequest1() {
-  offline_pages::SavePageRequest request1(kRequestId1, Url1(), kClientId1,
-                                          OfflineTimeNow(), kUserRequested);
+  offline_pages::SavePageRequest request1(
+      kRequestId1, GURL("http://universe.com/everything"), kClientId1,
+      OfflineTimeNow(), kUserRequested);
   queue()->AddRequest(request1, RequestQueue::AddOptions(), base::DoNothing());
   return request1;
 }
 
 SavePageRequest RequestCoordinatorTest::AddRequest2() {
-  offline_pages::SavePageRequest request2(kRequestId2, Url2(), kClientId2,
-                                          OfflineTimeNow(), kUserRequested);
+  offline_pages::SavePageRequest request2(
+      kRequestId2, GURL("http://universe.com/toinfinityandbeyond"), kClientId2,
+      OfflineTimeNow(), kUserRequested);
   queue()->AddRequest(request2, RequestQueue::AddOptions(), base::DoNothing());
   return request2;
 }
@@ -645,10 +638,12 @@ TEST_F(RequestCoordinatorTest, SavePageLater) {
       processing_callback());
 
   // Use default values for |user_requested| and |availability|.
+  const GURL kUrl1("http://universe.com/everything");
+  const GURL kUrl2("http://universe.com/toinfinityandbeyond");
   RequestCoordinator::SavePageLaterParams params;
-  params.url = Url1();
+  params.url = kUrl1;
   params.client_id = kClientId1;
-  params.original_url = Url2();
+  params.original_url = kUrl2;
   params.request_origin = kRequestOrigin;
   EXPECT_NE(0, coordinator()->SavePageLater(
                    params, base::BindOnce(
@@ -669,10 +664,10 @@ TEST_F(RequestCoordinatorTest, SavePageLater) {
 
   // Check the request queue is as expected.
   ASSERT_EQ(1UL, last_requests().size());
-  EXPECT_EQ(Url1(), last_requests().at(0)->url());
+  EXPECT_EQ(kUrl1, last_requests().at(0)->url());
   EXPECT_EQ(kClientId1, last_requests().at(0)->client_id());
   EXPECT_TRUE(last_requests().at(0)->user_requested());
-  EXPECT_EQ(Url2(), last_requests().at(0)->original_url());
+  EXPECT_EQ(kUrl2, last_requests().at(0)->original_url());
   EXPECT_EQ(kRequestOrigin, last_requests().at(0)->request_origin());
 
   // Expect that the scheduler got notified.
@@ -720,7 +715,8 @@ TEST_F(RequestCoordinatorTest, SavePageLaterFailed) {
   EXPECT_TRUE(add_request_callback_called());
   // Check the request queue is as expected.
   EXPECT_EQ(1UL, last_requests().size());
-  EXPECT_EQ(Url1(), last_requests().at(0)->url());
+  EXPECT_EQ(GURL("http://universe.com/everything"),
+            last_requests().at(0)->url());
   EXPECT_EQ(kClientId1, last_requests().at(0)->client_id());
 
   // Expect that the scheduler got notified.
@@ -736,8 +732,9 @@ TEST_F(RequestCoordinatorTest, SavePageLaterFailed) {
 
 TEST_F(RequestCoordinatorTest, OfflinerDoneRequestSucceeded) {
   // Add a request to the queue, wait for callbacks to finish.
-  offline_pages::SavePageRequest request(kRequestId1, Url1(), kClientId1,
-                                         OfflineTimeNow(), kUserRequested);
+  offline_pages::SavePageRequest request(
+      kRequestId1, GURL("http://universe.com/everything"), kClientId1,
+      OfflineTimeNow(), kUserRequested);
   SetupForOfflinerDoneCallbackTest(&request);
 
   // Call the OfflinerDoneCallback to simulate the page being completed, wait
@@ -767,8 +764,9 @@ TEST_F(RequestCoordinatorTest, OfflinerDoneRequestSucceeded) {
 
 TEST_F(RequestCoordinatorTest, OfflinerDoneRequestSucceededButLostNetwork) {
   // Add a request to the queue and set offliner done callback for it.
-  offline_pages::SavePageRequest request(kRequestId1, Url1(), kClientId1,
-                                         OfflineTimeNow(), kUserRequested);
+  offline_pages::SavePageRequest request(
+      kRequestId1, GURL("http://universe.com/everything"), kClientId1,
+      OfflineTimeNow(), kUserRequested);
   SetupForOfflinerDoneCallbackTest(&request);
   EnableOfflinerCallback(false);
 
@@ -796,8 +794,9 @@ TEST_F(RequestCoordinatorTest, OfflinerDoneRequestSucceededButLostNetwork) {
 
 TEST_F(RequestCoordinatorTest, OfflinerDoneRequestFailed) {
   // Add a request to the queue, wait for callbacks to finish.
-  offline_pages::SavePageRequest request(kRequestId1, Url1(), kClientId1,
-                                         OfflineTimeNow(), kUserRequested);
+  offline_pages::SavePageRequest request(
+      kRequestId1, GURL("http://universe.com/everything"), kClientId1,
+      OfflineTimeNow(), kUserRequested);
   request.set_completed_attempt_count(kMaxCompletedTries - 1);
   SetupForOfflinerDoneCallbackTest(&request);
   // Stop processing before completing the second request on the queue.
@@ -839,8 +838,9 @@ TEST_F(RequestCoordinatorTest, OfflinerDoneRequestFailed) {
 
 TEST_F(RequestCoordinatorTest, OfflinerDoneRequestFailedNoRetryFailure) {
   // Add a request to the queue, wait for callbacks to finish.
-  offline_pages::SavePageRequest request(kRequestId1, Url1(), kClientId1,
-                                         OfflineTimeNow(), kUserRequested);
+  offline_pages::SavePageRequest request(
+      kRequestId1, GURL("http://universe.com/everything"), kClientId1,
+      OfflineTimeNow(), kUserRequested);
   SetupForOfflinerDoneCallbackTest(&request);
   EnableOfflinerCallback(false);
 
@@ -882,8 +882,9 @@ TEST_F(RequestCoordinatorTest, OfflinerDoneRequestFailedNoRetryFailure) {
 
 TEST_F(RequestCoordinatorTest, OfflinerDoneRequestFailedNoNextFailure) {
   // Add a request to the queue, wait for callbacks to finish.
-  offline_pages::SavePageRequest request(kRequestId1, Url1(), kClientId1,
-                                         OfflineTimeNow(), kUserRequested);
+  offline_pages::SavePageRequest request(
+      kRequestId1, GURL("http://universe.com/everything"), kClientId1,
+      OfflineTimeNow(), kUserRequested);
   SetupForOfflinerDoneCallbackTest(&request);
   EnableOfflinerCallback(false);
 
@@ -914,8 +915,9 @@ TEST_F(RequestCoordinatorTest, OfflinerDoneRequestFailedNoNextFailure) {
 
 TEST_F(RequestCoordinatorTest, OfflinerDoneForegroundCancel) {
   // Add a request to the queue, wait for callbacks to finish.
-  offline_pages::SavePageRequest request(kRequestId1, Url1(), kClientId1,
-                                         OfflineTimeNow(), kUserRequested);
+  offline_pages::SavePageRequest request(
+      kRequestId1, GURL("http://universe.com/everything"), kClientId1,
+      OfflineTimeNow(), kUserRequested);
   SetupForOfflinerDoneCallbackTest(&request);
 
   // Call the OfflinerDoneCallback to simulate the request failed, wait
@@ -941,7 +943,7 @@ TEST_F(RequestCoordinatorTest, RequestDeferred) {
   // defer_while_page_is_active.
   active_tab_info_->set_does_active_tab_match(true);
   RequestCoordinator::SavePageLaterParams params;
-  params.url = Url1();
+  params.url = GURL("http://universe.com/everything");
   // Auto-async uses defer_background_fetch_while_page_is_active.
   params.client_id = ClientId(kAutoAsyncNamespace, "1");
   coordinator()->SavePageLater(params, base::DoNothing());
@@ -977,7 +979,7 @@ TEST_F(RequestCoordinatorTest, RequestNotDeferred) {
   // false. The page should be offlined.
   active_tab_info_->set_does_active_tab_match(false);
   RequestCoordinator::SavePageLaterParams params;
-  params.url = Url1();
+  params.url = GURL("http://universe.com/everything");
   // Auto-async uses defer_background_fetch_while_page_is_active.
   params.client_id = ClientId(kAutoAsyncNamespace, "1");
   coordinator()->SavePageLater(params, base::DoNothing());
@@ -1045,8 +1047,9 @@ TEST_F(RequestCoordinatorTest, SchedulerGetsLeastRestrictiveConditions) {
   // the second is not user requested.
   AddRequest1();
 
-  offline_pages::SavePageRequest request2(kRequestId2, Url2(), kClientId2,
-                                          OfflineTimeNow(), !kUserRequested);
+  offline_pages::SavePageRequest request2(
+      kRequestId2, GURL("http://universe.com/toinfinityandbeyond"), kClientId2,
+      OfflineTimeNow(), !kUserRequested);
   queue()->AddRequest(request2, RequestQueue::AddOptions(), base::DoNothing());
   PumpLoop();
 
@@ -1268,7 +1271,7 @@ TEST_F(RequestCoordinatorTest, RemoveInflightRequestAndAddAnother) {
 
   // Add a new request, and remove current request while it is processing.
   RequestCoordinator::SavePageLaterParams request2;
-  request2.url = Url2();
+  request2.url = GURL("http://universe.com/toinfinityandbeyond");
   request2.client_id = kClientId2;
   request2.user_requested = true;
   coordinator()->SavePageLater(request2, base::DoNothing());
@@ -1344,8 +1347,9 @@ TEST_F(RequestCoordinatorTest, EnableForOffliner) {
 TEST_F(RequestCoordinatorTest,
        WatchdogTimeoutForScheduledProcessingNoLastSnapshot) {
   // Build a request to use with the pre-renderer, and put it on the queue.
-  offline_pages::SavePageRequest request(kRequestId1, Url1(), kClientId1,
-                                         OfflineTimeNow(), kUserRequested);
+  offline_pages::SavePageRequest request(
+      kRequestId1, GURL("http://universe.com/everything"), kClientId1,
+      OfflineTimeNow(), kUserRequested);
   // Set request to allow one more completed attempt.
   int max_tries = coordinator()->policy()->GetMaxCompletedTries();
   request.set_completed_attempt_count(max_tries - 1);
@@ -1417,8 +1421,9 @@ TEST_F(RequestCoordinatorTest, TimeBudgetExceeded) {
   // Build two requests to use with the pre-renderer, and put it on the queue.
   AddRequest1();
   // The second request will have a larger completed attempt count.
-  offline_pages::SavePageRequest request2(kRequestId1 + 1, Url1(), kClientId1,
-                                          OfflineTimeNow(), kUserRequested);
+  offline_pages::SavePageRequest request2(
+      kRequestId1 + 1, GURL("http://universe.com/everything"), kClientId1,
+      OfflineTimeNow(), kUserRequested);
   request2.set_completed_attempt_count(kAttemptCount);
   queue()->AddRequest(request2, RequestQueue::AddOptions(), base::DoNothing());
   PumpLoop();
@@ -1701,8 +1706,9 @@ TEST_F(RequestCoordinatorTest,
 
 TEST_F(RequestCoordinatorTest, SnapshotOnLastTryForScheduledProcessing) {
   // Build a request to use with the pre-renderer, and put it on the queue.
-  offline_pages::SavePageRequest request(kRequestId1, Url1(), kClientId1,
-                                         OfflineTimeNow(), kUserRequested);
+  offline_pages::SavePageRequest request(
+      kRequestId1, GURL("http://universe.com/everything"), kClientId1,
+      OfflineTimeNow(), kUserRequested);
   // Set request to allow one more completed attempt. So that the next try would
   // be the last retry.
   int max_tries = coordinator()->policy()->GetMaxCompletedTries();
@@ -1867,7 +1873,7 @@ TEST_F(RequestCoordinatorTest,
 
   // Make a second request.
   RequestCoordinator::SavePageLaterParams params;
-  params.url = Url2();
+  params.url = GURL("http://universe.com/toinfinityandbeyond");
   params.client_id = kClientId2;
   params.user_requested = kUserRequested;
   EXPECT_NE(0, coordinator()->SavePageLater(
@@ -1888,7 +1894,7 @@ TEST_F(RequestCoordinatorTest, SavePageLaterRejectedDuplicateUrl) {
   EnableOfflinerCallback(false);
 
   RequestCoordinator::SavePageLaterParams params;
-  params.url = Url1();
+  params.url = GURL("http://universe.com/everything");
   params.client_id = kClientId1;
   params.add_options.disallow_duplicate_requests = true;
   std::vector<AddRequestResult> results;
