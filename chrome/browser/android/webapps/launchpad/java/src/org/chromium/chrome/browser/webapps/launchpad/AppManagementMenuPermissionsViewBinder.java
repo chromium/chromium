@@ -46,13 +46,34 @@ class AppManagementMenuPermissionsViewBinder {
     private static void updatePermissionIcon(
             View view, int iconId, int setting, int enabledIcon, int disabledIcon) {
         ImageView icon = (ImageView) view.findViewById(iconId);
+        int resId;
+        int tintId;
 
-        int resId = setting == ContentSettingValues.ASK ? disabledIcon : enabledIcon;
+        switch (setting) {
+            case ContentSettingValues.ALLOW:
+                // Permission is ALLOW, showing the enabled icon with the default tint.
+                resId = enabledIcon;
+                tintId = R.color.default_icon_color;
+                break;
+            case ContentSettingValues.BLOCK:
+                // Permission is BLOCK, showing the disabled icon (crossed-out icon), with the
+                // default tint.
+                resId = disabledIcon;
+                tintId = R.color.default_icon_color;
+                break;
+            case ContentSettingValues.ASK:
+            case ContentSettingValues.DEFAULT:
+                // When value is ASK or DEFAULT, the permission is not set (never requested),
+                // showing the disabled icon and grey-out tint color.
+                resId = disabledIcon;
+                tintId = R.color.default_icon_color_disabled;
+                icon.setEnabled(false);
+                break;
+            default:
+                assert false : "Unexpected ContentSettingValue: " + setting;
+                return;
+        }
         icon.setImageResource(resId);
-
-        ColorStateList tint = ColorStateList.valueOf(view.getResources().getColor(
-                setting == ContentSettingValues.ALLOW ? R.color.default_icon_color
-                                                      : R.color.default_icon_color_disabled));
-        icon.setImageTintList(tint);
+        icon.setImageTintList(ColorStateList.valueOf(view.getResources().getColor(tintId)));
     }
 }

@@ -145,23 +145,21 @@ public class LaunchpadPageTest {
 
         Context context = InstrumentationRegistry.getTargetContext();
 
-        ImageView notificationsIcon =
-                (ImageView) dialogView.findViewById(R.id.notifications_button);
-        Assert.assertEquals(
-                AppCompatResources.getColorStateList(context, R.color.default_icon_color_disabled),
-                notificationsIcon.getImageTintList());
-        ImageView micIcon = (ImageView) dialogView.findViewById(R.id.mic_button);
-        Assert.assertEquals(
-                AppCompatResources.getColorStateList(context, R.color.default_icon_color),
-                micIcon.getImageTintList());
-        ImageView cameraIcon = (ImageView) dialogView.findViewById(R.id.camera_button);
-        Assert.assertEquals(
-                AppCompatResources.getColorStateList(context, R.color.default_icon_color),
-                cameraIcon.getImageTintList());
+        // Icons for permissions that set to "ALLOW" or "BLOCK" are enabled.
+        int[] enabledIcons = {R.id.notifications_button, R.id.mic_button, R.id.camera_button};
+        for (int id : enabledIcons) {
+            ImageView icon = (ImageView) dialogView.findViewById(id);
+            Assert.assertEquals(
+                    AppCompatResources.getColorStateList(context, R.color.default_icon_color),
+                    icon.getImageTintList());
+            Assert.assertTrue(icon.isEnabled());
+        }
+
         ImageView locationIcon = (ImageView) dialogView.findViewById(R.id.location_button);
         Assert.assertEquals(
                 AppCompatResources.getColorStateList(context, R.color.default_icon_color_disabled),
                 locationIcon.getImageTintList());
+        Assert.assertFalse(locationIcon.isEnabled());
     }
 
     @Test

@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.webapps.launchpad;
 
+import android.content.Context;
+
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
@@ -18,13 +21,14 @@ class AppManagementMenuPermissionsCoordinator {
     /**
      * Creates a new AppManagementMenuPermissionsCoordinator.
      * @param view The associated AppManagementMenuPermissionsView..
-     * @param item The LaunchpadItem that are displaying in the management menu.
+     * @param item The LaunchpadItem that is displaying in the management menu.
      */
     AppManagementMenuPermissionsCoordinator(
-            AppManagementMenuPermissionsView view, LaunchpadItem item) {
+            Context context, AppManagementMenuPermissionsView view, LaunchpadItem item) {
         mView = view;
 
-        mMediator = new AppManagementMenuPermissionsMediator(item.url);
+        mMediator = new AppManagementMenuPermissionsMediator(
+                context, item.packageName, Origin.create(item.url));
         PropertyModelChangeProcessor.create(
                 mMediator.getModel(), mView, AppManagementMenuPermissionsViewBinder::bind);
     }

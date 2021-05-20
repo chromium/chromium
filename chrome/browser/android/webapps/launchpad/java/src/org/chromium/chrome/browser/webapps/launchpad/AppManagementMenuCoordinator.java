@@ -100,7 +100,7 @@ class AppManagementMenuCoordinator implements ModalDialogProperties.Controller {
         PropertyModelChangeProcessor.create(
                 headerModel, headerView, new AppManagementMenuHeaderViewBinder());
 
-        mPermissionsCoordinator = new AppManagementMenuPermissionsCoordinator(
+        mPermissionsCoordinator = new AppManagementMenuPermissionsCoordinator(mContext,
                 (AppManagementMenuPermissionsView) dialogView.findViewById(R.id.permissions), item);
 
         mShortcutList = dialogView.findViewById(R.id.shortcuts_list_view);
