@@ -1452,7 +1452,6 @@ source_set("quiche_tests") {
     "src/spdy/core/spdy_simple_arena_test.cc",
     "src/spdy/core/spdy_test_utils.cc",
     "src/spdy/core/spdy_test_utils.h",
-    "src/spdy/platform/api/spdy_string_utils_test.cc",
   ]
 
   deps = [

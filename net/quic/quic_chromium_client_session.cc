@@ -1120,10 +1120,8 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
   // The MTU used by QUIC is limited to a fairly small set of predefined values
   // (initial values and MTU discovery values), but does not fare well when
   // bucketed.  Because of that, a sparse histogram is used here.
-  base::UmaHistogramSparse("Net.QuicSession.ClientSideMtu",
-                           connection()->max_packet_length());
-  base::UmaHistogramSparse("Net.QuicSession.ServerSideMtu",
-                           stats.max_received_packet_size);
+  base::UmaHistogramSparse("Net.QuicSession.ClientSideMtu", stats.egress_mtu);
+  base::UmaHistogramSparse("Net.QuicSession.ServerSideMtu", stats.ingress_mtu);
 
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.MtuProbesSent",
                           connection()->mtu_probe_count());
