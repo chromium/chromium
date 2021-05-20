@@ -28,6 +28,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -240,7 +241,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         // activity.
         mThemedApplicationContext =
                 NightModeUtils.wrapContextWithNightModeConfig(ContextUtils.getApplicationContext(),
-                        ChromeActivity.getThemeId(), false /*nightMode*/);
+                        ActivityUtils.getThemeId(), false /*nightMode*/);
 
         mLaunchType = launchType;
 

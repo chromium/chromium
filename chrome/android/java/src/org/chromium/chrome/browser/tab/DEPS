@@ -1,6 +1,7 @@
 include_rules = [
   "-chrome",
   "+chrome/android/java/src/org/chromium/chrome/browser/ActivityTabProvider.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/ActivityUtils.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/TabHidingType.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkModel.java",

@@ -26,7 +26,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -226,7 +226,7 @@ public class BrowserControlsManager
 
         switch (mControlsPosition) {
             case ControlsPosition.TOP:
-                assert resControlContainerHeight != ChromeActivity.NO_CONTROL_CONTAINER;
+                assert resControlContainerHeight != ActivityUtils.NO_RESOURCE_ID;
                 mTopControlContainerHeight =
                         mActivity.getResources().getDimensionPixelSize(resControlContainerHeight);
                 break;

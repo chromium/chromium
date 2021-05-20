@@ -8,11 +8,16 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.SysUtils;
+import org.chromium.chrome.R;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Provides a set of utilities to help with working with Activities. */
 public final class ActivityUtils {
+    /** Constant used to express a missing or null resource id. */
+    public static final int NO_RESOURCE_ID = -1;
+
     /**
      * Looks up the Activity of the given web contents. This can be null. Should never be cached,
      * because web contents can change activities, e.g., when user selects "Open in Chrome" menu
@@ -31,5 +36,12 @@ public final class ActivityUtils {
 
         Activity activity = window.getActivity().get();
         return activity;
+    }
+
+    /** @return the theme ID to use. */
+    public static int getThemeId() {
+        boolean useLowEndTheme = SysUtils.isLowEndDevice();
+        return (useLowEndTheme ? R.style.Theme_Chromium_WithWindowAnimation_LowEnd
+                               : R.style.Theme_Chromium_WithWindowAnimation);
     }
 }
