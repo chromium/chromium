@@ -858,6 +858,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MobileFre.PolicyServiceInitDelayAfterNative{PolicyPresence}"
     units="ms" expires_after="2021-07-31">
+  <obsolete>
+    Replaced by MobileFre.PolicyServiceInitDelayAfterNative.*2 due to bug fix as
+    of 05/2021. See https://crbug.com/1208942.
+  </obsolete>
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -865,8 +869,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     decision &quot;whether we need to wait to load policy service from
     native&quot; has been made. The decision is made when no on-device policy is
     found, or policy service is fully initialized. If the decision has been made
-    before native initialization, 0 will be recorded. Recorded during FRE only,
+    before native initialization, SystemClock#elapsedRealTime was recorded, in
+    which does not provide much useful information. Recorded during FRE only,
     when on-device policy is {PolicyPresence}
+  </summary>
+  <token key="PolicyPresence">
+    <variant name=".WithoutPolicy" summary="not presented."/>
+    <variant name=".WithPolicy" summary="presented."/>
+  </token>
+</histogram>
+
+<histogram name="MobileFre.PolicyServiceInitDelayAfterNative{PolicyPresence}2"
+    units="ms" expires_after="2022-05-01">
+  <owner>skym@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Android: The amount of time spent between native initialized and the
+    decision &quot;whether we need to wait to load policy service from
+    native&quot; has been made. The decision is made when no on-device policy is
+    found, or policy service is fully initialized. If the decision has been made
+    before native initialization, it will not be recorded. Recorded during FRE
+    only, when on-device policy is {PolicyPresence}
   </summary>
   <token key="PolicyPresence">
     <variant name=".WithoutPolicy" summary="not presented."/>

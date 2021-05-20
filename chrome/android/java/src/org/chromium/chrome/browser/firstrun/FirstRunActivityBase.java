@@ -164,10 +164,13 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
     }
 
     protected void onPolicyLoadListenerAvailable(boolean onDevicePolicyFound) {
-        long delayAfterNative = Math.max(0, SystemClock.elapsedRealtime() - mNativeInitializedTime);
+        if (!mNativeInitialized) return;
+
+        assert mNativeInitializedTime != 0;
+        long delayAfterNative = SystemClock.elapsedRealtime() - mNativeInitializedTime;
         String histogramName = onDevicePolicyFound
-                ? "MobileFre.PolicyServiceInitDelayAfterNative.WithPolicy"
-                : "MobileFre.PolicyServiceInitDelayAfterNative.WithoutPolicy";
+                ? "MobileFre.PolicyServiceInitDelayAfterNative.WithPolicy2"
+                : "MobileFre.PolicyServiceInitDelayAfterNative.WithoutPolicy2";
         RecordHistogram.recordTimesHistogram(histogramName, delayAfterNative);
     }
 
