@@ -386,8 +386,8 @@ void SandboxedUnpacker::OnVerifiedContentsUncompressed(
   // Make a copy, since |result| may store data in shared memory, accessible by
   // some other processes.
   std::vector<uint8_t> verified_contents(
-      result.value.value().byte_span().begin(),
-      result.value.value().byte_span().end());
+      result.value.value().data(),
+      result.value.value().data() + result.value.value().size());
   if (!StoreVerifiedContentsInExtensionDir(std::move(verified_contents)))
     return;
   Unpack(unzip_dir);
