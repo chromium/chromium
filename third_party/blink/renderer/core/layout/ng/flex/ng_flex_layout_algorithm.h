@@ -86,6 +86,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   const bool is_cross_size_definite_;
   const LogicalSize child_percentage_size_;
 
+  bool has_column_percent_flex_basis_ = false;
   bool ignore_child_scrollbar_changes_ = false;
   FlexLayoutAlgorithm algorithm_;
   DevtoolsFlexInfo* layout_info_for_devtools_;

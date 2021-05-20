@@ -584,6 +584,9 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
     const Length& specified_length_in_main_axis =
         is_horizontal_flow_ ? child_style.Width() : child_style.Height();
     const Length& flex_basis = child_style.FlexBasis();
+    if (is_column_ && flex_basis.IsPercentOrCalc())
+      has_column_percent_flex_basis_ = true;
+
     Length length_to_resolve = Length::Auto();
     if (flex_basis.IsAuto()) {
       if (!is_column_ || IsItemMainSizeDefinite(child))
@@ -1058,6 +1061,9 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
 
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
+
+  if (has_column_percent_flex_basis_)
+    container_builder_.SetHasDescendantThatDependsOnPercentageBlockSize(true);
 
   bool success = GiveLinesAndItemsFinalPositionAndSize();
   if (!success)
