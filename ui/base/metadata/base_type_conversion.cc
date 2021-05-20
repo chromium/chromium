@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time_delta_from_string.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/color_utils.h"
@@ -250,7 +251,7 @@ absl::optional<base::FilePath> TypeConverter<base::FilePath>::FromString(
 absl::optional<base::TimeDelta> TypeConverter<base::TimeDelta>::FromString(
     const std::u16string& source_value) {
   std::string source = base::UTF16ToUTF8(source_value);
-  return base::TimeDelta::FromString(source);
+  return base::TimeDeltaFromString(source);
 }
 
 absl::optional<gfx::Insets> TypeConverter<gfx::Insets>::FromString(

@@ -7,6 +7,7 @@
 
 #include "base/i18n/unicodestring.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/translit.h"

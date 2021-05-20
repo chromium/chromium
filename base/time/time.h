@@ -72,10 +72,8 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/numerics/safe_math.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_FUCHSIA)
 #include <zircon/types.h>
@@ -155,21 +153,6 @@ class BASE_EXPORT TimeDelta {
 
   // Converts a frequency in Hertz (cycles per second) into a period.
   static constexpr TimeDelta FromHz(double frequency);
-
-  // From Go's doc at https://golang.org/pkg/time/#ParseDuration
-  //   [ParseDuration] parses a duration string. A duration string is
-  //   a possibly signed sequence of decimal numbers, each with optional
-  //   fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m".
-  //   Valid time units are "ns", "us" "ms", "s", "m", "h".
-  //
-  // Special values that are allowed without specifying units:
-  //  "0", "+0", "-0" -> TimeDelta()
-  //  "inf", "+inf"   -> TimeDelta::Max()
-  //  "-inf"          -> TimeDelta::Min()
-  // Returns |absl::nullopt| when parsing fails. Numbers larger than 2^63-1
-  // will fail parsing. Overflowing `number * unit` will return +/-inf, as
-  // appropriate.
-  static absl::optional<TimeDelta> FromString(StringPiece duration_string);
 
   // Converts an integer value representing TimeDelta to a class. This is used
   // when deserializing a |TimeDelta| structure, using a value known to be
