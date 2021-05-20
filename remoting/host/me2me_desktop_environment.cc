@@ -86,10 +86,10 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
   }
 #endif  // defined(OS_WIN)
 
-#if defined(OS_LINUX)
+#if !defined(NDEBUG) && defined(OS_LINUX)
   capabilities += " ";
   capabilities += protocol::kRemoteOpenUrlCapability;
-#endif  // defined(OS_LINUX)
+#endif  // !defined(NDEBUG) && defined(OS_LINUX)
 
   return capabilities;
 }
