@@ -28,7 +28,7 @@ python_version: "3.8"
 #   components/policy/test_support/policy_testserver.py
 wheel: <
   name: "infra/python/wheels/protobuf-py2_py3"
-  version: "version:3.6.1"
+  version: "version:3.15.8"
 >
 
 # TODO(https://crbug.com/898348): Add in necessary wheels as Python3 versions
