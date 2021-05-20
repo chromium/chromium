@@ -43,6 +43,12 @@ status of Chromium's C++ support is covered in more detail in
     `ForTesting` is the conventional suffix although similar patterns, such as
     `ForTest`, are also accepted. These suffixes are checked at presubmit time
     to ensure the functions are called only by test files.
+  * Classes used only for testing should be in a GN build target that is
+    marked `testonly=true`. Tests can depend on such targets, but production
+    code can not.
+  * The code for `testonly` targets should be placed in a `test/` subdirectory.
+    For test classes used across multiple directories, it might make sense to
+    move them into a nested `test` namespace for clarity.
 
 ## Code formatting
 
