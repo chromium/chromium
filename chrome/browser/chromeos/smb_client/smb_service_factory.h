@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_SMB_CLIENT_SMB_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_CHROMEOS_SMB_CLIENT_SMB_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
@@ -31,6 +30,8 @@ class SmbServiceFactory : public BrowserContextKeyedServiceFactory {
   friend struct base::DefaultSingletonTraits<SmbServiceFactory>;
 
   SmbServiceFactory();
+  SmbServiceFactory(const SmbServiceFactory&) = delete;
+  SmbServiceFactory& operator=(const SmbServiceFactory&) = delete;
   ~SmbServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides:
@@ -41,8 +42,6 @@ class SmbServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(SmbServiceFactory);
 };
 
 }  // namespace smb_client

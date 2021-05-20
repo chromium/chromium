@@ -14,10 +14,9 @@ namespace smb_client {
 class SmbErrorsTest : public ::testing::Test {
  public:
   SmbErrorsTest() = default;
+  SmbErrorsTest(const SmbErrorsTest&) = delete;
+  SmbErrorsTest& operator=(const SmbErrorsTest&) = delete;
   ~SmbErrorsTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SmbErrorsTest);
 };
 
 TEST_F(SmbErrorsTest, SmbErrorToFileError) {

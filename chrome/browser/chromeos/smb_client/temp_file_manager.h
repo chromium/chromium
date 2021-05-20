@@ -19,6 +19,8 @@ namespace smb_client {
 class TempFileManager {
  public:
   TempFileManager();
+  TempFileManager(const TempFileManager&) = delete;
+  TempFileManager& operator=(const TempFileManager&) = delete;
   ~TempFileManager();
 
   // Returns the path of the temporary directory.
@@ -37,8 +39,6 @@ class TempFileManager {
 
   // Scoped class that handles deletion of the temporary directory.
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(TempFileManager);
 };
 
 }  // namespace smb_client

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/smb_client/discovery/host_locator.h"
 #include "chrome/browser/chromeos/smb_client/discovery/network_scanner.h"
@@ -31,6 +30,8 @@ class SmbShareFinder : public base::SupportsWeakPtr<SmbShareFinder> {
       base::OnceCallback<void(const std::vector<SmbUrl>& shares_gathered)>;
 
   explicit SmbShareFinder(SmbProviderClient* client);
+  SmbShareFinder(const SmbShareFinder&) = delete;
+  SmbShareFinder& operator=(const SmbShareFinder&) = delete;
   ~SmbShareFinder();
 
   // Gathers the hosts in the network using |scanner_| and gets the shares for
@@ -103,8 +104,6 @@ class SmbShareFinder : public base::SupportsWeakPtr<SmbShareFinder> {
   std::vector<GatherSharesInNetworkResponse> share_callbacks_;
 
   std::vector<SmbUrl> shares_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmbShareFinder);
 };
 
 }  // namespace smb_client

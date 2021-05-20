@@ -30,10 +30,9 @@ constexpr char kTestWorkgroup[] = "accounts.baz.com";
 class SmbFileSystemIdTest : public testing::Test {
  public:
   SmbFileSystemIdTest() = default;
+  SmbFileSystemIdTest(const SmbFileSystemIdTest&) = delete;
+  SmbFileSystemIdTest& operator=(const SmbFileSystemIdTest&) = delete;
   ~SmbFileSystemIdTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SmbFileSystemIdTest);
 };
 
 TEST_F(SmbFileSystemIdTest, ShouldCreateFileSystemIdCorrectly) {

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 
 namespace chromeos {
@@ -27,7 +26,9 @@ class SmbKerberosCredentialsUpdater
   SmbKerberosCredentialsUpdater(
       KerberosCredentialsManager* credentials_manager,
       ActiveAccountChangedCallback active_account_changed_callback);
-
+  SmbKerberosCredentialsUpdater(const SmbKerberosCredentialsUpdater&) = delete;
+  SmbKerberosCredentialsUpdater& operator=(
+      const SmbKerberosCredentialsUpdater&) = delete;
   ~SmbKerberosCredentialsUpdater() override;
 
   // Checks if Kerberos is enabled by asking KerberosCredentialsManager.
@@ -44,8 +45,6 @@ class SmbKerberosCredentialsUpdater
   KerberosCredentialsManager* credentials_manager_;  // Not owned.
   std::string active_account_name_;
   const ActiveAccountChangedCallback active_account_changed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmbKerberosCredentialsUpdater);
 };
 
 }  // namespace smb_client

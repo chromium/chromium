@@ -25,6 +25,8 @@ constexpr size_t kTaskQueueCapacity = 3;
 class SmbTaskQueueTest : public testing::Test {
  public:
   SmbTaskQueueTest() : task_queue_(kTaskQueueCapacity) {}
+  SmbTaskQueueTest(const SmbTaskQueueTest&) = delete;
+  SmbTaskQueueTest& operator=(const SmbTaskQueueTest&) = delete;
   ~SmbTaskQueueTest() override = default;
 
  protected:
@@ -80,7 +82,6 @@ class SmbTaskQueueTest : public testing::Test {
 
   SmbTaskQueue task_queue_;
   std::map<uint32_t, base::OnceClosure> pending_;
-  DISALLOW_COPY_AND_ASSIGN(SmbTaskQueueTest);
 };
 
 // SmbTaskQueue immediately runs a task when less than max_pending are running.

@@ -14,6 +14,8 @@ namespace smb_client {
 class SmbServiceHelperTest : public ::testing::Test {
  public:
   SmbServiceHelperTest() = default;
+  SmbServiceHelperTest(const SmbServiceHelperTest&) = delete;
+  SmbServiceHelperTest& operator=(const SmbServiceHelperTest&) = delete;
   ~SmbServiceHelperTest() override = default;
 
  protected:
@@ -41,9 +43,6 @@ class SmbServiceHelperTest : public ::testing::Test {
     return ::chromeos::smb_client::ParseUserName(down_level_logon_name,
                                                  &user_name_, &realm_);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SmbServiceHelperTest);
 };
 
 // a@b.c succeeds.

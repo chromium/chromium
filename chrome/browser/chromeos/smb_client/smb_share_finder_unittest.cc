@@ -34,7 +34,8 @@ class SmbShareFinderTest : public testing::Test {
   SmbShareFinderTest() {
     SetupShareFinderTest(true /* should_run_synchronously */);
   }
-
+  SmbShareFinderTest(const SmbShareFinderTest&) = delete;
+  SmbShareFinderTest& operator=(const SmbShareFinderTest&) = delete;
   ~SmbShareFinderTest() override = default;
 
  protected:
@@ -176,8 +177,6 @@ class SmbShareFinderTest : public testing::Test {
   InMemoryHostLocator* host_locator_;
   std::unique_ptr<FakeSmbProviderClient> fake_client_;
   std::unique_ptr<SmbShareFinder> share_finder_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmbShareFinderTest);
 };
 
 TEST_F(SmbShareFinderTest, NoSharesFoundWithNoHosts) {

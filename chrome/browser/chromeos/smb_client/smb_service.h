@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
@@ -58,6 +57,8 @@ class SmbService : public KeyedService,
                                    bool done)>;
 
   SmbService(Profile* profile, std::unique_ptr<base::TickClock> tick_clock);
+  SmbService(const SmbService&) = delete;
+  SmbService& operator=(const SmbService&) = delete;
   ~SmbService() override;
 
   // KeyedService override.
@@ -320,8 +321,6 @@ class SmbService : public KeyedService,
 
   base::OnceClosure setup_complete_callback_;
   SmbFsShare::MounterCreationCallback smbfs_mounter_creation_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmbService);
 };
 
 }  // namespace smb_client

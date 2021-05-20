@@ -48,6 +48,11 @@ using OperationId = uint32_t;
 //  }
 class SmbTaskQueue {
  public:
+  explicit SmbTaskQueue(size_t max_pending);
+  SmbTaskQueue(const SmbTaskQueue&) = delete;
+  SmbTaskQueue& operator=(const SmbTaskQueue&) = delete;
+  ~SmbTaskQueue();
+
   // Provides the caller with a new OperationId to associate new tasks with.
   OperationId GetNextOperationId();
 
@@ -66,9 +71,6 @@ class SmbTaskQueue {
   // Must be called by the owner of this class to indicate that a response to a
   // task was received.
   void TaskFinished();
-
-  explicit SmbTaskQueue(size_t max_pending);
-  ~SmbTaskQueue();
 
  private:
   using TaskList = base::queue<SmbTask>;
@@ -107,8 +109,6 @@ class SmbTaskQueue {
   OperationId next_operation_id = 0;
   base::queue<OperationId> operations_;
   std::map<OperationId, TaskList> operation_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmbTaskQueue);
 };
 
 }  // namespace smb_client

@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/chromeos/smb_client/smb_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,6 +15,8 @@ namespace smb_client {
 class SmbUrlTest : public testing::Test {
  public:
   SmbUrlTest() = default;
+  SmbUrlTest(const SmbUrlTest&) = delete;
+  SmbUrlTest& operator=(const SmbUrlTest&) = delete;
   ~SmbUrlTest() override = default;
 
   void ExpectInvalidUrl(const std::string& url) {
@@ -40,9 +41,6 @@ class SmbUrlTest : public testing::Test {
     EXPECT_TRUE(smb_url.IsValid());
     EXPECT_EQ(expected_unc, smb_url.GetWindowsUNCString());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SmbUrlTest);
 };
 
 TEST_F(SmbUrlTest, EmptyUrlIsInvalid) {
