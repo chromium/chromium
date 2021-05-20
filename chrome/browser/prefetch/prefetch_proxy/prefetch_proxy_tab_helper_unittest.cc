@@ -1837,7 +1837,8 @@ TEST_F(PrefetchProxyTabHelperRedirectWithDecoyTest,
 
   RunNoRedirectTest(GURL("https://www.google.com/"));
 
-  EXPECT_EQ(predicted_urls_count(), 2U);
+  // The navigation prediction in |RunNoRedirectTest()| should be de-duped.
+  EXPECT_EQ(predicted_urls_count(), 1U);
   EXPECT_EQ(prefetch_eligible_count(), 0U);
   EXPECT_EQ(prefetch_attempted_count(), 0U);
   EXPECT_EQ(prefetch_successful_count(), 0U);

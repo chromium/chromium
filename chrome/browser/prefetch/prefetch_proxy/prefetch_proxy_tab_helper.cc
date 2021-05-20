@@ -1244,11 +1244,21 @@ void PrefetchProxyTabHelper::PrefetchUrls(
             web_contents()->GetMainFrame()->GetPageUkmSourceId());
   }
 
+  // Remove duplicate prefetches, but allow |allowed_to_prefetch_subresources|
+  // to be set for any upgraded prefetches.
+  std::vector<GURL> new_targets;
+  for (const auto& prefetch : prefetch_targets) {
+    if (page_->original_prediction_ordering_.find(prefetch) ==
+        page_->original_prediction_ordering_.end()) {
+      new_targets.push_back(prefetch);
+    }
+  }
+
   // It's very likely we'll prefetch something at this point, so inform PLM to
   // start tracking metrics.
   InformPLMOfLikelyPrefetching(web_contents());
 
-  page_->srp_metrics_->predicted_urls_count_ += prefetch_targets.size();
+  page_->srp_metrics_->predicted_urls_count_ += new_targets.size();
 
   // It is possible, since it is not stipulated by the API contract, that the
   // navigation predictor will issue multiple predictions during a single page
@@ -1261,8 +1271,8 @@ void PrefetchProxyTabHelper::PrefetchUrls(
       allowed_to_prefetch_subresources.begin(),
       allowed_to_prefetch_subresources.end());
 
-  for (size_t i = 0; i < prefetch_targets.size(); ++i) {
-    GURL url = prefetch_targets[i];
+  for (size_t i = 0; i < new_targets.size(); ++i) {
+    GURL url = new_targets[i];
 
     size_t url_index = original_prediction_ordering_starting_size + i;
     page_->original_prediction_ordering_.emplace(url, url_index);

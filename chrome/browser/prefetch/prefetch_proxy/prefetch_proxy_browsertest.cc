@@ -549,9 +549,6 @@ class PrefetchProxyBrowserTest
 
   void InsertSpeculation(bool subresources,
                          const std::vector<GURL>& prefetch_urls) {
-    // Make sure we are on a valid referring page.
-    ui_test_utils::NavigateToURL(browser(),
-                                 GetReferringPageServerURL("/search/q=blah"));
 
     std::string speculation_script = R"(
       var script = document.createElement('script');
@@ -4143,9 +4140,7 @@ class SpeculationPrefetchProxyTest : public PrefetchProxyBrowserTest {
   void SetFeatures() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kIsolatePrerenders,
-          {
-              {"use_speculation_rules", "true"},
-          }},
+          {{"use_speculation_rules", "true"}, {"max_srp_prefetches", "3"}}},
          {blink::features::kLightweightNoStatePrefetch, {}},
          {blink::features::kSpeculationRulesPrefetchProxy, {}}},
         {{features::kLazyImageLoading}});
@@ -4181,6 +4176,9 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
 
   tab_helper_observer.SetOnNSPFinishedClosure(nsp_run_loop.QuitClosure());
 
+  // Make sure we are on a valid referring page.
+  ui_test_utils::NavigateToURL(browser(),
+                               GetReferringPageServerURL("/search/q=blah"));
   InsertSpeculation(true, {eligible_link});
 
   // This run loop will quit when all the prefetch responses have been
@@ -4342,7 +4340,9 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
   tab_helper_observer.SetOnPrefetchSuccessfulClosure(run_loop.QuitClosure());
   tab_helper_observer.SetExpectedSuccessfulURLs({prefetch_url});
 
-  GURL doc_url("https://www.google.com/search?q=test");
+  // Make sure we are on a valid referring page.
+  ui_test_utils::NavigateToURL(browser(),
+                               GetReferringPageServerURL("/search/q=blah"));
   InsertSpeculation(false, {prefetch_url});
 
   // This run loop will quit when the prefetch response has been successfully
@@ -4361,4 +4361,46 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
 
   // The origin server should not have served this request.
   EXPECT_EQ(starting_origin_request_count, OriginServerRequestCount());
+}
+
+IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(TwoSpeculations)) {
+  SetDataSaverEnabled(true);
+  WaitForUpdatedCustomProxyConfig();
+
+  PrefetchProxyTabHelper* tab_helper =
+      PrefetchProxyTabHelper::FromWebContents(GetWebContents());
+  TestTabHelperObserver tab_helper_observer(tab_helper);
+
+  GURL prefetch_url = GetOriginServerURL("/title2.html");
+
+  base::RunLoop run_loop;
+  tab_helper_observer.SetOnPrefetchSuccessfulClosure(run_loop.QuitClosure());
+  tab_helper_observer.SetExpectedSuccessfulURLs({prefetch_url});
+
+  // Make sure we are on a valid referring page.
+  ui_test_utils::NavigateToURL(browser(),
+                               GetReferringPageServerURL("/search/q=blah"));
+  InsertSpeculation(false, {prefetch_url});
+
+  // This run loop will quit when the prefetch response has been successfully
+  // done and processed.
+  run_loop.Run();
+
+  EXPECT_EQ(tab_helper->srp_metrics().prefetch_attempted_count_, 1U);
+  EXPECT_EQ(tab_helper->srp_metrics().prefetch_successful_count_, 1U);
+
+  base::RunLoop run_loop_2;
+  GURL prefetch_url_2 = GetOriginServerURL("/title1.html");
+  tab_helper_observer.SetOnPrefetchSuccessfulClosure(run_loop_2.QuitClosure());
+  tab_helper_observer.SetExpectedSuccessfulURLs({prefetch_url_2});
+  InsertSpeculation(false, {prefetch_url_2});
+
+  // This run loop will quit when the prefetch response has been successfully
+  // done and processed.
+  run_loop_2.Run();
+
+  // Verify that we de-dupe and only fetch one new URL.
+  EXPECT_EQ(tab_helper->srp_metrics().prefetch_attempted_count_, 2U);
+  EXPECT_EQ(tab_helper->srp_metrics().prefetch_successful_count_, 2U);
 }

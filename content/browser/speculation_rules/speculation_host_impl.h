@@ -35,11 +35,6 @@ class SpeculationHostImpl
   void UpdateSpeculationCandidates(
       std::vector<blink::mojom::SpeculationCandidatePtr> candidates) override;
 
-  // Track if an update has been received. The current implementation only
-  // processes one update per document. At present, updates after the first are
-  // ignored.
-  bool received_update_ = false;
-
   std::unique_ptr<SpeculationHostDelegate> delegate_;
 };
 
