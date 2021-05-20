@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/containers/queue.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -8985,22 +8984,16 @@ service_manager::InterfaceProvider* RenderFrameHostImpl::GetJavaInterfaces() {
 
 void RenderFrameHostImpl::ForEachImmediateLocalRoot(
     const base::RepeatingCallback<void(RenderFrameHostImpl*)>& callback) {
-  if (!frame_tree_node_->child_count())
-    return;
-
-  base::queue<FrameTreeNode*> queue;
-  for (size_t index = 0; index < frame_tree_node_->child_count(); ++index)
-    queue.push(frame_tree_node_->child_at(index));
-  while (queue.size()) {
-    FrameTreeNode* current = queue.front();
-    queue.pop();
-    if (current->current_frame_host()->is_local_root()) {
-      callback.Run(current->current_frame_host());
-    } else {
-      for (size_t index = 0; index < current->child_count(); ++index)
-        queue.push(current->child_at(index));
-    }
-  }
+  ForEachRenderFrameHost(base::BindRepeating(
+      [](const base::RepeatingCallback<void(RenderFrameHostImpl*)>& callback,
+         const RenderFrameHostImpl* starting_rfh, RenderFrameHostImpl* rfh) {
+        if (rfh->is_local_root() && rfh != starting_rfh) {
+          callback.Run(rfh);
+          return FrameIterationAction::kSkipChildren;
+        }
+        return FrameIterationAction::kContinue;
+      },
+      callback, this));
 }
 
 void RenderFrameHostImpl::SetVisibilityForChildViews(bool visible) {

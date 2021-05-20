@@ -6412,63 +6412,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
   EXPECT_TRUE(watcher.did_exit_normally());
 }
 
-// TODO(ekaramad): Move this test out of this file when addressing
-// https://crbug.com/754726.
-// This test verifies that RFHImpl::ForEachImmediateLocalRoot works as expected.
-// The frame tree used in the test is:
-//                                A0
-//                            /    |    \
-//                          A1     B1    A2
-//                         /  \    |    /  \
-//                        B2   A3  B3  A4   C2
-//                       /    /   / \    \
-//                      D1   D2  C3  C4  C5
-//
-// As an example, the expected set of immediate local roots for the root node A0
-// should be {B1, B2, C2, D2, C5}. Note that the order is compatible with that
-// of a BFS traversal from root node A0.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, FindImmediateLocalRoots) {
-  GURL main_url(embedded_test_server()->GetURL(
-      "a.com",
-      "/cross_site_iframe_factory.html?a(a(b(d),a(d)),b(b(c,c)),a(a(c),c))"));
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  // Each entry is of the frame "LABEL:ILR1ILR2..." where ILR stands for
-  // immediate local root.
-  std::string immediate_local_roots[] = {
-      "A0:B1B2C2D2C5", "A1:B2D2", "B1:C3C4", "A2:C2C5", "B2:D1",
-      "A3:D2",         "B3:C3C4", "A4:C5",   "C2:",     "D1:",
-      "D2:",           "C3:",     "C4:",     "C5:"};
-
-  std::map<RenderFrameHostImpl*, std::string>
-      frame_to_immediate_local_roots_map;
-  std::map<RenderFrameHostImpl*, std::string> frame_to_label_map;
-  size_t index = 0;
-  // Map each RenderFrameHostImpl to its label and set of immediate local roots.
-  for (auto* ftn : web_contents()->GetFrameTree()->Nodes()) {
-    std::string roots = immediate_local_roots[index++];
-    frame_to_immediate_local_roots_map[ftn->current_frame_host()] = roots;
-    frame_to_label_map[ftn->current_frame_host()] = roots.substr(0, 2);
-  }
-
-  // For each frame in the tree, verify that ForEachImmediateLocalRoot properly
-  // visits each and only each immediate local root in a BFS traversal order.
-  for (auto* ftn : web_contents()->GetFrameTree()->Nodes()) {
-    RenderFrameHostImpl* current_frame_host = ftn->current_frame_host();
-    std::list<RenderFrameHostImpl*> frame_list;
-    current_frame_host->ForEachImmediateLocalRoot(base::BindRepeating(
-        [](std::list<RenderFrameHostImpl*>* ilr_list,
-           RenderFrameHostImpl* rfh) { ilr_list->push_back(rfh); },
-        &frame_list));
-
-    std::string result = frame_to_label_map[current_frame_host];
-    result.append(":");
-    for (auto* ilr_ptr : frame_list)
-      result.append(frame_to_label_map[ilr_ptr]);
-    EXPECT_EQ(frame_to_immediate_local_roots_map[current_frame_host], result);
-  }
-}
-
 // This test verifies that changing the CSS visibility of a cross-origin
 // <iframe> is forwarded to its corresponding RenderWidgetHost and all other
 // RenderWidgetHosts corresponding to the nested cross-origin frame.

@@ -2205,6 +2205,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest,
                            CheckIsCurrentBeforeAndAfterUnload);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest,
+                           FindImmediateLocalRoots);
+  FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest,
                            HasCommittedAnyNavigation);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, GetUkmSourceIds);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostManagerTest,
@@ -2224,7 +2226,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(
       RenderFrameHostManagerUnloadBrowserTest,
       PendingDeleteRFHProcessShutdownDoesNotRemoveSubframes);
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest, FindImmediateLocalRoots);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            RenderViewHostIsNotReusedAfterDelayedUnloadACK);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
@@ -2659,13 +2660,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // based on its parent frame.
   void ResetPermissionsPolicy();
 
-  // TODO(ekaramad): One major purpose behind the API is to traverse the frame
-  // tree top-down to visit the  RenderWidgetHostViews of interest in the most
-  // efficient way. We might want to revisit this API, remove it from RFHImpl,
-  // and perhaps consolidate it with some of the existing ones such as
-  // WebContentsImpl::GetRenderWidgetHostViewsInTree() into a new more
-  // appropriate API for dealing with (virtual) RenderWidgetHost(View) tree.
-  // (see https://crbug.com/754726).
   // Runs |callback| for all the local roots immediately under this frame, i.e.
   // local roots which are under this frame and their first ancestor which is a
   // local root is either this frame or this frame's local root. For instance,
@@ -2677,7 +2671,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //              D  A2    C   F             //
   // RFHs at nodes B, E, D, C, and F are all local roots in the given frame tree
   // under the root at A0, but only B, C, and E are considered immediate local
-  // roots of A0. Note that this will exclude any speculative or pending RFHs.
+  // roots of A0. Note that this will exclude any speculative RFHs.
   void ForEachImmediateLocalRoot(
       const base::RepeatingCallback<void(RenderFrameHostImpl*)>& callback);
 
