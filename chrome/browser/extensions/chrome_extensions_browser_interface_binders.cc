@@ -74,12 +74,12 @@ void BindMachineLearningService(
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-void BindTtsStreamFactory(
+void BindGoogleTtsStream(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<chromeos::tts::mojom::TtsStreamFactory> receiver) {
+    mojo::PendingReceiver<chromeos::tts::mojom::GoogleTtsStream> receiver) {
   TtsEngineExtensionObserverChromeOS::GetInstance(
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))
-      ->BindTtsStreamFactory(std::move(receiver));
+      ->BindGoogleTtsStream(std::move(receiver));
 }
 
 void BindRemoteAppsFactory(
@@ -166,8 +166,8 @@ void PopulateChromeFrameBindersForExtension(
   }
 
   if (extension->id() == extension_misc::kGoogleSpeechSynthesisExtensionId) {
-    binder_map->Add<chromeos::tts::mojom::TtsStreamFactory>(
-        base::BindRepeating(&BindTtsStreamFactory));
+    binder_map->Add<chromeos::tts::mojom::GoogleTtsStream>(
+        base::BindRepeating(&BindGoogleTtsStream));
   }
 
   if (chromeos::RemoteAppsImpl::IsAllowed(render_frame_host, extension)) {

@@ -64,30 +64,26 @@ void TtsExtensionEngineChromeOS::Speak(content::TtsUtterance* utterance,
   }
 
   TtsEngineExtensionObserverChromeOS::GetInstance(profile)
-      ->BindTtsStreamFactory(tts_stream_factory_.BindNewPipeAndPassReceiver());
+      ->BindPlaybackTtsStream(
+          playback_tts_stream_.BindNewPipeAndPassReceiver(),
+          base::BindOnce(
+              [](extensions::EventRouter* event_router,
+                 std::unique_ptr<base::ListValue> args,
+                 const std::string& engine_id, Profile* profile,
+                 TtsExtensionEngineChromeOS* owner, int32_t sample_rate,
+                 int32_t buffer_size) {
+                // |owner| is always valid because TtsExtensionEngine is a
+                // singleton.
+                owner->UpdateAudioStreamOptions(sample_rate, buffer_size);
+                owner->Play(event_router, std::move(args), engine_id, profile);
+              },
+              event_router, std::move(args), engine_id, profile, this));
 
-  tts_stream_factory_->CreatePlaybackTtsStream(base::BindOnce(
-      [](mojo::Remote<chromeos::tts::mojom::PlaybackTtsStream>*
-             playback_tts_stream,
-         extensions::EventRouter* event_router,
-         std::unique_ptr<base::ListValue> args, const std::string& engine_id,
-         Profile* profile, TtsExtensionEngineChromeOS* owner,
-         mojo::PendingRemote<chromeos::tts::mojom::PlaybackTtsStream> stream,
-         int32_t sample_rate, int32_t buffer_size) {
-        playback_tts_stream->Bind(std::move(stream));
-        playback_tts_stream->set_disconnect_handler(base::BindOnce(
-            [](mojo::Remote<chromeos::tts::mojom::PlaybackTtsStream>* stream) {
-              stream->reset();
-            },
-            playback_tts_stream));
-
-        // |owner| is always valid because TtsExtensionEngine is a
-        // singleton.
-        owner->UpdateAudioStreamOptions(sample_rate, buffer_size);
-        owner->Play(event_router, std::move(args), engine_id, profile);
+  playback_tts_stream_.set_disconnect_handler(base::BindOnce(
+      [](mojo::Remote<chromeos::tts::mojom::PlaybackTtsStream>* stream) {
+        stream->reset();
       },
-      &playback_tts_stream_, event_router, std::move(args), engine_id, profile,
-      this));
+      &playback_tts_stream_));
 }
 
 void TtsExtensionEngineChromeOS::Stop(content::TtsUtterance* utterance) {

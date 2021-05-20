@@ -12,6 +12,8 @@ source_set("tts") {
     "google_tts_stream.h",
     "playback_tts_stream.cc",
     "playback_tts_stream.h",
+    "tts_player.cc",
+    "tts_player.h",
     "tts_service.cc",
     "tts_service.h",
   ]

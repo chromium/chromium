@@ -74,8 +74,8 @@
           <include name="IDR_REMOTE_APPS_MOJOM_LITE_JS" file="${mojom_root}\chromeos\components\remote_apps\mojom\remote_apps.mojom-lite.js" use_base_dir="false" type="BINDATA" />
           <include name="IDR_MOJO_URL_MOJOM_LITE_JS" file="${mojom_root}\url\mojom\url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
 
-          <include name="IDR_TTS_STREAM_FACTORY_BINDINGS_JS" file="extensions\chromeos_tts_stream_factory_bindings.js" type="BINDATA" />
-          <include name="IDR_TTS_STREAM_FACTORY_MOJOM_JS" file="${mojom_root}\chromeos\services\tts\public\mojom\tts_service.mojom.js" use_base_dir="false" type="BINDATA" />
+          <include name="IDR_GOOGLE_TTS_STREAM_BINDINGS_JS" file="extensions\chromeos_google_tts_stream_bindings.js" type="BINDATA" />
+          <include name="IDR_GOOGLE_TTS_STREAM_MOJOM_JS" file="${mojom_root}\chromeos\services\tts\public\mojom\tts_service.mojom.js" use_base_dir="false" type="BINDATA" />
         </if>
         <!-- Media Router Mojo service and bindings. -->
         <include name="IDR_MEDIA_CONTROLLER_MOJOM_JS" file="${mojom_root}\components\media_router\common\mojom\media_controller.mojom.js" use_base_dir="false" type="BINDATA" />

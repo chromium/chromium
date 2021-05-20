@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_TTS_GOOGLE_TTS_STREAM_H_
 
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
+#include "chromeos/services/tts/tts_player.h"
 #include "library_loaders/libchrometts.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -17,8 +18,10 @@ class TtsService;
 
 class GoogleTtsStream : public mojom::GoogleTtsStream {
  public:
-  GoogleTtsStream(TtsService* owner,
-                  mojo::PendingReceiver<mojom::GoogleTtsStream> receiver);
+  GoogleTtsStream(
+      TtsService* owner,
+      mojo::PendingReceiver<mojom::GoogleTtsStream> receiver,
+      mojo::PendingRemote<media::mojom::AudioStreamFactory> factory);
   ~GoogleTtsStream() override;
 
   bool IsBound() const;
@@ -51,6 +54,9 @@ class GoogleTtsStream : public mojom::GoogleTtsStream {
 
   // Whether buffering is in progress.
   bool is_buffering_ = false;
+
+  // Plays raw tts audio samples.
+  TtsPlayer tts_player_;
 
   base::WeakPtrFactory<GoogleTtsStream> weak_factory_{this};
 };

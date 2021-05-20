@@ -12,8 +12,11 @@ namespace tts {
 
 PlaybackTtsStream::PlaybackTtsStream(
     TtsService* owner,
-    mojo::PendingReceiver<mojom::PlaybackTtsStream> receiver)
-    : owner_(owner), stream_receiver_(this, std::move(receiver)) {
+    mojo::PendingReceiver<mojom::PlaybackTtsStream> receiver,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> factory,
+    const media::AudioParameters& params)
+    : stream_receiver_(this, std::move(receiver)),
+      tts_player_(std::move(factory), params) {
   stream_receiver_.set_disconnect_handler(base::BindOnce(
       [](TtsService* owner,
          mojo::Receiver<mojom::PlaybackTtsStream>* receiver) {
@@ -32,41 +35,41 @@ bool PlaybackTtsStream::IsBound() const {
 }
 
 void PlaybackTtsStream::Play(PlayCallback callback) {
-  owner_->Play(std::move(callback));
+  tts_player_.Play(std::move(callback));
 
   // A small buffer to signal the start of the audio for this utterance.
-  TtsService::AudioBuffer buf;
+  TtsPlayer::AudioBuffer buf;
   buf.frames.resize(1, 0);
   buf.status = 1;
   buf.is_first_buffer = true;
-  owner_->AddAudioBuffer(std::move(buf));
+  tts_player_.AddAudioBuffer(std::move(buf));
 }
 
 void PlaybackTtsStream::SendAudioBuffer(
     const std::vector<float>& samples_buffer,
     int32_t char_index,
     bool is_done) {
-  TtsService::AudioBuffer buf;
+  TtsPlayer::AudioBuffer buf;
   buf.frames = samples_buffer;
   buf.status = is_done ? 0 : 1;
   buf.char_index = char_index;
-  owner_->AddAudioBuffer(std::move(buf));
+  tts_player_.AddAudioBuffer(std::move(buf));
 }
 
 void PlaybackTtsStream::Stop() {
-  owner_->Stop();
+  tts_player_.Stop();
 }
 
 void PlaybackTtsStream::SetVolume(float volume) {
-  owner_->SetVolume(volume);
+  tts_player_.SetVolume(volume);
 }
 
 void PlaybackTtsStream::Pause() {
-  owner_->Pause();
+  tts_player_.Pause();
 }
 
 void PlaybackTtsStream::Resume() {
-  owner_->Resume();
+  tts_player_.Resume();
 }
 
 }  // namespace tts

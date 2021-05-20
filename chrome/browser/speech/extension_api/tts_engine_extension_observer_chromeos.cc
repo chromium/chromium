@@ -147,30 +147,15 @@ TtsEngineExtensionObserverChromeOS::TtsEngineExtensionObserverChromeOS(
 TtsEngineExtensionObserverChromeOS::~TtsEngineExtensionObserverChromeOS() =
     default;
 
-void TtsEngineExtensionObserverChromeOS::BindTtsStreamFactory(
-    mojo::PendingReceiver<chromeos::tts::mojom::TtsStreamFactory> receiver) {
+void TtsEngineExtensionObserverChromeOS::BindGoogleTtsStream(
+    mojo::PendingReceiver<chromeos::tts::mojom::GoogleTtsStream> receiver) {
   // At this point, the component extension has loaded, and the js has requested
   // a TtsStreamFactory be bound. It's safe now to update the keep alive count
   // for important accessibility features. This path is also encountered if the
   // component extension background page forceably window.close(s) on error.
   UpdateGoogleSpeechSynthesisKeepAliveCountOnReload(profile_);
 
-  // Only launch a new TtsService if necessary. By assigning below, if
-  // |tts_service_| held a remote, it will be killed and a new one created,
-  // ensuring we only ever have one TtsService running.
-  if (!tts_service_) {
-    tts_service_ =
-        content::ServiceProcessHost::Launch<chromeos::tts::mojom::TtsService>(
-            content::ServiceProcessHost::Options()
-                .WithDisplayName("TtsService")
-                .Pass());
-
-    tts_service_.set_disconnect_handler(base::BindOnce(
-        [](mojo::Remote<chromeos::tts::mojom::TtsService>* tts_service) {
-          tts_service->reset();
-        },
-        &tts_service_));
-  }
+  CreateTtsServiceIfNeeded();
 
   // Always create a new audio stream for the tts stream. It is assumed once the
   // tts stream is reset by the service, the audio stream is appropriately
@@ -178,8 +163,23 @@ void TtsEngineExtensionObserverChromeOS::BindTtsStreamFactory(
   mojo::PendingRemote<media::mojom::AudioStreamFactory> factory_remote;
   auto factory_receiver = factory_remote.InitWithNewPipeAndPassReceiver();
   content::GetAudioService().BindStreamFactory(std::move(factory_receiver));
-  tts_service_->BindTtsStreamFactory(std::move(receiver),
-                                     std::move(factory_remote));
+  tts_service_->BindGoogleTtsStream(std::move(receiver),
+                                    std::move(factory_remote));
+}
+
+void TtsEngineExtensionObserverChromeOS::BindPlaybackTtsStream(
+    mojo::PendingReceiver<chromeos::tts::mojom::PlaybackTtsStream> receiver,
+    chromeos::tts::mojom::TtsService::BindPlaybackTtsStreamCallback callback) {
+  CreateTtsServiceIfNeeded();
+
+  // Always create a new audio stream for the tts stream. It is assumed once the
+  // tts stream is reset by the service, the audio stream is appropriately
+  // cleaned up by the audio service.
+  mojo::PendingRemote<media::mojom::AudioStreamFactory> factory_remote;
+  auto factory_receiver = factory_remote.InitWithNewPipeAndPassReceiver();
+  content::GetAudioService().BindStreamFactory(std::move(factory_receiver));
+  tts_service_->BindPlaybackTtsStream(
+      std::move(receiver), std::move(factory_remote), std::move(callback));
 }
 
 void TtsEngineExtensionObserverChromeOS::Shutdown() {
@@ -248,4 +248,24 @@ void TtsEngineExtensionObserverChromeOS::OnAccessibilityStatusChanged(
   // |OnExtensionLoaded| will do the increment. If it is, the call below will
   // increment. Decrements only occur when toggling off here.
   UpdateGoogleSpeechSynthesisKeepAliveCount(profile(), details.enabled);
+}
+
+void TtsEngineExtensionObserverChromeOS::CreateTtsServiceIfNeeded() {
+  // Only launch a new TtsService if necessary. By assigning below, if
+  // |tts_service_| held a remote, it will be killed and a new one created,
+  // ensuring we only ever have one TtsService running.
+  if (tts_service_)
+    return;
+
+  tts_service_ =
+      content::ServiceProcessHost::Launch<chromeos::tts::mojom::TtsService>(
+          content::ServiceProcessHost::Options()
+              .WithDisplayName("TtsService")
+              .Pass());
+
+  tts_service_.set_disconnect_handler(base::BindOnce(
+      [](mojo::Remote<chromeos::tts::mojom::TtsService>* tts_service) {
+        tts_service->reset();
+      },
+      &tts_service_));
 }

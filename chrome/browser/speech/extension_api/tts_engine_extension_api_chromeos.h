@@ -63,7 +63,6 @@ class TtsExtensionEngineChromeOS
             const std::string& engine_id,
             Profile* profile);
 
-  mojo::Remote<chromeos::tts::mojom::TtsStreamFactory> tts_stream_factory_;
   mojo::Remote<chromeos::tts::mojom::PlaybackTtsStream> playback_tts_stream_;
   mojo::ReceiverSet<chromeos::tts::mojom::TtsEventObserver>
       tts_event_observer_receiver_set_;

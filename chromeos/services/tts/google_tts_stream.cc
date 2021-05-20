@@ -14,6 +14,11 @@
 namespace chromeos {
 namespace tts {
 
+namespace {
+constexpr int kDefaultSampleRate = 24000;
+constexpr int kDefaultBufferSize = 512;
+}  // namespace
+
 // Simple helper to bridge logging in the shared library to Chrome's logging.
 void HandleLibraryLogging(int severity, const char* message) {
   switch (severity) {
@@ -41,8 +46,16 @@ void HandleLibraryLogging(int severity, const char* message) {
 
 GoogleTtsStream::GoogleTtsStream(
     TtsService* owner,
-    mojo::PendingReceiver<mojom::GoogleTtsStream> receiver)
-    : owner_(owner), stream_receiver_(this, std::move(receiver)) {
+    mojo::PendingReceiver<mojom::GoogleTtsStream> receiver,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> factory)
+    : owner_(owner),
+      stream_receiver_(this, std::move(receiver)),
+      tts_player_(
+          std::move(factory),
+          media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                 media::CHANNEL_LAYOUT_MONO,
+                                 kDefaultSampleRate,
+                                 kDefaultBufferSize)) {
   bool loaded = libchrometts_.Load(kLibchromettsPath);
   if (!loaded) {
     LOG(ERROR) << "Unable to load libchrometts.so.";
@@ -108,7 +121,7 @@ void GoogleTtsStream::Speak(const std::vector<uint8_t>& text_jspb,
     return;
   }
 
-  owner_->Play(std::move(callback));
+  tts_player_.Play(std::move(callback));
   is_buffering_ = true;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -118,27 +131,27 @@ void GoogleTtsStream::Speak(const std::vector<uint8_t>& text_jspb,
 }
 
 void GoogleTtsStream::Stop() {
-  owner_->Stop();
+  tts_player_.Stop();
   is_buffering_ = false;
 }
 
 void GoogleTtsStream::SetVolume(float volume) {
-  owner_->SetVolume(volume);
+  tts_player_.SetVolume(volume);
 }
 
 void GoogleTtsStream::Pause() {
-  owner_->Pause();
+  tts_player_.Pause();
 }
 
 void GoogleTtsStream::Resume() {
-  owner_->Resume();
+  tts_player_.Resume();
 }
 
 void GoogleTtsStream::ReadMoreFrames(bool is_first_buffer) {
   if (!is_buffering_)
     return;
 
-  TtsService::AudioBuffer buf;
+  TtsPlayer::AudioBuffer buf;
   buf.frames.resize(libchrometts_.GoogleTtsGetFramesInAudioBuffer());
   size_t frames_in_buf = 0;
   const int status =
@@ -150,12 +163,12 @@ void GoogleTtsStream::ReadMoreFrames(bool is_first_buffer) {
   buf.char_index = -1;
   buf.is_first_buffer = is_first_buffer;
 
-  owner_->AddAudioBuffer(std::move(buf));
+  tts_player_.AddAudioBuffer(std::move(buf));
 
   for (size_t timepoint_index = 0;
        timepoint_index < libchrometts_.GoogleTtsGetTimepointsCount();
        timepoint_index++) {
-    owner_->AddExplicitTimepoint(
+    tts_player_.AddExplicitTimepoint(
         libchrometts_.GoogleTtsGetTimepointsCharIndexAtIndex(timepoint_index),
         base::TimeDelta::FromSecondsD(
             libchrometts_.GoogleTtsGetTimepointsTimeInSecsAtIndex(
