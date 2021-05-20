@@ -618,11 +618,13 @@ Polymer({
    * @private
    */
   isSubpageButtonVisible_(networkState, showButtons, disabled_) {
+    if (!this.showButtons) {
+      return false;
+    }
     if (this.isPSimPendingActivationNetwork_ || this.isPSimActivatingNetwork_) {
       return true;
     }
-    return !!networkState && showButtons && !disabled_ &&
-        !this.shouldShowUnlockButton_();
+    return !!networkState && !disabled_ && !this.shouldShowUnlockButton_();
   },
 
   /**
@@ -673,15 +675,17 @@ Polymer({
             this.networkState, this.showButtons, this.disabled_) &&
         this.$$('#subpageButton') === this.shadowRoot.activeElement) {
       this.fireShowDetails_(event);
-    } else if (this.isESimPendingProfile_) {
+    } else if (this.shouldShowInstallButton_()) {
       this.onInstallButtonClick_(event);
     } else if (this.shouldShowUnlockButton_()) {
       this.onUnlockButtonClick_();
     } else if (this.item && this.item.hasOwnProperty('customItemName')) {
       this.fire('custom-item-selected', this.item);
+    } else if (this.shouldShowActivateButton_()) {
+      this.fireShowDetails_(event);
     } else if (
-        this.isPSimPendingActivationNetwork_ ||
-        this.isPSimUnavailableNetwork_ || this.isPSimActivatingNetwork_) {
+        this.showButtons &&
+        (this.isPSimUnavailableNetwork_ || this.isPSimActivatingNetwork_)) {
       this.fireShowDetails_(event);
     } else {
       this.fire('selected', this.item);
@@ -819,6 +823,17 @@ Polymer({
   },
 
   /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowActivateButton_() {
+    if (!this.showButtons) {
+      return false;
+    }
+    return this.isPSimPendingActivationNetwork_;
+  },
+
+  /**
    * @return {string}
    * @private
    */
@@ -902,6 +917,9 @@ Polymer({
    * @private
    */
   shouldShowUnlockButton_() {
+    if (!this.showButtons) {
+      return false;
+    }
     if (!this.networkState || !this.networkState.typeState.cellular ||
         !this.isUpdatedCellularUiEnabled_) {
       return false;
@@ -915,6 +933,17 @@ Polymer({
    */
   getUnlockBtnA11yLabel_() {
     return this.i18n('networkListItemUnlockA11YLabel', this.getItemName_());
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowInstallButton_() {
+    if (!this.showButtons) {
+      return false;
+    }
+    return this.isESimPendingProfile_;
   },
 
   /**

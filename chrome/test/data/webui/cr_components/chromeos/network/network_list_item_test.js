@@ -271,6 +271,12 @@ suite('NetworkListItemTest', function() {
     listItem.$.divOuter.click();
     const showDetailEvent = await showDetailPromise;
     assertEquals(showDetailEvent.detail, networkState);
+
+    // Setting showButtons to false should hide activate and arrow button.
+    listItem.showButtons = false;
+    await flushAsync();
+    assertFalse(!!listItem.$$('#activateButton'));
+    assertFalse(!!listItem.$$('#subpageButton'));
   });
 
   test('Unavailable pSIM UI visibility', async () => {
@@ -428,6 +434,11 @@ suite('NetworkListItemTest', function() {
 
         await flushAsync();
         assertEquals(installProfileEventIccid, 'iccid');
+
+        // Setting showButtons to false should hide install button.
+        listItem.showButtons = false;
+        await flushAsync();
+        assertFalse(!!listItem.$$('#installButton'));
       });
 
   test(
@@ -538,6 +549,11 @@ suite('NetworkListItemTest', function() {
     networkStateText = listItem.$$('#networkStateText');
     assertTrue(!!networkStateText);
     assertEquals(networkStateLockedText, networkStateText.textContent.trim());
+
+    // Setting showButtons to false should hide unlock button.
+    listItem.showButtons = false;
+    await flushAsync();
+    assertFalse(!!listItem.$$('#unlockButton'));
   });
 
   test('Disable sim lock button when device is inhibited', async () => {

@@ -163,7 +163,9 @@
           </cr-policy-indicator>
         </template>
         <!-- This can only be shown if isUpdatedCellularUiEnabled_ is enabled. -->
-        <template is="dom-if" if="[[isPSimPendingActivationNetwork_]]" restamp>
+        <template is="dom-if"
+            if="[[shouldShowActivateButton_(isPSimPendingActivationNetwork_,
+              showButtons)]]" restamp>
           <cr-button id="activateButton"
               aria-label$="[[getActivateBtnA11yLabel_(item)]]"
               on-click="onActivateButtonClick_"
@@ -177,12 +179,12 @@
           <paper-spinner-lite id="activatingPSimSpinner" active>
           </paper-spinner-lite>
           [[i18n('networkListItemActivating')]]
-          <div class="separator"></div>
+          <div class="separator" hidden$="[[!showButtons]]"></div>
         </template>
         <template is="dom-if"
             if="[[isSubpageButtonVisible_(networkState, showButtons, disabled_,
               networkState.typeState.cellular.simLocked,
-              isPSimPendingActivationNetwork_)]]" restamp>
+              isPSimPendingActivationNetwork_, isPSimActivatingNetwork_)]]" restamp>
           <div>
             <cr-icon-button class="subpage-arrow"
                 id="subpageButton"
@@ -195,7 +197,7 @@
           </div>
         </template>
         <template is="dom-if" if="[[shouldShowUnlockButton_(networkState,
-          networkState.typeState.cellular.simLocked)]]" restamp>
+          networkState.typeState.cellular.simLocked, showButtons)]]" restamp>
           <cr-button id="unlockButton"
               aria-label$="[[getUnlockBtnA11yLabel_(item)]]"
               on-click="onUnlockButtonClick_"
@@ -209,7 +211,8 @@
               device-state="[[deviceState]]">
           </sim-lock-dialogs>
         </template>
-        <template is="dom-if" if="[[isESimPendingProfile_]]" restamp>
+        <template is="dom-if" if="[[shouldShowInstallButton_(
+            isESimPendingProfile_, showButtons)]]" restamp>
           <cr-button id="installButton"
               aria-label$="[[getInstallBtnA11yLabel_(item)]]"
               on-click="onInstallButtonClick_"
