@@ -97,6 +97,20 @@ void HistogramTester::ExpectTimeBucketCount(StringPiece name,
   ExpectBucketCount(name, sample.InMilliseconds(), count);
 }
 
+int64_t HistogramTester::GetTotalSum(StringPiece name) const {
+  HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
+  if (!histogram)
+    return 0;
+
+  int64_t original_sum = 0;
+  auto original_samples_it = histograms_snapshot_.find(name);
+  if (original_samples_it != histograms_snapshot_.end())
+    original_sum = original_samples_it->second->sum();
+
+  std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
+  return samples->sum() - original_sum;
+}
+
 std::vector<Bucket> HistogramTester::GetAllSamples(StringPiece name) const {
   std::vector<Bucket> samples;
   std::unique_ptr<HistogramSamples> snapshot =

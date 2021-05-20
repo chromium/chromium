@@ -160,6 +160,17 @@ TEST_F(HistogramTesterTest, TestGetAllSamples_NoSamples) {
   EXPECT_THAT(tester.GetAllSamples(kHistogram5), IsEmpty());
 }
 
+TEST_F(HistogramTesterTest, TestGetTotalSum) {
+  // Emit values twice, once before the tester creation and once after.
+  UMA_HISTOGRAM_COUNTS_100(kHistogram4, 2);
+
+  HistogramTester tester;
+  UMA_HISTOGRAM_COUNTS_100(kHistogram4, 3);
+  UMA_HISTOGRAM_COUNTS_100(kHistogram4, 4);
+
+  EXPECT_EQ(7, tester.GetTotalSum(kHistogram4));
+}
+
 TEST_F(HistogramTesterTest, TestGetTotalCountsForPrefix) {
   HistogramTester tester;
   UMA_HISTOGRAM_ENUMERATION("Test1.Test2.Test3", 2, 5);
@@ -205,6 +216,7 @@ TEST_F(HistogramTesterTest, MissingHistogramMeansEmptyBuckets) {
   tester.ExpectBucketCount(kHistogram, 42, 0);
   tester.ExpectTotalCount(kHistogram, 0);
   EXPECT_TRUE(tester.GetAllSamples(kHistogram).empty());
+  EXPECT_EQ(0, tester.GetTotalSum(kHistogram));
   EXPECT_EQ(0, tester.GetBucketCount(kHistogram, 42));
   EXPECT_EQ(0,
             tester.GetHistogramSamplesSinceCreation(kHistogram)->TotalCount());

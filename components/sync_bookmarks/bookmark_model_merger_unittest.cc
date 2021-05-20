@@ -25,7 +25,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::ElementsAre;
 using testing::Eq;
 using testing::IsNull;
 using testing::Ne;
@@ -1764,16 +1763,16 @@ TEST(BookmarkModelMergerTest, ShouldLogMetricsForChildrenOfOrphanUpdates) {
 
   base::HistogramTester histogram_tester;
   Merge(std::move(updates), bookmark_model.get());
-  EXPECT_THAT(histogram_tester.GetAllSamples(
+  EXPECT_THAT(histogram_tester.GetTotalSum(
                   "Sync.BookmarkModelMerger.ValidInputUpdates"),
-              ElementsAre(base::Bucket(/*min=*/2, /*count=*/1)));
+              Eq(2));
   histogram_tester.ExpectUniqueSample(
       "Sync.ProblematicServerSideBookmarksDuringMerge",
       /*sample=*/ExpectedRemoteBookmarkUpdateError::kMissingParentEntity,
       /*count=*/1);
-  EXPECT_THAT(histogram_tester.GetAllSamples(
+  EXPECT_THAT(histogram_tester.GetTotalSum(
                   "Sync.BookmarkModelMerger.ReachableInputUpdates"),
-              ElementsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+              Eq(1));
 }
 
 TEST(BookmarkModelMergerTest, ShouldLogMetricsForUnsupportedServerTag) {
@@ -1879,15 +1878,15 @@ TEST(BookmarkModelMergerTest, ShouldRemoveMatchingDuplicatesByGUID) {
               UnorderedElementsAre(HasTitle(base::UTF8ToUTF16(kTitle2)),
                                    HasTitle(base::UTF8ToUTF16(kTitle3))));
 
-  EXPECT_THAT(histogram_tester.GetAllSamples(
+  EXPECT_THAT(histogram_tester.GetTotalSum(
                   "Sync.BookmarkModelMerger.ValidInputUpdates"),
-              ElementsAre(base::Bucket(/*min=*/4, /*count=*/1)));
+              Eq(4));
   histogram_tester.ExpectBucketCount(
       "Sync.BookmarksGUIDDuplicates",
       /*sample=*/ExpectedBookmarksGUIDDuplicates::kMatchingUrls, /*count=*/1);
-  EXPECT_THAT(histogram_tester.GetAllSamples(
+  EXPECT_THAT(histogram_tester.GetTotalSum(
                   "Sync.BookmarkModelMerger.ReachableInputUpdates"),
-              ElementsAre(base::Bucket(/*min=*/3, /*count=*/1)));
+              Eq(3));
 }
 
 TEST(BookmarkModelMergerTest, ShouldRemoveDifferentDuplicatesByGUID) {
@@ -1929,7 +1928,7 @@ TEST(BookmarkModelMergerTest, ShouldRemoveDifferentDuplicatesByGUID) {
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model->bookmark_bar_node();
   EXPECT_THAT(bookmark_bar_node->children(),
-              ElementsAre(HasTitle(base::UTF8ToUTF16(kTitle1))));
+              UnorderedElementsAre(HasTitle(base::UTF8ToUTF16(kTitle1))));
   histogram_tester.ExpectBucketCount(
       "Sync.BookmarksGUIDDuplicates",
       /*sample=*/ExpectedBookmarksGUIDDuplicates::kDifferentUrls, /*count=*/1);

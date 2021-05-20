@@ -83,6 +83,11 @@ class HistogramTester {
                              TimeDelta sample,
                              HistogramBase::Count count) const;
 
+  // We don't know the values of the samples, but we know their sum.
+  // This returns the diff from the snapshot taken when this object was
+  // constructed.
+  int64_t GetTotalSum(StringPiece name) const;
+
   // Returns a list of all of the buckets recorded since creation of this
   // object, as vector<Bucket>, where the Bucket represents the min boundary of
   // the bucket and the count of samples recorded to that bucket since creation.
