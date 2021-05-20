@@ -38,6 +38,14 @@ bool ExtensionRequestPolicyHandler::CheckPolicySettings(
     return false;
   }
 
+  const policy::PolicyMap::Entry* extension_request_policy =
+      policies.Get(policy::key::kCloudExtensionRequestEnabled);
+  if (extension_request_policy->source != policy::POLICY_SOURCE_CLOUD &&
+      extension_request_policy->source !=
+          policy::POLICY_SOURCE_PRIORITY_CLOUD) {
+    errors->AddError(policy_name(), IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
+    return false;
+  }
   return true;
 }
 
