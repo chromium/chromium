@@ -53,7 +53,7 @@ thread](/docs/threading_and_tasks.md) of the utility process (see this
 [comment][1] in `content/utility/services.cc` for why). The utility process
 houses only the network service, so there is nothing running on its main thread.
 
-[1]: https://source.chromium.org/chromium/chromium/src/+/master:content/utility/services.cc;l=197-198;drc=9b85cd82c52e13ed685dd74c726d91067bbd34d5
+[1]: https://source.chromium.org/chromium/chromium/src/+/main:content/utility/services.cc;l=197-198;drc=9b85cd82c52e13ed685dd74c726d91067bbd34d5
 
 *In the in-process case*: The network service runs on its own dedicated thread
 in the browser process. Exception: on Chrome OS, it currently runs on the IO

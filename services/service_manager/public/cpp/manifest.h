@@ -251,7 +251,7 @@ struct COMPONENT_EXPORT(SERVICE_MANAGER_CPP) Manifest {
   // |Service::CreatePackagedServiceInstance()|.
   //
   // See
-  // https://chromium.googlesource.com/chromium/src/+/master/services/service_manager/README.md#Packaging
+  // https://chromium.googlesource.com/chromium/src/+/main/services/service_manager/README.md#Packaging
   // for more information.
   std::vector<Manifest> packaged_services;
   std::vector<PreloadedFileInfo> preloaded_files;
