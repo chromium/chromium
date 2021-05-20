@@ -19,26 +19,23 @@
 #include "base/containers/stack_container.h"
 #include "base/debug/alias.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "cc/base/math_util.h"
 #include "cc/paint/node_id.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
-#include "cc/paint/skottie_wrapper.h"
-#include "cc/paint/transfer_cache_deserialize_helper.h"
-#include "cc/paint/transfer_cache_serialize_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkScalar.h"
-#include "third_party/skia/include/core/SkTextBlob.h"
-#include "ui/gfx/color_space.h"
+#include "ui/gfx/geometry/rect.h"
 
 class SkColorSpace;
 class SkStrikeClient;
 class SkStrikeServer;
+class SkTextBlob;
 
 // PaintOpBuffer is a reimplementation of SkLiteDL.
 // See: third_party/skia/src/core/SkLiteDL.h.
@@ -46,6 +43,9 @@ namespace cc {
 class ClientPaintCache;
 class ImageProvider;
 class ServicePaintCache;
+class SkottieWrapper;
+class TransferCacheDeserializeHelper;
+class TransferCacheSerializeHelper;
 
 class CC_PAINT_EXPORT ThreadsafePath : public SkPath {
  public:

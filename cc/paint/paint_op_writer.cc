@@ -24,6 +24,7 @@
 
 #if !defined(OS_ANDROID)
 #include "cc/paint/skottie_transfer_cache_entry.h"
+#include "cc/paint/skottie_wrapper.h"
 #endif
 
 namespace cc {

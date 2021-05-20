@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bits.h"
 #include "base/compiler_specific.h"
@@ -31,6 +32,7 @@
 
 #if !defined(OS_ANDROID)
 #include "cc/paint/skottie_transfer_cache_entry.h"
+#include "cc/paint/skottie_wrapper.h"
 #endif
 
 namespace cc {
