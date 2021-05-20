@@ -196,11 +196,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       {mc, {usb, aoa, cable}, {}, {"b", "a"}, {t(usb), p("a"), p("b")}, tss},
       {ga, {usb, aoa, cable}, {}, {"b", "a"}, {t(usb), p("a"), p("b")}, tss},
 
-      // On Windows, if there are linked phones we'll show a selection sheet for
-      // makeCredential.
+      // On Windows, if there are linked phones we'll show a selection sheet.
       {mc, {cable}, {has_winapi}, {"a"}, {winapi, p("a")}, tss},
-      // ... but not for getAssertion (currently).
-      {ga, {cable}, {has_winapi}, {"a"}, {winapi, p("a")}, plat_ui},
+      {ga, {cable}, {has_winapi}, {"a"}, {winapi, p("a")}, tss},
   };
 
   unsigned test_num = 0;

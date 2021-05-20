@@ -903,13 +903,9 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
         GetTransportIcon(AuthenticatorTransport::kUsbHumanInterfaceDevice),
         base::BindRepeating(&AuthenticatorRequestDialogModel::StartWinNativeApi,
                             base::Unretained(this), mechanisms_.size()),
-        // The Windows API should have priority unless caBLE does, except that
-        // we'll show the selection sheet if there are linked phones in a
-        // makeCredential call.
-        !(priority_transport.has_value() ||
-          (transport_availability_.request_type ==
-               device::FidoRequestType::kMakeCredential &&
-           !paired_phones_.empty())));
+        // The Windows API should have priority unless caBLE does or if there
+        // are linked phones.
+        !priority_transport.has_value() && paired_phones_.empty());
   }
 
   if (base::Contains(
