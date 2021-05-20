@@ -182,6 +182,7 @@
 #include "ui/accessibility/ax_tree_combiner.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/window_open_disposition.h"
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #endif
@@ -4428,10 +4429,17 @@ WebContents* WebContentsImpl::OpenURL(const OpenURLParams& params) {
     return nullptr;
   }
 
-  WebContents* new_contents = delegate_->OpenURLFromTab(this, params);
-
   RenderFrameHost* source_render_frame_host = RenderFrameHost::FromID(
       params.source_render_process_id, params.source_render_frame_id);
+
+  // Prevent frams that are not active from opening new windows, tabs, popups,
+  // etc.
+  if (params.disposition != WindowOpenDisposition::CURRENT_TAB &&
+      source_render_frame_host && !source_render_frame_host->IsCurrent()) {
+    return nullptr;
+  }
+
+  WebContents* new_contents = delegate_->OpenURLFromTab(this, params);
 
   if (source_render_frame_host && params.source_site_instance) {
     CHECK_EQ(source_render_frame_host->GetSiteInstance(),

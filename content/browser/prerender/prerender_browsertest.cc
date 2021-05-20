@@ -834,6 +834,38 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivatePageWithInnerContents) {
   EXPECT_EQ(GetRequestCount(kInnerContentsUrl), 1);
 }
 
+// Ensures that if we attempt to open a URL while prerendering with a window
+// disposition other than CURRENT_TAB, we
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SuppressOpenURL) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+  const GURL kSecondUrl = GetUrl("/title1.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+
+  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  const int host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      GetPrerenderedMainFrameHost(host_id);
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  auto* web_contents =
+      WebContents::FromRenderFrameHost(prerendered_render_frame_host);
+  OpenURLParams params(kSecondUrl, Referrer(),
+                       prerendered_render_frame_host->GetFrameTreeNodeId(),
+                       WindowOpenDisposition::NEW_WINDOW,
+                       ui::PAGE_TRANSITION_LINK, true);
+  params.initiator_origin =
+      prerendered_render_frame_host->GetLastCommittedOrigin();
+  params.source_render_process_id =
+      prerendered_render_frame_host->GetProcess()->GetID();
+  params.source_render_frame_id = prerendered_render_frame_host->GetRoutingID();
+  auto* new_web_contents = web_contents->OpenURL(params);
+  EXPECT_EQ(nullptr, new_web_contents);
+}
+
 // Tests that |RenderFrameHost::ForEachRenderFrameHost| and
 // |WebContents::ForEachRenderFrameHost| behave correctly when prerendering.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ForEachRenderFrameHost) {
