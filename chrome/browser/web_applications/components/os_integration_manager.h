@@ -143,8 +143,6 @@ class OsIntegrationManager {
   // Proxy calls for ProtocolHandlerManager.
   virtual absl::optional<GURL> TranslateProtocolUrl(const AppId& app_id,
                                                     const GURL& protocol_url);
-  virtual std::vector<ProtocolHandler> GetHandlersForProtocol(
-      const std::string& protocol);
 
   // Getter for testing FileHandlerManager
   FileHandlerManager& file_handler_manager_for_testing();
