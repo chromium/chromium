@@ -647,6 +647,7 @@ TEST(ScrollTreeTest, PushScrollUpdatesFromMainThreadIntegerDelta) {
   int scroll_node_id = main_scroll_tree.Insert(ScrollNode(), 0);
   main_scroll_tree.Node(scroll_node_id)->transform_id = transform_node_id;
   main_scroll_tree.Node(scroll_node_id)->element_id = element_id;
+  main_scroll_tree.Node(scroll_node_id)->is_composited = true;
 
   // Set up FakeLayerTreeHostImpl.
   TestTaskGraphRunner task_graph_runner;
@@ -666,6 +667,7 @@ TEST(ScrollTreeTest, PushScrollUpdatesFromMainThreadIntegerDelta) {
   scroll_node_id = pending_scroll_tree.Insert(ScrollNode(), 0);
   pending_scroll_tree.Node(scroll_node_id)->transform_id = transform_node_id;
   pending_scroll_tree.Node(scroll_node_id)->element_id = element_id;
+  pending_scroll_tree.Node(scroll_node_id)->is_composited = true;
   pending_property_trees->element_id_to_scroll_node_index[element_id] =
       scroll_node_id;
 
