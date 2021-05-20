@@ -10,11 +10,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
-#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/messages.h"
@@ -89,18 +89,16 @@ void AddressEditorController::UpdateEditorFields() {
     }
   }
   // Always add phone number and email at the end.
-  // TODO(crbug.com/1167060): use internationalized strings for both fields.
-  // Phone number is using a payment string, and the email is using an
-  // non-internationalized string.
   editor_fields_.emplace_back(
       autofill::PHONE_HOME_WHOLE_NUMBER,
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_FIELD_LABEL_PHONE),
+      l10n_util::GetStringUTF16(IDS_SETTINGS_AUTOFILL_ADDRESSES_PHONE),
       EditorField::LengthHint::HINT_SHORT,
       EditorField::ControlType::TEXTFIELD_NUMBER);
 
-  editor_fields_.emplace_back(autofill::EMAIL_ADDRESS, u"Email",
-                              EditorField::LengthHint::HINT_LONG,
-                              EditorField::ControlType::TEXTFIELD);
+  editor_fields_.emplace_back(
+      autofill::EMAIL_ADDRESS,
+      l10n_util::GetStringUTF16(IDS_SETTINGS_AUTOFILL_ADDRESSES_EMAIL),
+      EditorField::LengthHint::HINT_LONG, EditorField::ControlType::TEXTFIELD);
 }
 
 void AddressEditorController::SetProfileInfo(autofill::ServerFieldType type,
