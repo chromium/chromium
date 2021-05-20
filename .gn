@@ -66,7 +66,6 @@ no_check_targets = [
   "//chrome/test:browser_tests",
   "//chrome/test:browser_tests_runner",
   "//chrome/test:interactive_ui_tests",
-  "//chrome/test:test_support_ui",
   "//chrome/test:unit_tests",
   "//chrome/test:unit_tests__library",
   "//chrome/test:usage_time_limit_unittests",

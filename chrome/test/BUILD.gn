@@ -360,6 +360,7 @@ static_library("test_support") {
       "base/test_browser_window.cc",
       "base/test_browser_window.h",
     ]
+    allow_circular_includes_from = [ ":test_support_ui" ]
   }
 
   if (is_linux || is_chromeos) {
@@ -560,11 +561,9 @@ static_library("test_support") {
 
     deps += [
       "//build:chromeos_buildflags",
-      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/browser/web_applications:web_applications_test_support_minimal",
       "//components/webapps/browser",
     ]
-    allow_circular_includes_from =
-        [ "//chrome/browser/web_applications:web_applications_test_support" ]
   }
 
   if (enable_message_center) {
@@ -6667,19 +6666,79 @@ if (!is_android) {
     ]
     deps = [
       "//build:chromeos_buildflags",
+      "//chrome/app:command_ids",
+      "//chrome/browser",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/devtools",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications:web_applications_test_support_minimal",
+      "//chrome/browser/web_applications/components",
+      "//chrome/common",
+      "//chrome/common:chrome_features",
+      "//chrome/common:constants",
+      "//chrome/common:non_code_constants",
       "//chrome/common/profiler",
+      "//chrome/renderer",
+      "//chrome/test/data:web_ui_test_bindings",
+      "//chrome/test/data:webui_test_resources_grit",
+      "//components/account_id",
+      "//components/autofill/content/browser",
+      "//components/autofill/core/browser",
+      "//components/autofill/core/browser:test_support",
+      "//components/autofill/core/common",
+      "//components/bookmarks/browser",
+      "//components/captive_portal/content",
       "//components/captive_portal/core:buildflags",
+      "//components/content_settings/core/browser",
+      "//components/embedder_support",
+      "//components/find_in_page",
+      "//components/google/core/common",
+      "//components/history/core/browser",
+      "//components/infobars/content",
+      "//components/infobars/core",
+      "//components/javascript_dialogs",
+      "//components/keyed_service/content",
       "//components/metrics:test_support",
       "//components/nacl/common:buildflags",
+      "//components/nacl/common:switches",
+      "//components/omnibox/browser",
       "//components/os_crypt:test_support",
+      "//components/password_manager/core/browser",
+      "//components/password_manager/core/browser:password_form",
+      "//components/password_manager/core/browser:test_support",
+      "//components/permissions",
+      "//components/prefs",
+      "//components/search_engines",
+      "//components/security_interstitials/content:security_interstitial_page",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//components/storage_monitor:test_support",
+      "//components/sync/driver:test_support",
+      "//components/user_manager",
+      "//components/webapps/browser",
       "//content/public/browser",
       "//extensions/buildflags",
+      "//google_apis",
+      "//ppapi/shared_impl",
+      "//printing/buildflags",
       "//services/device/public/cpp:test_support",
       "//skia",
       "//testing/gtest",
       "//third_party/libaddressinput",
       "//ui/base:features",
+      "//ui/base:test_support",
+      "//ui/events:test_support",
+      "//ui/shell_dialogs",
+      "//ui/views",
+      "//ui/views:test_support",
+      "//ui/views/controls/webview",
     ]
+
+    if (use_aura) {
+      deps += [ "//ui/aura:test_support" ]
+    }
 
     if (enable_plugins) {
       sources += [
@@ -6696,7 +6755,12 @@ if (!is_android) {
 
     if (is_chromeos_ash) {
       deps += [
+        "//ash",
+        "//ash:test_support",
+        "//ash/constants",
         "//ash/public/cpp",
+        "//chrome/browser/chromeos",
+        "//chromeos/cryptohome",
         "//chromeos/services/device_sync",
         "//chromeos/services/device_sync:test_support",
       ]
