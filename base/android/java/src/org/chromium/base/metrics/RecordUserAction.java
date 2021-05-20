@@ -16,7 +16,7 @@ import org.chromium.base.annotations.NativeMethods;
  * WARNINGS: JNI calls are relatively costly - avoid using in performance-critical code.
  * <p>
  * Action names must be documented in {@code actions.xml}. See {@link
- * https://source.chromium.org/chromium/chromium/src/+/master:tools/metrics/actions/README.md} <p>
+ * https://source.chromium.org/chromium/chromium/src/+/main:tools/metrics/actions/README.md} <p>
  * We use a script ({@code extract_actions.py{}) to scan the source code and extract actions. A
  * string literal (not a variable) must be passed to {@link #record(String)}.
  */

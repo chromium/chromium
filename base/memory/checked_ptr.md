@@ -260,7 +260,7 @@ memory leaks.
 One way to execute such an incorrect assignment is `reinterpret_cast` of
 a pointer to a `CheckedPtr`.  For example, see https://crbug.com/1154799
 where the `reintepret_cast` is/was used in the `Extract` method
-[here](https://source.chromium.org/chromium/chromium/src/+/master:device/fido/cbor_extract.h;l=318;drc=16f9768803e17c90901adce97b3153cfd39fdde2)).
+[here](https://source.chromium.org/chromium/chromium/src/+/main:device/fido/cbor_extract.h;l=318;drc=16f9768803e17c90901adce97b3153cfd39fdde2)).
 Simplified example:
 
 ```cpp
@@ -353,4 +353,4 @@ but runtime errors still exist for BackupRefPtr).
 
 TODO(glazunov): One example is
 accessing a class' CheckedPtr fields in its base class' constructor:
-https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/wtf/doubly_linked_list.h;drc=cce44dc1cb55c77f63f2ebec5e7015b8dc851c82;l=52
+https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/wtf/doubly_linked_list.h;drc=cce44dc1cb55c77f63f2ebec5e7015b8dc851c82;l=52

@@ -141,7 +141,7 @@ void VerifyDebugger() {
       << "Detected lldb without sourcing //tools/lldb/lldbinit.py. lldb may "
          "not be able to find debug symbols. Please see debug instructions for "
          "using //tools/lldb/lldbinit.py:\n"
-         "https://chromium.googlesource.com/chromium/src/+/master/docs/"
+         "https://chromium.googlesource.com/chromium/src/+/main/docs/"
          "lldbinit.md\n"
          "To continue anyway, type 'continue' in lldb. To always skip this "
          "check, define an environment variable CHROMIUM_LLDBINIT_SOURCED=1";
@@ -224,7 +224,7 @@ void VerifyDebugger() {
       << "Detected gdb without sourcing //tools/gdb/gdbinit.  gdb may not be "
          "able to find debug symbols, and pretty-printing of STL types may not "
          "work.  Please see debug instructions for using //tools/gdb/gdbinit:\n"
-         "https://chromium.googlesource.com/chromium/src/+/master/docs/"
+         "https://chromium.googlesource.com/chromium/src/+/main/docs/"
          "gdbinit.md\n"
          "To continue anyway, type 'continue' in gdb.  To always skip this "
          "check, define an environment variable CHROMIUM_GDBINIT_SOURCED=1";

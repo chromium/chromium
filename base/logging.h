@@ -166,7 +166,7 @@
 // SetLogItems()
 //
 // Additional logging-related information can be found here:
-// https://chromium.googlesource.com/chromium/src/+/master/docs/linux/debugging.md#Logging
+// https://chromium.googlesource.com/chromium/src/+/main/docs/linux/debugging.md#Logging
 
 namespace logging {
 
