@@ -96,9 +96,9 @@ class EventListenerMapTest : public ExtensionsTest {
                                      const GURL& url) {
     EventFilteringInfo info;
     info.url = url;
-    return std::make_unique<Event>(
-        events::FOR_TEST, event_name, std::make_unique<ListValue>(), nullptr,
-        GURL(), EventRouter::USER_GESTURE_UNKNOWN, info);
+    return std::make_unique<Event>(events::FOR_TEST, event_name,
+                                   std::vector<base::Value>(), nullptr, GURL(),
+                                   EventRouter::USER_GESTURE_UNKNOWN, info);
   }
 
   std::unique_ptr<EventListener> CreateLazyListener(

@@ -1110,34 +1110,18 @@ Event::Event(events::HistogramValue histogram_value,
 
 Event::Event(events::HistogramValue histogram_value,
              const std::string& event_name,
-             std::vector<base::Value> event_args,
+             std::vector<base::Value> event_args_tmp,
              content::BrowserContext* restrict_to_browser_context,
              const GURL& event_url,
              EventRouter::UserGestureState user_gesture,
              const EventFilteringInfo& info)
-    : Event(histogram_value,
-            event_name,
-            base::ListValue::From(base::Value::ToUniquePtrValue(
-                base::Value(std::move(event_args)))),
-            restrict_to_browser_context,
-            event_url,
-            user_gesture,
-            info) {}
-
-Event::Event(events::HistogramValue histogram_value,
-             const std::string& event_name,
-             std::unique_ptr<ListValue> event_args_tmp,
-             BrowserContext* restrict_to_browser_context,
-             const GURL& event_url,
-             EventRouter::UserGestureState user_gesture,
-             const EventFilteringInfo& filter_info)
     : histogram_value(histogram_value),
       event_name(event_name),
-      event_args(std::move(event_args_tmp)),
+      event_args(std::make_unique<base::ListValue>(std::move(event_args_tmp))),
       restrict_to_browser_context(restrict_to_browser_context),
       event_url(event_url),
       user_gesture(user_gesture),
-      filter_info(filter_info) {
+      filter_info(info) {
   DCHECK(event_args);
   DCHECK_NE(events::UNKNOWN, histogram_value)
       << "events::UNKNOWN cannot be used as a histogram value.\n"
@@ -1151,7 +1135,7 @@ Event::~Event() = default;
 
 std::unique_ptr<Event> Event::DeepCopy() const {
   auto copy = std::make_unique<Event>(
-      histogram_value, event_name, event_args->CreateDeepCopy(),
+      histogram_value, event_name, event_args->Clone().TakeList(),
       restrict_to_browser_context, event_url, user_gesture, filter_info);
   copy->will_dispatch_callback = will_dispatch_callback;
   return copy;

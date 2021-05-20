@@ -533,14 +533,6 @@ struct Event {
         const GURL& event_url,
         EventRouter::UserGestureState user_gesture,
         const EventFilteringInfo& info);
-  // TODO(crbug.com/1139221): Remove this deprecated ctor and use the one above.
-  Event(events::HistogramValue histogram_value,
-        const std::string& event_name,
-        std::unique_ptr<base::ListValue> event_args,
-        content::BrowserContext* restrict_to_browser_context,
-        const GURL& event_url,
-        EventRouter::UserGestureState user_gesture,
-        const EventFilteringInfo& info);
 
   ~Event();
 
