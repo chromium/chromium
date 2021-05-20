@@ -34,6 +34,7 @@ source_set("common") {
     "//base",
     "//fuchsia/base",
     "//fuchsia/base:modular",
+    "//fuchsia/engine/web_instance_host",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//ui/gfx/geometry",
     "//url",
@@ -98,9 +99,14 @@ source_set("cast_runner_core") {
   ]
 
   # Keep CastRunner trim by ensuring that large browser dependencies don't creep in.
+  # TODO(crbug.com/1211328): Migrate //fuchsia/engine/web_instance_host to have
+  # each web_instance set the command-line options internally, so that no-deps
+  # assertions on the "common" targets can be used again.
   assert_no_deps = [
-    "//content/public/common",
-    "//third_party/blink/public/common",
+    "//content/public/browser",
+    "//content/public/renderer",
+    "//third_party/blink/public/browser",
+    "//third_party/blink/public/renderer",
   ]
   visibility = [ ":*" ]
 }
@@ -113,6 +119,7 @@ executable("cast_runner_exe") {
     ":common",
     "//base",
     "//fuchsia/base",
+    "//fuchsia/engine/web_instance_host",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
   ]
 
@@ -124,6 +131,9 @@ cr_fuchsia_package("cast_runner_pkg") {
   binary = ":cast_runner_exe"
   package_name_override = "cast_runner"
   manifest = "cast/cast_runner.cmx"
+
+  # Required by web_instance_host.
+  additional_manifests = [ "//fuchsia/engine/web_instance.cmx" ]
 }
 
 fuchsia_package_runner("cast_runner") {
@@ -243,6 +253,7 @@ executable("web_runner_exe") {
     ":common",
     "//base",
     "//fuchsia/base",
+    "//fuchsia/engine/web_instance_host",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
   ]
   visibility = [ ":*" ]
@@ -252,6 +263,9 @@ cr_fuchsia_package("web_runner_pkg") {
   binary = ":web_runner_exe"
   package_name_override = "web_runner"
   manifest = "web/web_runner.cmx"
+
+  # Required by web_instance_host.
+  additional_manifests = [ "//fuchsia/engine/web_instance.cmx" ]
 }
 
 fuchsia_package_runner("web_runner") {

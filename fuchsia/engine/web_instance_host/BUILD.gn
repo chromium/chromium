@@ -9,6 +9,7 @@ source_set("web_instance_host") {
   public = [ "web_instance_host.h" ]
   deps = [
     "//base",
+    "//base:base_static",
     "//content/public/common",
     "//fuchsia/base",
     "//fuchsia/engine:switches",

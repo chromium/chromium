@@ -16,6 +16,7 @@
 #include "fuchsia/base/fuchsia_dir_scheme.h"
 #include "fuchsia/base/init_logging.h"
 #include "fuchsia/base/inspect.h"
+#include "fuchsia/engine/web_instance_host/web_instance_host.h"
 #include "fuchsia/runners/buildflags.h"
 #include "fuchsia/runners/common/web_content_runner.h"
 
@@ -71,7 +72,9 @@ int main(int argc, char** argv) {
   WebContentRunner::GetContextParamsCallback get_context_params_callback =
       base::BindRepeating(&GetContextParams);
 
-  WebContentRunner runner(std::move(get_context_params_callback));
+  cr_fuchsia::WebInstanceHost web_instance_host;
+  WebContentRunner runner(&web_instance_host,
+                          std::move(get_context_params_callback));
   base::ScopedServiceBinding<fuchsia::sys::Runner> binding(
       base::ComponentContextForProcess()->outgoing().get(), &runner);
 

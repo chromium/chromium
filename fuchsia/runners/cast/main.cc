@@ -18,6 +18,7 @@
 #include "fuchsia/base/fuchsia_dir_scheme.h"
 #include "fuchsia/base/init_logging.h"
 #include "fuchsia/base/inspect.h"
+#include "fuchsia/engine/web_instance_host/web_instance_host.h"
 #include "fuchsia/runners/cast/cast_runner.h"
 #include "fuchsia/runners/cast/cast_runner_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -63,10 +64,11 @@ int main(int argc, char** argv) {
       base::ComponentContextForProcess()->outgoing().get();
 
   // Publish the fuchsia.sys.Runner implementation for Cast applications.
+  cr_fuchsia::WebInstanceHost web_instance_host;
   const bool enable_headless =
       command_line->HasSwitch(kForceHeadlessForTestsSwitch) ||
       GetConfigBool(kHeadlessConfigKey);
-  CastRunner runner(enable_headless);
+  CastRunner runner(&web_instance_host, enable_headless);
   base::ScopedServiceBinding<fuchsia::sys::Runner> binding(outgoing_directory,
                                                            &runner);
 

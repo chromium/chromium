@@ -5,8 +5,10 @@
 #include "fuchsia/runners/common/web_content_runner.h"
 
 #include <fuchsia/sys/cpp/fidl.h>
+#include <lib/fdio/directory.h>
 #include <lib/fidl/cpp/binding_set.h>
 #include <lib/sys/cpp/component_context.h>
+#include <lib/sys/cpp/service_directory.h>
 #include <utility>
 
 #include "base/bind.h"
@@ -19,22 +21,12 @@
 #include "base/fuchsia/startup_context.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "fuchsia/engine/web_instance_host/web_instance_host.h"
 #include "fuchsia/runners/buildflags.h"
 #include "fuchsia/runners/common/web_component.h"
 #include "url/gurl.h"
 
 namespace {
-
-fuchsia::web::ContextPtr CreateWebContext(
-    fuchsia::web::CreateContextParams context_params) {
-  auto context_provider = base::ComponentContextForProcess()
-                              ->svc()
-                              ->Connect<fuchsia::web::ContextProvider>();
-  fuchsia::web::ContextPtr web_context;
-  context_provider->Create(std::move(context_params), web_context.NewRequest());
-
-  return web_context;
-}
 
 bool IsChannelClosed(const zx::channel& channel) {
   zx_signals_t observed = 0u;
@@ -51,35 +43,37 @@ std::string CreateUniqueComponentName() {
 }  // namespace
 
 WebContentRunner::WebContentRunner(
+    cr_fuchsia::WebInstanceHost* web_instance_host,
     GetContextParamsCallback get_context_params_callback)
-    : get_context_params_callback_(std::move(get_context_params_callback)) {}
+    : web_instance_host_(web_instance_host),
+      get_context_params_callback_(std::move(get_context_params_callback)) {
+  DCHECK(web_instance_host_);
+  DCHECK(get_context_params_callback_);
+}
 
 WebContentRunner::WebContentRunner(
+    cr_fuchsia::WebInstanceHost* web_instance_host,
     fuchsia::web::CreateContextParams context_params)
-    : context_(CreateWebContext(std::move(context_params))) {
-  context_.set_error_handler([](zx_status_t status) {
-    ZX_LOG(ERROR, status) << "Connection to one-shot Context lost.";
-  });
+    : web_instance_host_(web_instance_host) {
+  CreateWebInstanceAndContext(std::move(context_params));
 }
 
 WebContentRunner::~WebContentRunner() = default;
 
+fidl::InterfaceRequestHandler<fuchsia::web::FrameHost>
+WebContentRunner::GetFrameHostRequestHandler() {
+  return [this](fidl::InterfaceRequest<fuchsia::web::FrameHost> request) {
+    EnsureWebInstanceAndContext();
+    fdio_service_connect_at(web_instance_services_.channel().get(),
+                            fuchsia::web::FrameHost::Name_,
+                            request.TakeChannel().release());
+  };
+}
+
 void WebContentRunner::CreateFrameWithParams(
     fuchsia::web::CreateFrameParams params,
     fidl::InterfaceRequest<fuchsia::web::Frame> request) {
-  // Synchronously check whether the web.Context channel has closed, to reduce
-  // the chance of issuing CreateFrameWithParams() to an already-closed channel.
-  // This avoids potentially flaking a test - see crbug.com/1173418.
-  if (context_ && IsChannelClosed(context_.channel()))
-    context_.Unbind();
-
-  if (!context_) {
-    DCHECK(get_context_params_callback_);
-    context_ = CreateWebContext(get_context_params_callback_.Run());
-    context_.set_error_handler([](zx_status_t status) {
-      ZX_LOG(ERROR, status) << "Connection to Context lost.";
-    });
-  }
+  EnsureWebInstanceAndContext();
 
   context_->CreateFrameWithParams(std::move(params), std::move(request));
 }
@@ -132,4 +126,31 @@ void WebContentRunner::SetOnEmptyCallback(base::OnceClosure on_empty) {
 void WebContentRunner::DestroyWebContext() {
   DCHECK(get_context_params_callback_);
   context_ = nullptr;
+}
+
+void WebContentRunner::EnsureWebInstanceAndContext() {
+  // Synchronously check whether the web.Context channel has closed, to reduce
+  // the chance of issuing CreateFrameWithParams() to an already-closed channel.
+  // This avoids potentially flaking a test - see crbug.com/1173418.
+  if (context_ && IsChannelClosed(context_.channel()))
+    context_.Unbind();
+
+  if (!context_) {
+    DCHECK(get_context_params_callback_);
+    CreateWebInstanceAndContext(get_context_params_callback_.Run());
+  }
+}
+
+void WebContentRunner::CreateWebInstanceAndContext(
+    fuchsia::web::CreateContextParams params) {
+  web_instance_host_->CreateInstanceForContext(
+      std::move(params), web_instance_services_.NewRequest());
+  zx_status_t result = fdio_service_connect_at(
+      web_instance_services_.channel().get(), fuchsia::web::Context::Name_,
+      context_.NewRequest().TakeChannel().release());
+  ZX_LOG_IF(ERROR, result != ZX_OK, result)
+      << "fdio_service_connect_at(web.Context)";
+  context_.set_error_handler([](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "Connection to web.Context lost.";
+  });
 }

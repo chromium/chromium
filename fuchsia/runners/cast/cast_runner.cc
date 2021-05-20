@@ -186,11 +186,12 @@ class FrameHostComponent : public fuchsia::sys::ComponentController {
       std::unique_ptr<base::StartupContext> startup_context,
       fidl::InterfaceRequest<fuchsia::sys::ComponentController>
           controller_request,
-      fuchsia::web::FrameHost* const frame_host_impl) {
+      fidl::InterfaceRequestHandler<fuchsia::web::FrameHost>
+          frame_host_request_handler) {
     // |frame_host_component| deletes itself when the client disconnects.
-    auto* frame_host_component =
-        new FrameHostComponent(std::move(startup_context),
-                               std::move(controller_request), frame_host_impl);
+    auto* frame_host_component = new FrameHostComponent(
+        std::move(startup_context), std::move(controller_request),
+        std::move(frame_host_request_handler));
     return frame_host_component->weak_incoming_services_.GetWeakPtr();
   }
 
@@ -198,9 +199,11 @@ class FrameHostComponent : public fuchsia::sys::ComponentController {
   FrameHostComponent(std::unique_ptr<base::StartupContext> startup_context,
                      fidl::InterfaceRequest<fuchsia::sys::ComponentController>
                          controller_request,
-                     fuchsia::web::FrameHost* const frame_host_impl)
+                     fidl::InterfaceRequestHandler<fuchsia::web::FrameHost>
+                         frame_host_request_handler)
       : startup_context_(std::move(startup_context)),
-        frame_host_binding_(startup_context_->outgoing(), frame_host_impl),
+        frame_host_binding_(startup_context_->outgoing(),
+                            std::move(frame_host_request_handler)),
         weak_incoming_services_(startup_context_->svc()) {
     startup_context_->ServeOutgoingDirectory();
     binding_.Bind(std::move(controller_request));
@@ -216,7 +219,8 @@ class FrameHostComponent : public fuchsia::sys::ComponentController {
   }
 
   const std::unique_ptr<base::StartupContext> startup_context_;
-  const base::ScopedServiceBinding<fuchsia::web::FrameHost> frame_host_binding_;
+  const base::ScopedServicePublisher<fuchsia::web::FrameHost>
+      frame_host_binding_;
   fidl::Binding<fuchsia::sys::ComponentController> binding_{this};
 
   base::WeakPtrFactory<const sys::ServiceDirectory> weak_incoming_services_;
@@ -278,11 +282,14 @@ class DataResetComponent : public fuchsia::sys::ComponentController,
 
 }  // namespace
 
-CastRunner::CastRunner(bool is_headless)
-    : is_headless_(is_headless),
+CastRunner::CastRunner(cr_fuchsia::WebInstanceHost* web_instance_host,
+                       bool is_headless)
+    : web_instance_host_(web_instance_host),
+      is_headless_(is_headless),
       main_services_(std::make_unique<base::FilteredServiceDirectory>(
           base::ComponentContextForProcess()->svc().get())),
       main_context_(std::make_unique<WebContentRunner>(
+          web_instance_host_,
           base::BindRepeating(&CastRunner::GetMainContextParams,
                               base::Unretained(this)))),
       isolated_services_(std::make_unique<base::FilteredServiceDirectory>(
@@ -640,8 +647,8 @@ CastRunner::GetContextParamsForAppConfig(
 WebContentRunner* CastRunner::CreateIsolatedContextForParams(
     fuchsia::web::CreateContextParams create_context_params) {
   // Create an isolated context which will own the CastComponent.
-  auto context =
-      std::make_unique<WebContentRunner>(std::move(create_context_params));
+  auto context = std::make_unique<WebContentRunner>(
+      web_instance_host_, std::move(create_context_params));
   context->SetOnEmptyCallback(
       base::BindOnce(&CastRunner::OnIsolatedContextEmpty,
                      base::Unretained(this), base::Unretained(context.get())));
@@ -724,7 +731,7 @@ void CastRunner::StartComponentInternal(
     frame_host_component_incoming_services_ =
         FrameHostComponent::StartAndReturnIncomingServiceDirectory(
             std::move(startup_context), std::move(controller_request),
-            main_context_.get());
+            main_context_->GetFrameHostRequestHandler());
     return;
   }
 
