@@ -999,7 +999,7 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
   ASSERT_EQ(4u, res.bidder1_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
             res.bidder1_prev_wins[3]->ad_json);
-  EXPECT_EQ(6, res.bidder2_bid_count);
+  EXPECT_EQ(5, res.bidder2_bid_count);
   EXPECT_EQ(3u, res.bidder2_prev_wins.size());
   EXPECT_THAT(
       res.errors,
@@ -1038,7 +1038,7 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
   ASSERT_EQ(4u, res.bidder1_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
             res.bidder1_prev_wins[3]->ad_json);
-  EXPECT_EQ(6, res.bidder2_bid_count);
+  EXPECT_EQ(5, res.bidder2_bid_count);
   EXPECT_EQ(3u, res.bidder2_prev_wins.size());
   EXPECT_THAT(res.errors,
               testing::ElementsAre("https://anotheradthing.com/bids.js "
@@ -1138,9 +1138,9 @@ TEST_F(AuctionRunnerTest, SellerRejectsAll) {
   EXPECT_FALSE(res.ad_url);
   EXPECT_FALSE(res.seller_report_url);
   EXPECT_FALSE(res.bidder_report_url);
-  EXPECT_EQ(5, res.bidder1_bid_count);
+  EXPECT_EQ(6, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
-  EXPECT_EQ(5, res.bidder2_bid_count);
+  EXPECT_EQ(6, res.bidder2_bid_count);
   EXPECT_EQ(3u, res.bidder2_prev_wins.size());
   EXPECT_THAT(res.errors, testing::UnorderedElementsAre(
                               "https://adstuff.publisher1.com/auction.js "
@@ -1511,7 +1511,7 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
       EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
       EXPECT_FALSE(result_.seller_report_url);
       EXPECT_FALSE(result_.bidder_report_url);
-      EXPECT_EQ(6, result_.bidder1_bid_count);
+      EXPECT_EQ(5, result_.bidder1_bid_count);
       EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
       EXPECT_EQ(6, result_.bidder2_bid_count);
       ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
@@ -1621,9 +1621,9 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileScoring) {
   EXPECT_FALSE(result_.ad_url);
   EXPECT_FALSE(result_.seller_report_url);
   EXPECT_FALSE(result_.bidder_report_url);
-  EXPECT_EQ(5, result_.bidder1_bid_count);
+  EXPECT_EQ(6, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
-  EXPECT_EQ(5, result_.bidder2_bid_count);
+  EXPECT_EQ(6, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
   EXPECT_THAT(result_.errors,
               testing::ElementsAre(base::StringPrintf(
@@ -1670,9 +1670,9 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   EXPECT_FALSE(result_.ad_url);
   EXPECT_FALSE(result_.seller_report_url);
   EXPECT_FALSE(result_.bidder_report_url);
-  EXPECT_EQ(5, result_.bidder1_bid_count);
+  EXPECT_EQ(6, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
-  EXPECT_EQ(5, result_.bidder2_bid_count);
+  EXPECT_EQ(6, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
   EXPECT_THAT(result_.errors, testing::ElementsAre(base::StringPrintf(
                                   "%s crashed while trying to run reportWin().",
@@ -1761,10 +1761,19 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
     EXPECT_FALSE(result_.ad_url);
     EXPECT_FALSE(result_.seller_report_url);
     EXPECT_FALSE(result_.bidder_report_url);
-    EXPECT_EQ(5, result_.bidder1_bid_count);
-    EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
-    EXPECT_EQ(5, result_.bidder2_bid_count);
-    EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
+    if (crash_phase != CrashPhase::kReportResult) {
+      EXPECT_EQ(5, result_.bidder1_bid_count);
+      EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+      EXPECT_EQ(5, result_.bidder2_bid_count);
+      EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
+    } else {
+      // If the seller worklet crashes while calculating the report URL, still
+      // report bids.
+      EXPECT_EQ(6, result_.bidder1_bid_count);
+      EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+      EXPECT_EQ(6, result_.bidder2_bid_count);
+      EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
+    }
     EXPECT_THAT(result_.errors, testing::ElementsAre(base::StringPrintf(
                                     "%s crashed.", kSellerUrl.spec().c_str())));
   }
@@ -1917,7 +1926,7 @@ TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
   EXPECT_FALSE(result_.ad_url);
   EXPECT_FALSE(result_.seller_report_url);
   EXPECT_FALSE(result_.bidder_report_url);
-  EXPECT_EQ(5, result_.bidder1_bid_count);
+  EXPECT_EQ(6, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
@@ -1962,7 +1971,7 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
   EXPECT_FALSE(result_.ad_url);
   EXPECT_FALSE(result_.seller_report_url);
   EXPECT_FALSE(result_.bidder_report_url);
-  EXPECT_EQ(5, result_.bidder1_bid_count);
+  EXPECT_EQ(6, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());

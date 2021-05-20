@@ -125,7 +125,13 @@ class CONTENT_EXPORT AuctionRunner {
     BidState(BidState&&);
     ~BidState();
 
-    auction_worklet::mojom::BiddingInterestGroup* bidder = nullptr;
+    // Disable copy and assign, since this struct owns a
+    // auction_worklet::mojom::BiddingInterestGroupPtr, and mojo classes are not
+    // copiable.
+    BidState(BidState&) = delete;
+    BidState& operator=(BidState&) = delete;
+
+    auction_worklet::mojom::BiddingInterestGroupPtr bidder;
 
     // URLLoaderFactory proxy class configured only to load the URLs the bidder
     // needs.
@@ -152,7 +158,7 @@ class CONTENT_EXPORT AuctionRunner {
   // OnInterestGroupRead() will be invoked with the lookup results.
   void ReadNextInterestGroup();
 
-  // Adds `interest_groups` to `bidders_`. Continues retrieving bidders from
+  // Adds `interest_groups` to `bid_states_`. Continues retrieving bidders from
   // `pending_buyers_` if any have not been retrieved yet. Otherwise, invokes
   // StartBidding().
   void OnInterestGroupRead(
@@ -219,18 +225,17 @@ class CONTENT_EXPORT AuctionRunner {
   // Configuration.
   blink::mojom::AuctionAdConfigPtr auction_config_;
   // Buyers whose interest groups need to be looked up to be added to
-  // `bidders_`.
+  // `bid_states_`.
   std::vector<url::Origin> pending_buyers_;
   // Next entry in `pending_buyers_` to fetch the interest group for.
   size_t next_pending_buyer_ = 0;
-  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders_;
   auction_worklet::mojom::BrowserSignalsPtr browser_signals_;
   const url::Origin frame_origin_;
   RunAuctionCallback callback_;
 
   // State for the bidding phase.
   int outstanding_bids_;  // number of bids for which we're waiting on a fetch.
-  std::vector<BidState> bid_states_;  // parallel to `bidders_`.
+  std::vector<BidState> bid_states_;  // State of all loaded bidders.
   // The time the auction started. Use a single base time for all Worklets, to
   // present a more consistent view of the universe.
   const base::Time auction_start_time_ = base::Time::Now();

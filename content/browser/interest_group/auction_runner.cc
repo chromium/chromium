@@ -120,9 +120,11 @@ void AuctionRunner::ReadNextInterestGroup() {
 void AuctionRunner::OnInterestGroupRead(
     std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
         interest_groups) {
-  bidders_.insert(bidders_.end(),
-                  std::make_move_iterator(interest_groups.begin()),
-                  std::make_move_iterator(interest_groups.end()));
+  for (auto bidder = std::make_move_iterator(interest_groups.begin());
+       bidder != std::make_move_iterator(interest_groups.end()); ++bidder) {
+    bid_states_.emplace_back(BidState());
+    bid_states_.back().bidder = std::move(*bidder);
+  }
   next_pending_buyer_++;
 
   // If more buyers in the queue, load the next one.
@@ -135,7 +137,7 @@ void AuctionRunner::OnInterestGroupRead(
   pending_buyers_.clear();
 
   // If no interest groups were found, end the auction without a winner.
-  if (bidders_.empty()) {
+  if (bid_states_.empty()) {
     FailAuction();
     return;
   }
@@ -147,31 +149,28 @@ void AuctionRunner::StartBidding() {
   // Auctions are only run when there are bidders participating. As-is, and
   // empty bidder vector here would result in synchronously calling back into
   // the creator, which isn't allowed.
-  DCHECK(!bidders_.empty());
+  DCHECK(!bid_states_.empty());
 
-  outstanding_bids_ = bidders_.size();
-  bid_states_.resize(outstanding_bids_);
+  outstanding_bids_ = bid_states_.size();
 
-  for (int bid_index = 0; bid_index < outstanding_bids_; ++bid_index) {
-    const auction_worklet::mojom::BiddingInterestGroupPtr& bidder =
-        bidders_[bid_index];
-    BidState* bid_state = &bid_states_[bid_index];
-    bid_state->bidder = bidder.get();
+  for (auto& bid_state : bid_states_) {
+    auction_worklet::mojom::BiddingInterestGroup* bidder =
+        bid_state.bidder.get();
 
     // Assemble list of URLs the bidder can request.
 
     // TODO(mmenke): This largely duplicates logic in the auction worklet
     // service. Avoid duplicating code.
     absl::optional<GURL> trusted_bidding_signals_full_url;
-    if (bid_state->bidder->group->trusted_bidding_signals_url &&
-        bid_state->bidder->group->trusted_bidding_signals_keys) {
+    if (bid_state.bidder->group->trusted_bidding_signals_url &&
+        bid_state.bidder->group->trusted_bidding_signals_keys) {
       std::string query_params =
           "hostname=" + net::EscapeQueryParamValue(
                             browser_signals_->top_frame_origin.host(), true);
       query_params += "&keys=";
       bool first_key = true;
       for (const auto& key :
-           *bid_state->bidder->group->trusted_bidding_signals_keys) {
+           *bid_state.bidder->group->trusted_bidding_signals_keys) {
         if (first_key) {
           first_key = false;
         } else {
@@ -183,31 +182,31 @@ void AuctionRunner::StartBidding() {
       GURL::Replacements replacements;
       replacements.SetQueryStr(query_params);
       trusted_bidding_signals_full_url =
-          bid_state->bidder->group->trusted_bidding_signals_url
+          bid_state.bidder->group->trusted_bidding_signals_url
               ->ReplaceComponents(replacements);
     }
 
     mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
-    bid_state->url_loader_factory_ =
+    bid_state.url_loader_factory_ =
         std::make_unique<AuctionURLLoaderFactoryProxy>(
             url_loader_factory.InitWithNewPipeAndPassReceiver(),
             base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
                                 base::Unretained(delegate_)),
             frame_origin_, false /* use_cors */,
-            bid_state->bidder->group->bidding_url.value_or(GURL()),
+            bid_state.bidder->group->bidding_url.value_or(GURL()),
             trusted_bidding_signals_full_url);
 
     delegate_->GetWorkletService()->LoadBidderWorkletAndGenerateBid(
-        bid_state->bidder_worklet.BindNewPipeAndPassReceiver(),
+        bid_state.bidder_worklet.BindNewPipeAndPassReceiver(),
         std::move(url_loader_factory), bidder->Clone(),
-        auction_config_->auction_signals, PerBuyerSignals(bid_state),
+        auction_config_->auction_signals, PerBuyerSignals(&bid_state),
         browser_signals_->top_frame_origin, browser_signals_->seller,
         auction_start_time_,
         base::BindOnce(&AuctionRunner::OnGenerateBidComplete,
-                       weak_ptr_factory_.GetWeakPtr(), bid_state));
-    bid_state->bidder_worklet.set_disconnect_handler(
+                       weak_ptr_factory_.GetWeakPtr(), &bid_state));
+    bid_state.bidder_worklet.set_disconnect_handler(
         base::BindOnce(&AuctionRunner::OnGenerateBidCrashed,
-                       weak_ptr_factory_.GetWeakPtr(), bid_state));
+                       weak_ptr_factory_.GetWeakPtr(), &bid_state));
   }
 
   // Also initiate the script fetch for the seller script.
@@ -346,11 +345,21 @@ absl::optional<std::string> AuctionRunner::PerBuyerSignals(
 void AuctionRunner::CompleteAuction() {
   double best_bid_score = 0.0;
   BidState* best_bid = nullptr;
+
+  // Find the best bid, if any, and record the bid of all bidders that made a
+  // bid. Record bidders at this point because the auction has successfully
+  // completed, and need to record bids even in the case the seller rejected all
+  // bids.
+  //
   // TODO(morlovich): What if there is a tie?
   for (BidState& bid_state : bid_states_) {
-    if (bid_state.seller_score > best_bid_score) {
-      best_bid_score = bid_state.seller_score;
-      best_bid = &bid_state;
+    if (bid_state.bid_result) {
+      interest_group_manager_->RecordInterestGroupBid(
+          bid_state.bidder->group->owner, bid_state.bidder->group->name);
+      if (bid_state.seller_score > best_bid_score) {
+        best_bid_score = bid_state.seller_score;
+        best_bid = &bid_state;
+      }
     }
   }
 
@@ -407,9 +416,6 @@ void AuctionRunner::ReportBidWin(BidState* best_bid) {
   // TODO(mmenke): Be smarter about process crashes in general. Even without
   // the report URL, can display the ad and report to the seller (though will
   // need to think more about that case).
-  //
-  // TODO(mmenke): Make this FailAuction call (And likely others as well) add
-  // a failure to `messages_`.
   if (!best_bid->bidder_worklet.is_connected()) {
     FailAuctionWithError(
         base::StrCat({best_bid->bidder->group->bidding_url->spec(),
@@ -475,12 +481,6 @@ void AuctionRunner::ReportSuccess(const BidState* state) {
 
   interest_group_manager_->RecordInterestGroupWin(
       state->bidder->group->owner, state->bidder->group->name, ad_metadata);
-
-  // TODO(mmenke): Don't record a bid if the interest group doesn't make a bid.
-  for (const auto& bidder : bidders_) {
-    interest_group_manager_->RecordInterestGroupBid(bidder->group->owner,
-                                                    bidder->group->name);
-  }
 
   std::move(callback_).Run(this, state->bid_result->render_url,
                            std::move(bidder_report_url_),

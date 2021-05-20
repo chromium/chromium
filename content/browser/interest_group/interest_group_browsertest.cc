@@ -1446,7 +1446,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   EXPECT_EQ(
       bidding_interest_groups2.front()->signals->prev_wins.front()->ad_json,
       R"({"render_url":"https://example.com/render"})");
-  EXPECT_EQ(bidding_interest_groups.front()->signals->bid_count, 2);
+  // First interest group didn't bid this time.
+  EXPECT_EQ(bidding_interest_groups.front()->signals->bid_count, 1);
   EXPECT_EQ(bidding_interest_groups2.front()->signals->bid_count, 2);
 
   // Run auction third time, and only interest group "shoes" bids this time.
@@ -1469,7 +1470,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   EXPECT_EQ(
       bidding_interest_groups2.front()->signals->prev_wins.back()->ad_json,
       R"({"render_url":"https://example.com/render"})");
-  EXPECT_EQ(bidding_interest_groups.front()->signals->bid_count, 2);
+  // First interest group didn't bid this time.
+  EXPECT_EQ(bidding_interest_groups.front()->signals->bid_count, 1);
   EXPECT_EQ(bidding_interest_groups2.front()->signals->bid_count, 3);
 }
 
