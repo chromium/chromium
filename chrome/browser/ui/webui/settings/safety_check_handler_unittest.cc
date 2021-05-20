@@ -1380,44 +1380,6 @@ TEST_F(SafetyCheckHandlerTest, CheckExtensions_BlocklistedReenabledSomeByUser) {
       SafetyCheckHandler::ExtensionsStatus::kBlocklistedReenabledSomeByUser, 1);
 }
 
-TEST_F(SafetyCheckHandlerTest, CheckExtensions_Error) {
-  // One extension in the error state.
-  std::string extension_id = GenerateExtensionId('a');
-  scoped_refptr<const extensions::Extension> extension =
-      extensions::ExtensionBuilder("test0").SetID(extension_id).Build();
-  test_extension_prefs_->OnExtensionInstalled(
-      extension.get(), extensions::Extension::State::ENABLED,
-      syncer::StringOrdinal(), "");
-  test_extension_prefs_->SetExtensionBlocklistState(
-      extension_id, extensions::BLOCKLISTED_UNKNOWN);
-  test_extension_service_.AddExtensionState(extension_id, Enabled(true),
-                                            UserCanDisable(true));
-
-  // Another extension blocklisted.
-  std::string extension2_id = GenerateExtensionId('b');
-  scoped_refptr<const extensions::Extension> extension2 =
-      extensions::ExtensionBuilder("test1").SetID(extension2_id).Build();
-  test_extension_prefs_->OnExtensionInstalled(
-      extension2.get(), extensions::Extension::State::ENABLED,
-      syncer::StringOrdinal(), "");
-  test_extension_prefs_->SetExtensionBlocklistState(
-      extension2_id, extensions::BLOCKLISTED_POTENTIALLY_UNWANTED);
-  test_extension_service_.AddExtensionState(extension2_id, Enabled(true),
-                                            UserCanDisable(false));
-
-  safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kExtensions,
-          static_cast<int>(SafetyCheckHandler::ExtensionsStatus::kError));
-  EXPECT_TRUE(event);
-  VerifyDisplayString(event,
-                      "Browser can't check your extensions. Try again later.");
-  histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.ExtensionsResult",
-      SafetyCheckHandler::ExtensionsStatus::kError, 1);
-}
-
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 class SafetyCheckHandlerChromeCleanerIdleTest
     : public SafetyCheckHandlerTest,

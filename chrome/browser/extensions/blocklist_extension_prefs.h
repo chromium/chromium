@@ -20,6 +20,15 @@ namespace blocklist_prefs {
 BitMapBlocklistState BlocklistStateToBitMapBlocklistState(
     BlocklistState blocklist_state);
 
+// Takes both Safe Browsing blocklist state and Omaha attribute blocklist states
+// into account and determine the final state of the extension. The precedence
+// is defined as follow:
+// BLOCKLISTED_MALWARE > BLOCKLISTED_CWS_POLICY_VIOLATION >
+// BLOCKLISTED_POTENTIALLY_UNWANTED > BLOCKLISTED_SECURITY_VULNERABILITY.
+BitMapBlocklistState GetExtensionBlocklistState(
+    const std::string& extension_id,
+    ExtensionPrefs* extension_prefs);
+
 // Adds the `state` to the Omaha blocklist state pref.
 void AddOmahaBlocklistState(const std::string& extension_id,
                             BitMapBlocklistState state,

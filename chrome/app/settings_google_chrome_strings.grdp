@@ -138,9 +138,6 @@
   <message name="IDS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED" desc="This text points out that Safe Browsing is disabled and that the user is not protected.">
     Safe Browsing is off. Chrome recommends turning it on.
   </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_ERROR" desc="This text describes that safety check could not check extensions for an unkown reason.">
-    Chrome can't check your extensions. Try again later.
-  </message>
 
   <!-- People Page -->
   <message name="IDS_SETTINGS_SYNC_DISCONNECT_DELETE_PROFILE_WARNING_WITH_COUNTS_SINGULAR" desc="Warning message displayed in the Sign out of Chrome dialog that indicates profile browsing data will be removed from the device.">

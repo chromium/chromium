@@ -174,4 +174,37 @@ TEST_F(BlocklistExtensionPrefsUnitTest,
       extension_prefs()));
 }
 
+TEST_F(BlocklistExtensionPrefsUnitTest, GetExtensionBlocklistState) {
+  EXPECT_EQ(BitMapBlocklistState::NOT_BLOCKLISTED,
+            blocklist_prefs::GetExtensionBlocklistState(kExtensionId,
+                                                        extension_prefs()));
+
+  extension_prefs()->SetExtensionBlocklistState(
+      kExtensionId, BLOCKLISTED_POTENTIALLY_UNWANTED);
+  blocklist_prefs::AddOmahaBlocklistState(
+      kExtensionId, BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY,
+      extension_prefs());
+  // BLOCKLISTED_POTENTIALLY_UNWANTED has a higher precedence than
+  // BLOCKLISTED_SECURITY_VULNERABILITY.
+  EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+            blocklist_prefs::GetExtensionBlocklistState(kExtensionId,
+                                                        extension_prefs()));
+
+  blocklist_prefs::AddOmahaBlocklistState(
+      kExtensionId, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs());
+  // BLOCKLISTED_CWS_POLICY_VIOLATION has a higher precedence than
+  // BLOCKLISTED_POTENTIALLY_UNWANTED.
+  EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+            blocklist_prefs::GetExtensionBlocklistState(kExtensionId,
+                                                        extension_prefs()));
+
+  extension_prefs()->SetExtensionBlocklistState(kExtensionId,
+                                                BLOCKLISTED_MALWARE);
+  // BLOCKLISTED_MALWARE has the highest precedence.
+  EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_MALWARE,
+            blocklist_prefs::GetExtensionBlocklistState(kExtensionId,
+                                                        extension_prefs()));
+}
+
 }  // namespace extensions

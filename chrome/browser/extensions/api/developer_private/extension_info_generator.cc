@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/api/commands/command_service.h"
 #include "chrome/browser/extensions/api/developer_private/inspectable_views_finder.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
+#include "chrome/browser/extensions/blocklist_extension_prefs.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -33,6 +34,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/render_frame_host.h"
+#include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_icon_placeholder.h"
 #include "extensions/browser/extension_prefs.h"
@@ -492,20 +494,24 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
 
   // Blocklist text.
   int blocklist_text = -1;
-  switch (extension_prefs_->GetExtensionBlocklistState(extension.id())) {
-    case BLOCKLISTED_MALWARE:
+  BitMapBlocklistState blocklist_state =
+      blocklist_prefs::GetExtensionBlocklistState(extension.id(),
+                                                  extension_prefs_);
+  switch (blocklist_state) {
+    case BitMapBlocklistState::BLOCKLISTED_MALWARE:
       blocklist_text = IDS_EXTENSIONS_BLOCKLISTED_MALWARE;
       break;
-    case BLOCKLISTED_SECURITY_VULNERABILITY:
+    case BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY:
       blocklist_text = IDS_EXTENSIONS_BLOCKLISTED_SECURITY_VULNERABILITY;
       break;
-    case BLOCKLISTED_CWS_POLICY_VIOLATION:
+    case BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION:
       blocklist_text = IDS_EXTENSIONS_BLOCKLISTED_CWS_POLICY_VIOLATION;
       break;
-    case BLOCKLISTED_POTENTIALLY_UNWANTED:
+    case BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED:
       blocklist_text = IDS_EXTENSIONS_BLOCKLISTED_POTENTIALLY_UNWANTED;
       break;
-    default:
+    case BitMapBlocklistState::NOT_BLOCKLISTED:
+      // no-op.
       break;
   }
   if (blocklist_text != -1) {

@@ -73,7 +73,9 @@ class SafetyCheckHandler
   using UpdateStatus = safety_check::UpdateStatus;
   enum class ExtensionsStatus {
     kChecking = 0,
-    kError = 1,
+    // Deprecated in M92, because the unknown extension state is never stored in
+    // extension prefs.
+    // kError = 1,
     kNoneBlocklisted = 2,
     kBlocklistedAllDisabled = 3,
     kBlocklistedReenabledAllByUser = 4,

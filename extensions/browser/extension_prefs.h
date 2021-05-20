@@ -241,12 +241,18 @@ class ExtensionPrefs : public KeyedService {
   void SetExtensionDisabled(const std::string& extension_id,
                             int disable_reasons);
 
-  // TODO(crbug.com/1180996): Move SetExtensionBlocklistState and
-  // GetExtensionBlocklistState to the blocklist_extension_prefs file.
+  // TODO(crbug.com/1180996): Rename this function to
+  // SetSafeBrowsingExtensionBlocklistState and move it to the
+  // blocklist_extension_prefs file.
   void SetExtensionBlocklistState(const std::string& extension_id,
                                   BlocklistState state);
 
   // Checks whether |extension_id| is marked as greylisted.
+  // Warning: This function only takes Safe Browsing blocklist states into
+  // account. Please use blocklist_prefs::GetExtensionBlocklistState instead.
+  // TODO(crbug.com/1180996): Rename this function to
+  // GetSafeBrowsingExtensionBlocklistState and move it to the
+  // blocklist_extension_prefs file.
   // TODO(oleg): Replace IsExtensionBlocklisted by this method.
   BlocklistState GetExtensionBlocklistState(
       const std::string& extension_id) const;

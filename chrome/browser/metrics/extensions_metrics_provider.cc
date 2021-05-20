@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/blocklist_extension_prefs.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/profiles/profile.h"
@@ -280,20 +281,19 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
 ExtensionInstallProto::BlacklistState GetBlacklistState(
     const extensions::ExtensionId& id,
     extensions::ExtensionPrefs* prefs) {
-  extensions::BlocklistState state = prefs->GetExtensionBlocklistState(id);
+  extensions::BitMapBlocklistState state =
+      extensions::blocklist_prefs::GetExtensionBlocklistState(id, prefs);
   switch (state) {
-    case extensions::NOT_BLOCKLISTED:
+    case extensions::BitMapBlocklistState::NOT_BLOCKLISTED:
       return ExtensionInstallProto::NOT_BLACKLISTED;
-    case extensions::BLOCKLISTED_MALWARE:
+    case extensions::BitMapBlocklistState::BLOCKLISTED_MALWARE:
       return ExtensionInstallProto::BLACKLISTED_MALWARE;
-    case extensions::BLOCKLISTED_SECURITY_VULNERABILITY:
+    case extensions::BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY:
       return ExtensionInstallProto::BLACKLISTED_SECURITY_VULNERABILITY;
-    case extensions::BLOCKLISTED_CWS_POLICY_VIOLATION:
+    case extensions::BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION:
       return ExtensionInstallProto::BLACKLISTED_CWS_POLICY_VIOLATION;
-    case extensions::BLOCKLISTED_POTENTIALLY_UNWANTED:
+    case extensions::BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED:
       return ExtensionInstallProto::BLACKLISTED_POTENTIALLY_UNWANTED;
-    case extensions::BLOCKLISTED_UNKNOWN:
-      return ExtensionInstallProto::BLACKLISTED_UNKNOWN;
   }
   NOTREACHED();
   return ExtensionInstallProto::BLACKLISTED_UNKNOWN;

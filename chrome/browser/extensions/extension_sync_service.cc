@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/one_shot_event.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/extensions/blocklist_extension_prefs.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
@@ -236,15 +237,16 @@ absl::optional<syncer::ModelError> ExtensionSyncService::ProcessSyncChanges(
 ExtensionSyncData ExtensionSyncService::CreateSyncData(
     const Extension& extension) const {
   const std::string& id = extension.id();
-  const ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile_);
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile_);
   int disable_reasons =
       extension_prefs->GetDisableReasons(id) & kSyncableDisableReasons;
   // Note that we're ignoring the enabled state during ApplySyncData (we check
   // for the existence of disable reasons instead), we're just setting it here
   // for older Chrome versions (<M48).
   bool enabled = (disable_reasons == extensions::disable_reason::DISABLE_NONE);
-  if (extension_prefs->GetExtensionBlocklistState(extension.id()) ==
-      extensions::BLOCKLISTED_MALWARE) {
+  if (extensions::blocklist_prefs::GetExtensionBlocklistState(
+          id, extension_prefs) ==
+      extensions::BitMapBlocklistState::BLOCKLISTED_MALWARE) {
     enabled = false;
     NOTREACHED() << "Blocklisted extensions should not be getting synced.";
   }

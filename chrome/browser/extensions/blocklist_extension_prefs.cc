@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/blocklist_extension_prefs.h"
 
+#include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_prefs.h"
 
 namespace extensions {
@@ -22,10 +23,12 @@ constexpr BitMapBlocklistState kDefaultBitMapBlocklistState =
     BitMapBlocklistState::NOT_BLOCKLISTED;
 
 // Extensions in these states should be put into the extension greylist.
+// This list is sorted by the precedence order. When two states are presented
+// at the same time, the state with higher precedence takes effect.
 const BitMapBlocklistState kGreylistStates[] = {
-    BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY,
     BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
-    BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED};
+    BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+    BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY};
 const int kAllGreylistStates =
     static_cast<int>(BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY) |
     static_cast<int>(BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION) |
@@ -52,6 +55,28 @@ BitMapBlocklistState BlocklistStateToBitMapBlocklistState(
       NOTREACHED() << "The unknown state should not be added into prefs.";
       return BitMapBlocklistState::NOT_BLOCKLISTED;
   }
+}
+
+BitMapBlocklistState GetExtensionBlocklistState(
+    const std::string& extension_id,
+    ExtensionPrefs* extension_prefs) {
+  BitMapBlocklistState sb_state = BlocklistStateToBitMapBlocklistState(
+      extension_prefs->GetExtensionBlocklistState(extension_id));
+  if (sb_state == BitMapBlocklistState::BLOCKLISTED_MALWARE ||
+      HasOmahaBlocklistState(extension_id,
+                             BitMapBlocklistState::BLOCKLISTED_MALWARE,
+                             extension_prefs)) {
+    return BitMapBlocklistState::BLOCKLISTED_MALWARE;
+  }
+
+  for (auto greylist_state : kGreylistStates) {
+    if (sb_state == greylist_state ||
+        HasOmahaBlocklistState(extension_id, greylist_state, extension_prefs)) {
+      return greylist_state;
+    }
+  }
+
+  return BitMapBlocklistState::NOT_BLOCKLISTED;
 }
 
 void AddOmahaBlocklistState(const std::string& extension_id,

@@ -18,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
+#include "chrome/browser/extensions/blocklist_extension_prefs.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
@@ -427,17 +428,10 @@ void SafetyCheckHandler::CheckExtensions() {
   int reenabled_by_user = 0;
   int reenabled_by_admin = 0;
   for (auto extension_id : extensions) {
-    extensions::BlocklistState state =
-        extension_prefs_->GetExtensionBlocklistState(extension_id);
-    if (state == extensions::BLOCKLISTED_UNKNOWN) {
-      // If any of the extensions are in the unknown blocklist state, that means
-      // there was an error the last time the blocklist was fetched. That means
-      // the results cannot be relied upon.
-      OnExtensionsCheckResult(ExtensionsStatus::kError, Blocklisted(0),
-                              ReenabledUser(0), ReenabledAdmin(0));
-      return;
-    }
-    if (state == extensions::NOT_BLOCKLISTED) {
+    extensions::BitMapBlocklistState state =
+        extensions::blocklist_prefs::GetExtensionBlocklistState(
+            extension_id, extension_prefs_);
+    if (state == extensions::BitMapBlocklistState::NOT_BLOCKLISTED) {
       continue;
     }
     ++blocklisted;
@@ -720,9 +714,6 @@ std::u16string SafetyCheckHandler::GetStringForExtensions(
   switch (status) {
     case ExtensionsStatus::kChecking:
       return u"";
-    case ExtensionsStatus::kError:
-      return l10n_util::GetStringUTF16(
-          IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_ERROR);
     case ExtensionsStatus::kNoneBlocklisted:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_SAFE);

@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/extensions/blocklist_extension_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -52,13 +53,13 @@ std::vector<std::u16string> GenerateMessage(
   message.reserve(forbidden.size());
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
   for (const auto& extension : forbidden) {
-    BlocklistState blocklist_state =
-        prefs->GetExtensionBlocklistState(extension->id());
+    BitMapBlocklistState blocklist_state =
+        blocklist_prefs::GetExtensionBlocklistState(extension->id(), prefs);
     bool disable_remotely_for_malware = prefs->HasDisableReason(
         extension->id(), disable_reason::DISABLE_REMOTELY_FOR_MALWARE);
     int id = 0;
     if (disable_remotely_for_malware ||
-        (blocklist_state == BlocklistState::BLOCKLISTED_MALWARE)) {
+        (blocklist_state == BitMapBlocklistState::BLOCKLISTED_MALWARE)) {
       id = IDS_EXTENSION_ALERT_ITEM_BLOCKLISTED_MALWARE;
     } else {
       id = extension->is_app() ? IDS_APP_ALERT_ITEM_BLOCKLISTED_OTHER
