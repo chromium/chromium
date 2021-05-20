@@ -238,7 +238,9 @@ class FaviconHandler {
   void ScheduleImageDownload(const GURL& image_url,
                              favicon_base::IconType icon_type);
 
-  // Triggered when a download of an image has finished.
+  // Triggered when a download of an image has finished. |bitmaps| and
+  // |original_bitmap_sizes| must contain the same number of elements (i.e. same
+  // vector size).
   void OnDidDownloadFavicon(
       favicon_base::IconType icon_type,
       int id,

@@ -216,6 +216,7 @@ gfx::ImageSkia CreateFaviconImageSkia(
     const std::vector<gfx::Size>& original_sizes,
     int desired_size_in_dip,
     float* score) {
+  DCHECK_EQ(bitmaps.size(), original_sizes.size());
 
   const std::vector<float>& favicon_scales = favicon_base::GetFaviconScales();
   std::vector<int> desired_sizes;

@@ -38,6 +38,8 @@ extern const float kSelectFaviconFramesInvalidScore;
 // it inspired by this method.
 // If an unsupported scale (not in the favicon_base::GetFaviconScales())
 // is requested, the ImageSkia will automatically scales using lancoz3.
+// |original_sizes| represents the pixel sizes of the favicon bitmaps in
+// |bitmaps|, which also means both vectors must have the same size.
 gfx::ImageSkia CreateFaviconImageSkia(
     const std::vector<SkBitmap>& bitmaps,
     const std::vector<gfx::Size>& original_sizes,

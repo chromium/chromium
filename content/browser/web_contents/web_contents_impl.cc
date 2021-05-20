@@ -165,6 +165,7 @@
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "third_party/blink/public/mojom/image_downloader/image_downloader.mojom.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -4661,18 +4662,18 @@ int WebContentsImpl::DownloadImageInFrame(
     // respond with a 400 HTTP error code to indicate that something went wrong.
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&WebContentsImpl::OnDidDownloadImage,
-                       weak_factory_.GetWeakPtr(), std::move(callback),
-                       download_id, url, 400, std::vector<SkBitmap>(),
-                       std::vector<gfx::Size>()));
+        base::BindOnce(
+            &WebContentsImpl::OnDidDownloadImage, weak_factory_.GetWeakPtr(),
+            initiator_frame->GetWeakPtr(), std::move(callback), download_id,
+            url, 400, std::vector<SkBitmap>(), std::vector<gfx::Size>()));
     return download_id;
   }
 
   mojo_image_downloader->DownloadImage(
       url, is_favicon, preferred_size, max_bitmap_size, bypass_cache,
       base::BindOnce(&WebContentsImpl::OnDidDownloadImage,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     download_id, url));
+                     weak_factory_.GetWeakPtr(), initiator_frame->GetWeakPtr(),
+                     std::move(callback), download_id, url));
   return download_id;
 }
 
@@ -7319,12 +7320,27 @@ bool WebContentsImpl::CompletedFirstVisuallyNonEmptyPaint() {
 }
 
 void WebContentsImpl::OnDidDownloadImage(
+    base::WeakPtr<RenderFrameHostImpl> rfh,
     ImageDownloadCallback callback,
     int id,
     const GURL& image_url,
     int32_t http_status_code,
     const std::vector<SkBitmap>& images,
     const std::vector<gfx::Size>& original_image_sizes) {
+  // Guard against buggy or compromised renderers that could violate the API
+  // contract that |images| and |original_image_sizes| must have the same
+  // length.
+  if (images.size() != original_image_sizes.size()) {
+    if (rfh) {
+      ReceivedBadMessage(rfh->GetProcess(),
+                         bad_message::WCI_INVALID_DOWNLOAD_IMAGE_RESULT);
+    }
+    // Respond with a 400 to indicate that something went wrong.
+    std::move(callback).Run(id, 400, image_url, std::vector<SkBitmap>(),
+                            std::vector<gfx::Size>());
+    return;
+  }
+
   std::move(callback).Run(id, http_status_code, image_url, images,
                           original_image_sizes);
 }
