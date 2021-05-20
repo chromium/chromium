@@ -105,8 +105,9 @@ class PrivacySandboxSettings : public KeyedService,
   std::u16string GetFlocStatusForDisplay() const;
 
   // Returns whether the user's current FLoC ID can be reset. This requires that
-  // the FLoC feature be enabled, FLoC be enabled in preferences, and the ID be
-  // valid.
+  // the FLoC feature be enabled and FLoC be enabled in preferences. It does not
+  // require that the current ID is valid, as resetting the ID also resets the
+  // compute timer, it should be available whenever FLoC is active.
   bool IsFlocIdResettable() const;
 
   // Sets the time when history is accessible for FLoC calculation to the

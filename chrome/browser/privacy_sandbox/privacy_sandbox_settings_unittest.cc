@@ -1063,8 +1063,8 @@ TEST_F(PrivacySandboxSettingsTest, GetFlocStatusForDisplay) {
 }
 
 TEST_F(PrivacySandboxSettingsTest, IsFlocIdResettable) {
-  // Check that if the FLoC id is valid and FLoC is functional, then it is also
-  // resettable.
+  // Check that if FLoC is functional the FLoC ID is resettable, regardless of
+  // whether the FLoC ID is currently valid.
   feature_list()->InitWithFeatures(
       {blink::features::kInterestCohortAPIOriginTrial}, {});
   federated_learning::FlocId floc_id(123456, base::Time(), base::Time::Now(),
@@ -1097,7 +1097,7 @@ TEST_F(PrivacySandboxSettingsTest, IsFlocIdResettable) {
   floc_id.InvalidateIdAndSaveToPrefs(profile()->GetTestingPrefService());
   profile()->GetTestingPrefService()->SetBoolean(
       prefs::kPrivacySandboxFlocEnabled, true);
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocIdResettable());
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocIdResettable());
 }
 
 TEST_F(PrivacySandboxSettingsTest, IsFlocPrefEnabled) {

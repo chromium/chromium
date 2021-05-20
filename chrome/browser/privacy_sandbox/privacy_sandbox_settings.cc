@@ -290,10 +290,9 @@ std::u16string PrivacySandboxSettings::GetFlocStatusForDisplay() const {
 }
 
 bool PrivacySandboxSettings::IsFlocIdResettable() const {
-  auto floc_id = federated_learning::FlocId::ReadFromPrefs(pref_service_);
   const bool floc_feature_enabled = base::FeatureList::IsEnabled(
       blink::features::kInterestCohortAPIOriginTrial);
-  return floc_feature_enabled && floc_id.IsValid() && IsFlocAllowed();
+  return floc_feature_enabled && IsFlocAllowed();
 }
 
 void PrivacySandboxSettings::ResetFlocId() const {
