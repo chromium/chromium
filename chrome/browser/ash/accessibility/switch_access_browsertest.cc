@@ -122,8 +122,6 @@ class SwitchAccessTest : public InProcessBrowserTest {
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
 };
 
-// TODO(anastasi): Add a test for typing with the virtual keyboard.
-
 IN_PROC_BROWSER_TEST_F(SwitchAccessTest, ConsumesKeyEvents) {
   EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                      {'3', 'C'} /* previous */);
@@ -252,6 +250,40 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
 
   // Wrap back around to the "keyboard" button.
   WaitForFocusRing("primary", "button", "Keyboard");
+}
+
+IN_PROC_BROWSER_TEST_F(SwitchAccessTest, TypeIntoVirtualKeyboard) {
+  EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
+                     {'3', 'C'} /* previous */);
+
+  // Load a webpage with a text box.
+  ui_test_utils::NavigateToURL(
+      browser(),
+      GURL("data:text/html,<input autofocus aria-label=MyTextField>"));
+
+  // Wait for switch access to focus on the text field.
+  WaitForFocusRing("primary", "textField", "MyTextField");
+
+  // Send "select", which opens the switch access menu.
+  SendVirtualKeyPress(ui::KeyboardCode::VKEY_1);
+
+  // Wait for the switch access menu to appear and for focus to land on
+  // the first item, the "keyboard" button.
+  //
+  // Note that we don't try to also call WaitForSwitchAccessMenuAndGetActions
+  // here because by the time it returns, we may have already received the focus
+  // ring for the menu and so the following WaitForFocusRing would fail / loop
+  // forever.
+  WaitForFocusRing("primary", "button", "Keyboard");
+
+  // Send "select", which opens the virtual keyboard.
+  SendVirtualKeyPress(ui::KeyboardCode::VKEY_1);
+
+  // Finally, we should land on a keyboard key.
+  WaitForFocusRing("primary", "keyboard", "");
+
+  // Actually typing and verifying text field value should be covered by
+  // js-based tests that have the ability to ask the text field for its value.
 }
 
 }  // namespace ash

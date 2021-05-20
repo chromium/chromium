@@ -50,6 +50,9 @@ export class ItemScanManager extends ItemNavigatorInterface {
     /** @private {!FocusHistory} */
     this.history_ = new FocusHistory();
 
+    /** @private {boolean} */
+    this.ignoreFocusInKeyboard_ = false;
+
     this.init_();
   }
 
@@ -75,6 +78,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
 
   /** @override */
   enterKeyboard() {
+    this.ignoreFocusInKeyboard_ = true;
     this.node_.automationNode.focus();
     const keyboard = KeyboardRootNode.buildTree();
     this.jumpTo_(keyboard);
@@ -94,6 +98,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
 
   /** @override */
   exitKeyboard() {
+    this.ignoreFocusInKeyboard_ = false;
     const isKeyboard = (data) => data.group instanceof KeyboardRootNode;
     // If we are not in the keyboard, do nothing.
     if (!(this.group_ instanceof KeyboardRootNode) &&
@@ -269,6 +274,14 @@ export class ItemScanManager extends ItemNavigatorInterface {
     if (event.eventFrom === 'action') {
       return;
     }
+
+    // To be safe, let's ignore focus when we're in the SA menu or over the
+    // keyboard.
+    if (this.ignoreFocusInKeyboard_ ||
+        this.group_ instanceof KeyboardRootNode || MenuManager.isMenuOpen()) {
+      return;
+    }
+
 
     if (this.node_.isEquivalentTo(event.target)) {
       return;
