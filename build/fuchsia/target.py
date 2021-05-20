@@ -2,15 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import common
 import json
 import logging
 import os
-import remote_cmd
-import runner_logs
 import subprocess
 import time
 
+import common
+import remote_cmd
+import runner_logs
 
 _SHUTDOWN_CMD = ['dm', 'poweroff']
 _ATTACH_RETRY_INTERVAL = 1
@@ -32,7 +32,7 @@ def _GetPackageInfo(package_path):
   # Query the metadata file which resides next to the package file.
   package_info = json.load(
       open(os.path.join(os.path.dirname(package_path), 'package')))
-  return (package_info['name'], package_info['version'])
+  return package_info['name'], package_info['version'],
 
 
 class _MapIsolatedPathsForPackage:
@@ -86,26 +86,21 @@ class Target(object):
     """Handles the instantiation and connection process for the Fuchsia
     target instance."""
 
-    pass
-
   def IsStarted(self):
     """Returns True if the Fuchsia target instance is ready to accept
     commands."""
-
     return self._started
 
   def IsNewInstance(self):
     """Returns True if the connected target instance is newly provisioned."""
-
     return True
 
   def GetCommandRunner(self):
     """Returns CommandRunner that can be used to execute commands on the
     target. Most clients should prefer RunCommandPiped() and RunCommand()."""
-
     self._AssertIsStarted()
 
-    if self._command_runner == None:
+    if self._command_runner is None:
       host, port = self._GetEndpoint()
       self._command_runner = \
           remote_cmd.CommandRunner(self._GetSshConfigPath(), host, port)
@@ -124,17 +119,17 @@ class Target(object):
 
     Returns: a Popen object.
 
-    Note: method does not block."""
-
-    logging.debug('running (non-blocking) \'%s\'.' % ' '.join(command))
+    Note: method does not block.
+    """
+    logging.debug('running (non-blocking) \'%s\'.', ' '.join(command))
     return self.GetCommandRunner().RunCommandPiped(command, **kwargs)
 
   def RunCommand(self, command, silent=False, timeout_secs=None):
     """Executes a remote command and waits for it to finish executing.
 
-    Returns the exit code of the command."""
-
-    logging.debug('running \'%s\'.' % ' '.join(command))
+    Returns the exit code of the command.
+    """
+    logging.debug('running \'%s\'.', ' '.join(command))
     return self.GetCommandRunner().RunCommand(command, silent,
                                               timeout_secs=timeout_secs)
 
@@ -152,7 +147,7 @@ class Target(object):
               dest,
               recursive=False,
               for_package=None,
-              for_realms=[]):
+              for_realms=()):
     """Copies a file from the local filesystem to the target filesystem.
 
     source: The path of the file being copied.
@@ -164,7 +159,6 @@ class Target(object):
     for_realms: If specified, identifies the sub-realm of 'sys' under which
                 isolated paths (see |for_package|) are stored.
     """
-
     assert type(source) is str
     self.PutFiles([source], dest, recursive, for_package, for_realms)
 
@@ -173,7 +167,7 @@ class Target(object):
                dest,
                recursive=False,
                for_package=None,
-               for_realms=[]):
+               for_realms=()):
     """Copies files from the local filesystem to the target filesystem.
 
     sources: List of local file paths to copy from, or a single path.
@@ -184,12 +178,11 @@ class Target(object):
     for_realms: If specified, identifies the sub-realm of 'sys' under which
                 isolated paths (see |for_package|) are stored.
     """
-
     assert type(sources) is tuple or type(sources) is list
     if for_package:
       self.EnsureIsolatedPathsExist(for_package, for_realms)
       dest = _MapIsolatedPathsForPackage(for_package, 0, for_realms)(dest)
-    logging.debug('copy local:%s => remote:%s' % (sources, dest))
+    logging.debug('copy local:%s => remote:%s', sources, dest)
     self.GetCommandRunner().RunScp(sources, dest, remote_cmd.COPY_TO_TARGET,
                                    recursive)
 
@@ -197,7 +190,7 @@ class Target(object):
               source,
               dest,
               for_package=None,
-              for_realms=[],
+              for_realms=(),
               recursive=False):
     """Copies a file from the target filesystem to the local filesystem.
 
@@ -216,7 +209,7 @@ class Target(object):
                sources,
                dest,
                for_package=None,
-               for_realms=[],
+               for_realms=(),
                recursive=False):
     """Copies files from the target filesystem to the local filesystem.
 
@@ -233,14 +226,14 @@ class Target(object):
     if for_package:
       sources = map(_MapIsolatedPathsForPackage(for_package, 0, for_realms),
                     sources)
-    logging.debug('copy remote:%s => local:%s' % (sources, dest))
+    logging.debug('copy remote:%s => local:%s', sources, dest)
     return self.GetCommandRunner().RunScp(sources, dest,
                                           remote_cmd.COPY_FROM_TARGET,
                                           recursive)
 
   def _GetEndpoint(self):
     """Returns a (host, port) tuple for the SSH connection to the target."""
-    raise NotImplementedError
+    raise NotImplementedError()
 
   def _GetTargetSdkArch(self):
     """Returns the Fuchsia SDK architecture name for the target CPU."""
@@ -274,7 +267,7 @@ class Target(object):
     raise FuchsiaTargetException('Couldn\'t connect using SSH.')
 
   def _GetSshConfigPath(self, path):
-    raise NotImplementedError
+    raise NotImplementedError()
 
   def GetAmberRepo(self):
     """Returns an AmberRepo instance which serves packages for this Target.
@@ -282,14 +275,14 @@ class Target(object):
     install and execute commands inside the |with| block, so that the returned
     AmberRepo can teardown correctly, if necessary.
     """
-    pass
+    raise NotImplementedError()
 
   def InstallPackage(self, package_paths):
     """Installs a package and it's dependencies on the device. If the package is
     already installed then it will be updated to the new version.
 
-    package_paths: Paths to the .far files to install."""
-
+    package_paths: Paths to the .far files to install.
+    """
     with self.GetAmberRepo() as amber_repo:
       # Publish all packages to the serving TUF repository under |tuf_root|.
       for package_path in package_paths:
@@ -298,7 +291,7 @@ class Target(object):
       # Resolve all packages, to have them pulled into the device/VM cache.
       for package_path in package_paths:
         package_name, package_version = _GetPackageInfo(package_path)
-        logging.info('Resolving %s into cache.' % (package_name))
+        logging.info('Resolving %s into cache.', package_name)
         return_code = self.RunCommand(
             ['pkgctl', 'resolve',
              _GetPackageUri(package_name), '>/dev/null'],
