@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 module arc.mojom;
 
@@ -85,6 +85,11 @@ struct PaymentParameters {
   // not currently need this parameter.
   [MinVersion=2]
   string? payment_request_id;
+
+  // Opaque, browser-generated identifier for this payment request. Used to
+  // identify a particular request across calls.
+  [MinVersion=3]
+  string? request_token;
 };
 
 // After the browser calls IsReadyToPay(), ARC sends back this result.
@@ -165,4 +170,14 @@ interface PaymentAppInstance {
   [MinVersion=2]
   InvokePaymentApp@2(PaymentParameters parameters)
       => (InvokePaymentAppResult response);
+
+  // Requests to abort a previous payment flow (identified by |request_token|)
+  // which was opened with InvokePaymentApp().
+  //
+  // This may be called by the website if a payment should no longer be made
+  // (e.g., when an item goes out of stock), or by the browser if the payment is
+  // no longer available (e.g., the page was refreshed).
+  [MinVersion=3]
+  AbortPaymentApp@3(string request_token)
+      => (bool aborted);
 };

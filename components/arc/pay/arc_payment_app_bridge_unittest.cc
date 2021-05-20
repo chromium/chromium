@@ -13,6 +13,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 namespace {
@@ -39,10 +40,13 @@ class ArcPaymentAppBridgeTest : public testing::Test {
     invoke_app_ = std::move(response);
   }
 
+  void OnAbortPaymentAppResponse(bool response) { abort_app_ = response; }
+
   ArcPaymentAppBridgeTestSupport support_;
   mojom::IsPaymentImplementedResultPtr is_implemented_;
   mojom::IsReadyToPayResultPtr is_ready_to_pay_;
   mojom::InvokePaymentAppResultPtr invoke_app_;
+  absl::optional<bool> abort_app_;
 };
 
 TEST_F(ArcPaymentAppBridgeTest, UnableToConnectInIsImplemented) {
@@ -303,6 +307,42 @@ TEST_F(ArcPaymentAppBridgeTest, InvokePaymentAppError) {
   EXPECT_FALSE(invoke_app_->is_valid());
   ASSERT_TRUE(invoke_app_->is_error());
   EXPECT_EQ("Error message.", invoke_app_->get_error());
+}
+
+TEST_F(ArcPaymentAppBridgeTest, UnableToConnectAbortPaymentApp) {
+  // Intentionally do not set an instance.
+
+  EXPECT_CALL(*support_.instance(), AbortPaymentApp(testing::_, testing::_))
+      .Times(0);
+
+  ArcPaymentAppBridge::GetForBrowserContextForTesting(support_.context())
+      ->AbortPaymentApp(
+          "some token",
+          base::BindOnce(&ArcPaymentAppBridgeTest::OnAbortPaymentAppResponse,
+                         base::Unretained(this)));
+
+  ASSERT_TRUE(abort_app_.has_value());
+  ASSERT_FALSE(abort_app_.value());
+}
+
+TEST_F(ArcPaymentAppBridgeTest, AbortPaymentAppOK) {
+  auto scoped_set_instance = support_.CreateScopedSetInstance();
+
+  EXPECT_CALL(*support_.instance(), AbortPaymentApp(testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [](const std::string& request_token,
+             ArcPaymentAppBridge::AbortPaymentAppCallback callback) {
+            std::move(callback).Run(true);
+          }));
+
+  ArcPaymentAppBridge::GetForBrowserContextForTesting(support_.context())
+      ->AbortPaymentApp(
+          "some token",
+          base::BindOnce(&ArcPaymentAppBridgeTest::OnAbortPaymentAppResponse,
+                         base::Unretained(this)));
+
+  ASSERT_TRUE(abort_app_.has_value());
+  ASSERT_TRUE(abort_app_.value());
 }
 
 }  // namespace

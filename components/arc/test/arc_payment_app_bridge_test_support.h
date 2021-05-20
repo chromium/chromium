@@ -44,6 +44,9 @@ class ArcPaymentAppBridgeTestSupport {
     MOCK_METHOD2(InvokePaymentApp,
                  void(mojom::PaymentParametersPtr,
                       ArcPaymentAppBridge::InvokePaymentAppCallback));
+    MOCK_METHOD2(AbortPaymentApp,
+                 void(const std::string&,
+                      ArcPaymentAppBridge::AbortPaymentAppCallback));
   };
 
   // Sets up the payment_app.mojom connection in the constructor and disconnects

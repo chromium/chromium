@@ -28,6 +28,7 @@ class ArcPaymentAppBridge : public KeyedService {
       base::OnceCallback<void(mojom::IsReadyToPayResultPtr)>;
   using InvokePaymentAppCallback =
       base::OnceCallback<void(mojom::InvokePaymentAppResultPtr)>;
+  using AbortPaymentAppCallback = base::OnceCallback<void(bool)>;
 
   // Returns the instance owned by the given BrowserContext, or nullptr if the
   // browser |context| is not allowed to use ARC.
@@ -59,6 +60,10 @@ class ArcPaymentAppBridge : public KeyedService {
   // Invokes the TWA payment app flow.
   void InvokePaymentApp(mojom::PaymentParametersPtr parameters,
                         InvokePaymentAppCallback callback);
+
+  // Aborts an existing TWA payment app flow.
+  void AbortPaymentApp(const std::string& request_token,
+                       AbortPaymentAppCallback callback);
 
  private:
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.

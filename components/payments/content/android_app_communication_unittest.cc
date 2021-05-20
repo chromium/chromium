@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/unguessable_token.h"
 #include "components/payments/content/android_app_communication_test_support.h"
 #include "components/payments/core/android_app_description.h"
 #include "content/public/browser/web_contents.h"
@@ -472,7 +473,7 @@ TEST_F(AndroidAppCommunicationTest, NoArcForInvokePaymentApp) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
-      web_contents_,
+      base::UnguessableToken::Create(), web_contents_,
       base::BindOnce(&AndroidAppCommunicationTest::OnPaymentAppResponse,
                      base::Unretained(this)));
 
@@ -497,7 +498,7 @@ TEST_F(AndroidAppCommunicationTest, TwaPaymentOnlyWithPlayBilling) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
-      web_contents_,
+      base::UnguessableToken::Create(), web_contents_,
       base::BindOnce(&AndroidAppCommunicationTest::OnPaymentAppResponse,
                      base::Unretained(this)));
 
@@ -530,7 +531,7 @@ TEST_F(AndroidAppCommunicationTest, NoPaymentWithMoreThanOnePaymentMethodData) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
-      web_contents_,
+      base::UnguessableToken::Create(), web_contents_,
       base::BindOnce(&AndroidAppCommunicationTest::OnPaymentAppResponse,
                      base::Unretained(this)));
 
@@ -566,7 +567,7 @@ TEST_F(AndroidAppCommunicationTest, PaymentWithEmptyMethodData) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
-      web_contents_,
+      base::UnguessableToken::Create(), web_contents_,
       base::BindOnce(&AndroidAppCommunicationTest::OnPaymentAppResponse,
                      base::Unretained(this)));
 
@@ -599,7 +600,7 @@ TEST_F(AndroidAppCommunicationTest, UserCancelInvokePaymentApp) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
-      web_contents_,
+      base::UnguessableToken::Create(), web_contents_,
       base::BindOnce(&AndroidAppCommunicationTest::OnPaymentAppResponse,
                      base::Unretained(this)));
 
@@ -632,7 +633,7 @@ TEST_F(AndroidAppCommunicationTest, UserConfirmInvokePaymentApp) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
-      web_contents_,
+      base::UnguessableToken::Create(), web_contents_,
       base::BindOnce(&AndroidAppCommunicationTest::OnPaymentAppResponse,
                      base::Unretained(this)));
 

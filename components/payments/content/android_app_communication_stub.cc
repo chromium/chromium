@@ -48,12 +48,18 @@ class AndroidAppCommunicationStub : public AndroidAppCommunication {
                         const GURL& top_level_origin,
                         const GURL& payment_request_origin,
                         const std::string& payment_request_id,
+                        const base::UnguessableToken& request_token,
                         content::WebContents* web_contents,
                         InvokePaymentAppCallback callback) override {
     std::move(callback).Run(errors::kUnableToInvokeAndroidPaymentApps,
                             /*is_activity_result_ok=*/false,
                             /*payment_method_identifier=*/"",
                             /*stringified_details=*/"{}");
+  }
+
+  void AbortPaymentApp(const base::UnguessableToken& request_token,
+                       AbortPaymentAppCallback callback) override {
+    std::move(callback).Run(false);
   }
 
   // AndroidAppCommunication implementation.

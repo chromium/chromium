@@ -45,6 +45,10 @@ class AndroidAppCommunicationTestSupportStub
       const std::string& payment_method_identifier,
       const std::string& stringified_details) override {}
 
+  void ExpectInvokeAndAbortPaymentApp() override {}
+
+  void ExpectNoAbortPaymentApp() override {}
+
   content::BrowserContext* context() override { return &context_; }
 
  private:

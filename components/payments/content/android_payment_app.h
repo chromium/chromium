@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/core/android_app_description.h"
@@ -74,6 +75,7 @@ class AndroidPaymentApp : public PaymentApp {
   void UpdateWith(
       mojom::PaymentRequestDetailsUpdatePtr details_update) override;
   void OnPaymentDetailsNotUpdated() override;
+  void AbortPaymentApp(base::OnceCallback<void(bool)> abort_callback) override;
   bool IsPreferred() const override;
 
  private:
@@ -91,6 +93,13 @@ class AndroidPaymentApp : public PaymentApp {
   const std::unique_ptr<AndroidAppDescription> description_;
   base::WeakPtr<AndroidAppCommunication> communication_;
   content::GlobalFrameRoutingId frame_routing_id_;
+
+  // Token used to uniquely identify a particular payment app instance between
+  // Android and Chrome.
+  base::UnguessableToken payment_app_token_;
+  // True when InvokePaymentApp() has been called but no response has been
+  // received yet.
+  bool payment_app_open_;
 
   base::WeakPtrFactory<AndroidPaymentApp> weak_ptr_factory_{this};
 };

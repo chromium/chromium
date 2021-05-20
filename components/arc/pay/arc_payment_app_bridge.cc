@@ -100,4 +100,16 @@ void ArcPaymentAppBridge::InvokePaymentApp(
   payment_app->InvokePaymentApp(std::move(parameters), std::move(callback));
 }
 
+void ArcPaymentAppBridge::AbortPaymentApp(const std::string& request_token,
+                                          AbortPaymentAppCallback callback) {
+  mojom::PaymentAppInstance* payment_app = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->payment_app(), AbortPaymentApp);
+  if (!payment_app) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  payment_app->AbortPaymentApp(request_token, std::move(callback));
+}
+
 }  // namespace arc

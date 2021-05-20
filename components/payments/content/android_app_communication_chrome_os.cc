@@ -279,6 +279,7 @@ class AndroidAppCommunicationChromeOS : public AndroidAppCommunication {
                         const GURL& top_level_origin,
                         const GURL& payment_request_origin,
                         const std::string& payment_request_id,
+                        const base::UnguessableToken& request_token,
                         content::WebContents* web_contents,
                         InvokePaymentAppCallback callback) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -286,8 +287,8 @@ class AndroidAppCommunicationChromeOS : public AndroidAppCommunication {
     // Create and register a token with ArcOverlayManager for the
     // browser window. Doing so is required to allow the Android Play Billing
     // interface to be overlaid on top of the browser window.
-    // TODO(b/172592701): Use base::UnguessableToken::Create().ToString() and
-    // send the same value to the Android service.
+    // TODO(crbug.com/1209716): Reuse the request_token for coordinating the
+    // overlay.
     std::string billing_token =
         payment_request_origin.spec() + "#" + payment_request_id;
     ash::ArcOverlayManager* const overlay_manager =
@@ -323,11 +324,23 @@ class AndroidAppCommunicationChromeOS : public AndroidAppCommunication {
                               /*stringified_details=*/kEmptyDictionaryJson);
       return;
     }
+    parameters->request_token = request_token.ToString();
 
     payment_app_service->InvokePaymentApp(
         std::move(parameters),
         base::BindOnce(&OnPaymentAppResponse, std::move(callback),
                        std::move(overlay_state)));
+  }
+
+  void AbortPaymentApp(const base::UnguessableToken& token,
+                       AbortPaymentAppCallback callback) override {
+    auto* payment_app_service = get_app_service_.Run(context());
+    if (!payment_app_service) {
+      std::move(callback).Run(false);
+      return;
+    }
+
+    payment_app_service->AbortPaymentApp(token.ToString(), std::move(callback));
   }
 
   // AndroidAppCommunication implementation.

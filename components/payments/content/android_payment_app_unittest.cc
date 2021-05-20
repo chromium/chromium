@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/test/bind.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/android_app_communication_test_support.h"
 #include "components/payments/core/android_app_description.h"
@@ -169,6 +170,59 @@ TEST_F(AndroidPaymentAppTest, OnInstrumentDetailsReady) {
     EXPECT_TRUE(method_name_.empty());
     EXPECT_TRUE(stringified_details_.empty());
   }
+}
+
+TEST_F(AndroidPaymentAppTest, AbortWithPaymentAppOpen) {
+  communication_ =
+      AndroidAppCommunication::GetForBrowserContext(support_->context());
+  communication_->SetForTesting();
+  scoped_initialization_ = support_->CreateScopedInitialization();
+
+  support_->ExpectInvokeAndAbortPaymentApp();
+
+  auto app = CreateAndroidPaymentApp(communication_, web_contents_);
+  app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
+
+  bool aborted = false;
+  app->AbortPaymentApp(base::BindLambdaForTesting(
+      [&aborted](bool abort_success) { aborted = abort_success; }));
+
+  if (support_->AreAndroidAppsSupportedOnThisPlatform()) {
+    EXPECT_EQ("Payment was aborted.", error_message_);
+    EXPECT_TRUE(aborted);
+  } else {
+    EXPECT_EQ("Unable to invoke Android apps.", error_message_);
+  }
+}
+
+TEST_F(AndroidPaymentAppTest, AbortWhenAppDestroyed) {
+  communication_ =
+      AndroidAppCommunication::GetForBrowserContext(support_->context());
+  communication_->SetForTesting();
+  scoped_initialization_ = support_->CreateScopedInitialization();
+
+  support_->ExpectInvokeAndAbortPaymentApp();
+
+  auto app = CreateAndroidPaymentApp(communication_, web_contents_);
+  app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
+  // Payment app will be aborted when |app| is destroyed.
+}
+
+TEST_F(AndroidPaymentAppTest, NoAbortWhenDestroyedWithCompletedFlow) {
+  communication_ =
+      AndroidAppCommunication::GetForBrowserContext(support_->context());
+  communication_->SetForTesting();
+  scoped_initialization_ = support_->CreateScopedInitialization();
+
+  support_->ExpectInvokePaymentAppAndRespond(
+      /*is_activity_result_ok=*/false,
+      /*payment_method_identifier=*/methods::kGooglePlayBilling,
+      /*stringified_details=*/"{}");
+  support_->ExpectNoAbortPaymentApp();
+
+  auto app = CreateAndroidPaymentApp(communication_, web_contents_);
+  app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
+  // Payment app will not be aborted when |app| is destroyed.
 }
 
 }  // namespace

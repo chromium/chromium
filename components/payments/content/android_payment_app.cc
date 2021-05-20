@@ -32,7 +32,9 @@ AndroidPaymentApp::AndroidPaymentApp(
       payment_request_id_(payment_request_id),
       description_(std::move(description)),
       communication_(communication),
-      frame_routing_id_(frame_routing_id) {
+      frame_routing_id_(frame_routing_id),
+      payment_app_token_(base::UnguessableToken::Create()),
+      payment_app_open_(false) {
   DCHECK(!payment_method_names.empty());
   DCHECK_EQ(payment_method_names.size(), stringified_method_data_->size());
   DCHECK_EQ(*payment_method_names.begin(),
@@ -45,7 +47,11 @@ AndroidPaymentApp::AndroidPaymentApp(
   app_method_names_ = payment_method_names;
 }
 
-AndroidPaymentApp::~AndroidPaymentApp() = default;
+AndroidPaymentApp::~AndroidPaymentApp() {
+  if (payment_app_open_) {
+    AbortPaymentApp(base::DoNothing());
+  }
+}
 
 void AndroidPaymentApp::InvokePaymentApp(base::WeakPtr<Delegate> delegate) {
   // Browser is closing, so no need to invoke a callback.
@@ -61,10 +67,11 @@ void AndroidPaymentApp::InvokePaymentApp(base::WeakPtr<Delegate> delegate) {
   if (!web_contents)
     return;
 
+  payment_app_open_ = true;
   communication_->InvokePaymentApp(
       description_->package, description_->activities.front()->name,
       *stringified_method_data_, top_level_origin_, payment_request_origin_,
-      payment_request_id_, web_contents,
+      payment_request_id_, payment_app_token_, web_contents,
       base::BindOnce(&AndroidPaymentApp::OnPaymentAppResponse,
                      weak_ptr_factory_.GetWeakPtr(), delegate));
 }
@@ -155,6 +162,19 @@ void AndroidPaymentApp::UpdateWith(
 
 void AndroidPaymentApp::OnPaymentDetailsNotUpdated() {}
 
+void AndroidPaymentApp::AbortPaymentApp(
+    base::OnceCallback<void(bool)> abort_callback) {
+  // Browser is closing or no payment app active, so no need to invoke a
+  // callback.
+  if (!communication_ || !payment_app_open_)
+    return;
+
+  payment_app_open_ = false;
+
+  communication_->AbortPaymentApp(payment_app_token_,
+                                  std::move(abort_callback));
+}
+
 bool AndroidPaymentApp::IsPreferred() const {
   // This class used only on Chrome OS, where the only Android payment app
   // available is the trusted web application (TWA) that launched this instance
@@ -174,6 +194,7 @@ void AndroidPaymentApp::OnPaymentAppResponse(
     bool is_activity_result_ok,
     const std::string& payment_method_identifier,
     const std::string& stringified_details) {
+  payment_app_open_ = false;
   if (!delegate)
     return;
 
