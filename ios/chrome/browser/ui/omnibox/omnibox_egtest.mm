@@ -451,6 +451,12 @@ id<GREYMatcher> SearchCopiedTextButton() {
 }
 
 - (void)testOmniboxDefocusesOnTabSwitchIncognito {
+#if !TARGET_IPHONE_SIMULATOR
+  // Test flaky, see TODO:(crbug.com/1211373).
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test disable on iPad device.");
+  }
+#endif
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey waitForIncognitoTabCount:1];
   [self openPage1];
