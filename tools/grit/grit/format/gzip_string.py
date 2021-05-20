@@ -37,6 +37,8 @@ def GzipString(data):
   # not have --rsyncable. If used over GzipStringRsyncable, the primary
   # difference of this function's compression will be larger updates every time
   # a compressed resource is changed.
+  if isinstance(data, str):
+    data = data.encode('utf8')
   gzip_output = io.BytesIO()
   with gzip.GzipFile(mode='wb', compresslevel=9, fileobj=gzip_output,
                      mtime=0) as gzip_file:

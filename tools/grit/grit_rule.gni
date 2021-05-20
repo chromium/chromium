@@ -67,11 +67,6 @@
 #   configs (optional)
 #       List of additional configs to be applied to the generated target.
 #
-#   run_under_python2 (optional)
-#       If true, this is always run under Python2; if false (the default),
-#       will be run under whatever script_executable actually is.
-#       TODO(crbug.com/1112471): Find all users of this and get them to
-#       run cleanly under Python3, then remove this option.
 #   deps  (optional)
 #   testonly (optional)
 #   visibility  (optional)
@@ -144,22 +139,8 @@ template("grit") {
 
   _grit_custom_target = target_name + "_grit"
   action(_grit_custom_target) {
-    # TODO(crbug.com/1112471): Remove the 'true' branch so that we can start
-    # running *some* grit invocations under python3, and then get them
-    # all to work under python3.
-    if ((defined(invoker.run_under_python2) && invoker.run_under_python2) ||
-        true) {
-      script = "//build/util/python2_action.py"
-      args = [ rebase_path("//tools/grit/grit.py", root_build_dir) ]
-      inputs = [
-        "//tools/grit/grit.py",
-        invoker.source,
-      ]
-    } else {
-      script = "//tools/grit/grit.py"
-      args = []
-      inputs = [ invoker.source ]
-    }
+    script = "//tools/grit/grit.py"
+    inputs = [ invoker.source ]
 
     testonly = defined(invoker.testonly) && invoker.testonly
 
@@ -200,19 +181,19 @@ template("grit") {
       inputs += rebase_path(_rel_inputs, ".", root_build_dir)
     }
 
-    args += [
-              "-i",
-              _rebased_source_path,
-              "build",
-              "-o",
-              rebase_path(_output_dir, root_build_dir),
-              "--depdir",
-              ".",
-              "--depfile",
-              rebase_path(depfile, root_build_dir),
-              "--write-only-new=1",
-              "--depend-on-stamp",
-            ] + _grit_flags
+    args = [
+             "-i",
+             _rebased_source_path,
+             "build",
+             "-o",
+             rebase_path(_output_dir, root_build_dir),
+             "--depdir",
+             ".",
+             "--depfile",
+             rebase_path(depfile, root_build_dir),
+             "--write-only-new=1",
+             "--depend-on-stamp",
+           ] + _grit_flags
 
     # Add brotli executable if using brotli.
     if (defined(invoker.use_brotli) && invoker.use_brotli) {
