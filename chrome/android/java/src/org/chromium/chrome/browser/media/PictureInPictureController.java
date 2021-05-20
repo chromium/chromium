@@ -14,6 +14,7 @@ import android.os.SystemClock;
 import android.text.format.DateUtils;
 import android.util.Rational;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -27,7 +28,6 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -49,26 +49,50 @@ public class PictureInPictureController {
     private static final String METRICS_DURATION = "Media.VideoPersistence.Duration";
 
     private static final String METRICS_ATTEMPT_RESULT = "Media.VideoPersistence.AttemptResult";
-    private static final int METRICS_ATTEMPT_RESULT_SUCCESS = 0;
-    private static final int METRICS_ATTEMPT_RESULT_NO_SYSTEM_SUPPORT = 1;
-    private static final int METRICS_ATTEMPT_RESULT_NO_FEATURE = 2;
-    // Obsolete: private static final int METRICS_ATTEMPT_RESULT_NO_ACTIVITY_SUPPORT = 3;
-    private static final int METRICS_ATTEMPT_RESULT_ALREADY_RUNNING = 4;
-    private static final int METRICS_ATTEMPT_RESULT_RESTARTING = 5;
-    private static final int METRICS_ATTEMPT_RESULT_FINISHING = 6;
-    private static final int METRICS_ATTEMPT_RESULT_NO_WEB_CONTENTS = 7;
-    // Obsolete: private static final int METRICS_ATTEMPT_RESULT_NO_VIDEO = 8;
+    @IntDef({
+            MetricsAttemptResult.SUCCESS,
+            MetricsAttemptResult.NO_SYSTEM_SUPPORT,
+            MetricsAttemptResult.NO_FEATURE,
+            MetricsAttemptResult.ALREADY_RUNNING,
+            MetricsAttemptResult.RESTARTING,
+            MetricsAttemptResult.FINISHING,
+            MetricsAttemptResult.NO_WEB_CONTENTS,
+            MetricsAttemptResult.NO_VIDEO,
+    })
+    private @interface MetricsAttemptResult {
+        static final int SUCCESS = 0;
+        static final int NO_SYSTEM_SUPPORT = 1;
+        static final int NO_FEATURE = 2;
+        // Obsolete: static final int NO_ACTIVITY_SUPPORT = 3;
+        static final int ALREADY_RUNNING = 4;
+        static final int RESTARTING = 5;
+        static final int FINISHING = 6;
+        static final int NO_WEB_CONTENTS = 7;
+        static final int NO_VIDEO = 8;
+    }
+    // For UMA, not a valid MetricsAttemptResult.
     private static final int METRICS_ATTEMPT_RESULT_COUNT = 9;
 
     private static final String METRICS_END_REASON = "Media.VideoPersistence.EndReason";
-    private static final int METRICS_END_REASON_RESUME = 0;
-    // Obsolete: METRICS_END_REASON_NAVIGATION = 1;
-    private static final int METRICS_END_REASON_CLOSE = 2;
-    private static final int METRICS_END_REASON_CRASH = 3;
-    private static final int METRICS_END_REASON_NEW_TAB = 4;
-    private static final int METRICS_END_REASON_REPARENT = 5;
-    private static final int METRICS_END_REASON_LEFT_FULLSCREEN = 6;
-    private static final int METRICS_END_REASON_WEB_CONTENTS_LEFT_FULLSCREEN = 7;
+    @IntDef({
+            MetricsEndReason.RESUME,
+            MetricsEndReason.CLOSE,
+            MetricsEndReason.CRASH,
+            MetricsEndReason.NEW_TAB,
+            MetricsEndReason.REPARENT,
+            MetricsEndReason.LEFT_FULLSCREEN,
+            MetricsEndReason.WEB_CONTENTS_LEFT_FULLSCREEN,
+    })
+    private @interface MetricsEndReason {
+        static final int RESUME = 0;
+        // Obsolete: NAVIGATION = 1;
+        static final int CLOSE = 2;
+        static final int CRASH = 3;
+        static final int NEW_TAB = 4;
+        static final int REPARENT = 5;
+        static final int LEFT_FULLSCREEN = 6;
+        static final int WEB_CONTENTS_LEFT_FULLSCREEN = 7;
+    }
     private static final int METRICS_END_REASON_COUNT = 8;
 
     private static final float MIN_ASPECT_RATIO = 1 / 2.39f;
@@ -76,6 +100,12 @@ public class PictureInPictureController {
 
     /** Callbacks to cleanup after leaving PiP. */
     private final List<Runnable> mOnLeavePipCallbacks = new LinkedList<>();
+    /** Current observers, if any. */
+    @Nullable
+    DismissActivityOnTabChangeObserver mActivityTabObserver;
+    @Nullable
+    FullscreenManager.Observer mFullscreenListener;
+
     private final Activity mActivity;
     private final ActivityTabProvider mActivityTabProvider;
     private final FullscreenManager mFullscreenManager;
@@ -97,16 +127,24 @@ public class PictureInPictureController {
         return tab.getWebContents();
     }
 
-    private static void recordAttemptResult(int result) {
+    private static void recordAttemptResult(@MetricsAttemptResult int result) {
+        // Silently ignore NO_VIDEO, since it's spammy.
+        if (result == MetricsAttemptResult.NO_VIDEO) return;
+
         RecordHistogram.recordEnumeratedHistogram(
                 METRICS_ATTEMPT_RESULT, result, METRICS_ATTEMPT_RESULT_COUNT);
     }
 
-    private boolean shouldAttempt() {
+    /**
+     * Return a METRICS_ATTEMPT_REASON_* for whether Picture in Picture is okay or not.
+     * @param checkCurrentMode should be true if and only if "already in PiP mode" is sufficient to
+     *                         cause this to return failure.
+     */
+    @MetricsAttemptResult
+    private int getAttemptResult(boolean checkCurrentMode) {
         WebContents webContents = getWebContents();
         if (webContents == null) {
-            recordAttemptResult(METRICS_ATTEMPT_RESULT_NO_WEB_CONTENTS);
-            return false;
+            return MetricsAttemptResult.NO_WEB_CONTENTS;
         }
 
         // Non-null WebContents implies the native library has been loaded.
@@ -115,53 +153,60 @@ public class PictureInPictureController {
         // Only auto-PiP if there is a playing fullscreen video that allows PiP.
         if (!webContents.hasActiveEffectivelyFullscreenVideo()
                 || !webContents.isPictureInPictureAllowedForFullscreenVideo()) {
-            return false;
+            return MetricsAttemptResult.NO_VIDEO;
         }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            recordAttemptResult(METRICS_ATTEMPT_RESULT_NO_SYSTEM_SUPPORT);
-            return false;
+            return MetricsAttemptResult.NO_SYSTEM_SUPPORT;
         }
 
         if (!mActivity.getPackageManager().hasSystemFeature(
                     PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
             Log.d(TAG, "Activity does not have PiP feature.");
-            recordAttemptResult(METRICS_ATTEMPT_RESULT_NO_FEATURE);
-            return false;
+            return MetricsAttemptResult.NO_FEATURE;
         }
 
         // Don't PiP if we are already in PiP.
-        if (mActivity.isInPictureInPictureMode()) {
+        if (checkCurrentMode && mActivity.isInPictureInPictureMode()) {
             Log.d(TAG, "Activity is already in PiP.");
-            recordAttemptResult(METRICS_ATTEMPT_RESULT_ALREADY_RUNNING);
-            return false;
+            return MetricsAttemptResult.ALREADY_RUNNING;
         }
 
         // This means the activity is going to be restarted, so don't PiP.
         if (mActivity.isChangingConfigurations()) {
             Log.d(TAG, "Activity is being restarted.");
-            recordAttemptResult(METRICS_ATTEMPT_RESULT_RESTARTING);
-            return false;
+            return MetricsAttemptResult.RESTARTING;
         }
 
         // Don't PiP if the activity is finishing.
         if (mActivity.isFinishing()) {
             Log.d(TAG, "Activity is finishing.");
-            recordAttemptResult(METRICS_ATTEMPT_RESULT_FINISHING);
-            return false;
+            return MetricsAttemptResult.FINISHING;
         }
 
-        recordAttemptResult(METRICS_ATTEMPT_RESULT_SUCCESS);
-        return true;
+        return MetricsAttemptResult.SUCCESS;
     }
 
     /**
-     * Attempt to enter Picture in Picture mode if there is fullscreen video.
+     * Return a METRICS_ATTEMPT_REASON_* for whether Picture in Picture is okay or not.  Considers
+     * that "already in PiP mode" is a reason to say no.
+     */
+    @MetricsAttemptResult
+    private int getAttemptResult() {
+        return getAttemptResult(true);
+    }
+
+    /**
+     * Attempt to enter Picture in Picture mode if there is fullscreen video.  If Picture in Picture
+     * is not applicable, then do nothing.  It is still the caller's responsibility to notify us if
+     * Picture in Picture mode is started; at most, we will request it from the framework.
      */
     public void attemptPictureInPicture() {
-        if (!shouldAttempt()) return;
+        // If there are already callbacks registered, then do nothing.
+        final @MetricsAttemptResult int result = getAttemptResult();
+        recordAttemptResult(result);
+        if (result != MetricsAttemptResult.SUCCESS) return;
 
-        // Inform the WebContents when we enter and when we leave PiP.
         final WebContents webContents = getWebContents();
         assert webContents != null;
 
@@ -179,10 +224,19 @@ public class PictureInPictureController {
                     bounds.width(), bounds.height(), e);
             return;
         }
+    }
+
+    /**
+     * Notify us that Picture in Picture mode has started.  This can be because we requested it in
+     * {@link #attemptPictureInPicture()}.
+     */
+    public void onEnteredPictureInPictureMode() {
+        // Inform the WebContents when we enter and when we leave PiP.
+        final WebContents webContents = getWebContents();
+        assert webContents != null;
 
         webContents.setHasPersistentVideo(true);
 
-        // Setup observers to dismiss the Activity on events that should end PiP.
         final Tab activityTab = mActivityTabProvider.get();
 
         // We don't want InfoBars displaying while in PiP, they cover too much content.
@@ -193,29 +247,8 @@ public class PictureInPictureController {
             InfoBarContainer.get(activityTab).setHidden(false);
         });
 
-        TabObserver tabObserver = new DismissActivityOnTabEventObserver(mActivity);
-        Callback<Tab> activityTabObserver =
-                new DismissActivityOnTabChangeObserver(mActivity, activityTab);
-        WebContentsObserver webContentsObserver =
-                new DismissActivityOnWebContentsObserver(mActivity);
-        FullscreenManager.Observer fullscreenListener = new FullscreenManager.Observer() {
-            @Override
-            public void onExitFullscreen(Tab tab) {
-                dismissActivity(mActivity, METRICS_END_REASON_LEFT_FULLSCREEN);
-            }
-        };
-
-        activityTab.addObserver(tabObserver);
-        webContents.addObserver(webContentsObserver);
-        mFullscreenManager.addObserver(fullscreenListener);
-        mActivityTabProvider.addObserver(activityTabObserver);
-
-        mOnLeavePipCallbacks.add(() -> {
-            activityTab.removeObserver(tabObserver);
-            webContents.removeObserver(webContentsObserver);
-            mFullscreenManager.removeObserver(fullscreenListener);
-            mActivityTabProvider.removeObserver(activityTabObserver);
-        });
+        // Setup observers to dismiss the Activity on events that should end PiP.
+        addObserversIfNeeded();
 
         long startTimeMs = SystemClock.elapsedRealtime();
         mOnLeavePipCallbacks.add(() -> {
@@ -264,10 +297,13 @@ public class PictureInPictureController {
      * If we have previously entered Picture in Picture, perform cleanup.
      */
     public void cleanup() {
-        cleanup(METRICS_END_REASON_RESUME);
+        exitPictureInPicture(MetricsEndReason.RESUME);
     }
 
-    private void cleanup(int reason) {
+    /**
+     * Switch out of Picture in Picture mode.
+     */
+    private void exitPictureInPicture(@MetricsEndReason int reason) {
         // If `mOnLeavePipCallbacks` is empty, it means that the cleanup call happened while Chrome
         // was not PIP'ing. The early return also avoid recording the reason why the PIP session
         // ended.
@@ -280,14 +316,51 @@ public class PictureInPictureController {
         }
         mOnLeavePipCallbacks.clear();
 
+        removeObserversIfNeeded();
+
         RecordHistogram.recordEnumeratedHistogram(
                 METRICS_END_REASON, reason, METRICS_END_REASON_COUNT);
     }
 
+    /**
+     * Add observers for the tab / activity / etc. state, so that we can tell if Picture in Picture
+     * is allowed or not.
+     */
+    private void addObserversIfNeeded() {
+        if (mActivityTabObserver == null) {
+            // This will auto-register itself.
+            mActivityTabObserver = new DismissActivityOnTabChangeObserver(mActivity);
+        }
+
+        if (mFullscreenListener == null) {
+            mFullscreenListener = new FullscreenManager.Observer() {
+                @Override
+                public void onExitFullscreen(Tab tab) {
+                    dismissActivity(mActivity, MetricsEndReason.LEFT_FULLSCREEN);
+                }
+            };
+
+            mFullscreenManager.addObserver(mFullscreenListener);
+        }
+    }
+
+    /** Unregister callbacks, or do nothing successfully if there aren't any. */
+    private void removeObserversIfNeeded() {
+        if (mFullscreenListener != null) {
+            mFullscreenManager.removeObserver(mFullscreenListener);
+            mFullscreenListener = null;
+        }
+
+        if (mActivityTabObserver != null) {
+            mActivityTabObserver.cleanup();
+            mActivityTabObserver = null;
+        }
+    }
+
     /** Moves the Activity to the back and performs all cleanup. */
-    private void dismissActivity(Activity activity, int reason) {
+    private void dismissActivity(Activity activity, @MetricsEndReason int reason) {
         activity.moveTaskToBack(true);
-        cleanup(reason);
+        exitPictureInPicture(reason);
     }
 
     /**
@@ -299,45 +372,121 @@ public class PictureInPictureController {
      */
     private class DismissActivityOnTabEventObserver extends EmptyTabObserver {
         private final Activity mActivity;
-        public DismissActivityOnTabEventObserver(Activity activity) {
+        private final Tab mTab;
+        private WebContents mWebContents;
+        private DismissActivityOnWebContentsObserver mWebContentsObserver;
+
+        public DismissActivityOnTabEventObserver(Activity activity, Tab tab) {
             mActivity = activity;
+            mTab = tab;
+            mTab.addObserver(this);
+            registerWebContentsObserver();
+        }
+
+        // Register an observer if we have a WebContents.
+        private void registerWebContentsObserver() {
+            if (mTab == null) return;
+            mWebContents = mTab.getWebContents();
+            if (mWebContents == null) return;
+            mWebContentsObserver =
+                    new DismissActivityOnWebContentsObserver(mActivity, mWebContents);
+        }
+
+        /**
+         * Clean up everything, and unregister `this`.
+         */
+        public void cleanup() {
+            cleanupWebContentsObserver();
+            if (mTab != null) {
+                mTab.removeObserver(this);
+            }
+        }
+
+        private void cleanupWebContentsObserver() {
+            if (mWebContentsObserver == null) return;
+            mWebContentsObserver.cleanup();
+            mWebContentsObserver = null;
+            mWebContents = null;
         }
 
         @Override
         public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-            if (window != null) dismissActivity(mActivity, METRICS_END_REASON_REPARENT);
+            if (window != null) dismissActivity(mActivity, MetricsEndReason.REPARENT);
         }
 
         @Override
         public void onClosingStateChanged(Tab tab, boolean closing) {
-            dismissActivity(mActivity, METRICS_END_REASON_CLOSE);
+            dismissActivity(mActivity, MetricsEndReason.CLOSE);
+            cleanupWebContentsObserver();
         }
 
         @Override
         public void onCrash(Tab tab) {
-            dismissActivity(mActivity, METRICS_END_REASON_CRASH);
+            dismissActivity(mActivity, MetricsEndReason.CRASH);
+            cleanupWebContentsObserver();
         }
 
         @Override
         public void webContentsWillSwap(Tab tab) {
-            dismissActivity(mActivity, METRICS_END_REASON_WEB_CONTENTS_LEFT_FULLSCREEN);
+            dismissActivity(mActivity, MetricsEndReason.WEB_CONTENTS_LEFT_FULLSCREEN);
+            cleanupWebContentsObserver();
+        }
+
+        @Override
+        public void onContentChanged(Tab tab) {
+            if (tab == mTab) return;
+            // While webContentsWillSwap() probably did this, doesn't hurt to do it again.
+            cleanupWebContentsObserver();
+            // Now that we have a new WebContents, start listening.
+            registerWebContentsObserver();
         }
     }
 
     /** A class to dismiss the Activity when the tab changes. */
     private class DismissActivityOnTabChangeObserver implements Callback<Tab> {
         private final Activity mActivity;
-        private final Tab mCurrentTab;
+        private Tab mCurrentTab;
+        private DismissActivityOnTabEventObserver mTabEventObserver;
 
-        private DismissActivityOnTabChangeObserver(Activity activity, Tab currentTab) {
+        private DismissActivityOnTabChangeObserver(Activity activity) {
             mActivity = activity;
-            mCurrentTab = currentTab;
+            mCurrentTab = mActivityTabProvider.get();
+            mActivityTabProvider.addObserver(this);
+            registerTabEventObserver();
+        }
+
+        private void registerTabEventObserver() {
+            if (mCurrentTab == null) return;
+
+            mTabEventObserver = new DismissActivityOnTabEventObserver(mActivity, mCurrentTab);
+        }
+
+        /**
+         * Called to clean up everything, and unregister `this`.
+         */
+        public void cleanup() {
+            if (mTabEventObserver != null) {
+                mTabEventObserver.cleanup();
+                mTabEventObserver = null;
+            }
+            mCurrentTab = null;
+            mActivityTabProvider.removeObserver(this);
         }
 
         @Override
         public void onResult(Tab tab) {
             if (mCurrentTab == tab) return;
-            dismissActivity(mActivity, METRICS_END_REASON_NEW_TAB);
+
+            // If we're switching tabs, including to the case of "no tab", then get rid of the
+            // observer on the current tab.
+            if (mTabEventObserver != null) {
+                mTabEventObserver.cleanup();
+                mTabEventObserver = null;
+            }
+
+            mCurrentTab = tab;
+
+            dismissActivity(mActivity, MetricsEndReason.NEW_TAB);
         }
     }
 
@@ -348,16 +497,25 @@ public class PictureInPictureController {
      */
     private class DismissActivityOnWebContentsObserver extends WebContentsObserver {
         private final Activity mActivity;
+        private final WebContents mWebContents;
 
-        public DismissActivityOnWebContentsObserver(Activity activity) {
+        public DismissActivityOnWebContentsObserver(Activity activity, WebContents webContents) {
             mActivity = activity;
+            mWebContents = webContents;
+            mWebContents.addObserver(this);
+        }
+
+        /**
+         * Unregister us from `mWebContents`.
+         */
+        public void cleanup() {
+            mWebContents.removeObserver(this);
         }
 
         @Override
         public void hasEffectivelyFullscreenVideoChange(boolean isFullscreen) {
             if (isFullscreen) return;
-
-            dismissActivity(mActivity, METRICS_END_REASON_WEB_CONTENTS_LEFT_FULLSCREEN);
+            dismissActivity(mActivity, MetricsEndReason.WEB_CONTENTS_LEFT_FULLSCREEN);
         }
     }
 }
