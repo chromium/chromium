@@ -54,9 +54,9 @@ src/unittests/params_builder_and_utils.spec.ts
 src/unittests/params_builder_toplevel.spec.ts
 src/unittests/preprocessor.spec.ts
 src/unittests/query_compare.spec.ts
+src/unittests/query_string.spec.ts
 src/unittests/test_group.spec.ts
 src/unittests/test_query.spec.ts
-src/unittests/url_query.spec.ts
 src/webgpu/constants.ts
 src/webgpu/capability_info.ts
 src/webgpu/util/buffer.ts
