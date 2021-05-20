@@ -19,7 +19,7 @@ promise_test(async testCase => {
     },
     {
       url: worker_url,
-      scope: 'DedicatedWindow',
+      scope: 'DedicatedWorkerGlobalScope',
       container: null,
     },
   ]);
