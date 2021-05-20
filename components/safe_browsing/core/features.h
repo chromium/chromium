@@ -40,6 +40,9 @@ extern const base::Feature kCaptureInlineJavascriptForGoogleAds;
 // Enables client side detection on Android.
 extern const base::Feature kClientSideDetectionForAndroid;
 
+// The client side detection model is a flatbuffer.
+extern const base::Feature kClientSideDetectionModelIsFlatBuffer;
+
 // Determines the experimental version of client side detection model, for
 // Desktop.
 extern const base::Feature kClientSideDetectionModelVersion;
