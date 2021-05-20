@@ -91,3 +91,11 @@ static ScopedJavaLocalRef<jstring> JNI_PrivacySandboxBridge_GetFlocUpdateString(
               federated_learning::FlocIdProviderFactory::GetForProfile(profile),
               profile->GetOriginalProfile()->GetPrefs(), base::Time::Now()));
 }
+
+static ScopedJavaLocalRef<jstring>
+JNI_PrivacySandboxBridge_GetFlocResetExplanationString(JNIEnv* env) {
+  return ConvertUTF16ToJavaString(env,
+                                  PrivacySandboxSettingsFactory::GetForProfile(
+                                      ProfileManager::GetActiveUserProfile())
+                                      ->GetFlocResetExplanationForDisplay());
+}

@@ -804,7 +804,7 @@ Privacy Sandbox preserves the vitality of the open web by creating better ways t
 Privacy Sandbox is still in active development and is available in selected regions. For now, sites may try out Privacy Sandbox while continuing to use current web technologies like third-party cookies. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_PRIVACY_SANDBOX_DESCRIPTION_TWO" desc="Description of the 'Privacy Sandbox' when phase 2 flag is enabled.">
-        <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Sandbox<ph name="END_LINK">&lt;/link&gt;</ph> is an ongoing initiative to develop new technologies that will safeguard you from tracking mechanisms while preserving the open web.
+        With <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Sandbox<ph name="END_LINK">&lt;/link&gt;</ph>, Chrome is developing new technologies to safeguard you from cross-site tracking while preserving the open web.
 
 Privacy Sandbox trials are still in active development and are available in selected regions. For now, sites may try out Privacy Sandbox while continuing to use current web technologies like third-party cookies.
       </message>
@@ -821,7 +821,7 @@ Privacy Sandbox trials are still in active development and are available in sele
       <message name="IDS_PRIVACY_SANDBOX_TOGGLE_DESCRIPTION_TWO" desc="Description for the Privacy Sandbox toggle when phase 2 flag is enabled.">
         When on, sites may use the privacy-preserving techniques shown here to provide their content and services. These include alternatives to cross-site tracking. More trials may be added over time.
 
-<ph name="BEGIN_LIST_ITEM1">&lt;li1&gt;</ph>Advertisers and publishers can use the FLoC technique.<ph name="END_LIST_ITEM1">&lt;/li1&gt;</ph>
+<ph name="BEGIN_LIST_ITEM1">&lt;li1&gt;</ph>Advertisers and publishers can use FLoC.<ph name="END_LIST_ITEM1">&lt;/li1&gt;</ph>
 
 <ph name="BEGIN_LIST_ITEM2">&lt;li2&gt;</ph>Advertisers and publishers can study the effectiveness of ads in a way that does not track you across sites.<ph name="END_LIST_ITEM2">&lt;/li2&gt;</ph>
       </message>
@@ -831,8 +831,8 @@ Privacy Sandbox trials are still in active development and are available in sele
       <message name="IDS_PREFS_PRIVACY_SANDBOX_FLOC" desc="Title for the FLoC preferences as part of the Privacy Sandbox.">
         FLoC
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION" desc="Describes the FLoC technology as part of Privacy Sandbox.">
-        When on and the status is active, Chrome uses your browsing history over 7 days to determine a group, or “cohort”, that you’re in. Advertisers can select ads for the group. Your browsing history is kept private on your device. This trial is active only in <ph name="BEGIN_LINK">&lt;link&gt;</ph>some regions<ph name="END_LINK">&lt;/link&gt;</ph>.
+      <message name="IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION" desc="Sentence indicating that FLoC is only available in some regions, including a link to a page that describes exactly what regions it is available. This will only ever appear directly after another sentence.">
+        This trial is active only in <ph name="BEGIN_LINK">&lt;link&gt;</ph>some regions<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_FLOC_STATUS_TITLE" desc="Title for FLoC experiment status.">
         Status
@@ -842,9 +842,6 @@ Privacy Sandbox trials are still in active development and are available in sele
       </message>
       <message name="IDS_PRIVACY_SANDBOX_FLOC_UPDATE_TITLE" desc="Title for FLoC update.">
         Next update
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_FLOC_RESET_DESCRIPTION" desc="Describes the ability to reset FLoC group ID.">
-        You can reset your group at any time. It takes 7 days to determine your group.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_FLOC_RESET_BUTTON" desc="Button text to reset FLoC group ID.">
         Reset group

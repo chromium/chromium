@@ -29,7 +29,7 @@
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
-        android:summary="@string/privacy_sandbox_floc_reset_description"
+        android:key="reset_floc_explanation"
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.ButtonPreference

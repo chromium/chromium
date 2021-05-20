@@ -8,16 +8,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Browser;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -30,13 +27,16 @@ import org.chromium.ui.widget.ButtonCompat;
  */
 public class FlocSettingsFragment extends PreferenceFragmentCompat
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
-    public static final String FLOC_REGIONS_DEFAULT_URL = "https://www.privacysandbox.com";
+    public static final String FLOC_REGIONS_DEFAULT_URL =
+            "https://www.privacysandbox.com/proposals/floc";
+    public static final String EXPERIMENT_URL_PARAM = "floc-website-url";
 
     public static final String FLOC_DESCRIPTION = "floc_description";
     public static final String FLOC_TOGGLE = "floc_toggle";
     public static final String FLOC_STATUS = "floc_status";
     public static final String FLOC_GROUP = "floc_group";
     public static final String FLOC_UPDATE = "floc_update";
+    public static final String RESET_FLOC_EXPLANATION = "reset_floc_explanation";
     public static final String RESET_FLOC_BUTTON = "reset_floc_button";
 
     private PrivacySandboxHelpers.CustomTabIntentHelper mCustomTabHelper;
@@ -57,6 +57,8 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat
                         new SpanInfo("<link>", "</link>",
                                 new NoUnderlineClickableSpan(getContext().getResources(),
                                         (widget) -> openUrlInCct(getFlocRegionsUrl())))));
+        findPreference(RESET_FLOC_EXPLANATION)
+                .setSummary(PrivacySandboxBridge.getFlocResetExplanationString());
         // Configure the toggle.
         ChromeSwitchPreference flocToggle = (ChromeSwitchPreference) findPreference(FLOC_TOGGLE);
         flocToggle.setOnPreferenceChangeListener(this);
@@ -113,8 +115,11 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat
     }
 
     private String getFlocRegionsUrl() {
-        // TODO(crbug.com/1205781): use a FeatureParam to control this.
-        return FLOC_REGIONS_DEFAULT_URL;
+        // Get the URL from Finch, if defined.
+        String url = ChromeFeatureList.getFieldTrialParamByFeature(
+                ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_2, EXPERIMENT_URL_PARAM);
+        if (url == null || url.isEmpty()) return FLOC_REGIONS_DEFAULT_URL;
+        return url;
     }
 
     private void openUrlInCct(String url) {
