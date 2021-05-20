@@ -1042,10 +1042,9 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, RestoreArcApp) {
   window = widget->GetNativeWindow();
 
   // The task is not ready, so the window is currently in a hidden container.
-  EXPECT_EQ(
-      ash::Shell::GetContainer(window->GetRootWindow(),
-                               ash::kShellWindowId_UnparentedControlContainer),
-      window->parent());
+  EXPECT_EQ(ash::Shell::GetContainer(window->GetRootWindow(),
+                                     ash::kShellWindowId_UnparentedContainer),
+            window->parent());
 
   VerifyObserver(window, /*launch_count=*/0, /*init_count=*/1);
   VerifyWindowProperty(window, kTaskId2,

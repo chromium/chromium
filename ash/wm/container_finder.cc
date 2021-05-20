@@ -99,7 +99,7 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
   // before their associated tasks are, which are required to retrieve full
   // restore data.
   if (window->GetProperty(full_restore::kParentToHiddenContainerKey))
-    return target_root->GetChildById(kShellWindowId_UnparentedControlContainer);
+    return target_root->GetChildById(kShellWindowId_UnparentedContainer);
 
   switch (window->GetType()) {
     case aura::client::WINDOW_TYPE_NORMAL:
@@ -110,8 +110,7 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
         return GetContainerForWindow(transient_parent);
       return GetContainerFromAlwaysOnTopController(target_root, window);
     case aura::client::WINDOW_TYPE_CONTROL:
-      return target_root->GetChildById(
-          kShellWindowId_UnparentedControlContainer);
+      return target_root->GetChildById(kShellWindowId_UnparentedContainer);
     case aura::client::WINDOW_TYPE_MENU:
       return target_root->GetChildById(kShellWindowId_MenuContainer);
     case aura::client::WINDOW_TYPE_TOOLTIP:

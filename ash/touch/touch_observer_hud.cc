@@ -114,8 +114,7 @@ void TouchObserverHud::OnDisplayConfigurationChanging() {
 
   views::Widget::ReparentNativeView(
       widget_->GetNativeView(),
-      Shell::GetContainer(root_window_,
-                          kShellWindowId_UnparentedControlContainer));
+      Shell::GetContainer(root_window_, kShellWindowId_UnparentedContainer));
 
   root_window_ = NULL;
 }

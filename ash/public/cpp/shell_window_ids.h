@@ -48,9 +48,10 @@ enum ShellWindowId {
   // PowerButtonController for animating lower-level containers.
   kShellWindowId_LockScreenRelatedContainersContainer,
 
-  // A container used for windows of WINDOW_TYPE_CONTROL that have no parent.
+  // A container used for windows that temporarily have no parent. It is
+  // expected the windows will get parented to another container shortly after.
   // This container is not visible.
-  kShellWindowId_UnparentedControlContainer,
+  kShellWindowId_UnparentedContainer,
 
   // The wallpaper (desktop background) window.
   kShellWindowId_WallpaperContainer,

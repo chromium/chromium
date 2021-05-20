@@ -1020,9 +1020,9 @@ TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTask) {
   auto* restored_window = CreateTestFullRestoredWidgetFromRestoreId(
                               kRestoreId, /*is_taskless_arc_app=*/true)
                               ->GetNativeWindow();
-  EXPECT_EQ(Shell::GetContainer(root_window,
-                                kShellWindowId_UnparentedControlContainer),
-            restored_window->parent());
+  EXPECT_EQ(
+      Shell::GetContainer(root_window, kShellWindowId_UnparentedContainer),
+      restored_window->parent());
 
   // Simulate having the task ready. Our `restored_window` should now be
   // parented to the desk associated with desk 3, which is desk D.
@@ -1067,7 +1067,7 @@ TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTaskMultiDisplay) {
                                kRestoreId1, /*is_taskless_arc_app=*/true)
                                ->GetNativeWindow();
   EXPECT_EQ(Shell::GetContainer(secondary_root_window,
-                                kShellWindowId_UnparentedControlContainer),
+                                kShellWindowId_UnparentedContainer),
             restored_window1->parent());
   FullRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
       restored_window1);
@@ -1081,7 +1081,7 @@ TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTaskMultiDisplay) {
                                kRestoreId2, /*is_taskless_arc_app=*/true)
                                ->GetNativeWindow();
   EXPECT_EQ(Shell::GetContainer(secondary_root_window,
-                                kShellWindowId_UnparentedControlContainer),
+                                kShellWindowId_UnparentedContainer),
             restored_window2->parent());
 
   // Remove the secondary display. When the ARC task is ready, it should go to

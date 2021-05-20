@@ -176,7 +176,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
   unparented_control->Init(std::move(params));
   EXPECT_EQ(root_windows[1],
             unparented_control->GetNativeView()->GetRootWindow());
-  EXPECT_EQ(kShellWindowId_UnparentedControlContainer,
+  EXPECT_EQ(kShellWindowId_UnparentedContainer,
             unparented_control->GetNativeView()->parent()->GetId());
 
   // Make sure a window that will delete itself when losing focus
@@ -242,7 +242,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
   // Test if the unparented widget has moved.
   EXPECT_EQ(root_windows[0],
             unparented_control->GetNativeView()->GetRootWindow());
-  EXPECT_EQ(kShellWindowId_UnparentedControlContainer,
+  EXPECT_EQ(kShellWindowId_UnparentedContainer,
             unparented_control->GetNativeView()->parent()->GetId());
 }
 
