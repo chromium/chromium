@@ -43,10 +43,12 @@ TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
   ProcessCpuTimeMetrics::SetIgnoreHistogramAllocatorForTesting(true);
   std::unique_ptr<ProcessCpuTimeMetrics> metrics =
       ProcessCpuTimeMetrics::CreateForTesting();
+  metrics->WaitForCollectionForTesting();
 
   // Start out in the foreground and spend one CPU second there.
   // This will also set the current power mode to 'idle'.
   ProcessVisibilityTracker::GetInstance()->OnProcessVisibilityChanged(true);
+  metrics->WaitForCollectionForTesting();
 
   thread1.task_runner()->PostTask(
       FROM_HERE, BindOnce(&WorkForOneCpuSec, base::Unretained(&event)));
@@ -115,9 +117,11 @@ TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
   ProcessCpuTimeMetrics::SetIgnoreHistogramAllocatorForTesting(true);
   std::unique_ptr<ProcessCpuTimeMetrics> metrics =
       ProcessCpuTimeMetrics::CreateForTesting();
+  metrics->WaitForCollectionForTesting();
 
   // Start out in the background and spend one CPU second there.
   ProcessVisibilityTracker::GetInstance()->OnProcessVisibilityChanged(false);
+  metrics->WaitForCollectionForTesting();
 
   thread1.task_runner()->PostTask(
       FROM_HERE, BindOnce(&WorkForOneCpuSec, base::Unretained(&event)));
