@@ -12,7 +12,7 @@
 #include "chrome/browser/sharing/sharing_app.h"
 #include "chrome/browser/sharing/sharing_metrics.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
+#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -41,30 +41,6 @@
 #endif
 
 namespace {
-
-class HeaderImageView : public NonAccessibleImageView {
- public:
-  explicit HeaderImageView(const views::BubbleFrameView* frame_view,
-                           const SharingDialogData::HeaderIcons& icons)
-      : frame_view_(frame_view), icons_(icons) {
-    constexpr gfx::Size kHeaderImageSize(320, 100);
-    SetPreferredSize(kHeaderImageSize);
-    SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-  }
-
-  // NonAccessibleImageView
-  void OnThemeChanged() override {
-    NonAccessibleImageView::OnThemeChanged();
-    const auto* icon = color_utils::IsDark(frame_view_->GetBackgroundColor())
-                           ? icons_.dark
-                           : icons_.light;
-    SetImage(gfx::CreateVectorIcon(*icon, gfx::kPlaceholderColor));
-  }
-
- private:
-  const views::BubbleFrameView* frame_view_;
-  const SharingDialogData::HeaderIcons icons_;
-};
 
 constexpr int kSharingDialogSpacing = 8;
 
@@ -166,8 +142,18 @@ void SharingDialogView::WebContentsDestroyed() {
 void SharingDialogView::AddedToWidget() {
   views::BubbleFrameView* frame_view = GetBubbleFrameView();
   if (frame_view && data_.header_icons) {
-    frame_view->SetHeaderView(
-        std::make_unique<HeaderImageView>(frame_view, *data_.header_icons));
+    auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
+        gfx::CreateVectorIcon(*data_.header_icons->light,
+                              gfx::kPlaceholderColor),
+        gfx::CreateVectorIcon(*data_.header_icons->dark,
+                              gfx::kPlaceholderColor),
+        base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
+                            base::Unretained(frame_view)));
+    constexpr gfx::Size kHeaderImageSize(320, 100);
+    image_view->SetPreferredSize(kHeaderImageSize);
+    image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+
+    frame_view->SetHeaderView(std::move(image_view));
   }
 }
 
