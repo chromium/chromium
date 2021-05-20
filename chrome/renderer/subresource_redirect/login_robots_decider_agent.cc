@@ -59,7 +59,6 @@ LoginRobotsDeciderAgent::ShouldRedirectSubresource(
     ShouldRedirectDecisionCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(url.SchemeIsHTTPOrHTTPS());
-  DCHECK_NE(redirect_result_, SubresourceRedirectResult::kUnknown);
   DCHECK(url.is_valid());
   num_should_redirect_checks_++;
 

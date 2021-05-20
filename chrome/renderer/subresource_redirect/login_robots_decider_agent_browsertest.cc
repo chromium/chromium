@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/memory/weak_ptr.h"
-#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/renderer/subresource_redirect/login_robots_decider_agent.h"
 #include "chrome/renderer/subresource_redirect/robots_rules_parser_cache.h"
@@ -231,7 +230,7 @@ TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
   EXPECT_EQ(SubresourceRedirectResult::kUnknown,
             decider_agent_redirect_result());
   EXPECT_FALSE(*is_pending_navigation_loggged_in());
-  EXPECT_DCHECK_DEATH(ShouldRedirectSubresource("https://foo.com/public.jpg"));
+  EXPECT_FALSE(ShouldRedirectSubresource("https://foo.com/public.jpg"));
 }
 
 TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
@@ -247,7 +246,7 @@ TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
   EXPECT_EQ(SubresourceRedirectResult::kUnknown,
             decider_agent_redirect_result());
   EXPECT_FALSE(is_pending_navigation_loggged_in().has_value());
-  EXPECT_DCHECK_DEATH(ShouldRedirectSubresource("https://foo.com/public.jpg"));
+  EXPECT_FALSE(ShouldRedirectSubresource("https://foo.com/public.jpg"));
 }
 
 }  // namespace subresource_redirect
