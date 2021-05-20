@@ -4450,12 +4450,6 @@
   <message name="IDS_CROSTINI_TERMINAL_STATUS_START_CONTAINER" desc="Text shown in the crostini terminal when it is starting the Linux container">
     Starting the Linux container
   </message>
-  <message name="IDS_CROSTINI_TERMINAL_STATUS_FETCH_SSH_KEYS" desc="Text shown in the crostini terminal when it is fetching the Linux container ssh keys">
-    Fetching the Linux container ssh keys
-  </message>
-  <message name="IDS_CROSTINI_TERMINAL_STATUS_MOUNT_CONTAINER" desc="Text shown in the crostini terminal when it is mounting container sshfs (ssh filesystem)">
-    Mounting the Linux container sshfs
-  </message>
   <message name="IDS_CROSTINI_TERMINAL_STATUS_CONNECT_CONTAINER" desc="Text shown in the crostini terminal when it is connecting to the container">
     Connecting to the container
   </message>

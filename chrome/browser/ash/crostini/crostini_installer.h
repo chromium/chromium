@@ -42,8 +42,8 @@ class CrostiniInstaller : public KeyedService,
     kErrorStartingTermina = 6,
     kErrorStartingContainer = 7,
     kErrorOffline = 8,
-    kErrorFetchingSshKeys = 9,
-    kErrorMountingContainer = 10,
+    // kErrorFetchingSshKeys = 9,
+    // kErrorMountingContainer = 10,
     kErrorSettingUpContainer = 11,
 
     kUserCancelledStart = 12,
@@ -54,8 +54,8 @@ class CrostiniInstaller : public KeyedService,
     kUserCancelledCreateContainer = 17,
     kUserCancelledStartContainer = 18,
     kUserCancelledSetupContainer = 19,
-    kUserCancelledFetchSshKeys = 20,
-    kUserCancelledMountContainer = 21,
+    // kUserCancelledFetchSshKeys = 20,
+    // kUserCancelledMountContainer = 21,
 
     kErrorInsufficientDiskSpace = 22,
 
@@ -102,8 +102,6 @@ class CrostiniInstaller : public KeyedService,
   void OnContainerCreated(crostini::CrostiniResult result) override;
   void OnContainerSetup(bool success) override;
   void OnContainerStarted(crostini::CrostiniResult result) override;
-  void OnSshKeysFetched(bool success) override;
-  void OnContainerMounted(bool success) override;
 
   // AnsibleManagementService::Observer:
   void OnAnsibleSoftwareConfigurationStarted() override;

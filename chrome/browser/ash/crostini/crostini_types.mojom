@@ -16,8 +16,8 @@ enum InstallerState {
   kCreateContainer = 5,      // Creating the container inside the Termina VM.
   kSetupContainer = 6,       // Setting up the container inside the Termina VM.
   kStartContainer = 7,       // Starting the container inside the Termina VM.
-  kFetchSshKeys = 8,         // Fetch ssh keys from concierge.
-  kMountContainer = 9,       // Do sshfs mount of container.
+  //kFetchSshKeys = 8,         // Fetch ssh keys from concierge.
+  //kMountContainer = 9,       // Do sshfs mount of container.
   kConfigureContainer = 10,  // Configuring the container inside the Termina VM.
 };
 
@@ -30,8 +30,8 @@ enum InstallerError {
   kErrorStartingLxd,
   kErrorStartingContainer,
   kErrorOffline,
-  kErrorFetchingSshKeys,
-  kErrorMountingContainer,
+  // kErrorFetchingSshKeys,
+  // kErrorMountingContainer,
   kErrorSettingUpContainer,
   kErrorInsufficientDiskSpace,
   kErrorConfiguringContainer,

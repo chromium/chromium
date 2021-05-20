@@ -458,12 +458,6 @@ Polymer({
       case InstallerState.kConfigureContainer:
         messageId = 'configureContainerMessage';
         break;
-      case InstallerState.kFetchSshKeys:
-        messageId = 'fetchSshKeysMessage';
-        break;
-      case InstallerState.kMountContainer:
-        messageId = 'mountContainerMessage';
-        break;
       default:
         assertNotReached();
     }
@@ -502,12 +496,6 @@ Polymer({
         break;
       case InstallerError.kErrorOffline:
         messageId = 'offlineError';
-        break;
-      case InstallerError.kErrorFetchingSshKeys:
-        messageId = 'fetchSshKeysError';
-        break;
-      case InstallerError.kErrorMountingContainer:
-        messageId = 'mountContainerError';
         break;
       case InstallerError.kErrorSettingUpContainer:
         messageId = 'setupContainerError';

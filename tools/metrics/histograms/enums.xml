@@ -15826,8 +15826,8 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="5" label="CreateContainer"/>
   <int value="6" label="SetupContainer"/>
   <int value="7" label="StartContainer"/>
-  <int value="8" label="FetchSshKeys"/>
-  <int value="9" label="MountContainer"/>
+  <int value="8" label="FetchSshKeys (Obsolete crbug/1198006)"/>
+  <int value="9" label="MountContainer (Obsolete crbug/1198006)"/>
   <int value="10" label="ConfigureContainer"/>
 </enum>
 

@@ -138,12 +138,6 @@ void CrostiniStartupStatus::OnStageStarted(InstallerState stage) {
           {InstallerState::kStartContainer,
            l10n_util::GetStringUTF8(
                IDS_CROSTINI_TERMINAL_STATUS_START_CONTAINER)},
-          {InstallerState::kFetchSshKeys,
-           l10n_util::GetStringUTF8(
-               IDS_CROSTINI_TERMINAL_STATUS_FETCH_SSH_KEYS)},
-          {InstallerState::kMountContainer,
-           l10n_util::GetStringUTF8(
-               IDS_CROSTINI_TERMINAL_STATUS_MOUNT_CONTAINER)},
       });
   const std::string& stage_string = (*kStartStrings)[stage];
   PrintStage(kColor3Yellow, stage_string);

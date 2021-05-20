@@ -127,10 +127,6 @@ SetupResult ErrorToSetupResult(InstallerError error) {
       return SetupResult::kErrorConfiguringContainer;
     case InstallerError::kErrorOffline:
       return SetupResult::kErrorOffline;
-    case InstallerError::kErrorFetchingSshKeys:
-      return SetupResult::kErrorFetchingSshKeys;
-    case InstallerError::kErrorMountingContainer:
-      return SetupResult::kErrorMountingContainer;
     case InstallerError::kErrorSettingUpContainer:
       return SetupResult::kErrorSettingUpContainer;
     case InstallerError::kErrorInsufficientDiskSpace:
@@ -165,10 +161,6 @@ SetupResult InstallStateToCancelledSetupResult(
       return SetupResult::kUserCancelledStartContainer;
     case InstallerState::kConfigureContainer:
       return SetupResult::kUserCancelledConfiguringContainer;
-    case InstallerState::kFetchSshKeys:
-      return SetupResult::kUserCancelledFetchSshKeys;
-    case InstallerState::kMountContainer:
-      return SetupResult::kUserCancelledMountContainer;
   }
 
   NOTREACHED();
@@ -462,25 +454,6 @@ void CrostiniInstaller::OnContainerStarted(CrostiniResult result) {
     HandleError(InstallerError::kErrorStartingContainer);
     return;
   }
-  UpdateInstallingState(InstallerState::kFetchSshKeys);
-}
-
-void CrostiniInstaller::OnSshKeysFetched(bool success) {
-  DCHECK_EQ(installing_state_, InstallerState::kFetchSshKeys);
-
-  if (!success) {
-    HandleError(InstallerError::kErrorFetchingSshKeys);
-    return;
-  }
-  UpdateInstallingState(InstallerState::kMountContainer);
-}
-
-void CrostiniInstaller::OnContainerMounted(bool success) {
-  DCHECK_EQ(installing_state_, InstallerState::kMountContainer);
-
-  if (!success) {
-    HandleError(InstallerError::kErrorMountingContainer);
-  }
 }
 
 bool CrostiniInstaller::CanInstall() {
@@ -540,17 +513,9 @@ void CrostiniInstaller::RunProgressCallback() {
       break;
     case InstallerState::kConfigureContainer:
       state_start_mark = 0.79;
-      state_end_mark = 0.99;
+      state_end_mark = 1;
       // Ansible installation and playbook application.
       state_max_time = base::TimeDelta::FromSeconds(140 + 300);
-      break;
-    case InstallerState::kFetchSshKeys:
-      state_start_mark = 0.99;
-      state_end_mark = 1;
-      break;
-    case InstallerState::kMountContainer:
-      state_start_mark = 1;
-      state_end_mark = 1;
       break;
     default:
       NOTREACHED();
@@ -652,7 +617,6 @@ void CrostiniInstaller::OnCrostiniRestartFinished(CrostiniResult result) {
     return;
   }
 
-  DCHECK_EQ(installing_state_, InstallerState::kMountContainer);
   // Reset state to allow |Install()| again in case the user remove and
   // re-install crostini.
   UpdateState(State::IDLE);

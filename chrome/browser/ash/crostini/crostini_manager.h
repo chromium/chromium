@@ -194,8 +194,6 @@ class CrostiniManager : public KeyedService,
     virtual void OnContainerCreated(CrostiniResult result) {}
     virtual void OnContainerSetup(bool success) {}
     virtual void OnContainerStarted(CrostiniResult result) {}
-    virtual void OnSshKeysFetched(bool success) {}
-    virtual void OnContainerMounted(bool success) {}
   };
 
   struct RestartOptions {

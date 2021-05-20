@@ -175,12 +175,6 @@ void EmitTimeInStageHistogram(base::TimeDelta duration,
     case mojom::InstallerState::kStartContainer:
       name = "Crostini.RestarterTimeInState.StartContainer";
       break;
-    case mojom::InstallerState::kFetchSshKeys:
-      name = "Crostini.RestarterTimeInState.FetchSshKeys";
-      break;
-    case mojom::InstallerState::kMountContainer:
-      name = "Crostini.RestarterTimeInState.MountContainer";
-      break;
     case mojom::InstallerState::kConfigureContainer:
       NOTREACHED();
       return;
@@ -301,12 +295,6 @@ class CrostiniManager::CrostiniRestarter
       case mojom::InstallerState::kStartContainer:
         result = CrostiniResult::START_CONTAINER_TIMED_OUT;
         break;
-      case mojom::InstallerState::kFetchSshKeys:
-        result = CrostiniResult::FETCH_SSH_KEYS_TIMED_OUT;
-        break;
-      case mojom::InstallerState::kMountContainer:
-        result = CrostiniResult::MOUNT_CONTAINER_TIMED_OUT;
-        break;
       case mojom::InstallerState::kConfigureContainer:
       case mojom::InstallerState::kStart:
         NOTREACHED();
@@ -424,36 +412,13 @@ class CrostiniManager::CrostiniRestarter
     // try mounting sshfs in that case.
     auto info = crostini_manager_->GetContainerInfo(container_id_);
     if (container_id_ == ContainerId::GetDefault() && info) {
-      StartStage(mojom::InstallerState::kFetchSshKeys);
       crostini_manager_->MountCrostiniFiles(container_id_, base::DoNothing());
       // TODO(crbug/1142321): Metrics
-      FinishDefaultContainerRestart(result);
-    } else {
-      FinishRestart(result);
-    }
-  }
-
- private:
-  void FinishDefaultContainerRestart(CrostiniResult result) {
-    // TODO(crbug/1198006): For backwards compatibility quickly run through
-    // these stages which have since been removed, but some clients still
-    // expect to see.
-    for (auto& observer : observer_list_) {
-      observer.OnSshKeysFetched(true);
-    }
-    if (ReturnEarlyIfAborted()) {
-      return;
-    }
-    StartStage(mojom::InstallerState::kMountContainer);
-    for (auto& observer : observer_list_) {
-      observer.OnContainerMounted(result == CrostiniResult::SUCCESS);
-    }
-    if (ReturnEarlyIfAborted()) {
-      return;
     }
     FinishRestart(result);
   }
 
+ private:
   void ContinueRestart() {
     is_running_ = true;
     // Skip to the end immediately if testing.
@@ -493,8 +458,6 @@ class CrostiniManager::CrostiniRestarter
       // StartContainer might need to do a UID remapping, which in the worst
       // case can take a very long time.
       {mojom::InstallerState::kStartContainer, base::TimeDelta::FromDays(5)},
-      {mojom::InstallerState::kFetchSshKeys, base::TimeDelta::FromMinutes(5)},
-      {mojom::InstallerState::kMountContainer, base::TimeDelta::FromMinutes(5)},
       // ConfigureContainer is special, it's not part of the restarter flow, so
       // it doesn't have a timeout.
       {mojom::InstallerState::kConfigureContainer,
