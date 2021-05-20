@@ -396,12 +396,16 @@ customElements.define(ChromeCartModuleElement.is, ChromeCartModuleElement);
 
 /** @return {!Promise<?HTMLElement>} */
 async function createCartElement() {
+  // getWarmWelcomeVisible makes server-side change and might flip the status of
+  // whether welcome surface should show or not. Anything whose visibility
+  // dependes on welcome surface (e.g. RBD consent) should check before
+  // getWarmWelcomeVisible.
+  const {consentVisible} = await ChromeCartProxy.getInstance()
+                               .handler.getDiscountConsentCardVisible();
   const {welcomeVisible} =
       await ChromeCartProxy.getInstance().handler.getWarmWelcomeVisible();
   const {carts} =
       await ChromeCartProxy.getInstance().handler.getMerchantCarts();
-  const {consentVisible} = await ChromeCartProxy.getInstance()
-                               .handler.getDiscountConsentCardVisible();
   chrome.metricsPrivate.recordSmallCount(
       'NewTabPage.Carts.CartCount', carts.length);
   if (carts.length === 0) {
