@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_DEFAULT_OVERLAY_REQUEST_CANCEL_HANDLER_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_DEFAULT_OVERLAY_REQUEST_CANCEL_HANDLER_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_cancel_handler.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
@@ -39,7 +39,8 @@ class DefaultOverlayRequestCancelHandler : public OverlayRequestCancelHandler {
 
    private:
     DefaultOverlayRequestCancelHandler* cancel_handler_ = nullptr;
-    ScopedObserver<web::WebState, web::WebStateObserver> scoped_observer_;
+    base::ScopedObservation<web::WebState, web::WebStateObserver>
+        scoped_observation_{this};
   };
 
   NavigationHelper navigation_helper_;

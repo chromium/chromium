@@ -28,10 +28,10 @@ void DefaultOverlayRequestCancelHandler::Cancel() {
 DefaultOverlayRequestCancelHandler::NavigationHelper::NavigationHelper(
     DefaultOverlayRequestCancelHandler* cancel_handler,
     web::WebState* web_state)
-    : cancel_handler_(cancel_handler), scoped_observer_(this) {
+    : cancel_handler_(cancel_handler) {
   DCHECK(cancel_handler);
   DCHECK(web_state);
-  scoped_observer_.Add(web_state);
+  scoped_observation_.Observe(web_state);
 }
 
 DefaultOverlayRequestCancelHandler::NavigationHelper::~NavigationHelper() =
@@ -57,7 +57,7 @@ void DefaultOverlayRequestCancelHandler::NavigationHelper::RenderProcessGone(
 
 void DefaultOverlayRequestCancelHandler::NavigationHelper::WebStateDestroyed(
     web::WebState* web_state) {
-  scoped_observer_.RemoveAll();
+  scoped_observation_.Reset();
   cancel_handler_->Cancel();
   // The cancel handler is destroyed after Cancel(), so no code can be added
   // after this call.

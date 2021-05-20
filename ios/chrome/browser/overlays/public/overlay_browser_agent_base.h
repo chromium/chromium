@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #include "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_callback_installer.h"
@@ -69,7 +69,9 @@ class OverlayBrowserAgentBase {
 
     Browser* browser_ = nullptr;
     OverlayBrowserAgentBase* browser_agent_ = nullptr;
-    ScopedObserver<OverlayPresenter, OverlayPresenterObserver> scoped_observer_;
+    base::ScopedMultiSourceObservation<OverlayPresenter,
+                                       OverlayPresenterObserver>
+        scoped_observations_{this};
   };
 
   // Storage struct used to store OverlayRequestCallbackInstallers and their

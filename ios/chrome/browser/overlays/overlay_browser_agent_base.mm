@@ -70,7 +70,7 @@ void OverlayBrowserAgentBase::InstallOverlayRequestCallbacks(
 OverlayBrowserAgentBase::CallbackInstallationDriver::CallbackInstallationDriver(
     Browser* browser,
     OverlayBrowserAgentBase* browser_agent)
-    : browser_(browser), browser_agent_(browser_agent), scoped_observer_(this) {
+    : browser_(browser), browser_agent_(browser_agent) {
   DCHECK(browser_agent_);
   DCHECK(browser_);
 }
@@ -82,8 +82,8 @@ void OverlayBrowserAgentBase::CallbackInstallationDriver::
     StartInstallingCallbacks(OverlayModality modality) {
   OverlayPresenter* presenter =
       OverlayPresenter::FromBrowser(browser_, modality);
-  if (!scoped_observer_.IsObserving(presenter))
-    scoped_observer_.Add(presenter);
+  if (!scoped_observations_.IsObservingSource(presenter))
+    scoped_observations_.AddObservation(presenter);
 }
 
 const OverlayRequestSupport*
@@ -104,7 +104,7 @@ void OverlayBrowserAgentBase::CallbackInstallationDriver::WillShowOverlay(
 
 void OverlayBrowserAgentBase::CallbackInstallationDriver::
     OverlayPresenterDestroyed(OverlayPresenter* presenter) {
-  scoped_observer_.Remove(presenter);
+  scoped_observations_.RemoveObservation(presenter);
 }
 
 #pragma mark - OverlayBrowserAgentBase::CallbackInstallerStorage

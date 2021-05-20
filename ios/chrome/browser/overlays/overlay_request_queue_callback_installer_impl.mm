@@ -41,10 +41,9 @@ void OverlayRequestQueueCallbackInstallerImpl::AddRequestCallbackInstaller(
 #pragma mark - OverlayRequestQueueCallbackInstallerImpl::RequestAddedObserver
 
 OverlayRequestQueueCallbackInstallerImpl::RequestAddedObserver::
-    RequestAddedObserver(web::WebState* web_state, OverlayModality modality)
-    : scoped_observer_(this) {
+    RequestAddedObserver(web::WebState* web_state, OverlayModality modality) {
   DCHECK(web_state);
-  scoped_observer_.Add(
+  scoped_observation_.Observe(
       OverlayRequestQueueImpl::FromWebState(web_state, modality));
 }
 
@@ -72,5 +71,6 @@ void OverlayRequestQueueCallbackInstallerImpl::RequestAddedObserver::
 
 void OverlayRequestQueueCallbackInstallerImpl::RequestAddedObserver::
     OverlayRequestQueueDestroyed(OverlayRequestQueueImpl* queue) {
-  scoped_observer_.Remove(queue);
+  DCHECK(scoped_observation_.IsObservingSource(queue));
+  scoped_observation_.Reset();
 }
