@@ -44,6 +44,10 @@ class PaymentRequestRowView
   void ShowBottomSeparator();
   void HideBottomSeparator();
 
+  // Updates the border used for the bottom separator based on
+  // `bottom_separator_visible_`.
+  void UpdateBottomSeparator();
+
   // Sets the row as |highlighted| or not. A row is highlighted if it's hovered
   // on or focused, in which case it hides its bottom separator and gets a light
   // colored background color.
@@ -51,12 +55,14 @@ class PaymentRequestRowView
 
   // views::Button:
   void StateChanged(ButtonState old_state) override;
+  void OnThemeChanged() override;
 
   // views::View:
   void OnFocus() override;
   void OnBlur() override;
 
   bool clickable_;
+  bool bottom_separator_visible_ = false;
   gfx::Insets insets_;
 
   // A non-owned pointer to the previous row object in the UI. Used to hide the

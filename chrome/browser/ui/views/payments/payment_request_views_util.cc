@@ -30,6 +30,8 @@
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "ui/base/default_style.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -56,6 +58,55 @@ namespace payments {
 
 namespace {
 
+class ThemeTrackingLabel : public views::Label {
+ public:
+  METADATA_HEADER(ThemeTrackingLabel);
+
+  explicit ThemeTrackingLabel(const std::u16string& text) : Label(text) {}
+  ~ThemeTrackingLabel() override = default;
+
+  void set_enabled_color_id(ui::NativeTheme::ColorId enabled_color_id) {
+    enabled_color_id_ = enabled_color_id;
+  }
+
+  // views::Label:
+  void OnThemeChanged() override {
+    Label::OnThemeChanged();
+    if (enabled_color_id_.has_value())
+      SetEnabledColor(GetNativeTheme()->GetSystemColor(*enabled_color_id_));
+  }
+
+ private:
+  absl::optional<ui::NativeTheme::ColorId> enabled_color_id_;
+};
+
+BEGIN_METADATA(ThemeTrackingLabel, views::Label)
+END_METADATA
+
+class ChromeLogoImageView : public views::ImageView {
+ public:
+  METADATA_HEADER(ChromeLogoImageView);
+
+  ChromeLogoImageView() {
+    SetCanProcessEventsWithinSubtree(false);
+    SetTooltipText(l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
+  }
+  ~ChromeLogoImageView() override = default;
+
+  // views::ImageView:
+  void OnThemeChanged() override {
+    ImageView::OnThemeChanged();
+    SetImage(ui::ResourceBundle::GetSharedInstance()
+                 .GetImageNamed(GetNativeTheme()->ShouldUseDarkColors()
+                                    ? IDR_PRODUCT_LOGO_NAME_22_WHITE
+                                    : IDR_PRODUCT_LOGO_NAME_22)
+                 .AsImageSkia());
+  }
+};
+
+BEGIN_METADATA(ChromeLogoImageView, views::ImageView)
+END_METADATA
+
 // |s1|, |s2|, and |s3| are lines identifying the profile. |s1| is the
 // "headline" which may be emphasized depending on |type|. If |enabled| is
 // false, the labels will look disabled.
@@ -78,36 +129,31 @@ std::unique_ptr<views::View> GetBaseProfileLabel(
     const int text_style = type == AddressStyleType::DETAILED
                                ? static_cast<int>(STYLE_EMPHASIZED)
                                : static_cast<int>(views::style::STYLE_PRIMARY);
-    std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
-        s1, views::style::CONTEXT_LABEL, text_style);
+    auto label = std::make_unique<ThemeTrackingLabel>(s1);
+    label->SetTextContext(views::style::CONTEXT_LABEL);
+    label->SetTextStyle(text_style);
     label->SetID(static_cast<int>(DialogViewID::PROFILE_LABEL_LINE_1));
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    if (!enabled) {
-      label->SetEnabledColor(label->GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_LabelDisabledColor));
-    }
+    if (!enabled)
+      label->set_enabled_color_id(ui::NativeTheme::kColorId_LabelDisabledColor);
     container->AddChildView(std::move(label));
   }
 
   if (!s2.empty()) {
-    std::unique_ptr<views::Label> label = std::make_unique<views::Label>(s2);
+    auto label = std::make_unique<ThemeTrackingLabel>(s2);
     label->SetID(static_cast<int>(DialogViewID::PROFILE_LABEL_LINE_2));
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    if (!enabled) {
-      label->SetEnabledColor(label->GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_LabelDisabledColor));
-    }
+    if (!enabled)
+      label->set_enabled_color_id(ui::NativeTheme::kColorId_LabelDisabledColor);
     container->AddChildView(std::move(label));
   }
 
   if (!s3.empty()) {
-    std::unique_ptr<views::Label> label = std::make_unique<views::Label>(s3);
+    auto label = std::make_unique<ThemeTrackingLabel>(s3);
     label->SetID(static_cast<int>(DialogViewID::PROFILE_LABEL_LINE_3));
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    if (!enabled) {
-      label->SetEnabledColor(label->GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_LabelDisabledColor));
-    }
+    if (!enabled)
+      label->set_enabled_color_id(ui::NativeTheme::kColorId_LabelDisabledColor);
     container->AddChildView(std::move(label));
   }
 
@@ -140,12 +186,11 @@ std::unique_ptr<views::View> GetShippingAddressLabel(
 
 std::unique_ptr<views::Label> GetLabelForMissingInformation(
     const std::u16string& missing_info) {
-  std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
-      missing_info, CONTEXT_DIALOG_BODY_TEXT_SMALL);
+  auto label = std::make_unique<ThemeTrackingLabel>(missing_info);
+  label->SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL);
   label->SetID(static_cast<int>(DialogViewID::PROFILE_LABEL_ERROR));
   // Missing information typically has a nice shade of blue.
-  label->SetEnabledColor(label->GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_LinkEnabled));
+  label->set_enabled_color_id(ui::NativeTheme::kColorId_LinkEnabled);
   return label;
 }
 
@@ -276,17 +321,7 @@ std::unique_ptr<views::View> CreateProductLogoFooterView() {
   content_view->SetLayoutManager(std::move(layout));
 
   // Adds the Chrome logo image.
-  std::unique_ptr<views::ImageView> chrome_logo =
-      std::make_unique<views::ImageView>();
-  chrome_logo->SetCanProcessEventsWithinSubtree(false);
-  chrome_logo->SetImage(
-      ui::ResourceBundle::GetSharedInstance()
-          .GetImageNamed(content_view->GetNativeTheme()->ShouldUseDarkColors()
-                             ? IDR_PRODUCT_LOGO_NAME_22_WHITE
-                             : IDR_PRODUCT_LOGO_NAME_22)
-          .AsImageSkia());
-  chrome_logo->SetTooltipText(l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
-  content_view->AddChildView(std::move(chrome_logo));
+  content_view->AddChildView(std::make_unique<ChromeLogoImageView>());
 
   return content_view;
 }
@@ -438,7 +473,7 @@ std::unique_ptr<views::View> CreateWarningView(const std::u16string& message,
       views::BoxLayout::CrossAxisAlignment::kStretch);
   header_view->SetLayoutManager(std::move(layout));
 
-  auto label = std::make_unique<views::Label>(message);
+  auto label = std::make_unique<ThemeTrackingLabel>(message);
   // If the warning message comes from the websites, then align label
   // according to the language of the website's text.
   label->SetHorizontalAlignment(message.empty() ? gfx::ALIGN_LEFT
@@ -450,13 +485,11 @@ std::unique_ptr<views::View> CreateWarningView(const std::u16string& message,
   if (show_icon) {
     auto warning_icon = std::make_unique<views::ImageView>();
     warning_icon->SetCanProcessEventsWithinSubtree(false);
-    warning_icon->SetImage(gfx::CreateVectorIcon(
-        vector_icons::kWarningIcon, 16,
-        warning_icon->GetNativeTheme()->GetSystemColor(
-            ui::NativeTheme::kColorId_AlertSeverityHigh)));
+    warning_icon->SetImage(ui::ImageModel::FromVectorIcon(
+        vector_icons::kWarningIcon, ui::NativeTheme::kColorId_AlertSeverityHigh,
+        16));
     header_view->AddChildView(std::move(warning_icon));
-    label->SetEnabledColor(label->GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_AlertSeverityHigh));
+    label->set_enabled_color_id(ui::NativeTheme::kColorId_AlertSeverityHigh);
   }
 
   header_view->AddChildView(std::move(label));

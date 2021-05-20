@@ -183,7 +183,8 @@ void Link::OnThemeChanged() {
 
 void Link::SetEnabledColor(SkColor color) {
   requested_enabled_color_ = color;
-  Label::SetEnabledColor(GetColor());
+  if (GetWidget())
+    Label::SetEnabledColor(GetColor());
 }
 
 bool Link::IsSelectionSupported() const {

@@ -174,12 +174,6 @@ class BorderedScrollView : public views::ScrollView {
   BorderedScrollView() {
     SetBackground(views::CreateThemedSolidBackground(
         this, ui::NativeTheme::kColorId_DialogBackground));
-    SetBorder(views::CreateBorderPainter(
-        std::make_unique<BorderedScrollViewBorderPainter>(
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_SeparatorColor),
-            this),
-        gfx::Insets(1, 0)));
   }
 
   bool GetTopBorder() const { return GetVisibleRect().y() > 0; }
@@ -192,6 +186,15 @@ class BorderedScrollView : public views::ScrollView {
   void ScrollToPosition(views::ScrollBar* source, int position) override {
     views::ScrollView::ScrollToPosition(source, position);
     SchedulePaint();
+  }
+  void OnThemeChanged() override {
+    ScrollView::OnThemeChanged();
+    SetBorder(views::CreateBorderPainter(
+        std::make_unique<BorderedScrollViewBorderPainter>(
+            GetNativeTheme()->GetSystemColor(
+                ui::NativeTheme::kColorId_SeparatorColor),
+            this),
+        gfx::Insets(1, 0)));
   }
 };
 
