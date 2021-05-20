@@ -23,6 +23,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -280,6 +281,13 @@
 #include "content/public/common/profiling_utils.h"
 #endif
 
+// VLOG additional statements in Fuchsia release builds.
+#if defined(OS_FUCHSIA)
+#define MAYBEVLOG VLOG
+#else
+#define MAYBEVLOG DVLOG
+#endif
+
 namespace content {
 
 namespace {
@@ -321,6 +329,31 @@ std::vector<RenderProcessHostCreationObserver*>& GetAllCreationObservers() {
   static base::NoDestructor<std::vector<RenderProcessHostCreationObserver*>>
       s_all_creation_observers;
   return *s_all_creation_observers;
+}
+
+// Returns |host|'s PID if the process is valid and "no-process" otherwise.
+std::string GetRendererPidAsString(RenderProcessHost* host) {
+  if (host->GetProcess().IsValid()) {
+    return base::NumberToString(host->GetProcess().Pid());
+  }
+
+  return "no-process";
+}
+
+std::ostream& operator<<(std::ostream& o,
+                         const SiteInstanceProcessAssignment& assignment) {
+  switch (assignment) {
+    case SiteInstanceProcessAssignment::UNKNOWN:
+      return o << "No renderer process has been assigned to the SiteInstance "
+                  "yet.";
+    case SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS:
+      return o << "Reused some pre-existing process.";
+    case SiteInstanceProcessAssignment::USED_SPARE_PROCESS:
+      return o << "Used an existing spare process.";
+    case SiteInstanceProcessAssignment::CREATED_NEW_PROCESS:
+      return o << "No renderer could be reused, so a new one was created for "
+                  "the SiteInstance.";
+  }
 }
 
 // Map of site to process, to ensure we only have one RenderProcessHost per
@@ -947,7 +980,65 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
     }
   }
 
+  // Returns a string containing formatted data from
+  // GetHostIdToSiteMapForDebugging().
+  std::string GetDebugString() const {
+    HostIdToSiteMap rph_to_sites_map = GetHostIdToSiteMapForDebugging();
+    std::string output;
+
+    for (auto host_info : rph_to_sites_map) {
+      RenderProcessHost* host = GetAllHosts().Lookup(host_info.first);
+      DCHECK(host);
+
+      bool is_locked_to_site = ChildProcessSecurityPolicyImpl::GetInstance()
+                                   ->GetProcessLock(host->GetID())
+                                   .is_locked_to_site();
+      output += base::StringPrintf("\tProcess Host ID %d (PID %s, %s):\n",
+                                   host_info.first,
+                                   GetRendererPidAsString(host).c_str(),
+                                   is_locked_to_site ? "locked" : "not locked");
+
+      for (auto site_string : host_info.second) {
+        output += base::StringPrintf("\t\t%s\n", site_string.c_str());
+      }
+    }
+
+    return output;
+  }
+
  private:
+  using ProcessID = int;
+  using Count = int;
+  using HostIdToSiteMap = base::flat_map<ProcessID, std::vector<std::string>>;
+
+  // Creates a new mapping of the ProcessID to sites and their count based on
+  // the current map_.
+  HostIdToSiteMap GetHostIdToSiteMapForDebugging() const {
+    HostIdToSiteMap rph_to_sites_map;
+
+    // There may be process hosts without sites. To ensure all process hosts are
+    // represented, start by adding entries for all hosts.
+    rph_to_sites_map.reserve(GetAllHosts().size());
+    for (auto iter(RenderProcessHost::AllHostsIterator()); !iter.IsAtEnd();
+         iter.Advance()) {
+      rph_to_sites_map[iter.GetCurrentValue()->GetID()];
+    }
+
+    for (auto iter : map_) {
+      std::string site = iter.first.GetDebugString();
+      std::map<ProcessID, Count>& counts_per_process = iter.second;
+      for (auto iter_process : counts_per_process) {
+        ProcessID id = iter_process.first;
+        Count count = iter_process.second;
+
+        rph_to_sites_map[id].push_back(
+            base::StringPrintf("%s -- count: %d", site.c_str(), count));
+      }
+    }
+
+    return rph_to_sites_map;
+  }
+
   void RenderProcessHostDestroyed(RenderProcessHost* host) override {
 #ifndef NDEBUG
     host->RemoveObserver(this);
@@ -956,7 +1047,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
   }
 
 #ifndef NDEBUG
-  // Used in debug builds to ensure that RenderProcessHost don't persist in the
+  // Used in debug builds to ensure that RenderProcessHosts don't persist in the
   // map after they've been destroyed.
   bool HasProcess(RenderProcessHost* process) {
     for (auto iter : map_) {
@@ -970,8 +1061,6 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
   }
 #endif
 
-  using ProcessID = int;
-  using Count = int;
   using CountPerProcessPerSiteMap =
       std::map<SiteInfo, std::map<ProcessID, Count>>;
   CountPerProcessPerSiteMap map_;
@@ -983,8 +1072,12 @@ bool ShouldUseSiteProcessTracking(BrowserContext* browser_context,
   // StoragePartition.  For now, track them only in the default one.
   StoragePartition* default_partition =
       browser_context->GetDefaultStoragePartition();
-  if (dest_partition != default_partition)
+  if (dest_partition != default_partition) {
+    MAYBEVLOG(2) << __func__
+                 << ": Site process tracking will not be available for a "
+                    "non-default partition.";
     return false;
+  }
 
   return true;
 }
@@ -1008,6 +1101,18 @@ bool ShouldFindReusableProcessHostForSite(BrowserContext* browser_context,
       browser_context,
       browser_context->GetStoragePartition(
           site_info.GetStoragePartitionConfig(browser_context)));
+}
+
+std::string GetCurrentHostMapDebugString(
+    const SiteProcessCountTracker* tracker) {
+  std::string output = base::StringPrintf(
+      "There are now %zu RenderProcessHosts.", GetAllHosts().size());
+  if (tracker) {
+    output += base::StringPrintf("\nThe mappings are:\n%s",
+                                 tracker->GetDebugString().c_str());
+  }
+
+  return output;
 }
 
 const void* const kUnmatchedServiceWorkerProcessTrackerKey =
@@ -1491,6 +1596,7 @@ size_t RenderProcessHost::GetMaxRendererProcessCount() {
 
     max_count = base::ClampToRange(max_count, kMinRendererProcessCount,
                                    kMaxRendererProcessCount);
+    MAYBEVLOG(1) << __func__ << ": Calculated max " << max_count;
   }
   return max_count;
 #endif
@@ -1498,7 +1604,9 @@ size_t RenderProcessHost::GetMaxRendererProcessCount() {
 
 // static
 void RenderProcessHost::SetMaxRendererProcessCount(size_t count) {
+  MAYBEVLOG(1) << __func__ << ": Max override set to " << count;
   g_max_renderer_count_override = count;
+
   if (GetAllHosts().size() > count) {
     SpareRenderProcessHostManager::GetInstance()
         .CleanupSpareRenderProcessHost();
@@ -2944,6 +3052,11 @@ void RenderProcessHostImpl::AddFrameWithSite(
   SiteProcessCountTracker* tracker = SiteProcessCountTracker::GetInstance(
       browser_context, kCommittedSiteProcessCountTrackerKey);
   tracker->IncrementSiteProcessCount(site_info, render_process_host->GetID());
+
+  MAYBEVLOG(2) << __func__ << "(" << site_info
+               << "): Site added to process host "
+               << render_process_host->GetID() << "." << std::endl
+               << GetCurrentHostMapDebugString(tracker);
 }
 
 // static
@@ -3892,6 +4005,13 @@ void RenderProcessHostImpl::UnregisterHost(int host_id) {
 
   GetAllHosts().Remove(host_id);
 
+  // Log after updating the GetAllHosts() list but before deleting the host.
+  MAYBEVLOG(3) << __func__ << "(" << host_id << ")" << std::endl
+               << GetCurrentHostMapDebugString(
+                      static_cast<SiteProcessCountTracker*>(
+                          host->GetBrowserContext()->GetUserData(
+                              kCommittedSiteProcessCountTrackerKey)));
+
   // Look up the map of site to process for the given browser_context,
   // in case we need to remove this process from it.  It will be registered
   // under any sites it rendered that use process-per-site mode.
@@ -4146,8 +4266,14 @@ bool RenderProcessHost::ShouldTryToUseExistingProcessHost(
   //       a renderer process for a browser context that has no existing
   //       renderers. This is OK in moderation, since the
   //       GetMaxRendererProcessCount() is conservative.
-  if (GetAllHosts().size() >= GetMaxRendererProcessCount())
+  if (GetAllHosts().size() >= GetMaxRendererProcessCount()) {
+    MAYBEVLOG(4) << __func__
+                 << ": GetAllHosts().size() >= GetMaxRendererProcessCount() ("
+                 << GetAllHosts().size()
+                 << " >= " << GetMaxRendererProcessCount()
+                 << ") - will try to reuse an existing process";
     return true;
+  }
 
   return GetContentClient()->browser()->ShouldTryToUseExistingProcessHost(
       browser_context, url);
@@ -4170,6 +4296,10 @@ RenderProcessHost* RenderProcessHostImpl::GetExistingProcessHost(
     if (MayReuseAndIsSuitable(iter.GetCurrentValue(), site_instance))
       suitable_renderers.push_back(iter.GetCurrentValue());
   }
+
+  MAYBEVLOG(4) << __func__ << ": Found " << suitable_renderers.size()
+               << " suitable process hosts out of " << GetAllHosts().size()
+               << ".";
 
   // Now pick a random suitable renderer, if we have any.
   if (!suitable_renderers.empty()) {
@@ -4404,6 +4534,15 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
   CHECK(render_process_host->InSameStoragePartition(
       browser_context->GetStoragePartition(site_instance,
                                            false /* can_create */)));
+
+  MAYBEVLOG(2) << __func__ << "(" << site_info << ") selected process host "
+               << render_process_host->GetID() << " using assignment \""
+               << site_instance->GetLastProcessAssignmentOutcome() << "\""
+               << std::endl
+               << GetCurrentHostMapDebugString(
+                      static_cast<SiteProcessCountTracker*>(
+                          browser_context->GetUserData(
+                              kCommittedSiteProcessCountTrackerKey)));
 
   return render_process_host;
 }
