@@ -1573,12 +1573,12 @@ webrtc::RTCErrorType RTCPeerConnectionHandler::SetConfiguration(
   return webrtc_error.type();
 }
 
-void RTCPeerConnectionHandler::AddICECandidate(
+void RTCPeerConnectionHandler::AddIceCandidate(
     RTCVoidRequest* request,
     RTCIceCandidatePlatform* candidate) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(dependency_factory_);
-  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::addICECandidate");
+  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::addIceCandidate");
   std::unique_ptr<webrtc::IceCandidateInterface> native_candidate(
       dependency_factory_->CreateIceCandidate(
           candidate->SdpMid(),

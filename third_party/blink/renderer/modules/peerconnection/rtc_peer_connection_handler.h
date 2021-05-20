@@ -213,7 +213,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   GetConfiguration() const;
   virtual webrtc::RTCErrorType SetConfiguration(
       const webrtc::PeerConnectionInterface::RTCConfiguration& configuration);
-  virtual void AddICECandidate(blink::RTCVoidRequest* request,
+  virtual void AddIceCandidate(blink::RTCVoidRequest* request,
                                RTCIceCandidatePlatform* candidate);
   virtual void RestartIce();
 

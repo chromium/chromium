@@ -110,7 +110,7 @@ class MockRTCPeerConnectionHandlerPlatform : public RTCPeerConnectionHandler {
       const override;
   webrtc::RTCErrorType SetConfiguration(
       const webrtc::PeerConnectionInterface::RTCConfiguration&) override;
-  void AddICECandidate(RTCVoidRequest*, RTCIceCandidatePlatform*) override;
+  void AddIceCandidate(RTCVoidRequest*, RTCIceCandidatePlatform*) override;
   void RestartIce() override;
   void GetStats(RTCStatsRequest*) override;
   void GetStats(RTCStatsReportCallback,

@@ -1961,7 +1961,7 @@ ScriptPromise RTCPeerConnection::addIceCandidate(
   ScriptPromise promise = resolver->Promise();
   auto* request = MakeGarbageCollected<RTCVoidRequestPromiseImpl>(
       absl::nullopt, this, resolver, "RTCPeerConnection", "addIceCandidate");
-  peer_handler_->AddICECandidate(request, std::move(platform_candidate));
+  peer_handler_->AddIceCandidate(request, std::move(platform_candidate));
   return promise;
 }
 
@@ -2000,7 +2000,7 @@ ScriptPromise RTCPeerConnection::addIceCandidate(
   auto* request = MakeGarbageCollected<RTCVoidRequestImpl>(
       GetExecutionContext(), absl::nullopt, this, success_callback,
       error_callback);
-  peer_handler_->AddICECandidate(request, std::move(platform_candidate));
+  peer_handler_->AddIceCandidate(request, std::move(platform_candidate));
   return ScriptPromise::CastUndefined(script_state);
 }
 

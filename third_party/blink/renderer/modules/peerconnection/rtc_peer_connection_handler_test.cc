@@ -798,7 +798,7 @@ TEST_F(RTCPeerConnectionHandlerTest, addICECandidate) {
               TrackAddIceCandidate(pc_handler_.get(), candidate,
                                    PeerConnectionTracker::SOURCE_REMOTE, true));
   auto* request = MakeGarbageCollected<DummyRTCVoidRequest>();
-  pc_handler_->AddICECandidate(request, candidate);
+  pc_handler_->AddIceCandidate(request, candidate);
   RunMessageLoopsUntilIdle();
   EXPECT_TRUE(request->was_called());
   EXPECT_EQ(kDummySdp, mock_peer_connection_->ice_sdp());
