@@ -1573,7 +1573,7 @@
     "de": [
       {
         "pattern_identifier": "de_card_number_preserving",
-        "positive_pattern": "(?<!telefon|haus|person|fødsels)nummer",
+        "positive_pattern": "(?<!telefon|haus|person|fødsels|kunden)nummer",
         "positive_score": 1.0,
         "negative_pattern": null,
         "match_field_attributes": 3,
