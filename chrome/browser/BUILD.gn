@@ -204,8 +204,6 @@ static_library("browser") {
     "bitmap_fetcher/bitmap_fetcher_service.h",
     "bitmap_fetcher/bitmap_fetcher_service_factory.cc",
     "bitmap_fetcher/bitmap_fetcher_service_factory.h",
-    "bluetooth/bluetooth_chooser_context.cc",
-    "bluetooth/bluetooth_chooser_context.h",
     "bluetooth/bluetooth_chooser_context_factory.cc",
     "bluetooth/bluetooth_chooser_context_factory.h",
     "bluetooth/chrome_bluetooth_delegate.cc",

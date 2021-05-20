@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_BLUETOOTH_BLUETOOTH_CHOOSER_CONTEXT_H_
-#define CHROME_BROWSER_BLUETOOTH_BLUETOOTH_CHOOSER_CONTEXT_H_
+#ifndef COMPONENTS_PERMISSIONS_CONTEXTS_BLUETOOTH_CHOOSER_CONTEXT_H_
+#define COMPONENTS_PERMISSIONS_CONTEXTS_BLUETOOTH_CHOOSER_CONTEXT_H_
 
 #include <map>
 #include <string>
@@ -11,21 +11,27 @@
 
 #include "base/containers/flat_set.h"
 #include "components/permissions/object_permission_context_base.h"
-#include "device/bluetooth/bluetooth_adapter.h"
-#include "device/bluetooth/bluetooth_device.h"
-#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
-
-class Profile;
 
 namespace base {
 class Value;
 }  // namespace base
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
+namespace device {
+class BluetoothDevice;
+class BluetoothUUID;
+}  // namespace device
+
 namespace url {
 class Origin;
 }  // namespace url
+
+namespace permissions {
 
 // Manages the permissions for Web Bluetooth device objects. A Web Bluetooth
 // permission object consists of its WebBluetoothDeviceId and set of Bluetooth
@@ -33,10 +39,9 @@ class Origin;
 // and is unique for a given Bluetooth device address and origin pair, so this
 // class stores this mapping and provides utility methods to convert between
 // the WebBluetoothDeviceId and Bluetooth device address.
-class BluetoothChooserContext
-    : public permissions::ObjectPermissionContextBase {
+class BluetoothChooserContext : public ObjectPermissionContextBase {
  public:
-  explicit BluetoothChooserContext(Profile* profile);
+  explicit BluetoothChooserContext(content::BrowserContext* browser_context);
   ~BluetoothChooserContext() override;
 
   // Set class as move-only.
@@ -94,4 +99,6 @@ class BluetoothChooserContext
   std::map<url::Origin, DeviceAddressToIdMap> scanned_devices_;
 };
 
-#endif  // CHROME_BROWSER_BLUETOOTH_BLUETOOTH_CHOOSER_CONTEXT_H_
+}  // namespace permissions
+
+#endif  // COMPONENTS_PERMISSIONS_CONTEXTS_BLUETOOTH_CHOOSER_CONTEXT_H_

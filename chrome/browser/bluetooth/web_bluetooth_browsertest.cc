@@ -10,7 +10,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/bluetooth/bluetooth_chooser_context.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/render_frame_host.h"
@@ -799,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
     })()
   )"));
 
-  BluetoothChooserContext* context =
+  permissions::BluetoothChooserContext* context =
       BluetoothChooserContextFactory::GetForProfile(browser()->profile());
   url::Origin origin =
       url::Origin::Create(web_contents_->GetLastCommittedURL());
@@ -884,7 +884,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   // Number of granted objects should be 2.
   url::Origin origin =
       url::Origin::Create(web_contents_->GetLastCommittedURL());
-  BluetoothChooserContext* context =
+  permissions::BluetoothChooserContext* context =
       BluetoothChooserContextFactory::GetForProfile(browser()->profile());
   const auto objects = context->GetGrantedObjects(origin);
   EXPECT_EQ(2u, objects.size());

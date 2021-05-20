@@ -9,9 +9,9 @@
 #include "base/scoped_observer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/bluetooth/bluetooth_chooser_context.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -39,7 +39,8 @@ using device::BluetoothUUID;
 
 namespace {
 
-BluetoothChooserContext* GetBluetoothChooserContext(RenderFrameHost* frame) {
+permissions::BluetoothChooserContext* GetBluetoothChooserContext(
+    RenderFrameHost* frame) {
   auto* profile = Profile::FromBrowserContext(frame->GetBrowserContext());
   return BluetoothChooserContextFactory::GetForProfile(profile);
 }
@@ -181,7 +182,7 @@ ChromeBluetoothDelegate::GetPermittedDevices(content::RenderFrameHost* frame) {
   for (const auto& object : objects) {
     auto permitted_device = blink::mojom::WebBluetoothDevice::New();
     permitted_device->id =
-        BluetoothChooserContext::GetObjectDeviceId(object->value);
+        permissions::BluetoothChooserContext::GetObjectDeviceId(object->value);
     permitted_device->name =
         base::UTF16ToUTF8(context->GetObjectDisplayName(object->value));
     permitted_devices.push_back(std::move(permitted_device));

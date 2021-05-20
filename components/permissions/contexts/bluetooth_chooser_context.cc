@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/bluetooth/bluetooth_chooser_context.h"
+#include "components/permissions/contexts/bluetooth_chooser_context.h"
 
 #include <memory>
 #include <utility>
@@ -10,16 +10,18 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "device/bluetooth/bluetooth_adapter.h"
+#include "components/permissions/permissions_client.h"
+#include "content/public/browser/browser_context.h"
+#include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 #include "url/origin.h"
 
 using blink::WebBluetoothDeviceId;
 using device::BluetoothUUID;
-using device::BluetoothUUIDHash;
+
+namespace permissions {
 
 namespace {
 
@@ -124,11 +126,12 @@ base::Value DeviceInfoToDeviceObject(
 
 }  // namespace
 
-BluetoothChooserContext::BluetoothChooserContext(Profile* profile)
+BluetoothChooserContext::BluetoothChooserContext(
+    content::BrowserContext* browser_context)
     : ObjectPermissionContextBase(
           ContentSettingsType::BLUETOOTH_GUARD,
           ContentSettingsType::BLUETOOTH_CHOOSER_DATA,
-          HostContentSettingsMapFactory::GetForProfile(profile)) {}
+          PermissionsClient::Get()->GetSettingsMap(browser_context)) {}
 
 BluetoothChooserContext::~BluetoothChooserContext() = default;
 
@@ -330,3 +333,5 @@ base::Value BluetoothChooserContext::FindDeviceObject(
   }
   return base::Value(base::Value::Type::NONE);
 }
+
+}  // namespace permissions

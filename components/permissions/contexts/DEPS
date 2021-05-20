@@ -2,6 +2,9 @@ include_rules = [
   "+components/content_settings/browser",
   "+components/location",
   "+components/prefs",
+  "+device/bluetooth",
   "+mojo/public",
   "+services/device/public",
+  "+third_party/blink/public/common",
+  "+third_party/blink/public/mojom",
 ]

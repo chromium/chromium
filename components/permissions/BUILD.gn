@@ -19,6 +19,8 @@ source_set("permissions") {
   sources = [
     "chooser_controller.cc",
     "chooser_controller.h",
+    "contexts/bluetooth_chooser_context.cc",
+    "contexts/bluetooth_chooser_context.h",
     "contexts/clipboard_read_write_permission_context.cc",
     "contexts/clipboard_read_write_permission_context.h",
     "contexts/clipboard_sanitized_write_permission_context.cc",
@@ -95,6 +97,8 @@ source_set("permissions") {
     "//components/variations",
     "//components/vector_icons",
     "//content/public/browser",
+    "//device/bluetooth",
+    "//device/bluetooth/public/cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//sql",
     "//third_party/blink/public/common",

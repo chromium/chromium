@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 
 #include "build/build_config.h"
-#include "chrome/browser/bluetooth/bluetooth_chooser_context.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
@@ -22,6 +21,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"

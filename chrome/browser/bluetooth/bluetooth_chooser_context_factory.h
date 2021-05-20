@@ -9,13 +9,16 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
-class BluetoothChooserContext;
 class Profile;
+
+namespace permissions {
+class BluetoothChooserContext;
+}
 
 class BluetoothChooserContextFactory
     : public BrowserContextKeyedServiceFactory {
  public:
-  static BluetoothChooserContext* GetForProfile(Profile* profile);
+  static permissions::BluetoothChooserContext* GetForProfile(Profile* profile);
   static BluetoothChooserContextFactory* GetInstance();
 
   // Move-only class.
@@ -30,9 +33,9 @@ class BluetoothChooserContextFactory
   BluetoothChooserContextFactory();
   ~BluetoothChooserContextFactory() override;
 
-  // BrowserContextKeyedBaseFactory implementation:
+  // BrowserContextKeyedServiceFactory implementation:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* profile) const override;
+      content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
