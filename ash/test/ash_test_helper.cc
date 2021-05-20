@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/app_list/test/app_list_test_helper.h"
@@ -252,6 +253,11 @@ void AshTestHelper::SetUp(InitParams init_params) {
   chromeos::LoginState::Initialize();
 
   ambient_ash_test_helper_ = std::make_unique<AmbientAshTestHelper>();
+
+  // There is a temporary M92-M94 notification that shows once to users
+  // at startup, but this interferes with many tests that expect a
+  // specific active window, or a certain number of notifications.
+  AcceleratorControllerImpl::SetShouldShowShortcutNotificationForTest(false);
 
   ShellInitParams shell_init_params;
   shell_init_params.delegate = std::move(init_params.delegate);

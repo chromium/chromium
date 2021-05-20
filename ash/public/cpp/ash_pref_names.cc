@@ -636,6 +636,11 @@ const char kLastUsedImeShortcutReminderDismissed[] =
 const char kNextImeShortcutReminderDismissed[] =
     "ash.shortcut_reminders.next_ime_dismissed";
 
+// An integet pref that tracks how many times the user has been shown the
+// notification about shortcuts changing.
+const char kImprovedShortcutsNotificationShownCount[] =
+    "ash.improved_shortcuts_notification_shown_count";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

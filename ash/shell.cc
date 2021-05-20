@@ -682,6 +682,10 @@ Shell::~Shell() {
   // it before destroying |tablet_mode_controller_|.
   accessibility_controller_->Shutdown();
 
+  // Because this function will call |SessionController::RemoveObserver|, do it
+  // before destroying |session_controller_|.
+  accelerator_controller_->Shutdown();
+
   // Shutdown tablet mode controller early on since it has some observers which
   // need to be removed. It will be destroyed later after all windows are closed
   // since it might be accessed during this process.
