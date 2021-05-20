@@ -109,14 +109,8 @@ class BrowserTestHelper {
  public:
   BrowserTestHelper(const std::wstring& gaia_id,
                     const std::wstring& email,
-                    const std::string& refresh_token,
-                    int import_only_on_first_run,
-                    int import_on_primary_account)
-      : gaia_id_(gaia_id),
-        email_(email),
-        refresh_token_(refresh_token),
-        import_only_on_first_run_(import_only_on_first_run),
-        import_on_primary_account_(import_on_primary_account) {}
+                    const std::string& refresh_token)
+      : gaia_id_(gaia_id), email_(email), refresh_token_(refresh_token) {}
 
  protected:
   void CreateRegKey(base::win::RegKey* key) {
@@ -168,21 +162,6 @@ class BrowserTestHelper {
     base::win::RegKey key;
     CreateRegKey(&key);
 
-    if (import_only_on_first_run_ != 2) {
-      EXPECT_TRUE(key.Valid());
-      EXPECT_EQ(ERROR_SUCCESS,
-                key.WriteValue(credential_provider::kAllowImportOnlyOnFirstRun,
-                               import_only_on_first_run_));
-    }
-
-    if (import_on_primary_account_ != 2) {
-      EXPECT_TRUE(key.Valid());
-      EXPECT_EQ(ERROR_SUCCESS,
-                key.WriteValue(
-                    credential_provider::kAllowImportWhenPrimaryAccountExists,
-                    import_on_primary_account_));
-    }
-
     if (!email_.empty()) {
       EXPECT_TRUE(key.Valid());
       EXPECT_EQ(ERROR_SUCCESS,
@@ -213,8 +192,6 @@ class BrowserTestHelper {
   std::wstring gaia_id_;
   std::wstring email_;
   std::string refresh_token_;
-  int import_only_on_first_run_;
-  int import_on_primary_account_;
 };
 
 class SigninUtilWinBrowserTest
@@ -225,9 +202,7 @@ class SigninUtilWinBrowserTest
   SigninUtilWinBrowserTest()
       : BrowserTestHelper(GetParam().gaia_id,
                           GetParam().email,
-                          GetParam().refresh_token,
-                          2,
-                          2) {}
+                          GetParam().refresh_token) {}
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -391,15 +366,13 @@ INSTANTIATE_TEST_SUITE_P(SigninUtilWinBrowserTest6,
                              /*gaia_id=*/L"gaia-123456",
                              /*email=*/L"foo@gmail.com",
                              /*refresh_token=*/"lst-123456",
-                             /*expect_is_started=*/false)));
+                             /*expect_is_started=*/true)));
 
 struct ExistingWinBrowserSigninUtilTestParams : SigninUtilWinBrowserTestParams {
   ExistingWinBrowserSigninUtilTestParams(
       const std::wstring& gaia_id,
       const std::wstring& email,
       const std::string& refresh_token,
-      const int allow_import_only_on_first_run,
-      const int allow_import_on_primary_account,
       const std::wstring& existing_email,
       bool expect_is_started)
       : SigninUtilWinBrowserTestParams(false,
@@ -407,12 +380,8 @@ struct ExistingWinBrowserSigninUtilTestParams : SigninUtilWinBrowserTestParams {
                                        email,
                                        refresh_token,
                                        expect_is_started),
-        import_only_on_first_run(allow_import_only_on_first_run),
-        import_on_primary_account(allow_import_on_primary_account),
         existing_email(existing_email) {}
 
-  int import_only_on_first_run;
-  int import_on_primary_account;
   std::wstring existing_email;
 };
 
@@ -425,9 +394,7 @@ class ExistingWinBrowserSigninUtilTest
   ExistingWinBrowserSigninUtilTest()
       : BrowserTestHelper(GetParam().gaia_id,
                           GetParam().email,
-                          GetParam().refresh_token,
-                          GetParam().import_only_on_first_run,
-                          GetParam().import_on_primary_account) {}
+                          GetParam().refresh_token) {}
 
  protected:
   bool SetUpUserDataDirectory() override {
@@ -482,25 +449,12 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserSigninUtilTest, ExistingWinBrowser) {
     ExpectRefreshTokenExists(false);
 }
 
-INSTANTIATE_TEST_SUITE_P(OnlyAllowFirstRun,
-                         ExistingWinBrowserSigninUtilTest,
-                         testing::Values(ExistingWinBrowserSigninUtilTestParams(
-                             /*gaia_id=*/L"gaia-123456",
-                             /*email=*/L"foo@gmail.com",
-                             /*refresh_token=*/"lst-123456",
-                             /*import_only_on_first_run=*/1,
-                             /*import_on_primary_account=*/0,
-                             /*existing_email=*/std::wstring(),
-                             /*expect_is_started=*/false)));
-
 INSTANTIATE_TEST_SUITE_P(AllowSubsequentRun,
                          ExistingWinBrowserSigninUtilTest,
                          testing::Values(ExistingWinBrowserSigninUtilTestParams(
                              /*gaia_id=*/L"gaia-123456",
                              /*email=*/L"foo@gmail.com",
                              /*refresh_token=*/"lst-123456",
-                             /*import_only_on_first_run=*/0,
-                             /*import_on_primary_account=*/0,
                              /*existing_email=*/std::wstring(),
                              /*expect_is_started=*/true)));
 
@@ -510,8 +464,6 @@ INSTANTIATE_TEST_SUITE_P(OnlyAllowProfileWithNoPrimaryAccount,
                              /*gaia_id=*/L"gaia_id_for_foo_gmail.com",
                              /*email=*/L"foo@gmail.com",
                              /*refresh_token=*/"lst-123456",
-                             /*import_only_on_first_run=*/0,
-                             /*import_on_primary_account=*/0,
                              /*existing_email=*/L"bar@gmail.com",
                              /*expect_is_started=*/false)));
 
@@ -521,21 +473,9 @@ INSTANTIATE_TEST_SUITE_P(AllowProfileWithPrimaryAccount_DifferentUser,
                              /*gaia_id=*/L"gaia_id_for_foo_gmail.com",
                              /*email=*/L"foo@gmail.com",
                              /*refresh_token=*/"lst-123456",
-                             /*import_only_on_first_run=*/0,
-                             /*import_on_primary_account=*/1,
                              /*existing_email=*/L"bar@gmail.com",
                              /*expect_is_started=*/false)));
 
-INSTANTIATE_TEST_SUITE_P(AllowProfileWithPrimaryAccount_DisabledImport,
-                         ExistingWinBrowserSigninUtilTest,
-                         testing::Values(ExistingWinBrowserSigninUtilTestParams(
-                             /*gaia_id=*/L"gaia_id_for_foo_gmail.com",
-                             /*email=*/L"foo@gmail.com",
-                             /*refresh_token=*/"lst-123456",
-                             /*import_only_on_first_run=*/0,
-                             /*import_on_primary_account=*/0,
-                             /*existing_email=*/L"foo@gmail.com",
-                             /*expect_is_started=*/false)));
 
 INSTANTIATE_TEST_SUITE_P(AllowProfileWithPrimaryAccount_SameUser,
                          ExistingWinBrowserSigninUtilTest,
@@ -543,8 +483,6 @@ INSTANTIATE_TEST_SUITE_P(AllowProfileWithPrimaryAccount_SameUser,
                              /*gaia_id=*/L"gaia_id_for_foo_gmail.com",
                              /*email=*/L"foo@gmail.com",
                              /*refresh_token=*/"lst-123456",
-                             /*import_only_on_first_run=*/0,
-                             /*import_on_primary_account=*/1,
                              /*existing_email=*/L"foo@gmail.com",
                              /*expect_is_started=*/true)));
 
@@ -605,9 +543,7 @@ class ExistingWinBrowserProfilesSigninUtilTest
   ExistingWinBrowserProfilesSigninUtilTest()
       : BrowserTestHelper(L"gaia_id_for_foo_gmail.com",
                           L"foo@gmail.com",
-                          "lst-123456",
-                          0,
-                          1) {
+                          "lst-123456") {
     // TODO(droger): Disable the profile picker using the local state preference
     // instead.
     feature_list_.InitAndDisableFeature(features::kNewProfilePicker);
@@ -624,7 +560,7 @@ class ExistingWinBrowserProfilesSigninUtilTest
       SetSigninUtilRegistry();
     } else if (IsPrePreTest() && GetParam().cred_provider_used_other_profile) {
       BrowserTestHelper(L"gaia_id_for_bar_gmail.com", L"bar@gmail.com",
-                        "lst-123456", 0, 1)
+                        "lst-123456")
           .SetSigninUtilRegistry();
     }
 

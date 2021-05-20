@@ -141,30 +141,13 @@ void ImportCredentialsFromProvider(Profile* profile,
   profile->GetPrefs()->SetBoolean(prefs::kSignedInWithCredentialProvider, true);
 }
 
-// Extracts preferences to consider while signing in through credential
-// provider. The preferences are set by credential provider after a successful
-// login. They manipulate the behavior of Chrome when importing refresh_token
-// provided by credential provider. When |allow_import_only_on_first_run| is
-// set to true, importing refresh_token is only allowed during Chrome
-// first time run. If it is false, refresh_token is allowed to be imported in
-// subsequent runs. When |allow_import_when_primary_account_exists| is set to
-// false, importing refresh_token is only allowed when profile doesn't have a
-// primary account. If |allow_import_when_primary_account_exists| is set to
-// true, importing refresh_token is allowed even if the profile has primary
-// account for the user authenticated through credential provider.
-void ExtractCredentialImportPreferences(
-    std::wstring* cred_provider_gaia_id,
-    std::wstring* cred_provider_email,
-    bool* allow_import_only_on_first_run,
-    bool* allow_import_when_primary_account_exists) {
+// Extracts the |cred_provider_gaia_id| and |cred_provider_email| for the user
+// signed in throuhg credential provider.
+void ExtractCredentialProviderUser(std::wstring* cred_provider_gaia_id,
+                                   std::wstring* cred_provider_email) {
   DCHECK(cred_provider_gaia_id);
   DCHECK(cred_provider_email);
-  DCHECK(allow_import_only_on_first_run);
-  DCHECK(allow_import_when_primary_account_exists);
 
-  // Initialize to more restricted configuration.
-  *allow_import_only_on_first_run = true;
-  *allow_import_when_primary_account_exists = false;
   cred_provider_gaia_id->clear();
   cred_provider_email->clear();
 
@@ -189,23 +172,8 @@ void ExtractCredentialImportPreferences(
     return;
   }
 
-  // No need to return immediately if reading following registries fail. They
-  // will set to be stricter by default. cred_provider_gaia_id and
-  // cred_provider_email will be correctly set, though.
-  DWORD reg_import_only_on_first_run = 1;
-  key_account.ReadValueDW(credential_provider::kAllowImportOnlyOnFirstRun,
-                          &reg_import_only_on_first_run);
-
-  DWORD reg_import_when_primary_account_exists = 0;
-  key_account.ReadValueDW(
-      credential_provider::kAllowImportWhenPrimaryAccountExists,
-      &reg_import_when_primary_account_exists);
-
   *cred_provider_gaia_id = it.Name();
   *cred_provider_email = email;
-  *allow_import_only_on_first_run = (reg_import_only_on_first_run == 1);
-  *allow_import_when_primary_account_exists =
-      (reg_import_when_primary_account_exists == 1);
 }
 
 // Attempt to sign in with a credentials from a system installed credential
@@ -306,14 +274,16 @@ bool IsGCPWUsedInOtherProfile(Profile* profile) {
 }
 
 void SigninWithCredentialProviderIfPossible(Profile* profile) {
-  bool import_only_on_first_run = true;
-  bool import_when_primary_account_exists = false;
+  // This flow is used for first time signin through credential provider. Any
+  // subsequent signin for the credential provider user needs to go through
+  // reauth flow.
+  if (profile->GetPrefs()->GetBoolean(prefs::kSignedInWithCredentialProvider))
+    return;
+
   std::wstring cred_provider_gaia_id;
   std::wstring cred_provider_email;
 
-  ExtractCredentialImportPreferences(
-      &cred_provider_gaia_id, &cred_provider_email, &import_only_on_first_run,
-      &import_when_primary_account_exists);
+  ExtractCredentialProviderUser(&cred_provider_gaia_id, &cred_provider_email);
   if (cred_provider_gaia_id.empty() || cred_provider_email.empty())
     return;
 
@@ -326,19 +296,12 @@ void SigninWithCredentialProviderIfPossible(Profile* profile) {
     return;
   }
 
-  if (import_only_on_first_run && !first_run::IsChromeFirstRun())
-    return;
-
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   std::wstring gaia_id;
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     gaia_id = base::UTF8ToWide(
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
             .gaia);
-
-    if (!import_when_primary_account_exists) {
-      return;
-    }
   }
 
   TrySigninWithCredentialProvider(profile, gaia_id, gaia_id.empty());
