@@ -105,6 +105,7 @@ ts_library("library") {
     #"components-chromium/paper-behaviors/paper-inky-focus-behavior.d.ts",
     #"components-chromium/paper-behaviors/paper-ripple-behavior.d.ts",
     "components-chromium/paper-progress/paper-progress.d.ts",
+    "components-chromium/paper-ripple/paper-ripple.d.ts",
     "components-chromium/paper-spinner/paper-spinner-behavior.d.ts",
     "components-chromium/paper-spinner/paper-spinner-lite.d.ts",
     "components-chromium/paper-spinner/paper-spinner-styles.d.ts",

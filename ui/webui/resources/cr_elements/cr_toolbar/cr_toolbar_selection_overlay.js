@@ -13,82 +13,112 @@
  * tab-traversal.
  */
 
-import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {IronA11yAnnouncer} from '//resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import '../cr_button/cr_button.m.js';
 import '../cr_icon_button/cr_icon_button.m.js';
 import '../icons.m.js';
 import '../shared_vars_css.m.js';
 
-Polymer({
-  is: 'cr-toolbar-selection-overlay',
+import {IronA11yAnnouncer} from '//resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+import {Debouncer, html, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  _template: html`{__html_template__}`,
+export class CrToolbarSelectionOverlayElement extends PolymerElement {
+  static get is() {
+    return 'cr-toolbar-selection-overlay';
+  }
 
-  properties: {
-    show: {
-      type: Boolean,
-      observer: 'onShowChanged_',
-      reflectToAttribute: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    deleteLabel: String,
+  static get properties() {
+    return {
+      show: {
+        type: Boolean,
+        observer: 'onShowChanged_',
+        reflectToAttribute: true,
+      },
 
-    cancelLabel: String,
+      deleteLabel: String,
 
-    selectionLabel: String,
+      cancelLabel: String,
 
-    deleteDisabled: Boolean,
+      selectionLabel: String,
 
-    /** @private */
-    hasShown_: Boolean,
+      deleteDisabled: Boolean,
 
-    /** @private */
-    selectionLabel_: String,
-  },
+      /** @private */
+      hasShown_: Boolean,
 
-  observers: [
-    'updateSelectionLabel_(show, selectionLabel)',
-  ],
+      /** @private */
+      selectionLabel_: String,
+    };
+  }
 
-  hostAttributes: {
-    'role': 'toolbar',
-  },
+  static get observers() {
+    return [
+      'updateSelectionLabel_(show, selectionLabel)',
+    ];
+  }
+
+  constructor() {
+    super();
+
+    /** @private {Debouncer} */
+    this.debouncer_;
+  }
+
+  ready() {
+    super.ready();
+    this.setAttribute('role', 'toolbar');
+  }
 
   /** @return {HTMLElement} */
   get deleteButton() {
-    return /** @type {HTMLElement} */ (this.$$('#delete'));
-  },
+    return /** @type {HTMLElement} */ (
+        this.shadowRoot.querySelector('#delete'));
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
 
   /** @private */
   onClearSelectionClick_() {
-    this.fire('clear-selected-items');
-  },
+    this.fire_('clear-selected-items');
+  }
 
   /** @private */
   onDeleteClick_() {
-    this.fire('delete-selected-items');
-  },
+    this.fire_('delete-selected-items');
+  }
 
   /** @private */
   updateSelectionLabel_() {
     // Do this update in a microtask to ensure |show| and |selectionLabel|
     // are both updated.
-    this.debounce('updateSelectionLabel_', () => {
+    this.debouncer_ = Debouncer.debounce(this.debouncer_, microTask, () => {
       this.selectionLabel_ =
           this.show ? this.selectionLabel : this.selectionLabel_;
       this.setAttribute('aria-label', this.selectionLabel_);
 
       IronA11yAnnouncer.requestAvailability();
-      this.fire('iron-announce', {text: this.selectionLabel});
+      this.fire_('iron-announce', {text: this.selectionLabel});
     });
-  },
+  }
 
   /** @private */
   onShowChanged_() {
     if (this.show) {
       this.hasShown_ = true;
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    CrToolbarSelectionOverlayElement.is, CrToolbarSelectionOverlayElement);

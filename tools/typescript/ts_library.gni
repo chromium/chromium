@@ -110,7 +110,13 @@ template("ts_library") {
       "chrome://resources/polymer/v3_0/*|" +
           rebase_path("//third_party/polymer/v3_0/components-chromium/*",
                       target_gen_dir),
+      "//resources/polymer/v3_0/*|" +
+          rebase_path("//third_party/polymer/v3_0/components-chromium/*",
+                      target_gen_dir),
       "chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js|" + rebase_path(
+              "//third_party/polymer/v3_0/components-chromium/polymer/polymer.d.ts",
+              target_gen_dir),
+      "//resources/polymer/v3_0/polymer/polymer_bundled.min.js|" + rebase_path(
               "//third_party/polymer/v3_0/components-chromium/polymer/polymer.d.ts",
               target_gen_dir),
     ]
