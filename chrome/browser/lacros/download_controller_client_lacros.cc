@@ -40,7 +40,7 @@ crosapi::mojom::DownloadEventPtr BuildDownloadEvent(
   crosapi::mojom::DownloadEventPtr dle = crosapi::mojom::DownloadEvent::New();
   dle->state = ConvertDownloadState(item->GetState());
   dle->target_file_path = item->GetTargetFilePath();
-  dle->is_from_icognito_profile = profile->IsIncognitoProfile();
+  dle->is_from_incognito_profile = profile->IsIncognitoProfile();
   return dle;
 }
 }  // namespace

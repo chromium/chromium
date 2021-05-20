@@ -728,7 +728,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
   // Create a corresponding `crosapi::mojom::DownloadEvent`.
   crosapi::mojom::DownloadEventPtr dle = crosapi::mojom::DownloadEvent::New();
   dle->target_file_path = file_path;
-  dle->is_from_icognito_profile = false;
+  dle->is_from_incognito_profile = false;
 
   auto* download_controller =
       crosapi::CrosapiManager::Get()->crosapi_ash()->download_controller_ash();
@@ -747,12 +747,12 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
 
   // Make sure incognito downloads are ignored.
   dle->state = crosapi::mojom::DownloadState::kComplete;
-  dle->is_from_icognito_profile = true;
+  dle->is_from_incognito_profile = true;
   download_controller->OnDownloadUpdated(dle.Clone());
   ASSERT_EQ(0u, model->items().size());
 
   // Finally complete the download.
-  dle->is_from_icognito_profile = false;
+  dle->is_from_incognito_profile = false;
   download_controller->OnDownloadUpdated(dle.Clone());
   ASSERT_EQ(1u, model->items().size());
 

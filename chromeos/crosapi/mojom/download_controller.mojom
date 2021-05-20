@@ -21,7 +21,7 @@ enum DownloadState {
 struct DownloadEvent {
   DownloadState state@0;
   mojo_base.mojom.FilePath target_file_path@1;
-  bool is_from_icognito_profile@2;
+  bool is_from_incognito_profile@2;
 };
 
 // Allows lacros to pass download information to ash-chrome.

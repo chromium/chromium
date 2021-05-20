@@ -266,7 +266,7 @@ void HoldingSpaceDownloadsDelegate::EraseDownload(
 void HoldingSpaceDownloadsDelegate::OnLacrosDownloadUpdated(
     const crosapi::mojom::DownloadEvent& event) {
   // For now, we ignore incognito downloads to match current behavior.
-  if (event.is_from_icognito_profile)
+  if (event.is_from_incognito_profile)
     return;
   if (event.state == crosapi::mojom::DownloadState::kComplete) {
     service()->AddDownload(ash::HoldingSpaceItem::Type::kLacrosDownload,
