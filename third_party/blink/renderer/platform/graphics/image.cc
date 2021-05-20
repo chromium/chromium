@@ -327,8 +327,8 @@ bool Image::ApplyShader(PaintFlags& flags, const SkMatrix& local_matrix) {
   if (!image)
     return false;
 
-  flags.setShader(PaintShader::MakeImage(image, SkTileMode::kRepeat,
-                                         SkTileMode::kRepeat, &local_matrix));
+  flags.setShader(PaintShader::MakeImage(image, SkTileMode::kClamp,
+                                         SkTileMode::kClamp, &local_matrix));
   if (!flags.HasShader())
     return false;
 

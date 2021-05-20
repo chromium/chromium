@@ -481,7 +481,7 @@ bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
 
   const FloatRect bounds(FloatPoint(), draw_info.ContainerSize());
   flags.setShader(PaintShader::MakePaintRecord(
-      std::move(record), bounds, SkTileMode::kRepeat, SkTileMode::kRepeat,
+      std::move(record), bounds, SkTileMode::kClamp, SkTileMode::kClamp,
       &local_matrix));
 
   // Animation is normally refreshed in Draw() impls, which we don't reach when

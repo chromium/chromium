@@ -239,6 +239,9 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
                     ImageClampingMode,
                     ImageDecodingMode) = 0;
 
+  // Apply this Image as a shader to the passed PaintFlags. This is currently
+  // only used by GraphicsContext::DrawImageRRect() and to match the semantics
+  // of that function the shader should use a clamping tile mode if possible.
   virtual bool ApplyShader(cc::PaintFlags&, const SkMatrix& local_matrix);
 
   // Use ContextProvider() for immediate use only, use
