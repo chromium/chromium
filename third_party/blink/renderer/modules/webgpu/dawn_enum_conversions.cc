@@ -11,39 +11,6 @@
 namespace blink {
 
 template <>
-WGPUBindingType AsDawnEnum<WGPUBindingType>(const WTF::String& webgpu_enum) {
-  if (webgpu_enum == "uniform-buffer") {
-    return WGPUBindingType_UniformBuffer;
-  }
-  if (webgpu_enum == "storage-buffer") {
-    return WGPUBindingType_StorageBuffer;
-  }
-  if (webgpu_enum == "readonly-storage-buffer") {
-    return WGPUBindingType_ReadonlyStorageBuffer;
-  }
-  if (webgpu_enum == "sampler") {
-    return WGPUBindingType_Sampler;
-  }
-  if (webgpu_enum == "comparison-sampler") {
-    return WGPUBindingType_ComparisonSampler;
-  }
-  if (webgpu_enum == "sampled-texture") {
-    return WGPUBindingType_SampledTexture;
-  }
-  if (webgpu_enum == "multisampled-texture") {
-    return WGPUBindingType_MultisampledTexture;
-  }
-  if (webgpu_enum == "readonly-storage-texture") {
-    return WGPUBindingType_ReadonlyStorageTexture;
-  }
-  if (webgpu_enum == "writeonly-storage-texture") {
-    return WGPUBindingType_WriteonlyStorageTexture;
-  }
-  NOTREACHED();
-  return WGPUBindingType_Force32;
-}
-
-template <>
 WGPUBufferBindingType AsDawnEnum<WGPUBufferBindingType>(
     const WTF::String& webgpu_enum) {
   if (webgpu_enum == "uniform") {

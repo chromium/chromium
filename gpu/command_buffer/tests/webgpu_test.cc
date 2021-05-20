@@ -155,17 +155,19 @@ void WebGPUTest::RunPendingTasks() {
 }
 
 void WebGPUTest::WaitForCompletion(wgpu::Device device) {
-  // Insert a fence signal and wait for it to be signaled. The guarantees of
+  // Wait for any work submitted to the queue to be finished. The guarantees of
   // Dawn are that all previous operations will have been completed and more
   // importantly the callbacks will have been called.
   wgpu::Queue queue = device.GetQueue();
-  wgpu::FenceDescriptor fence_desc{nullptr, 0};
-  wgpu::Fence fence = queue.CreateFence(&fence_desc);
+  bool done = false;
+  queue.OnSubmittedWorkDone(
+      0u,
+      [](WGPUQueueWorkDoneStatus, void* userdata) {
+        *static_cast<bool*>(userdata) = true;
+      },
+      &done);
 
-  queue.Submit(0, nullptr);
-  queue.Signal(fence, 1u);
-
-  while (fence.GetCompletedValue() < 1) {
+  while (!done) {
     device.Tick();
     webgpu()->FlushCommands();
     RunPendingTasks();

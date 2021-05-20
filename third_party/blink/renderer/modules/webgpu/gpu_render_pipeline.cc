@@ -178,8 +178,8 @@ void AsDawnVertexBufferLayouts(
     v8::Isolate* isolate,
     GPUDevice* device,
     v8::Local<v8::Value> vertex_buffers_value,
-    Vector<WGPUVertexBufferLayoutDescriptor>* dawn_vertex_buffers,
-    Vector<WGPUVertexAttributeDescriptor>* dawn_vertex_attributes,
+    Vector<WGPUVertexBufferLayout>* dawn_vertex_buffers,
+    Vector<WGPUVertexAttribute>* dawn_vertex_attributes,
     ExceptionState& exception_state) {
   if (!vertex_buffers_value->IsArray()) {
     exception_state.ThrowTypeError("vertexBuffers must be an array");
@@ -190,9 +190,9 @@ void AsDawnVertexBufferLayouts(
   v8::Local<v8::Array> vertex_buffers = vertex_buffers_value.As<v8::Array>();
 
   // First we collect all the descriptors but we don't set
-  // WGPUVertexBufferLayoutDescriptor::attributes
+  // WGPUVertexBufferLayout::attributes
   // TODO(cwallez@chromium.org): Should we validate the Length() first so we
-  // don't risk creating HUGE vectors of WGPUVertexBufferLayoutDescriptor from
+  // don't risk creating HUGE vectors of WGPUVertexBufferLayout from
   // the sparse array?
   for (uint32_t i = 0; i < vertex_buffers->Length(); ++i) {
     // This array can be sparse. Skip empty slots.
@@ -200,7 +200,7 @@ void AsDawnVertexBufferLayouts(
     v8::Local<v8::Value> value;
     if (!maybe_value.ToLocal(&value) || value.IsEmpty() ||
         value->IsNullOrUndefined()) {
-      WGPUVertexBufferLayoutDescriptor dawn_vertex_buffer = {};
+      WGPUVertexBufferLayout dawn_vertex_buffer = {};
       dawn_vertex_buffer.arrayStride = 0;
       dawn_vertex_buffer.stepMode = WGPUInputStepMode_Vertex;
       dawn_vertex_buffer.attributeCount = 0;
@@ -216,7 +216,7 @@ void AsDawnVertexBufferLayouts(
       return;
     }
 
-    WGPUVertexBufferLayoutDescriptor dawn_vertex_buffer = {};
+    WGPUVertexBufferLayout dawn_vertex_buffer = {};
     dawn_vertex_buffer.arrayStride = vertex_buffer->arrayStride();
     dawn_vertex_buffer.stepMode =
         AsDawnEnum<WGPUInputStepMode>(vertex_buffer->stepMode());
@@ -227,7 +227,7 @@ void AsDawnVertexBufferLayouts(
 
     for (wtf_size_t j = 0; j < vertex_buffer->attributes().size(); ++j) {
       const GPUVertexAttribute* attribute = vertex_buffer->attributes()[j];
-      WGPUVertexAttributeDescriptor dawn_vertex_attribute = {};
+      WGPUVertexAttribute dawn_vertex_attribute = {};
       dawn_vertex_attribute.shaderLocation = attribute->shaderLocation();
       dawn_vertex_attribute.offset = attribute->offset();
       dawn_vertex_attribute.format =
@@ -236,11 +236,11 @@ void AsDawnVertexBufferLayouts(
     }
   }
 
-  // Set up pointers in DawnVertexBufferLayoutDescriptor::attributes only
+  // Set up pointers in DawnVertexBufferLayout::attributes only
   // after we stopped appending to the vector so the pointers aren't
   // invalidated.
   uint32_t attributeIndex = 0;
-  for (WGPUVertexBufferLayoutDescriptor& buffer : *dawn_vertex_buffers) {
+  for (WGPUVertexBufferLayout& buffer : *dawn_vertex_buffers) {
     if (buffer.attributeCount == 0) {
       continue;
     }
