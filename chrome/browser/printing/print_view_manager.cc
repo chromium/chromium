@@ -242,10 +242,8 @@ bool PrintViewManager::PrintPreview(
 }
 
 void PrintViewManager::DidShowPrintDialog() {
-  if (print_manager_host_receivers_.GetCurrentTargetFrame() !=
-      print_preview_rfh_) {
+  if (GetCurrentTargetFrame() != print_preview_rfh_)
     return;
-  }
 
   if (on_print_dialog_shown_callback_)
     std::move(on_print_dialog_shown_callback_).Run();
@@ -255,8 +253,7 @@ void PrintViewManager::SetupScriptedPrintPreview(
     SetupScriptedPrintPreviewCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto& map = g_scripted_print_preview_closure_map.Get();
-  content::RenderFrameHost* rfh =
-      print_manager_host_receivers_.GetCurrentTargetFrame();
+  content::RenderFrameHost* rfh = GetCurrentTargetFrame();
   content::RenderProcessHost* rph = rfh->GetProcess();
 
   if (base::Contains(map, rph)) {
@@ -304,8 +301,7 @@ void PrintViewManager::ShowScriptedPrintPreview(bool source_is_modifiable) {
     return;
 
   DCHECK(print_preview_rfh_);
-  if (print_manager_host_receivers_.GetCurrentTargetFrame() !=
-      print_preview_rfh_)
+  if (GetCurrentTargetFrame() != print_preview_rfh_)
     return;
 
   PrintPreviewDialogController* dialog_controller =
@@ -329,9 +325,7 @@ void PrintViewManager::ShowScriptedPrintPreview(bool source_is_modifiable) {
 
 void PrintViewManager::RequestPrintPreview(
     mojom::RequestPrintPreviewParamsPtr params) {
-  content::RenderFrameHost* render_frame_host =
-      print_manager_host_receivers_.GetCurrentTargetFrame();
-
+  content::RenderFrameHost* render_frame_host = GetCurrentTargetFrame();
   if (RejectPrintPreviewRequestIfRestricted(render_frame_host))
     return;
 

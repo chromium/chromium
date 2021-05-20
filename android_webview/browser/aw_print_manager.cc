@@ -42,7 +42,7 @@ AwPrintManager::AwPrintManager(content::WebContents* contents)
 AwPrintManager::~AwPrintManager() = default;
 
 void AwPrintManager::PdfWritingDone(int page_count) {
-  pdf_writing_done_callback_.Run(page_count);
+  pdf_writing_done_callback().Run(page_count);
   // Invalidate the file descriptor so it doesn't get reused.
   fd_ = -1;
 }
@@ -60,7 +60,7 @@ void AwPrintManager::GetDefaultPrintSettings(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto params = printing::mojom::PrintParams::New();
   printing::RenderParamsFromPrintSettings(*settings_, params.get());
-  params->document_cookie = cookie_;
+  params->document_cookie = cookie();
   std::move(callback).Run(std::move(params));
 }
 
@@ -68,12 +68,12 @@ void AwPrintManager::UpdateParam(
     std::unique_ptr<printing::PrintSettings> settings,
     int file_descriptor,
     PrintManager::PdfWritingDoneCallback callback) {
+  DCHECK(settings);
+  DCHECK(callback);
   settings_ = std::move(settings);
-  DCHECK(settings_);
   fd_ = file_descriptor;
-  pdf_writing_done_callback_ = std::move(callback);
-  DCHECK(pdf_writing_done_callback_);
-  cookie_ = 1;  // Set a valid dummy cookie value.
+  set_pdf_writing_done_callback(std::move(callback));
+  set_cookie(1);  // Set a valid dummy cookie value.
 }
 
 void AwPrintManager::ScriptedPrint(
@@ -91,7 +91,7 @@ void AwPrintManager::ScriptedPrint(
 void AwPrintManager::DidPrintDocument(
     printing::mojom::DidPrintDocumentParamsPtr params,
     DidPrintDocumentCallback callback) {
-  if (params->document_cookie != cookie_) {
+  if (params->document_cookie != cookie()) {
     std::move(callback).Run(false);
     return;
   }
@@ -115,22 +115,22 @@ void AwPrintManager::DidPrintDocument(
     return;
   }
 
-  if (number_pages_ > printing::kMaxPageCount) {
+  if (number_pages() > printing::kMaxPageCount) {
     web_contents()->Stop();
     PdfWritingDone(0);
     std::move(callback).Run(false);
     return;
   }
 
-  DCHECK(pdf_writing_done_callback_);
+  DCHECK(pdf_writing_done_callback());
   base::PostTaskAndReplyWithResult(
       base::ThreadPool::CreateTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
           .get(),
-      FROM_HERE, base::BindOnce(&SaveDataToFd, fd_, number_pages_, data),
+      FROM_HERE, base::BindOnce(&SaveDataToFd, fd_, number_pages(), data),
       base::BindOnce(&AwPrintManager::OnDidPrintDocumentWritingDone,
-                     pdf_writing_done_callback_, std::move(callback)));
+                     pdf_writing_done_callback(), std::move(callback)));
 }
 
 // static

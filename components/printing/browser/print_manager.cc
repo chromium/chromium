@@ -77,6 +77,10 @@ PrintManager::GetPrintRenderFrame(content::RenderFrameHost* rfh) {
   return it->second;
 }
 
+content::RenderFrameHost* PrintManager::GetCurrentTargetFrame() {
+  return print_manager_host_receivers_.GetCurrentTargetFrame();
+}
+
 void PrintManager::PrintingRenderFrameDeleted() {
 #if defined(OS_ANDROID)
   PdfWritingDone(0);

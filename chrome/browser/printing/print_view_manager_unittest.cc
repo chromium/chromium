@@ -87,7 +87,8 @@ class TestPrintViewManager : public PrintViewManagerBase {
   // Override to create a TestPrintJob instead of a real one.
   bool CreateNewPrintJob(std::unique_ptr<PrinterQuery> query) override {
     print_job_ = base::MakeRefCounted<TestPrintJob>();
-    print_job_->Initialize(std::move(query), RenderSourceName(), number_pages_);
+    print_job_->Initialize(std::move(query), RenderSourceName(),
+                           number_pages());
 #if defined(OS_CHROMEOS)
     print_job_->SetSource(PrintJob::Source::PRINT_PREVIEW, /*source_id=*/"");
 #endif  // defined(OS_CHROMEOS)

@@ -613,13 +613,10 @@ void PrintViewManagerBase::DidPrintDocument(
     return;
   }
 
-  auto* client = PrintCompositeClient::FromWebContents(web_contents());
-  content::RenderFrameHost* render_frame_host =
-      print_manager_host_receivers_.GetCurrentTargetFrame();
-
   if (IsOopifEnabled() && print_job_->document()->settings().is_modifiable()) {
+    auto* client = PrintCompositeClient::FromWebContents(web_contents());
     client->DoCompositeDocumentToPdf(
-        params->document_cookie, render_frame_host, content,
+        params->document_cookie, GetCurrentTargetFrame(), content,
         base::BindOnce(&PrintViewManagerBase::OnComposePdfDone,
                        weak_ptr_factory_.GetWeakPtr(), params->page_size,
                        params->content_area, params->physical_offsets,
@@ -649,9 +646,7 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
     return;
   }
 
-  content::RenderFrameHost* render_frame_host =
-      print_manager_host_receivers_.GetCurrentTargetFrame();
-
+  content::RenderFrameHost* render_frame_host = GetCurrentTargetFrame();
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&GetDefaultPrintSettingsOnIO, std::move(callback), queue_,
@@ -675,9 +670,7 @@ void PrintViewManagerBase::UpdatePrintSettings(
     return;
   }
 
-  content::RenderFrameHost* render_frame_host =
-      print_manager_host_receivers_.GetCurrentTargetFrame();
-
+  content::RenderFrameHost* render_frame_host = GetCurrentTargetFrame();
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdatePrintSettingsOnIO, cookie, std::move(callback),
@@ -690,9 +683,8 @@ void PrintViewManagerBase::UpdatePrintSettings(
 void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
                                          ScriptedPrintCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::RenderFrameHost* render_frame_host =
-      print_manager_host_receivers_.GetCurrentTargetFrame();
 
+  content::RenderFrameHost* render_frame_host = GetCurrentTargetFrame();
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&ScriptedPrintOnIO, std::move(params), std::move(callback),
@@ -821,8 +813,8 @@ void PrintViewManagerBase::OnNotifyPrintJobEvent(
       }
 #endif
 #if defined(OS_ANDROID)
-      DCHECK_LE(number_pages_, kMaxPageCount);
-      PdfWritingDone(base::checked_cast<int>(number_pages_));
+      DCHECK_LE(number_pages(), kMaxPageCount);
+      PdfWritingDone(base::checked_cast<int>(number_pages()));
 #endif
       break;
     }
@@ -915,7 +907,7 @@ bool PrintViewManagerBase::CreateNewPrintJob(
 
   DCHECK(!print_job_);
   print_job_ = base::MakeRefCounted<PrintJob>();
-  print_job_->Initialize(std::move(query), RenderSourceName(), number_pages_);
+  print_job_->Initialize(std::move(query), RenderSourceName(), number_pages());
 #if defined(OS_CHROMEOS)
   print_job_->SetSource(web_contents()->GetBrowserContext()->IsOffTheRecord()
                             ? PrintJob::Source::PRINT_PREVIEW_INCOGNITO
@@ -1063,18 +1055,19 @@ void PrintViewManagerBase::SetPrintingRFH(content::RenderFrameHost* rfh) {
 }
 
 void PrintViewManagerBase::ReleasePrinterQuery() {
-  if (!cookie_)
+  int current_cookie = cookie();
+  if (!current_cookie)
     return;
 
-  int cookie = cookie_;
-  cookie_ = 0;
+  set_cookie(0);
 
   PrintJobManager* print_job_manager = g_browser_process->print_job_manager();
   // May be NULL in tests.
   if (!print_job_manager)
     return;
 
-  std::unique_ptr<PrinterQuery> printer_query = queue_->PopPrinterQuery(cookie);
+  std::unique_ptr<PrinterQuery> printer_query =
+      queue_->PopPrinterQuery(current_cookie);
   if (!printer_query)
     return;
   content::GetIOThreadTaskRunner({})->PostTask(

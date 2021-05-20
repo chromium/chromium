@@ -16,8 +16,8 @@ namespace printing {
 PrintViewManagerBasic::PrintViewManagerBasic(content::WebContents* web_contents)
     : PrintViewManagerBase(web_contents) {
 #if defined(OS_ANDROID)
-  pdf_writing_done_callback_ =
-      base::BindRepeating(&PrintingContextAndroid::PdfWritingDone);
+  set_pdf_writing_done_callback(
+      base::BindRepeating(&PrintingContextAndroid::PdfWritingDone));
 #endif
 }
 
@@ -32,7 +32,7 @@ PrintViewManagerBasic::~PrintViewManagerBasic() {
 
 #if defined(OS_ANDROID)
 void PrintViewManagerBasic::PdfWritingDone(int page_count) {
-  pdf_writing_done_callback_.Run(page_count);
+  pdf_writing_done_callback().Run(page_count);
 }
 #endif
 
