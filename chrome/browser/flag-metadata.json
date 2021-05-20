@@ -4878,7 +4878,7 @@
   {
     "name": "sms-receiver-cross-device",
     "owners": [ "goto", "yigu", "web-identity@google.com" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 96
   },
   {
     "name": "snapshot-draw-view",
