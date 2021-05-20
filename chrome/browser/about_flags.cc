@@ -2845,6 +2845,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"webui-tab-strip", flag_descriptions::kWebUITabStripName,
      flag_descriptions::kWebUITabStripDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebUITabStrip)},
+    {"webui-tab-strip-ntb-in-tab-strip",
+     flag_descriptions::kWebUITabStripNTBInTabStripName,
+     flag_descriptions::kWebUITabStripNTBInTabStripDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kWebUITabStripNewTabButtonInTabStrip)},
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && BUILDFLAG(IS_CHROMEOS_ASH)
     {

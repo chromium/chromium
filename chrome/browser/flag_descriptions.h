@@ -3012,6 +3012,8 @@ extern const char kPdfViewerPresentationModeDescription[];
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 extern const char kWebUITabStripName[];
 extern const char kWebUITabStripDescription[];
+extern const char kWebUITabStripNTBInTabStripName[];
+extern const char kWebUITabStripNTBInTabStripDescription[];
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && BUILDFLAG(IS_CHROMEOS_ASH)
