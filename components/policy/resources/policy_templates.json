@@ -11382,10 +11382,10 @@
       'owners': ['ericorth@chromium.org', 'file://net/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'future_on': [
-        'android',
-        'chrome.*',
-        'chrome_os',
+      'supported_on': [
+        'android:92-',
+        'chrome.*:92-',
+        'chrome_os:92-',
       ],
       'features': {
         'dynamic_refresh': True,
