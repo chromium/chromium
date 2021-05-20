@@ -123,9 +123,13 @@ public class ContextMenuHelper {
             mMenuShownTimeMs =
                     TimeUnit.MICROSECONDS.toMillis(TimeUtilsJni.get().getTimeTicksNowUs());
             RecordHistogram.recordBooleanHistogram("ContextMenu.Shown", mWebContents != null);
+            recordContextMenuShownType(params);
             if (LensUtils.isInShoppingAllowlist(mCurrentContextMenuParams.getPageUrl())) {
                 RecordHistogram.recordBooleanHistogram(
                         "ContextMenu.Shown.ShoppingDomain", mWebContents != null);
+            }
+            if (sMenuShownCallbackForTests != null) {
+                sMenuShownCallbackForTests.onResult((ContextMenuCoordinator) mCurrentContextMenu);
             }
         };
         mOnMenuClosed = () -> {
@@ -152,10 +156,21 @@ public class ContextMenuHelper {
         displayContextMenu(topContentOffsetPx);
     }
 
+    /**
+     * Record a histogram for a context menu shown even sliced by type.
+     */
+    private void recordContextMenuShownType(final ContextMenuParams params) {
+        RecordHistogram.recordBooleanHistogram(
+                String.format("ContextMenu.Shown.%s",
+                        ContextMenuUtils.getContextMenuTypeForHistogram(params)),
+                mWebContents != null);
+    }
+
     private void displayContextMenu(float topContentOffsetPx) {
         List<Pair<Integer, ModelList>> items = mCurrentPopulator.buildContextMenu();
         if (items.isEmpty()) {
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, mOnMenuClosed);
+            // Only call if no items are populated. Otherwise call in mOnMenuShown callback.
             if (sMenuShownCallbackForTests != null) {
                 sMenuShownCallbackForTests.onResult(null);
             }
@@ -173,10 +188,6 @@ public class ContextMenuHelper {
         } else {
             menuCoordinator.displayMenu(mWindow, mWebContents, mCurrentContextMenuParams, items,
                     mCallback, mOnMenuShown, mOnMenuClosed);
-        }
-
-        if (sMenuShownCallbackForTests != null) {
-            sMenuShownCallbackForTests.onResult(menuCoordinator);
         }
     }
 

@@ -3679,6 +3679,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="The context menu was shown from tap on highlighted text."/>
   <suffix name="Video" label="The context menu was shown for a video"/>
   <affected-histogram name="ContextMenu.SelectedOptionAndroid"/>
+  <affected-histogram name="ContextMenu.Shown"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ContextMenuTypeDesktop" separator=".">

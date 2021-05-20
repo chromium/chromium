@@ -1150,12 +1150,19 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ContextMenuHelper.setMenuShownCallbackForTests((coordinator) -> {
                 assertMenuItemsAreEqual(coordinator, expectedItems);
+                Assert.assertEquals(
+                        1, RecordHistogram.getHistogramTotalCountForTesting("ContextMenu.Shown"));
+                Assert.assertEquals(1,
+                        RecordHistogram.getHistogramTotalCountForTesting(
+                                "ContextMenu.Shown.SharedHighlightingInteraction"));
                 ContextMenuHelper.setMenuShownCallbackForTests(null);
             });
             contextMenuHelper.showContextMenuForTesting(
                     populatorFactory, params, null, tab.getView(), 0);
         });
     }
+
+    // TODO(benwgold): Add more test coverage for histogram recording of other context menu types.
 
     /**
      * Takes all the visible items on the menu and compares them to a the list of expected items.

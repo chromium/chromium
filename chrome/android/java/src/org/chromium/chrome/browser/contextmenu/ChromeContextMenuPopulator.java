@@ -223,27 +223,18 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
          * @param action The action that the user selected (e.g. ACTION_SAVE_IMAGE).
          */
         static void record(WebContents webContents, ContextMenuParams params, @Action int action) {
-            String histogramName;
-            if (params.isVideo()) {
-                histogramName = "ContextMenu.SelectedOptionAndroid.Video";
-            } else if (params.isImage()) {
-                if (LensUtils.isInShoppingAllowlist(params.getPageUrl())) {
-                    String shoppingHistogramName = params.isAnchor()
-                            ? "ContextMenu.SelectedOptionAndroid.ImageLink.ShoppingDomain"
-                            : "ContextMenu.SelectedOptionAndroid.Image.ShoppingDomain";
-                    RecordHistogram.recordEnumeratedHistogram(
-                            shoppingHistogramName, action, Action.NUM_ENTRIES);
-                }
-                histogramName = params.isAnchor() ? "ContextMenu.SelectedOptionAndroid.ImageLink"
-                                                  : "ContextMenu.SelectedOptionAndroid.Image";
-
-            } else if (params.getOpenedFromHighlight()) {
-                histogramName = "ContextMenu.SelectedOptionAndroid.SharedHighlightingInteraction";
-            } else {
-                assert params.isAnchor();
-                histogramName = "ContextMenu.SelectedOptionAndroid.Link";
-            }
+            String histogramName = String.format("ContextMenu.SelectedOptionAndroid.%s",
+                    ContextMenuUtils.getContextMenuTypeForHistogram(params));
             RecordHistogram.recordEnumeratedHistogram(histogramName, action, Action.NUM_ENTRIES);
+
+            if (!params.isVideo() && params.isImage()
+                    && LensUtils.isInShoppingAllowlist(params.getPageUrl())) {
+                String shoppingHistogramName = params.isAnchor()
+                        ? "ContextMenu.SelectedOptionAndroid.ImageLink.ShoppingDomain"
+                        : "ContextMenu.SelectedOptionAndroid.Image.ShoppingDomain";
+                RecordHistogram.recordEnumeratedHistogram(
+                        shoppingHistogramName, action, Action.NUM_ENTRIES);
+            }
             if (params.isAnchor()
                     && PerformanceHintsObserver.getPerformanceClassForURL(
                                webContents, params.getLinkUrl())

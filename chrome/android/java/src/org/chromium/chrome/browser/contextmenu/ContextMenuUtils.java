@@ -30,4 +30,22 @@ public final class ContextMenuUtils {
         }
         return "";
     }
+
+    /**
+     * Get the suffix for the context menu type determined by the params. Histogram values should
+     * match with the values defined in histogram_suffixes_list.xml under ContextMenuTypeAndroid
+     * @param params The list of params for the opened context menu.
+     * @return A string value for the histogram suffix.
+     */
+    static String getContextMenuTypeForHistogram(ContextMenuParams params) {
+        if (params.isVideo()) {
+            return "Video";
+        } else if (params.isImage()) {
+            return params.isAnchor() ? "ImageLink" : "Image";
+        } else if (params.getOpenedFromHighlight()) {
+            return "SharedHighlightingInteraction";
+        }
+        assert params.isAnchor();
+        return "Link";
+    }
 }
