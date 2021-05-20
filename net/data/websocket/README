@@ -34,6 +34,10 @@ Multiple tests may share one resource, or URI handler.
      eg. connect_to.html?url=ws://localhost/echo Sets the title to "PASS" if
      connection succeeds and "FAIL" otherwise.
 
+- check-origin.html : A page which checks the origin header of the WebSocket
+     opening handshake with check-origin_wsh.py. The page is expected to be
+     accessed via a file:// URL.
+
 - multiple-connections.html : Verify that HTTP connection limits are not applied
      to WebSockets. Used by WebSocketBrowserTest.SSLConnectionLimit.
 
@@ -72,3 +76,6 @@ Multiple tests may share one resource, or URI handler.
 - protocol-test_wsh.py : A WebSocket URL handler for testing outgoing opening
      handshake protocol.
      Used by kinds of PPAPI tests for WebSocket.
+
+- check-origin_wsh.py : A WebSocket URL handler to echo back the origin header
+     used in the opening handshake.

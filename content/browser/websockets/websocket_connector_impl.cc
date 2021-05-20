@@ -4,17 +4,33 @@
 
 #include "content/browser/websockets/websocket_connector_impl.h"
 
+#include "base/containers/contains.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 
 namespace content {
 
 namespace {
+
+url::Origin MaybeTreatLocalOriginAsOpaque(const url::Origin& origin) {
+  if (base::Contains(url::GetLocalSchemes(), origin.scheme()) &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAllowFileAccessFromFiles)) {
+    // For local origins we should use an opaque origin unless
+    // "--allow-file-access-from-files" is specified. This should have been
+    // done in content::RenderFrameHost. See https://crbug.com/1206736 for
+    // details.
+    return origin.DeriveNewOpaqueOrigin();
+  }
+  return origin;
+}
+
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("websocket_stream", R"(
         semantics {
@@ -47,7 +63,7 @@ WebSocketConnectorImpl::WebSocketConnectorImpl(
     const net::IsolationInfo& isolation_info)
     : process_id_(process_id),
       frame_id_(frame_id),
-      origin_(origin),
+      origin_(MaybeTreatLocalOriginAsOpaque(origin)),
       isolation_info_(isolation_info) {}
 
 WebSocketConnectorImpl::~WebSocketConnectorImpl() = default;
