@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/task/thread_pool.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -47,6 +48,16 @@ void AuthenticationServiceFake::SignOut(
     signin_metrics::ProfileSignout signout_source,
     bool force_clear_browsing_data,
     ProceduralBlock completion) {
+  if (force_clear_browsing_data || IsAuthenticatedIdentityManaged()) {
+    base::ThreadPool::PostTask(
+        base::BindOnce(&AuthenticationServiceFake::SignOutInternal,
+                       base::Unretained(this), completion));
+  } else {
+    SignOutInternal(completion);
+  }
+}
+
+void AuthenticationServiceFake::SignOutInternal(ProceduralBlock completion) {
   authenticated_identity_ = nil;
   if (completion)
     completion();

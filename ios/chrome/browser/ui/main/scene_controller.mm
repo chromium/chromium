@@ -812,12 +812,16 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // Create and start the BVC.
   [self.browserViewWrangler createMainCoordinatorAndInterface];
 
-  // Start observing PolicyWatcherBrowserAgent so it can start monitoring
-  // UI-impacting policy changes.
+  // Now that the main browser's command dispatcher is created and the newly
+  // started UI coordinators have registered with it, inject it into the
+  // PolicyWatcherBrowserAgent so it can start monitoring UI-impacting policy
+  // changes.
   PolicyWatcherBrowserAgent* policyWatcherAgent =
       PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser);
+  id<PolicySignoutPromptCommands> handler =
+      HandlerForProtocol(mainCommandDispatcher, PolicySignoutPromptCommands);
   policyWatcherAgent->AddObserver(_policyWatcherObserverBridge.get());
-  policyWatcherAgent->Initialize();
+  policyWatcherAgent->Initialize(handler);
 
   if (@available(iOS 14, *)) {
     if (base::ios::IsSceneStartupSupported() &&
@@ -3148,51 +3152,19 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 - (void)policyWatcherBrowserAgentNotifySignInDisabled:
     (PolicyWatcherBrowserAgent*)policyWatcher {
-  auto signOut = ^{
-    [self signOutIfNeeded];
+  auto signinInterrupted = ^{
+    policyWatcher->SignInUIDismissed();
   };
 
   if (self.signinCoordinator) {
-    [self interruptSigninCoordinatorAnimated:YES completion:signOut];
+    [self interruptSigninCoordinatorAnimated:YES completion:signinInterrupted];
     UMA_HISTOGRAM_BOOLEAN(
         "Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy", true);
   } else if (self.sceneState.presentingFirstRunUI &&
              self.welcomeToChromeController) {
     [self.welcomeToChromeController
-        interruptSigninCoordinatorWithCompletion:signOut];
-  } else {
-    signOut();
+        interruptSigninCoordinatorWithCompletion:signinInterrupted];
   }
-}
-
-// TODO(crbug.com/1205793): Move this method to the BrowserAgent.
-- (void)signOutIfNeeded {
-  AuthenticationService* service =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.mainInterface.browser->GetBrowserState());
-  if (self.mainInterface.browser->GetBrowserState()->GetPrefs()->GetBoolean(
-          prefs::kSigninAllowed) ||
-      !service->IsAuthenticated()) {
-    return;
-  }
-
-  UMA_HISTOGRAM_BOOLEAN("Enterprise.BrowserSigninIOS.SignedOutByPolicy", true);
-  // Sign the user out, but keep synced data (bookmarks, passwords, etc)
-  // locally to be consistent with the policy's behavior on other platforms.
-  service->SignOut(
-      signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED,
-      /*force_clear_browsing_data=*/false, ^{
-        BOOL sceneIsActive = self.sceneState.activationLevel >=
-                             SceneActivationLevelForegroundActive;
-        if (sceneIsActive) {
-          id<PolicySignoutPromptCommands> handler = HandlerForProtocol(
-              self.mainInterface.browser->GetCommandDispatcher(),
-              PolicySignoutPromptCommands);
-          [handler showPolicySignoutPrompt];
-        } else {
-          self.sceneState.appState.shouldShowPolicySignoutPrompt = YES;
-        }
-      });
 }
 
 @end

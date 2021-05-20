@@ -50,6 +50,9 @@ class AuthenticationServiceFake : public AuthenticationService {
                             signin::IdentityManager* identity_manager,
                             syncer::SyncService* sync_service);
 
+  // Internal method effectively signing out the user.
+  void SignOutInternal(ProceduralBlock completion);
+
   __strong ChromeIdentity* authenticated_identity_;
   bool have_accounts_changed_while_in_background_;
 };

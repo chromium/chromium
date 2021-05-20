@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/main/browser_user_data.h"
 
 class Browser;
+@protocol PolicySignoutPromptCommands;
 class PolicyWatcherBrowserAgentObserver;
 class PrefChangeRegistrar;
 
@@ -25,9 +26,14 @@ class PolicyWatcherBrowserAgent
   void AddObserver(PolicyWatcherBrowserAgentObserver* observer);
   void RemoveObserver(PolicyWatcherBrowserAgentObserver* observer);
 
+  // Notifies the BrowserAgent that a SignIn UI was dismissed as a result of a
+  // policy SignOut.
+  void SignInUIDismissed();
+
   // Starts observing the kSigninAllowed pref and trigger a SignOut if the pref
-  // has changed before the BrowserAgent start the observation.
-  void Initialize();
+  // has changed before the BrowserAgent start the observation. |handler| is
+  // used to send UI commands when the SignOut is done.
+  void Initialize(id<PolicySignoutPromptCommands> handler);
 
  private:
   explicit PolicyWatcherBrowserAgent(Browser* browser);
@@ -47,6 +53,12 @@ class PolicyWatcherBrowserAgent
 
   // List of observers notified of changes to the policy.
   base::ObserverList<PolicyWatcherBrowserAgentObserver, true> observers_;
+
+  // Whether a Sign Out is currently in progress.
+  bool sign_out_in_progress_ = false;
+
+  // Handler to send commands.
+  id<PolicySignoutPromptCommands> handler_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_POLICY_POLICY_WATCHER_BROWSER_AGENT_H_
