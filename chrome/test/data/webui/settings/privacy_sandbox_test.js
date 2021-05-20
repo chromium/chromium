@@ -123,6 +123,9 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
   /** @type {!PrivacySandboxAppElement} */
   let page;
 
+  /** @type {?TestMetricsBrowserProxy} */
+  let testMetricsBrowserProxy = null;
+
   /**
    * @implements {PrivacySandboxBrowserProxy}
    * @extends {TestBrowserProxy}
@@ -146,6 +149,9 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
 
   setup(function() {
     document.body.innerHTML = '';
+
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.instance_ = testMetricsBrowserProxy;
 
     testPrivacySandboxBrowserProxy =
         TestBrowserProxy.fromClass(PrivacySandboxBrowserProxy);
@@ -219,5 +225,31 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
   test('toggleClass', function() {
     assertEquals(
         'hr updated-toggle-button', page.$$('#apiToggleButton').className);
+  });
+
+  test('userActions', async function() {
+    page.$$('#flocToggleButton').click();
+    assertEquals(
+        'Settings.PrivacySandbox.FlocDisabled',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.resetResolver('recordAction');
+
+    page.$$('#flocToggleButton').click();
+    assertEquals(
+        'Settings.PrivacySandbox.FlocEnabled',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.resetResolver('recordAction');
+
+    page.$$('#resetFlocIdButton').click();
+    assertEquals(
+        'Settings.PrivacySandbox.ResetFloc',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.resetResolver('recordAction');
+
+    // Ensure that an action is only recorded in response to interaction with
+    // the toggle, and not for the generated preference changing.
+    page.set('prefs.generated.floc_enabled.value', false);
+    await flushTasks();
+    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
   });
 });

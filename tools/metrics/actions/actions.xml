@@ -21975,6 +21975,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacySandbox.FlocDisabled">
+  <owner>andzaytsev@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>User disables FLoC on the privacy sandbox page.</description>
+</action>
+
+<action name="Settings.PrivacySandbox.FlocEnabled">
+  <owner>andzaytsev@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>User enables FLoC on the privacy sandbox page.</description>
+</action>
+
 <action name="Settings.PrivacySandbox.OpenedFromCookiesPageToast">
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
@@ -22002,6 +22014,14 @@ should be able to be added at any place in this file.
   <description>
     User clicks the details button in the privacy sandbox page to see the
     privacy sandbox explainer.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.ResetFloc">
+  <owner>andzaytsev@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User clicks the reset group button to reset their FLoC cohor identifier.
   </description>
 </action>
 
