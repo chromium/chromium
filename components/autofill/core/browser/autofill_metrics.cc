@@ -2689,6 +2689,18 @@ void AutofillMetrics::LogNewProfileImportDecision(
                                 decision);
 }
 
+void AutofillMetrics::LogNewProfileEditedType(ServerFieldType edited_type) {
+  base::UmaHistogramEnumeration("Autofill.ProfileImport.NewProfileEditedType",
+                                ConvertEditedFieldTypeForMetrics(edited_type));
+}
+
+void AutofillMetrics::LogNewProfileNumberOfEditedFields(
+    int number_of_edited_fields) {
+  base::UmaHistogramExactLinear(
+      "Autofill.ProfileImport.NewProfileNumberOfEditedFields",
+      number_of_edited_fields, /*exclusive_max=*/15);
+}
+
 void AutofillMetrics::LogProfileUpdateImportDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   base::UmaHistogramEnumeration("Autofill.ProfileImport.UpdateProfileDecision",
@@ -2701,9 +2713,11 @@ void AutofillMetrics::LogProfileUpdateEditedType(ServerFieldType edited_type) {
       ConvertEditedFieldTypeForMetrics(edited_type));
 }
 
-void AutofillMetrics::LogNewProfileEditedType(ServerFieldType edited_type) {
-  base::UmaHistogramEnumeration("Autofill.ProfileImport.NewProfileEditedType",
-                                ConvertEditedFieldTypeForMetrics(edited_type));
+void AutofillMetrics::LogUpdateProfileNumberOfEditedFields(
+    int number_of_edited_fields) {
+  base::UmaHistogramExactLinear(
+      "Autofill.ProfileImport.UpdateProfileNumberOfEditedFields",
+      number_of_edited_fields, /*exclusive_max=*/15);
 }
 
 void AutofillMetrics::LogVerificationStatusOfNameTokensOnProfileUsage(

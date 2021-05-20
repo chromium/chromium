@@ -37,6 +37,10 @@ constexpr char kNewProfileDecisionHistogram[] =
     "Autofill.ProfileImport.NewProfileDecision";
 constexpr char kProfileUpdateDecisionHistogram[] =
     "Autofill.ProfileImport.UpdateProfileDecision";
+constexpr char kNewProfileNumberOfEditsHistogram[] =
+    "Autofill.ProfileImport.NewProfileNumberOfEditedFields";
+constexpr char kProfileUpdateNumberOfEditsHistogram[] =
+    "Autofill.ProfileImport.UpdateProfileNumberOfEditedFields";
 
 class MockPersonalDataManager : public TestPersonalDataManager {
  public:
@@ -260,31 +264,45 @@ void AddressProfileSaveManagerTest::TestImportScenario(
   } else {
     DCHECK(!is_new_profile || !is_confirmable_merge);
 
-    const std::string changed_decision_histo =
+    const std::string affected_decision_histo =
         is_new_profile ? kNewProfileDecisionHistogram
                        : kProfileUpdateDecisionHistogram;
-    const std::string unchanged_decision_histo =
+    const std::string unaffected_decision_histo =
         !is_new_profile ? kNewProfileDecisionHistogram
                         : kProfileUpdateDecisionHistogram;
 
-    const std::string changed_edits_histo = is_new_profile
-                                                ? kNewProfileEditsHistogram
-                                                : kProfileUpdateEditsHistogram;
-    const std::string unchanged_edits_histo =
+    const std::string affected_edits_histo = is_new_profile
+                                                 ? kNewProfileEditsHistogram
+                                                 : kProfileUpdateEditsHistogram;
+    const std::string unaffected_edits_histo =
         !is_new_profile ? kNewProfileEditsHistogram
                         : kProfileUpdateEditsHistogram;
 
-    histogram_tester.ExpectTotalCount(unchanged_decision_histo, 0);
-    histogram_tester.ExpectTotalCount(unchanged_edits_histo, 0);
+    const std::string affected_number_of_edits_histo =
+        is_new_profile ? kNewProfileNumberOfEditsHistogram
+                       : kProfileUpdateNumberOfEditsHistogram;
+    const std::string unaffected_number_of_edits_histo =
+        !is_new_profile ? kNewProfileNumberOfEditsHistogram
+                        : kProfileUpdateNumberOfEditsHistogram;
 
-    histogram_tester.ExpectUniqueSample(changed_decision_histo,
+    histogram_tester.ExpectTotalCount(unaffected_decision_histo, 0);
+    histogram_tester.ExpectTotalCount(unaffected_edits_histo, 0);
+
+    histogram_tester.ExpectUniqueSample(affected_decision_histo,
                                         test_scenario.user_decision, 1);
     histogram_tester.ExpectTotalCount(
-        changed_edits_histo,
+        affected_edits_histo,
         test_scenario.expected_edited_types_for_metrics.size());
 
     for (auto edited_type : test_scenario.expected_edited_types_for_metrics) {
-      histogram_tester.ExpectBucketCount(changed_edits_histo, edited_type, 1);
+      histogram_tester.ExpectBucketCount(affected_edits_histo, edited_type, 1);
+    }
+
+    if (test_scenario.user_decision == UserDecision::kEditAccepted) {
+      histogram_tester.ExpectUniqueSample(
+          affected_number_of_edits_histo,
+          test_scenario.expected_edited_types_for_metrics.size(), 1);
+      histogram_tester.ExpectTotalCount(unaffected_number_of_edits_histo, 0);
     }
   }
 

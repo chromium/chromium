@@ -307,15 +307,23 @@ void ProfileImportProcess::CollectMetrics() const {
 
   // If the profile was edited by the user, record a histogram of edited types.
   if (user_decision_ == UserDecision::kEditAccepted) {
-    for (const auto& difference :
-         AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-             import_candidate_.value(), confirmed_import_candidate_.value(),
-             app_locale_)) {
+    const std::vector<ProfileValueDifference> edit_difference =
+        AutofillProfileComparator::GetSettingsVisibleProfileDifference(
+            import_candidate_.value(), confirmed_import_candidate_.value(),
+            app_locale_);
+    for (const auto& difference : edit_difference) {
       if (import_type_ == AutofillProfileImportType::kNewProfile) {
         AutofillMetrics::LogNewProfileEditedType(difference.type);
       } else {
         AutofillMetrics::LogProfileUpdateEditedType(difference.type);
       }
+    }
+    if (import_type_ == AutofillProfileImportType::kNewProfile) {
+      AutofillMetrics::LogNewProfileNumberOfEditedFields(
+          edit_difference.size());
+    } else {
+      AutofillMetrics::LogUpdateProfileNumberOfEditedFields(
+          edit_difference.size());
     }
   }
 }
