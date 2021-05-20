@@ -44,11 +44,6 @@ void WebAppInternalsPageHandlerImpl::AddPageResources(
   source->AddResourcePath("web-app", IDR_WEB_APP_INTERNALS_HTML);
 }
 
-void WebAppInternalsPageHandlerImpl::IsBmoEnabled(
-    IsBmoEnabledCallback callback) {
-  std::move(callback).Run(true);
-}
-
 void WebAppInternalsPageHandlerImpl::GetWebApps(GetWebAppsCallback callback) {
   auto* provider = web_app::WebAppProvider::Get(profile_);
   if (!provider) {

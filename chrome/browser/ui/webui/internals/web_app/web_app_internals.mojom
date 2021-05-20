@@ -66,9 +66,6 @@ struct PreinstalledWebAppDebugInfo {
 // Provides access to browser side internal information about installed web apps
 // (also known as PWAs) for chrome://internals/web-app.
 interface WebAppInternalsPageHandler {
-  // Whether the BMO web app backend is enabled.
-  IsBmoEnabled() => (bool is_bmo_enabled);
-
   // Returns details of all the installed web apps for the current profile.
   GetWebApps() => (array<WebApp> web_app_list);
 

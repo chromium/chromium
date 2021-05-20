@@ -13,12 +13,6 @@ Polymer({
 
   properties: {
     /**
-     * Whether Bookmark apps off Extensions is enabled.
-     * @private {!boolean}
-     */
-    isBmoEnabled_: Boolean,
-
-    /**
      * List of internal details about installed web apps.
      * @private {!Array<!mojom.webAppInternals.WebApp>}
      */
@@ -45,8 +39,6 @@ Polymer({
     (async () => {
       const remote =
           mojom.webAppInternals.WebAppInternalsPageHandler.getRemote();
-
-      this.isBmoEnabled_ = (await remote.isBmoEnabled()).isBmoEnabled;
 
       this.webAppList_ = (await remote.getWebApps()).webAppList;
       this.webAppList_.sort((a, b) => a.name.localeCompare(b.name));
