@@ -8,14 +8,29 @@
  * setting to allow the restoration in Chrome OS.
  */
 
+import '../../prefs/prefs.js';
+import '../../settings_page/settings_animated_pages.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared_css.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-on-startup-page',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -52,12 +67,12 @@ Polymer({
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.ON_STARTUP) {
+    if (route !== routes.ON_STARTUP) {
       return;
     }
 

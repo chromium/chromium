@@ -40,7 +40,7 @@ import './nearby_share_page/nearby_share_receive_dialog.m.js';
 import './nearby_share_page/nearby_share_subpage.m.js';
 import './personalization_page/change_picture.m.js';
 import './personalization_page/personalization_page.m.js';
-import './on_startup_page/on_startup_page.m.js';
+import './on_startup_page/on_startup_page.js';
 import './os_about_page/channel_switcher_dialog.m.js';
 import './os_about_page/detailed_build_info.m.js';
 import './os_about_page/os_about_page.m.js';
