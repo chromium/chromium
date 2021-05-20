@@ -20,6 +20,7 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.download.DownloadActivity;
@@ -305,6 +306,7 @@ public class OfflineIndicatorControllerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1211514")
     public void testDoNotShowOfflineIndicatorWhenTemporarilyPaused() {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
