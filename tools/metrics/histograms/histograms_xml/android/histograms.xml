@@ -2608,6 +2608,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Android.WebView.AndroidProtocolHandler.ResourceGetIdentifier2"
     enum="AndroidWebViewAndroidProtocolHandlerResources"
     expires_after="2021-05-30">
+  <obsolete>
+    Removed May 2021 because it's no longer needed, we found that
+    AndroidProtocolHandler still needs to fail back to reflection to find
+    resource ids in 1.7% of cases.
+  </obsolete>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
