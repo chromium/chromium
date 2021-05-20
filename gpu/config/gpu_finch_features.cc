@@ -205,7 +205,8 @@ const base::FeatureParam<std::string> kVulkanBlockListByModel{
     &kVulkan, "BlockListByModel", ""};
 
 const base::FeatureParam<std::string> kVulkanBlockListByBoard{
-    &kVulkan, "BlockListByBoard", ""};
+    &kVulkan, "BlockListByBoard",
+    "RM67*|RM68*|k68*|mt67*|oppo67*|oppo68*|QM215|rk30sdk"};
 
 const base::FeatureParam<std::string> kVulkanBlockListByAndroidBuildFP{
     &kVulkan, "BlockListByAndroidBuildFP", ""};
