@@ -16,3 +16,5 @@ xidachen@chromium.org
 johnidel@chromium.org
 # For SharedHighlights.* histograms:
 sebsg@chromium.org
+# For Compositor*, Gpu.*, Graphics* and Viz.* histograms:
+jonross@chromium.org
