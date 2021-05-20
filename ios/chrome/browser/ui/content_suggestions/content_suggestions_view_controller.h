@@ -96,6 +96,9 @@
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
+// |YES| the NTP feed is collapsed and enabled.
+@property(nonatomic, assign, getter=isFeedVisible) BOOL feedVisible;
+
 - (void)setDataSource:(id<ContentSuggestionsDataSource>)dataSource;
 - (void)setDispatcher:(id<SnackbarCommands>)dispatcher;
 

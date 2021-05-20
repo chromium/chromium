@@ -843,6 +843,7 @@
   [self.contentSuggestionsMediator reloadAllData];
   [self.discoverFeedMetricsRecorder
       recordDiscoverFeedVisibilityChanged:visible];
+  self.suggestionsViewController.feedVisible = [self isFeedVisible];
 }
 
 // YES if the NTP feed is currently visible.
