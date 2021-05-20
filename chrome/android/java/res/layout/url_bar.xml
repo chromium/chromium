@@ -13,6 +13,5 @@
     android:singleLine="true"
     android:imeOptions="actionGo|flagNoExtractUi|flagNoFullscreen"
     android:textSize="@dimen/location_bar_url_text_size"
-    android:inputType="textUri"
     android:hint="@string/search_or_type_web_address"
     android:importantForAutofill="no" />

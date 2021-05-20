@@ -205,6 +205,8 @@ public abstract class UrlBar extends AutocompleteEditText {
         // the first draw.
         setFocusable(false);
         setFocusableInTouchMode(false);
+        setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI
+                | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
         // The HTC Sense IME will attempt to autocomplete words in the Omnibox when Prediction is
         // enabled.  We want to disable this feature and rely on the Omnibox's implementation.
