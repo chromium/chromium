@@ -24,6 +24,7 @@
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/platform/platform_event_source.h"
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
 
@@ -873,8 +874,16 @@ TEST_F(AmbientControllerTest, ShowsOnMultipleDisplays) {
                 ctrl->ambient_widget_for_testing()->IsVisible());
 }
 
-// TODO(crbug.com/1195762): Test is disabled due to flakiness.
-TEST_F(AmbientControllerTest, DISABLED_RespondsToDisplayAdded) {
+TEST_F(AmbientControllerTest, RespondsToDisplayAdded) {
+  // UpdateDisplay triggers a rogue MouseEvent that cancels Ambient mode when
+  // testing with Xvfb. A corresponding MouseEvent is not fired on a real device
+  // when an external display is added. Ignore this MouseEvent for testing.
+  // Store the old |ShouldIgnoreNativePlatformEvents| value and reset it at the
+  // end of the test.
+  bool old_should_ignore_events =
+      ui::PlatformEventSource::ShouldIgnoreNativePlatformEvents();
+  ui::PlatformEventSource::SetIgnoreNativePlatformEvents(true);
+
   UpdateDisplay("800x600");
   ShowAmbientScreen();
   FastForwardToNextImage();
@@ -892,6 +901,9 @@ TEST_F(AmbientControllerTest, DISABLED_RespondsToDisplayAdded) {
   for (auto* ctrl : RootWindowController::root_window_controllers())
     EXPECT_TRUE(ctrl->ambient_widget_for_testing() &&
                 ctrl->ambient_widget_for_testing()->IsVisible());
+
+  ui::PlatformEventSource::SetIgnoreNativePlatformEvents(
+      old_should_ignore_events);
 }
 
 TEST_F(AmbientControllerTest, HandlesDisplayRemoved) {
