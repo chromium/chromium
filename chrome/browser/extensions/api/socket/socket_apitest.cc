@@ -4,6 +4,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -108,7 +109,13 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketTCPServerUnbindOnUnload) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketMulticast) {
+// Fails on MacOS 11, crbug.com/1211141 .
+#if defined(OS_MAC)
+#define MAYBE_SocketMulticast DISABLED_SocketMulticast
+#else
+#define MAYBE_SocketMulticast SocketMulticast
+#endif
+IN_PROC_BROWSER_TEST_F(SocketApiTest, MAYBE_SocketMulticast) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(browser()->profile());
   ExtensionTestMessageListener listener("info_please", true);
