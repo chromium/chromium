@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -417,9 +418,11 @@ void CookieStoreManager::StoreSubscriptions(
   DCHECK(!subscriptions_data.empty())
       << "Failed to create cookie change subscriptions protobuf";
 
+  // TODO(crbug.com/1199077): Update this when CookieStoreManager
+  // implements StorageKey.
   service_worker_context_->StoreRegistrationUserData(
       service_worker_registration_id,
-      url::Origin::Create(service_worker_origin),
+      storage::StorageKey(url::Origin::Create(service_worker_origin)),
       std::vector<std::pair<std::string, std::string>>(
           {{registration_user_data_key_, subscriptions_data}}),
       base::BindOnce(

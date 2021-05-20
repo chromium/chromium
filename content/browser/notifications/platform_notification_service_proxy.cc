@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/notifications/devtools_event_logging.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -101,7 +102,7 @@ void PlatformNotificationServiceProxy::DisplayNotification(
       base::BindOnce(
           &ServiceWorkerContextWrapper::FindReadyRegistrationForId,
           service_worker_context_, data.service_worker_registration_id,
-          url::Origin::Create(data.origin),
+          storage::StorageKey(url::Origin::Create(data.origin)),
           base::BindOnce(
               &PlatformNotificationServiceProxy::VerifyServiceWorkerScope,
               weak_ptr_factory_io_.GetWeakPtr(), data, std::move(callback))));

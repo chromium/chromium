@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/notifications/devtools_event_logging.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -181,12 +182,14 @@ void FindServiceWorkerRegistration(
     return;
   }
 
+  // If Push Notification becomes usable from a 3p context then
+  // NotificationDatabaseData should be changed to use StorageKey.
   RunOrPostTaskOnThread(
       FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
       base::BindOnce(&ServiceWorkerContextWrapper::FindReadyRegistrationForId,
                      service_worker_context,
                      notification_database_data.service_worker_registration_id,
-                     origin,
+                     storage::StorageKey(origin),
                      base::BindOnce(&DispatchNotificationEventOnRegistration,
                                     notification_database_data,
                                     std::move(notification_action_callback),

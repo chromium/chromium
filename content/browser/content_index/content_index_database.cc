@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/background_fetch/storage/image_helpers.h"
 #include "content/browser/content_index/content_index.pb.h"
 #include "content/browser/content_index/content_index_metrics.h"
@@ -225,7 +226,7 @@ void ContentIndexDatabase::DidSerializeIcons(
                           std::move(description), launch_url, entry_time);
 
   service_worker_context_->StoreRegistrationUserData(
-      service_worker_registration_id, origin,
+      service_worker_registration_id, storage::StorageKey(origin),
       {{std::move(entry_key), std::move(entry_value)},
        {std::move(icon_key), std::move(icons_value)}},
       base::BindOnce(&ContentIndexDatabase::DidAddEntry,
@@ -656,7 +657,7 @@ void ContentIndexDatabase::DidDeleteItem(
     return;
 
   service_worker_context_->FindReadyRegistrationForId(
-      service_worker_registration_id, origin,
+      service_worker_registration_id, storage::StorageKey(origin),
       base::BindOnce(&ContentIndexDatabase::StartActiveWorkerForDispatch,
                      weak_ptr_factory_core_.GetWeakPtr(), description_id));
 }

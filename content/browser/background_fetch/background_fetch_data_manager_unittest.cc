@@ -19,6 +19,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/browser/background_fetch/background_fetch_data_manager_observer.h"
 #include "content/browser/background_fetch/background_fetch_request_info.h"
@@ -448,9 +449,12 @@ class BackgroundFetchDataManagerTest
                      const std::string& value) {
     std::vector<std::string> data;
 
+    // TODO(crbug.com/1199077): Update this when BackgroundFetchTestBase
+    // implements StorageKey.
     base::RunLoop run_loop;
     embedded_worker_test_helper()->context_wrapper()->StoreRegistrationUserData(
-        service_worker_registration_id, origin(), {{key, value}},
+        service_worker_registration_id, storage::StorageKey(origin()),
+        {{key, value}},
         base::BindOnce(&DidStoreUserData, run_loop.QuitClosure()));
     run_loop.Run();
   }

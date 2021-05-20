@@ -19,6 +19,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/background_sync/background_sync_metrics.h"
 #include "content/browser/background_sync/background_sync_network_observer.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
@@ -1314,7 +1315,8 @@ void BackgroundSyncManager::StoreDataInBackend(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   service_worker_context_->StoreRegistrationUserData(
-      sw_registration_id, origin, {{backend_key, data}}, std::move(callback));
+      sw_registration_id, storage::StorageKey(origin), {{backend_key, data}},
+      std::move(callback));
 }
 
 void BackgroundSyncManager::GetDataFromBackend(
@@ -1412,7 +1414,7 @@ void BackgroundSyncManager::DispatchPeriodicSyncEvent(
 
 void BackgroundSyncManager::HasMainFrameWindowClient(const url::Origin& origin,
                                                      BoolCallback callback) {
-  service_worker_context_->HasMainFrameWindowClient(origin.GetURL(),
+  service_worker_context_->HasMainFrameWindowClient(storage::StorageKey(origin),
                                                     std::move(callback));
 }
 
@@ -1948,9 +1950,12 @@ void BackgroundSyncManager::FireReadyEventsImpl(
 
     int64_t service_worker_registration_id =
         registration_info->service_worker_registration_id;
+    // If BackgroundSync becomes usable from a 3p context then
+    // BackgroundSyncRegistrations should be changed to use StorageKey.
     service_worker_context_->FindReadyRegistrationForId(
         service_worker_registration_id,
-        active_registrations_[service_worker_registration_id].origin,
+        storage::StorageKey(
+            active_registrations_[service_worker_registration_id].origin),
         base::BindOnce(
             &BackgroundSyncManager::FireReadyEventsDidFindRegistration,
             weak_ptr_factory_.GetWeakPtr(), std::move(registration_info),

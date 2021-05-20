@@ -31,6 +31,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
@@ -834,13 +835,15 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
     auto observer = base::MakeRefCounted<WorkerStateObserver>(
         wrapper(), ServiceWorkerVersion::ACTIVATED);
     observer->Init();
-    wrapper()->UpdateRegistration(https_server.GetURL(kPageUrl));
+    GURL url = https_server.GetURL(kPageUrl);
+    wrapper()->UpdateRegistration(
+        url, storage::StorageKey(url::Origin::Create(url)));
     observer->Wait();
 
     // Wait until the page is appropriately served by the service worker.
     const std::u16string title = u"Title";
     TitleWatcher title_watcher(shell()->web_contents(), title);
-    EXPECT_TRUE(NavigateToURL(shell(), https_server.GetURL(kPageUrl)));
+    EXPECT_TRUE(NavigateToURL(shell(), url));
     EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
 
     // The page should be marked as secure.
@@ -955,8 +958,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, StartWorkerWhileInstalling) {
   observer->Wait();
 
   base::RunLoop run_loop;
+  GURL full_url = embedded_test_server()->GetURL(kWorkerUrl);
   wrapper()->StartActiveServiceWorker(
-      embedded_test_server()->GetURL(kWorkerUrl),
+      full_url, storage::StorageKey(url::Origin::Create(full_url)),
       base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
         EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kErrorNotFound);
         run_loop.Quit();
@@ -1979,7 +1983,7 @@ class ServiceWorkerBlackBoxBrowserTest : public ServiceWorkerBrowserTest {
                                     blink::ServiceWorkerStatusCode* status,
                                     base::OnceClosure continuation) {
     wrapper()->FindReadyRegistrationForClientUrl(
-        document_url,
+        document_url, storage::StorageKey(url::Origin::Create(document_url)),
         base::BindOnce(
             &ServiceWorkerBlackBoxBrowserTest::DidFindRegistrationOnCoreThread,
             base::Unretained(this), status, std::move(continuation)));

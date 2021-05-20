@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/push_messaging/push_messaging_manager.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_context.h"
@@ -64,7 +65,8 @@ void UpdatePushSubscriptionIdOnIO(
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   service_worker_context->StoreRegistrationUserData(
-      service_worker_registration_id, url::Origin::Create(origin),
+      service_worker_registration_id,
+      storage::StorageKey(url::Origin::Create(origin)),
       {{kPushRegistrationIdServiceWorkerKey, subscription_id}},
       base::BindOnce(&CallClosureFromIO, std::move(callback)));
 }
@@ -79,7 +81,8 @@ void StorePushSubscriptionOnIOForTesting(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   service_worker_context->StoreRegistrationUserData(
-      service_worker_registration_id, url::Origin::Create(origin),
+      service_worker_registration_id,
+      storage::StorageKey(url::Origin::Create(origin)),
       {{kPushRegistrationIdServiceWorkerKey, subscription_id},
        {kPushSenderIdServiceWorkerKey, sender_id}},
       base::BindOnce(&CallClosureFromIO, std::move(callback)));

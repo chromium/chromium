@@ -185,7 +185,8 @@ void BackgroundSyncServiceImplTestHarness::CreateServiceWorkerRegistration() {
   ASSERT_TRUE(called);
 
   embedded_worker_helper_->context_wrapper()->FindReadyRegistrationForId(
-      sw_registration_id_, url::Origin::Create(GURL(kServiceWorkerScope)),
+      sw_registration_id_,
+      storage::StorageKey(url::Origin::Create(GURL(kServiceWorkerScope))),
       base::BindOnce(FindServiceWorkerRegistrationCallback, &sw_registration_));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(sw_registration_);

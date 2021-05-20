@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/trace_event/trace_event.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/background_fetch/background_fetch_cross_origin_filter.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/storage/database_helpers.h"
@@ -216,7 +217,7 @@ void MarkRequestCompleteTask::CreateAndStoreCompletedRequest(
 
   service_worker_context()->StoreRegistrationUserData(
       registration_id_.service_worker_registration_id(),
-      registration_id_.origin(),
+      storage::StorageKey(registration_id_.origin()),
       {{CompletedRequestKey(completed_request_.unique_id(),
                             completed_request_.request_index()),
         completed_request_.SerializeAsString()}},
@@ -293,7 +294,7 @@ void MarkRequestCompleteTask::DidGetMetadata(
 
   service_worker_context()->StoreRegistrationUserData(
       registration_id_.service_worker_registration_id(),
-      registration_id_.origin(),
+      storage::StorageKey(registration_id_.origin()),
       {{RegistrationKey(registration_id_.unique_id()),
         metadata->SerializeAsString()}},
       base::BindOnce(&MarkRequestCompleteTask::DidStoreMetadata,

@@ -74,6 +74,7 @@ class CONTENT_EXPORT BackgroundFetchRegistrationId {
 
  private:
   int64_t service_worker_registration_id_;
+  // TODO(crbug.com/1199077): Implement StorageKey.
   url::Origin origin_;
   std::string developer_id_;
   std::string unique_id_;

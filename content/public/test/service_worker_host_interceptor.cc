@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/browser_context.h"
@@ -70,7 +71,7 @@ void ServiceWorkerHostInterceptor::FindRegistrationOnServiceWorkerCoreThread(
     BrowserThread::ID run_done_thread,
     base::OnceClosure done) {
   context->FindRegistrationForScope(
-      scope,
+      scope, storage::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&ServiceWorkerHostInterceptor::
                          OnFoundRegistrationOnServiceWorkerCoreThread,
                      base::Unretained(this), run_done_thread, std::move(done)));

@@ -10,6 +10,7 @@
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -121,10 +122,11 @@ void BackgroundSyncBaseBrowserTest::RegistrationPendingOnCoreThread(
     const GURL& url,
     base::OnceCallback<void(bool)> callback) {
   sw_context->FindReadyRegistrationForClientUrl(
-      url, base::BindOnce(&BackgroundSyncBaseBrowserTest::
-                              RegistrationPendingDidGetSWRegistration,
-                          base::Unretained(this), sync_context, tag,
-                          std::move(callback)));
+      url, storage::StorageKey(url::Origin::Create(url)),
+      base::BindOnce(&BackgroundSyncBaseBrowserTest::
+                         RegistrationPendingDidGetSWRegistration,
+                     base::Unretained(this), sync_context, tag,
+                     std::move(callback)));
 }
 
 void BackgroundSyncBaseBrowserTest::SetUp() {

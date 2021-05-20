@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/loader/content_security_notifier.h"
@@ -707,8 +708,9 @@ void DedicatedWorkerHost::MaybeCountWebFeature(const GURL& script_url) {
       if (!service_worker_context)
         return;
 
-      service_worker_context->GetRegistrationsForOrigin(
-          ancestor_render_frame_host->GetLastCommittedOrigin(),
+      service_worker_context->GetRegistrationsForStorageKey(
+          storage::StorageKey(
+              ancestor_render_frame_host->GetLastCommittedOrigin()),
           base::BindOnce(&DedicatedWorkerHost::ContinueOnMaybeCountWebFeature,
                          weak_factory_.GetWeakPtr(), script_url,
                          std::move(container_host)));

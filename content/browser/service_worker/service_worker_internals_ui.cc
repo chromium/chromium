@@ -678,7 +678,10 @@ void ServiceWorkerInternalsHandler::HandleStartWorker(const ListValue* args) {
   base::OnceCallback<void(blink::ServiceWorkerStatusCode)> callback =
       base::BindOnce(OperationCompleteCallback, weak_ptr_factory_.GetWeakPtr(),
                      callback_id);
-  context->StartActiveServiceWorker(GURL(scope_string), std::move(callback));
+  context->StartActiveServiceWorker(
+      GURL(scope_string),
+      storage::StorageKey(url::Origin::Create(GURL(scope_string))),
+      std::move(callback));
 }
 
 void ServiceWorkerInternalsHandler::StopWorkerWithId(

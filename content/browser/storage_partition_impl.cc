@@ -36,6 +36,7 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_impl.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
@@ -1023,7 +1024,7 @@ class StoragePartitionImpl::ServiceWorkerCookieAccessObserver
       network::mojom::CookieAccessDetailsPtr details) {
     std::vector<GlobalFrameRoutingId> destinations =
         *service_worker_context->GetWindowClientFrameRoutingIds(
-            details->url.GetOrigin());
+            storage::StorageKey(url::Origin::Create(details->url)));
     if (destinations.empty())
       return;
     RunOrPostTaskOnThread(
