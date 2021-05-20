@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/bind.h"
-#include "chrome/browser/accessibility/caption_controller.h"
-#include "chrome/browser/accessibility/caption_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption_controller.h"
+#include "chrome/browser/accessibility/live_caption_controller_factory.h"
 #include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"

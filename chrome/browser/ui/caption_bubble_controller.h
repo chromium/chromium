@@ -53,7 +53,7 @@ class CaptionBubbleController {
       absl::optional<ui::CaptionStyle> caption_style) = 0;
 
  private:
-  friend class CaptionControllerTest;
+  friend class LiveCaptionControllerTest;
 
   virtual bool IsWidgetVisibleForTesting() = 0;
   virtual std::string GetBubbleLabelTextForTesting() = 0;

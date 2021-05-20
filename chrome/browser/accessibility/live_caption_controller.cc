@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/caption_controller.h"
+#include "chrome/browser/accessibility/live_caption_controller.h"
 
 #include <memory>
 
@@ -39,10 +39,10 @@ const char* const kCaptionStylePrefsToObserve[] = {
 
 namespace captions {
 
-CaptionController::CaptionController(PrefService* profile_prefs)
+LiveCaptionController::LiveCaptionController(PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {}
 
-CaptionController::~CaptionController() {
+LiveCaptionController::~LiveCaptionController() {
   if (enabled_) {
     enabled_ = false;
     StopLiveCaption();
@@ -50,7 +50,7 @@ CaptionController::~CaptionController() {
 }
 
 // static
-void CaptionController::RegisterProfilePrefs(
+void LiveCaptionController::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kLiveCaptionEnabled, false,
@@ -61,7 +61,7 @@ void CaptionController::RegisterProfilePrefs(
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
-void CaptionController::Init() {
+void LiveCaptionController::Init() {
   base::UmaHistogramBoolean("Accessibility.LiveCaption.FeatureEnabled",
                             media::IsLiveCaptionFeatureEnabled());
 
@@ -82,11 +82,11 @@ void CaptionController::Init() {
 
   pref_change_registrar_->Add(
       prefs::kLiveCaptionEnabled,
-      base::BindRepeating(&CaptionController::OnLiveCaptionEnabledChanged,
+      base::BindRepeating(&LiveCaptionController::OnLiveCaptionEnabledChanged,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
       prefs::kLiveCaptionLanguageCode,
-      base::BindRepeating(&CaptionController::OnLiveCaptionLanguageChanged,
+      base::BindRepeating(&LiveCaptionController::OnLiveCaptionLanguageChanged,
                           base::Unretained(this)));
 
   enabled_ = IsLiveCaptionEnabled();
@@ -100,11 +100,11 @@ void CaptionController::Init() {
   // callback is not called on destroyed object.
   content::BrowserAccessibilityState::GetInstance()
       ->AddUIThreadHistogramCallback(base::BindOnce(
-          &CaptionController::UpdateAccessibilityCaptionHistograms,
+          &LiveCaptionController::UpdateAccessibilityCaptionHistograms,
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void CaptionController::OnLiveCaptionEnabledChanged() {
+void LiveCaptionController::OnLiveCaptionEnabledChanged() {
   bool enabled = IsLiveCaptionEnabled();
   if (enabled == enabled_)
     return;
@@ -119,19 +119,19 @@ void CaptionController::OnLiveCaptionEnabledChanged() {
   }
 }
 
-void CaptionController::OnLiveCaptionLanguageChanged() {
+void LiveCaptionController::OnLiveCaptionLanguageChanged() {
   if (enabled_)
     speech::SodaInstaller::GetInstance()->InstallLanguage(
         profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode),
         g_browser_process->local_state());
 }
 
-bool CaptionController::IsLiveCaptionEnabled() {
+bool LiveCaptionController::IsLiveCaptionEnabled() {
   PrefService* profile_prefs = profile_prefs_;
   return profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled);
 }
 
-void CaptionController::StartLiveCaption() {
+void LiveCaptionController::StartLiveCaption() {
   DCHECK(enabled_);
   if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
     CreateUI();
@@ -151,13 +151,13 @@ void CaptionController::StartLiveCaption() {
   }
 }
 
-void CaptionController::StopLiveCaption() {
+void LiveCaptionController::StopLiveCaption() {
   DCHECK(!enabled_);
   speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   DestroyUI();
 }
 
-void CaptionController::OnSodaInstalled() {
+void LiveCaptionController::OnSodaInstalled() {
   // Live Caption should always be enabled when this is called. If Live Caption
   // has been disabled, then this should not be observing the SodaInstaller
   // anymore.
@@ -166,7 +166,7 @@ void CaptionController::OnSodaInstalled() {
   CreateUI();
 }
 
-void CaptionController::CreateUI() {
+void LiveCaptionController::CreateUI() {
   DCHECK(enabled_);
   if (is_ui_constructed_)
     return;
@@ -185,13 +185,13 @@ void CaptionController::CreateUI() {
     DCHECK(!pref_change_registrar_->IsObserved(pref_name));
     pref_change_registrar_->Add(
         pref_name,
-        base::BindRepeating(&CaptionController::OnCaptionStyleUpdated,
+        base::BindRepeating(&LiveCaptionController::OnCaptionStyleUpdated,
                             base::Unretained(this)));
   }
   OnCaptionStyleUpdated();
 }
 
-void CaptionController::DestroyUI() {
+void LiveCaptionController::DestroyUI() {
   DCHECK(!enabled_);
   if (!is_ui_constructed_)
     return;
@@ -208,11 +208,11 @@ void CaptionController::DestroyUI() {
   }
 }
 
-void CaptionController::UpdateAccessibilityCaptionHistograms() {
+void LiveCaptionController::UpdateAccessibilityCaptionHistograms() {
   base::UmaHistogramBoolean("Accessibility.LiveCaption", enabled_);
 }
 
-bool CaptionController::DispatchTranscription(
+bool LiveCaptionController::DispatchTranscription(
     LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host,
     const media::mojom::SpeechRecognitionResultPtr& result) {
   if (!caption_bubble_controller_)
@@ -221,14 +221,14 @@ bool CaptionController::DispatchTranscription(
       live_caption_speech_recognition_host, result);
 }
 
-void CaptionController::OnError(
+void LiveCaptionController::OnError(
     LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host) {
   if (!caption_bubble_controller_)
     return;
   caption_bubble_controller_->OnError(live_caption_speech_recognition_host);
 }
 
-void CaptionController::OnAudioStreamEnd(
+void LiveCaptionController::OnAudioStreamEnd(
     LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host) {
   if (!caption_bubble_controller_)
     return;
@@ -236,12 +236,12 @@ void CaptionController::OnAudioStreamEnd(
       live_caption_speech_recognition_host);
 }
 
-void CaptionController::OnLanguageIdentificationEvent(
+void LiveCaptionController::OnLanguageIdentificationEvent(
     const media::mojom::LanguageIdentificationEventPtr& event) {
   // TODO(crbug.com/1175357): Implement the UI for language identification.
 }
 
-void CaptionController::OnCaptionStyleUpdated() {
+void LiveCaptionController::OnCaptionStyleUpdated() {
   // Metrics are recorded when passing the caption prefs to the browser, so do
   // not duplicate them here.
   caption_style_ = GetCaptionStyleFromUserSettings(profile_prefs_,

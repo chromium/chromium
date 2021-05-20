@@ -15,7 +15,7 @@ class RenderFrameHost;
 
 namespace captions {
 
-class CaptionController;
+class LiveCaptionController;
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Live Caption Speech Recognition Host
@@ -59,9 +59,9 @@ class LiveCaptionSpeechRecognitionHost
   void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
 
  private:
-  // Returns the CaptionController for frame_host_. Returns nullptr if it does
-  // not exist.
-  CaptionController* GetCaptionController();
+  // Returns the LiveCaptionController for frame_host_. Returns nullptr if it
+  // does not exist.
+  LiveCaptionController* GetLiveCaptionController();
 
   content::RenderFrameHost* frame_host_;
 };

@@ -131,8 +131,8 @@
 #endif
 
 #if !defined(OS_ANDROID)
-#include "chrome/browser/accessibility/caption_controller.h"
-#include "chrome/browser/accessibility/caption_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption_controller.h"
+#include "chrome/browser/accessibility/live_caption_controller_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -1628,9 +1628,9 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!chromeos::ProfileHelper::IsSigninProfile(profile))
-    captions::CaptionControllerFactory::GetForProfile(profile)->Init();
+    captions::LiveCaptionControllerFactory::GetForProfile(profile)->Init();
 #elif !defined(OS_ANDROID)  // !OS_ANDROID && !IS_CHROMEOS_ASH
-  captions::CaptionControllerFactory::GetForProfile(profile)->Init();
+  captions::LiveCaptionControllerFactory::GetForProfile(profile)->Init();
 #endif
 
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_DICE_SUPPORT)

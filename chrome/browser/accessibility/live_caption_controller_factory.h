@@ -1,0 +1,41 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_CONTROLLER_FACTORY_H_
+#define CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_CONTROLLER_FACTORY_H_
+
+#include "base/no_destructor.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+
+class Profile;
+
+namespace captions {
+
+class LiveCaptionController;
+
+// Factory to get or create an instance of LiveCaptionController from a Profile.
+class LiveCaptionControllerFactory : public BrowserContextKeyedServiceFactory {
+ public:
+  static LiveCaptionController* GetForProfile(Profile* profile);
+
+  static LiveCaptionController* GetForProfileIfExists(Profile* profile);
+
+  static LiveCaptionControllerFactory* GetInstance();
+
+ private:
+  friend base::NoDestructor<LiveCaptionControllerFactory>;
+
+  LiveCaptionControllerFactory();
+  ~LiveCaptionControllerFactory() override;
+
+  // BrowserContextKeyedServiceFactory:
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* profile) const override;
+};
+
+}  // namespace captions
+
+#endif  // CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_CONTROLLER_FACTORY_H_

@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/accessibility/caption_controller.h"
-#include "chrome/browser/accessibility/caption_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption_controller.h"
+#include "chrome/browser/accessibility/live_caption_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -36,35 +36,36 @@ LiveCaptionSpeechRecognitionHost::LiveCaptionSpeechRecognitionHost(
 }
 
 LiveCaptionSpeechRecognitionHost::~LiveCaptionSpeechRecognitionHost() {
-  CaptionController* caption_controller = GetCaptionController();
-  if (caption_controller)
-    caption_controller->OnAudioStreamEnd(this);
+  LiveCaptionController* live_caption_controller = GetLiveCaptionController();
+  if (live_caption_controller)
+    live_caption_controller->OnAudioStreamEnd(this);
 }
 
 void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
     media::mojom::SpeechRecognitionResultPtr result,
     OnSpeechRecognitionRecognitionEventCallback reply) {
-  CaptionController* caption_controller = GetCaptionController();
-  if (!caption_controller) {
+  LiveCaptionController* live_caption_controller = GetLiveCaptionController();
+  if (!live_caption_controller) {
     std::move(reply).Run(false);
     return;
   }
-  std::move(reply).Run(caption_controller->DispatchTranscription(this, result));
+  std::move(reply).Run(
+      live_caption_controller->DispatchTranscription(this, result));
 }
 
 void LiveCaptionSpeechRecognitionHost::OnLanguageIdentificationEvent(
     media::mojom::LanguageIdentificationEventPtr event) {
-  CaptionController* caption_controller = GetCaptionController();
-  if (!caption_controller)
+  LiveCaptionController* live_caption_controller = GetLiveCaptionController();
+  if (!live_caption_controller)
     return;
 
-  caption_controller->OnLanguageIdentificationEvent(std::move(event));
+  live_caption_controller->OnLanguageIdentificationEvent(std::move(event));
 }
 
 void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionError() {
-  CaptionController* caption_controller = GetCaptionController();
-  if (caption_controller)
-    caption_controller->OnError(this);
+  LiveCaptionController* live_caption_controller = GetLiveCaptionController();
+  if (live_caption_controller)
+    live_caption_controller->OnError(this);
 }
 
 void LiveCaptionSpeechRecognitionHost::RenderFrameDeleted(
@@ -83,7 +84,8 @@ content::WebContents* LiveCaptionSpeechRecognitionHost::GetWebContents() {
   return web_contents;
 }
 
-CaptionController* LiveCaptionSpeechRecognitionHost::GetCaptionController() {
+LiveCaptionController*
+LiveCaptionSpeechRecognitionHost::GetLiveCaptionController() {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents)
     return nullptr;
@@ -91,7 +93,7 @@ CaptionController* LiveCaptionSpeechRecognitionHost::GetCaptionController() {
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (!profile)
     return nullptr;
-  return CaptionControllerFactory::GetForProfile(profile);
+  return LiveCaptionControllerFactory::GetForProfile(profile);
 }
 
 }  // namespace captions

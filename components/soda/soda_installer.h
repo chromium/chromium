@@ -80,11 +80,11 @@ class SodaInstaller {
   // other platforms.
   virtual base::FilePath GetLanguagePath() const = 0;
 
-  // Installs the user-selected SODA language model. Called by CaptionController
-  // when the kLiveCaptionEnabled or kLiveCaptionLanguageCode preferences
-  // change. `language` is a localized language e.g. "en-US". `global_prefs` is
-  // passed as part of component registration for the non-ChromeOS
-  // implementation.
+  // Installs the user-selected SODA language model. Called by
+  // LiveCaptionController when the kLiveCaptionEnabled or
+  // kLiveCaptionLanguageCode preferences change. `language` is a localized
+  // language e.g. "en-US". `global_prefs` is passed as part of component
+  // registration for the non-ChromeOS implementation.
   virtual void InstallLanguage(const std::string& language,
                                PrefService* global_prefs) = 0;
 

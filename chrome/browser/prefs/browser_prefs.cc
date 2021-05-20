@@ -226,7 +226,7 @@
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/query_tiles/tile_service_prefs.h"
 #else  // defined(OS_ANDROID)
-#include "chrome/browser/accessibility/caption_controller.h"
+#include "chrome/browser/accessibility/live_caption_controller.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
@@ -1079,7 +1079,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #else   // defined(OS_ANDROID)
   AppShortcutManager::RegisterProfilePrefs(registry);
   browser_sync::ForeignSessionHandler::RegisterProfilePrefs(registry);
-  captions::CaptionController::RegisterProfilePrefs(registry);
+  captions::LiveCaptionController::RegisterProfilePrefs(registry);
   ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(registry);
   DevToolsWindow::RegisterProfilePrefs(registry);
   DriveService::RegisterProfilePrefs(registry);

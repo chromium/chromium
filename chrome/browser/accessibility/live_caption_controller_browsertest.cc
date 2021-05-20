@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/caption_controller.h"
+#include "chrome/browser/accessibility/live_caption_controller.h"
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -10,7 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/accessibility/caption_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption_controller_factory.h"
 #include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
@@ -68,12 +68,13 @@ Profile* CreateProfile() {
   return profile_manager->GetProfileByPath(profile_path);
 }
 
-class CaptionControllerTest : public InProcessBrowserTest {
+class LiveCaptionControllerTest : public InProcessBrowserTest {
  public:
-  CaptionControllerTest() = default;
-  ~CaptionControllerTest() override = default;
-  CaptionControllerTest(const CaptionControllerTest&) = delete;
-  CaptionControllerTest& operator=(const CaptionControllerTest&) = delete;
+  LiveCaptionControllerTest() = default;
+  ~LiveCaptionControllerTest() override = default;
+  LiveCaptionControllerTest(const LiveCaptionControllerTest&) = delete;
+  LiveCaptionControllerTest& operator=(const LiveCaptionControllerTest&) =
+      delete;
 
   // InProcessBrowserTest overrides:
   void SetUp() override {
@@ -94,12 +95,12 @@ class CaptionControllerTest : public InProcessBrowserTest {
       speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   }
 
-  CaptionController* GetController() {
+  LiveCaptionController* GetController() {
     return GetControllerForProfile(browser()->profile());
   }
 
-  CaptionController* GetControllerForProfile(Profile* profile) {
-    return CaptionControllerFactory::GetForProfile(profile);
+  LiveCaptionController* GetControllerForProfile(Profile* profile) {
+    return LiveCaptionControllerFactory::GetForProfile(profile);
   }
 
   CaptionBubbleController* GetBubbleController() {
@@ -184,7 +185,7 @@ class CaptionControllerTest : public InProcessBrowserTest {
       live_caption_speech_recognition_host_;
 };
 
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest, ProfilePrefsAreRegistered) {
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, ProfilePrefsAreRegistered) {
   EXPECT_FALSE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
 
@@ -198,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest, ProfilePrefsAreRegistered) {
 #endif  // !defined(OS_CHROMEOS)
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
                        ProfilePrefsAreRegistered_Incognito) {
   // Set live caption enabled on the regular profile.
   SetLiveCaptionEnabled(true);
@@ -228,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
 #endif  // !defined(OS_CHROMEOS)
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest, LiveCaptionEnabledChanged) {
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, LiveCaptionEnabledChanged) {
   EXPECT_EQ(nullptr, GetBubbleController());
   EXPECT_FALSE(HasBubbleController());
 
@@ -241,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest, LiveCaptionEnabledChanged) {
   EXPECT_FALSE(HasBubbleController());
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
                        LiveCaptionEnabledChanged_BubbleVisible) {
   SetLiveCaptionEnabled(true);
   // Make the bubble visible by dispatching a transcription.
@@ -254,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
   EXPECT_FALSE(HasBubbleController());
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnSodaInstalled) {
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnSodaInstalled) {
   EXPECT_FALSE(HasBubbleController());
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
                                                true);
@@ -265,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnSodaInstalled) {
   EXPECT_TRUE(HasBubbleController());
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest, DispatchTranscription) {
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, DispatchTranscription) {
   bool success = DispatchTranscription("A baby spider is called a spiderling.");
   EXPECT_FALSE(success);
   EXPECT_FALSE(HasBubbleController());
@@ -286,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest, DispatchTranscription) {
   EXPECT_FALSE(HasBubbleController());
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnError) {
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnError) {
   OnError();
   EXPECT_FALSE(HasBubbleController());
 
@@ -299,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnError) {
   EXPECT_FALSE(HasBubbleController());
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnAudioStreamEnd) {
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnAudioStreamEnd) {
   OnAudioStreamEnd();
   EXPECT_FALSE(HasBubbleController());
 
@@ -317,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnAudioStreamEnd) {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)  // No multi-profile on ChromeOS.
 
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
                        LiveCaptionEnabledChanged_MultipleProfiles) {
   Profile* profile1 = browser()->profile();
   Profile* profile2 = CreateProfile();
@@ -347,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
   EXPECT_FALSE(HasBubbleControllerOnProfile(profile2));
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
                        DispatchTranscription_MultipleProfiles) {
   Profile* profile1 = browser()->profile();
   Profile* profile2 = CreateProfile();
@@ -375,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
       "Mosquitos were around at the time of the dinosaurs.", profile2);
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnError_MultipleProfiles) {
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnError_MultipleProfiles) {
   Profile* profile1 = browser()->profile();
   Profile* profile2 = CreateProfile();
 
@@ -393,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnError_MultipleProfiles) {
   ExpectIsWidgetVisibleOnProfile(true, profile2);
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
                        OnAudioStreamEnd_MultipleProfiles) {
   Profile* profile1 = browser()->profile();
   Profile* profile2 = CreateProfile();

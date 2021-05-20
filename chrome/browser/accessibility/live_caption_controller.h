@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACCESSIBILITY_CAPTION_CONTROLLER_H_
-#define CHROME_BROWSER_ACCESSIBILITY_CAPTION_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_CONTROLLER_H_
+#define CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_CONTROLLER_H_
 
 #include <memory>
 
@@ -31,22 +31,22 @@ class CaptionBubbleController;
 class LiveCaptionSpeechRecognitionHost;
 
 ///////////////////////////////////////////////////////////////////////////////
-// Caption Controller
+// Live Caption Controller
 //
 //  The controller of the live caption feature. It enables the captioning
-//  service when the preference is enabled. The caption controller is a
-//  KeyedService. There exists one caption controller per profile and it lasts
-//  for the duration of the session. The caption controller owns the live
-//  caption UI, which is a caption bubble controller.
+//  service when the preference is enabled. The live caption controller is a
+//  KeyedService. There exists one live caption controller per profile and it
+//  lasts for the duration of the session. The live caption controller owns the
+//  live caption UI, which is a caption bubble controller.
 //
-class CaptionController : public KeyedService,
-                          public speech::SodaInstaller::Observer,
-                          public ui::NativeThemeObserver {
+class LiveCaptionController : public KeyedService,
+                              public speech::SodaInstaller::Observer,
+                              public ui::NativeThemeObserver {
  public:
-  explicit CaptionController(PrefService* profile_prefs);
-  ~CaptionController() override;
-  CaptionController(const CaptionController&) = delete;
-  CaptionController& operator=(const CaptionController&) = delete;
+  explicit LiveCaptionController(PrefService* profile_prefs);
+  ~LiveCaptionController() override;
+  LiveCaptionController(const LiveCaptionController&) = delete;
+  LiveCaptionController& operator=(const LiveCaptionController&) = delete;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -72,8 +72,8 @@ class CaptionController : public KeyedService,
       LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host);
 
  private:
-  friend class CaptionControllerFactory;
-  friend class CaptionControllerTest;
+  friend class LiveCaptionControllerFactory;
+  friend class LiveCaptionControllerTest;
 
   // SodaInstaller::Observer:
   void OnSodaInstalled() override;
@@ -113,9 +113,9 @@ class CaptionController : public KeyedService,
   // ensures that the UI is not constructed or deconstructed twice.
   bool is_ui_constructed_ = false;
 
-  base::WeakPtrFactory<CaptionController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<LiveCaptionController> weak_ptr_factory_{this};
 };
 
 }  // namespace captions
 
-#endif  // CHROME_BROWSER_ACCESSIBILITY_CAPTION_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_CONTROLLER_H_
