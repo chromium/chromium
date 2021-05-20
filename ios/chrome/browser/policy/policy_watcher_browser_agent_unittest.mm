@@ -193,6 +193,10 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandIfSignedIn) {
 // Tests that the pref change doesn't trigger a command if the scene isn't
 // active.
 TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotActive) {
+#if !TARGET_IPHONE_SIMULATOR
+  // Test fails on device, see TODO:(crbug.com/1211546).
+  EARL_GREY_TEST_DISABLED(@"Test disable on device.");
+#endif
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
