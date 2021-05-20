@@ -266,7 +266,7 @@ preprocess_if_expr("preprocess_generated") {
 
     # Files app Elements:
     "file_manager/foreground/elements/icons.m.js",
-    "file_manager/foreground/elements/files_format_dialog.m.js",
+    "file_manager/foreground/elements/files_format_dialog.js",
     "file_manager/foreground/elements/files_icon_button.m.js",
     "file_manager/foreground/elements/files_message.m.js",
     "file_manager/foreground/elements/files_metadata_box.m.js",
@@ -379,6 +379,7 @@ preprocess_if_expr("preprocess_generated") {
     "//ui/file_manager/file_manager/externs/background:modulize",
     "//ui/file_manager/file_manager/foreground/elements:elements",
     "//ui/file_manager/file_manager/foreground/elements:modulize",
+    "//ui/file_manager/file_manager/foreground/elements:web_components",
     "//ui/file_manager/file_manager/foreground/js:modulize",
     "//ui/file_manager/file_manager/foreground/js/metadata:modulize",
     "//ui/file_manager/file_manager/foreground/js/ui:modulize",

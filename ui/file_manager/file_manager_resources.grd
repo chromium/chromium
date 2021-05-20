@@ -25,8 +25,6 @@
 
       <!-- Polymer elements -->
       <include name="IDR_FILE_MANAGER_ELEMENTS_ELEMENTS_BUNDLE_HTML" file="file_manager/foreground/elements/elements_bundle.html" type="BINDATA"/>
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_FORMAT_DIALOG_HTML" file="file_manager/foreground/elements/files_format_dialog.html" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_FORMAT_DIALOG_JS" file="file_manager/foreground/elements/files_format_dialog.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_ICON_BUTTON_HTML" file="file_manager/foreground/elements/files_icon_button.html" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_ICON_BUTTON_JS" file="file_manager/foreground/elements/files_icon_button.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_MESSAGE_HTML" file="file_manager/foreground/elements/files_message.html" type="BINDATA" />

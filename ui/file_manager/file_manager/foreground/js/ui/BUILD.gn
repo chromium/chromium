@@ -15,7 +15,6 @@ group("closure_compile") {
   visibility += [ "//ui/file_manager:closure_compile" ]
   deps = [
     ":closure_compile_jsmodules",
-    ":closure_compile_module",
     ":js_test_gen_html_modules_type_check_auto",
   ]
 }
@@ -69,74 +68,6 @@ js_type_check("closure_compile_jsmodules") {
     "table:table_header.m",
     "table:table_list.m",
     "table:table_splitter.m",
-  ]
-}
-
-js_type_check("closure_compile_module") {
-  uses_legacy_modules = true
-  deps = [
-    ":action_model_ui",
-    ":actions_submenu",
-    ":banners",
-    ":breadcrumb",
-    ":closure_compile_externs",
-    ":combobutton",
-    ":commandbutton",
-    ":default_task_dialog",
-    ":dialog_footer",
-    ":directory_tree",
-    ":drag_selector",
-    ":empty_folder",
-    ":file_grid",
-    ":file_list_selection_model",
-    ":file_manager_dialog_base",
-    ":file_manager_ui",
-    ":file_metadata_formatter",
-    ":file_table",
-    ":file_table_list",
-    ":file_tap_handler",
-    ":files_alert_dialog",
-    ":files_confirm_dialog",
-    ":files_menu",
-    ":gear_menu",
-    ":import_crostini_image_dialog",
-    ":install_linux_package_dialog",
-    ":list_container",
-    ":location_line",
-    ":multi_menu",
-    ":multi_menu_button",
-    ":progress_center_panel",
-    ":providers_menu",
-    ":search_box",
-    "table:table",
-    "table:table_column",
-    "table:table_column_model",
-    "table:table_header",
-    "table:table_list",
-    "table:table_splitter",
-  ]
-}
-
-js_library("closure_compile_externs") {
-  sources = []
-  externs_list = [
-    "$externs_path/metrics_private.js",
-    "//ui/file_manager/file_manager/externs/background/crostini.js",
-    "//ui/file_manager/file_manager/externs/background/drive_sync_handler.js",
-    "//ui/file_manager/file_manager/externs/background/background_base.js",
-    "//ui/file_manager/file_manager/externs/background/file_operation_manager.js",
-    "//ui/file_manager/file_manager/externs/background/import_history.js",
-    "//ui/file_manager/file_manager/externs/background_window.js",
-    "//ui/file_manager/file_manager/externs/chrome_echo_private.js",
-    "//ui/file_manager/file_manager/externs/css_rule.js",
-    "//ui/file_manager/file_manager/externs/drag_target.js",
-    "//ui/file_manager/file_manager/externs/drive_dialog_controller.js",
-    "//ui/file_manager/file_manager/externs/entries_changed_event.js",
-    "//ui/file_manager/file_manager/externs/gallery_foreground.js",
-    "//ui/file_manager/file_manager/externs/menu_item_update_event.js",
-    "//ui/file_manager/file_manager/externs/paper_elements.js",
-    "//ui/file_manager/file_manager/externs/platform.js",
-    "//ui/file_manager/file_manager/externs/search_item.js",
   ]
 }
 

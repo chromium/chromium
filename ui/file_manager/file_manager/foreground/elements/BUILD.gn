@@ -4,6 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/polymer.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
@@ -13,7 +14,6 @@ visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 group("elements") {
   visibility += [ "//ui/file_manager/*" ]
   public_deps = [
-    "//ui/file_manager/file_manager/foreground/elements:files_format_dialog_module",
     "//ui/file_manager/file_manager/foreground/elements:files_icon_button_module",
     "//ui/file_manager/file_manager/foreground/elements:files_metadata_box_module",
     "//ui/file_manager/file_manager/foreground/elements:files_metadata_entry_module",
@@ -32,40 +32,19 @@ group("closure_compile") {
   testonly = true
   visibility += [ "//ui/file_manager:closure_compile" ]
   deps = [
-    ":closure_compile_internal",
     ":closure_compile_jsmodules",
     ":js_test_gen_html_modules_type_check_auto",
   ]
 }
 
-js_type_check("closure_compile_internal") {
-  uses_legacy_modules = true
-  deps = [
-    ":files_format_dialog",
-    ":files_icon_button",
-    ":files_message",
-    ":files_metadata_box",
-    ":files_metadata_entry",
-    ":files_password_dialog",
-    ":files_quick_view",
-    ":files_ripple",
-    ":files_safe_media",
-    ":files_safe_media_webview_content",
-    ":files_spinner",
-    ":files_toast",
-    ":files_toggle_ripple",
-    ":files_tooltip",
-    ":xf_button",
-    ":xf_circular_progress",
-    ":xf_display_panel",
-    ":xf_panel_item",
-  ]
-}
-
 js_type_check("closure_compile_jsmodules") {
   is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "js_module_root=gen/ui/file_manager/",
+                    "js_module_root=../../ui/file_manager/",
+                  ]
   deps = [
-    ":files_format_dialog.m",
+    ":files_format_dialog",
     ":files_icon_button.m",
     ":files_message.m",
     ":files_metadata_box.m",
@@ -85,33 +64,12 @@ js_type_check("closure_compile_jsmodules") {
   ]
 }
 
+html_to_js("web_components") {
+  js_files = [ "files_format_dialog.js" ]
+}
+
 js_library("files_format_dialog") {
-  deps = [
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
-polymer_modulizer("files_format_dialog") {
-  js_file = "files_format_dialog.js"
-  html_file = "files_format_dialog.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-
-  auto_imports = [
-    "ui/file_manager/file_manager/common/js/util.html|util",
-    "ui/file_manager/file_manager/common/js/files_app_entry_types.html|EntryList,VolumeEntry",
-    "ui/file_manager/file_manager/common/js/volume_manager_types.html|VolumeManagerCommon",
-    "ui/file_manager/file_manager/externs/volume_info.html|VolumeInfo",
-  ]
-}
-
-js_library("files_format_dialog.m") {
   visibility += [ "//ui/file_manager/audio_player/*" ]
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_format_dialog.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -124,7 +82,6 @@ js_library("files_format_dialog.m") {
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  extra_deps = [ ":files_format_dialog_module" ]
 }
 
 js_library("files_icon_button") {

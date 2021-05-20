@@ -20,9 +20,7 @@ group("closure_compile") {
   visibility += [ "//ui/file_manager:closure_compile" ]
   deps = [
     ":closure_compile_jsmodules",
-    ":closure_compile_module",
     ":js_test_gen_html_modules_type_check_auto",
-    ":test_support_type_check",
   ]
 }
 
@@ -30,6 +28,7 @@ js_type_check("closure_compile_jsmodules") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
                     "js_module_root=gen/ui/file_manager/",
+                    "js_module_root=../../ui/file_manager/",
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                   ]
@@ -96,110 +95,6 @@ js_type_check("closure_compile_jsmodules") {
     ":thumbnail_loader.m",
     ":toolbar_controller.m",
     ":webui_command_extender.m",
-  ]
-}
-
-js_type_check("closure_compile_module") {
-  uses_legacy_modules = true
-  deps = [
-    ":actions_controller",
-    ":actions_model",
-    ":android_app_list_model",
-    ":app_state_controller",
-    ":closure_compile_externs",
-    ":column_visibility_controller",
-    ":constants",
-    ":crossover_search_utils",
-    ":crostini_controller",
-    ":dialog_action_controller",
-    ":dialog_type",
-    ":directory_contents",
-    ":directory_model",
-    ":directory_tree_naming_controller",
-    ":drive_dialog_controller",
-    ":drop_effect_and_label",
-    ":elements_importer",
-    ":empty_folder_controller",
-    ":file_list_model",
-    ":file_manager",
-    ":file_manager_commands",
-    ":file_selection",
-    ":file_tasks",
-    ":file_transfer_controller",
-    ":file_type_filters_controller",
-    ":file_watcher",
-    ":folder_shortcuts_data_model",
-    ":gear_menu_controller",
-    ":import_controller",
-    ":last_modified_controller",
-    ":launch_param",
-    ":list_thumbnail_loader",
-    ":main",
-    ":main_window_component",
-    ":metadata_box_controller",
-    ":metadata_update_controller",
-    ":metrics_start",
-    ":naming_controller",
-    ":navigation_list_model",
-    ":navigation_uma",
-    ":path_component",
-    ":providers_model",
-    ":quick_view_controller",
-    ":quick_view_model",
-    ":quick_view_uma",
-    ":scan_controller",
-    ":search_controller",
-    ":selection_menu_controller",
-    ":sort_menu_controller",
-    ":spinner_controller",
-    ":task_controller",
-    ":task_history",
-    ":thumbnail_loader",
-    ":toolbar_controller",
-    ":webui_command_extender",
-  ]
-}
-
-js_library("closure_compile_externs") {
-  sources = []
-  externs_list = [
-    "$externs_path/command_line_private.js",
-    "$externs_path/metrics_private.js",
-    "//ui/file_manager/file_manager/externs/background/crostini.js",
-    "//ui/file_manager/file_manager/externs/background/drive_sync_handler.js",
-    "//ui/file_manager/file_manager/externs/background/background_base.js",
-    "//ui/file_manager/file_manager/externs/background/file_browser_background_full.js",
-    "//ui/file_manager/file_manager/externs/background/file_operation_manager.js",
-    "//ui/file_manager/file_manager/externs/background/media_import_handler.js",
-    "//ui/file_manager/file_manager/externs/background/task_queue.js",
-    "//ui/file_manager/file_manager/externs/background/duplicate_finder.js",
-    "//ui/file_manager/file_manager/externs/background/media_scanner.js",
-    "//ui/file_manager/file_manager/externs/background/progress_center.js",
-    "//ui/file_manager/file_manager/externs/background_window.js",
-    "//ui/file_manager/file_manager/externs/chrome_echo_private.js",
-    "//ui/file_manager/file_manager/externs/command_handler_deps.js",
-    "//ui/file_manager/file_manager/externs/css_rule.js",
-    "//ui/file_manager/file_manager/externs/directory_change_event.js",
-    "//ui/file_manager/file_manager/externs/drive_dialog_controller.js",
-    "//ui/file_manager/file_manager/externs/entries_changed_event.js",
-    "//ui/file_manager/file_manager/externs/gallery_foreground.js",
-    "//ui/file_manager/file_manager/externs/menu_item_update_event.js",
-    "//ui/file_manager/file_manager/externs/paper_elements.js",
-    "//ui/file_manager/file_manager/externs/platform.js",
-    "//ui/file_manager/file_manager/externs/search_item.js",
-  ]
-}
-
-js_type_check("test_support_type_check") {
-  uses_legacy_modules = true
-  testonly = true
-  deps = [
-    ":fake_android_app_list_model",
-    ":mock_actions_model",
-    ":mock_directory_model",
-    ":mock_folder_shortcut_data_model",
-    ":mock_navigation_list_model",
-    ":mock_thumbnail_loader",
   ]
 }
 
@@ -734,7 +629,7 @@ js_library("elements_importer.m") {
 js_library("deferred_elements.m") {
   visibility += [ "//ui/file_manager:*" ]
   deps = [
-    "//ui/file_manager/file_manager/foreground/elements:files_format_dialog.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_format_dialog",
     "//ui/file_manager/file_manager/foreground/elements:files_message.m",
     "//ui/file_manager/file_manager/foreground/elements:files_password_dialog.m",
     "//ui/file_manager/file_manager/foreground/elements:files_ripple.m",
@@ -990,7 +885,7 @@ js_library("file_manager_commands.m") {
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
     "//ui/file_manager/file_manager/externs:volume_info.m",
     "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_format_dialog.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_format_dialog",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js/cr/ui:command.m",
     "//ui/webui/resources/js/cr/ui:context_menu_handler.m",
