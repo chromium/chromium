@@ -78,10 +78,6 @@ class GPU_EXPORT GpuChannelHost
 
   int channel_id() const { return channel_id_; }
 
-  const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner() {
-    return io_thread_;
-  }
-
   // Virtual for testing.
   virtual mojom::GpuChannel& GetGpuChannel();
 

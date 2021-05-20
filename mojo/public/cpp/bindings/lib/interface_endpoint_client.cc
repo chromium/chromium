@@ -442,6 +442,11 @@ InterfaceEndpointClient::InterfaceEndpointClient(
           base::BindOnce(&InterfaceEndpointClient::OnAssociationEvent,
                          weak_ptr_factory_.GetWeakPtr())));
     }
+  } else if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&InterfaceEndpointClient::InitControllerIfNecessary,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     InitControllerIfNecessary();
   }
@@ -770,17 +775,6 @@ void InterfaceEndpointClient::MaybeSendNotifyIdle() {
       idle_tracking_connection_group_.HasZeroRefs()) {
     control_message_proxy_.NotifyIdle();
   }
-}
-
-void InterfaceEndpointClient::ResetFromAnotherSequenceUnsafe() {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-
-  if (controller_) {
-    controller_ = nullptr;
-    handle_.group_controller()->DetachEndpointClient(handle_);
-  }
-
-  handle_.reset();
 }
 
 void InterfaceEndpointClient::InitControllerIfNecessary() {

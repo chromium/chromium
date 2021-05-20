@@ -192,8 +192,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
       mojom::CreateCommandBufferParamsPtr init_params,
       int32_t routing_id,
       base::UnsafeSharedMemoryRegion shared_state_shm,
-      mojo::PendingAssociatedReceiver<mojom::CommandBuffer> receiver,
-      mojo::PendingAssociatedRemote<mojom::CommandBufferClient> client,
       mojom::GpuChannel::CreateCommandBufferCallback callback);
   void DestroyCommandBuffer(int32_t routing_id);
   bool CreateStreamTexture(int32_t stream_id);

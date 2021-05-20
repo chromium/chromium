@@ -25,66 +25,6 @@
 
 namespace IPC {
 
-// Incoming legacy IPCs have always been dispatched to one of two threads: the
-// IO thread (when an installed MessageFilter handles the message), or the
-// thread which owns the corresponding ChannelProxy receiving the message. There
-// were no other places to route legacy IPC messages, so when a message arrived
-// the legacy IPC system would run through its MessageFilters and if the message
-// was still unhandled, it would be posted to the ChannelProxy thread for
-// further processing.
-//
-// Mojo on the other hand allows for mutually associated endpoints (that is,
-// endpoints which locally share the same message pipe) to span any number of
-// threads while still guaranteeing that each endpoint on a given thread
-// preserves FIFO order of messages dispatched there. This means that if a
-// message arrives carrying a PendingAssociatedRemote/Receiver endpoint, and
-// then another message arrives which targets that endpoint, the entire pipe
-// will be blocked from dispatch until the endpoint is bound: otherwise we have
-// no idea where to dispatch the message such that we can uphold the FIFO
-// guarantee between the new endpoint and any other endpoints on the thread it
-// ends up binding to.
-//
-// Channel-associated interfaces share a message pipe with the legacy IPC
-// Channel, and in order to avoid nasty surprises during the migration process
-// we decided to constrain how incoming Channel-associated endpoints could be
-// bound: you must either bind them immediately as they arrive on the IO thread,
-// or you must immediately post a task to the ChannelProxy thread to bind them.
-// This allows all aforementioned FIFO guaratees to be upheld without ever
-// stalling dispatch of legacy IPCs (particularly on the IO thread), because
-// when we see a message targeting an unbound endpoint we can safely post it to
-// the ChannelProxy's task runner before forging ahead to dispatch subsequent
-// messages. No stalling.
-//
-// As there are some cases where a Channel-associated endpoint really wants to
-// receive messages on a different TaskRunner, we want to allow that now. It's
-// safe as long as the application can guarantee that the endpoint in question
-// will be bound to a task runner *before* any messages are received for that
-// endpoint.
-//
-// HOWEVER, it turns out that we cannot simply adhere to the application's
-// wishes when an alternative TaskRunner is provided at binding time: over time
-// we have accumulated application code which binds Channel-associated endpoints
-// to task runners which -- while running tasks exclusively on the ChannelProxy
-// thread -- are not the ChannelProxy's own task runner. Such code now
-// implicitly relies on the behavior of Channel-associated interfaces always
-// dispatching their messages to the ChannelProxy task runner. This is tracked
-// by https://crbug.com/1209188.
-//
-// Finally, the point: if you really know you want to bind your endpoint to an
-// alternative task runner and you can really guarantee that no messages may
-// have already arrived for it on the IO thread, you can do the binding within
-// the extent of a ScopedAllowOffSequenceChannelAssociatedBindings. This will
-// flag the endpoint such that it honors your binding configuration, and its
-// incoming messages will actually dispatch to the task runner you provide.
-class COMPONENT_EXPORT(IPC) ScopedAllowOffSequenceChannelAssociatedBindings {
- public:
-  ScopedAllowOffSequenceChannelAssociatedBindings();
-  ~ScopedAllowOffSequenceChannelAssociatedBindings();
-
- private:
-  const bool outer_flag_;
-};
-
 // MojoBootstrap establishes a pair of associated interfaces between two
 // processes in Chrome.
 //

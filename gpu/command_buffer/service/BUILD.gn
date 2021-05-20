@@ -54,8 +54,6 @@ target(link_target_type, "service_sources") {
     "memory_tracking.h",
     "scheduler.cc",
     "scheduler.h",
-    "scheduler_task_runner.cc",
-    "scheduler_task_runner.h",
     "sequence_id.h",
     "sync_point_manager.cc",
     "sync_point_manager.h",

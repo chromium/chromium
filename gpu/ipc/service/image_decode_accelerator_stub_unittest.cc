@@ -325,10 +325,7 @@ class ImageDecodeAcceleratorStubTest
         channel->LookupCommandBuffer(kCommandBufferRouteId);
     ASSERT_TRUE(command_buffer);
 
-    // Make sure there are no pending tasks before starting the test. Command
-    // buffer creation creates some throw-away Mojo endpoints that will post
-    // some tasks.
-    base::RunLoop().RunUntilIdle();
+    // Make sure there are no pending tasks before starting the test.
     ASSERT_TRUE(task_environment().MainThreadIsIdle());
   }
 

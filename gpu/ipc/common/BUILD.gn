@@ -740,8 +740,6 @@ source_set("mojom_traits") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "mock_command_buffer.cc",
-    "mock_command_buffer.h",
     "mock_gpu_channel.cc",
     "mock_gpu_channel.h",
   ]

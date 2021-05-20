@@ -58,6 +58,11 @@
 
 #define IPC_MESSAGE_START GpuChannelMsgStart
 
+IPC_STRUCT_BEGIN(GPUCommandBufferConsoleMessage)
+  IPC_STRUCT_MEMBER(int32_t, id)
+  IPC_STRUCT_MEMBER(std::string, message)
+IPC_STRUCT_END()
+
 IPC_STRUCT_BEGIN(GpuCommandBufferMsg_CreateImage_Params)
   IPC_STRUCT_MEMBER(int32_t, id)
   IPC_STRUCT_MEMBER(gfx::GpuMemoryBufferHandle, gpu_memory_buffer)
@@ -133,6 +138,13 @@ IPC_MESSAGE_ROUTED1(GpuStreamTextureMsg_UpdateRotatedVisibleSize,
 // GPU Command Buffer Messages
 // These are messages between a renderer process to the GPU process relating to
 // a single OpenGL context.
+
+// Sets the shared memory buffer used for commands.
+IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_SetGetBuffer, int32_t /* shm_id */)
+
+// Sent by the GPU process to display messages in the console.
+IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_ConsoleMsg,
+                    GPUCommandBufferConsoleMessage /* msg */)
 
 // Sent by the GPU process to notify the renderer process of a GPU switch.
 IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_GpuSwitched,

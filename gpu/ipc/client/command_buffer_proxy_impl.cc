@@ -31,7 +31,6 @@
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/gpu_messages.h"
 #include "gpu/ipc/common/gpu_param_traits.h"
-#include "ipc/ipc_mojo_bootstrap.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -120,23 +119,15 @@ ContextResult CommandBufferProxyImpl::Initialize(
   // TODO(piman): Make this asynchronous (http://crbug.com/125248).
   ContextResult result = ContextResult::kSuccess;
   mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync;
-  IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_binding;
   bool sent = channel->GetGpuChannel().CreateCommandBuffer(
-      std::move(params), route_id_, std::move(region),
-      command_buffer_.BindNewEndpointAndPassReceiver(channel->io_task_runner()),
-      client_receiver_.BindNewEndpointAndPassRemote(callback_thread_), &result,
-      &capabilities_);
+      std::move(params), route_id_, std::move(region), &result, &capabilities_);
   if (!sent) {
-    command_buffer_.reset();
-    client_receiver_.reset();
     channel->RemoveRoute(route_id_);
     LOG(ERROR) << "ContextResult::kTransientFailure: "
                   "Failed to send GpuControl.CreateCommandBuffer.";
     return ContextResult::kTransientFailure;
   }
   if (result != ContextResult::kSuccess) {
-    command_buffer_.reset();
-    client_receiver_.reset();
     DLOG(ERROR) << "Failure processing GpuControl.CreateCommandBuffer.";
     channel->RemoveRoute(route_id_);
     return result;
@@ -151,6 +142,7 @@ bool CommandBufferProxyImpl::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(CommandBufferProxyImpl, message)
     IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_Destroyed, OnDestroyed);
+    IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_ConsoleMsg, OnConsoleMessage);
     IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_GpuSwitched, OnGpuSwitched);
     IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_SignalAck, OnSignalAck);
     IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_SwapBuffersCompleted,
@@ -193,9 +185,11 @@ void CommandBufferProxyImpl::OnDestroyed(gpu::error::ContextLostReason reason,
   OnGpuAsyncMessageError(reason, error);
 }
 
-void CommandBufferProxyImpl::OnConsoleMessage(const std::string& message) {
+void CommandBufferProxyImpl::OnConsoleMessage(
+    const GPUCommandBufferConsoleMessage& message) {
   if (gpu_control_client_)
-    gpu_control_client_->OnGpuControlErrorMessage(message.c_str(), /*id=*/0);
+    gpu_control_client_->OnGpuControlErrorMessage(message.message.c_str(),
+                                                  message.id);
 }
 
 void CommandBufferProxyImpl::OnGpuSwitched(
@@ -365,7 +359,7 @@ void CommandBufferProxyImpl::SetGetBuffer(int32_t shm_id) {
   if (last_state_.error != gpu::error::kNoError)
     return;
 
-  command_buffer_->SetGetBuffer(shm_id);
+  Send(new GpuCommandBufferMsg_SetGetBuffer(route_id_, shm_id));
   last_put_offset_ = -1;
   has_buffer_ = (shm_id > 0);
 }

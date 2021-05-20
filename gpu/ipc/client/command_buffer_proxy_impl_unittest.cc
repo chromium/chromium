@@ -12,7 +12,6 @@
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
-#include "gpu/ipc/common/mock_command_buffer.h"
 #include "gpu/ipc/common/mock_gpu_channel.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ipc/ipc_test_sink.h"
@@ -84,8 +83,7 @@ class CommandBufferProxyImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  std::unique_ptr<CommandBufferProxyImpl> CreateAndInitializeProxy(
-      MockCommandBuffer* mock_command_buffer = nullptr) {
+  std::unique_ptr<CommandBufferProxyImpl> CreateAndInitializeProxy() {
     auto proxy = std::make_unique<CommandBufferProxyImpl>(
         channel_, nullptr /* gpu_memory_buffer_manager */, 0 /* stream_id */,
         base::ThreadTaskRunnerHandle::Get());
@@ -93,23 +91,12 @@ class CommandBufferProxyImplTest : public testing::Test {
     // The Initialize() call below synchronously requests a new CommandBuffer
     // using the channel's GpuControl interface.  Simulate success, since we're
     // not actually talking to the service in these tests.
-    EXPECT_CALL(mock_gpu_channel_, CreateCommandBuffer(_, _, _, _, _, _, _))
+    EXPECT_CALL(mock_gpu_channel_, CreateCommandBuffer(_, _, _, _, _))
         .Times(1)
         .WillOnce(Invoke(
             [&](mojom::CreateCommandBufferParamsPtr params, int32_t routing_id,
                 base::UnsafeSharedMemoryRegion shared_state,
-                mojo::PendingAssociatedReceiver<mojom::CommandBuffer> receiver,
-                mojo::PendingAssociatedRemote<mojom::CommandBufferClient>
-                    client,
                 ContextResult* result, Capabilities* capabilities) -> bool {
-              // There's no real GpuChannel pipe for this endpoint to use, so
-              // give it its own dedicated pipe for these tests. This allows the
-              // CommandBufferProxyImpl to make calls on its CommandBuffer
-              // endpoint, which will send them to `mock_command_buffer` if
-              // provided by the test.
-              receiver.EnableUnassociatedUsage();
-              if (mock_command_buffer)
-                mock_command_buffer->Bind(std::move(receiver));
               *result = ContextResult::kSuccess;
               return true;
             }));
