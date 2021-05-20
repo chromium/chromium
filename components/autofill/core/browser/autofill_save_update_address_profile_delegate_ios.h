@@ -66,9 +66,8 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   // decision.
   virtual bool EditAccepted();
 
-  // Updates |profile_| |type| value to |data|.
-  void SetProfileRawInfo(const ServerFieldType& type,
-                         const std::u16string& data);
+  // Updates |profile_| |type| value to |value|.
+  void SetProfileInfo(const ServerFieldType& type, const std::u16string& value);
 
   const autofill::AutofillProfile* GetProfile() const;
   const autofill::AutofillProfile* GetOriginalProfile() const;

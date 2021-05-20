@@ -38,7 +38,7 @@ void SaveAddressProfileInfobarModalInteractionHandler::SaveEditedProfile(
     autofill::ServerFieldType type =
         AutofillTypeFromAutofillUIType((AutofillUIType)[key intValue]);
     std::u16string data = base::SysNSStringToUTF16(profileData[key]);
-    GetInfoBarDelegate(infobar)->SetProfileRawInfo(type, data);
+    GetInfoBarDelegate(infobar)->SetProfileInfo(type, data);
   }
   infobar->set_accepted(GetInfoBarDelegate(infobar)->EditAccepted());
   // On post-edit save, the infobar should not be brought back from the omnibox

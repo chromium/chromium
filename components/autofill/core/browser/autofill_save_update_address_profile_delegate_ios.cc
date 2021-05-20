@@ -122,10 +122,21 @@ bool AutofillSaveUpdateAddressProfileDelegateIOS::EditAccepted() {
   return true;
 }
 
-void AutofillSaveUpdateAddressProfileDelegateIOS::SetProfileRawInfo(
+void AutofillSaveUpdateAddressProfileDelegateIOS::SetProfileInfo(
     const ServerFieldType& type,
-    const std::u16string& data) {
-  profile_.SetRawInfo(type, data);
+    const std::u16string& value) {
+  // Since the country field is a text field, we should use SetInfo() to make
+  // sure they get converted to country codes.
+  if (type == autofill::ADDRESS_HOME_COUNTRY) {
+    profile_.SetInfoWithVerificationStatus(
+        type, value, locale_,
+        autofill::structured_address::VerificationStatus::kUserVerified);
+    return;
+  }
+
+  profile_.SetRawInfoWithVerificationStatus(
+      type, value,
+      autofill::structured_address::VerificationStatus::kUserVerified);
 }
 
 bool AutofillSaveUpdateAddressProfileDelegateIOS::Accept() {
