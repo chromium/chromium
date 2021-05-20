@@ -16,7 +16,9 @@ import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
-import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider.AutoplayEvent;
+import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider.VideoInitializationError;
+import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider.VideoPlayError;
+import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider.VideoPlayEvent;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 
@@ -24,16 +26,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
  * Provides activity and darkmode context for a single surface.
  */
 public class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependencyProvider {
-    // This must match the FeedAutoplayEvent enum in enums.xml.
-    private @interface FeedAutoplayEvent {
-        int AUTOPLAY_REQUESTED = 0;
-        int AUTOPLAY_STARTED = 1;
-        int AUTOPLAY_STOPPED = 2;
-        int AUTOPLAY_ENDED = 3;
-        int AUTOPLAY_CLICKED = 4;
-        int NUM_ENTRIES = 5;
-    }
-
     private static final String TAG = "Feed";
     private final Activity mActivity;
     private final Context mActivityContext;
@@ -77,28 +69,6 @@ public class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependenc
             default:
                 return AutoplayPreference.AUTOPLAY_ON_WIFI_ONLY;
         }
-    }
-
-    @Override
-    public void reportAutoplayEvent(AutoplayEvent event) {
-        int feedAutoplayEvent;
-        if (event == AutoplayEvent.AUTOPLAY_REQUESTED) {
-            feedAutoplayEvent = FeedAutoplayEvent.AUTOPLAY_REQUESTED;
-        } else if (event == AutoplayEvent.AUTOPLAY_STARTED) {
-            feedAutoplayEvent = FeedAutoplayEvent.AUTOPLAY_STARTED;
-        } else if (event == AutoplayEvent.AUTOPLAY_STOPPED) {
-            feedAutoplayEvent = FeedAutoplayEvent.AUTOPLAY_STOPPED;
-        } else if (event == AutoplayEvent.AUTOPLAY_ENDED) {
-            feedAutoplayEvent = FeedAutoplayEvent.AUTOPLAY_ENDED;
-        } else if (event == AutoplayEvent.AUTOPLAY_CLICKED) {
-            feedAutoplayEvent = FeedAutoplayEvent.AUTOPLAY_CLICKED;
-            NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_VIDEO);
-        } else {
-            Log.wtf(TAG, "Unable to map AutoplayEvent " + event.name());
-            return;
-        }
-        RecordHistogram.recordEnumeratedHistogram("ContentSuggestions.Feed.AutoplayEvent",
-                feedAutoplayEvent, FeedAutoplayEvent.NUM_ENTRIES);
     }
 
     /**
@@ -152,5 +122,37 @@ public class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependenc
     @Override
     public void processViewAction(byte[] data) {
         mFeedStream.processViewAction(data);
+    }
+
+    @Override
+    public void reportVideoPlayEvent(boolean isMutedAutoplay, @VideoPlayEvent int event) {
+        Log.i(TAG, "Feed video event %d", event);
+        RecordHistogram.recordEnumeratedHistogram(
+                getVideoHistogramName(isMutedAutoplay, "sPlayEvent"), event,
+                VideoPlayEvent.NUM_ENTRIES);
+    }
+
+    @Override
+    public void reportVideoInitializationError(
+            boolean isMutedAutoplay, @VideoInitializationError int error) {
+        Log.i(TAG, "Feed video initialization error %d", error);
+        RecordHistogram.recordEnumeratedHistogram(
+                getVideoHistogramName(isMutedAutoplay, "InitializationError"), error,
+                VideoInitializationError.NUM_ENTRIES);
+    }
+
+    @Override
+    public void reportVideoPlayError(boolean isMutedAutoplay, @VideoPlayError int error) {
+        Log.i(TAG, "Feed video play error %d", error);
+        RecordHistogram.recordEnumeratedHistogram(
+                getVideoHistogramName(isMutedAutoplay, "PlayError"), error,
+                VideoPlayError.NUM_ENTRIES);
+    }
+
+    private static String getVideoHistogramName(boolean isMutedAutoplay, String partName) {
+        String name = "ContentSuggestions.Feed.";
+        name += (isMutedAutoplay ? "AutoplayMutedVideo." : "NormalUnmutedVideo.");
+        name += partName;
+        return name;
     }
 }

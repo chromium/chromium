@@ -626,6 +626,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ContentSuggestions.Feed.AutoplayEvent"
     enum="FeedAutoplayEvent" expires_after="M95">
+  <obsolete>
+    Removed as of 05/2021. Replaced by ContentSuggestions.Feed.VideoPlayEvent.
+  </obsolete>
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1552,6 +1555,53 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>The reason the zero state (no articles) is shown to a user.</summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.{PlayType}Video.InitializationError"
+    enum="FeedVideoInitializationError" expires_after="M96">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: records errors occurred during the video player initialization. The
+    embedded video player needs to be initialized before it can be used to play
+    a video in {PlayType} mode. In autoplay muted mode, the initialization may
+    kick off even before the video view is scrolled to become visible. In normal
+    unmuted mode, this happens when the user taps the video to launch the video
+    in fullscreen playing mode.
+  </summary>
+  <token key="PlayType">
+    <variant name="AutoplayMuted"/>
+    <variant name="NormalUnmuted"/>
+  </token>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.{PlayType}Video.PlayError"
+    enum="FeedVideoPlayError" expires_after="M96">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: records errors occurred during the video playing, in {PlayType}
+    mode. Upon the successful initialization of the embedded player, the video
+    starts to play and any error occurs since then is reported here.
+  </summary>
+  <token key="PlayType">
+    <variant name="AutoplayMuted"/>
+    <variant name="NormalUnmuted"/>
+  </token>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.{PlayType}Video.PlayEvent"
+    enum="FeedVideoPlayEvent" expires_after="M96">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: records events triggered during the video playing, in {PlayType}
+    mode.
+  </summary>
+  <token key="PlayType">
+    <variant name="AutoplayMuted"/>
+    <variant name="NormalUnmuted"/>
+  </token>
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.EngagementType"
