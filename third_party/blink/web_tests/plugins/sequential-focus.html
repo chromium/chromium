@@ -10,6 +10,7 @@
 description('Test if sequential focus navigation works well with OBJECT in IFRAME.');
 jsTestIsAsync = true;
 window.onload = function() {
+  setTimeout(function() {
     if (!window.eventSender) {
         debug('Manual test instruction: Focus on the first INPUT, press TAB twice, confirm the second INPUT gets focus.');
         return;
@@ -19,6 +20,7 @@ window.onload = function() {
     eventSender.keyDown('\t');
     shouldBeEqualToString('document.activeElement.id', 'input-post');
     finishJSTest();
+  },50);
 };
 </script>
 </body>
