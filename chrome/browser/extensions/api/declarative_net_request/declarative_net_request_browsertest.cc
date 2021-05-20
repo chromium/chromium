@@ -862,9 +862,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
       {"example.jp", "/pages_with_script/page.html", true},
       {"example.jp", "/pages_with_script/page2.html", false},  // Rule 4
       {"example.jp", "/pages_with_script/page2.html?q=hello", true},
-      {"msn.com", "/pages_with_script/page.html", false},  // Rule 5
-      {"msn.com", "/pages_with_script/page.html?q=hello", true},
-      {"a.msn.com", "/pages_with_script/page.html", true},
+      {"msn.test", "/pages_with_script/page.html", false},  // Rule 5
+      {"msn.test", "/pages_with_script/page.html?q=hello", true},
+      {"a.msn.test", "/pages_with_script/page.html", true},
       {"abc.com", "/pages_with_script/page.html?q=hi bye", false},    // Rule 6
       {"abc.com", "/pages_with_script/page.html?q=hi%20bye", false},  // Rule 6
       {"abc.com", "/pages_with_script/page.html?q=hibye", true},
