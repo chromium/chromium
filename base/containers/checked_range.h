@@ -11,7 +11,7 @@
 #include <type_traits>
 
 #include "base/containers/checked_iterators.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/template_util.h"
 
 namespace base {
