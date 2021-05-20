@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download.settings;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -28,7 +30,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 /**
  * Fragment containing Download settings.
  */
-// TODO(xingliu): Add a test for this.
 public class DownloadSettings
         extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
     static final String PREF_LOCATION_CHANGE = "location_change";
@@ -40,6 +41,7 @@ public class DownloadSettings
     private DownloadLocationPreference mLocationChangePref;
     private ChromeSwitchPreference mDownloadLaterPromptEnabledPref;
     private ChromeSwitchPreference mLocationPromptEnabledPref;
+    private ManagedPreferenceDelegate mLocationPromptEnabledPrefDelegate;
     private ChromeSwitchPreference mPrefetchingEnabled;
 
     @Override
@@ -61,13 +63,13 @@ public class DownloadSettings
         mLocationPromptEnabledPref =
                 (ChromeSwitchPreference) findPreference(PREF_LOCATION_PROMPT_ENABLED);
         mLocationPromptEnabledPref.setOnPreferenceChangeListener(this);
-        mLocationPromptEnabledPref.setManagedPreferenceDelegate(
-                new ChromeManagedPreferenceDelegate() {
-                    @Override
-                    public boolean isPreferenceControlledByPolicy(Preference preference) {
-                        return DownloadDialogBridge.isLocationDialogManaged();
-                    }
-                });
+        mLocationPromptEnabledPrefDelegate = new ChromeManagedPreferenceDelegate() {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                return DownloadDialogBridge.isLocationDialogManaged();
+            }
+        };
+        mLocationPromptEnabledPref.setManagedPreferenceDelegate(mLocationPromptEnabledPrefDelegate);
         mLocationChangePref = (DownloadLocationPreference) findPreference(PREF_LOCATION_CHANGE);
 
         if (PrefetchConfiguration.isPrefetchingFlagEnabled()) {
@@ -184,5 +186,10 @@ public class DownloadSettings
             updatePrefetchSummary();
         }
         return true;
+    }
+
+    @VisibleForTesting
+    ManagedPreferenceDelegate getLocationPromptEnabledPrefDelegateForTesting() {
+        return mLocationPromptEnabledPrefDelegate;
     }
 }
