@@ -36,7 +36,7 @@ SaveAddressProfileModalRequestConfig::SaveAddressProfileModalRequestConfig(
 
   if (IsUpdateModal()) {
     StoreProfileDiff(delegate->GetProfileDiff());
-    update_modal_description_ = delegate->GetDescription();
+    update_modal_description_ = delegate->GetSubtitle();
   }
 
   current_address_profile_saved_ = infobar->accepted();

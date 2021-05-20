@@ -49,6 +49,9 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   // Returns the subtitle text to be displayed in the save/update banner.
   std::u16string GetDescription() const;
 
+  // Returns subtitle for the update modal.
+  std::u16string GetSubtitle();
+
   // Returns the message button text.
   std::u16string GetMessageActionText() const;
 
