@@ -1118,6 +1118,8 @@ source_set("chromeos") {
     "../ash/crosapi/idle_service_ash.h",
     "../ash/crosapi/keystore_service_ash.cc",
     "../ash/crosapi/keystore_service_ash.h",
+    "../ash/crosapi/keystore_service_factory_ash.cc",
+    "../ash/crosapi/keystore_service_factory_ash.h",
     "../ash/crosapi/local_printer_ash.cc",
     "../ash/crosapi/local_printer_ash.h",
     "../ash/crosapi/message_center_ash.cc",

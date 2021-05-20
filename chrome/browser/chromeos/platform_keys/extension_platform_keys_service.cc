@@ -16,8 +16,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/extension_key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/extension_key_permissions_service_factory.h"
@@ -29,6 +27,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -39,6 +38,16 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
+#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
+#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;
 using crosapi::mojom::KeystoreBinaryResult;
@@ -121,6 +130,23 @@ KeystoreSigningScheme GetKeystoreSigningScheme(
   }
   NOTREACHED();
   return KeystoreSigningScheme::kUnknown;
+}
+
+void BindKeystoreService(
+    content::BrowserContext* browser_context,
+    mojo::PendingReceiver<crosapi::mojom::KeystoreService> receiver) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  (void)browser_context;
+  crosapi::CrosapiManager::Get()->crosapi_ash()->BindKeystoreService(
+      std::move(receiver));
+#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  crosapi::KeystoreServiceAsh* keystore_remote =
+      crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(browser_context);
+  CHECK(keystore_remote);
+  keystore_remote->BindReceiver(std::move(receiver));
+#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 }  // namespace
@@ -853,8 +879,8 @@ ExtensionPlatformKeysService::ExtensionPlatformKeysService(
   DCHECK(platform_keys_service_);
   DCHECK(browser_context);
 
-  crosapi::CrosapiManager::Get()->crosapi_ash()->BindKeystoreService(
-      keystore_service_.BindNewPipeAndPassReceiver());
+  BindKeystoreService(browser_context,
+                      keystore_service_.BindNewPipeAndPassReceiver());
 }
 
 ExtensionPlatformKeysService::~ExtensionPlatformKeysService() {}

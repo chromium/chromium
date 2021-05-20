@@ -143,6 +143,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   TaskManagerAsh* task_manager_ash() { return task_manager_ash_.get(); }
 
+  KeystoreServiceAsh* keystore_service_ash() {
+    return keystore_service_ash_.get();
+  }
+
  private:
   // Called when a connection is lost.
   void OnDisconnected();

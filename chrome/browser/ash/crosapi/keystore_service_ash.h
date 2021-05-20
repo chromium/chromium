@@ -11,8 +11,13 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace ash {
 namespace attestation {
@@ -21,16 +26,25 @@ struct TpmChallengeKeyResult;
 }  // namespace attestation
 }  // namespace ash
 
+namespace chromeos {
+namespace platform_keys {
+class PlatformKeysService;
+}  // namespace platform_keys
+}  // namespace chromeos
+
 namespace crosapi {
 
 // This class is the ash implementation of the KeystoreService crosapi. It
 // allows lacros to expose blessed extension APIs which can query or modify the
 // system keystores. This class is affine to the UI thread.
-class KeystoreServiceAsh : public mojom::KeystoreService {
+class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
  public:
   using KeystoreType = mojom::KeystoreType;
   using SigningScheme = mojom::KeystoreSigningScheme;
 
+  explicit KeystoreServiceAsh(content::BrowserContext* context);
+  // Allows to create the service early. It will use the current primary profile
+  // whenever used. The profile should be specified explicitly when possible.
   KeystoreServiceAsh();
   KeystoreServiceAsh(const KeystoreServiceAsh&) = delete;
   KeystoreServiceAsh& operator=(const KeystoreServiceAsh&) = delete;
@@ -77,8 +91,10 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
             SignCallback callback) override;
 
  private:
-  // |challenge| is used as a opaque identifier to match against the unique_ptr
-  // in outstanding_challenges_. It should not be dereferenced.
+  chromeos::platform_keys::PlatformKeysService* GetPlatformKeys();
+
+  // |challenge| is used as a opaque identifier to match against the
+  // unique_ptr in outstanding_challenges_. It should not be dereferenced.
   void DidChallengeAttestationOnlyKeystore(
       ChallengeAttestationOnlyKeystoreCallback callback,
       void* challenge,
@@ -108,6 +124,10 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
   static void DidSign(SignCallback callback,
                       const std::string& signature,
                       chromeos::platform_keys::Status status);
+
+  // Can be nullptr, should not be used directly, use GetPlatformKeys() instead.
+  chromeos::platform_keys::PlatformKeysService* platform_keys_service_ =
+      nullptr;
 
   // Container to keep outstanding challenges alive.
   std::vector<std::unique_ptr<ash::attestation::TpmChallengeKey>>

@@ -18,6 +18,7 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -53,15 +54,7 @@ scoped_refptr<net::X509Certificate> ParseCertificate(
 ExtensionPlatformKeysService* GetExtensionPlatformKeys() {
   ExtensionPlatformKeysService* service =
       chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
-          ProfileManager::GetActiveUserProfile());
-  CHECK(service);
-  return service;
-}
-
-PlatformKeysService* GetPlatformKeys() {
-  PlatformKeysService* service =
-      chromeos::platform_keys::PlatformKeysServiceFactory::GetForBrowserContext(
-          ProfileManager::GetActiveUserProfile());
+          ProfileManager::GetPrimaryUserProfile());
   CHECK(service);
   return service;
 }
@@ -143,13 +136,31 @@ bool UnpackSigningScheme(
 
 }  // namespace
 
-KeystoreServiceAsh::KeystoreServiceAsh() = default;
+KeystoreServiceAsh::KeystoreServiceAsh(content::BrowserContext* context)
+    : platform_keys_service_(
+          chromeos::platform_keys::PlatformKeysServiceFactory::
+              GetForBrowserContext(context)) {
+  CHECK(platform_keys_service_);
+}
 
+KeystoreServiceAsh::KeystoreServiceAsh() = default;
 KeystoreServiceAsh::~KeystoreServiceAsh() = default;
 
 void KeystoreServiceAsh::BindReceiver(
     mojo::PendingReceiver<mojom::KeystoreService> receiver) {
   receivers_.Add(this, std::move(receiver));
+}
+
+PlatformKeysService* KeystoreServiceAsh::GetPlatformKeys() {
+  if (platform_keys_service_) {
+    return platform_keys_service_;
+  }
+
+  PlatformKeysService* service =
+      chromeos::platform_keys::PlatformKeysServiceFactory::GetForBrowserContext(
+          ProfileManager::GetPrimaryUserProfile());
+  CHECK(service);
+  return service;
 }
 
 //------------------------------------------------------------------------------
