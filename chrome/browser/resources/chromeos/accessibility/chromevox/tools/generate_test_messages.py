@@ -6,6 +6,7 @@
 '''Generates test_messages.js from an extension message json file.'''
 
 import gzip
+import io
 import optparse
 import sys
 
@@ -42,10 +43,10 @@ def main():
   def _OpenFile(filename):
     if filename.endswith('.gz'):
       return gzip.open(filename)
-    return open(filename)
+    return open(filename, 'rb')
   with _OpenFile(in_file_name) as in_file:
-    json = in_file.read().strip()
-  with open(options.output_file, 'w') as out_file:
+    json = in_file.read().decode('utf-8').strip()
+  with io.open(options.output_file, 'w', encoding='utf-8') as out_file:
     out_file.write(_JS_TEMPLATE % {'in_file': in_file_name, 'json': json})
 
 

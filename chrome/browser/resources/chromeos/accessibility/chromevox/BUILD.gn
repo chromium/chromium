@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//build/config/python.gni")
 import(
     "//chrome/browser/resources/chromeos/accessibility/common/run_jsbundler.gni")
 import("//chrome/common/features.gni")
@@ -246,8 +245,7 @@ template("generate_deps_js") {
   }
 }
 
-# TODO(crbug.com/1112471): Get this to run under Python3.
-python2_action("chromevox_phonetic_dictionaries_js") {
+action("chromevox_phonetic_dictionaries_js") {
   script = "tools/phonetic_dictionaries.py"
   src_dir = [ "$root_out_dir/resources/chromeos/accessibility/_locales" ]
   output_file = "$chromevox_out_dir/phonetic_dictionaries.js"
@@ -328,8 +326,7 @@ if (is_chromeos_ash) {
     data += js2gtest_js_libraries
   }
 
-  # TODO(crbug.com/1112471): Get this to run under Python3.
-  python2_action("chromevox_test_messages_js") {
+  action("chromevox_test_messages_js") {
     script = "tools/generate_test_messages.py"
     sources = [ "$root_out_dir/resources/chromeos/accessibility/_locales/en/messages.json.gz" ]
     output_file = "$root_out_dir/test_data/chrome/browser/resources/chromeos/accessibility/chromevox/host/testing/test_messages.js"
