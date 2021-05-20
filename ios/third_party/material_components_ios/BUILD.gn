@@ -1550,7 +1550,6 @@ _mdc_sources = [
   "src/components/schemes/Shape/src/MDCShapeScheme.m",
   "src/components/schemes/Shape/src/MaterialShapeScheme.h",
   "src/components/schemes/Typography/src/BasicFontScheme/MDCBasicFontScheme.h",
-  "src/components/schemes/Typography/src/BasicFontScheme/MDCBasicFontScheme.m",
   "src/components/schemes/Typography/src/BasicFontScheme/MaterialTypographyScheme+BasicFontScheme.h",
   "src/components/schemes/Typography/src/MDCLegacyFontScheme.h",
   "src/components/schemes/Typography/src/MDCTypographyScheme.h",
