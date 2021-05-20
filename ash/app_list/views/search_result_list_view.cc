@@ -41,6 +41,10 @@ namespace {
 constexpr base::TimeDelta kImpressionThreshold =
     base::TimeDelta::FromSeconds(3);
 
+// TODO(crbug.com/1199206): Move this into SharedAppListConfig once the UI for
+// categories is more developed.
+constexpr size_t kMaxResultsWithCategoricalSearch = 12;
+
 SearchResultIdWithPositionIndices GetSearchResultsForLogging(
     std::vector<SearchResultView*> search_result_views) {
   SearchResultIdWithPositionIndices results;
@@ -51,6 +55,12 @@ SearchResultIdWithPositionIndices GetSearchResultsForLogging(
     }
   }
   return results;
+}
+
+size_t GetMaxSearchResultListItems() {
+  if (app_list_features::IsCategoricalSearchEnabled())
+    return kMaxResultsWithCategoricalSearch;
+  return SharedAppListConfig::instance().max_search_result_list_items();
 }
 
 }  // namespace
@@ -65,7 +75,7 @@ SearchResultListView::SearchResultListView(AppListMainView* main_view,
       views::BoxLayout::Orientation::kVertical));
 
   size_t result_count =
-      SharedAppListConfig::instance().max_search_result_list_items() +
+      GetMaxSearchResultListItems() +
       SharedAppListConfig::instance().max_assistant_search_result_list_items();
 
   for (size_t i = 0; i < result_count; ++i) {
@@ -240,8 +250,7 @@ std::vector<SearchResult*> SearchResultListView::GetSearchResults() {
                    result.result_type() !=
                        AppListSearchResultType::kAssistantText;
           }),
-          /*max_results=*/
-          SharedAppListConfig::instance().max_search_result_list_items());
+          GetMaxSearchResultListItems());
 
   std::vector<SearchResult*> assistant_results = GetAssistantResults();
 
