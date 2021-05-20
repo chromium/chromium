@@ -29,6 +29,10 @@ namespace {
 // This should allow any initial overlays to be presented first.
 const NSTimeInterval kShowPromoWebpageLoadWaitTime = 3;
 
+// Default time interval to wait to show the promo after the share action is
+// completed.
+const NSTimeInterval kShowPromoPostShareWaitTime = 1;
+
 // Number of times to show the promo to a user.
 const int kPromoShownTimesLimit = 2;
 
@@ -36,6 +40,13 @@ bool PromoCanBeDisplayed() {
   return !UserInPromoCooldown() &&
          UserInteractionWithNonModalPromoCount() < kPromoShownTimesLimit;
 }
+
+typedef NS_ENUM(NSUInteger, PromoReason) {
+  PromoReasonNone,
+  PromoReasonOmniboxPaste,
+  PromoReasonExternalLink,
+  PromoReasonShare
+};
 
 }  // namespace
 
@@ -58,8 +69,8 @@ bool PromoCanBeDisplayed() {
 // Timer for dismissing the promo after it is shown.
 @property(nonatomic, strong) NSTimer* dismissPromoTimer;
 
-// Webstate that the omnibox paste triggring event occured in.
-@property(nonatomic, assign) web::WebState* omniboxPasteWebState;
+// WebState that the triggering event occured in.
+@property(nonatomic, assign) web::WebState* webStateToListenTo;
 
 // The handler used to respond to the promo show/hide commands.
 @property(nonatomic, readonly) id<DefaultBrowserPromoNonModalCommands> handler;
@@ -74,6 +85,9 @@ bool PromoCanBeDisplayed() {
 // The overlay presenter used to prevent the
 // promo from showing over an overlay.
 @property(nonatomic, assign) OverlayPresenter* overlayPresenter;
+
+// The trigger reason for the in-progress promo flow.
+@property(nonatomic, assign) PromoReason currentPromoReason;
 
 @end
 
@@ -90,6 +104,10 @@ bool PromoCanBeDisplayed() {
 }
 
 - (void)logUserPastedInOmnibox {
+  if (self.currentPromoReason != PromoReasonNone) {
+    return;
+  }
+
   // This assumes that the currently active webstate is the one that the paste
   // occured in.
   web::WebState* activeWebState = self.webStateList->GetActiveWebState();
@@ -97,18 +115,43 @@ bool PromoCanBeDisplayed() {
   if (!activeWebState) {
     return;
   }
+
+  self.currentPromoReason = PromoReasonOmniboxPaste;
+
   // Store the pasted web state, so when that web state's page load finishes,
   // the promo can be shown.
-  self.omniboxPasteWebState = activeWebState;
+  self.webStateToListenTo = activeWebState;
 }
 
 - (void)logUserFinishedActivityFlow {
+  if (self.currentPromoReason != PromoReasonNone) {
+    return;
+  }
+  self.currentPromoReason = PromoReasonShare;
+  [self startShowPromoTimer];
 }
 
 - (void)logUserEnteredAppViaFirstPartyScheme {
+  if (self.currentPromoReason != PromoReasonNone) {
+    return;
+  }
+  // This assumes that the currently active webstate is the one that the paste
+  // occured in.
+  web::WebState* activeWebState = self.webStateList->GetActiveWebState();
+  // There should always be an active web state when pasting in the omnibox.
+  if (!activeWebState) {
+    return;
+  }
+
+  self.currentPromoReason = PromoReasonExternalLink;
+
+  // Store the current web state, so when that web state's page load finishes,
+  // the promo can be shown.
+  self.webStateToListenTo = activeWebState;
 }
 
 - (void)logPromoWasDismissed {
+  self.currentPromoReason = PromoReasonNone;
   self.promoIsShowing = NO;
 }
 
@@ -198,14 +241,30 @@ bool PromoCanBeDisplayed() {
                 oldWebState:(web::WebState*)oldWebState
                     atIndex:(int)atIndex
                      reason:(ActiveWebStateChangeReason)reason {
-  [self cancelShowPromoTimer];
+  if (newWebState != self.webStateToListenTo) {
+    [self cancelShowPromoTimer];
+  }
+}
+
+- (void)webStateList:(WebStateList*)webStateList
+    didInsertWebState:(web::WebState*)webState
+              atIndex:(int)index
+           activating:(BOOL)activating {
+  // For the external link open, the opened link can open in a new webstate.
+  // Assume that is the case if a new WebState is inserted and activated when
+  // the current web state is the one that was active when the link was opened.
+  if (self.currentPromoReason == PromoReasonExternalLink &&
+      self.webStateList->GetActiveWebState() == self.webStateToListenTo &&
+      activating) {
+    self.webStateToListenTo = webState;
+  }
 }
 
 #pragma mark - CRWWebStateObserver
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
-  if (success && webState == self.omniboxPasteWebState) {
-    self.omniboxPasteWebState = nil;
+  if (success && webState == self.webStateToListenTo) {
+    self.webStateToListenTo = nil;
     [self startShowPromoTimer];
   }
 }
@@ -236,12 +295,34 @@ bool PromoCanBeDisplayed() {
 
 #pragma mark - Timer Management
 
+// Start the timer to show a promo. |self.currentPromoReason| must be set to
+// the reason for this promo flow and must not be |PromoReasonNone|.
 - (void)startShowPromoTimer {
+  DCHECK(self.currentPromoReason != PromoReasonNone);
+
   if (!PromoCanBeDisplayed() || self.promoIsShowing || self.showPromoTimer) {
     return;
   }
+
+  NSTimeInterval promoTimeInterval;
+  switch (self.currentPromoReason) {
+    case PromoReasonNone:
+      NOTREACHED();
+      promoTimeInterval = kShowPromoWebpageLoadWaitTime;
+      break;
+    case PromoReasonOmniboxPaste:
+      promoTimeInterval = kShowPromoWebpageLoadWaitTime;
+      break;
+    case PromoReasonExternalLink:
+      promoTimeInterval = kShowPromoWebpageLoadWaitTime;
+      break;
+    case PromoReasonShare:
+      promoTimeInterval = kShowPromoPostShareWaitTime;
+      break;
+  }
+
   self.showPromoTimer =
-      [NSTimer scheduledTimerWithTimeInterval:kShowPromoWebpageLoadWaitTime
+      [NSTimer scheduledTimerWithTimeInterval:promoTimeInterval
                                        target:self
                                      selector:@selector(showPromoTimerFinished)
                                      userInfo:nil
@@ -251,6 +332,7 @@ bool PromoCanBeDisplayed() {
 - (void)cancelShowPromoTimer {
   [self.showPromoTimer invalidate];
   self.showPromoTimer = nil;
+  self.currentPromoReason = PromoReasonNone;
 }
 
 - (void)showPromoTimerFinished {
