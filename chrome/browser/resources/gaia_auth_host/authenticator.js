@@ -50,6 +50,7 @@ cr.define('cr.login', function() {
    * Sync trusted vault encryption keys optionally passed with 'authCompleted'
    * message.
    * @typedef {{
+   *   obfuscatedGaiaId: string,
    *   encryptionKeys: Array<SyncTrustedVaultKey>,
    *   trustedRecoveryMethods: Array<SyncTrustedRecoveryMethod>
    * }}

@@ -31,6 +31,8 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) SyncTrustedVaultKeys {
   // authenticator.js.
   static SyncTrustedVaultKeys FromJs(const base::DictionaryValue& js_object);
 
+  const std::string& gaia_id() const;
+
   const std::vector<std::vector<uint8_t>>& encryption_keys() const;
   int last_encryption_key_version() const;
 
@@ -46,6 +48,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) SyncTrustedVaultKeys {
   const std::vector<TrustedRecoveryMethod>& trusted_recovery_methods() const;
 
  private:
+  std::string gaia_id_;
   std::vector<std::vector<uint8_t>> encryption_keys_;
   int last_encryption_key_version_ = 0;
   std::vector<TrustedRecoveryMethod> trusted_recovery_methods_;

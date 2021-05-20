@@ -116,9 +116,24 @@ const char kAuthIframeParentName[] = "signin-frame";
 
 const char kEndpointGen[] = "1.0";
 
-bool IsSyncTrustedVaultKeysEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::switches::kSyncSupportTrustedVaultPassphraseRecovery);
+absl::optional<SyncTrustedVaultKeys> GetSyncTrustedVaultKeysForUserContext(
+    const base::DictionaryValue* js_object,
+    const std::string& gaia_id) {
+  if (!base::FeatureList::IsEnabled(
+          ::switches::kSyncSupportTrustedVaultPassphraseRecovery)) {
+    return absl::nullopt;
+  }
+
+  // |js_object| is not expected to be null, but as extra precaution, guard
+  // against crashes.
+  if (!js_object)
+    return absl::nullopt;
+
+  SyncTrustedVaultKeys parsed_keys = SyncTrustedVaultKeys::FromJs(*js_object);
+  if (parsed_keys.gaia_id() != gaia_id)
+    return absl::nullopt;
+
+  return absl::make_optional(std::move(parsed_keys));
 }
 
 // Must be kept consistent with ChromeOSSamlApiUsed in enums.xml
@@ -801,10 +816,8 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
           GetAccountId(email, gaia_id, AccountType::GOOGLE), using_saml,
           using_saml_api_, password,
           SamlPasswordAttributes::FromJs(*password_attributes),
-          IsSyncTrustedVaultKeysEnabled()
-              ? absl::make_optional(
-                    SyncTrustedVaultKeys::FromJs(*sync_trusted_vault_keys))
-              : absl::nullopt,
+          GetSyncTrustedVaultKeysForUserContext(sync_trusted_vault_keys,
+                                                gaia_id),
           *extension_provided_client_cert_usage_observer_,
           pending_user_context_.get(), &error)) {
     LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(

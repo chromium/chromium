@@ -67,6 +67,13 @@ TEST(SyncTrustedVaultKeysTest, FromJsWithInvalidDictionary) {
   EXPECT_THAT(SyncTrustedVaultKeys::FromJs(value), HasEmptyValue());
 }
 
+TEST(SyncTrustedVaultKeysTest, FromJsWithGaiaId) {
+  const std::string kGaiaId = "user1";
+  base::DictionaryValue value;
+  value.SetStringKey("obfuscatedGaiaId", kGaiaId);
+  EXPECT_THAT(SyncTrustedVaultKeys::FromJs(value).gaia_id(), Eq(kGaiaId));
+}
+
 TEST(SyncTrustedVaultKeysTest, FromJsWithEncryptionKeys) {
   const std::vector<uint8_t> kEncryptionKeyMaterial1 = {1, 2, 3, 4};
   const std::vector<uint8_t> kEncryptionKeyMaterial2 = {5, 6, 7, 8};

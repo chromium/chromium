@@ -223,6 +223,7 @@ function base64DecodeToArrayBuffer(encoded) {
 // posting to authenticator.js, due to the use of binary blobs in the API.
 function convertSyncTrustedVaultKeys(fakeKeys) {
   var keys = {
+    obfuscatedGaiaId: fakeKeys.obfuscatedGaiaId,
     encryptionKeys: [
       {keyMaterial: base64DecodeToArrayBuffer(fakeKeys.fakeEncryptionKeyMaterial),
        version: fakeKeys.fakeEncryptionKeyVersion}

@@ -15,6 +15,7 @@ namespace {
 
 // Keys in base::Value dictionaries.
 const char kEncryptionKeysDictKey[] = "encryptionKeys";
+const char kGaiaIdDictKey[] = "obfuscatedGaiaId";
 const char kKeyMaterialDictKey[] = "keyMaterial";
 const char kMethodTypeHintDictKey[] = "type";
 const char kPublicKeyDictKey[] = "publicKey";
@@ -103,11 +104,16 @@ SyncTrustedVaultKeys::~SyncTrustedVaultKeys() = default;
 // static
 SyncTrustedVaultKeys SyncTrustedVaultKeys::FromJs(
     const base::DictionaryValue& js_object) {
+  SyncTrustedVaultKeys result;
+  const std::string* gaia_id = js_object.FindStringKey(kGaiaIdDictKey);
+  if (gaia_id) {
+    result.gaia_id_ = *gaia_id;
+  }
+
   const std::vector<KeyMaterialAndVersion> encryption_keys =
       ParseList(js_object.FindListKey(kEncryptionKeysDictKey),
                 base::BindRepeating(&ParseSingleEncryptionKey));
 
-  SyncTrustedVaultKeys result;
   for (const KeyMaterialAndVersion& key : encryption_keys) {
     if (key.version != 0) {
       result.encryption_keys_.push_back(key.key_material);
@@ -120,6 +126,10 @@ SyncTrustedVaultKeys SyncTrustedVaultKeys::FromJs(
                 base::BindRepeating(&ParseSingleTrustedRecoveryMethod));
 
   return result;
+}
+
+const std::string& SyncTrustedVaultKeys::gaia_id() const {
+  return gaia_id_;
 }
 
 const std::vector<std::vector<uint8_t>>& SyncTrustedVaultKeys::encryption_keys()

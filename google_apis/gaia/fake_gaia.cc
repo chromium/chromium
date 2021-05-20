@@ -140,6 +140,7 @@ std::string FormatSyncTrustedRecoveryMethods(
 }
 
 std::string FormatSyncTrustedVaultKeysHeader(
+    const std::string& gaia_id,
     const FakeGaia::SyncTrustedVaultKeys& sync_trusted_vault_keys) {
   // Single line used because this string populates HTTP headers. Similarly,
   // base64 encoding is used to avoid line breaks and meanwhile adopt JSON
@@ -147,12 +148,13 @@ std::string FormatSyncTrustedVaultKeysHeader(
   // embedded_setup_chromeos.html.
   const char format[] =
       "{"
+      "\"obfuscatedGaiaId\":\"%s\","
       "\"fakeEncryptionKeyMaterial\":\"%s\","
       "\"fakeEncryptionKeyVersion\":%d,"
       "\"fakeTrustedRecoveryMethods\":[%s]"
       "}";
   return base::StringPrintf(
-      format,
+      format, gaia_id.c_str(),
       base::Base64Encode(sync_trusted_vault_keys.encryption_key).c_str(),
       sync_trusted_vault_keys.encryption_key_version,
       FormatSyncTrustedRecoveryMethods(
@@ -288,6 +290,7 @@ void FakeGaia::AddSyncTrustedKeysHeader(BasicHttpResponse* http_response,
   http_response->AddCustomHeader(
       "fake-sync-trusted-vault-keys",
       FormatSyncTrustedVaultKeysHeader(
+          GetGaiaIdOfEmail(email),
           email_to_sync_trusted_vault_keys_map_.at(email)));
 }
 
