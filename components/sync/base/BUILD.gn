@@ -104,7 +104,6 @@ static_library("base") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "../test/callback_counter.h",
     "../test/mock_invalidation.cc",
     "../test/mock_invalidation.h",
     "../test/mock_invalidation_tracker.cc",

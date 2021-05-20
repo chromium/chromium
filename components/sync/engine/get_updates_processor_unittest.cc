@@ -97,7 +97,7 @@ class GetUpdatesProcessorTest : public ::testing::Test {
 // Basic test to make sure nudges are expressed properly in the request.
 TEST_F(GetUpdatesProcessorTest, BookmarkNudge) {
   NudgeTracker nudge_tracker;
-  nudge_tracker.RecordLocalChange(ModelTypeSet(BOOKMARKS));
+  nudge_tracker.RecordLocalChange(BOOKMARKS);
 
   sync_pb::ClientToServerMessage message;
   NormalGetUpdatesDelegate normal_delegate(nudge_tracker);
@@ -302,7 +302,7 @@ TEST_F(GetUpdatesProcessorTest, NudgeWithRetryTest) {
   nudge_tracker.SetSyncCycleStartTime(t1 + base::TimeDelta::FromSeconds(1));
 
   // Record a local change, too.
-  nudge_tracker.RecordLocalChange(ModelTypeSet(BOOKMARKS));
+  nudge_tracker.RecordLocalChange(BOOKMARKS);
 
   sync_pb::ClientToServerMessage message;
   NormalGetUpdatesDelegate normal_delegate(nudge_tracker);

@@ -14,6 +14,7 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -124,7 +125,7 @@ class SyncerTest : public testing::Test,
     ResetCycle();
 
     // Pretend we've seen a local change, to make the nudge_tracker look normal.
-    nudge_tracker_.RecordLocalChange(ModelTypeSet(BOOKMARKS));
+    nudge_tracker_.RecordLocalChange(BOOKMARKS);
 
     return syncer_->NormalSyncShare(context_->GetEnabledTypes(),
                                     &nudge_tracker_, cycle_.get());

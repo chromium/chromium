@@ -44,7 +44,6 @@
 #include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
-#include "components/sync/test/callback_counter.h"
 #include "components/sync/test/engine/fake_sync_manager.h"
 #include "components/sync/test/engine/sync_engine_host_stub.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

@@ -175,24 +175,17 @@ void NudgeTracker::RecordInitialSyncDone(ModelTypeSet types) {
   }
 }
 
-base::TimeDelta NudgeTracker::RecordLocalChange(ModelTypeSet types) {
-  // Start with the longest delay.
-  base::TimeDelta delay = kDefaultPollInterval;
-  for (ModelType type : types) {
-    TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end());
-
-    // Only if the type tracker has a valid delay (non-zero) that is shorter
-    // than the calculated delay do we update the calculated delay.
-    base::TimeDelta type_delay = tracker_it->second->RecordLocalChange();
-    if (type_delay.is_zero()) {
-      type_delay = GetDefaultDelayForType(type, minimum_local_nudge_delay_);
-    }
-    if (type_delay < delay) {
-      delay = type_delay;
-    }
+base::TimeDelta NudgeTracker::RecordLocalChange(ModelType type) {
+  // TODO(crbug.com/1210906): Part of the logic to compute this delay is in
+  // NudgeTracker and part is in DataTypeTracker. Move it all to one class.
+  // |minimum_local_nudge_delay_| also isn't respected for SHARING_MESSAGE.
+  TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
+  DCHECK(tracker_it != type_trackers_.end());
+  base::TimeDelta type_delay = tracker_it->second->RecordLocalChange();
+  if (type_delay.is_zero()) {
+    type_delay = GetDefaultDelayForType(type, minimum_local_nudge_delay_);
   }
-  return delay;
+  return std::min(kDefaultPollInterval, type_delay);
 }
 
 base::TimeDelta NudgeTracker::RecordLocalRefreshRequest(ModelTypeSet types) {

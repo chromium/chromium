@@ -327,7 +327,7 @@ void SyncSchedulerImpl::ScheduleLocalNudge(ModelType type) {
 
   SDVLOG(2) << "Scheduling sync because of local change to "
             << ModelTypeToString(type);
-  TimeDelta nudge_delay = nudge_tracker_.RecordLocalChange(ModelTypeSet(type));
+  TimeDelta nudge_delay = nudge_tracker_.RecordLocalChange(type);
   ScheduleNudgeImpl(nudge_delay);
 }
 

@@ -54,8 +54,8 @@ class NudgeTracker {
   void RecordInitialSyncDone(ModelTypeSet types);
 
   // Takes note of a local change.
-  // Returns the shortest nudge delay from the tracker of each type in |types|.
-  base::TimeDelta RecordLocalChange(ModelTypeSet types);
+  // Returns the current nudge delay for local changes to |type|.
+  base::TimeDelta RecordLocalChange(ModelType type);
 
   // Takes note of a locally issued request to refresh a data type.
   // Returns the current nudge delay for a local refresh.
