@@ -41,6 +41,12 @@ XRSpace* XRLightProbe::probeSpace() const {
   return probe_space_;
 }
 
+device::mojom::blink::XRNativeOriginInformationPtr XRLightProbe::NativeOrigin()
+    const {
+  return device::mojom::blink::XRNativeOriginInformation::NewReferenceSpaceType(
+      device::mojom::XRReferenceSpaceType::kLocal);
+}
+
 absl::optional<TransformationMatrix> XRLightProbe::MojoFromObject() const {
   // For the moment we're making an assumption that the lighting estimations
   // are always generated from the local space origin. This is the case for

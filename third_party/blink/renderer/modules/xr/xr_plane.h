@@ -35,6 +35,8 @@ class XRPlane : public ScriptWrappable {
 
   absl::optional<TransformationMatrix> MojoFromObject() const;
 
+  device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin() const;
+
   String orientation() const;
   HeapVector<Member<DOMPointReadOnly>> polygon() const;
   double lastChangedTime() const;

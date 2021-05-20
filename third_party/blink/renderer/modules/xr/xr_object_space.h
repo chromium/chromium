@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_OBJECT_SPACE_H_
 
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
-#include "third_party/blink/renderer/modules/xr/xr_native_origin_information.h"
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 
@@ -16,9 +15,11 @@ class XRSession;
 
 // Helper class that returns an XRSpace that tracks the position of object of
 // type T (for example XRPlane, XRAnchor). The type T has to have a
-// MojoFromObject() method, returning a absl::optional<TransformationMatrix>,
-// and IsStationary() method returning true if the object is supposed to be
-// treated as stationary for the purposes of anchor creation.
+// NativeOrigin() method, returning a
+// device::mojom::blink::XRNativeOriginInformationPtr, a MojoFromObject()
+// method, returning a absl::Optional<TransformationMatrix>, and IsStationary()
+// method returning true if the object is supposed to be treated as stationary
+// for the purposes of anchor creation.
 //
 // If the object's MojoFromObject() method returns a absl::nullopt, it means
 // that the object is not localizable in the current frame (i.e. its pose is
@@ -37,9 +38,9 @@ class XRObjectSpace final : public XRSpace {
     return object_->MojoFromObject();
   }
 
-  absl::optional<device::mojom::blink::XRNativeOriginInformation> NativeOrigin()
+  device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()
       const override {
-    return XRNativeOriginInformation::Create(object_);
+    return object_->NativeOrigin();
   }
 
   bool IsStationary() const override { return is_stationary_; }

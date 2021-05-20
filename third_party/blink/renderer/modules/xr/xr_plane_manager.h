@@ -12,6 +12,7 @@
 
 namespace blink {
 
+class XRPlane;
 class XRPlaneSet;
 
 // Helper class, used to separate the code related to plane processing out of

@@ -340,8 +340,8 @@ ScriptPromise XRFrame::createAnchor(ScriptState* script_state,
     return {};
   }
 
-  absl::optional<device::mojom::blink::XRNativeOriginInformation>
-      maybe_native_origin = space->NativeOrigin();
+  device::mojom::blink::XRNativeOriginInformationPtr maybe_native_origin =
+      space->NativeOrigin();
   if (!maybe_native_origin) {
     DVLOG(2) << __func__ << ": native origin not set, failing anchor creation";
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -369,7 +369,7 @@ ScriptPromise XRFrame::createAnchor(ScriptState* script_state,
   if (space->IsStationary()) {
     // Space is considered stationary, no adjustments are needed.
     return session_->CreateAnchorHelper(script_state, native_origin_from_anchor,
-                                        *maybe_native_origin, maybe_plane_id,
+                                        maybe_native_origin, maybe_plane_id,
                                         exception_state);
   }
 

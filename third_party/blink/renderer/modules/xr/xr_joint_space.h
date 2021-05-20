@@ -6,8 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_JOINT_SPACE_H_
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/modules/xr/xr_native_origin_information.h"
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 
@@ -33,8 +31,7 @@ class XRJointSpace : public XRSpace {
   absl::optional<TransformationMatrix> MojoFromNative() override;
   bool EmulatedPosition() const override;
 
-  absl::optional<device::mojom::blink::XRNativeOriginInformation> NativeOrigin()
-      const final;
+  device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin() const final;
 
   bool IsStationary() const override;
 

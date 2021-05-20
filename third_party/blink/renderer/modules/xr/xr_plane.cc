@@ -60,6 +60,12 @@ absl::optional<TransformationMatrix> XRPlane::MojoFromObject() const {
   return TransformationMatrix(mojo_from_plane_->ToTransform().matrix());
 }
 
+device::mojom::blink::XRNativeOriginInformationPtr XRPlane::NativeOrigin()
+    const {
+  return device::mojom::blink::XRNativeOriginInformation::NewPlaneId(
+      this->id());
+}
+
 String XRPlane::orientation() const {
   if (orientation_) {
     switch (*orientation_) {

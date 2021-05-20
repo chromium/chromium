@@ -256,9 +256,10 @@ absl::optional<TransformationMatrix> XRInputSource::InputFromPointer() const {
   return *(input_from_pointer_.get());
 }
 
-absl::optional<device::mojom::blink::XRNativeOriginInformation>
-XRInputSource::nativeOrigin() const {
-  return XRNativeOriginInformation::Create(this);
+device::mojom::blink::XRNativeOriginInformationPtr XRInputSource::nativeOrigin()
+    const {
+  return device::mojom::blink::XRNativeOriginInformation::NewInputSourceId(
+      this->source_id());
 }
 
 void XRInputSource::OnSelectStart() {

@@ -49,8 +49,7 @@ class XRReferenceSpace : public XRSpace {
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(reset, kReset)
 
-  absl::optional<device::mojom::blink::XRNativeOriginInformation> NativeOrigin()
-      const final;
+  device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin() const final;
 
   std::string ToString() const override;
 

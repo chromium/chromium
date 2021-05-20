@@ -197,9 +197,10 @@ XRReferenceSpace* XRReferenceSpace::cloneWithOriginOffset(
                                                 type_);
 }
 
-absl::optional<device::mojom::blink::XRNativeOriginInformation>
+device::mojom::blink::XRNativeOriginInformationPtr
 XRReferenceSpace::NativeOrigin() const {
-  return XRNativeOriginInformation::Create(this);
+  return device::mojom::blink::XRNativeOriginInformation::NewReferenceSpaceType(
+      this->GetType());
 }
 
 std::string XRReferenceSpace::ToString() const {

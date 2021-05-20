@@ -31,6 +31,8 @@ class XRAnchor : public ScriptWrappable {
 
   absl::optional<TransformationMatrix> MojoFromObject() const;
 
+  device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin() const;
+
   void Delete();
 
   void Update(const device::mojom::blink::XRAnchorData& anchor_data);

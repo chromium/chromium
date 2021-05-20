@@ -50,7 +50,7 @@ bool XRTargetRaySpace::EmulatedPosition() const {
   return input_source_->emulatedPosition();
 }
 
-absl::optional<device::mojom::blink::XRNativeOriginInformation>
+device::mojom::blink::XRNativeOriginInformationPtr
 XRTargetRaySpace::NativeOrigin() const {
   return input_source_->nativeOrigin();
 }

@@ -63,6 +63,12 @@ XRSpace* XRAnchor::anchorSpace(ExceptionState& exception_state) const {
   return anchor_space_;
 }
 
+device::mojom::blink::XRNativeOriginInformationPtr XRAnchor::NativeOrigin()
+    const {
+  return device::mojom::blink::XRNativeOriginInformation::NewAnchorId(
+      this->id());
+}
+
 absl::optional<TransformationMatrix> XRAnchor::MojoFromObject() const {
   DVLOG(3) << __func__ << ": id_=" << id_;
 

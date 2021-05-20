@@ -621,7 +621,7 @@ ScriptPromise XRSession::requestReferenceSpace(
 ScriptPromise XRSession::CreateAnchorHelper(
     ScriptState* script_state,
     const blink::TransformationMatrix& native_origin_from_anchor,
-    const device::mojom::blink::XRNativeOriginInformation&
+    const device::mojom::blink::XRNativeOriginInformationPtr&
         native_origin_information,
     absl::optional<uint64_t> maybe_plane_id,
     ExceptionState& exception_state) {
@@ -660,13 +660,13 @@ ScriptPromise XRSession::CreateAnchorHelper(
 
   if (maybe_plane_id) {
     xr_->xrEnvironmentProviderRemote()->CreatePlaneAnchor(
-        native_origin_information.Clone(),
+        native_origin_information->Clone(),
         *maybe_native_origin_from_anchor_pose, *maybe_plane_id,
         WTF::Bind(&XRSession::OnCreateAnchorResult, WrapPersistent(this),
                   WrapPersistent(resolver)));
   } else {
     xr_->xrEnvironmentProviderRemote()->CreateAnchor(
-        native_origin_information.Clone(),
+        native_origin_information->Clone(),
         *maybe_native_origin_from_anchor_pose,
         WTF::Bind(&XRSession::OnCreateAnchorResult, WrapPersistent(this),
                   WrapPersistent(resolver)));
@@ -702,7 +702,8 @@ XRSession::GetStationaryReferenceSpace() const {
   ReferenceSpaceInformation result;
   result.mojo_from_space = *mojo_from_space;
   result.native_origin =
-      XRNativeOriginInformation::Create(reference_space_type);
+      device::mojom::blink::XRNativeOriginInformation::NewReferenceSpaceType(
+          reference_space_type);
   return result;
 }
 
@@ -773,10 +774,10 @@ ScriptPromise XRSession::requestHitTestSource(
   }
 
   // 1. Grab the native origin from the passed in XRSpace.
-  absl::optional<device::mojom::blink::XRNativeOriginInformation>
-      maybe_native_origin = options_init && options_init->hasSpace()
-                                ? options_init->space()->NativeOrigin()
-                                : absl::nullopt;
+  device::mojom::blink::XRNativeOriginInformationPtr maybe_native_origin =
+      options_init && options_init->hasSpace()
+          ? options_init->space()->NativeOrigin()
+          : nullptr;
 
   if (!maybe_native_origin) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,

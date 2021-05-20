@@ -97,8 +97,8 @@ class XRSpace : public EventTargetWithInlineData {
   ExecutionContext* GetExecutionContext() const override;
   const AtomicString& InterfaceName() const override;
 
-  virtual absl::optional<device::mojom::blink::XRNativeOriginInformation>
-  NativeOrigin() const = 0;
+  virtual device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()
+      const = 0;
 
   void Trace(Visitor* visitor) const override;
 

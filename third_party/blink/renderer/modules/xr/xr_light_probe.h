@@ -43,6 +43,8 @@ class XRLightProbe : public EventTargetWithInlineData {
 
   absl::optional<TransformationMatrix> MojoFromObject() const;
 
+  device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin() const;
+
   void ProcessLightEstimationData(
       const device::mojom::blink::XRLightEstimationData* data,
       double timestamp);

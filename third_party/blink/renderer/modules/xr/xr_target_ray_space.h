@@ -17,7 +17,7 @@ class XRTargetRaySpace : public XRSpace {
   absl::optional<TransformationMatrix> MojoFromNative() override;
   bool EmulatedPosition() const override;
 
-  absl::optional<device::mojom::blink::XRNativeOriginInformation> NativeOrigin()
+  device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()
       const override;
 
   bool IsStationary() const override;

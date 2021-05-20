@@ -29,9 +29,14 @@ bool XRJointSpace::EmulatedPosition() const {
   return false;
 }
 
-absl::optional<device::mojom::blink::XRNativeOriginInformation>
-XRJointSpace::NativeOrigin() const {
-  return XRNativeOriginInformation::Create(this);
+device::mojom::blink::XRNativeOriginInformationPtr XRJointSpace::NativeOrigin()
+    const {
+  device::mojom::blink::XRHandJointSpaceInfoPtr joint_space_info =
+      device::mojom::blink::XRHandJointSpaceInfo::New();
+  joint_space_info->handedness = this->handedness();
+  joint_space_info->joint = this->joint();
+  return device::mojom::blink::XRNativeOriginInformation::NewHandJointSpaceInfo(
+      std::move(joint_space_info));
 }
 
 bool XRJointSpace::IsStationary() const {

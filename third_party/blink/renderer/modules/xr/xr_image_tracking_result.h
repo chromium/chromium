@@ -28,6 +28,8 @@ class XRImageTrackingResult : public ScriptWrappable {
   XRSpace* imageSpace() const;
   absl::optional<TransformationMatrix> MojoFromObject() const;
 
+  device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin() const;
+
   uint32_t index() { return index_; }
 
   float measuredWidthInMeters() { return width_in_meters_; }

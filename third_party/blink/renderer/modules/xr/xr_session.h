@@ -173,7 +173,7 @@ class XRSession final
   ScriptPromise CreateAnchorHelper(
       ScriptState* script_state,
       const blink::TransformationMatrix& native_origin_from_anchor,
-      const device::mojom::blink::XRNativeOriginInformation&
+      const device::mojom::blink::XRNativeOriginInformationPtr&
           native_origin_information,
       absl::optional<uint64_t> maybe_plane_id,
       ExceptionState& exception_state);
@@ -182,7 +182,7 @@ class XRSession final
   // case the anchor needs to be transformed to be expressed relative to a
   // stationary reference space.
   struct ReferenceSpaceInformation {
-    device::mojom::blink::XRNativeOriginInformation native_origin;
+    device::mojom::blink::XRNativeOriginInformationPtr native_origin;
     blink::TransformationMatrix mojo_from_space;
   };
 
