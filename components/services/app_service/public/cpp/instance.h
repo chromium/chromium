@@ -81,4 +81,8 @@ class Instance {
 std::ostream& operator<<(std::ostream& os,
                          const apps::Instance::InstanceKey& instance_key);
 
+struct InstanceKeyHash {
+  size_t operator()(const apps::Instance::InstanceKey& key) const;
+};
+
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INSTANCE_H_

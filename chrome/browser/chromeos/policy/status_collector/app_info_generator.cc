@@ -234,27 +234,29 @@ void AppInfoGenerator::SetIdleDurationsToOpen() {
   provider_->app_service_proxy.InstanceRegistry().ForEachInstance(
       [this, start_time](const apps::InstanceUpdate& update) {
         if (update.State() & apps::InstanceState::kStarted) {
-          OpenUsageInterval(update.AppId(), update.Window(), start_time);
+          OpenUsageInterval(update.AppId(), update.InstanceKey(), start_time);
         }
       });
   provider_->app_service_proxy.InstanceRegistry().AddObserver(this);
 }
 
-void AppInfoGenerator::OpenUsageInterval(const std::string& app_id,
-                                         aura::Window* window,
-                                         const base::Time start_time) {
+void AppInfoGenerator::OpenUsageInterval(
+    const std::string& app_id,
+    const apps::Instance::InstanceKey& instance_key,
+    const base::Time start_time) {
   if (app_instances_by_id_.count(app_id) == 0) {
     app_instances_by_id_[app_id] = std::make_unique<AppInstances>(start_time);
   }
-  app_instances_by_id_[app_id]->running_instances.insert(window);
+  app_instances_by_id_[app_id]->running_instances.insert(instance_key);
 }
 
-void AppInfoGenerator::CloseUsageInterval(const std::string& app_id,
-                                          aura::Window* window,
-                                          const base::Time end_time) {
+void AppInfoGenerator::CloseUsageInterval(
+    const std::string& app_id,
+    const apps::Instance::InstanceKey& instance_key,
+    const base::Time end_time) {
   if (app_instances_by_id_.count(app_id)) {
     auto& app_instances = app_instances_by_id_[app_id];
-    app_instances->running_instances.erase(window);
+    app_instances->running_instances.erase(instance_key);
     if (app_instances->running_instances.empty()) {
       base::Time start_time = app_instances->start_time;
       provider_->activity_storage.AddActivityPeriod(start_time, end_time,
@@ -270,11 +272,11 @@ void AppInfoGenerator::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   }
   apps::InstanceState state = update.State();
   const std::string& app_id = update.AppId();
-  aura::Window* window = update.Window();
+  auto instance_key = update.InstanceKey();
   if (state & apps::InstanceState::kStarted) {
-    OpenUsageInterval(app_id, window, update.LastUpdatedTime());
+    OpenUsageInterval(app_id, instance_key, update.LastUpdatedTime());
   } else if (state & apps::InstanceState::kDestroyed) {
-    CloseUsageInterval(app_id, window, update.LastUpdatedTime());
+    CloseUsageInterval(app_id, instance_key, update.LastUpdatedTime());
   }
 }
 

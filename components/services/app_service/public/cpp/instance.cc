@@ -56,3 +56,8 @@ std::ostream& operator<<(std::ostream& os,
                          const apps::Instance::InstanceKey& instance_key) {
   return os << "InstanceKey {Window: " << instance_key.Window() << "}";
 }
+
+size_t InstanceKeyHash::operator()(
+    const apps::Instance::InstanceKey& key) const {
+  return std::hash<aura::Window*>()(key.Window());
+}
