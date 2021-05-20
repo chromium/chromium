@@ -192,7 +192,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -226,7 +225,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation",
@@ -450,7 +448,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -484,7 +481,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation",
@@ -708,7 +704,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -742,7 +737,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation",
@@ -966,7 +960,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -1000,7 +993,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation",
@@ -1239,7 +1231,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -1275,7 +1266,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation",
@@ -1500,7 +1490,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -1534,7 +1523,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation",
@@ -1771,7 +1759,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -1807,7 +1794,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation",
@@ -2032,7 +2018,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -2066,7 +2051,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation",
@@ -2288,7 +2272,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -2511,7 +2494,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -2544,7 +2526,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
@@ -2761,7 +2742,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -2794,7 +2774,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation",
@@ -3011,7 +2990,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -3044,7 +3022,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
@@ -3261,7 +3238,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -3294,7 +3270,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation",
@@ -3513,7 +3488,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -3545,7 +3519,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
@@ -3761,7 +3734,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -3793,7 +3765,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation",
@@ -4009,7 +3980,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -4041,7 +4011,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
@@ -4257,7 +4226,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
@@ -4289,7 +4257,6 @@
       },
       {
         "args": [
-          "--driver-logging",
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation",

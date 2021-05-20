@@ -3963,7 +3963,6 @@
         # TODO(crbug.com/816629) - Move these args into //BUILD.gn.
         'name': 'webgpu_blink_web_tests_with_backend_validation',
         'args': [
-          '--driver-logging',
           # Disable parallel jobs to work around consistent test timeout flakes.
           # Also, the first test is always flaky due to startup time, so force
           # the order so we can suppress it.
@@ -4006,7 +4005,6 @@
         # TODO(crbug.com/816629) - Move these args into //BUILD.gn.
         'name': 'webgpu_blink_web_tests',
         'args': [
-          '--driver-logging',
           # Disable parallel jobs to work around consistent test timeout flakes.
           # Also, the first test is always flaky due to startup time, so force
           # the order so we can suppress it.
@@ -4050,7 +4048,6 @@
         # TODO(crbug.com/816629) - Move these args into //BUILD.gn.
         'name': 'webgpu_blink_web_tests_with_backend_validation',
         'args': [
-          '--driver-logging',
           # Disable parallel jobs to work around consistent test timeout flakes.
           # Also, the first test is always flaky due to startup time, so force
           # the order so we can suppress it.
