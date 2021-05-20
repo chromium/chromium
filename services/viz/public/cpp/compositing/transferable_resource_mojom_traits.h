@@ -80,6 +80,11 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.color_space;
   }
 
+  static const absl::optional<gfx::HDRMetadata>& hdr_metadata(
+      const viz::TransferableResource& resource) {
+    return resource.hdr_metadata;
+  }
+
   static const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info(
       const viz::TransferableResource& resource) {
     return resource.ycbcr_info;

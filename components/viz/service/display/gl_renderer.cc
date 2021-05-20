@@ -60,6 +60,7 @@
 #include "gpu/command_buffer/common/gpu_memory_allocation.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
@@ -2835,7 +2836,8 @@ void GLRenderer::FlushTextureQuadCache(BoundGeometry flush_binding) {
   // Bind the program to the GL state.
   SetUseProgram(draw_cache_.program_key, locked_quad.color_space(),
                 CurrentRenderPassColorSpace(),
-                /*adjust_src_white_level=*/draw_cache_.is_video_frame);
+                /*adjust_src_white_level=*/draw_cache_.is_video_frame,
+                locked_quad.hdr_metadata());
 
   if (current_program_->rounded_corner_rect_location() != -1) {
     SetShaderRoundedCorner(
@@ -3662,12 +3664,16 @@ void GLRenderer::PrepareGeometry(BoundGeometry binding) {
 void GLRenderer::SetUseProgram(const ProgramKey& program_key_no_color,
                                const gfx::ColorSpace& src_color_space,
                                const gfx::ColorSpace& dst_color_space,
-                               bool adjust_src_white_level) {
+                               bool adjust_src_white_level,
+                               absl::optional<gfx::HDRMetadata> hdr_metadata) {
   DCHECK(dst_color_space.IsValid());
   gfx::ColorSpace adjusted_src_color_space = src_color_space;
-  if (adjust_src_white_level) {
-    // If the input color space is HDR, and it did not specify a white level,
-    // override it with the frame's white level.
+  if (adjust_src_white_level && src_color_space.IsHDR()) {
+    // TODO(b/183236148): consider using the destination's HDR static metadata
+    // in current_frame()->display_color_spaces.hdr_static_metadata() and the
+    // mastering metadata in |src_hdr_metadata| for the tone mapping; e.g. the
+    // content might be mastered in 0-1000 nits but the display only be able to
+    // represent 0 to 500.
     adjusted_src_color_space = src_color_space.GetWithSDRWhiteLevel(
         current_frame()->display_color_spaces.GetSDRWhiteLevel());
   }

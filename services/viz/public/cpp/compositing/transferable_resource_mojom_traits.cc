@@ -10,6 +10,7 @@
 #include "services/viz/public/cpp/compositing/resource_id_mojom_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
+#include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
 
 namespace mojo {
 
@@ -22,6 +23,7 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
   if (!data.ReadSize(&out->size) || !data.ReadFormat(&out->format) ||
       !data.ReadMailboxHolder(&out->mailbox_holder) ||
       !data.ReadColorSpace(&out->color_space) ||
+      !data.ReadHdrMetadata(&out->hdr_metadata) ||
       !data.ReadYcbcrInfo(&out->ycbcr_info) || !data.ReadId(&id)) {
     return false;
   }

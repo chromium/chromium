@@ -329,6 +329,7 @@ DisplayResourceProviderGL::ScopedReadLockGL::ScopedReadLockGL(
   target_ = resource->transferable.mailbox_holder.texture_target;
   size_ = resource->transferable.size;
   color_space_ = resource->transferable.color_space;
+  hdr_metadata_ = resource->transferable.hdr_metadata;
 }
 
 DisplayResourceProviderGL::ScopedReadLockGL::~ScopedReadLockGL() {

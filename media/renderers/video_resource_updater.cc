@@ -910,6 +910,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
           mailbox, GL_LINEAR, mailbox_holder.texture_target, sync_token,
           plane_size, video_frame->metadata().allow_overlay);
       transfer_resource.color_space = resource_color_space;
+      transfer_resource.hdr_metadata = video_frame->hdr_metadata();
       transfer_resource.read_lock_fences_enabled =
           video_frame->metadata().read_lock_fences_enabled;
       transfer_resource.format = viz::GetResourceFormat(buffer_formats[i]);

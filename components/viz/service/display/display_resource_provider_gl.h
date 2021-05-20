@@ -49,6 +49,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
     GLenum target() const { return target_; }
     const gfx::Size& size() const { return size_; }
     const gfx::ColorSpace& color_space() const { return color_space_; }
+    const absl::optional<gfx::HDRMetadata>& hdr_metadata() const {
+      return hdr_metadata_;
+    }
 
    private:
     DisplayResourceProviderGL* const resource_provider_;
@@ -58,6 +61,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
     GLenum target_ = GL_TEXTURE_2D;
     gfx::Size size_;
     gfx::ColorSpace color_space_;
+    absl::optional<gfx::HDRMetadata> hdr_metadata_;
   };
 
   class VIZ_SERVICE_EXPORT ScopedSamplerGL {
@@ -78,6 +82,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
     GLenum target() const { return target_; }
     const gfx::ColorSpace& color_space() const {
       return resource_lock_.color_space();
+    }
+    const absl::optional<gfx::HDRMetadata>& hdr_metadata() const {
+      return resource_lock_.hdr_metadata();
     }
 
    private:

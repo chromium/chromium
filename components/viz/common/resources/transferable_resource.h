@@ -19,6 +19,7 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace viz {
 
@@ -91,8 +92,9 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   // resources.
   gpu::MailboxHolder mailbox_holder;
 
-  // The color space of the pixels in the resource.
+  // The color space and associated mastering of the pixels in the resource.
   gfx::ColorSpace color_space;
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
 
   // A gpu resource may be possible to use directly in an overlay if this is
   // true.
@@ -130,7 +132,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
            mailbox_holder.mailbox == o.mailbox_holder.mailbox &&
            mailbox_holder.sync_token == o.mailbox_holder.sync_token &&
            mailbox_holder.texture_target == o.mailbox_holder.texture_target &&
-           color_space == o.color_space &&
+           color_space == o.color_space && hdr_metadata == o.hdr_metadata &&
            is_overlay_candidate == o.is_overlay_candidate &&
            filter == o.filter &&
 #if defined(OS_ANDROID)

@@ -307,11 +307,14 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   // that video color conversion can be enabled separately from general color
   // conversion. If |adjust_src_white_level| is true, then the |src_color_space|
   // white levels are adjusted to the display SDR white level so that no white
-  // level scaling happens.
-  void SetUseProgram(const ProgramKey& program_key,
-                     const gfx::ColorSpace& src_color_space,
-                     const gfx::ColorSpace& dst_color_space,
-                     bool adjust_src_white_level = false);
+  // level scaling happens. |src_hdr_metadata|, if available, is the mastering
+  // metadata associated to the source quad.
+  void SetUseProgram(
+      const ProgramKey& program_key,
+      const gfx::ColorSpace& src_color_space,
+      const gfx::ColorSpace& dst_color_space,
+      bool adjust_src_white_level = false,
+      absl::optional<gfx::HDRMetadata> src_hdr_metadata = absl::nullopt);
 
   bool MakeContextCurrent();
 
