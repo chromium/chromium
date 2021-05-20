@@ -643,13 +643,6 @@
       'crypto_unittests': {},
       'display_unittests': {},
       'google_apis_unittests': {},
-      'interactive_ui_tests': {
-        'args': [
-          '--stop-ui',
-          '--dbus-stub',
-          '--gtest_filter=SplitViewTest.SplitViewResize',
-        ],
-      },
       'ipc_tests': {},
       'jingle_unittests': {},
       'latency_unittests': {},
