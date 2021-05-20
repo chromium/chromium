@@ -7,16 +7,13 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-
-namespace prefs {
-const char kHeadlessMode[] = "headless.mode";
-}
+#include "headless/lib/browser/headless_pref_names.h"
 
 namespace policy {
 
 // static
 void HeadlessModePolicy::RegisterLocalPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kHeadlessMode,
+  registry->RegisterIntegerPref(headless::prefs::kHeadlessMode,
                                 static_cast<int>(HeadlessMode::kDefaultValue));
 }
 
@@ -28,7 +25,7 @@ HeadlessModePolicy::HeadlessMode HeadlessModePolicy::GetPolicy(
   if (!pref_service)
     return HeadlessMode::kDefaultValue;
 
-  int value = pref_service->GetInteger(prefs::kHeadlessMode);
+  int value = pref_service->GetInteger(headless::prefs::kHeadlessMode);
   if (value < static_cast<int>(HeadlessMode::kMinValue) ||
       value > static_cast<int>(HeadlessMode::kMaxValue)) {
     // This should never happen, because the |kHeadlessMode| pref is
@@ -50,7 +47,7 @@ bool HeadlessModePolicy::IsHeadlessDisabled(const PrefService* pref_service) {
 HeadlessModePolicyHandler::HeadlessModePolicyHandler()
     : IntRangePolicyHandler(
           key::kHeadlessMode,
-          prefs::kHeadlessMode,
+          headless::prefs::kHeadlessMode,
           static_cast<int>(HeadlessModePolicy::HeadlessMode::kMinValue),
           static_cast<int>(HeadlessModePolicy::HeadlessMode::kMaxValue),
           false) {}

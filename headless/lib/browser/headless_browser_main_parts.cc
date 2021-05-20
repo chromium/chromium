@@ -21,8 +21,8 @@
 
 #if defined(HEADLESS_USE_POLICY)
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
 #include "headless/lib/browser/policy/headless_mode_policy.h"
+#include "headless/lib/browser/policy/headless_policies.h"
 #endif
 
 #if defined(OS_MAC)
@@ -51,10 +51,7 @@ int HeadlessBrowserMainParts::PreMainMessageLoopRun() {
 #if defined(HEADLESS_USE_PREFS)
   CreatePrefService();
 #endif
-  if (browser_->options()->DevtoolsServerEnabled()) {
-    StartLocalDevToolsHttpHandler(browser_);
-    devtools_http_handler_started_ = true;
-  }
+  MaybeStartLocalDevToolsHttpHandler();
   browser_->PlatformInitialize();
   browser_->RunOnStartCallback();
 
@@ -105,6 +102,22 @@ void HeadlessBrowserMainParts::QuitMainMessageLoop() {
     std::move(quit_main_message_loop_).Run();
 }
 
+void HeadlessBrowserMainParts::MaybeStartLocalDevToolsHttpHandler() {
+  if (!browser_->options()->DevtoolsServerEnabled())
+    return;
+
+#if defined(HEADLESS_USE_POLICY)
+  const PrefService* pref_service = browser_->GetPrefs();
+  if (!policy::IsRemoteDebuggingAllowed(pref_service)) {
+    LOG(ERROR) << "Remote debugging is disallowed by the system admin.";
+    return;
+  }
+#endif
+
+  StartLocalDevToolsHttpHandler(browser_);
+  devtools_http_handler_started_ = true;
+}
+
 #if defined(HEADLESS_USE_PREFS)
 void HeadlessBrowserMainParts::CreatePrefService() {
   scoped_refptr<PersistentPrefStore> pref_store;
@@ -127,8 +140,7 @@ void HeadlessBrowserMainParts::CreatePrefService() {
   PrefServiceFactory factory;
 
 #if defined(HEADLESS_USE_POLICY)
-  policy::HeadlessModePolicy::RegisterLocalPrefs(pref_registry.get());
-  policy::URLBlocklistManager::RegisterProfilePrefs(pref_registry.get());
+  policy::RegisterPrefs(pref_registry.get());
 
   policy_connector_ =
       std::make_unique<policy::HeadlessBrowserPolicyConnector>();

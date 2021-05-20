@@ -225,6 +225,7 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
       platform_part_(std::make_unique<BrowserProcessPlatformPart>()) {
   g_browser_process = this;
 
+  DCHECK(local_state_);
   DCHECK(startup_data);
   // Most work should be done in Init().
 }
@@ -762,6 +763,10 @@ void BrowserProcessImpl::CreateDevToolsProtocolHandler() {
   // StartupBrowserCreator::LaunchBrowser can be run multiple times when browser
   // is started with several profiles or existing browser process is reused.
   if (!remote_debugging_server_) {
+    if (!local_state_->GetBoolean(prefs::kDevToolsRemoteDebuggingAllowed)) {
+      LOG(ERROR) << "Remote debugging is disallowed by the system admin.";
+      return;
+    }
     remote_debugging_server_ = std::make_unique<RemoteDebuggingServer>();
   }
 #endif
@@ -936,6 +941,7 @@ void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingEnabled,
                                 GoogleUpdateSettings::GetCollectStatsConsent());
+  registry->RegisterBooleanPref(prefs::kDevToolsRemoteDebuggingAllowed, true);
 }
 
 DownloadRequestLimiter* BrowserProcessImpl::download_request_limiter() {
