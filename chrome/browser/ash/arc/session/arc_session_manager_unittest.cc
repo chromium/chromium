@@ -21,6 +21,7 @@
 #include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -2139,6 +2140,17 @@ TEST_F(ArcSessionManagerTest, ReadSaltOnDisk) {
                               std::string(kSaltLen + 1, 'x')));  // too long
   EXPECT_TRUE(ReadSaltOnDisk(arc_salt_path, &salt));
   EXPECT_TRUE(salt.empty());
+}
+
+// Tests that TrimVmMemory doesn't crash.
+TEST_F(ArcSessionManagerTest, TrimVmMemory) {
+  bool callback_called = false;
+  arc_session_manager()->TrimVmMemory(
+      base::BindLambdaForTesting([&callback_called](bool, const std::string&) {
+        callback_called = true;
+      }));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(callback_called);
 }
 
 class ArcSessionManagerPowerwashTest : public ArcSessionManagerTestBase {

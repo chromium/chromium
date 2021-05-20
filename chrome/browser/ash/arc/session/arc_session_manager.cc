@@ -765,6 +765,10 @@ void ArcSessionManager::SetUserInfo() {
   arc_session_runner_->SetUserInfo(cryptohome_id, user_id_hash, serialno);
 }
 
+void ArcSessionManager::TrimVmMemory(TrimVmMemoryCallback callback) {
+  arc_session_runner_->TrimVmMemory(std::move(callback));
+}
+
 std::string ArcSessionManager::GetSerialNumber() const {
   DCHECK(profile_);
   DCHECK(arc_salt_on_disk_);

@@ -223,6 +223,11 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // A helper function that calls ArcSessionRunner's SetUserInfo.
   void SetUserInfo();
 
+  // Trims VM's memory by moving it to zram. |callback| is called when the
+  // operation is done.
+  using TrimVmMemoryCallback = ArcSessionRunner::TrimVmMemoryCallback;
+  void TrimVmMemory(TrimVmMemoryCallback callback);
+
   // Returns the time when ARC was pre-started (mini-ARC start), or a null time
   // if ARC has not been pre-started yet.
   base::TimeTicks pre_start_time() const { return pre_start_time_; }
