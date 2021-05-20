@@ -8,6 +8,7 @@
 #include "ui/display/display.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/display/test/test_screen.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace display {
 
@@ -85,6 +86,17 @@ TEST_F(ScreenTest, ScopedDisplayForNewWindows) {
   }
 
   EXPECT_EQ(DEFAULT_DISPLAY_ID, screen->GetDisplayForNewWindows().id());
+}
+
+TEST_F(ScreenTest, GetDisplayListNearestWindowWithFallbacks) {
+  Screen* screen = Screen::GetScreen();
+  DisplayList display_list =
+      screen->GetDisplayListNearestWindowWithFallbacks(gfx::kNullNativeWindow);
+  ASSERT_FALSE(display_list.displays().empty());
+  EXPECT_EQ(screen->GetPrimaryDisplay().id(),
+            display_list.GetPrimaryDisplay().id());
+  EXPECT_EQ(screen->GetPrimaryDisplay().id(),
+            display_list.GetCurrentDisplay().id());
 }
 
 }  // namespace display

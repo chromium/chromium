@@ -188,10 +188,9 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
   // Guess that the initial screen we will be on is the screen of the current
   // window (since that's the best guess that we have, and is usually right).
   // https://crbug.com/357443
-  display::Screen* screen = display::Screen::GetScreen();
-  display_list_ = display::DisplayList(
-      screen->GetAllDisplays(), screen->GetPrimaryDisplay().id(),
-      screen->GetDisplayNearestWindow([NSApp keyWindow]).id());
+  display_list_ =
+      display::Screen::GetScreen()->GetDisplayListNearestWindowWithFallbacks(
+          [NSApp keyWindow]);
 
   viz::FrameSinkId frame_sink_id = host()->GetFrameSinkId();
 
@@ -419,8 +418,9 @@ RenderWidgetHostImpl* RenderWidgetHostViewMac::GetWidgetForIme() {
 
 void RenderWidgetHostViewMac::GetScreenInfo(blink::ScreenInfo* screen_info) {
   const display::DisplayList& displays = browser_compositor_->display_list();
-  DisplayUtil::DisplayToScreenInfo(screen_info,
-                                   *displays.GetCurrentDisplayIterator());
+  CHECK(displays.IsValidAndHasPrimaryAndCurrentDisplays());
+  const display::Display& display = displays.GetCurrentDisplay();
+  DisplayUtil::DisplayToScreenInfo(screen_info, display);
   // Recalculate some ScreenInfo properties from the cached screen info, which
   // may originate from a remote process that hosts the associated NSWindow.
   // DisplayToScreenInfo derives some properties from the latest display::Screen
@@ -431,7 +431,7 @@ void RenderWidgetHostViewMac::GetScreenInfo(blink::ScreenInfo* screen_info) {
   // TODO(crbug.com/1194700): Pass cached remote process screen info to
   // DisplayToScreenInfo; it should not use local process info internally.
   screen_info->is_extended = displays.displays().size() > 1;
-  screen_info->is_primary = screen_info->display_id == displays.primary_id();
+  screen_info->is_primary = display.id() == displays.primary_id();
 }
 
 void RenderWidgetHostViewMac::Show() {
@@ -913,8 +913,7 @@ void RenderWidgetHostViewMac::CopyFromSurface(
   RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
       host()->GetWeakPtr(),
       browser_compositor_->GetDelegatedFrameHost()->GetWeakPtr(), popup_host,
-      popup_frame_host, src_subrect, dst_size,
-      display_list_.GetCurrentDisplayIterator()->device_scale_factor(),
+      popup_frame_host, src_subrect, dst_size, GetCurrentDeviceScaleFactor(),
       std::move(callback));
 }
 

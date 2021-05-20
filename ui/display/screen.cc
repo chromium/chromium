@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "ui/display/display.h"
@@ -62,6 +63,17 @@ display::Display Screen::GetDisplayForNewWindows() const {
 void Screen::SetDisplayForNewWindows(int64_t display_id) {
   // GetDisplayForNewWindows() handles invalid display ids.
   display_id_for_new_windows_ = display_id;
+}
+
+DisplayList Screen::GetDisplayListNearestViewWithFallbacks(
+    gfx::NativeView view) const {
+  return GetDisplayListNearestDisplayWithFallbacks(GetDisplayNearestView(view));
+}
+
+DisplayList Screen::GetDisplayListNearestWindowWithFallbacks(
+    gfx::NativeWindow window) const {
+  return GetDisplayListNearestDisplayWithFallbacks(
+      GetDisplayNearestWindow(window));
 }
 
 void Screen::SetScreenSaverSuspended(bool suspend) {
@@ -126,6 +138,36 @@ void Screen::SetScopedDisplayForNewWindows(int64_t display_id) {
       << "display_id=" << display_id << ", scoped_display_id_for_new_windows_="
       << scoped_display_id_for_new_windows_;
   scoped_display_id_for_new_windows_ = display_id;
+}
+
+DisplayList Screen::GetDisplayListNearestDisplayWithFallbacks(
+    Display nearest) const {
+  DisplayList display_list;
+  const std::vector<Display>& displays = GetAllDisplays();
+  Display primary = GetPrimaryDisplay();
+  if (displays.empty()) {
+    // The nearest display's metrics are of greater value to clients of this
+    // function than those of the primary display, so prefer to use that Display
+    // object as the fallback, if GetAllDisplays() returned an empty array.
+    if (nearest.id() == kInvalidDisplayId && primary.id() != kInvalidDisplayId)
+      display_list = DisplayList({primary}, primary.id(), primary.id());
+    else
+      display_list = DisplayList({nearest}, nearest.id(), nearest.id());
+  } else {
+    // Use the primary and nearest displays as fallbacks for each other, if the
+    // counterpart exists in `displays`. Otherwise, use `display[0]` for both.
+    int64_t primary_id = primary.id();
+    int64_t nearest_id = nearest.id();
+    const bool has_primary = base::Contains(displays, primary_id, &Display::id);
+    const bool has_nearest = base::Contains(displays, nearest_id, &Display::id);
+    if (!has_primary)
+      primary_id = has_nearest ? nearest_id : displays[0].id();
+    if (!has_nearest)
+      nearest_id = primary_id;
+    display_list = DisplayList(displays, primary_id, nearest_id);
+  }
+  CHECK(display_list.IsValidAndHasPrimaryAndCurrentDisplays());
+  return display_list;
 }
 
 }  // namespace display

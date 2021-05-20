@@ -70,9 +70,16 @@ DisplayList::Displays::const_iterator DisplayList::GetPrimaryDisplayIterator()
   return FindDisplayById(primary_id_);
 }
 
-DisplayList::Displays::const_iterator DisplayList::GetCurrentDisplayIterator()
-    const {
-  return FindDisplayById(current_id_);
+const Display& DisplayList::GetPrimaryDisplay() const {
+  Displays::const_iterator primary_iter = GetPrimaryDisplayIterator();
+  CHECK(primary_iter != displays_.end());
+  return *primary_iter;
+}
+
+const Display& DisplayList::GetCurrentDisplay() const {
+  Displays::const_iterator current_iter = FindDisplayById(current_id_);
+  CHECK(current_iter != displays_.end());
+  return *current_iter;
 }
 
 void DisplayList::AddOrUpdateDisplay(const Display& display, Type type) {
@@ -190,11 +197,16 @@ bool DisplayList::IsValid() const {
 
   // The current id may be invalid, or must correspond to a `displays_` entry.
   if (current_id_ != kInvalidDisplayId &&
-      GetCurrentDisplayIterator() == displays_.end()) {
+      FindDisplayById(current_id_) == displays_.end()) {
     return false;
   }
 
   return true;
+}
+
+bool DisplayList::IsValidAndHasPrimaryAndCurrentDisplays() const {
+  return IsValid() && GetPrimaryDisplayIterator() != displays_.end() &&
+         FindDisplayById(current_id_) != displays_.end();
 }
 
 DisplayList::Type DisplayList::GetTypeByDisplayId(int64_t display_id) const {

@@ -131,17 +131,11 @@ void RenderWidgetHostViewChildFrame::SetFrameConnector(
     SetParentFrameSinkId(parent_view->GetFrameSinkId());
   }
 
-  // Initialize a display struct as needed, to cache the scale factor.
   // TODO(crbug.com/1182855): Use the parent_view's entire display::DisplayList.
-  if (display_list_.displays().empty()) {
-    display_list_ = display::DisplayList(
-        {display::Display(display::kDefaultDisplayId)},
-        display::kDefaultDisplayId, display::kDefaultDisplayId);
-  }
-  display::Display current_display = *display_list_.GetCurrentDisplayIterator();
-  current_display.set_device_scale_factor(
+  display::Display display = display_list_.GetCurrentDisplay();
+  display.set_device_scale_factor(
       frame_connector_->screen_info().device_scale_factor);
-  display_list_.UpdateDisplay(current_display);
+  display_list_.UpdateDisplay(display);
 
   auto* root_view = frame_connector_->GetRootRenderWidgetHostView();
   if (root_view) {

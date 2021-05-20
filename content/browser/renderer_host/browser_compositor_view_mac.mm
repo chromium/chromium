@@ -56,6 +56,7 @@ BrowserCompositorMac::BrowserCompositorMac(
       accelerated_widget_mac_ns_view_(accelerated_widget_mac_ns_view),
       display_list_(initial_display_list),
       weak_factory_(this) {
+  CHECK(display_list_.IsValidAndHasPrimaryAndCurrentDisplays());
   g_browser_compositors.Get().insert(this);
 
   root_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
@@ -117,14 +118,16 @@ void BrowserCompositorMac::SetBackgroundColor(SkColor background_color) {
 bool BrowserCompositorMac::UpdateSurfaceFromNSView(
     const gfx::Size& new_size_dip,
     const display::DisplayList& new_display_list) {
+  CHECK(new_display_list.IsValidAndHasPrimaryAndCurrentDisplays());
+
   if (new_size_dip == dfh_size_dip_) {
     if (new_display_list == display_list_)
       return false;
-    if (*new_display_list.GetCurrentDisplayIterator() ==
-        *display_list_.GetCurrentDisplayIterator()) {
+    if (new_display_list.GetCurrentDisplay() ==
+        display_list_.GetCurrentDisplay()) {
       // Another display changed; no SurfaceId updates are needed here, but
       // returning true instructs the caller to notify its RenderWidgetHostImpl.
-      // That will synchronize visual properties thoughout the frame tree,
+      // That will synchronize visual properties throughout the frame tree,
       // updating cached screen info and events exposed by web platform APIs.
       display_list_ = new_display_list;
       return true;
@@ -135,12 +138,12 @@ bool BrowserCompositorMac::UpdateSurfaceFromNSView(
 
   bool needs_new_surface_id =
       new_size_dip != dfh_size_dip_ ||
-      new_display_list.GetCurrentDisplayIterator()->device_scale_factor() !=
-          display_list_.GetCurrentDisplayIterator()->device_scale_factor();
+      new_display_list.GetCurrentDisplay().device_scale_factor() !=
+          display_list_.GetCurrentDisplay().device_scale_factor();
 
   display_list_ = new_display_list;
   dfh_size_dip_ = new_size_dip;
-  const display::Display& display = *display_list_.GetCurrentDisplayIterator();
+  const display::Display display = display_list_.GetCurrentDisplay();
 
   // The device scale factor is always an integer, so the result here is also
   // an integer.
@@ -172,7 +175,7 @@ void BrowserCompositorMac::UpdateSurfaceFromChild(
   if (dfh_local_surface_id_allocator_.UpdateFromChild(child_local_surface_id)) {
     if (auto_resize_enabled) {
       // TODO(crbug.com/1169312): Update RWHVMac's cached screen info similarly?
-      display::Display display = *display_list_.GetCurrentDisplayIterator();
+      display::Display display = display_list_.GetCurrentDisplay();
       display.set_device_scale_factor(new_device_scale_factor);
       display_list_.UpdateDisplay(display);
       // TODO(danakj): We should avoid lossy conversions to integer DIPs.
@@ -285,8 +288,7 @@ void BrowserCompositorMac::TransitionToState(State new_state) {
     recyclable_compositor_ =
         ui::RecyclableCompositorMacFactory::Get()->CreateCompositor(
             content::GetContextFactory());
-    const display::Display& display =
-        *display_list_.GetCurrentDisplayIterator();
+    const display::Display display = display_list_.GetCurrentDisplay();
     recyclable_compositor_->UpdateSurface(dfh_size_pixels_,
                                           display.device_scale_factor(),
                                           display.color_spaces());
@@ -347,7 +349,7 @@ void BrowserCompositorMac::OnFrameTokenChanged(
 }
 
 float BrowserCompositorMac::GetDeviceScaleFactor() const {
-  return display_list_.GetCurrentDisplayIterator()->device_scale_factor();
+  return display_list_.GetCurrentDisplay().device_scale_factor();
 }
 
 void BrowserCompositorMac::InvalidateLocalSurfaceIdOnEviction() {
@@ -400,7 +402,7 @@ void BrowserCompositorMac::SetParentUiLayer(ui::Layer* new_parent_ui_layer) {
 
 bool BrowserCompositorMac::ForceNewSurfaceForTesting() {
   display::DisplayList new_display_list(display_list_);
-  display::Display display = *new_display_list.GetCurrentDisplayIterator();
+  display::Display display = new_display_list.GetCurrentDisplay();
   // TODO(crbug.com/1169312): Update RWHVMac's cached screen info similarly?
   display.set_device_scale_factor(display.device_scale_factor() * 2.0f);
   new_display_list.UpdateDisplay(display);

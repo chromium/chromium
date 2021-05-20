@@ -93,19 +93,19 @@ TEST(DisplayListTest, AddUpdateRemove) {
   ASSERT_EQ(2u, display_list.displays().size());
   EXPECT_EQ(2, display_list.displays()[0].id());
   EXPECT_EQ(3, display_list.displays()[1].id());
-  EXPECT_EQ(2, display_list.GetPrimaryDisplayIterator()->id());
+  EXPECT_EQ(2, display_list.GetPrimaryDisplay().id());
 
   // Make the second the primary.
   display_list.UpdateDisplay(display_list.displays()[1],
                              DisplayList::Type::PRIMARY);
   EXPECT_EQ("Changed id=3 primary", observer.GetAndClearChanges());
-  EXPECT_EQ(3, display_list.GetPrimaryDisplayIterator()->id());
+  EXPECT_EQ(3, display_list.GetPrimaryDisplay().id());
 
   // Delete the first.
   display_list.RemoveDisplay(2);
   ASSERT_EQ(1u, display_list.displays().size());
   EXPECT_EQ("Removed id=2", observer.GetAndClearChanges());
-  EXPECT_EQ(3, display_list.GetPrimaryDisplayIterator()->id());
+  EXPECT_EQ(3, display_list.GetPrimaryDisplay().id());
 }
 
 TEST(DisplayListTest, EmptyIsValid) {
@@ -165,6 +165,60 @@ TEST(DisplayListTest, DisplaysIdsMustBeUnique) {
                                                /*primary_id=*/1,
                                                /*current_id=*/1)
                                        .IsValid()));
+}
+
+TEST(DisplayListTest, IsValidAndHasPrimaryAndCurrentDisplaysEmpty) {
+  EXPECT_FALSE(DisplayList().IsValidAndHasPrimaryAndCurrentDisplays());
+}
+
+TEST(DisplayListTest, IsValidAndHasPrimaryAndCurrentDisplaysNoCurrent) {
+  EXPECT_FALSE(DisplayList({Display(1)}, /*primary_id=*/1,
+                           /*current_id=*/kInvalidDisplayId)
+                   .IsValidAndHasPrimaryAndCurrentDisplays());
+}
+
+TEST(DisplayListTest, IsValidAndHasPrimaryAndCurrentDisplaysOk) {
+  EXPECT_TRUE(DisplayList({Display(1)}, /*primary_id=*/1, /*current_id=*/1)
+                  .IsValidAndHasPrimaryAndCurrentDisplays());
+}
+
+TEST(DisplayListTest, GetPrimaryDisplayEmpty) {
+  DisplayList display_list;
+  EXPECT_EQ(display_list.displays().end(),
+            display_list.FindDisplayById(display_list.primary_id()));
+  EXPECT_DEATH_IF_SUPPORTED(EXPECT_NE(1, display_list.GetPrimaryDisplay().id()),
+                            "");
+}
+
+TEST(DisplayListTest, GetPrimaryDisplayOk) {
+  DisplayList display_list({Display(1)}, /*primary_id=*/1, /*current_id=*/1);
+  EXPECT_NE(display_list.displays().end(),
+            display_list.FindDisplayById(display_list.primary_id()));
+  EXPECT_EQ(1, display_list.GetPrimaryDisplay().id());
+}
+
+TEST(DisplayListTest, GetCurrentDisplayEmpty) {
+  DisplayList display_list;
+  EXPECT_EQ(display_list.displays().end(),
+            display_list.FindDisplayById(display_list.current_id()));
+  EXPECT_DEATH_IF_SUPPORTED(EXPECT_NE(1, display_list.GetCurrentDisplay().id()),
+                            "");
+}
+
+TEST(DisplayListTest, GetCurrentDisplayUnset) {
+  DisplayList display_list({Display(1)}, /*primary_id=*/1,
+                           /*current_id=*/kInvalidDisplayId);
+  EXPECT_EQ(display_list.displays().end(),
+            display_list.FindDisplayById(display_list.current_id()));
+  EXPECT_DEATH_IF_SUPPORTED(EXPECT_NE(1, display_list.GetCurrentDisplay().id()),
+                            "");
+}
+
+TEST(DisplayListTest, GetCurrentDisplayOk) {
+  DisplayList display_list({Display(1)}, /*primary_id=*/1, /*current_id=*/1);
+  EXPECT_NE(display_list.displays().end(),
+            display_list.FindDisplayById(display_list.current_id()));
+  EXPECT_EQ(1, display_list.GetCurrentDisplay().id());
 }
 
 }  // namespace

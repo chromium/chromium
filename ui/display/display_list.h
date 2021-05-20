@@ -48,8 +48,15 @@ class DISPLAY_EXPORT DisplayList {
 
   Displays::const_iterator FindDisplayById(int64_t id) const;
 
+  // Get an iterator for the primary display. This returns an invalid iterator
+  // if no such display is available. Callers must check the returned value
+  // against `displays().end()` before dereferencing.
   Displays::const_iterator GetPrimaryDisplayIterator() const;
-  Displays::const_iterator GetCurrentDisplayIterator() const;
+
+  // Get a reference to the primary or current display. This will CHECK if no
+  // such display is available. Callers must know that the display is available.
+  const Display& GetPrimaryDisplay() const;
+  const Display& GetCurrentDisplay() const;
 
   void AddOrUpdateDisplay(const Display& display, Type type);
 
@@ -69,8 +76,15 @@ class DISPLAY_EXPORT DisplayList {
   // Removes the Display with the specified id.
   void RemoveDisplay(int64_t id);
 
-  // Checks expectations around DisplayList validity.
+  // Checks for general struct validity. This permits empty lists, and the
+  // current display may be unspecified, but non-empty lists must specify a
+  // primary display and the displays must not use repeated id values.
+  // TODO(msw): Rename this IsValidOrEmpty().
   bool IsValid() const;
+
+  // Checks for validity, and for the presence of primary and current displays.
+  // This is a stronger check than IsValid, which allows the list to be empty.
+  bool IsValidAndHasPrimaryAndCurrentDisplays() const;
 
   base::ObserverList<DisplayObserver>* observers() { return &observers_; }
 

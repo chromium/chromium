@@ -31,6 +31,7 @@
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #import "ui/base/cocoa/touch_bar_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/display_list.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -1391,13 +1392,12 @@ void ExtractUnderlines(NSAttributedString* string,
   if (!enclosingWindow)
     return;
 
-  display::Screen* screen = display::Screen::GetScreen();
   // TODO(ccameron): This will call [enclosingWindow screen], which may return
   // nil. Do that call here to avoid sending bogus display info to the host.
-  display::DisplayList display_list(screen->GetAllDisplays(),
-                                    screen->GetPrimaryDisplay().id(),
-                                    screen->GetDisplayNearestView(self).id());
-  _host->OnDisplaysChanged(display_list);
+  const display::DisplayList new_display_list =
+      display::Screen::GetScreen()->GetDisplayListNearestViewWithFallbacks(
+          self);
+  _host->OnDisplaysChanged(new_display_list);
 }
 
 // This will be called when the NSView's NSWindow moves from one NSScreen to
