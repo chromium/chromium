@@ -42,12 +42,6 @@ NSPoint ConvertRootPointToTarget(NSWindow* target,
   DCHECK(GetActiveGenerator());
   gfx::Point point = point_in_root;
 
-  if (GetActiveGenerator()->assume_window_at_origin()) {
-    // When assuming the window is at the origin, ignore the titlebar as well.
-    NSRect content_rect = [target contentRectForFrameRect:[target frame]];
-    return NSMakePoint(point.x(), NSHeight(content_rect) - point.y());
-  }
-
   point -= gfx::ScreenRectFromNSRect([target frame]).OffsetFromOrigin();
   return NSMakePoint(point.x(), NSHeight([target frame]) - point.y());
 }

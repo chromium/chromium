@@ -37,7 +37,6 @@ class LinkTest : public test::BaseControlTestWidget {
 
     event_generator_ = std::make_unique<ui::test::EventGenerator>(
         GetContext(), widget()->GetNativeWindow());
-    event_generator_->set_assume_window_at_origin(false);
   }
 
  protected:

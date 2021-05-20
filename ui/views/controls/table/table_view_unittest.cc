@@ -462,7 +462,6 @@ class TableViewTest : public ViewsTestBase,
 
   void ClickOnRow(int row, int flags) {
     ui::test::EventGenerator generator(GetRootWindow(widget_.get()));
-    generator.set_assume_window_at_origin(false);
     generator.set_flags(flags);
     generator.set_current_screen_location(GetPointForRow(row));
     generator.PressLeftButton();
