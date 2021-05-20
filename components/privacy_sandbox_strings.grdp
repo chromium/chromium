@@ -5,9 +5,9 @@
   </message>
   <message name="IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION" desc="Description of how FLoC works displayed to the user.">
     {NUM_DAYS, plural,
-     =0 {When this control is on and the status is active, Chrome identifies which large group of people, or "cohort," your recent browsing activity is most similar to. Advertisers can select ads for the group and your browsing activity is kept private on your device. Your group is updated every day.}
-     =1 {When this control is on and the status is active, Chrome identifies which large group of people, or "cohort," your recent browsing activity is most similar to. Advertisers can select ads for the group and your browsing activity is kept private on your device. Your group is updated every day.}
-     other {When this control is on and the status is active, Chrome identifies which large group of people, or "cohort," your recent browsing activity is most similar to. Advertisers can select ads for the group and your browsing activity is kept private on your device. Your group is updated every {NUM_DAYS} days.}}
+     =0 {When this control is on and the status is active, Chrome determines which large group of people, or "cohort," your recent browsing activity is most similar to. Advertisers can select ads for the group and your browsing activity is kept private on your device. Your group is updated every day.}
+     =1 {When this control is on and the status is active, Chrome determines which large group of people, or "cohort," your recent browsing activity is most similar to. Advertisers can select ads for the group and your browsing activity is kept private on your device. Your group is updated every day.}
+     other {When this control is on and the status is active, Chrome determines which large group of people, or "cohort," your recent browsing activity is most similar to. Advertisers can select ads for the group and your browsing activity is kept private on your device. Your group is updated every {NUM_DAYS} days.}}
   </message>
   <message name="IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE" desc="Description of how long until the user's FLoC ID is recomputed, in days.">
     {NUM_DAYS, plural,
