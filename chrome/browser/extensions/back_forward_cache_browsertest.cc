@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -135,9 +136,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheExtensionsDisabledBrowserTest,
 }
 
 // Test content script injection disallow the back forward cache.
+// TODO(https://crbug.com/1204751): Very flaky on Windows.
+#if defined(OS_WIN)
+#define MAYBE_ScriptDisallowed DISABLED_ScriptDisallowed
+#else
+#define MAYBE_ScriptDisallowed ScriptDisallowed
+#endif
 IN_PROC_BROWSER_TEST_F(
     ExtensionBackForwardCacheContentScriptDisabledBrowserTest,
-    ScriptDisallowed) {
+    MAYBE_ScriptDisallowed) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
                                 .AppendASCII("content_script")));
 
