@@ -13,12 +13,14 @@
 #include "base/values.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
+#include "services/network/trust_tokens/types.h"
 
 namespace network {
 
 const char kTrustTokenKeyCommitmentProtocolVersionField[] = "protocol_version";
 const char kTrustTokenKeyCommitmentIDField[] = "id";
 const char kTrustTokenKeyCommitmentBatchsizeField[] = "batchsize";
+const char kTrustTokenKeyCommitmentKeysField[] = "keys";
 const char kTrustTokenKeyCommitmentExpiryField[] = "expiry";
 const char kTrustTokenKeyCommitmentKeyField[] = "Y";
 const char kTrustTokenKeyCommitmentRequestIssuanceLocallyOnField[] =
@@ -162,47 +164,57 @@ bool ParseLocalOperationFieldsIfPresent(
 }
 
 mojom::TrustTokenKeyCommitmentResultPtr ParseSingleIssuer(
-    const base::Value& value) {
-  if (!value.is_dict())
+    const base::Value& commitments_by_version) {
+  if (!commitments_by_version.is_dict())
     return nullptr;
 
   auto result = mojom::TrustTokenKeyCommitmentResult::New();
 
-  // Confirm that the protocol_version field is present.
-  const std::string* maybe_version =
-      value.FindStringKey(kTrustTokenKeyCommitmentProtocolVersionField);
-  if (!maybe_version)
-    return nullptr;
-  if (*maybe_version == "TrustTokenV3PMB") {
-    result->protocol_version =
-        mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
-  } else if (*maybe_version == "TrustTokenV3VOPRF") {
-    result->protocol_version =
-        mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf;
-  } else {
-    return nullptr;
+  const base::Value* value = nullptr;
+  // Confirm that the protocol_version field is present. If the server supports
+  // multiple versions, we prefer the VOPRF version, since it's more efficient
+  // (and we're free to choose which version to use).
+  for (auto version : {mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf,
+                       mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb}) {
+    std::string version_label = internal::ProtocolVersionToString(version);
+    if (commitments_by_version.FindKey(version_label)) {
+      value = commitments_by_version.FindKey(version_label);
+      const std::string* maybe_version =
+          value->FindStringKey(kTrustTokenKeyCommitmentProtocolVersionField);
+      if (!maybe_version || *maybe_version != version_label)
+        return nullptr;
+      result->protocol_version = version;
+      break;
+    }
   }
+  if (!value)
+    return nullptr;
 
   // Confirm that the id field is present and type-safe.
   absl::optional<int> maybe_id =
-      value.FindIntKey(kTrustTokenKeyCommitmentIDField);
+      value->FindIntKey(kTrustTokenKeyCommitmentIDField);
   if (!maybe_id || *maybe_id <= 0)
     return nullptr;
   result->id = *maybe_id;
 
   // Confirm that the batchsize field is present and type-safe.
   absl::optional<int> maybe_batch_size =
-      value.FindIntKey(kTrustTokenKeyCommitmentBatchsizeField);
+      value->FindIntKey(kTrustTokenKeyCommitmentBatchsizeField);
   if (!maybe_batch_size || *maybe_batch_size <= 0)
     return nullptr;
   result->batch_size = *maybe_batch_size;
 
-  if (!ParseLocalOperationFieldsIfPresent(value, result.get()))
+  if (!ParseLocalOperationFieldsIfPresent(*value, result.get()))
     return nullptr;
 
-  // Parse the key commitments in the result (these are exactly the
-  // key-value pairs in the dictionary with dictionary-typed values).
-  for (const auto& kv : value.DictItems()) {
+  // Parse the key commitments in the result if available.
+  const base::Value* maybe_keys =
+      value->FindKey(kTrustTokenKeyCommitmentKeysField);
+  if (!maybe_keys)
+    return result;
+  if (!maybe_keys->is_dict())
+    return nullptr;
+  for (const auto& kv : maybe_keys->DictItems()) {
     const base::Value& item = kv.second;
     if (!item.is_dict())
       continue;

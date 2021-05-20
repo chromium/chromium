@@ -1251,7 +1251,8 @@ TEST_F(NetworkServiceTestWithService, SetsTrustTokenKeyCommitments) {
 
   base::RunLoop run_loop;
   network_service_->SetTrustTokenKeyCommitments(
-      R"( { "https://issuer.example": { "protocol_version": "TrustTokenV3PMB", "id": 1, "batchsize": 5 } } )",
+      R"( { "https://issuer.example": { "TrustTokenV3PMB": {
+        "protocol_version": "TrustTokenV3PMB", "id": 1, "batchsize": 5 } } } )",
       run_loop.QuitClosure());
   run_loop.Run();
 

@@ -248,24 +248,27 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
   JSONStringValueSerializer serializer(&ret);
 
   base::Value value(base::Value::Type::DICTIONARY);
-  value.SetStringKey("protocol_version", rep_->protocol_version);
-  value.SetIntKey("id", rep_->id);
-  value.SetIntKey("batchsize", rep_->batch_size);
+  value.SetStringPath("TrustTokenV3PMB.protocol_version",
+                      rep_->protocol_version);
+  value.SetIntPath("TrustTokenV3PMB.id", rep_->id);
+  value.SetIntPath("TrustTokenV3PMB.batchsize", rep_->batch_size);
 
   for (size_t i = 0; i < rep_->issuance_keys.size(); ++i) {
-    value.SetStringPath(base::NumberToString(i) + ".Y",
-                        base::Base64Encode(base::make_span(
-                            rep_->issuance_keys[i].verification)));
-    value.SetStringPath(base::NumberToString(i) + ".expiry",
-                        base::NumberToString((rep_->issuance_keys[i].expiry -
-                                              base::Time::UnixEpoch())
-                                                 .InMicroseconds()));
+    value.SetStringPath(
+        "TrustTokenV3PMB.keys." + base::NumberToString(i) + ".Y",
+        base::Base64Encode(
+            base::make_span(rep_->issuance_keys[i].verification)));
+    value.SetStringPath(
+        "TrustTokenV3PMB.keys." + base::NumberToString(i) + ".expiry",
+        base::NumberToString(
+            (rep_->issuance_keys[i].expiry - base::Time::UnixEpoch())
+                .InMicroseconds()));
   }
 
   if (!rep_->specify_platform_issuance_on.empty()) {
-    value.SetStringKey("unavailable_local_operation_fallback",
-                       UnavailableLocalOperationFallbackToString(
-                           rep_->unavailable_local_operation_fallback));
+    value.SetStringPath("TrustTokenV3PMB.unavailable_local_operation_fallback",
+                        UnavailableLocalOperationFallbackToString(
+                            rep_->unavailable_local_operation_fallback));
 
     base::Value oses(base::Value::Type::LIST);
     for (auto os : rep_->specify_platform_issuance_on) {
@@ -275,7 +278,8 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
           break;
       };
     }
-    value.SetKey("request_issuance_locally_on", std::move(oses));
+    value.SetPath("TrustTokenV3PMB.request_issuance_locally_on",
+                  std::move(oses));
   }
 
   // It's OK to be a bit crashy in exceptional failure cases because it
