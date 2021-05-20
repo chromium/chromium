@@ -14,6 +14,8 @@
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/font.h"
+#include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -21,6 +23,9 @@
 #include "ui/views/background.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/layout_manager_base.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -30,43 +35,6 @@ AnimationExample::AnimationExample() : ExampleBase("Animation") {}
 
 AnimationExample::~AnimationExample() = default;
 
-class SquareLayerPainter : public ui::LayerDelegate {
- public:
-  SquareLayerPainter(View* container, int index);
-  ~SquareLayerPainter() override = default;
-
-  // ui::LayerDelegate:
-  void OnPaintLayer(const ui::PaintContext& context) override;
-  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
-                                  float new_device_scale_factor) override {}
-
- private:
-  int index_;
-  View* container_;
-};
-
-SquareLayerPainter::SquareLayerPainter(View* container, int index)
-    : index_(index), container_(container) {}
-
-void SquareLayerPainter::OnPaintLayer(const ui::PaintContext& context) {
-  const SkColor color = SkColorSetRGB((5 - index_) * 51, 0, index_ * 51);
-  const SkColor colors[2] = {color,
-                             color_utils::HSLShift(color, {-1.0, -1.0, 0.75})};
-  cc::PaintFlags flags;
-  gfx::Rect local_bounds = gfx::Rect(container_->layer()->size());
-  ui::PaintRecorder recorder(context, local_bounds.size());
-  gfx::Canvas* canvas = recorder.canvas();
-  const float dsf = canvas->UndoDeviceScaleFactor();
-  gfx::RectF local_bounds_f = gfx::RectF(local_bounds);
-  local_bounds_f.Scale(dsf);
-  SkRect bounds = gfx::RectToSkRect(gfx::ToEnclosingRect(local_bounds_f));
-  flags.setAntiAlias(true);
-  flags.setShader(cc::PaintShader::MakeRadialGradient(
-      SkPoint::Make(bounds.centerX(), bounds.centerY()), bounds.width() / 2,
-      colors, nullptr, 2, SkTileMode::kClamp));
-  canvas->DrawRect(gfx::ToEnclosingRect(local_bounds_f), flags);
-}
-
 class AnimatingSquare : public View {
  public:
   explicit AnimatingSquare(size_t index);
@@ -74,15 +42,23 @@ class AnimatingSquare : public View {
   AnimatingSquare& operator=(const AnimatingSquare&) = delete;
   ~AnimatingSquare() override = default;
 
+ protected:
+  // views::View override
+  void OnPaint(gfx::Canvas* canvas) override;
+
  private:
-  SquareLayerPainter painter_;
+  int index_;
+  int paint_counter_ = 0;
+  gfx::FontList font_list_ =
+      LayoutProvider::Get()->GetTypographyProvider().GetFont(
+          style::CONTEXT_DIALOG_TITLE,
+          style::STYLE_PRIMARY);
 };
 
-AnimatingSquare::AnimatingSquare(size_t index) : painter_({this, index}) {
+AnimatingSquare::AnimatingSquare(size_t index) : index_(index) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetFillsBoundsCompletely(false);
-  layer()->set_delegate(&painter_);
   layer()->SetAnimator(new ui::LayerAnimator(base::TimeDelta::FromSeconds(1)));
   layer()->GetAnimator()->set_tween_type(gfx::Tween::EASE_IN_OUT);
   layer()->GetAnimator()->set_preemption_strategy(
@@ -95,6 +71,32 @@ AnimatingSquare::AnimatingSquare(size_t index) : painter_({this, index}) {
   opacity_sequence->AddElement(ui::LayerAnimationElement::CreateOpacityElement(
       0.9f, base::TimeDelta::FromSeconds(2)));
   layer()->GetAnimator()->StartAnimation(opacity_sequence.release());
+}
+
+void AnimatingSquare::OnPaint(gfx::Canvas* canvas) {
+  View::OnPaint(canvas);
+  const SkColor color = SkColorSetRGB((5 - index_) * 51, 0, index_ * 51);
+  const SkColor colors[2] = {color,
+                             color_utils::HSLShift(color, {-1.0, -1.0, 0.75})};
+  cc::PaintFlags flags;
+  gfx::Rect local_bounds = gfx::Rect(layer()->size());
+  const float dsf = canvas->UndoDeviceScaleFactor();
+  gfx::RectF local_bounds_f = gfx::RectF(local_bounds);
+  local_bounds_f.Scale(dsf);
+  SkRect bounds = gfx::RectToSkRect(gfx::ToEnclosingRect(local_bounds_f));
+  flags.setAntiAlias(true);
+  flags.setShader(cc::PaintShader::MakeRadialGradient(
+      SkPoint::Make(bounds.centerX(), bounds.centerY()), bounds.width() / 2,
+      colors, nullptr, 2, SkTileMode::kClamp));
+  canvas->DrawRect(gfx::ToEnclosingRect(local_bounds_f), flags);
+  int width = 0;
+  int height = 0;
+  std::u16string counter = base::NumberToString16(++paint_counter_);
+  canvas->SizeStringInt(counter, font_list_, &width, &height, 0,
+                        gfx::Canvas::TEXT_ALIGN_CENTER);
+  local_bounds.ClampToCenteredSize(gfx::Size(width, height));
+  canvas->DrawStringRectWithFlags(counter, font_list_, SK_ColorBLACK,
+                                  local_bounds, gfx::Canvas::TEXT_ALIGN_CENTER);
 }
 
 class SquaresLayoutManager : public LayoutManagerBase {

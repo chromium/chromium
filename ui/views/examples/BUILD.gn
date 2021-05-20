@@ -43,8 +43,6 @@ component("views_examples_lib") {
     "flex_layout_example.h",
     "label_example.cc",
     "label_example.h",
-    "layer_animation_example.cc",
-    "layer_animation_example.h",
     "layout_example_base.cc",
     "layout_example_base.h",
     "link_example.cc",
