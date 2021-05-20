@@ -51,7 +51,9 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/dedicated_or_shared_worker_fetch_context_impl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -477,9 +479,12 @@ DedicatedWorker::CreateWebWorkerFetchContext() {
   // This worker is being created by an existing worker (i.e., nested workers).
   // Clone the worker fetch context from the parent's one.
   auto* scope = To<WorkerGlobalScope>(GetExecutionContext());
+  auto& worker_fetch_context =
+      static_cast<WorkerFetchContext&>(scope->Fetcher()->Context());
+
   return factory_client_->CloneWorkerFetchContext(
-      static_cast<WorkerFetchContext&>(scope->Fetcher()->Context())
-          .GetWebWorkerFetchContext(),
+      To<DedicatedOrSharedWorkerFetchContextImpl>(
+          worker_fetch_context.GetWebWorkerFetchContext()),
       scope->GetTaskRunner(TaskType::kNetworking));
 }
 

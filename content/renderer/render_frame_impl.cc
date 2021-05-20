@@ -89,7 +89,6 @@
 #include "content/renderer/gpu_benchmarking_extension.h"
 #include "content/renderer/internal_document_state_data.h"
 #include "content/renderer/loader/navigation_body_loader.h"
-#include "content/renderer/loader/web_worker_fetch_context_impl.h"
 #include "content/renderer/media/media_permission_dispatcher.h"
 #include "content/renderer/mhtml_handle_writer.h"
 #include "content/renderer/mojo/blink_interface_registry_impl.h"
@@ -172,6 +171,7 @@
 #include "third_party/blink/public/platform/weak_wrapper_resource_load_info_notifier.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_data.h"
+#include "third_party/blink/public/platform/web_dedicated_or_shared_worker_fetch_context.h"
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
@@ -3243,28 +3243,42 @@ RenderFrameImpl::CreateWorkerFetchContext() {
       pending_resource_load_info_notifier.InitWithNewPipeAndPassReceiver(),
       agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
 
+  std::vector<std::string> cors_exempt_header_list =
+      RenderThreadImpl::current()->cors_exempt_header_list();
+  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
+      cors_exempt_header_list.size());
+  std::transform(cors_exempt_header_list.begin(), cors_exempt_header_list.end(),
+                 web_cors_exempt_header_list.begin(), [](const std::string& h) {
+                   return blink::WebString::FromLatin1(h);
+                 });
+
   // |pending_subresource_loader_updater| and
   // |pending_resource_load_info_notifier| are not used for
   // non-PlzDedicatedWorker and worklets.
-  scoped_refptr<WebWorkerFetchContextImpl> worker_fetch_context =
-      WebWorkerFetchContextImpl::Create(
-          provider->context(), GetWebView()->GetRendererPreferences(),
-          std::move(watcher_receiver), GetLoaderFactoryBundle()->Clone(),
-          GetLoaderFactoryBundle()->CloneWithoutAppCacheFactory(),
-          /*pending_subresource_loader_updater=*/mojo::NullReceiver(),
-          RenderThreadImpl::current()->cors_exempt_header_list(),
-          std::move(pending_resource_load_info_notifier));
+  scoped_refptr<blink::WebDedicatedOrSharedWorkerFetchContext>
+      web_dedicated_or_shared_worker_fetch_context =
+          blink::WebDedicatedOrSharedWorkerFetchContext::Create(
+              provider->context(), GetWebView()->GetRendererPreferences(),
+              std::move(watcher_receiver), GetLoaderFactoryBundle()->Clone(),
+              GetLoaderFactoryBundle()->CloneWithoutAppCacheFactory(),
+              /*pending_subresource_loader_updater=*/mojo::NullReceiver(),
+              web_cors_exempt_header_list,
+              std::move(pending_resource_load_info_notifier));
 
-  worker_fetch_context->set_ancestor_frame_id(routing_id_);
-  worker_fetch_context->set_frame_request_blocker(frame_request_blocker_);
-  worker_fetch_context->set_site_for_cookies(
+  web_dedicated_or_shared_worker_fetch_context->set_ancestor_frame_id(
+      routing_id_);
+  web_dedicated_or_shared_worker_fetch_context->set_frame_request_blocker(
+      frame_request_blocker_);
+  web_dedicated_or_shared_worker_fetch_context->set_site_for_cookies(
       frame_->GetDocument().SiteForCookies());
-  worker_fetch_context->set_top_frame_origin(
+  web_dedicated_or_shared_worker_fetch_context->set_top_frame_origin(
       frame_->GetDocument().TopFrameOrigin());
 
-  for (auto& observer : observers_)
-    observer.WillCreateWorkerFetchContext(worker_fetch_context.get());
-  return worker_fetch_context;
+  for (auto& observer : observers_) {
+    observer.WillCreateWorkerFetchContext(
+        web_dedicated_or_shared_worker_fetch_context.get());
+  }
+  return web_dedicated_or_shared_worker_fetch_context;
 }
 
 scoped_refptr<blink::WebWorkerFetchContext>
@@ -3285,23 +3299,28 @@ RenderFrameImpl::CreateWorkerFetchContextForPlzDedicatedWorker(
       pending_resource_load_info_notifier.InitWithNewPipeAndPassReceiver(),
       agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
 
-  scoped_refptr<WebWorkerFetchContextImpl> worker_fetch_context =
-      static_cast<DedicatedWorkerHostFactoryClient*>(factory_client)
-          ->CreateWorkerFetchContext(
-              GetWebView()->GetRendererPreferences(),
-              std::move(watcher_receiver),
-              std::move(pending_resource_load_info_notifier));
+  scoped_refptr<blink::WebDedicatedOrSharedWorkerFetchContext>
+      web_dedicated_or_shared_worker_fetch_context =
+          static_cast<DedicatedWorkerHostFactoryClient*>(factory_client)
+              ->CreateWorkerFetchContext(
+                  GetWebView()->GetRendererPreferences(),
+                  std::move(watcher_receiver),
+                  std::move(pending_resource_load_info_notifier));
 
-  worker_fetch_context->set_ancestor_frame_id(routing_id_);
-  worker_fetch_context->set_frame_request_blocker(frame_request_blocker_);
-  worker_fetch_context->set_site_for_cookies(
+  web_dedicated_or_shared_worker_fetch_context->set_ancestor_frame_id(
+      routing_id_);
+  web_dedicated_or_shared_worker_fetch_context->set_frame_request_blocker(
+      frame_request_blocker_);
+  web_dedicated_or_shared_worker_fetch_context->set_site_for_cookies(
       frame_->GetDocument().SiteForCookies());
-  worker_fetch_context->set_top_frame_origin(
+  web_dedicated_or_shared_worker_fetch_context->set_top_frame_origin(
       frame_->GetDocument().TopFrameOrigin());
 
-  for (auto& observer : observers_)
-    observer.WillCreateWorkerFetchContext(worker_fetch_context.get());
-  return worker_fetch_context;
+  for (auto& observer : observers_) {
+    observer.WillCreateWorkerFetchContext(
+        web_dedicated_or_shared_worker_fetch_context.get());
+  }
+  return web_dedicated_or_shared_worker_fetch_context;
 }
 
 std::unique_ptr<blink::WebPrescientNetworking>

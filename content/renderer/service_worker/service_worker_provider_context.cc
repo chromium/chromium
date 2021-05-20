@@ -279,8 +279,10 @@ blink::CrossVariantMojoRemote<
     blink::mojom::ServiceWorkerContainerHostInterfaceBase>
 ServiceWorkerProviderContext::CloneRemoteContainerHost() {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  if (!container_host_)
-    return mojo::NullRemote();
+  if (!container_host_) {
+    return blink::CrossVariantMojoRemote<
+        blink::mojom::ServiceWorkerContainerHostInterfaceBase>();
+  }
   mojo::PendingRemote<blink::mojom::ServiceWorkerContainerHost>
       remote_container_host;
   container_host_->CloneContainerHost(

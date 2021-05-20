@@ -20,14 +20,13 @@
 
 namespace blink {
 class ChildURLLoaderFactoryBundle;
+class WebDedicatedOrSharedWorkerFetchContext;
 class WebDedicatedWorker;
-class WebWorkerFetchContext;
 }  // namespace blink
 
 namespace content {
 
 class ServiceWorkerProviderContext;
-class WebWorkerFetchContextImpl;
 
 // DedicatedWorkerHostFactoryClient intermediates between
 // blink::(Web)DedicatedWorker and content::DedicatedWorkerHostFactory. This
@@ -60,7 +59,8 @@ class DedicatedWorkerHostFactoryClient final
       blink::WebWorkerFetchContext* web_worker_fetch_context,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
 
-  scoped_refptr<WebWorkerFetchContextImpl> CreateWorkerFetchContext(
+  scoped_refptr<blink::WebDedicatedOrSharedWorkerFetchContext>
+  CreateWorkerFetchContext(
       const blink::RendererPreferences& renderer_preference,
       mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
           watcher_receiver,

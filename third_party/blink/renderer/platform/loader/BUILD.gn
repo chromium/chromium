@@ -120,6 +120,8 @@ blink_platform_sources("loader") {
     "fetch/trust_token_params_conversion.h",
     "fetch/unique_identifier.cc",
     "fetch/unique_identifier.h",
+    "fetch/url_loader/dedicated_or_shared_worker_fetch_context_impl.cc",
+    "fetch/url_loader/dedicated_or_shared_worker_fetch_context_impl.h",
     "fetch/url_loader/mojo_url_loader_client.cc",
     "fetch/url_loader/mojo_url_loader_client.h",
     "fetch/url_loader/request_conversion.cc",

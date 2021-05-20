@@ -36,6 +36,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/gpu_stream_constants.h"
+#include "content/public/common/origin_util.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -47,6 +48,8 @@
 #include "content/renderer/media/renderer_webaudiodevice_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
+#include "content/renderer/service_worker/controller_service_worker_connector.h"
+#include "content/renderer/service_worker/service_worker_subresource_loader.h"
 #include "content/renderer/storage_util.h"
 #include "content/renderer/v8_value_converter_impl.h"
 #include "content/renderer/variations_render_thread_observer.h"
@@ -78,6 +81,7 @@
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "third_party/blink/public/platform/blame_context.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
@@ -367,6 +371,20 @@ void RendererBlinkPlatformImpl::AppendVariationsThrottles(
     const url::Origin& top_origin,
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>>* throttles) {
   VariationsRenderThreadObserver::AppendThrottleIfNeeded(top_origin, throttles);
+}
+
+std::unique_ptr<blink::URLLoaderThrottleProvider>
+RendererBlinkPlatformImpl::CreateURLLoaderThrottleProviderForWorker(
+    blink::URLLoaderThrottleProviderType provider_type) {
+  return GetContentClient()->renderer()->CreateURLLoaderThrottleProvider(
+      blink::URLLoaderThrottleProviderType::kWorker);
+}
+
+std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
+RendererBlinkPlatformImpl::CreateWebSocketHandshakeThrottleProvider() {
+  return GetContentClient()
+      ->renderer()
+      ->CreateWebSocketHandshakeThrottleProvider();
 }
 
 void RendererBlinkPlatformImpl::CacheMetadataInCacheStorage(
@@ -953,6 +971,55 @@ bool RendererBlinkPlatformImpl::IsExcludedHeaderForServiceWorkerFetchEvent(
   return GetContentClient()
       ->renderer()
       ->IsExcludedHeaderForServiceWorkerFetchEvent(header_name.Ascii());
+}
+
+bool RendererBlinkPlatformImpl::OriginCanAccessServiceWorkers(
+    const blink::WebURL& url) {
+  return content::OriginCanAccessServiceWorkers(url);
+}
+
+std::tuple<blink::CrossVariantMojoRemote<
+               blink::mojom::ServiceWorkerContainerHostInterfaceBase>,
+           blink::CrossVariantMojoRemote<
+               blink::mojom::ServiceWorkerContainerHostInterfaceBase>>
+RendererBlinkPlatformImpl::CloneServiceWorkerContainerHost(
+    blink::CrossVariantMojoRemote<
+        blink::mojom::ServiceWorkerContainerHostInterfaceBase>
+        service_worker_container_host) {
+  mojo::Remote<blink::mojom::ServiceWorkerContainerHost>
+      service_worker_container_host_remote(
+          std::move(service_worker_container_host));
+  mojo::PendingRemote<blink::mojom::ServiceWorkerContainerHost>
+      service_worker_container_host_pending_remote;
+
+  service_worker_container_host_remote->CloneContainerHost(
+      service_worker_container_host_pending_remote
+          .InitWithNewPipeAndPassReceiver());
+  return std::make_tuple(
+      service_worker_container_host_remote.Unbind(),
+      std::move(service_worker_container_host_pending_remote));
+}
+
+void RendererBlinkPlatformImpl::CreateServiceWorkerSubresourceLoaderFactory(
+    blink::CrossVariantMojoRemote<
+        blink::mojom::ServiceWorkerContainerHostInterfaceBase>
+        service_worker_container_host,
+    const blink::WebString& client_id,
+    std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    scoped_refptr<base::SequencedTaskRunner> worker_timing_callback_task_runner,
+    base::RepeatingCallback<
+        void(int, mojo::PendingReceiver<blink::mojom::WorkerTimingContainer>)>
+        worker_timing_callback) {
+  ServiceWorkerSubresourceLoaderFactory::Create(
+      base::MakeRefCounted<ControllerServiceWorkerConnector>(
+          std::move(service_worker_container_host),
+          /*remote_controller=*/mojo::NullRemote(), client_id.Utf8()),
+      network::SharedURLLoaderFactory::Create(std::move(fallback_factory)),
+      std::move(receiver), std::move(task_runner),
+      std::move(worker_timing_callback_task_runner),
+      std::move(worker_timing_callback));
 }
 
 //------------------------------------------------------------------------------

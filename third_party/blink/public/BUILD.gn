@@ -191,6 +191,7 @@ source_set("blink_headers") {
     "platform/web_crypto_key_algorithm.h",
     "platform/web_crypto_key_algorithm_params.h",
     "platform/web_data.h",
+    "platform/web_dedicated_or_shared_worker_fetch_context.h",
     "platform/web_dedicated_worker.h",
     "platform/web_dedicated_worker_host_factory_client.h",
     "platform/web_distillability.h",

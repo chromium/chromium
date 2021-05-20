@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_PLATFORM_H_
 
 #include <memory>
+#include <tuple>
 #include <vector>
 
 #include "base/callback.h"
@@ -43,13 +44,17 @@
 #include "media/base/audio_latency.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/base/media_log.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-forward.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom-shared.h"
+#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-forward.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
 #include "third_party/blink/public/platform/blame_context.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
+#include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -58,6 +63,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/platform/web_v8_value_converter.h"
+#include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
 #include "third_party/webrtc/api/video/video_codec_type.h"
 #include "ui/base/resource/scale_factor.h"
 
@@ -366,6 +372,21 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // May return null on some platforms.
   virtual WebPublicSuffixList* PublicSuffixList() { return nullptr; }
+
+  // Allows the embedder to return a (possibly null)
+  // blink::URLLoaderThrottleProvider for a worker.
+  virtual std::unique_ptr<URLLoaderThrottleProvider>
+  CreateURLLoaderThrottleProviderForWorker(
+      URLLoaderThrottleProviderType provider_type) {
+    return nullptr;
+  }
+
+  // Allows the embedder to provide a WebSocketHandshakeThrottleProvider. If it
+  // returns nullptr then none will be used.
+  virtual std::unique_ptr<WebSocketHandshakeThrottleProvider>
+  CreateWebSocketHandshakeThrottleProvider() {
+    return nullptr;
+  }
 
   // Resources -----------------------------------------------------------
 
@@ -726,6 +747,45 @@ class BLINK_PLATFORM_EXPORT Platform {
       const WebString& header_name) {
     return false;
   }
+
+  // Returns true if the origin can register a service worker. Scheme must be
+  // http (localhost only), https, or a custom-set secure scheme.
+  virtual bool OriginCanAccessServiceWorkers(const WebURL& url) {
+    return false;
+  }
+
+  // Clones the current `service_worker_container_host` and returns the original
+  // host and the cloned one together.
+  //
+  // TODO(https://crbug.com/1110176): Remove this method once the mojom
+  // interface ServiceWorkerContainerHost is moved out of mojom_core, which is
+  // not available from renderer/platform.
+  virtual std::tuple<
+      CrossVariantMojoRemote<mojom::ServiceWorkerContainerHostInterfaceBase>,
+      CrossVariantMojoRemote<mojom::ServiceWorkerContainerHostInterfaceBase>>
+  CloneServiceWorkerContainerHost(
+      CrossVariantMojoRemote<mojom::ServiceWorkerContainerHostInterfaceBase>
+          service_worker_container_host) {
+    return std::make_tuple(
+        /*original_service_worker_container_host=*/CrossVariantMojoRemote<
+            mojom::ServiceWorkerContainerHostInterfaceBase>(),
+        /*cloned_service_worker_container_host=*/CrossVariantMojoRemote<
+            mojom::ServiceWorkerContainerHostInterfaceBase>());
+  }
+
+  // Creates a ServiceWorkerSubresourceLoaderFactory.
+  virtual void CreateServiceWorkerSubresourceLoaderFactory(
+      CrossVariantMojoRemote<mojom::ServiceWorkerContainerHostInterfaceBase>
+          service_worker_container_host,
+      const WebString& client_id,
+      std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      scoped_refptr<base::SequencedTaskRunner>
+          worker_timing_callback_task_runner,
+      base::RepeatingCallback<
+          void(int, mojo::PendingReceiver<blink::mojom::WorkerTimingContainer>)>
+          worker_timing_callback) {}
 
   // WebCrypto ----------------------------------------------------------
 

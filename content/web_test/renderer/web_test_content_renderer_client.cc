@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
-#include "content/renderer/loader/web_worker_fetch_context_impl.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/shell/renderer/shell_render_frame_observer.h"
 #include "content/web_test/common/web_test_switches.h"
@@ -26,6 +25,7 @@
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
+#include "third_party/blink/public/platform/web_dedicated_or_shared_worker_fetch_context.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/test/frame_widget_test_helper.h"
 #include "third_party/blink/public/web/blink.h"
@@ -89,7 +89,8 @@ WebTestContentRendererClient::WebTestContentRendererClient() {
   blink::InstallCreateWebFrameWidgetHook(&create_widget_callback_);
 
   blink::UniqueNameHelper::PreserveStableUniqueNameForTesting();
-  WebWorkerFetchContextImpl::InstallRewriteURLFunction(RewriteWebTestsURL);
+  blink::WebDedicatedOrSharedWorkerFetchContext::InstallRewriteURLFunction(
+      RewriteWebTestsURL);
 }
 
 WebTestContentRendererClient::~WebTestContentRendererClient() {

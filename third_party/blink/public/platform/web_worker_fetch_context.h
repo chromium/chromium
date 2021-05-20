@@ -1,5 +1,4 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
-
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,8 +35,9 @@ namespace blink {
 class WebURLRequest;
 class WebDocumentSubresourceFilter;
 
-// Helper class allowing WebWorkerFetchContextImpl to notify blink upon an
-// accept languages update. This class will be extended by WorkerNavigator.
+// Helper class allowing DedicatedOrSharedWorkerFetchContextImpl to notify blink
+// upon an accept languages update. This class will be extended by
+// WorkerNavigator.
 class AcceptLanguagesWatcher {
  public:
   virtual void NotifyUpdate() = 0;
@@ -141,7 +141,7 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
     return nullptr;
   }
 
-  // Returns the current list of user prefered languages.
+  // Returns the current list of user preferred languages.
   virtual blink::WebString GetAcceptLanguages() const = 0;
 
   // Returns the blink::mojom::WorkerTimingContainer receiver for the
@@ -159,6 +159,10 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
   CreateResourceLoadInfoNotifierWrapper() {
     return std::make_unique<blink::ResourceLoadInfoNotifierWrapper>(
         /*resource_load_info_notifier=*/nullptr);
+  }
+
+  virtual bool IsDedicatedWorkerOrSharedWorkerFetchContext() const {
+    return false;
   }
 };
 
