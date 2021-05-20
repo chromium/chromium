@@ -84,9 +84,11 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
     bool IsBaselineAlignedForDirection(
         GridTrackSizingDirection track_direction) const;
-    void SetAlignmentFallback(
-        const NGGridLayoutAlgorithmTrackCollection& track_collection,
-        const ComputedStyle& container_style);
+    bool IsBaselineSpecifiedForDirection(
+        GridTrackSizingDirection track_direction) const;
+    void SetAlignmentFallback(const GridTrackSizingDirection track_direction,
+                              const ComputedStyle& container_style,
+                              const bool has_synthesized_baseline);
 
     // For this item and track direction, computes the pair of indices |begin|
     // and |end| such that the item spans every set from the respective
@@ -106,8 +108,18 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     const NGBlockNode node;
     GridArea resolved_position;
 
+    AxisEdge InlineAxisAlignment() const {
+      return inline_axis_alignment_fallback.value_or(inline_axis_alignment);
+    }
+
+    AxisEdge BlockAxisAlignment() const {
+      return block_axis_alignment_fallback.value_or(block_axis_alignment);
+    }
+
     AxisEdge inline_axis_alignment;
     AxisEdge block_axis_alignment;
+    absl::optional<AxisEdge> inline_axis_alignment_fallback;
+    absl::optional<AxisEdge> block_axis_alignment_fallback;
 
     ItemType item_type;
     bool is_grid_containing_block : 1;
@@ -115,7 +127,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     bool is_inline_axis_stretched : 1;
     bool is_block_axis_stretched : 1;
 
-    bool has_baseline_alignment : 1;
     BaselineType row_baseline_type;
     BaselineType column_baseline_type;
 
@@ -324,11 +335,19 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGGridLayoutAlgorithmTrackCollection& track_collection,
       GridItems* grid_items) const;
 
+  // Returns 'true' if it's possible to layout a grid item.
+  bool CanLayoutGridItem(const GridItemData& grid_item,
+                         const GridTrackSizingDirection track_direction,
+                         const NGConstraintSpace space,
+                         const SizingConstraint sizing_constraint) const;
+
   // Determines the major/minor alignment baselines for each row/column based on
   // each item in |grid_items|, and stores the results in |grid_geometry|.
-  void CalculateAlignmentBaselines(const GridItems& grid_items,
-                                   GridTrackSizingDirection track_direction,
-                                   GridGeometry* grid_geometry) const;
+  void CalculateAlignmentBaselines(GridTrackSizingDirection track_direction,
+                                   SizingConstraint sizing_constraint,
+                                   GridGeometry* grid_geometry,
+                                   GridItems* grid_items,
+                                   bool* needs_additional_pass = nullptr) const;
 
   // Initializes the given track collection, and returns the base set geometry.
   SetGeometry InitializeTrackSizes(
