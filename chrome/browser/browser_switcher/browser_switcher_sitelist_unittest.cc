@@ -207,6 +207,17 @@ TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectPort) {
   EXPECT_FALSE(ShouldSwitch(GURL("http://test.com/something:3000")));
 }
 
+// crbug.com/1209124
+TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectHostnamePrefix) {
+  // A hostname rule (no "/") can match at the beginning of the hostname, not
+  // just at the end.
+  Initialize({"10.", "subdomain"}, {});
+  EXPECT_EQ(Decision(kGo, kSitelist, "10."),
+            GetDecision(GURL("http://10.0.0.1/")));
+  EXPECT_EQ(Decision(kGo, kSitelist, "subdomain"),
+            GetDecision(GURL("http://subdomain.example.com/")));
+}
+
 TEST_F(BrowserSwitcherSitelistTest, ShouldPickUpPrefChanges) {
   Initialize({}, {});
   prefs_backend()->SetManagedPref(prefs::kUrlList,
