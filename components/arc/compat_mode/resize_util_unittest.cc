@@ -16,7 +16,6 @@
 #include "ui/aura/window.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/dialog_delegate.h"
 
 namespace arc {
 namespace {
@@ -56,20 +55,6 @@ class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
 
 class ResizeUtilTest : public exo::test::ExoTestBaseViews {
  public:
-  void AcceptChildDialog(views::Widget* parent_widget) {
-    auto* dialog_widget = GetChildDialogWidget(parent_widget);
-    views::test::WidgetDestroyedWaiter waiter(dialog_widget);
-    DialogDelegateFor(dialog_widget)->AcceptDialog();
-    waiter.Wait();
-  }
-
-  void CancelChildDialog(views::Widget* parent_widget) {
-    auto* dialog_widget = GetChildDialogWidget(parent_widget);
-    views::test::WidgetDestroyedWaiter waiter(dialog_widget);
-    DialogDelegateFor(dialog_widget)->CancelDialog();
-    waiter.Wait();
-  }
-
   // Overridden from test::Test.
   void SetUp() override {
     exo::test::ExoTestBaseViews::SetUp();
@@ -82,18 +67,6 @@ class ResizeUtilTest : public exo::test::ExoTestBaseViews {
   views::Widget* widget() { return widget_.get(); }
 
  private:
-  views::DialogDelegate* DialogDelegateFor(views::Widget* widget) {
-    auto* delegate = widget->widget_delegate()->AsDialogDelegate();
-    return delegate;
-  }
-
-  views::Widget* GetChildDialogWidget(views::Widget* widget) {
-    std::set<views::Widget*> child_widgets;
-    views::Widget::GetAllOwnedWidgets(widget->GetNativeView(), &child_widgets);
-    DCHECK_EQ(1u, child_widgets.size());
-    return *child_widgets.begin();
-  }
-
   TestArcResizeLockPrefDelegate pref_delegate_;
   std::unique_ptr<views::Widget> widget_;
 };
@@ -103,25 +76,11 @@ class ResizeUtilTest : public exo::test::ExoTestBaseViews {
 TEST_F(ResizeUtilTest, TestResizeToPhone) {
   widget()->Maximize();
 
-  // Test the widget is resized if accepted the confirmation dialog.
+  // Test the widget is NOT resized immediately if the confirmation dialog is
+  // needed.
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, true);
   ResizeToPhoneWithConfirmationIfNeeded(widget(), pref_delegate());
   EXPECT_TRUE(widget()->IsMaximized());
-  AcceptChildDialog(widget());
-  EXPECT_FALSE(widget()->IsMaximized());
-  EXPECT_LT(widget()->GetWindowBoundsInScreen().width(),
-            widget()->GetWindowBoundsInScreen().height());
-
-  widget()->Maximize();
-
-  // Test the widget is NOT resized if cancelled the confirmation dialog.
-  pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, true);
-  ResizeToPhoneWithConfirmationIfNeeded(widget(), pref_delegate());
-  EXPECT_TRUE(widget()->IsMaximized());
-  CancelChildDialog(widget());
-  EXPECT_TRUE(widget()->IsMaximized());
-
-  widget()->Maximize();
 
   // Test the widget is resized without confirmation.
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, false);
@@ -137,25 +96,11 @@ TEST_F(ResizeUtilTest, TestResizeToPhone) {
 TEST_F(ResizeUtilTest, TestResizeToTablet) {
   widget()->Maximize();
 
-  // Test the widget is resized if accepted the confirmation dialog.
+  // Test the widget is NOT resized immediately if the confirmation dialog is
+  // needed.
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, true);
   ResizeToTabletWithConfirmationIfNeeded(widget(), pref_delegate());
   EXPECT_TRUE(widget()->IsMaximized());
-  AcceptChildDialog(widget());
-  EXPECT_FALSE(widget()->IsMaximized());
-  EXPECT_GT(widget()->GetWindowBoundsInScreen().width(),
-            widget()->GetWindowBoundsInScreen().height());
-
-  widget()->Maximize();
-
-  // Test the widget is NOT resized if cancelled the confirmation dialog.
-  pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, true);
-  ResizeToTabletWithConfirmationIfNeeded(widget(), pref_delegate());
-  EXPECT_TRUE(widget()->IsMaximized());
-  CancelChildDialog(widget());
-  EXPECT_TRUE(widget()->IsMaximized());
-
-  widget()->Maximize();
 
   // Test the widget is resized without confirmation.
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, false);
@@ -171,23 +116,11 @@ TEST_F(ResizeUtilTest, TestResizeToTablet) {
 TEST_F(ResizeUtilTest, TestResizeToDesktop) {
   widget()->Restore();
 
-  // Test the widget is resized if accepted the confirmation dialog.
+  // Test the widget is NOT resized immediately if the confirmation dialog is
+  // needed.
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, true);
   ResizeToDesktopWithConfirmationIfNeeded(widget(), pref_delegate());
   EXPECT_FALSE(widget()->IsMaximized());
-  AcceptChildDialog(widget());
-  EXPECT_TRUE(widget()->IsMaximized());
-
-  widget()->Restore();
-
-  // Test the widget is NOT resized if cancelled the confirmation dialog.
-  pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, true);
-  ResizeToDesktopWithConfirmationIfNeeded(widget(), pref_delegate());
-  EXPECT_FALSE(widget()->IsMaximized());
-  CancelChildDialog(widget());
-  EXPECT_FALSE(widget()->IsMaximized());
-
-  widget()->Restore();
 
   // Test the widget is resized without confirmation.
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, false);

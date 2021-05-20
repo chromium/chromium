@@ -9,7 +9,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/callback_forward.h"
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
-#include "components/arc/compat_mode/resize_confirmation_dialog.h"
+#include "components/arc/compat_mode/resize_confirmation_dialog_view.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
 
