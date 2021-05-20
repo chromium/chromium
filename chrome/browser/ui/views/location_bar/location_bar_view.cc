@@ -268,8 +268,15 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kQRCodeGenerator);
     if (base::FeatureList::IsEnabled(kSharedClipboardUI))
       params.types_enabled.push_back(PageActionIconType::kSharedClipboard);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (base::FeatureList::IsEnabled(features::kChromeOSSharingHub) &&
+        base::FeatureList::IsEnabled(features::kSharesheet)) {
+      params.types_enabled.push_back(PageActionIconType::kSharingHub);
+    }
+#else
     if (base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopOmnibox))
       params.types_enabled.push_back(PageActionIconType::kSharingHub);
+#endif
     if (base::FeatureList::IsEnabled(kWebOTPCrossDevice))
       params.types_enabled.push_back(PageActionIconType::kSmsRemoteFetcher);
     if (!base::FeatureList::IsEnabled(

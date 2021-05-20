@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
@@ -57,7 +58,11 @@ void SharingHubIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& SharingHubIconView::GetVectorIcon() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return omnibox::kShareIcon;
+#else
   return omnibox::kSendIcon;
+#endif
 }
 
 bool SharingHubIconView::ShouldShowLabel() const {

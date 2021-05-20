@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_BUBBLE_CONTROLLER_H_
 
+#include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class Profile;
@@ -58,6 +59,11 @@ class SharingHubBubbleController
 
  private:
   friend class content::WebContentsUserData<SharingHubBubbleController>;
+
+#if defined(IS_CHROMEOS_ASH)
+  void ShowSharesheet();
+  void OnSharesheetShown(sharesheet::SharesheetResult result);
+#endif
 
   // The web_contents associated with this controller.
   content::WebContents* web_contents_;

@@ -4438,6 +4438,7 @@ static_library("ui") {
       "//components/payments/core",
       "//components/qr_code_generator",
       "//components/reading_list/features:flags",
+      "//components/services/app_service/public/cpp:intents",
       "//components/soda",
       "//components/soda:constants",
       "//components/tab_count_metrics",

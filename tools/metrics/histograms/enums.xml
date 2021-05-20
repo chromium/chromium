@@ -11038,6 +11038,8 @@ histogram as enum -->
   <int value="1" label="Invoked from the share button in the Files app"/>
   <int value="2" label="Invoked from the context menu in the Files app"/>
   <int value="3" label="Invoked through WebShare"/>
+  <int value="4" label="Invoked from ARC++ to directly trigger Nearby Share"/>
+  <int value="5" label="Invoked through the omnibox entry point"/>
 </enum>
 
 <enum name="ChromeOSSharesheetShareAction">
@@ -71963,6 +71965,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5"/>
   <int value="6"/>
   <int value="7"/>
+</enum>
+
+<enum name="SharingHubSharesheetResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Canceled"/>
 </enum>
 
 <enum name="SharingLongScreenshotsBitmapGenerationStatus">
