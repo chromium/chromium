@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/safe_browsing/core/common/visual_utils.h"
+
 #include <unordered_map>
 #include <vector>
 
-#include "components/safe_browsing/core/common/visual_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
 #include "base/check_op.h"
 #include "base/numerics/checked_math.h"
+#include "base/optional.h"
+#include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "third_party/opencv/src/emd_wrapper.h"
@@ -102,12 +103,14 @@ bool ImageHasColorInRange(const SkBitmap& image,
 
 bool ImageHasColorInRange(const SkBitmap& image,
                           const MatchRule::FloatColorRange& color_range) {
+  TRACE_EVENT0("safe_browsing", "ImageHasColorInRange");
   for (int i = 0; i < image.width(); i++) {
     for (int j = 0; j < image.height(); j++) {
       SkScalar hsv[3];
       SkColorToHSV(image.getColor(i, j), hsv);
-      if (color_range.low() <= hsv[0] && hsv[0] <= color_range.high())
+      if (color_range.low() <= hsv[0] && hsv[0] <= color_range.high()) {
         return true;
+      }
     }
   }
 
@@ -158,6 +161,7 @@ struct ColorStats {
 
 bool GetHistogramForImage(const SkBitmap& image,
                           VisualFeatures::ColorHistogram* histogram) {
+  TRACE_EVENT0("safe_browsing", "GetHistogramForImage");
   if (image.drawsNothing())
     return false;
 
@@ -223,6 +227,7 @@ bool GetHistogramForImage(const SkBitmap& image,
 
 bool GetBlurredImage(const SkBitmap& image,
                      VisualFeatures::BlurredImage* blurred_image) {
+  TRACE_EVENT0("safe_browsing", "GetBlurredImage");
   if (image.drawsNothing())
     return false;
 
@@ -317,6 +322,7 @@ std::unique_ptr<SkBitmap> BlockMeanAverage(const SkBitmap& image,
 
 std::string GetHashFromBlurredImage(
     VisualFeatures::BlurredImage blurred_image) {
+  TRACE_EVENT0("safe_browsing", "GetHashFromBlurredImage");
   DCHECK_EQ(blurred_image.data().size(),
             3u * blurred_image.width() * blurred_image.height());
   // Convert the blurred image to grayscale.
@@ -368,14 +374,20 @@ absl::optional<VisionMatchResult> IsVisualMatch(
     const std::string& blurred_image_hash,
     const VisualFeatures::ColorHistogram& histogram,
     const VisualTarget& target) {
+  TRACE_EVENT0("safe_browsing", "IsVisualMatch");
+
+  TRACE_EVENT_BEGIN0("safe_browsing", "IsVisualMatch_ComputeHashDistance");
   size_t hash_distance;
   bool has_hash_distance =
       GetHashDistance(blurred_image_hash, target.hash(), &hash_distance);
+  TRACE_EVENT_END0("safe_browsing", "IsVisualMatch_ComputeHashDistance");
 
+  TRACE_EVENT_BEGIN0("safe_browsing", "IsVisualMatch_ComputeEMD");
   opencv::PointDistribution point_distribution =
       HistogramBinsToPointDistribution(histogram.bins());
   absl::optional<double> color_distance = opencv::EMD(
       point_distribution, HistogramBinsToPointDistribution(target.bins()));
+  TRACE_EVENT_END0("safe_browsing", "IsVisualMatch_ComputeEMD");
 
   for (const MatchRule& match_rule : target.match_config().match_rule()) {
     bool is_match = true;

@@ -16,6 +16,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "content/public/renderer/render_view.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -130,6 +131,8 @@ void PhishingDOMFeatureExtractor::ExtractFeatures(blink::WebDocument document,
   features_ = features;
   done_callback_ = std::move(done_callback);
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("safe_browsing", "ExtractDomFeatures",
+                                    this);
   page_feature_state_ = std::make_unique<PageFeatureState>(clock_->NowTicks());
   cur_document_ = document;
 
@@ -338,6 +341,7 @@ void PhishingDOMFeatureExtractor::RunCallback(bool success) {
                       clock_->NowTicks() - page_feature_state_->start_time);
 
   DCHECK(!done_callback_.is_null());
+  TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "ExtractDomFeatures", this);
   std::move(done_callback_).Run(success);
   Clear();
 }

@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/core/common/visual_utils.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
@@ -53,6 +54,8 @@ std::unique_ptr<ClientPhishingRequest> GetMatchingVisualTargetsHelper(
     const ClientSideModel& model,
     std::unique_ptr<ClientPhishingRequest> request) {
   DCHECK(!content::RenderThread::IsMainThread());
+
+  TRACE_EVENT0("safe_browsing", "GetMatchingVisualTargets");
 
   VisualFeatures::BlurredImage blurred_image;
   // Obtaining a blurred image is essential for both adding a vision match or
@@ -105,6 +108,7 @@ std::unique_ptr<tflite::MutableOpResolver> CreateOpResolver() {
 
 std::unique_ptr<tflite::task::vision::ImageClassifier> CreateClassifier(
     const std::string& model_data) {
+  TRACE_EVENT0("safe_browsing", "CreateTfLiteClassifier");
   tflite::task::vision::ImageClassifierOptions options;
   options.mutable_model_file_with_metadata()->set_file_content(model_data);
   auto statusor_classifier =
@@ -119,6 +123,7 @@ std::unique_ptr<tflite::task::vision::ImageClassifier> CreateClassifier(
 }
 
 std::string GetModelInput(const SkBitmap& bitmap, int width, int height) {
+  TRACE_EVENT0("safe_browsing", "GetTfLiteModelInput");
   // Use the Rec. 2020 color space, in case the user input is wide-gamut.
   sk_sp<SkColorSpace> rec2020 = SkColorSpace::MakeRGB(
       {2.22222f, 0.909672f, 0.0903276f, 0.222222f, 0.0812429f, 0, 0},
@@ -152,6 +157,7 @@ std::vector<double> ApplyVisualTfLiteModelHelper(
     int input_width,
     int input_height,
     const std::string& model_data) {
+  TRACE_EVENT0("safe_browsing", "ApplyVisualTfLiteModel");
   std::unique_ptr<tflite::task::vision::ImageClassifier> classifier =
       CreateClassifier(model_data);
   if (!classifier)

@@ -19,6 +19,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "components/safe_browsing/buildflags.h"
@@ -84,6 +85,8 @@ bool PhishingClassifier::is_ready() const {
 
 void PhishingClassifier::BeginClassification(const std::u16string* page_text,
                                              DoneCallback done_callback) {
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("safe_browsing", "PhishingClassification",
+                                    this);
   DCHECK(is_ready());
 
   // The RenderView should have called CancelPendingClassification() before
@@ -180,6 +183,7 @@ void PhishingClassifier::TermExtractionFinished(bool success) {
 void PhishingClassifier::ExtractVisualFeatures() {
   DCHECK(content::RenderThread::IsMainThread());
   base::TimeTicks start_time = base::TimeTicks::Now();
+  TRACE_EVENT0("safe_browsing", "ExtractVisualFeatures");
 
   blink::WebLocalFrame* frame = render_frame_->GetWebFrame();
   gfx::SizeF viewport_size = frame->View()->VisualViewportSize();
@@ -293,6 +297,8 @@ void PhishingClassifier::OnVisualTfLiteModelDone(
 }
 
 void PhishingClassifier::RunCallback(const ClientPhishingRequest& verdict) {
+  TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "PhishingClassification",
+                                  this);
   std::move(done_callback_).Run(verdict);
   Clear();
 }

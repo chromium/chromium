@@ -21,6 +21,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/murmurhash3_util.h"
 #include "crypto/sha2.h"
@@ -113,6 +114,9 @@ void PhishingTermFeatureExtractor::ExtractFeatures(
   // However, in an opt build, we will go ahead and clean up the pending
   // extraction so that we can start in a known state.
   CancelPendingExtraction();
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("safe_browsing", "ExtractTermFeatures",
+                                    this);
 
   page_text_ = page_text;
   features_ = features;
@@ -263,6 +267,7 @@ void PhishingTermFeatureExtractor::RunCallback(bool success) {
                       clock_->NowTicks() - state_->start_time);
 
   DCHECK(!done_callback_.is_null());
+  TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "ExtractTermFeatures", this);
   std::move(done_callback_).Run(success);
   Clear();
 }
