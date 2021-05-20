@@ -1972,14 +1972,21 @@ class CaptureModeHdcpTest
   void SetUp() override {
     CaptureModeTest::SetUp();
     window_ = CreateTestWindow(gfx::Rect(200, 200));
-    protection_delegate_ =
-        std::make_unique<OutputProtectionDelegate>(window_.get());
+    // Create a child window with protected content. This simulates the real
+    // behavior of a browser window hosting a page with protected content, where
+    // the window that has a protection mask is the RenderWidgetHostViewAura,
+    // which is a descendant of the BrowserFrame window which can get recorded.
+    protected_content_window_ = CreateTestWindow(gfx::Rect(150, 150));
+    window_->AddChild(protected_content_window_.get());
+    protection_delegate_ = std::make_unique<OutputProtectionDelegate>(
+        protected_content_window_.get());
     CaptureModeController::Get()->SetUserCaptureRegion(gfx::Rect(20, 50),
                                                        /*by_user=*/true);
   }
 
   void TearDown() override {
     protection_delegate_.reset();
+    protected_content_window_.reset();
     window_.reset();
     CaptureModeTest::TearDown();
   }
@@ -2012,6 +2019,7 @@ class CaptureModeHdcpTest
 
  protected:
   std::unique_ptr<aura::Window> window_;
+  std::unique_ptr<aura::Window> protected_content_window_;
   std::unique_ptr<OutputProtectionDelegate> protection_delegate_;
 };
 
@@ -2110,6 +2118,7 @@ TEST_P(CaptureModeHdcpTest, ProtectedWindowInMultiDisplay) {
     window_util::MoveWindowToDisplay(window_.get(),
                                      roots[1]->GetHost()->GetDisplayId());
     ASSERT_EQ(window_->GetRootWindow(), roots[1]);
+    ASSERT_EQ(protected_content_window_->GetRootWindow(), roots[1]);
     EXPECT_FALSE(controller->is_recording_in_progress());
     histogram_tester.ExpectBucketCount(
         kEndRecordingReasonInClamshellHistogramName,

@@ -342,7 +342,7 @@ class ASH_EXPORT CaptureModeController
 
   // Tracks the windows that currently have content protection enabled, so that
   // we prevent them from being video recorded. Each window is mapped to its
-  // cureently-set protection_mask. Windows in this map are only the ones that
+  // currently-set protection_mask. Windows in this map are only the ones that
   // have protection masks other than |display::CONTENT_PROTECTION_METHOD_NONE|.
   base::flat_map<aura::Window*, /*protection_mask*/ uint32_t>
       protected_windows_;

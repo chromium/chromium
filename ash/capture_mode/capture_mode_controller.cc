@@ -624,19 +624,24 @@ void CaptureModeController::OnRecordedWindowSizeChanged(
 }
 
 bool CaptureModeController::ShouldBlockRecordingForContentProtection(
-    aura::Window* window) const {
-  if (window->IsRootWindow()) {
-    // Recording fullscreen or partial region of it. Block if this root has a
-    // window with protection.
-    for (const auto& iter : protected_windows_) {
-      if (iter.first->GetRootWindow() == window)
-        return true;
-    }
+    aura::Window* window_being_recorded) const {
+  DCHECK(window_being_recorded);
 
-    return false;
+  // The protected window can be a descendant of the window being recorded, for
+  // examples:
+  //   - When recording a fullscreen or partial region of it, the
+  //     |window_being_recorded| in this case is the root window, and a
+  //     protected window on this root will be a descendant.
+  //   - When recording a browser window showing a page with protected content,
+  //     the |window_being_recorded| in this case is the BrowserFrame, while the
+  //     protected window will be the RenderWidgetHostViewAura, which is also a
+  //     descendant.
+  for (const auto& iter : protected_windows_) {
+    if (window_being_recorded->Contains(iter.first))
+      return true;
   }
 
-  return protected_windows_.contains(window);
+  return false;
 }
 
 void CaptureModeController::EndSessionOrRecording(EndRecordingReason reason) {
