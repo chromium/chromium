@@ -20,15 +20,19 @@ class MockGpuChannel : public mojom::GpuChannel {
   MOCK_METHOD0(TerminateForTesting, void());
   MOCK_METHOD0(Flush, bool());
   MOCK_METHOD1(Flush, void(FlushCallback));
-  MOCK_METHOD4(CreateCommandBuffer,
+  MOCK_METHOD6(CreateCommandBuffer,
                void(mojom::CreateCommandBufferParamsPtr,
                     int32_t,
                     base::UnsafeSharedMemoryRegion,
+                    mojo::PendingAssociatedReceiver<mojom::CommandBuffer>,
+                    mojo::PendingAssociatedRemote<mojom::CommandBufferClient>,
                     CreateCommandBufferCallback));
-  MOCK_METHOD5(CreateCommandBuffer,
+  MOCK_METHOD7(CreateCommandBuffer,
                bool(mojom::CreateCommandBufferParamsPtr,
                     int32_t,
                     base::UnsafeSharedMemoryRegion,
+                    mojo::PendingAssociatedReceiver<mojom::CommandBuffer>,
+                    mojo::PendingAssociatedRemote<mojom::CommandBufferClient>,
                     ContextResult*,
                     Capabilities*));
   MOCK_METHOD1(DestroyCommandBuffer, bool(int32_t));

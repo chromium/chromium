@@ -145,10 +145,13 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   void CrashForTesting() override;
   void TerminateForTesting() override;
   void Flush(FlushCallback callback) override;
-  void CreateCommandBuffer(mojom::CreateCommandBufferParamsPtr config,
-                           int32_t routing_id,
-                           base::UnsafeSharedMemoryRegion shared_state,
-                           CreateCommandBufferCallback callback) override;
+  void CreateCommandBuffer(
+      mojom::CreateCommandBufferParamsPtr config,
+      int32_t routing_id,
+      base::UnsafeSharedMemoryRegion shared_state,
+      mojo::PendingAssociatedReceiver<mojom::CommandBuffer> receiver,
+      mojo::PendingAssociatedRemote<mojom::CommandBufferClient> client,
+      CreateCommandBufferCallback callback) override;
   void DestroyCommandBuffer(int32_t routing_id,
                             DestroyCommandBufferCallback callback) override;
   void ScheduleImageDecode(mojom::ScheduleImageDecodeParamsPtr params,
@@ -411,6 +414,8 @@ void GpuChannelMessageFilter::CreateCommandBuffer(
     mojom::CreateCommandBufferParamsPtr params,
     int32_t routing_id,
     base::UnsafeSharedMemoryRegion shared_state,
+    mojo::PendingAssociatedReceiver<mojom::CommandBuffer> receiver,
+    mojo::PendingAssociatedRemote<mojom::CommandBufferClient> client,
     CreateCommandBufferCallback callback) {
   base::AutoLock auto_lock(gpu_channel_lock_);
   if (!gpu_channel_) {
@@ -422,7 +427,8 @@ void GpuChannelMessageFilter::CreateCommandBuffer(
       FROM_HERE,
       base::BindOnce(&gpu::GpuChannel::CreateCommandBuffer,
                      gpu_channel_->AsWeakPtr(), std::move(params), routing_id,
-                     std::move(shared_state),
+                     std::move(shared_state), std::move(receiver),
+                     std::move(client),
                      base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
                                         std::move(callback))));
 }
@@ -847,6 +853,8 @@ void GpuChannel::CreateCommandBuffer(
     mojom::CreateCommandBufferParamsPtr init_params,
     int32_t route_id,
     base::UnsafeSharedMemoryRegion shared_state_shm,
+    mojo::PendingAssociatedReceiver<mojom::CommandBuffer> receiver,
+    mojo::PendingAssociatedRemote<mojom::CommandBufferClient> client,
     mojom::GpuChannel::CreateCommandBufferCallback callback) {
   ScopedCreateCommandBufferResponder responder(std::move(callback));
   TRACE_EVENT2("gpu", "GpuChannel::CreateCommandBuffer", "route_id", route_id,
@@ -942,6 +950,8 @@ void GpuChannel::CreateCommandBuffer(
     LOG(ERROR) << "ContextResult::kFatalFailure: failed to add route";
     return;
   }
+
+  stub->BindEndpoints(std::move(receiver), std::move(client));
 
   responder.set_result(ContextResult::kSuccess);
   responder.set_capabilities(stub->decoder_context()->GetCapabilities());

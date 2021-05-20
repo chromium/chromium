@@ -35,12 +35,14 @@
 #include "gpu/command_buffer/common/gpu_memory_allocation.h"
 #include "gpu/command_buffer/common/scheduling_priority.h"
 #include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ipc/ipc_listener.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gpu_preference.h"
 
-struct GPUCommandBufferConsoleMessage;
 class GURL;
 
 namespace base {
@@ -67,7 +69,8 @@ class GpuMemoryBufferManager;
 // CommandBufferStub.
 class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
                                           public gpu::GpuControl,
-                                          public IPC::Listener {
+                                          public IPC::Listener,
+                                          public mojom::CommandBufferClient {
  public:
   class DeletionObserver {
    public:
@@ -183,10 +186,12 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   std::pair<base::UnsafeSharedMemoryRegion, base::WritableSharedMemoryMapping>
   AllocateAndMapSharedMemory(size_t size);
 
+  // mojom::CommandBufferClient:
+  void OnConsoleMessage(const std::string& message) override;
+
   // Message handlers:
   void OnDestroyed(gpu::error::ContextLostReason reason,
                    gpu::error::Error error);
-  void OnConsoleMessage(const GPUCommandBufferConsoleMessage& message);
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic);
   void OnSignalAck(uint32_t id, const CommandBuffer::State& state);
   void OnSwapBuffersCompleted(const SwapBuffersCompleteParams& params);
@@ -270,6 +275,9 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   uint32_t last_flush_id_ = 0;
   int32_t last_put_offset_ = -1;
   bool has_buffer_ = false;
+
+  mojo::SharedAssociatedRemote<mojom::CommandBuffer> command_buffer_;
+  mojo::AssociatedReceiver<mojom::CommandBufferClient> client_receiver_{this};
 
   // Next generated fence sync.
   uint64_t next_fence_sync_release_ = 1;

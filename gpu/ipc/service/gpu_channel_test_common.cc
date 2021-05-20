@@ -20,6 +20,8 @@
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 #include "url/gurl.h"
@@ -126,8 +128,12 @@ void GpuChannelTestCommon::CreateCommandBuffer(
     Capabilities* out_capabilities) {
   base::RunLoop loop;
   auto quit = loop.QuitClosure();
+  mojo::PendingAssociatedRemote<mojom::CommandBuffer> remote;
+  mojo::PendingAssociatedRemote<mojom::CommandBufferClient> client;
+  ignore_result(client.InitWithNewEndpointAndPassReceiver());
   channel.CreateCommandBuffer(
       std::move(init_params), routing_id, std::move(shared_state),
+      remote.InitWithNewEndpointAndPassReceiver(), std::move(client),
       base::BindLambdaForTesting(
           [&](ContextResult result, const Capabilities& capabilities) {
             *out_result = result;

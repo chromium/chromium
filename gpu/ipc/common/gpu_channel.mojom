@@ -150,7 +150,9 @@ interface GpuChannel {
   // will create an offscreen backbuffer of dimensions `size`.
   [Sync, NoInterrupt] CreateCommandBuffer(
       CreateCommandBufferParams params, int32 routing_id,
-      mojo_base.mojom.UnsafeSharedMemoryRegion shared_state)
+      mojo_base.mojom.UnsafeSharedMemoryRegion shared_state,
+      pending_associated_receiver<CommandBuffer> receiver,
+      pending_associated_remote<CommandBufferClient> client)
       => (ContextResult result, Capabilities capabilties);
 
   // The CommandBufferProxy sends this to the CommandBufferStub in its
@@ -196,6 +198,24 @@ interface GpuChannel {
   [Sync, NoInterrupt] WaitForGetOffsetInRange(
       int32 routing_id, uint32 set_get_buffer_count, int32 start, int32 end)
       => (CommandBufferState state);
+};
+
+// Interface used to issue commands to a specific CommandBuffer instance in the
+// GPU process.
+interface CommandBuffer {
+  // Sets the shared memory buffer to use for commands. The ID given here must
+  // correspond to one registered by a prior RegisterTransferBuffer IPC to the
+  // same CommandBuffer.
+  SetGetBuffer(int32 shm_id);
+};
+
+// Interface used by the GPU process to send the client messages from a specific
+// CommandBuffer instance.
+interface CommandBufferClient {
+  // Notifies the client about a console message emitted on behalf of the
+  // command buffer. These messages are intended to be exposed by
+  // developer-facing UI such as the DevTools console.
+  OnConsoleMessage(string message);
 };
 
 // DeferredRequests are batched locally by clients and sent to the service only

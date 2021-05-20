@@ -88,7 +88,6 @@ class MultiplexRouter::InterfaceEndpoint
     router_->AssertLockAcquired();
     DCHECK(!client_);
     DCHECK(!closed_);
-    DCHECK(runner->RunsTasksInCurrentSequence());
 
     task_runner_ = std::move(runner);
     client_ = client;
@@ -99,7 +98,6 @@ class MultiplexRouter::InterfaceEndpoint
   void DetachClient() {
     router_->AssertLockAcquired();
     DCHECK(client_);
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
     DCHECK(!closed_);
 
     task_runner_ = nullptr;
