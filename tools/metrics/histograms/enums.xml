@@ -54878,6 +54878,11 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Removed: empty"/>
 </enum>
 
+<enum name="NetReportingHeaderType">
+  <int value="0" label="Report-To"/>
+  <int value="1" label="Invalid Report-To"/>
+</enum>
+
 <enum name="NetReportingReportOutcome">
   <int value="0" label="Unknown"/>
   <int value="1" label="Discarded: no URLRequestContext"/>

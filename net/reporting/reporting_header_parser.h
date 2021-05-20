@@ -24,6 +24,14 @@ class ReportingContext;
 
 class NET_EXPORT ReportingHeaderParser {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ReportingHeaderType {
+    kReportTo = 0,
+    kReportToInvalid = 1,
+    kMaxValue = kReportToInvalid,
+  };
+
   static void ParseReportToHeader(
       ReportingContext* context,
       const NetworkIsolationKey& network_isolation_key,
@@ -35,6 +43,8 @@ class NET_EXPORT ReportingHeaderParser {
       const NetworkIsolationKey& network_isolation_key,
       const url::Origin& origin,
       std::unique_ptr<structured_headers::Dictionary> value);
+
+  static void RecordReportingHeaderType(ReportingHeaderType header_type);
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(ReportingHeaderParser);

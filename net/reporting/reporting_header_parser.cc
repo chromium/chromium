@@ -13,7 +13,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/features.h"
@@ -259,6 +259,12 @@ bool ProcessEndpointGroupStructuredHeader(
 }  // namespace
 
 // static
+void ReportingHeaderParser::RecordReportingHeaderType(
+    ReportingHeaderType header_type) {
+  base::UmaHistogramEnumeration("Net.Reporting.HeaderType", header_type);
+}
+
+// static
 void ReportingHeaderParser::ParseReportToHeader(
     ReportingContext* context,
     const NetworkIsolationKey& network_isolation_key,
@@ -288,11 +294,17 @@ void ReportingHeaderParser::ParseReportToHeader(
     }
   }
 
+  if (parsed_header.empty() && group_list->GetSize() > 0) {
+    RecordReportingHeaderType(ReportingHeaderType::kReportToInvalid);
+  }
+
   // Remove the client if it has no valid endpoint groups.
   if (parsed_header.empty()) {
     cache->RemoveClient(network_isolation_key, origin);
     return;
   }
+
+  RecordReportingHeaderType(ReportingHeaderType::kReportTo);
 
   cache->OnParsedHeader(network_isolation_key, origin,
                         std::move(parsed_header));

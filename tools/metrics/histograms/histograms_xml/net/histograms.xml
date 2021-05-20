@@ -4763,6 +4763,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Net.Reporting.HeaderType" enum="NetReportingHeaderType"
+    expires_after="2021-11-18">
+  <owner>rodneyding@google.com</owner>
+  <owner>src/net/reporting/OWNERS</owner>
+  <summary>
+    The type of header received for configuring reporting API endpoints,
+    recorded when reporting API headers are successfully parsed.
+  </summary>
+</histogram>
+
 <histogram name="Net.Reporting.ReportOutcome" enum="NetReportingReportOutcome"
     expires_after="2021-06-25">
   <owner>chlily@chromium.org</owner>

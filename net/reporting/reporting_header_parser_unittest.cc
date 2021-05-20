@@ -13,6 +13,7 @@
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -32,6 +33,8 @@ namespace {
 
 using CommandType = MockPersistentReportingStore::Command::Type;
 using Dictionary = structured_headers::Dictionary;
+
+constexpr char kReportingHeaderTypeHistogram[] = "Net.Reporting.HeaderType";
 
 class ReportingHeaderParserTestBase
     : public ReportingTestBase,
@@ -236,30 +239,43 @@ TEST_P(ReportingHeaderParserTest, Invalid) {
        "{\"max_age\":1, \"endpoints\": [{\"url\":\"https://b/\"}]}]",
        "wrapped in list"}};
 
-  for (size_t i = 0; i < base::size(kInvalidHeaderTestCases); ++i) {
-    auto& test_case = kInvalidHeaderTestCases[i];
+  base::HistogramTester histograms;
+  int invalid_case_count = 0;
+
+  for (const auto& test_case : kInvalidHeaderTestCases) {
     ParseHeader(kNik_, kUrl1_, test_case.header_value);
+    invalid_case_count++;
 
     EXPECT_EQ(0u, cache()->GetEndpointCount())
         << "Invalid Report-To header (" << test_case.description << ": \""
         << test_case.header_value << "\") parsed as valid.";
-
+    histograms.ExpectBucketCount(
+        kReportingHeaderTypeHistogram,
+        ReportingHeaderParser::ReportingHeaderType::kReportToInvalid,
+        invalid_case_count);
     if (mock_store()) {
       mock_store()->Flush();
       EXPECT_EQ(0, mock_store()->StoredEndpointsCount());
       EXPECT_EQ(0, mock_store()->StoredEndpointGroupsCount());
     }
   }
+  histograms.ExpectBucketCount(
+      kReportingHeaderTypeHistogram,
+      ReportingHeaderParser::ReportingHeaderType::kReportTo, 0);
 }
 
 TEST_P(ReportingHeaderParserTest, Basic) {
   std::vector<ReportingEndpoint::EndpointInfo> endpoints = {{kEndpoint1_}};
+  base::HistogramTester histograms;
 
   std::string header =
       ConstructHeaderGroupString(MakeEndpointGroup(kGroup1_, endpoints));
 
   ParseHeader(kNik_, kUrl1_, header);
   EXPECT_EQ(1u, cache()->GetEndpointGroupCountForTesting());
+  histograms.ExpectBucketCount(
+      kReportingHeaderTypeHistogram,
+      ReportingHeaderParser::ReportingHeaderType::kReportTo, 1);
   EXPECT_TRUE(
       EndpointGroupExistsInCache(kGroupKey11_, OriginSubdomains::DEFAULT));
   EXPECT_TRUE(ClientExistsInCacheForOrigin(kOrigin1_));
@@ -292,9 +308,13 @@ TEST_P(ReportingHeaderParserTest, PathAbsoluteURLEndpoint) {
   std::string header =
       "{\"group\": \"group1\", \"max_age\":1, \"endpoints\": "
       "[{\"url\":\"/path-absolute-url\"}]}";
+  base::HistogramTester histograms;
 
   ParseHeader(kNik_, kUrl1_, header);
   EXPECT_EQ(1u, cache()->GetEndpointGroupCountForTesting());
+  histograms.ExpectBucketCount(
+      kReportingHeaderTypeHistogram,
+      ReportingHeaderParser::ReportingHeaderType::kReportTo, 1);
   EXPECT_TRUE(
       EndpointGroupExistsInCache(kGroupKey11_, OriginSubdomains::DEFAULT));
   EXPECT_TRUE(ClientExistsInCacheForOrigin(kOrigin1_));
