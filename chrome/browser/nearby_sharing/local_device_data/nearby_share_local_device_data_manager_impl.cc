@@ -132,22 +132,22 @@ std::string NearbyShareLocalDeviceDataManagerImpl::GetDeviceName() const {
 
 absl::optional<std::string> NearbyShareLocalDeviceDataManagerImpl::GetFullName()
     const {
-  std::string name =
-      pref_service_->GetString(prefs::kNearbySharingFullNamePrefName);
-  if (name.empty())
+  if (pref_service_->FindPreference(prefs::kNearbySharingFullNamePrefName)
+          ->IsDefaultValue()) {
     return absl::nullopt;
+  }
 
-  return name;
+  return pref_service_->GetString(prefs::kNearbySharingFullNamePrefName);
 }
 
 absl::optional<std::string> NearbyShareLocalDeviceDataManagerImpl::GetIconUrl()
     const {
-  std::string url =
-      pref_service_->GetString(prefs::kNearbySharingIconUrlPrefName);
-  if (url.empty())
+  if (pref_service_->FindPreference(prefs::kNearbySharingIconUrlPrefName)
+          ->IsDefaultValue()) {
     return absl::nullopt;
+  }
 
-  return url;
+  return pref_service_->GetString(prefs::kNearbySharingIconUrlPrefName);
 }
 
 nearby_share::mojom::DeviceNameValidationResult
