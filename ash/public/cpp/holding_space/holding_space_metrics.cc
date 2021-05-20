@@ -74,6 +74,8 @@ std::string ItemTypeToString(HoldingSpaceItem::Type type) {
       return "DiagnosticsLog";
     case HoldingSpaceItem::Type::kDownload:
       return "Download";
+    case HoldingSpaceItem::Type::kLacrosDownload:
+      return "LacrosDownload";
     case HoldingSpaceItem::Type::kNearbyShare:
       return "NearbyShare";
     case HoldingSpaceItem::Type::kPinnedFile:

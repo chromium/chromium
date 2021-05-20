@@ -10,7 +10,9 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/crosapi/download_controller_ash.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
+#include "chromeos/crosapi/mojom/download_controller.mojom-forward.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "content/public/browser/download_manager.h"
@@ -26,7 +28,8 @@ namespace ash {
 class HoldingSpaceDownloadsDelegate
     : public HoldingSpaceKeyedServiceDelegate,
       public arc::ArcIntentHelperObserver,
-      public content::DownloadManager::Observer {
+      public content::DownloadManager::Observer,
+      public crosapi::DownloadControllerAsh::DownloadControllerObserver {
  public:
   HoldingSpaceDownloadsDelegate(HoldingSpaceKeyedService* service,
                                 HoldingSpaceModel* model);
@@ -56,6 +59,10 @@ class HoldingSpaceDownloadsDelegate
   void ManagerGoingDown(content::DownloadManager* manager) override;
   void OnDownloadCreated(content::DownloadManager* manager,
                          download::DownloadItem* download_item) override;
+
+  // crosapi::DownloadControllerAsh::DownloadControllerObserver:
+  void OnLacrosDownloadUpdated(
+      const crosapi::mojom::DownloadEvent& event) override;
 
   // Invoked when the specified `in_progress_download` is updated.
   void OnDownloadUpdated(const InProgressDownload* in_progress_download);

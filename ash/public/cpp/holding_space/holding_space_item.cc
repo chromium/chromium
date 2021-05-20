@@ -72,6 +72,7 @@ bool HoldingSpaceItem::IsDownload(HoldingSpaceItem::Type type) {
     case Type::kArcDownload:
     case Type::kDiagnosticsLog:
     case Type::kDownload:
+    case Type::kLacrosDownload:
       return true;
     case Type::kNearbyShare:
     case Type::kPinnedFile:
@@ -201,6 +202,7 @@ bool HoldingSpaceItem::IsScreenCapture() const {
     case Type::kArcDownload:
     case Type::kDiagnosticsLog:
     case Type::kDownload:
+    case Type::kLacrosDownload:
     case Type::kNearbyShare:
     case Type::kPinnedFile:
     case Type::kPrintedPdf:

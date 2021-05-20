@@ -37,7 +37,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="ArcDownload" summary="Items backed by an ARC download file."/>
   <variant name="DiagnosticsLog"
       summary="Items backed by a diagnostics log file."/>
-  <variant name="Download" summary="Items backed by a download file."/>
+  <variant name="Download"
+      summary="Items backed by a download file originating from Ash Chrome."/>
+  <variant name="LacrosDownload"
+      summary="Items backed by a download file originating from Lacros
+               Chrome."/>
   <variant name="NearbyShare" summary="Items backed by a nearby shared file."/>
   <variant name="PinnedFile" summary="Items pinned explicitly by the user."/>
   <variant name="PrintedPdf" summary="Items backed by a printed PDF file."/>

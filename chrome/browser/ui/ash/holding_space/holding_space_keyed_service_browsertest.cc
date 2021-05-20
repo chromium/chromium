@@ -23,6 +23,9 @@
 #include "base/test/scoped_path_override.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/download_controller_ash.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -711,6 +714,53 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
           &loop, &is_pinned));
   loop.Run();
   EXPECT_TRUE(is_pinned);
+}
+
+IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
+                       AddLacrosDownloadItem) {
+  // Verify the holding space `model` is empty.
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  ASSERT_EQ(0u, model->items().size());
+
+  // Create a test downloaded file.
+  auto file_path = CreateTextFile(GetTestMountPoint(), "foo.txt");
+
+  // Create a corresponding `crosapi::mojom::DownloadEvent`.
+  crosapi::mojom::DownloadEventPtr dle = crosapi::mojom::DownloadEvent::New();
+  dle->target_file_path = file_path;
+  dle->is_from_icognito_profile = false;
+
+  auto* download_controller =
+      crosapi::CrosapiManager::Get()->crosapi_ash()->download_controller_ash();
+
+  // Only `crosapi::mojom::DownloadState::kComplete` events should currently do
+  // anything. These should all be ignored.
+  using DownloadState = crosapi::mojom::DownloadState;
+  for (int state = static_cast<int>(DownloadState::kMinValue);
+       state <= static_cast<int>(DownloadState::kMaxValue); ++state) {
+    if (state == static_cast<int>(crosapi::mojom::DownloadState::kComplete))
+      continue;
+    dle->state = static_cast<DownloadState>(state);
+    download_controller->OnDownloadUpdated(dle.Clone());
+    ASSERT_EQ(0u, model->items().size());
+  }
+
+  // Make sure incognito downloads are ignored.
+  dle->state = crosapi::mojom::DownloadState::kComplete;
+  dle->is_from_icognito_profile = true;
+  download_controller->OnDownloadUpdated(dle.Clone());
+  ASSERT_EQ(0u, model->items().size());
+
+  // Finally complete the download.
+  dle->is_from_icognito_profile = false;
+  download_controller->OnDownloadUpdated(dle.Clone());
+  ASSERT_EQ(1u, model->items().size());
+
+  // Verify that an item of type `kDownload` with the correct path was added to
+  // holding space.
+  const HoldingSpaceItem* download_item = model->items()[0].get();
+  EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kLacrosDownload);
+  EXPECT_EQ(download_item->file_path(), file_path);
 }
 
 }  // namespace ash

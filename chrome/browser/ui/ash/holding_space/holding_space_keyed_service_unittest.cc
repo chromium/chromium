@@ -1736,6 +1736,7 @@ class HoldingSpaceKeyedServiceAddItemTest
         break;
       case HoldingSpaceItem::Type::kArcDownload:
       case HoldingSpaceItem::Type::kDownload:
+      case HoldingSpaceItem::Type::kLacrosDownload:
         holding_space_service->AddDownload(type, file_path);
         break;
       case HoldingSpaceItem::Type::kNearbyShare:

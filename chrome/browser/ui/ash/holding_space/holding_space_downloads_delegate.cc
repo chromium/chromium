@@ -7,6 +7,8 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_features.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/download/public/common/download_item.h"
@@ -119,7 +121,15 @@ HoldingSpaceDownloadsDelegate::HoldingSpaceDownloadsDelegate(
     HoldingSpaceModel* model)
     : HoldingSpaceKeyedServiceDelegate(service, model) {}
 
-HoldingSpaceDownloadsDelegate::~HoldingSpaceDownloadsDelegate() = default;
+HoldingSpaceDownloadsDelegate::~HoldingSpaceDownloadsDelegate() {
+  // Lacros Chrome downloads.
+  if (crosapi::CrosapiManager::IsInitialized()) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->download_controller_ash()
+        ->RemoveObserver(this);
+  }
+}
 
 // static
 void HoldingSpaceDownloadsDelegate::SetDownloadManagerForTesting(
@@ -138,10 +148,18 @@ void HoldingSpaceDownloadsDelegate::Init() {
       arc_intent_helper_observation_.Observe(arc_intent_helper_bridge);
   }
 
-  // Chrome downloads.
+  // Ash Chrome downloads.
   download_manager_observation_.Observe(download_manager_for_testing
                                             ? download_manager_for_testing
                                             : profile()->GetDownloadManager());
+
+  // Lacros Chrome downloads.
+  if (crosapi::CrosapiManager::IsInitialized()) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->download_controller_ash()
+        ->AddObserver(this);
+  }
 }
 
 void HoldingSpaceDownloadsDelegate::OnPersistenceRestored() {
@@ -245,4 +263,14 @@ void HoldingSpaceDownloadsDelegate::EraseDownload(
   in_progress_downloads_.erase(it);
 }
 
+void HoldingSpaceDownloadsDelegate::OnLacrosDownloadUpdated(
+    const crosapi::mojom::DownloadEvent& event) {
+  // For now, we ignore incognito downloads to match current behavior.
+  if (event.is_from_icognito_profile)
+    return;
+  if (event.state == crosapi::mojom::DownloadState::kComplete) {
+    service()->AddDownload(ash::HoldingSpaceItem::Type::kLacrosDownload,
+                           event.target_file_path);
+  }
+}
 }  // namespace ash
