@@ -52,8 +52,9 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat
         getActivity().setTitle(R.string.prefs_privacy_sandbox_floc);
         SettingsUtils.addPreferencesFromResource(this, R.xml.floc_preferences);
         findPreference(FLOC_DESCRIPTION)
-                .setSummary(SpanApplier.applySpans(
-                        getContext().getString(R.string.privacy_sandbox_floc_description),
+                .setSummary(SpanApplier.applySpans(PrivacySandboxBridge.getFlocDescriptionString()
+                                + " "
+                                + getContext().getString(R.string.privacy_sandbox_floc_description),
                         new SpanInfo("<link>", "</link>",
                                 new NoUnderlineClickableSpan(getContext().getResources(),
                                         (widget) -> openUrlInCct(getFlocRegionsUrl())))));

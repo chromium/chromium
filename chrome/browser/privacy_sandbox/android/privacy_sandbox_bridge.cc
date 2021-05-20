@@ -93,6 +93,14 @@ static ScopedJavaLocalRef<jstring> JNI_PrivacySandboxBridge_GetFlocUpdateString(
 }
 
 static ScopedJavaLocalRef<jstring>
+JNI_PrivacySandboxBridge_GetFlocDescriptionString(JNIEnv* env) {
+  return ConvertUTF16ToJavaString(env,
+                                  PrivacySandboxSettingsFactory::GetForProfile(
+                                      ProfileManager::GetActiveUserProfile())
+                                      ->GetFlocDescriptionForDisplay());
+}
+
+static ScopedJavaLocalRef<jstring>
 JNI_PrivacySandboxBridge_GetFlocResetExplanationString(JNIEnv* env) {
   return ConvertUTF16ToJavaString(env,
                                   PrivacySandboxSettingsFactory::GetForProfile(
