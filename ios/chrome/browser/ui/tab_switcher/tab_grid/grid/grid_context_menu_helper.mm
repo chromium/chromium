@@ -78,7 +78,8 @@
                                                         fromView:gridCell];
                         }]];
 
-          if ([weakSelf.contextMenuDelegate
+          if (item.URL.SchemeIsHTTPOrHTTPS() &&
+              [weakSelf.contextMenuDelegate
                   respondsToSelector:@selector(addToReadingListURL:title:)]) {
             [menuElements
                 addObject:[actionFactory actionToAddToReadingListWithBlock:^{
