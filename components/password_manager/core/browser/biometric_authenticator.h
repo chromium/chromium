@@ -13,16 +13,28 @@ namespace password_manager {
 // Different states for biometric availability for a given device. Either no
 // biometric hardware is available, hardware is available but the user has no
 // biometrics enrolled, or hardware is available and the user makes use of it.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.password_manager
 enum class BiometricsAvailability {
-  kAvailable = 0,
-  kNoHardware = 1,
-  kNotEnrolled = 2,
-  kAndroidVersionNotSupported = 3,
-  kAvailableNoFallback = 4,
+  kOtherError = 0,
+  kAvailable = 1,
+  kAvailableNoFallback = 2,
+  kNoHardware = 3,
+  kHwUnavailable = 4,
+  kNotEnrolled = 5,
+  kSecurityUpdateRequired = 6,
+  kAndroidVersionNotSupported = 7,
+
+  kMaxValue = kAndroidVersionNotSupported,
 };
 
 // The filling surface asking for biometric authentication.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class BiometricAuthRequester {
   // The filling surface shown on the first tap on the field after page load.
   // This surface has replaced autofilling on Android.
@@ -40,6 +52,30 @@ enum class BiometricAuthRequester {
 
   // The dialog displayed via the Credential Management API.
   kAccountChooserDialog = 4,
+
+  kMaxValue = kAccountChooserDialog,
+};
+
+// The result of the biometric authentication.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BiometricAuthFinalResult {
+  // This value is used for when we don't know the exact auth method used. This
+  // can be the case on Android versions under 11.
+  kSuccessWithUnknownMethod = 0,
+  kSuccessWithBiometrics = 1,
+  kSuccessWithDeviceLock = 2,
+  kCanceledByUser = 3,
+  kFailed = 4,
+
+  // Recorded when the auth succeeds after Chrome cancelled it.
+  kSuccessButCanceled = 5,
+
+  // Recorded when the auth fails after Chrome cancelled it.
+  kFailedAndCanceled = 6,
+
+  kMaxValue = kFailedAndCanceled,
 };
 
 // This interface encapsulates operations related to biometric authentication.

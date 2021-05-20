@@ -19,6 +19,8 @@ android_library("java") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
+  srcjar_deps = [ ":password_manager_android_java_enums_srcjar" ]
+
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/BiometricAuthenticatorBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/ConfirmationDialogHelper.java",
@@ -69,4 +71,8 @@ android_resources("java_resources") {
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
   ]
+}
+
+java_cpp_enum("password_manager_android_java_enums_srcjar") {
+  sources = [ "biometric_authenticator_android.h" ]
 }

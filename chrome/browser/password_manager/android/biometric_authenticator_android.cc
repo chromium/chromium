@@ -13,6 +13,8 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/password_manager/android/jni_headers/BiometricAuthenticatorBridge_jni.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/biometric_authenticator.h"
@@ -26,8 +28,41 @@
 
 using base::android::AttachCurrentThread;
 using content::WebContents;
+using password_manager::BiometricAuthFinalResult;
+using password_manager::BiometricAuthUIResult;
 using password_manager::BiometricsAvailability;
 using password_manager::UiCredential;
+
+namespace {
+
+bool IsSuccessfulResult(BiometricAuthUIResult result) {
+  return result == BiometricAuthUIResult::kSuccessWithUnknownMethod ||
+         result == BiometricAuthUIResult::kSuccessWithBiometrics ||
+         result == BiometricAuthUIResult::kSuccessWithDeviceLock;
+}
+
+password_manager::BiometricAuthFinalResult MapUIResultToFinal(
+    BiometricAuthUIResult result) {
+  switch (result) {
+    case BiometricAuthUIResult::kSuccessWithUnknownMethod:
+      return BiometricAuthFinalResult::kSuccessWithUnknownMethod;
+    case BiometricAuthUIResult::kSuccessWithBiometrics:
+      return BiometricAuthFinalResult::kSuccessWithBiometrics;
+    case password_manager::BiometricAuthUIResult::kSuccessWithDeviceLock:
+      return BiometricAuthFinalResult::kSuccessWithDeviceLock;
+    case BiometricAuthUIResult::kCanceledByUser:
+      return BiometricAuthFinalResult::kCanceledByUser;
+    case BiometricAuthUIResult::kFailed:
+      return BiometricAuthFinalResult::kFailed;
+  }
+}
+
+void LogAuthResult(BiometricAuthFinalResult result) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.BiometricAuthPwdFill.AuthResult", result);
+}
+
+}  // namespace
 
 // static
 scoped_refptr<password_manager::BiometricAuthenticator>
@@ -60,9 +95,13 @@ BiometricAuthenticatorAndroid::~BiometricAuthenticatorAndroid() {
 }
 
 BiometricsAvailability BiometricAuthenticatorAndroid::CanAuthenticate() {
-  return static_cast<BiometricsAvailability>(
+  BiometricsAvailability availability = static_cast<BiometricsAvailability>(
       Java_BiometricAuthenticatorBridge_canAuthenticate(AttachCurrentThread(),
                                                         java_object_));
+  base::UmaHistogramEnumeration(
+      "PasswordManager.BiometricAuthPwdFill.CanAuthenticate", availability);
+
+  return availability;
 }
 
 void BiometricAuthenticatorAndroid::Authenticate(
@@ -72,6 +111,10 @@ void BiometricAuthenticatorAndroid::Authenticate(
   DCHECK(!requester_.has_value());
   callback_ = std::move(callback);
   requester_ = requester;
+
+  base::UmaHistogramEnumeration(
+      "PasswordManager.BiometricAuthPwdFill.AuthRequester", requester);
+
   Java_BiometricAuthenticatorBridge_authenticate(AttachCurrentThread(),
                                                  java_object_);
 }
@@ -87,11 +130,21 @@ void BiometricAuthenticatorAndroid::Cancel(
   Java_BiometricAuthenticatorBridge_cancel(AttachCurrentThread(), java_object_);
 }
 
-void BiometricAuthenticatorAndroid::OnAuthenticationCompleted(
-    JNIEnv* env,
-    jboolean success) {
-  if (callback_.is_null())
+void BiometricAuthenticatorAndroid::OnAuthenticationCompleted(JNIEnv* env,
+                                                              jint result) {
+  BiometricAuthUIResult ui_result = static_cast<BiometricAuthUIResult>(result);
+  bool success = IsSuccessfulResult(ui_result);
+  if (callback_.is_null()) {
+    if (success) {
+      LogAuthResult(
+          password_manager::BiometricAuthFinalResult::kSuccessButCanceled);
+    } else {
+      LogAuthResult(
+          password_manager::BiometricAuthFinalResult::kFailedAndCanceled);
+    }
     return;
+  }
+  LogAuthResult(MapUIResultToFinal(ui_result));
   std::move(callback_).Run(success);
   requester_ = absl::nullopt;
 }

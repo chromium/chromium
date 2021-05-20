@@ -7488,6 +7488,35 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Valid"/>
 </enum>
 
+<enum name="BiometricAuthRequester">
+  <int value="0" label="Touch-to-Fill"/>
+  <int value="1" label="Autofill suggestion(dropdown or accessory)"/>
+  <int value="2" label="Manual fallback sheet"/>
+  <int value="3" label="List of all passwords"/>
+  <int value="4" label="Account chooser dialog"/>
+</enum>
+
+<enum name="BiometricAuthResult">
+  <int value="0" label="Success with unknown method"/>
+  <int value="1" label="Success with biometrics"/>
+  <int value="2" label="Success with device lock"/>
+  <int value="3" label="Cancelled by user"/>
+  <int value="4" label="Failed"/>
+  <int value="5" label="Success, but cancelled by Chrome"/>
+  <int value="6" label="Failed and cancelled by Chrome"/>
+</enum>
+
+<enum name="BiometricsAvailability">
+  <int value="0" label="Other error"/>
+  <int value="1" label="Available"/>
+  <int value="2" label="Available, but no fallback"/>
+  <int value="3" label="No hardware"/>
+  <int value="4" label="Hardware unavailable"/>
+  <int value="5" label="Not enrolled"/>
+  <int value="6" label="Security update required"/>
+  <int value="7" label="Android version not supported"/>
+</enum>
+
 <enum name="BiquadFilterType">
   <int value="0" label="lowpass"/>
   <int value="1" label="highpass"/>

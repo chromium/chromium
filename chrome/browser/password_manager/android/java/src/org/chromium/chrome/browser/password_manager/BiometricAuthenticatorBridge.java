@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_manager;
 import static android.hardware.biometrics.BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE;
 import static android.hardware.biometrics.BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED;
 import static android.hardware.biometrics.BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
+import static android.hardware.biometrics.BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED;
 import static android.hardware.biometrics.BiometricManager.BIOMETRIC_SUCCESS;
 
 import android.app.KeyguardManager;
@@ -67,10 +68,14 @@ class BiometricAuthenticatorBridge {
                                             : BiometricsAvailability.AVAILABLE_NO_FALLBACK;
             case BIOMETRIC_ERROR_NONE_ENROLLED:
                 return BiometricsAvailability.NOT_ENROLLED;
+            case BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED:
+                return BiometricsAvailability.SECURITY_UPDATE_REQUIRED;
             case BIOMETRIC_ERROR_NO_HARDWARE:
-            case BIOMETRIC_ERROR_HW_UNAVAILABLE:
-            default:
                 return BiometricsAvailability.NO_HARDWARE;
+            case BIOMETRIC_ERROR_HW_UNAVAILABLE:
+                return BiometricsAvailability.HW_UNAVAILABLE;
+            default:
+                return BiometricsAvailability.OTHER_ERROR;
         }
     }
 
@@ -89,23 +94,39 @@ class BiometricAuthenticatorBridge {
                     public void onAuthenticationError(
                             int errorCode, @NonNull CharSequence errString) {
                         super.onAuthenticationError(errorCode, errString);
-                        onAuthenticationCompleted(false);
+                        if (errorCode == BiometricPrompt.BIOMETRIC_ERROR_USER_CANCELED) {
+                            onAuthenticationCompleted(BiometricAuthUIResult.CANCELED_BY_USER);
+                            return;
+                        }
+                        onAuthenticationCompleted(BiometricAuthUIResult.FAILED);
                     }
 
                     @Override
                     public void onAuthenticationSucceeded(
                             @NonNull BiometricPrompt.AuthenticationResult result) {
                         super.onAuthenticationSucceeded(result);
-                        onAuthenticationCompleted(true);
+                        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.R) {
+                            onAuthenticationCompleted(
+                                    BiometricAuthUIResult.SUCCESS_WITH_UNKNOWN_METHOD);
+                            return;
+                        }
+
+                        if (result.getAuthenticationType()
+                                == BiometricPrompt.AUTHENTICATION_RESULT_TYPE_BIOMETRIC) {
+                            onAuthenticationCompleted(
+                                    BiometricAuthUIResult.SUCCESS_WITH_BIOMETRICS);
+                            return;
+                        }
+                        onAuthenticationCompleted(BiometricAuthUIResult.SUCCESS_WITH_DEVICE_LOCK);
                     }
                 });
     }
 
-    void onAuthenticationCompleted(boolean success) {
+    void onAuthenticationCompleted(@BiometricAuthUIResult int result) {
         mCancellationSignal = null;
         if (mNativeBiometricAuthenticator != 0) {
             BiometricAuthenticatorBridgeJni.get().onAuthenticationCompleted(
-                    mNativeBiometricAuthenticator, success);
+                    mNativeBiometricAuthenticator, result);
         }
     }
 
@@ -129,6 +150,6 @@ class BiometricAuthenticatorBridge {
 
     @NativeMethods
     interface Natives {
-        void onAuthenticationCompleted(long nativeBiometricAuthenticatorAndroid, boolean success);
+        void onAuthenticationCompleted(long nativeBiometricAuthenticatorAndroid, int result);
     }
 }

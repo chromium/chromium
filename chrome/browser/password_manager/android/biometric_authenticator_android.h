@@ -10,7 +10,23 @@
 #include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
 #include "ui/android/window_android.h"
+
+namespace password_manager {
+
+// The biometric authentication result as returned by the biometric prompt.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.password_manager
+enum class BiometricAuthUIResult {
+  kSuccessWithUnknownMethod = 0,
+  kSuccessWithBiometrics = 1,
+  kSuccessWithDeviceLock = 2,
+  kCanceledByUser = 3,
+  kFailed = 4,
+};
+
+}  // namespace password_manager
 
 // Android implementation of the BiometricAuthenticator interface.
 class BiometricAuthenticatorAndroid : public ChromeBiometricAuthenticator {
@@ -32,7 +48,7 @@ class BiometricAuthenticatorAndroid : public ChromeBiometricAuthenticator {
   void Cancel(password_manager::BiometricAuthRequester requester) override;
 
   // Called by Java when the authentication completes.
-  void OnAuthenticationCompleted(JNIEnv* env, jboolean success);
+  void OnAuthenticationCompleted(JNIEnv* env, jint result);
 
  private:
   ~BiometricAuthenticatorAndroid() override;
