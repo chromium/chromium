@@ -232,9 +232,12 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
   // Only root_surface and primary_subsurface should use |window_shape_in_dips|.
   // Do not use non empty |window_shape_in_dips| if |region_px| is empty, i.e.
   // this surface is transluscent.
+  bool is_primary_or_root =
+      root_window_->root_surface() == this ||
+      (root_window()->primary_subsurface() &&
+       root_window()->primary_subsurface()->wayland_surface() == this);
   if (window_shape_in_dips.has_value() && !region_px.IsEmpty() &&
-      root_window_->root_surface() != this &&
-      root_window()->primary_subsurface()->wayland_surface() != this) {
+      is_primary_or_root) {
     for (const auto& rect : window_shape_in_dips.value())
       wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
                     rect.height());
