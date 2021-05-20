@@ -37,7 +37,7 @@ class JavaChecker(object):
 
   # This regular expression will be used to extract filenames from import
   # statements.
-  _EXTRACT_IMPORT_PATH = re.compile('^import\s+(?:static\s+)?([\w\.]+)\s*;')
+  _EXTRACT_IMPORT_PATH = re.compile(r'^import\s+(?:static\s+)?([\w\.]+)\s*;')
 
   def __init__(self, base_directory, verbose, added_imports=None,
                allow_multiple_definitions=None):
@@ -56,7 +56,7 @@ class JavaChecker(object):
     with codecs.open(filepath, encoding='utf-8') as f:
       short_class_name, _ = os.path.splitext(os.path.basename(filepath))
       for line in f:
-        for package in re.findall('^package\s+([\w\.]+);', line):
+        for package in re.findall(r'^package\s+([\w\.]+);', line):
           return package + '.' + short_class_name
 
   def _IgnoreDir(self, d):
@@ -77,13 +77,11 @@ class JavaChecker(object):
     return False
 
   def _PrescanFiles(self, added_classset):
-    for root, dirs, files in os.walk(self._base_directory.encode('utf-8')):
+    for root, dirs, files in os.walk(self._base_directory):
       # Skip unwanted subdirectories. TODO(husky): it would be better to do
       # this via the skip_child_includes flag in DEPS files. Maybe hoist this
       # prescan logic into checkdeps.py itself?
-      root = root.decode('utf-8')
-      dirs = [d.decode('utf-8') for d in dirs]
-      files = [f.decode('utf-8') for f in files]
+      # Modify dirs in-place with slice assignment to avoid recursing into them.
       dirs[:] = [d for d in dirs if not self._IgnoreDir(d)]
       for f in files:
         if f.endswith('.java'):
