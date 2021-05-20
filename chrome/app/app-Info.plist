@@ -223,14 +223,6 @@
 		</dict>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>FTP site URL</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>ftp</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleURLName</key>
 			<string>Local file URL</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
