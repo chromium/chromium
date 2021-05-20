@@ -222,6 +222,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
     infos.at(SystemAppType::MEDIA).include_launch_directory = true;
     infos.at(SystemAppType::MEDIA).show_in_launcher = false;
     infos.at(SystemAppType::MEDIA).show_in_search = false;
+    infos.at(SystemAppType::MEDIA).capture_navigations = true;
     infos.at(SystemAppType::MEDIA).enabled_origin_trials =
         OriginTrialsMap({{GetOrigin("chrome://media-app"), {"FileHandling"}}});
   }
