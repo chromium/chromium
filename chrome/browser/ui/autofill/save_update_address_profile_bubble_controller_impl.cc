@@ -48,6 +48,19 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OfferSave(
              profile);
     return;
   }
+  // If the user closed the bubble of the previous import process using the
+  // "Close" button without making a decision to "Accept" or "Deny" the prompt,
+  // a fallback icon is shown, so the user can get back to the prompt. In this
+  // specific scenario the import process is considered in progress (since the
+  // backend didn't hear back via the callback yet), but hidden. When a second
+  // prompt arrives, we finish the previous import process as "Ignored", before
+  // showing the 2nd prompt.
+  if (address_profile_save_prompt_callback_) {
+    std::move(address_profile_save_prompt_callback_)
+        .Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
+             address_profile_);
+  }
+
   address_profile_ = profile;
   original_profile_ = base::OptionalFromPtr(original_profile);
   address_profile_save_prompt_callback_ =

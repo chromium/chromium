@@ -138,7 +138,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
 // shown, the controller will ignore it, and inform the backend that the second
 // prompt has been auto declined.
 TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
-       SecondPromptWillBeAutoDeclined) {
+       SecondPromptWillBeAutoDeclinedWhileFirstIsVisible) {
   AutofillProfile profile = test::GetFullProfile();
 
   controller()->OfferSave(
@@ -156,6 +156,30 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
       profile, /*original_profile=*/nullptr,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       callback.Get());
+}
+
+// This is testing that when a second prompt comes while another prompt is in
+// progress but not shown, the controller will inform the backend that the first
+// process is ignored.
+TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
+       FirstHiddenPromptWillBeIgnoredWhenSecondPromptArrives) {
+  AutofillProfile profile = test::GetFullProfile();
+
+  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
+  controller()->OfferSave(
+      profile, /*original_profile=*/nullptr,
+      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
+      callback.Get());
+  controller()->OnBubbleClosed();
+
+  // When second prompt comes, the first one will be ignored.
+  EXPECT_CALL(callback,
+              Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
+                  testing::_));
+  controller()->OfferSave(
+      profile, /*original_profile=*/nullptr,
+      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
+      /*address_profile_save_prompt_callback=*/base::DoNothing());
 }
 
 }  // namespace autofill
