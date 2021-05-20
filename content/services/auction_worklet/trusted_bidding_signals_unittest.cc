@@ -22,7 +22,7 @@
 namespace auction_worklet {
 namespace {
 
-// Common JSON used for most tests. Key 5 is deliberately skipped.
+// Common JSON used for most tests. Key 4 is deliberately skipped.
 const char kBaseJson[] = R"(
   {
     "key1": 1,
@@ -30,7 +30,8 @@ const char kBaseJson[] = R"(
     "key3": null,
     "key5": "value5",
     "key 6": 6,
-    "key=7": 7
+    "key=7": 7,
+    "key,8": 8
   }
 )";
 
@@ -187,11 +188,13 @@ TEST_F(TrustedBiddingSignalsTest, FetchMultipleKeys) {
 TEST_F(TrustedBiddingSignalsTest, EscapeQueryParams) {
   std::unique_ptr<TrustedBiddingSignals> signals =
       FetchBiddingSignalsWithResponse(
-          GURL("https://url.test/?hostname=pub+li%26sher&keys=key+6,key%3D7"),
-          kBaseJson, {"key 6", "key=7"}, "pub li&sher");
+          GURL("https://url.test/"
+               "?hostname=pub+li%26sher&keys=key+6,key%3D7,key%2C8"),
+          kBaseJson, {"key 6", "key=7", "key,8"}, "pub li&sher");
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key 6":6})", ExtractSignals(signals.get(), {"key 6"}));
   EXPECT_EQ(R"({"key=7":7})", ExtractSignals(signals.get(), {"key=7"}));
+  EXPECT_EQ(R"({"key,8":8})", ExtractSignals(signals.get(), {"key,8"}));
 }
 
 }  // namespace
