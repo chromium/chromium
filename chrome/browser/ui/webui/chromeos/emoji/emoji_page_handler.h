@@ -27,7 +27,8 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
   // emoji_picker::mojom::PageHandler:
   void ShowUI() override;
   void InsertEmoji(const std::string& emoji_to_insert,
-                   bool is_variant) override;
+                   bool is_variant,
+                   int16_t search_length) override;
   void IsIncognitoTextField(IsIncognitoTextFieldCallback callback) override;
 
  private:

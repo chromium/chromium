@@ -21,7 +21,8 @@ interface PageHandler {
   // Request backend to insert emoji (will close the picker).
   // emoji: The emoji to insert in string form e.g. "😂".
   // is_variant: If the emoji is a variant / base emoji, used for metrics.
-  InsertEmoji(string emoji, bool is_variant);
+  // search_length: Length of search string, used for metrics
+  InsertEmoji(string emoji, bool is_variant, int16 search_length);
 
   // Allows the emoji picker to identify if it was initialized in a incognito
   // text field (so it will disable storing preference etc.)

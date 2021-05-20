@@ -242,7 +242,11 @@ export class EmojiPicker extends PolymerElement {
           ['history', 'emoji'],
           makeRecentlyUsed(this.recentEmojiStore.data.history));
     }
-    this.apiProxy_.insertEmoji(emoji, isVariant);
+    const searchLength = this.$['search-container']
+                             .shadowRoot.querySelector('cr-search-field')
+                             .getSearchInput()
+                             .value.length;
+    this.apiProxy_.insertEmoji(emoji, isVariant, searchLength);
   }
 
   clearRecentEmoji() {
