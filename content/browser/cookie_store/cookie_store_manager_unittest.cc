@@ -9,7 +9,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/cookie_store/cookie_store_context.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
@@ -22,7 +21,6 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/test/fake_mojo_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "net/base/features.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
@@ -177,13 +175,7 @@ class CookieStoreManagerTest
       public testing::WithParamInterface<bool /* reset_context */> {
  public:
   CookieStoreManagerTest()
-      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {
-    // Enable SameSiteByDefaultCookies because the default CookieAccessSemantics
-    // setting is based on the state of this feature, and we want a consistent
-    // expected value in the tests for domains without a custom setting.
-    feature_list_.InitAndEnableFeature(
-        net::features::kSameSiteByDefaultCookies);
-  }
+      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
 
   void SetUp() override {
     // Use an on-disk service worker storage to test saving and loading.
@@ -418,7 +410,6 @@ class CookieStoreManagerTest
   }
 
   BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir user_data_directory_;
   std::unique_ptr<CookieStoreWorkerTestHelper> worker_test_helper_;
   std::unique_ptr<StoragePartitionImpl> storage_partition_impl_;
