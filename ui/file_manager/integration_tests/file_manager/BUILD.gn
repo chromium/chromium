@@ -28,7 +28,6 @@ js_type_check("closure_compile") {
     ":grid_view",
     ":install_linux_package_dialog",
     ":keyboard_operations",
-    ":launcher_search",
     ":metadata",
     ":metrics",
     ":my_files",
@@ -153,11 +152,6 @@ js_library("install_linux_package_dialog") {
 }
 
 js_library("keyboard_operations") {
-  testonly = true
-  deps = []
-}
-
-js_library("launcher_search") {
   testonly = true
   deps = []
 }

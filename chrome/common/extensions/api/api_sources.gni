@@ -100,7 +100,6 @@ if (is_chromeos_ash) {
     "file_system_provider_internal.idl",
     "input_ime.json",
     "input_method_private.json",
-    "launcher_search_provider.idl",
     "login.idl",
     "login_screen_storage.idl",
     "login_screen_ui.idl",

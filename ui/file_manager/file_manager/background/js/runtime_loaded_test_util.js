@@ -992,22 +992,6 @@ test.util.async.getNotificationIDs = callback => {
 };
 
 /**
- * Opens the file URL. It emulates the interaction that Launcher search does
- * from a search result, it triggers the background page's event listener that
- * listens to evens from launcher_search_provider API.
- *
- * @param {string} fileURL File URL to open by Files app background dialog.
- * @suppress {accessControls|missingProperties} Closure disallow calling private
- * launcherSearch_, but here we just want to emulate the behaviour, so we don't
- * need to make this attribute public. Also the interface
- * "FileBrowserBackground" doesn't define the attributes "launcherSearch_" so we
- * need to suppress missingProperties.
- */
-test.util.sync.launcherSearchOpenResult = fileURL => {
-  window.background.launcherSearch_.onOpenResult_(fileURL);
-};
-
-/**
  * Gets file entries just under the volume.
  *
  * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.

@@ -2205,8 +2205,6 @@ source_set("chromeos") {
     "extensions/install_limiter.h",
     "extensions/install_limiter_factory.cc",
     "extensions/install_limiter_factory.h",
-    "extensions/launcher_search_provider.cc",
-    "extensions/launcher_search_provider.h",
     "extensions/media_player_event_router.cc",
     "extensions/media_player_event_router.h",
     "extensions/permissions_updater_delegate_chromeos.cc",

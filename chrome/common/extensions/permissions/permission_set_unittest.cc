@@ -869,7 +869,6 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kSocket);
   skip.insert(APIPermissionID::kUsb);
   skip.insert(APIPermissionID::kVirtualKeyboard);
-  skip.insert(APIPermissionID::kLauncherSearchProvider);
 
   // The lock screen apps are set by user through settings, no need to warn at
   // installation time.

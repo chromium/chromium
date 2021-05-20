@@ -118,7 +118,7 @@ enum APIPermissionID {
   kInput = 92,
   kInputMethodPrivate = 93,
   kDeleted_InterceptAllKeys = 94,
-  kLauncherSearchProvider = 95,
+  kDeleted_LauncherSearchProvider = 95,
   kLocation = 96,
   kDeleted_LogPrivate = 97,
   kManagement = 98,

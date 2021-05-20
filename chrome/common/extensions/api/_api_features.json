@@ -591,10 +591,6 @@
       "chrome://settings/*"
     ]
   }],
-  "launcherSearchProvider": {
-    "dependencies": ["permission:launcherSearchProvider"],
-    "contexts": ["blessed_extension"]
-  },
   "login": {
     "dependencies": ["permission:login"],
     "contexts": ["blessed_extension"],

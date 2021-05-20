@@ -34,7 +34,6 @@
       "file_manager/install_linux_package_dialog.js",
       "file_manager/keyboard_operations.js",
       "file_manager/launch_files_app_swa.js",
-      "file_manager/launcher_search.js",
       "file_manager/metadata.js",
       "file_manager/metrics.js",
       "file_manager/my_files.js",

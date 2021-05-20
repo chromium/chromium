@@ -430,14 +430,6 @@
     "extension_types": ["extension", "platform_app"],
     "location": "component"
   },
-  "launcherSearchProvider": {
-    "channel": "stable",
-    "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos"],
-    "allowlist": [
-      "A948368FC53BE437A55FEB414106E207925482F5"  // File Manager
-    ]
-  },
   "lockWindowFullscreenPrivate": {
     "channel": "stable",
     "component_extensions_auto_granted": false,

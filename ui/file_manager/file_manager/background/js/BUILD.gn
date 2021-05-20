@@ -54,7 +54,6 @@ js_type_check("closure_compile_module") {
     ":file_operation_util",
     ":import_history",
     ":launcher",
-    ":launcher_search",
     ":media_import_handler",
     ":media_scanner",
     ":metadata_proxy",
@@ -87,7 +86,6 @@ js_type_check("closure_compile_jsmodules") {
     ":file_operation_util.m",
     ":import_history.m",
     ":launcher.m",
-    ":launcher_search.m",
     ":media_import_handler.m",
     ":media_scanner.m",
     ":metadata_proxy.m",
@@ -163,7 +161,6 @@ js_library("closure_compile_externs") {
     "//ui/file_manager/file_manager/externs/background_window.js",
     "//ui/file_manager/file_manager/externs/css_rule.js",
     "//ui/file_manager/file_manager/externs/drive_dialog_controller.js",
-    "//ui/file_manager/file_manager/externs/launcher_search_provider.js",
     "//ui/file_manager/file_manager/externs/platform.js",
     "//ui/file_manager/file_manager/externs/progress_center_panel.js",
     "//ui/file_manager/file_manager/externs/background/task_queue.js",
@@ -216,7 +213,6 @@ js_library("background") {
     ":file_operation_manager",
     ":import_history",
     ":launcher",
-    ":launcher_search",
     ":media_import_handler",
     ":mount_metrics",
     ":progress_center",
@@ -243,7 +239,6 @@ js_library("background.m") {
     ":file_operation_util.m",
     ":import_history.m",
     ":launcher.m",
-    ":launcher_search.m",
     ":media_import_handler.m",
     ":media_scanner.m",
     ":mount_metrics.m",
@@ -759,30 +754,6 @@ js_library("launcher.m") {
     ":app_window_wrapper.m",
     "//ui/file_manager/file_manager/common/js:util.m",
   ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_library("launcher_search") {
-  deps = [
-    ":launcher",
-    ":volume_manager_factory",
-    "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/file_manager/file_manager/common/js:util",
-  ]
-}
-
-js_library("launcher_search.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/background/js/launcher_search.m.js" ]
-  deps = [
-    ":launcher.m",
-    ":volume_manager_factory.m",
-    "//ui/file_manager/file_manager/common/js:file_type.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-  ]
-
-  externs_list =
-      [ "//ui/file_manager/file_manager/externs/launcher_search_provider.js" ]
 
   extra_deps = [ ":modulize" ]
 }
@@ -1366,7 +1337,6 @@ js_modulizer("modulize") {
     "progress_center.js",
     "device_handler.js",
     "launcher.js",
-    "launcher_search.js",
     "background.js",
   ]
 

@@ -25596,9 +25596,9 @@ Called by update_extension_histograms.py.-->
   <int value="324" label="WINDOWS_ON_REMOVED"/>
   <int value="325" label="FILE_SYSTEM_PROVIDER_ON_EXECUTE_ACTION_REQUESTED"/>
   <int value="326" label="FILE_SYSTEM_PROVIDER_ON_GET_ACTIONS_REQUESTED"/>
-  <int value="327" label="LAUNCHER_SEARCH_PROVIDER_ON_QUERY_STARTED"/>
-  <int value="328" label="LAUNCHER_SEARCH_PROVIDER_ON_QUERY_ENDED"/>
-  <int value="329" label="LAUNCHER_SEARCH_PROVIDER_ON_OPEN_RESULT"/>
+  <int value="327" label="DELETED_LAUNCHER_SEARCH_PROVIDER_ON_QUERY_STARTED"/>
+  <int value="328" label="DELETED_LAUNCHER_SEARCH_PROVIDER_ON_QUERY_ENDED"/>
+  <int value="329" label="DELETED_LAUNCHER_SEARCH_PROVIDER_ON_OPEN_RESULT"/>
   <int value="330" label="CHROME_WEB_VIEW_INTERNAL_ON_CLICKED"/>
   <int value="331" label="WEB_VIEW_INTERNAL_CONTEXT_MENUS"/>
   <int value="332" label="CONTEXT_MENUS"/>
@@ -26809,7 +26809,7 @@ Called by update_extension_histograms.py.-->
   <int value="992" label="DELETED_EASYUNLOCKPRIVATE_HIDEERRORBUBBLE"/>
   <int value="993" label="WEBVIEWINTERNAL_SETZOOMMODE"/>
   <int value="994" label="WEBVIEWINTERNAL_GETZOOMMODE"/>
-  <int value="995" label="LAUNCHERSEARCHPROVIDER_SETSEARCHRESULTS"/>
+  <int value="995" label="DELETED_LAUNCHERSEARCHPROVIDER_SETSEARCHRESULTS"/>
   <int value="996" label="DELETED_DATAREDUCTIONPROXY_CLEARDATASAVINGS"/>
   <int value="997" label="BLUETOOTHPRIVATE_SETDISCOVERYFILTER"/>
   <int value="998" label="FILESYSTEM_GETVOLUMELIST"/>
@@ -27881,7 +27881,7 @@ Called by update_extension_permission.py.-->
   <int value="92" label="kInput"/>
   <int value="93" label="kInputMethodPrivate"/>
   <int value="94" label="kDeleted_InterceptAllKeys"/>
-  <int value="95" label="kLauncherSearchProvider"/>
+  <int value="95" label="kDeleted_LauncherSearchProvider"/>
   <int value="96" label="kLocation"/>
   <int value="97" label="kDeleted_LogPrivate"/>
   <int value="98" label="kManagement"/>
