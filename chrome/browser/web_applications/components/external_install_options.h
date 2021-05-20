@@ -86,6 +86,12 @@ struct ExternalInstallOptions {
   // the first time.
   bool only_for_new_users = false;
 
+  // Whether the app should be omitted for new preinstalls. This is the opposite
+  // of |only_for_new_users| option. It can be used for partial deprecation of
+  // a preinstalled app: do not preinstall the app for new users but leave
+  // existing users unaffected.
+  bool only_if_previously_preinstalled = false;
+
   // Which user types this app should be installed for.
   // See apps::DetermineUserType() for relevant string constants.
   std::vector<std::string> user_type_allowlist;

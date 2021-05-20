@@ -265,7 +265,7 @@ void WebAppProvider::ConnectSubsystems() {
       registrar_.get(), os_integration_manager_.get(), ui_manager_.get(),
       install_finalizer_.get(), install_manager_.get());
   preinstalled_web_app_manager_->SetSubsystems(
-      externally_managed_app_manager_.get());
+      registrar_->AsWebAppRegistrar(), externally_managed_app_manager_.get());
   system_web_app_manager_->SetSubsystems(
       externally_managed_app_manager_.get(), registrar_.get(),
       registry_controller_.get(), ui_manager_.get(),

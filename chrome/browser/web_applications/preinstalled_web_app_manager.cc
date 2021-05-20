@@ -40,6 +40,8 @@
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -149,9 +151,12 @@ ParsedConfigs ParseConfigsBlocking(LoadedConfigs loaded_configs) {
 absl::optional<std::string> GetDisableReason(
     const ExternalInstallOptions& options,
     Profile* profile,
+    WebAppRegistrar* registrar,
     bool preinstalled_apps_enabled_in_prefs,
     bool is_new_user,
     const std::string& user_type) {
+  DCHECK(registrar);
+
   if (!preinstalled_apps_enabled_in_prefs) {
     return options.install_url.spec() +
            " disabled by preinstalled_apps pref setting.";
@@ -193,6 +198,25 @@ absl::optional<std::string> GetDisableReason(
     if (!was_previously_installed) {
       return options.install_url.spec() +
              " disabled because user was not new when config was added.";
+    }
+  }
+
+  // Remove if was not previously preinstalled.
+  if (options.only_if_previously_preinstalled) {
+    absl::optional<AppId> app_id =
+        ExternallyInstalledWebAppPrefs(profile->GetPrefs())
+            .LookupAppId(options.install_url);
+
+    bool was_previously_preinstalled = false;
+    if (app_id.has_value()) {
+      const WebApp* web_app = registrar->GetAppById(app_id.value());
+      if (web_app && web_app->IsPreinstalledApp())
+        was_previously_preinstalled = true;
+    }
+
+    if (!was_previously_preinstalled) {
+      return options.install_url.spec() +
+             " disabled because was not previously preinstalled.";
     }
   }
 
@@ -317,7 +341,9 @@ PreinstalledWebAppManager::PreinstalledWebAppManager(Profile* profile)
 PreinstalledWebAppManager::~PreinstalledWebAppManager() = default;
 
 void PreinstalledWebAppManager::SetSubsystems(
+    WebAppRegistrar* registrar,
     ExternallyManagedAppManager* externally_managed_app_manager) {
+  registrar_ = registrar;
   externally_managed_app_manager_ = externally_managed_app_manager;
 }
 
@@ -450,9 +476,10 @@ void PreinstalledWebAppManager::PostProcessConfigs(
   size_t disabled_count = 0;
   base::EraseIf(parsed_configs.options_list,
                 [&](const ExternalInstallOptions& options) {
-                  absl::optional<std::string> disable_reason = GetDisableReason(
-                      options, profile_, preinstalled_apps_enabled_in_prefs,
-                      is_new_user, user_type);
+                  absl::optional<std::string> disable_reason =
+                      GetDisableReason(options, profile_, registrar_,
+                                       preinstalled_apps_enabled_in_prefs,
+                                       is_new_user, user_type);
                   if (disable_reason) {
                     VLOG(1) << *disable_reason;
                     ++disabled_count;

@@ -38,6 +38,11 @@ constexpr char kHideFromUser[] = "hide_from_user";
 // the app for users that have already run Chrome before.
 constexpr char kOnlyForNewUsers[] = "only_for_new_users";
 
+// kOnlyIfPreviouslyPreinstalled is an optional boolean. If set and true we will
+// not preinstall the app for new users.
+constexpr char kOnlyIfPreviouslyPreinstalled[] =
+    "only_if_previously_preinstalled";
+
 // kUserType is an allowlist of user types to install this app for. This must be
 // populated otherwise the app won't ever be installed.
 // Example: "user_type": ["unmanaged", "managed", "child"]
@@ -213,6 +218,16 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
           {file.AsUTF8Unsafe(), " had an invalid ", kOnlyForNewUsers});
     }
     options.only_for_new_users = value->GetBool();
+  }
+
+  // only_if_previously_preinstalled
+  value = app_config.FindKey(kOnlyIfPreviouslyPreinstalled);
+  if (value) {
+    if (!value->is_bool()) {
+      return base::StrCat({file.AsUTF8Unsafe(), " had an invalid ",
+                           kOnlyIfPreviouslyPreinstalled});
+    }
+    options.only_if_previously_preinstalled = value->GetBool();
   }
 
   // hide_from_user

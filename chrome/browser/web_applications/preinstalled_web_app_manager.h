@@ -35,6 +35,7 @@ struct ParsedConfigs;
 }  // namespace
 
 class ExternallyManagedAppManager;
+class WebAppRegistrar;
 
 // Installs web apps to be preinstalled on the device (AKA default apps) during
 // start up. Will keep the apps installed on the device in sync with the set of
@@ -69,6 +70,7 @@ class PreinstalledWebAppManager {
   ~PreinstalledWebAppManager();
 
   void SetSubsystems(
+      WebAppRegistrar* registrar,
       ExternallyManagedAppManager* externally_managed_app_manager);
 
   // Loads the preinstalled app configs and synchronizes them with the device's
@@ -131,6 +133,7 @@ class PreinstalledWebAppManager {
   bool IsReinstallPastMilestoneNeededSinceLastSync(
       int force_reinstall_for_milestone);
 
+  WebAppRegistrar* registrar_ = nullptr;
   ExternallyManagedAppManager* externally_managed_app_manager_ = nullptr;
   Profile* const profile_;
 

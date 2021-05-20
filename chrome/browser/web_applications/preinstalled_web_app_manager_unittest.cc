@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
@@ -109,6 +110,12 @@ class PreinstalledWebAppManagerTest : public testing::Test {
 
     auto preinstalled_web_app_manager =
         std::make_unique<PreinstalledWebAppManager>(profile);
+
+    auto* provider = WebAppProvider::Get(profile);
+    DCHECK(provider);
+    preinstalled_web_app_manager->SetSubsystems(
+        provider->registrar().AsWebAppRegistrar(),
+        &provider->externally_managed_app_manager());
 
     std::vector<ExternalInstallOptions> result;
     base::RunLoop run_loop;

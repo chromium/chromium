@@ -5,12 +5,15 @@
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/ui/web_applications/test/ssl_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
@@ -24,8 +27,10 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "net/ssl/ssl_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,6 +46,32 @@
 
 namespace web_app {
 
+namespace {
+
+constexpr char kBaseDataDir[] = "chrome/test/data/banners";
+
+// start_url in manifest.json matches navigation url for the simple
+// manifest_test_page.html.
+constexpr char kSimpleManifestStartUrl[] =
+    "https://example.org/manifest_test_page.html";
+
+constexpr char kNoManifestTestPageStartUrl[] =
+    "https://example.org/no_manifest_test_page.html";
+
+// Performs blocking IO operations.
+base::FilePath GetDataFilePath(const base::FilePath& relative_path,
+                               bool* path_exists) {
+  base::ScopedAllowBlockingForTesting allow_io;
+
+  base::FilePath root_path;
+  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path));
+  base::FilePath path = root_path.Append(relative_path);
+  *path_exists = base::PathExists(path);
+  return path;
+}
+
+}  // namespace
+
 class PreinstalledWebAppManagerBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
@@ -50,6 +81,41 @@ class PreinstalledWebAppManagerBrowserTest
 
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    url_loader_interceptor_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  void InitUrlLoaderInterceptor() {
+    // We use a URLLoaderInterceptor, rather than the EmbeddedTestServer, since
+    // a stable app_id across tests requires stable origin, whereas
+    // EmbeddedTestServer serves content on a random port.
+    url_loader_interceptor_ =
+        std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+            [](content::URLLoaderInterceptor::RequestParams* params) -> bool {
+              std::string relative_request = base::StrCat(
+                  {kBaseDataDir, params->url_request.url.path_piece()});
+              base::FilePath relative_path =
+                  base::FilePath().AppendASCII(relative_request);
+
+              bool path_exists = false;
+              base::FilePath path =
+                  GetDataFilePath(relative_path, &path_exists);
+              if (!path_exists)
+                return /*intercepted=*/false;
+
+              // Provide fake SSLInfo to avoid NOT_FROM_SECURE_ORIGIN error in
+              // InstallableManager::GetData().
+              net::SSLInfo ssl_info;
+              CreateFakeSslInfoCertificate(&ssl_info);
+
+              content::URLLoaderInterceptor::WriteResponse(
+                  path, params->client.get(), /*headers=*/nullptr, ssl_info);
+
+              return /*intercepted=*/true;
+            }));
   }
 
   GURL GetAppUrl() const {
@@ -132,6 +198,7 @@ class PreinstalledWebAppManagerBrowserTest
   ~PreinstalledWebAppManagerBrowserTest() override = default;
 
  private:
+  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
   ScopedOsHooksSuppress os_hooks_suppress_;
 };
 
@@ -346,6 +413,89 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   std::string app_config = base::ReplaceStringPlaceholders(
       kAppConfigTemplate, {GetAppUrl().spec()}, nullptr);
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config), absl::nullopt);
+}
+
+const char kOnlyIfPreviouslyPreinstalled_PreviousConfig[] = R"({
+  "app_url": "$1",
+  "launch_container": "window",
+  "user_type": ["unmanaged"]
+})";
+const char kOnlyIfPreviouslyPreinstalled_NextConfig[] = R"({
+  "app_url": "$1",
+  "launch_container": "window",
+  "user_type": ["unmanaged"],
+  "only_if_previously_preinstalled": true
+})";
+
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
+                       PRE_OnlyIfPreviouslyPreinstalled_AppPreserved) {
+  PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  InitUrlLoaderInterceptor();
+
+  std::string prev_app_config = base::ReplaceStringPlaceholders(
+      kOnlyIfPreviouslyPreinstalled_PreviousConfig, {kSimpleManifestStartUrl},
+      nullptr);
+
+  // The user had the app installed.
+  EXPECT_EQ(
+      SyncPreinstalledAppConfig(GURL{kSimpleManifestStartUrl}, prev_app_config),
+      InstallResultCode::kSuccessNewInstall);
+
+  AppId app_id = GenerateAppIdFromURL(GURL{kSimpleManifestStartUrl});
+  EXPECT_TRUE(registrar().IsInstalled(app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
+                       OnlyIfPreviouslyPreinstalled_AppPreserved) {
+  PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  InitUrlLoaderInterceptor();
+
+  std::string next_app_config =
+      base::ReplaceStringPlaceholders(kOnlyIfPreviouslyPreinstalled_NextConfig,
+                                      {kSimpleManifestStartUrl}, nullptr);
+
+  // The user still has the app.
+  EXPECT_EQ(
+      SyncPreinstalledAppConfig(GURL{kSimpleManifestStartUrl}, next_app_config),
+      InstallResultCode::kSuccessAlreadyInstalled);
+
+  AppId app_id = GenerateAppIdFromURL(GURL{kSimpleManifestStartUrl});
+  EXPECT_TRUE(registrar().IsInstalled(app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
+                       PRE_OnlyIfPreviouslyPreinstalled_NoAppPreinstalled) {
+  PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  InitUrlLoaderInterceptor();
+
+  std::string prev_app_config = base::ReplaceStringPlaceholders(
+      kOnlyIfPreviouslyPreinstalled_PreviousConfig,
+      {kNoManifestTestPageStartUrl}, nullptr);
+
+  EXPECT_EQ(SyncPreinstalledAppConfig(GURL{kNoManifestTestPageStartUrl},
+                                      prev_app_config),
+            InstallResultCode::kNotValidManifestForWebApp);
+
+  AppId app_id = GenerateAppIdFromURL(GURL{kNoManifestTestPageStartUrl});
+  EXPECT_FALSE(registrar().IsInstalled(app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
+                       OnlyIfPreviouslyPreinstalled_NoAppPreinstalled) {
+  PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  InitUrlLoaderInterceptor();
+
+  std::string next_app_config =
+      base::ReplaceStringPlaceholders(kOnlyIfPreviouslyPreinstalled_NextConfig,
+                                      {kNoManifestTestPageStartUrl}, nullptr);
+
+  // The user has no the app.
+  EXPECT_EQ(SyncPreinstalledAppConfig(GURL{kNoManifestTestPageStartUrl},
+                                      next_app_config),
+            absl::nullopt);
+
+  AppId app_id = GenerateAppIdFromURL(GURL{kNoManifestTestPageStartUrl});
+  EXPECT_FALSE(registrar().IsInstalled(app_id));
 }
 
 // The offline manifest JSON config functionality is only available on Chrome
