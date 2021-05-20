@@ -13,8 +13,9 @@
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_address_profile_modal_delegate.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
@@ -104,8 +105,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.styler.cellBackgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.tableView.sectionHeaderHeight = 0;
 
-  self.tableView.separatorInset =
-      UIEdgeInsetsMake(0, kTableViewSeparatorInsetWithIcon, 0, 0);
+  self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 
   // Configure the NavigationBar.
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
@@ -181,28 +181,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
                addTarget:self
                   action:@selector(saveAddressProfileButtonWasPressed:)
         forControlEvents:UIControlEventTouchUpInside];
-  } else if (itemType == ItemTypeAddress || itemType == ItemTypeUpdateOld) {
-    TableViewImageCell* managedcell =
-        base::mac::ObjCCastStrict<TableViewImageCell>(cell);
-    managedcell.textLabel.numberOfLines = 0;
-    managedcell.imageView.image = [managedcell.imageView.image
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    [managedcell.imageView setTintColor:[UIColor colorNamed:kGrey400Color]];
-  } else if (itemType == ItemTypePhoneNumber ||
-             itemType == ItemTypeEmailAddress) {
-    TableViewImageCell* managedcell =
-        base::mac::ObjCCastStrict<TableViewImageCell>(cell);
-    managedcell.imageView.image = [managedcell.imageView.image
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    [managedcell.imageView setTintColor:[UIColor colorNamed:kGrey400Color]];
-  } else if (itemType == ItemTypeUpdateNew) {
-    TableViewImageCell* managedcell =
-        base::mac::ObjCCastStrict<TableViewImageCell>(cell);
-    managedcell.textLabel.numberOfLines = 0;
-    managedcell.imageView.image = [managedcell.imageView.image
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    // Color is blue.
-    [managedcell.imageView setTintColor:[UIColor colorNamed:kBlueColor]];
   }
   return cell;
 }
@@ -415,16 +393,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark Item Constructors
 
-- (TableViewImageItem*)detailItemWithType:(NSInteger)type
-                                     text:(NSString*)text
-                            iconImageName:(NSString*)iconImageName {
-  TableViewImageItem* detailItem =
-      [[TableViewImageItem alloc] initWithType:type];
-  detailItem.title = text;
-  detailItem.enabled = NO;
+- (SettingsImageDetailTextItem*)detailItemWithType:(NSInteger)type
+                                              text:(NSString*)text
+                                     iconImageName:(NSString*)iconImageName {
+  SettingsImageDetailTextItem* detailItem =
+      [[SettingsImageDetailTextItem alloc] initWithType:type];
+  detailItem.text = text;
   detailItem.useCustomSeparator = YES;
+  detailItem.alignImageWithFirstLineOfText = YES;
   if ([iconImageName length]) {
-    detailItem.image = [UIImage imageNamed:iconImageName];
+    detailItem.image = [[UIImage imageNamed:iconImageName]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
+    if (type == ItemTypeUpdateNew) {
+      detailItem.imageViewTintColor = [UIColor colorNamed:kBlueColor];
+    } else {
+      detailItem.imageViewTintColor = [UIColor colorNamed:kGrey400Color];
+    }
   }
 
   return detailItem;

@@ -36,6 +36,14 @@
   } else {
     cell.detailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
   }
+
+  if (self.imageViewTintColor) {
+    [cell setImageViewTintColor:self.imageViewTintColor];
+  }
+
+  if (self.image && self.alignImageWithFirstLineOfText) {
+    [cell alignImageWithFirstLineOfText:YES];
+  }
 }
 
 @end
