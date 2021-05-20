@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
@@ -222,7 +223,13 @@ class PushMessagingServiceTest : public ::testing::Test {
 #endif  // OS_ANDROID
 };
 
-TEST_F(PushMessagingServiceTest, PayloadEncryptionTest) {
+// Fails too often on Linux TSAN builder: http://crbug.com/1211350.
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_PayloadEncryptionTest DISABLED_PayloadEncryptionTest
+#else
+#define MAYBE_PayloadEncryptionTest PayloadEncryptionTest
+#endif
+TEST_F(PushMessagingServiceTest, MAYBE_PayloadEncryptionTest) {
   PushMessagingServiceImpl* push_service = profile()->GetPushMessagingService();
   ASSERT_TRUE(push_service);
 
@@ -313,7 +320,13 @@ TEST_F(PushMessagingServiceTest, NormalizeSenderInfo) {
   EXPECT_EQ(p256dh, push_messaging::NormalizeSenderInfo(p256dh));
 }
 
-TEST_F(PushMessagingServiceTest, RemoveExpiredSubscriptions) {
+// Fails too often on Linux TSAN builder: http://crbug.com/1211350.
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_RemoveExpiredSubscriptions DISABLED_RemoveExpiredSubscriptions
+#else
+#define MAYBE_RemoveExpiredSubscriptions RemoveExpiredSubscriptions
+#endif
+TEST_F(PushMessagingServiceTest, MAYBE_RemoveExpiredSubscriptions) {
   // (1) Enable push subscriptions with expiration time and
   // `pushsubscriptionchange` events
   base::test::ScopedFeatureList scoped_feature_list_;
