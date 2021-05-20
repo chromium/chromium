@@ -180,6 +180,7 @@ source_set("wayland") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//skia",
+    "//third_party/libsync",
     "//third_party/wayland:wayland_util",
     "//third_party/wayland-protocols:cursor_shapes_protocol",
     "//third_party/wayland-protocols:extended_drag",

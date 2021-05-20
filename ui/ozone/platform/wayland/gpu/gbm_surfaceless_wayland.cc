@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.h"
 
+#include <sync/sync.h>
 #include <memory>
 
 #include "base/bind.h"
@@ -276,7 +277,6 @@ void GbmSurfacelessWayland::SetNoGLFlushForTests() {
 void GbmSurfacelessWayland::OnSubmission(BufferId buffer_id,
                                          const gfx::SwapResult& swap_result,
                                          gfx::GpuFenceHandle release_fence) {
-  DCHECK(release_fence.is_null());
   // submitted_frames_ may temporarily have more than one buffer in it if
   // buffers are released out of order by the Wayland server.
   DCHECK(!submitted_frames_.empty() || background_buffer_id_ == buffer_id);
@@ -294,6 +294,19 @@ void GbmSurfacelessWayland::OnSubmission(BufferId buffer_id,
         submitted_frame->swap_result = swap_result;
       }
       submitted_frame->pending_presentation_buffers.insert(buffer_id);
+
+      // Accumulate release fences into a single fence.
+      if (!release_fence.is_null()) {
+        if (submitted_frame->merged_release_fence_fd.is_valid()) {
+          submitted_frame->merged_release_fence_fd.reset(
+              sync_merge("", submitted_frame->merged_release_fence_fd.get(),
+                         release_fence.owned_fd.get()));
+        } else {
+          submitted_frame->merged_release_fence_fd =
+              std::move(release_fence.owned_fd);
+        }
+        DCHECK(submitted_frame->merged_release_fence_fd.is_valid());
+      }
       break;
     }
   }
@@ -309,8 +322,13 @@ void GbmSurfacelessWayland::OnSubmission(BufferId buffer_id,
     submitted_frames_.erase(submitted_frames_.begin());
     submitted_frame->overlays.clear();
 
+    gfx::GpuFenceHandle release_fence;
+    if (submitted_frame->merged_release_fence_fd.is_valid())
+      release_fence.owned_fd =
+          std::move(submitted_frame->merged_release_fence_fd);
     std::move(submitted_frame->completion_callback)
-        .Run(gfx::SwapCompletionResult(submitted_frame->swap_result));
+        .Run(gfx::SwapCompletionResult(submitted_frame->swap_result,
+                                       std::move(release_fence)));
 
     pending_presentation_frames_.push_back(std::move(submitted_frame));
   }
