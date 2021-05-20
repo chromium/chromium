@@ -19,7 +19,7 @@ const AutomationNode = chrome.automation.AutomationNode;
  * This class handles the behavior of keyboard nodes directly associated with a
  * single AutomationNode.
  */
-class KeyboardNode extends BasicNode {
+export class KeyboardNode extends BasicNode {
   /**
    * @param {!AutomationNode} node
    * @param {!SARootNode} parent
