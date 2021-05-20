@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/string_util.h"
 #include "chrome/android/chrome_jni_headers/SaveAddressProfilePromptController_jni.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/browser_process.h"
@@ -104,27 +105,30 @@ std::u16string SaveAddressProfilePromptController::GetSubtitle() {
 std::pair<std::u16string, std::u16string>
 SaveAddressProfilePromptController::GetDiffFromOldToNewProfile() {
   DCHECK(original_profile_);
-  // TODO(crbug.com/1167061): Switch to using GetProfileDifferenceForUi.
-  base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
-      differences = AutofillProfileComparator::GetProfileDifferenceMap(
-          original_profile_.value(), profile_,
-          autofill::ServerFieldTypeSet(
-              std::begin(kVisibleTypesForProfileDifferences),
-              std::end(kVisibleTypesForProfileDifferences)),
-          g_browser_process->GetApplicationLocale());
-  std::vector<std::u16string> old_values;
-  std::vector<std::u16string> new_values;
-  for (auto type : kVisibleTypesForProfileDifferences) {
-    auto it = differences.find(type);
-    if (it == differences.end())
-      continue;
-    if (!it->second.first.empty())
-      old_values.push_back(it->second.first);
-    if (!it->second.second.empty())
-      new_values.push_back(it->second.second);
+  std::vector<ProfileValueDifference> differences =
+      GetProfileDifferenceForUi(original_profile_.value(), profile_,
+                                g_browser_process->GetApplicationLocale());
+
+  std::u16string old_diff;
+  std::u16string new_diff;
+  for (const auto& diff : differences) {
+    if (!diff.first_value.empty()) {
+      old_diff += diff.first_value + u"\n";
+      // Add an extra newline to separate address and the following contacts.
+      if (diff.type == ADDRESS_HOME_ADDRESS)
+        old_diff += u"\n";
+    }
+    if (!diff.second_value.empty()) {
+      new_diff += diff.second_value + u"\n";
+      // Add an extra newline to separate address and the following contacts.
+      if (diff.type == ADDRESS_HOME_ADDRESS)
+        new_diff += u"\n";
+    }
   }
-  return std::make_pair(base::JoinString(old_values, u"\n"),
-                        base::JoinString(new_values, u"\n"));
+  // Make sure there will be no newlines in the end.
+  base::TrimString(old_diff, base::kWhitespaceASCIIAs16, &old_diff);
+  base::TrimString(new_diff, base::kWhitespaceASCIIAs16, &new_diff);
+  return std::make_pair(std::move(old_diff), std::move(new_diff));
 }
 
 base::android::ScopedJavaLocalRef<jobject>

@@ -90,13 +90,13 @@ void SaveAddressProfilePromptControllerTest::SetUpController(bool is_update) {
 }
 
 TEST_F(SaveAddressProfilePromptControllerTest,
-       ShouldShowViewOnDisplayPrompt_Save) {
+       ShouldShowViewOnDisplayPromptWhenSave) {
   EXPECT_CALL(*prompt_view_, Show(controller_.get(), profile_, false));
   controller_->DisplayPrompt();
 }
 
 TEST_F(SaveAddressProfilePromptControllerTest,
-       ShouldShowViewOnDisplayPrompt_Update) {
+       ShouldShowViewOnDisplayPromptWhenUpdate) {
   SetUpController(/*is_update=*/true);
   EXPECT_CALL(*prompt_view_, Show(controller_.get(), profile_, true));
   controller_->DisplayPrompt();
@@ -168,7 +168,8 @@ TEST_F(SaveAddressProfilePromptControllerTest,
   controller_.reset();
 }
 
-TEST_F(SaveAddressProfilePromptControllerTest, ShouldReturnDataToDisplay_Save) {
+TEST_F(SaveAddressProfilePromptControllerTest,
+       ShouldReturnDataToDisplayWhenSave) {
   EXPECT_EQ(u"Save address?", controller_->GetTitle());
   EXPECT_EQ(
       u"John H. Doe\nUnderworld\n666 Erebus St.\nApt 8\nElysium, CA "
@@ -181,7 +182,7 @@ TEST_F(SaveAddressProfilePromptControllerTest, ShouldReturnDataToDisplay_Save) {
 }
 
 TEST_F(SaveAddressProfilePromptControllerTest,
-       ShouldReturnDataToDisplay_Update) {
+       ShouldReturnDataToDisplayWhenUpdate) {
   SetUpController(/*is_update=*/true);
   EXPECT_EQ(u"Update address?", controller_->GetTitle());
   EXPECT_EQ(u"John Doe, 666 Erebus St.", controller_->GetSubtitle());
@@ -191,6 +192,27 @@ TEST_F(SaveAddressProfilePromptControllerTest,
   EXPECT_EQ(u"John H. Doe\n16502111111", differences.second);
   EXPECT_EQ(u"Update", controller_->GetPositiveButtonText());
   EXPECT_EQ(u"Cancel", controller_->GetNegativeButtonText());
+}
+
+TEST_F(SaveAddressProfilePromptControllerTest,
+       ShouldReturnDataToDisplayWhenUpdateWithAddressChanged) {
+  original_profile_ = test::GetFullProfile();
+  original_profile_.SetInfo(ADDRESS_HOME_ZIP, u"", GetLocale());
+  original_profile_.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"", GetLocale());
+  SetUpController(/*is_update=*/true);
+
+  // Subtitle should contain the full name only.
+  EXPECT_EQ(u"John H. Doe", controller_->GetSubtitle());
+  std::pair<std::u16string, std::u16string> differences =
+      controller_->GetDiffFromOldToNewProfile();
+  // Differences should contain envelope style address.
+  EXPECT_EQ(u"Underworld\n666 Erebus St.\nApt 8\nElysium, CA \nUnited States",
+            differences.first);
+  // There should be an extra newline between address and contacts data.
+  EXPECT_EQ(
+      u"Underworld\n666 Erebus St.\nApt 8\nElysium, CA 91111\nUnited "
+      u"States\n\n16502111111",
+      differences.second);
 }
 
 }  // namespace autofill
