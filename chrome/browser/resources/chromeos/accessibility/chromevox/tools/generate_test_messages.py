@@ -13,7 +13,7 @@ import sys
 
 def Die(message):
   '''Prints an error message and exit the program.'''
-  print >> sys.stderr, message
+  print(message, file=sys.stderr)
   sys.exit(1)
 
 
