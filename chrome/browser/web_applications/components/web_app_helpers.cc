@@ -69,8 +69,10 @@ AppId GenerateAppId(const absl::optional<std::string>& manifest_id,
   // <start_url_origin>/<manifest_id>.
   // Note: start_url.GetOrigin().spec() returns the origin ending with slash.
   if (manifest_id.has_value()) {
-    return crx_file::id_util::GenerateId(crypto::SHA256HashString(
-        start_url.GetOrigin().spec() + manifest_id.value()));
+    GURL app_id(start_url.GetOrigin().spec() + manifest_id.value());
+    DCHECK(app_id.is_valid());
+    return crx_file::id_util::GenerateId(
+        crypto::SHA256HashString(app_id.spec()));
   }
   return GenerateAppIdFromURL(start_url);
 }

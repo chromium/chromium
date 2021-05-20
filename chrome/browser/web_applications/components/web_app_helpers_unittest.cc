@@ -72,4 +72,18 @@ TEST(WebAppHelpers, IsValidExtensionUrl) {
       GURL("filesystem:http://example.com/path/file.html")));
 }
 
+TEST(WebAppHelpers, ManifestIdEncoding) {
+  GURL start_url("https://example.com/abc");
+  // ASCII character.
+  EXPECT_EQ(GenerateAppId("j", start_url), GenerateAppId("%6a", start_url));
+  EXPECT_EQ(GenerateAppId("%6Ax", start_url), GenerateAppId("%6ax", start_url));
+
+  // Special characters.
+  EXPECT_EQ(GenerateAppId("a😀b", start_url),
+            GenerateAppId("a%F0%9F%98%80b", start_url));
+  EXPECT_EQ(GenerateAppId("a b", start_url), GenerateAppId("a%20b", start_url));
+
+  // "/"" is excluded from encoding according to url spec.
+  EXPECT_NE(GenerateAppId("a/b", start_url), GenerateAppId("a%2Fb", start_url));
+}
 }  // namespace web_app
