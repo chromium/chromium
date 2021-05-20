@@ -49,12 +49,14 @@ std::vector<IconSizes> GetDownloadedShortcutsMenuIconsSizes(
   shortcuts_menu_icons_sizes.reserve(shortcuts_menu_icon_bitmaps.size());
   for (const auto& shortcut_icon_bitmaps : shortcuts_menu_icon_bitmaps) {
     IconSizes icon_sizes;
-    // TODO (crbug.com/1114638): Return monochrome icon sizes too.
     icon_sizes.SetSizesForPurpose(IconPurpose::ANY,
                                   GetSquareSizePxs(shortcut_icon_bitmaps.any));
     icon_sizes.SetSizesForPurpose(
         IconPurpose::MASKABLE,
         GetSquareSizePxs(shortcut_icon_bitmaps.maskable));
+    icon_sizes.SetSizesForPurpose(
+        IconPurpose::MONOCHROME,
+        GetSquareSizePxs(shortcut_icon_bitmaps.monochrome));
     shortcuts_menu_icons_sizes.push_back(std::move(icon_sizes));
   }
   return shortcuts_menu_icons_sizes;

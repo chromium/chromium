@@ -153,6 +153,11 @@ struct WebApplicationShortcutsMenuItemInfo {
   // designed for masking.
   // See https://www.w3.org/TR/appmanifest/#dfn-maskable-purpose
   std::vector<Icon> maskable;
+
+  // List of shortcut icon URLs with associated square size,
+  // designed for monochrome contexts.
+  // See https://www.w3.org/TR/appmanifest/#purpose-member
+  std::vector<Icon> monochrome;
 };
 
 // Structure used when installing a web page as an app.

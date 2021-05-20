@@ -251,22 +251,24 @@ shortcuts_menu_item_infos:
     url: https://example.com/scope1234/shortcut24741963851
     icons:
       any:
+      maskable:
+        url: https://example.com/shortcuts/icon247419638512
+        square_size_px: 28
+      monochrome:
         url: https://example.com/shortcuts/icon247419638511
         square_size_px: 11
         url: https://example.com/shortcuts/icon247419638510
         square_size_px: 1
-      maskable:
-        url: https://example.com/shortcuts/icon247419638512
-        square_size_px: 28
   name: shortcut24741963850
     url: https://example.com/scope1234/shortcut24741963850
     icons:
       any:
-        url: https://example.com/shortcuts/icon247419638501
-        square_size_px: 18
       maskable:
         url: https://example.com/shortcuts/icon247419638500
         square_size_px: 9
+      monochrome:
+        url: https://example.com/shortcuts/icon247419638501
+        square_size_px: 18
 downloaded_shortcuts_menu_icons_sizes:
   index: 0:
     any:
@@ -275,8 +277,8 @@ downloaded_shortcuts_menu_icons_sizes:
     any: 58
     maskable: 160
   index: 2:
-    any: 232 77
-    maskable: 113 154
+    any: 113 90
+    maskable: 77 109
 file_handlers:
   action: https://example.com/open-13087720410
     accept:

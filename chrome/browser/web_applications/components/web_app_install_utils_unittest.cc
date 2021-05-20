@@ -315,8 +315,13 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
 
     icon.url = GURL("http://www.chromium.org/shortcuts/icon1.png");
     icon.square_size_px = kIconSize;
-    shortcuts_menu_item_info.SetShortcutIconInfosForPurpose(
-        (i == 1) ? IconPurpose::MASKABLE : IconPurpose::ANY, {std::move(icon)});
+
+    ASSERT_LE(static_cast<int>(IconPurpose::kMinValue), i);
+    ASSERT_LE(i, static_cast<int>(IconPurpose::kMaxValue));
+    auto purpose = static_cast<IconPurpose>(i);
+
+    shortcuts_menu_item_info.SetShortcutIconInfosForPurpose(purpose,
+                                                            {std::move(icon)});
     web_app_info.shortcuts_menu_item_infos.push_back(
         std::move(shortcuts_menu_item_info));
   }
@@ -369,10 +374,10 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
                     .GetShortcutIconInfosForPurpose(IconPurpose::ANY)
                     .size());
   EXPECT_EQ(1u, web_app_info.shortcuts_menu_item_infos[1]
-                    .GetShortcutIconInfosForPurpose(IconPurpose::MASKABLE)
+                    .GetShortcutIconInfosForPurpose(IconPurpose::MONOCHROME)
                     .size());
   EXPECT_EQ(1u, web_app_info.shortcuts_menu_item_infos[2]
-                    .GetShortcutIconInfosForPurpose(IconPurpose::ANY)
+                    .GetShortcutIconInfosForPurpose(IconPurpose::MASKABLE)
                     .size());
 
   // Test that |manifest.name| takes priority over |manifest.short_name|, and
@@ -413,6 +418,8 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
 
   const GURL kIconUrl3("http://www.chromium.org/shortcuts/icon3.png");
   icon.src = kIconUrl3;
+  icon.purpose = {Purpose::MASKABLE, Purpose::MONOCHROME};
+
   shortcut_item.icons.clear();
   shortcut_item.icons.push_back(icon);
 
@@ -439,12 +446,18 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
           IconPurpose::ANY)[0];
   EXPECT_EQ(kIconUrl2, web_app_shortcut_icon.url);
 
-  EXPECT_EQ(1u, web_app_info.shortcuts_menu_item_infos[1]
+  EXPECT_EQ(0u, web_app_info.shortcuts_menu_item_infos[1]
                     .GetShortcutIconInfosForPurpose(IconPurpose::ANY)
+                    .size());
+  EXPECT_EQ(1u, web_app_info.shortcuts_menu_item_infos[1]
+                    .GetShortcutIconInfosForPurpose(IconPurpose::MONOCHROME)
+                    .size());
+  EXPECT_EQ(1u, web_app_info.shortcuts_menu_item_infos[1]
+                    .GetShortcutIconInfosForPurpose(IconPurpose::MASKABLE)
                     .size());
   web_app_shortcut_icon =
       web_app_info.shortcuts_menu_item_infos[1].GetShortcutIconInfosForPurpose(
-          IconPurpose::ANY)[0];
+          IconPurpose::MONOCHROME)[0];
   EXPECT_EQ(kIconUrl3, web_app_shortcut_icon.url);
 
   // Check file handlers were updated

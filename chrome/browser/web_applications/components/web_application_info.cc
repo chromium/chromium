@@ -161,9 +161,7 @@ WebApplicationShortcutsMenuItemInfo::GetShortcutIconInfosForPurpose(
     IconPurpose purpose) const {
   switch (purpose) {
     case IconPurpose::MONOCHROME:
-      // TODO (crbug.com/1114638): Monochrome support.
-      NOTREACHED();
-      FALLTHROUGH;
+      return monochrome;
     case IconPurpose::ANY:
       return any;
     case IconPurpose::MASKABLE:
@@ -180,8 +178,7 @@ void WebApplicationShortcutsMenuItemInfo::SetShortcutIconInfosForPurpose(
       any = std::move(shortcut_icon_infos);
       return;
     case IconPurpose::MONOCHROME:
-      // TODO (crbug.com/1114638): Monochrome support.
-      NOTREACHED();
+      monochrome = std::move(shortcut_icon_infos);
       return;
     case IconPurpose::MASKABLE:
       maskable = std::move(shortcut_icon_infos);
@@ -257,11 +254,10 @@ bool operator==(const WebApplicationShortcutsMenuItemInfo::Icon& icon1,
 
 bool operator==(const WebApplicationShortcutsMenuItemInfo& shortcut_info1,
                 const WebApplicationShortcutsMenuItemInfo& shortcut_info2) {
-  // TODO (crbug.com/1114638): Add Monochrome support.
   return std::tie(shortcut_info1.name, shortcut_info1.url, shortcut_info1.any,
-                  shortcut_info1.maskable) ==
+                  shortcut_info1.maskable, shortcut_info1.monochrome) ==
          std::tie(shortcut_info2.name, shortcut_info2.url, shortcut_info2.any,
-                  shortcut_info2.maskable);
+                  shortcut_info2.maskable, shortcut_info2.monochrome);
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -282,7 +278,11 @@ std::ostream& operator<<(std::ostream& out,
     out << "      square_size_px: " << icon.square_size_px << std::endl;
   }
 
-  // TODO (crbug.com/1114638): Add Monochrome support.
+  out << "    monochrome:" << std::endl;
+  for (WebApplicationShortcutsMenuItemInfo::Icon icon : info.monochrome) {
+    out << "      url: " << icon.url << std::endl;
+    out << "      square_size_px: " << icon.square_size_px << std::endl;
+  }
 
   return out;
 }

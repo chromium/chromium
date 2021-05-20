@@ -67,12 +67,14 @@ message WebAppShortcutsMenuItemInfoProto {
   required string url = 2;
   repeated sync_pb.WebAppIconInfo shortcut_icon_infos = 3;
   repeated sync_pb.WebAppIconInfo shortcut_icon_infos_maskable = 4;
+  repeated sync_pb.WebAppIconInfo shortcut_icon_infos_monochrome = 5;
 }
 
 // List of icon sizes downloaded to disk for a shortcuts menu item.
 message DownloadedShortcutsMenuIconSizesProto {
   repeated int32 icon_sizes = 1;
   repeated int32 icon_sizes_maskable = 2;
+  repeated int32 icon_sizes_monochrome = 3;
 }
 
 // Full WebApp object data. See detailed comments in

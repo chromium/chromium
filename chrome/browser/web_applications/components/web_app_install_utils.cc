@@ -91,8 +91,8 @@ UpdateShortcutsMenuItemInfosFromManifest(
     shortcut_info.name = shortcut.name;
     shortcut_info.url = shortcut.url;
 
-    std::array<IconPurpose, 2> purposes = {IconPurpose::ANY,
-                                           IconPurpose::MASKABLE};
+    std::array<IconPurpose, 3> purposes = {
+        IconPurpose::ANY, IconPurpose::MASKABLE, IconPurpose::MONOCHROME};
     for (IconPurpose purpose : purposes) {
       std::vector<WebApplicationShortcutsMenuItemInfo::Icon> shortcut_icons;
       for (const auto& icon : shortcut.icons) {
@@ -316,9 +316,8 @@ std::vector<GURL> GetValidIconUrlsToDownload(
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsAppIconShortcutsMenu)) {
     // Also add shortcut icon urls, so they can be downloaded.
-    // TODO (crbug.com/1114638): Support Monochrome icons.
-    std::array<IconPurpose, 2> purposes = {IconPurpose::ANY,
-                                           IconPurpose::MASKABLE};
+    std::array<IconPurpose, 3> purposes = {
+        IconPurpose::ANY, IconPurpose::MASKABLE, IconPurpose::MONOCHROME};
     for (const auto& shortcut : web_app_info.shortcuts_menu_item_infos) {
       for (IconPurpose purpose : purposes) {
         for (const auto& icon :
@@ -340,8 +339,8 @@ void PopulateShortcutItemIcons(WebApplicationInfo* web_app_info,
   for (auto& shortcut : web_app_info->shortcuts_menu_item_infos) {
     IconBitmaps shortcut_icon_bitmaps;
 
-    std::array<IconPurpose, 2> purposes = {IconPurpose::ANY,
-                                           IconPurpose::MASKABLE};
+    std::array<IconPurpose, 3> purposes = {
+        IconPurpose::ANY, IconPurpose::MASKABLE, IconPurpose::MONOCHROME};
     for (IconPurpose purpose : purposes) {
       std::map<SquareSizePx, SkBitmap> bitmaps;
       for (const auto& icon :
