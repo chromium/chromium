@@ -803,8 +803,11 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
     NavigationRequest* navigation_request,
     const mojom::DidCommitProvisionalLoadParams& params) {
   DCHECK(navigation_request);
+
+  // This should be called only when a new document is created. Navigations in
+  // the same document and page activations do not create a new document.
   DCHECK(!navigation_request->IsSameDocument());
-  DCHECK(!navigation_request->IsServedFromBackForwardCache());
+  DCHECK(!navigation_request->IsPageActivation());
 
   // Ignore for now cases where the NavigationRequest is in an unexpectedly
   // early state. Triggered by the following tests:
@@ -9405,12 +9408,10 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
   isolation_info_ = navigation_request->isolation_info_for_subresources();
 
-  // Navigations in the same document, or navigations that activate an existing
-  // bfcached or prerendered document, do not create a new document.
+  // Navigations in the same document and page activations do not create a new
+  // document.
   bool created_new_document =
-      !is_same_document_navigation &&
-      !navigation_request->IsServedFromBackForwardCache() &&
-      !navigation_request->IsPrerenderedPageActivation();
+      !is_same_document_navigation && !navigation_request->IsPageActivation();
 
   // TODO(crbug.com/936696): Remove this after we have RenderDocument.
   // IsWaitingToCommit can be false inside DidCommitNavigationInternal only in
@@ -9504,9 +9505,10 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 void RenderFrameHostImpl::DidCommitNewDocument(
     const mojom::DidCommitProvisionalLoadParams& params,
     NavigationRequest* navigation_request) {
-  // BackForwardCache navigations restore existing document, but never create
-  // new ones.
-  DCHECK(!navigation_request->IsServedFromBackForwardCache());
+  // Navigations in the same document and page activations do not create a new
+  // document.
+  DCHECK(!navigation_request->IsSameDocument());
+  DCHECK(!navigation_request->IsPageActivation());
 
   ResetPermissionsPolicy();
   // There are two type of navigations committing new documents:
