@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 
 namespace {
@@ -36,6 +35,8 @@ static inline bool operator <(const ScreenResolution& a,
 class DesktopResizerWin : public DesktopResizer {
  public:
   DesktopResizerWin();
+  DesktopResizerWin(const DesktopResizerWin&) = delete;
+  DesktopResizerWin& operator=(const DesktopResizerWin&) = delete;
   ~DesktopResizerWin() override;
 
   // DesktopResizer interface.
@@ -64,8 +65,6 @@ class DesktopResizerWin : public DesktopResizer {
 
   std::map<ScreenResolution, DEVMODE> best_mode_for_resolution_;
   DEVMODE initial_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopResizerWin);
 };
 
 DesktopResizerWin::DesktopResizerWin() {
