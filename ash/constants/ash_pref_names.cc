@@ -15,6 +15,10 @@ const char kAssistiveInputFeatureSettings[] =
 const char kAssistPersonalInfoEnabled[] =
     "assistive_input.personal_info_enabled";
 
+// A boolean pref of whether assist predictive writing is enabled.
+const char kAssistPredictiveWritingEnabled[] =
+    "assistive_input.predictive_writing_enabled";
+
 // A boolean pref of whether emoji suggestion is enabled.
 const char kEmojiSuggestionEnabled[] =
     "assistive_input.emoji_suggestion_enabled";

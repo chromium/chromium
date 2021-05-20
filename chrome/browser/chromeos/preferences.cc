@@ -305,6 +305,8 @@ void Preferences::RegisterProfilePrefs(
       chromeos::prefs::kAssistiveInputFeatureSettings);
   registry->RegisterBooleanPref(chromeos::prefs::kAssistPersonalInfoEnabled,
                                 true);
+  registry->RegisterBooleanPref(
+      chromeos::prefs::kAssistPredictiveWritingEnabled, true);
   registry->RegisterBooleanPref(chromeos::prefs::kEmojiSuggestionEnabled, true);
   registry->RegisterBooleanPref(
       chromeos::prefs::kEmojiSuggestionEnterpriseAllowed, true);

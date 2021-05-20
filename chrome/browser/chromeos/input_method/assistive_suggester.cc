@@ -282,8 +282,9 @@ bool AssistiveSuggester::IsEmojiSuggestAdditionEnabled() {
 }
 
 bool AssistiveSuggester::IsMultiWordSuggestEnabled() {
-  // TODO(b/172617062): Add settings page preference for multi word suggestions.
-  return base::FeatureList::IsEnabled(chromeos::features::kAssistMultiWord);
+  return base::FeatureList::IsEnabled(chromeos::features::kAssistMultiWord) &&
+         profile_->GetPrefs()->GetBoolean(
+             prefs::kAssistPredictiveWritingEnabled);
 }
 
 DisabledReason AssistiveSuggester::GetDisabledReasonForPersonalInfo() {
