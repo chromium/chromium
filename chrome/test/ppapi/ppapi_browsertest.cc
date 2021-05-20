@@ -988,7 +988,7 @@ PPAPI_SOCKET_TEST(UDPSocket_SetOption)
 PPAPI_SOCKET_TEST(UDPSocket_SetOption_1_0)
 PPAPI_SOCKET_TEST(UDPSocket_SetOption_1_1)
 
-// Fails on MacOS 11, crbug.com/1211138 .
+// Fails on MacOS 11, crbug.com/1211138.
 #if !defined(OS_MAC)
 PPAPI_SOCKET_TEST(UDPSocket_Broadcast)
 #endif
@@ -999,12 +999,17 @@ PPAPI_SOCKET_TEST(UDPSocket_Multicast)
 // UDPSocketPrivate tests.
 TEST_PPAPI_OUT_OF_PROCESS_VIA_HTTP(UDPSocketPrivate_Connect)
 TEST_PPAPI_OUT_OF_PROCESS_VIA_HTTP(UDPSocketPrivate_ConnectFailure)
+
+// Fails on MacOS 11, crbug.com/1211138.
+#if !defined(OS_MAC)
 TEST_PPAPI_OUT_OF_PROCESS_VIA_HTTP(UDPSocketPrivate_Broadcast)
+#endif
+
 TEST_PPAPI_OUT_OF_PROCESS_VIA_HTTP(UDPSocketPrivate_SetSocketFeatureErrors)
 TEST_PPAPI_NACL(UDPSocketPrivate_Connect)
 TEST_PPAPI_NACL(UDPSocketPrivate_ConnectFailure)
 
-// Fails on MacOS 11, crbug.com/1211138 .
+// Fails on MacOS 11, crbug.com/1211138.
 #if !defined(OS_MAC)
 TEST_PPAPI_NACL(UDPSocketPrivate_Broadcast)
 #endif
