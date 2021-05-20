@@ -9055,6 +9055,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="TextClassifier.SuggestSelection" label=""/>
   <suffix name="TextSuggester.LoadModelResult" label=""/>
   <suffix name="TextSuggester.Suggest" label=""/>
+  <suffix name="WebPlatformHandwritingModel.GetPrediction" label=""/>
+  <suffix name="WebPlatformHandwritingModel.LoadModelResult" label=""/>
   <affected-histogram name="MachineLearningService.CpuTimeMicrosec"/>
   <affected-histogram name="MachineLearningService.ElapsedTimeMicrosec">
     <obsolete>
