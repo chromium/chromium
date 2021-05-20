@@ -30,7 +30,6 @@ const char kChromeUIAutofillInternalsHost[] = "autofill-internals";
 const char kChromeUIBluetoothInternalsHost[] = "bluetooth-internals";
 const char kChromeUIBookmarksHost[] = "bookmarks";
 const char kChromeUIBookmarksURL[] = "chrome://bookmarks/";
-const char kChromeUICastFeedbackHost[] = "cast-feedback";
 const char kChromeUICertificateViewerHost[] = "view-cert";
 const char kChromeUICertificateViewerURL[] = "chrome://view-cert/";
 const char kChromeUIChromeSigninHost[] = "chrome-signin";
@@ -474,6 +473,10 @@ const char kPrivacySandboxSubPagePath[] = "/privacySandbox";
 #if defined(OS_WIN)
 const char kCleanupSubPage[] = "cleanup";
 #endif  // defined(OS_WIN)
+
+#if !defined(OS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+const char kChromeUICastFeedbackHost[] = "cast-feedback";
+#endif
 
 // Extension sub pages.
 const char kExtensionConfigureCommandsSubPage[] = "configureCommands";

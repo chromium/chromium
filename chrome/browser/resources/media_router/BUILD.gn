@@ -13,7 +13,7 @@ preprocess_folder = "preprocessed"
 preprocess_web_components_manifest = "preprocessed_gen_manifest.json"
 
 # Compile the .grd file produced by the "build_grd" target below.
-grit("resources") {
+grit("cast_feedback_ui_resources") {
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.

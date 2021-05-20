@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
@@ -45,7 +46,6 @@
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
 #include "chrome/browser/ui/webui/media/media_history_ui.h"
 #include "chrome/browser/ui/webui/media/webrtc_logs_ui.h"
-#include "chrome/browser/ui/webui/media_router/cast_feedback_ui.h"
 #include "chrome/browser/ui/webui/memory_internals_ui.h"
 #include "chrome/browser/ui/webui/net_export_ui.h"
 #include "chrome/browser/ui/webui/net_internals/net_internals_ui.h"
@@ -316,6 +316,10 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_ui.h"
+#endif
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/ui/webui/media_router/cast_feedback_ui.h"
 #endif
 
 using content::WebUI;
@@ -1004,10 +1008,12 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIWebRtcLogsHost)
     return &NewWebUI<WebRtcLogsUI>;
 #if !defined(OS_ANDROID)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (url.host_piece() == chrome::kChromeUICastFeedbackHost &&
       media_router::MediaRouterEnabled(profile)) {
     return &NewWebUI<media_router::CastFeedbackUI>;
   }
+#endif
   if (url.host_piece() == chrome::kChromeUIMediaRouterInternalsHost &&
       media_router::MediaRouterEnabled(profile)) {
     return &NewWebUI<media_router::MediaRouterInternalsUI>;

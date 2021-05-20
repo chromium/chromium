@@ -31,7 +31,6 @@ group("resources") {
       "feedback_webui:resources",
       "gaia_auth_host:resources",
       "history:resources",
-      "media_router:resources",
       "memories:resources",
       "new_tab_page:resources",
       "new_tab_page_instant:resources",
@@ -40,6 +39,9 @@ group("resources") {
       "settings:resources",
       "tab_search:resources",
     ]
+    if (is_chrome_branded) {
+      public_deps += [ "media_router:cast_feedback_ui_resources" ]
+    }
   }
 
   if (is_chromeos_ash) {

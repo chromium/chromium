@@ -75,7 +75,6 @@ if (include_js_tests) {
       "load_time_data_browsertest.js",
       "management/a11y/management_a11y_test.js",
       "media_internals/media_internals_ui_browsertest.js",
-      "media_router/cast_feedback_ui_browsertest.js",
       "net_internals/net_internals_browsertest.js",
       "ntp4.js",
       "resources/webui_resources_browsertest.js",
@@ -88,6 +87,10 @@ if (include_js_tests) {
       "text_defaults_browsertest.js",
       "webui_resource_async_browsertest.js",
     ]
+
+    if (is_chrome_branded) {
+      sources += [ "media_router/cast_feedback_ui_browsertest.js" ]
+    }
 
     gen_include_files = [
       "a11y/accessibility_audit_rules.js",

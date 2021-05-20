@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class Browser;
@@ -63,8 +64,10 @@ class MediaRouterContextualMenu : public ui::SimpleMenuModel::Delegate {
   // Toggles the preference to enable or disable media remoting.
   void ToggleMediaRemoting();
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Opens feedback page loaded from the media router extension.
   void ReportIssue();
+#endif
 
   Browser* const browser_;
   Observer* const observer_;

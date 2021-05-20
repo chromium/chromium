@@ -1400,8 +1400,6 @@ static_library("ui") {
       "webui/management/management_ui.h",
       "webui/management/management_ui_handler.cc",
       "webui/management/management_ui_handler.h",
-      "webui/media_router/cast_feedback_ui.cc",
-      "webui/media_router/cast_feedback_ui.h",
       "webui/media_router/media_router_internals_ui.cc",
       "webui/media_router/media_router_internals_ui.h",
       "webui/media_router/media_router_internals_webui_message_handler.cc",
@@ -1566,6 +1564,13 @@ static_library("ui") {
       "zoom/chrome_zoom_level_prefs.cc",
       "zoom/chrome_zoom_level_prefs.h",
     ]
+    if (is_chrome_branded) {
+      sources += [
+        "webui/media_router/cast_feedback_ui.cc",
+        "webui/media_router/cast_feedback_ui.h",
+      ]
+    }
+
     deps += [
       "//base/util/values:values_util",
       "//build:chromeos_buildflags",

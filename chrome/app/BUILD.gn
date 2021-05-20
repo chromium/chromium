@@ -19,7 +19,10 @@ if (is_android) {
 # This target is for dependency tracking for the command ID header.
 source_set("command_ids") {
   sources = [ "chrome_command_ids.h" ]
-  deps = [ "//build:chromeos_buildflags" ]
+  deps = [
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+  ]
 }
 
 # TODO: put back in chrome/browser if necessary. http://crbug.com/771801.

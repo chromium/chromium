@@ -139,7 +139,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/feedback_resources.pak",
         "$root_gen_dir/chrome/gaia_auth_host_resources.pak",
         "$root_gen_dir/chrome/history_resources.pak",
-        "$root_gen_dir/chrome/media_router_feedback_resources.pak",
         "$root_gen_dir/chrome/memories_resources.pak",
         "$root_gen_dir/chrome/new_tab_page_instant_resources.pak",
         "$root_gen_dir/chrome/new_tab_page_resources.pak",
@@ -163,7 +162,6 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/feedback_webui:resources",
         "//chrome/browser/resources/gaia_auth_host:resources",
         "//chrome/browser/resources/history:resources",
-        "//chrome/browser/resources/media_router:resources",
         "//chrome/browser/resources/memories:resources",
         "//chrome/browser/resources/new_tab_page:resources",
         "//chrome/browser/resources/new_tab_page_instant:resources",
@@ -176,9 +174,14 @@ template("chrome_extra_paks") {
         "//headless:resources",
       ]
       if (is_chrome_branded) {
-        sources +=
-            [ "$root_gen_dir/chrome/preinstalled_web_apps_resources.pak" ]
-        deps += [ "//chrome/browser/resources:preinstalled_web_apps_resources" ]
+        sources += [
+          "$root_gen_dir/chrome/media_router_feedback_resources.pak",
+          "$root_gen_dir/chrome/preinstalled_web_apps_resources.pak",
+        ]
+        deps += [
+          "//chrome/browser/resources:preinstalled_web_apps_resources",
+          "//chrome/browser/resources/media_router:cast_feedback_ui_resources",
+        ]
       }
     }
     if (is_chromeos_ash) {
