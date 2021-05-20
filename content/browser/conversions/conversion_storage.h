@@ -38,7 +38,7 @@ class ConversionStorage {
     // New conversion reports will be sent through this callback for
     // pruning/modification before they are added to storage. This will be
     // called during the execution of
-    // ConversionStorage::MaybeCreateAndStoreConversionReports().
+    // `ConversionStorage::MaybeCreateAndStoreConversionReport()`.
     // The report will be pre-populated from storage with the conversion
     // event data.
     virtual void ProcessNewConversionReport(ConversionReport& report) = 0;
@@ -86,12 +86,12 @@ class ConversionStorage {
   // reporting. Unconverted matching impressions are not modified.
   virtual void StoreImpression(const StorableImpression& impression) = 0;
 
-  // Finds all stored impressions matching a given |conversion|, and stores new
-  // associated conversion reports. The delegate will receive a call
-  // to Delegate::ProcessNewConversionReports() before the reports are added to
-  // storage. Only active impressions will receive new conversions. Returns the
-  // number of new conversion reports that have been scheduled/added to storage.
-  virtual int MaybeCreateAndStoreConversionReports(
+  // Finds all stored impressions matching a given `conversion`, and stores the
+  // new associated conversion report. The delegate will receive a call to
+  // `Delegate::ProcessNewConversionReports()` before the report is added to
+  // storage. Only active impressions will receive new conversions. Returns
+  // whether a new conversion report has been scheduled/added to storage.
+  virtual bool MaybeCreateAndStoreConversionReport(
       const StorableConversion& conversion) = 0;
 
   // Returns all of the conversion reports that should be sent before

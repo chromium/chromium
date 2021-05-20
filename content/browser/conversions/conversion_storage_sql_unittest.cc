@@ -43,7 +43,7 @@ class ConversionStorageSqlTest : public testing::Test {
 
   void AddReportToStorage() {
     storage_->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
-    storage_->MaybeCreateAndStoreConversionReports(DefaultConversion());
+    storage_->MaybeCreateAndStoreConversionReport(DefaultConversion());
   }
 
   base::FilePath db_path() {
@@ -156,12 +156,12 @@ TEST_F(ConversionStorageSqlTest, ClearDataWithVestigialConversion) {
   storage()->StoreImpression(impression);
 
   clock()->Advance(base::TimeDelta::FromDays(1));
-  EXPECT_EQ(
-      1, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
   clock()->Advance(base::TimeDelta::FromDays(1));
-  EXPECT_EQ(
-      1, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
   // Use a time range that only intersects the last conversion.
   storage()->ClearData(clock()->Now(), clock()->Now(),
@@ -204,12 +204,12 @@ TEST_F(ConversionStorageSqlTest, ClearAllDataWithVestigialConversion) {
   storage()->StoreImpression(impression);
 
   clock()->Advance(base::TimeDelta::FromDays(1));
-  EXPECT_EQ(
-      1, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
   clock()->Advance(base::TimeDelta::FromDays(1));
-  EXPECT_EQ(
-      1, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
   // Use a time range that only intersects the last conversion.
   auto null_filter = base::RepeatingCallback<bool(const url::Origin&)>();
@@ -254,11 +254,11 @@ TEST_F(ConversionStorageSqlTest, DeleteEverything) {
     clock()->Advance(base::TimeDelta::FromDays(1));
   }
 
-  EXPECT_EQ(
-      1, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
   clock()->Advance(base::TimeDelta::FromDays(1));
-  EXPECT_EQ(
-      1, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
   auto null_filter = base::RepeatingCallback<bool(const url::Origin&)>();
   storage()->ClearData(base::Time::Min(), base::Time::Max(), null_filter);
@@ -293,8 +293,8 @@ TEST_F(ConversionStorageSqlTest, MaxImpressionsPerOrigin) {
   storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
   storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
   storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
-  EXPECT_EQ(
-      1, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
   CloseDatabase();
   sql::Database raw_db;
@@ -311,12 +311,12 @@ TEST_F(ConversionStorageSqlTest, MaxConversionsPerOrigin) {
   OpenDatabase();
   delegate()->set_max_conversions_per_origin(2);
   storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
-  EXPECT_EQ(
-      1, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
-  EXPECT_EQ(
-      1, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
-  EXPECT_EQ(
-      0, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+  EXPECT_FALSE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
   CloseDatabase();
   sql::Database raw_db;
@@ -353,7 +353,7 @@ TEST_F(ConversionStorageSqlTest,
   clock()->Advance(base::TimeDelta::FromDays(1));
   StorableConversion conversion("1", net::SchemefulSite(conversion_origin),
                                 reporting_origin);
-  EXPECT_EQ(1, storage()->MaybeCreateAndStoreConversionReports(conversion));
+  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
 
   clock()->Advance(base::TimeDelta::FromDays(1));
   EXPECT_TRUE(storage()->DeleteConversion(1));
@@ -397,7 +397,7 @@ TEST_F(ConversionStorageSqlTest,
   clock()->Advance(base::TimeDelta::FromDays(1));
   StorableConversion conversion("1", net::SchemefulSite(conversion_origin),
                                 reporting_origin);
-  EXPECT_EQ(1, storage()->MaybeCreateAndStoreConversionReports(conversion));
+  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
 
   clock()->Advance(base::TimeDelta::FromDays(1));
   EXPECT_TRUE(storage()->DeleteConversion(1));
@@ -429,8 +429,8 @@ TEST_F(ConversionStorageSqlTest, CantOpenDb_FailsSilentlyInRelease) {
 
   // These calls should be no-ops.
   storage->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
-  EXPECT_EQ(0,
-            storage->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+  EXPECT_FALSE(
+      storage->MaybeCreateAndStoreConversionReport(DefaultConversion()));
 }
 
 TEST_F(ConversionStorageSqlTest, DatabaseDirDoesExist_CreateDirAndOpenDB) {
@@ -443,8 +443,8 @@ TEST_F(ConversionStorageSqlTest, DatabaseDirDoesExist_CreateDirAndOpenDB) {
 
   // The directory should be created, and the database opened.
   storage->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
-  EXPECT_EQ(1,
-            storage->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+  EXPECT_TRUE(
+      storage->MaybeCreateAndStoreConversionReport(DefaultConversion()));
 }
 
 TEST_F(ConversionStorageSqlTest, DBinitializationSucceeds_HistogramRecorded) {

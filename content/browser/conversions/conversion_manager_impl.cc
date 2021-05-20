@@ -166,9 +166,9 @@ void ConversionManagerImpl::HandleConversion(
   // TODO(https://crbug.com/1043345): Add UMA for the number of conversions we
   // are logging to storage, and the number of new reports logged to storage.
   conversion_storage_
-      .AsyncCall(&ConversionStorage::MaybeCreateAndStoreConversionReports)
+      .AsyncCall(&ConversionStorage::MaybeCreateAndStoreConversionReport)
       .WithArgs(conversion)
-      .Then(base::DoNothing::Once<int>());
+      .Then(base::DoNothing::Once<bool>());
 
   // If we are running in debug mode, we should also schedule a task to
   // gather and send any new reports.

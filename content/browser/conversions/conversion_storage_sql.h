@@ -78,7 +78,7 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
 
   // ConversionStorage
   void StoreImpression(const StorableImpression& impression) override;
-  int MaybeCreateAndStoreConversionReports(
+  bool MaybeCreateAndStoreConversionReport(
       const StorableConversion& conversion) override;
   std::vector<ConversionReport> GetConversionsToReport(base::Time expiry_time,
                                                        int limit = -1) override;

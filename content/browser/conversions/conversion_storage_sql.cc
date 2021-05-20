@@ -185,11 +185,11 @@ void ConversionStorageSql::StoreImpression(
   transaction.Commit();
 }
 
-int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
+bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
     const StorableConversion& conversion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
-    return 0;
+    return false;
 
   const net::SchemefulSite& conversion_destination =
       conversion.conversion_destination();
@@ -199,7 +199,7 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
   int capacity =
       GetCapacityForStoringConversion(serialized_conversion_destination);
   if (capacity == 0)
-    return 0;
+    return false;
 
   const url::Origin& reporting_origin = conversion.reporting_origin();
   DCHECK(!conversion_destination.opaque());
@@ -256,7 +256,7 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
 
   // Exit early if the last statement wasn't valid or if we have no impressions.
   if (!statement.Succeeded() || impressions.empty())
-    return 0;
+    return false;
 
   const StorableImpression& impression_to_attribute =
       delegate_->GetImpressionToAttribute(impressions);
@@ -271,11 +271,11 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
   delegate_->ProcessNewConversionReport(report);
 
   if (!rate_limit_table_.IsAttributionAllowed(db_.get(), report, current_time))
-    return 0;
+    return false;
 
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
-    return 0;
+    return false;
 
   const char kStoreConversionSql[] =
       "INSERT INTO conversions "
@@ -288,7 +288,7 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
   store_conversion_statement.BindTime(2, current_time);
   store_conversion_statement.BindTime(3, report.report_time);
   if (!store_conversion_statement.Run())
-    return 0;
+    return false;
 
   // Mark impressions inactive if they hit the max conversions allowed limit
   // supplied by the delegate. Because only active impressions log conversions,
@@ -314,7 +314,7 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
   impression_update_statement.BindInt(0, max_prior_conversions_before_inactive);
   impression_update_statement.BindInt64(1, *report.impression.impression_id());
   if (!impression_update_statement.Run())
-    return 0;
+    return false;
 
   // Delete all unattributed impressions.
   const char kDeleteUnattributedImpressionsSql[] =
@@ -328,7 +328,7 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
     delete_impression_statement.Reset(/*clear_bound_vars=*/true);
     delete_impression_statement.BindInt64(0, *impression.impression_id());
     if (!delete_impression_statement.Run())
-      return 0;
+      return false;
     // Based on the deletion logic here and the fact that we delete impressions
     // with |num_conversions > 1| when there is a new matching impression in
     // |StoreImpression()|, we should be guaranteed that these impressions all
@@ -338,11 +338,9 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
   }
 
   if (!rate_limit_table_.AddRateLimit(db_.get(), report))
-    return 0;
+    return false;
 
-  if (!transaction.Commit())
-    return 0;
-  return 1;
+  return transaction.Commit();
 }
 
 std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
@@ -948,18 +946,18 @@ bool ConversionStorageSql::CreateSchema() {
     return false;
 
   // Optimizes impression lookup by conversion destination/reporting origin
-  // during calls to MaybeCreateAndStoreConversionReports(), StoreImpression(),
-  // DeleteExpiredImpressions(). Impressions and conversions are considered
-  // matching if they share this pair. These calls only look at active
-  // conversions, so include |active| in the index.
+  // during calls to `MaybeCreateAndStoreConversionReport()`,
+  // `StoreImpression()`, `DeleteExpiredImpressions()`. Impressions and
+  // conversions are considered matching if they share this pair. These calls
+  // only look at active conversions, so include |active| in the index.
   const char kConversionDestinationIndexSql[] =
       "CREATE INDEX IF NOT EXISTS conversion_destination_idx "
       "ON impressions(active, conversion_destination, reporting_origin)";
   if (!db_->Execute(kConversionDestinationIndexSql))
     return false;
 
-  // Optimizes calls to DeleteExpiredImpressions() and
-  // MaybeCreateAndStoreConversionReports() by indexing impressions by expiry
+  // Optimizes calls to `DeleteExpiredImpressions()` and
+  // `MaybeCreateAndStoreConversionReport()` by indexing impressions by expiry
   // time. Both calls require only returning impressions that expire after a
   // given time.
   const char kImpressionExpiryIndexSql[] =
