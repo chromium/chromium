@@ -7,102 +7,28 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/stl_util.h"
 #include "components/sync/base/sync_base_switches.h"
-#include "components/sync/engine/polling_constants.h"
 
 namespace syncer {
 
 namespace {
 
-// Delays for syncer nudges.
-constexpr base::TimeDelta kDefaultNudgeDelay =
-    base::TimeDelta::FromMilliseconds(200);
-constexpr base::TimeDelta kSlowNudgeDelay =
-    base::TimeDelta::FromMilliseconds(2000);
-constexpr base::TimeDelta kSyncRefreshDelay =
+// Nudge delays for local refresh and invalidations. Common to all data types.
+constexpr base::TimeDelta kLocalRefreshDelay =
     base::TimeDelta::FromMilliseconds(500);
-constexpr base::TimeDelta kSyncSchedulerDelay =
+constexpr base::TimeDelta kRemoteInvalidationDelay =
     base::TimeDelta::FromMilliseconds(250);
-
-base::TimeDelta GetSharingMessageDelay(base::TimeDelta default_delay) {
-  if (!base::FeatureList::IsEnabled(
-          switches::kSyncCustomSharingMessageNudgeDelay)) {
-    return default_delay;
-  }
-
-  return base::TimeDelta::FromMilliseconds(
-      switches::kSyncSharingMessageNudgeDelayMilliseconds.Get());
-}
-
-base::TimeDelta GetDefaultDelayForType(ModelType model_type,
-                                       base::TimeDelta minimum_delay) {
-  switch (model_type) {
-    case AUTOFILL:
-    case USER_EVENTS:
-      // Accompany types rely on nudges from other types, and hence have long
-      // nudge delays.
-      return kDefaultPollInterval;
-    case BOOKMARKS:
-    case PREFERENCES:
-    case SESSIONS:
-      // Types with sometimes automatic changes get longer delays to allow more
-      // coalescing.
-      return kSlowNudgeDelay;
-    case SHARING_MESSAGE:
-      return GetSharingMessageDelay(minimum_delay);
-    case PASSWORDS:
-    case AUTOFILL_PROFILE:
-    case AUTOFILL_WALLET_DATA:
-    case AUTOFILL_WALLET_METADATA:
-    case AUTOFILL_WALLET_OFFER:
-    case THEMES:
-    case TYPED_URLS:
-    case EXTENSIONS:
-    case SEARCH_ENGINES:
-    case APPS:
-    case APP_SETTINGS:
-    case EXTENSION_SETTINGS:
-    case HISTORY_DELETE_DIRECTIVES:
-    case DICTIONARY:
-    case DEVICE_INFO:
-    case PRIORITY_PREFERENCES:
-    case SUPERVISED_USER_SETTINGS:
-    case APP_LIST:
-    case ARC_PACKAGE:
-    case PRINTERS:
-    case READING_LIST:
-    case USER_CONSENTS:
-    case SEND_TAB_TO_SELF:
-    case SECURITY_EVENTS:
-    case WIFI_CONFIGURATIONS:
-    case WEB_APPS:
-    case OS_PREFERENCES:
-    case OS_PRIORITY_PREFERENCES:
-    case PROXY_TABS:
-    case NIGORI:
-      return minimum_delay;
-    case UNSPECIFIED:
-      NOTREACHED();
-      return minimum_delay;
-  }
-}
 
 }  // namespace
 
-NudgeTracker::NudgeTracker()
-    : invalidations_enabled_(false),
-      invalidations_out_of_sync_(true),
-      minimum_local_nudge_delay_(kDefaultNudgeDelay),
-      local_refresh_nudge_delay_(kSyncRefreshDelay),
-      remote_invalidation_nudge_delay_(kSyncSchedulerDelay) {
-  // Default initialize all the type trackers.
+NudgeTracker::NudgeTracker() {
   for (ModelType type : ProtocolTypes()) {
-    type_trackers_.emplace(
-        type, std::make_unique<DataTypeTracker>(kDefaultMaxPayloadsPerType));
+    type_trackers_[type] = std::make_unique<DataTypeTracker>(type);
   }
 }
 
-NudgeTracker::~NudgeTracker() {}
+NudgeTracker::~NudgeTracker() = default;
 
 bool NudgeTracker::IsSyncRequired(ModelTypeSet types) const {
   if (IsRetryRequired()) {
@@ -176,16 +102,9 @@ void NudgeTracker::RecordInitialSyncDone(ModelTypeSet types) {
 }
 
 base::TimeDelta NudgeTracker::RecordLocalChange(ModelType type) {
-  // TODO(crbug.com/1210906): Part of the logic to compute this delay is in
-  // NudgeTracker and part is in DataTypeTracker. Move it all to one class.
-  // |minimum_local_nudge_delay_| also isn't respected for SHARING_MESSAGE.
-  TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-  DCHECK(tracker_it != type_trackers_.end());
-  base::TimeDelta type_delay = tracker_it->second->RecordLocalChange();
-  if (type_delay.is_zero()) {
-    type_delay = GetDefaultDelayForType(type, minimum_local_nudge_delay_);
-  }
-  return std::min(kDefaultPollInterval, type_delay);
+  DCHECK(base::Contains(type_trackers_, type));
+  type_trackers_[type]->RecordLocalChange();
+  return type_trackers_[type]->GetLocalChangeNudgeDelay();
 }
 
 base::TimeDelta NudgeTracker::RecordLocalRefreshRequest(ModelTypeSet types) {
@@ -194,7 +113,7 @@ base::TimeDelta NudgeTracker::RecordLocalRefreshRequest(ModelTypeSet types) {
     DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToString(type);
     tracker_it->second->RecordLocalRefreshRequest();
   }
-  return local_refresh_nudge_delay_;
+  return kLocalRefreshDelay;
 }
 
 base::TimeDelta NudgeTracker::RecordRemoteInvalidation(
@@ -204,7 +123,7 @@ base::TimeDelta NudgeTracker::RecordRemoteInvalidation(
   TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
   DCHECK(tracker_it != type_trackers_.end());
   tracker_it->second->RecordRemoteInvalidation(std::move(invalidation));
-  return remote_invalidation_nudge_delay_;
+  return kRemoteInvalidationDelay;
 }
 
 void NudgeTracker::RecordInitialSyncRequired(ModelType type) {
@@ -405,29 +324,18 @@ void NudgeTracker::SetNextRetryTime(base::TimeTicks retry_time) {
   next_retry_time_ = retry_time;
 }
 
-void NudgeTracker::OnReceivedCustomNudgeDelays(
-    const std::map<ModelType, base::TimeDelta>& delay_map) {
-  for (const auto& type_and_delay : delay_map) {
-    ModelType type = type_and_delay.first;
-    base::TimeDelta delay = type_and_delay.second;
-    DCHECK(ProtocolTypes().Has(type));
-    TypeTrackerMap::const_iterator type_iter = type_trackers_.find(type);
-    if (type_iter == type_trackers_.end()) {
-      continue;
-    }
-    DataTypeTracker* type_tracker = type_iter->second.get();
-
-    if (delay > minimum_local_nudge_delay_) {
-      type_tracker->UpdateLocalNudgeDelay(delay);
-    } else {
-      type_tracker->UpdateLocalNudgeDelay(
-          GetDefaultDelayForType(type, minimum_local_nudge_delay_));
-    }
+void NudgeTracker::UpdateLocalChangeDelay(ModelType type,
+                                          const base::TimeDelta& delay) {
+  if (base::Contains(type_trackers_, type)) {
+    type_trackers_[type]->UpdateLocalChangeNudgeDelay(delay);
   }
 }
 
-void NudgeTracker::SetDefaultNudgeDelay(base::TimeDelta nudge_delay) {
-  minimum_local_nudge_delay_ = nudge_delay;
+void NudgeTracker::SetLocalChangeDelayIgnoringMinForTest(
+    ModelType type,
+    const base::TimeDelta& delay) {
+  DCHECK(base::Contains(type_trackers_, type));
+  type_trackers_[type]->SetLocalChangeNudgeDelayIgnoringMinForTest(delay);
 }
 
 }  // namespace syncer

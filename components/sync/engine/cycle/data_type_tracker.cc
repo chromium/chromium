@@ -5,19 +5,80 @@
 #include "components/sync/engine/cycle/data_type_tracker.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "components/sync/engine/polling_constants.h"
 
 namespace syncer {
 
 namespace {
 
-#define ENUM_CASE(x) \
-  case x:            \
-    return #x;       \
-    break;
+// Possible nudge delays for local changes.
+constexpr base::TimeDelta kMinLocalChangeNudgeDelay =
+    base::TimeDelta::FromMilliseconds(50);
+constexpr base::TimeDelta kMediumLocalChangeNudgeDelay =
+    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kBigLocalChangeNudgeDelay =
+    base::TimeDelta::FromMilliseconds(2000);
+constexpr base::TimeDelta kVeryBigLocalChangeNudgeDelay = kDefaultPollInterval;
+
+const size_t kDefaultMaxPayloadsPerType = 10;
+
+base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
+  switch (model_type) {
+    case AUTOFILL:
+    case USER_EVENTS:
+      // Accompany types rely on nudges from other types, and hence have long
+      // nudge delays.
+      return kVeryBigLocalChangeNudgeDelay;
+    case BOOKMARKS:
+    case PREFERENCES:
+    case SESSIONS:
+      // Types with sometimes automatic changes get longer delays to allow more
+      // coalescing.
+      return kBigLocalChangeNudgeDelay;
+    case SHARING_MESSAGE:
+      // Sharing messages are time-sensitive, so use a small nudge delay.
+      return kMinLocalChangeNudgeDelay;
+    case PASSWORDS:
+    case AUTOFILL_PROFILE:
+    case AUTOFILL_WALLET_DATA:
+    case AUTOFILL_WALLET_METADATA:
+    case AUTOFILL_WALLET_OFFER:
+    case THEMES:
+    case TYPED_URLS:
+    case EXTENSIONS:
+    case SEARCH_ENGINES:
+    case APPS:
+    case APP_SETTINGS:
+    case EXTENSION_SETTINGS:
+    case HISTORY_DELETE_DIRECTIVES:
+    case DICTIONARY:
+    case DEVICE_INFO:
+    case PRIORITY_PREFERENCES:
+    case SUPERVISED_USER_SETTINGS:
+    case APP_LIST:
+    case ARC_PACKAGE:
+    case PRINTERS:
+    case READING_LIST:
+    case USER_CONSENTS:
+    case SEND_TAB_TO_SELF:
+    case SECURITY_EVENTS:
+    case WIFI_CONFIGURATIONS:
+    case WEB_APPS:
+    case OS_PREFERENCES:
+    case OS_PRIORITY_PREFERENCES:
+    case PROXY_TABS:
+    case NIGORI:
+      return kMediumLocalChangeNudgeDelay;
+    case UNSPECIFIED:
+      NOTREACHED();
+      return base::TimeDelta();
+  }
+}
 
 }  // namespace
 
@@ -26,33 +87,23 @@ WaitInterval::WaitInterval() : mode(UNKNOWN) {}
 WaitInterval::WaitInterval(BlockingMode mode, base::TimeDelta length)
     : mode(mode), length(length) {}
 
-WaitInterval::~WaitInterval() {}
+WaitInterval::~WaitInterval() = default;
 
-const char* WaitInterval::GetModeString(BlockingMode mode) {
-  switch (mode) {
-    ENUM_CASE(UNKNOWN);
-    ENUM_CASE(EXPONENTIAL_BACKOFF);
-    ENUM_CASE(THROTTLED);
-    ENUM_CASE(EXPONENTIAL_BACKOFF_RETRYING);
-  }
-  NOTREACHED();
-  return "";
-}
-
-#undef ENUM_CASE
-
-DataTypeTracker::DataTypeTracker(size_t initial_payload_buffer_size)
+DataTypeTracker::DataTypeTracker(ModelType type)
     : local_nudge_count_(0),
       local_refresh_request_count_(0),
-      payload_buffer_size_(initial_payload_buffer_size),
+      payload_buffer_size_(kDefaultMaxPayloadsPerType),
       initial_sync_required_(false),
-      sync_required_to_resolve_conflict_(false) {}
+      sync_required_to_resolve_conflict_(false),
+      local_change_nudge_delay_(GetDefaultLocalChangeNudgeDelay(type)) {
+  // Sanity check the hardcode value for kMinLocalChangeNudgeDelay.
+  DCHECK_GE(local_change_nudge_delay_, kMinLocalChangeNudgeDelay);
+}
 
-DataTypeTracker::~DataTypeTracker() {}
+DataTypeTracker::~DataTypeTracker() = default;
 
-base::TimeDelta DataTypeTracker::RecordLocalChange() {
+void DataTypeTracker::RecordLocalChange() {
   local_nudge_count_++;
-  return nudge_delay_;
 }
 
 void DataTypeTracker::RecordLocalRefreshRequest() {
@@ -300,8 +351,15 @@ void DataTypeTracker::UpdateThrottleOrBackoffState() {
   }
 }
 
-void DataTypeTracker::UpdateLocalNudgeDelay(base::TimeDelta delay) {
-  nudge_delay_ = delay;
+void DataTypeTracker::UpdateLocalChangeNudgeDelay(base::TimeDelta delay) {
+  // Protect against delays too small being set.
+  if (delay >= kMinLocalChangeNudgeDelay) {
+    local_change_nudge_delay_ = delay;
+  }
+}
+
+base::TimeDelta DataTypeTracker::GetLocalChangeNudgeDelay() const {
+  return local_change_nudge_delay_;
 }
 
 WaitInterval::BlockingMode DataTypeTracker::GetBlockingMode() const {
@@ -309,6 +367,11 @@ WaitInterval::BlockingMode DataTypeTracker::GetBlockingMode() const {
     return WaitInterval::UNKNOWN;
   }
   return wait_interval_->mode;
+}
+
+void DataTypeTracker::SetLocalChangeNudgeDelayIgnoringMinForTest(
+    base::TimeDelta delay) {
+  local_change_nudge_delay_ = delay;
 }
 
 }  // namespace syncer

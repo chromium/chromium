@@ -58,11 +58,11 @@ class NudgeTracker {
   base::TimeDelta RecordLocalChange(ModelType type);
 
   // Takes note of a locally issued request to refresh a data type.
-  // Returns the current nudge delay for a local refresh.
+  // Returns the nudge delay for a local refresh.
   base::TimeDelta RecordLocalRefreshRequest(ModelTypeSet types);
 
   // Takes note of the receipt of an invalidation notice from the server.
-  // Returns the current nudge delay for a remote invalidation.
+  // Returns the nudge delay for a remote invalidation.
   base::TimeDelta RecordRemoteInvalidation(
       ModelType type,
       std::unique_ptr<InvalidationInterface> invalidation);
@@ -151,28 +151,24 @@ class NudgeTracker {
   // SetSyncCycleStartTime() is called at the start of the *next* sync cycle.
   void SetNextRetryTime(base::TimeTicks next_retry_time);
 
-  // Update the per-datatype local change nudge delays.
-  void OnReceivedCustomNudgeDelays(
-      const std::map<ModelType, base::TimeDelta>& delay_map);
+  // Update the per-datatype local change nudge delay. No update happens
+  // if |delay| is too small (less than the smallest default delay).
+  void UpdateLocalChangeDelay(ModelType type, const base::TimeDelta& delay);
 
-  // Update the default nudge delay.
-  void SetDefaultNudgeDelay(base::TimeDelta nudge_delay);
-
-  size_t GetDefaultMaxPayloadsPerTypeForTesting() {
-    return kDefaultMaxPayloadsPerType;
-  }
+  // UpdateLocalChangeDelay() usually rejects a delay update if the value
+  // is too small. This method ignores that check.
+  void SetLocalChangeDelayIgnoringMinForTest(ModelType type,
+                                             const base::TimeDelta& delay);
 
  private:
   using TypeTrackerMap = std::map<ModelType, std::unique_ptr<DataTypeTracker>>;
 
   friend class SyncSchedulerImplTest;
 
-  const size_t kDefaultMaxPayloadsPerType = 10;
-
   TypeTrackerMap type_trackers_;
 
   // Tracks whether or not invalidations are currently enabled.
-  bool invalidations_enabled_;
+  bool invalidations_enabled_ = false;
 
   // This flag is set if suspect that some technical malfunction or known bug
   // may have left us with some unserviced invalidations.
@@ -183,7 +179,7 @@ class NudgeTracker {
   // won't persist invalidations between restarts, so we may be out of sync when
   // we restart.  The only way to get back into sync is to have invalidations
   // enabled, then complete a sync cycle to make sure we're fully up to date.
-  bool invalidations_out_of_sync_;
+  bool invalidations_out_of_sync_ = true;
 
   base::TimeTicks last_successful_sync_time_;
 
@@ -203,11 +199,6 @@ class NudgeTracker {
   // SetSyncCycleStartTime().  This may contain a stale value if we're not
   // currently in a sync cycle.
   base::TimeTicks sync_cycle_start_time_;
-
-  // Nudge delays for various events.
-  base::TimeDelta minimum_local_nudge_delay_;
-  base::TimeDelta local_refresh_nudge_delay_;
-  base::TimeDelta remote_invalidation_nudge_delay_;
 
   DISALLOW_COPY_AND_ASSIGN(NudgeTracker);
 };

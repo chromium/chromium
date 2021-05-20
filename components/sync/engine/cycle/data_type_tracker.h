@@ -37,8 +37,6 @@ struct WaitInterval {
   WaitInterval(BlockingMode mode, base::TimeDelta length);
   ~WaitInterval();
 
-  static const char* GetModeString(BlockingMode mode);
-
   BlockingMode mode;
   base::TimeDelta length;
 };
@@ -46,15 +44,14 @@ struct WaitInterval {
 // A class to track the per-type scheduling data.
 class DataTypeTracker {
  public:
-  explicit DataTypeTracker(size_t initial_payload_buffer_size);
+  explicit DataTypeTracker(ModelType type);
   ~DataTypeTracker();
 
   // For STL compatibility, we do not forbid the creation of a default copy
   // constructor and assignment operator.
 
   // Tracks that a local change has been made to this type.
-  // Returns the current local change nudge delay for this type.
-  base::TimeDelta RecordLocalChange();
+  void RecordLocalChange();
 
   // Tracks that a local refresh request has been made for this type.
   void RecordLocalRefreshRequest();
@@ -143,10 +140,19 @@ class DataTypeTracker {
   void UpdateThrottleOrBackoffState();
 
   // Update the local change nudge delay for this type.
-  void UpdateLocalNudgeDelay(base::TimeDelta delay);
+  // No update happens if |delay| is too small (less than the smallest default
+  // delay).
+  void UpdateLocalChangeNudgeDelay(base::TimeDelta delay);
+
+  // Returns the current local change nudge delay for this type.
+  base::TimeDelta GetLocalChangeNudgeDelay() const;
 
   // Return the BlockingMode for this type.
   WaitInterval::BlockingMode GetBlockingMode() const;
+
+  // UpdateLocalChangeNudgeDelay() usually rejects a delay update if the value
+  // is too small. This method ignores that check.
+  void SetLocalChangeNudgeDelayIgnoringMinForTest(base::TimeDelta delay);
 
  private:
   friend class SyncSchedulerImplTest;
@@ -188,7 +194,7 @@ class DataTypeTracker {
 
   // The amount of time to delay a sync cycle by when a local change for this
   // type occurs.
-  base::TimeDelta nudge_delay_;
+  base::TimeDelta local_change_nudge_delay_;
 
   DISALLOW_COPY_AND_ASSIGN(DataTypeTracker);
 };

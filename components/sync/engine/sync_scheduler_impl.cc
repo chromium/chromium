@@ -28,6 +28,9 @@ namespace syncer {
 
 namespace {
 
+constexpr base::TimeDelta kLocalChangeNudgeDelayForTest =
+    TimeDelta::FromMilliseconds(1);
+
 bool IsConfigRelatedUpdateOriginValue(
     sync_pb::SyncEnums::GetUpdatesOrigin origin) {
   switch (origin) {
@@ -409,17 +412,11 @@ const char* SyncSchedulerImpl::GetModeString(SyncScheduler::Mode mode) {
 
 void SyncSchedulerImpl::ForceShortNudgeDelayForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Set the default nudge delay to 0 because the default is used as a floor
-  // for override values, and we don't want the below override to be ignored.
-  nudge_tracker_.SetDefaultNudgeDelay(TimeDelta::FromMilliseconds(0));
   // Only protocol types can have their delay customized.
-  const ModelTypeSet protocol_types = syncer::ProtocolTypes();
-  const base::TimeDelta short_nudge_delay = TimeDelta::FromMilliseconds(1);
-  std::map<ModelType, base::TimeDelta> nudge_delays;
-  for (ModelType type : protocol_types) {
-    nudge_delays[type] = short_nudge_delay;
+  for (ModelType type : syncer::ProtocolTypes()) {
+    nudge_tracker_.SetLocalChangeDelayIgnoringMinForTest(
+        type, kLocalChangeNudgeDelayForTest);
   }
-  nudge_tracker_.OnReceivedCustomNudgeDelays(nudge_delays);
   // We should prevent further changing of nudge delays so if we use real server
   // for integration test then server is not able to increase delays.
   force_short_nudge_delay_for_test_ = true;
@@ -847,7 +844,10 @@ void SyncSchedulerImpl::OnReceivedCustomNudgeDelays(
   if (force_short_nudge_delay_for_test_)
     return;
 
-  nudge_tracker_.OnReceivedCustomNudgeDelays(nudge_delays);
+  for (const auto& type_and_delay : nudge_delays) {
+    nudge_tracker_.UpdateLocalChangeDelay(type_and_delay.first,
+                                          type_and_delay.second);
+  }
 }
 
 void SyncSchedulerImpl::OnReceivedClientInvalidationHintBufferSize(int size) {

@@ -287,7 +287,7 @@ class SyncSchedulerImplTest : public testing::Test {
     scheduler_ = std::make_unique<SyncSchedulerImpl>(
         "TestSyncScheduler", BackoffDelayProvider::FromDefaults(), context(),
         std::move(syncer), false);
-    scheduler_->nudge_tracker_.SetDefaultNudgeDelay(default_delay());
+    SetDefaultLocalChangeNudgeDelays();
   }
 
   SyncSchedulerImpl* scheduler() { return scheduler_.get(); }
@@ -302,6 +302,13 @@ class SyncSchedulerImplTest : public testing::Test {
     PumpLoop();
     scheduler_.reset();
     PumpLoop();
+  }
+
+  void SetDefaultLocalChangeNudgeDelays() {
+    for (ModelType type : ProtocolTypes()) {
+      scheduler_->nudge_tracker_.SetLocalChangeDelayIgnoringMinForTest(
+          type, default_delay());
+    }
   }
 
   void AnalyzePollRun(const SyncShareTimes& times,
@@ -412,7 +419,7 @@ class SyncSchedulerImplTest : public testing::Test {
     scheduler_ = std::make_unique<SyncSchedulerImpl>(
         "TestSyncScheduler", BackoffDelayProvider::FromDefaults(), context(),
         std::move(syncer), true);
-    scheduler_->nudge_tracker_.SetDefaultNudgeDelay(default_delay());
+    SetDefaultLocalChangeNudgeDelays();
   }
 
   bool BlockTimerIsRunning() const {
