@@ -17,4 +17,11 @@ NoteTemplate::NoteTemplate(NoteTemplateIds id,
       text_style_(text_style),
       footer_style_(footer_style) {}
 
+NoteTemplate::NoteTemplate(const NoteTemplate& other)
+    : id_(other.id()),
+      localized_name_(other.localized_name()),
+      main_background_(other.main_background()),
+      text_style_(other.text_style()),
+      footer_style_(other.footer_style()) {}
+
 }  // namespace content_creation

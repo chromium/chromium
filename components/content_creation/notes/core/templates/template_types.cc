@@ -4,9 +4,38 @@
 
 #include "components/content_creation/notes/core/templates/template_types.h"
 
+#include "base/check.h"
+
 namespace content_creation {
 
-Background::Background(ARGBColor color) : color_(color) {}
+Background::Background(ARGBColor color)
+    : color_(color),
+      colors_(),
+      direction_(LinearGradientDirection::kInvalid),
+      is_linear_gradient_(false) {}
+
+Background::Background(const std::vector<ARGBColor>& colors,
+                       LinearGradientDirection direction)
+    : color_(0U),
+      colors_(colors),
+      direction_(direction),
+      is_linear_gradient_(true) {
+  // Can't have a linear gradient with only one (or no) color.
+  DCHECK(colors_.size() > 1);
+}
+
+Background::Background(const Background& other) {
+  if (other.is_linear_gradient()) {
+    is_linear_gradient_ = true;
+    colors_ = *other.colors();
+    direction_ = other.direction();
+  } else {
+    is_linear_gradient_ = false;
+    color_ = other.color();
+  }
+}
+
+Background::~Background() = default;
 
 TextStyle::TextStyle(const std::string& font_name,
                      ARGBColor font_color,

@@ -4,6 +4,7 @@
 
 #include "components/content_creation/notes/android/note_template_conversion_bridge.h"
 
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/content_creation/notes/android/jni_headers/NoteTemplateConversionBridge_jni.h"
 #include "components/content_creation/notes/core/templates/template_types.h"
@@ -17,6 +18,15 @@ namespace {
 
 ScopedJavaLocalRef<jobject> CreateJavaBackground(JNIEnv* env,
                                                  const Background& background) {
+  if (background.is_linear_gradient()) {
+    const std::vector<int> int_colors(background.colors()->begin(),
+                                      background.colors()->end());
+    ScopedJavaLocalRef<jintArray> int_array =
+        base::android::ToJavaIntArray(env, int_colors);
+
+    return Java_NoteTemplateConversionBridge_createLinearGradientBackground(
+        env, int_array, static_cast<uint16_t>(background.direction()));
+  }
   return Java_NoteTemplateConversionBridge_createBackground(env,
                                                             background.color());
 }

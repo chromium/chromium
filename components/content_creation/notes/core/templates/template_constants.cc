@@ -14,6 +14,7 @@ const uint16_t k400Weight = 400;
 const uint16_t k700Weight = 700;
 
 const char kBebasNeueFontName[] = "Bebas Neue";
+const char kMansalvaFontName[] = "Mansalva";
 const char kRobotoCondensedFontName[] = "Roboto Condensed";
 const char kSourceSerifProFontName[] = "Source Serif Pro";
 
@@ -120,6 +121,18 @@ NoteTemplate GetBoldTemplate() {
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kBlackColor, k400Weight,
                 /*all_caps=*/true, TextAlignment::kCenter),
+      /*footer_style=*/CreateLightBackgroundFooterStyle());
+}
+
+NoteTemplate GetDreamyTemplate() {
+  return NoteTemplate(
+      /*id=*/NoteTemplateIds::kDreamy,
+      l10n_util::GetStringUTF8(IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_DREAMY),
+      Background(/*colors=*/{0xFFDB80B8, 0xFFF39FD3, 0xFFA89CED},
+                 LinearGradientDirection::kTopToBottom),
+      TextStyle(kMansalvaFontName,
+                /*font_color=*/kWhiteColor, k400Weight,
+                /*all_caps=*/false, TextAlignment::kStart),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
 

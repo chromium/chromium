@@ -20,6 +20,8 @@ class NoteTemplate {
                         const TextStyle& text_style,
                         const FooterStyle& footer_style);
 
+  NoteTemplate(const NoteTemplate& other);
+
   NoteTemplateIds id() const { return id_; }
   const std::string localized_name() const { return localized_name_; }
   const Background main_background() const { return main_background_; }

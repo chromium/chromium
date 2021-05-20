@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.content_creation.notes;
 
 import android.app.Dialog;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -76,8 +75,7 @@ public class NoteCreationDialog extends DialogFragment {
         NoteTemplate template = model.get(NoteProperties.TEMPLATE);
 
         View background = parent.findViewById(R.id.background);
-        GradientDrawable outline = (GradientDrawable) background.getBackground();
-        outline.setColor(template.mainBackground.color);
+        template.mainBackground.apply(background);
         background.setClipToOutline(true);
         ((TextView) parent.findViewById(R.id.title)).setText(template.localizedName);
 

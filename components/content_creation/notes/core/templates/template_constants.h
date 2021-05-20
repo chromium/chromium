@@ -9,8 +9,7 @@
 
 namespace content_creation {
 
-// TODO(crbug.com/1194168): Add missing templates: Friendly, Lovely, Groovy and
-// Dreamy.
+// TODO(crbug.com/1194168): Add missing templates: Friendly, Lovely, and Groovy.
 
 // Returns a NoteTemplate with the Classic style.
 NoteTemplate GetClassicTemplate();
@@ -29,6 +28,9 @@ NoteTemplate GetMonochromeTemplate();
 
 // Returns a NoteTemplate with the Bold style.
 NoteTemplate GetBoldTemplate();
+
+// Returns a NoteTemplate with the Dreamy style.
+NoteTemplate GetDreamyTemplate();
 
 }  // namespace content_creation
 

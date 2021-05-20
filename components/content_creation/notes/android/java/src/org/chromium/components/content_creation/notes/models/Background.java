@@ -4,16 +4,12 @@
 
 package org.chromium.components.content_creation.notes.models;
 
-import androidx.annotation.ColorInt;
+import android.view.View;
 
 /**
  * Model class for a template's background.
  */
-public class Background {
-    public final @ColorInt int color;
-
-    /** Constructor. */
-    public Background(@ColorInt int color) {
-        this.color = color;
-    }
+public interface Background {
+    // Draws the background onto |view|'s background.
+    void apply(View view);
 }

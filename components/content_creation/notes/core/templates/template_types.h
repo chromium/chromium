@@ -28,15 +28,44 @@ enum class NoteTemplateIds {
   kMaxValue = kDreamy
 };
 
+// Represents the different supported linear gradient directions. Keep this enum
+// in sync with its Java counterpart of the same name.
+enum class LinearGradientDirection {
+  kInvalid = 0,
+  kTopToBottom = 1,
+  kTopRightToBottomLeft = 2,
+  kRightToLeft = 3,
+  kBottomRightToTopLeft = 4,
+};
+
 // Represents a colored background.
 class Background {
  public:
+  // Creates a solid colored background.
   explicit Background(ARGBColor color);
+
+  // Creates a linear gradient background.
+  explicit Background(const std::vector<ARGBColor>& colors,
+                      LinearGradientDirection direction);
+
+  Background(const Background& other);
+
+  ~Background();
 
   ARGBColor color() const { return color_; }
 
+  const std::vector<ARGBColor>* colors() const { return &colors_; }
+  LinearGradientDirection direction() const { return direction_; }
+
+  bool is_linear_gradient() const { return is_linear_gradient_; }
+
  private:
   ARGBColor color_;
+
+  std::vector<ARGBColor> colors_;
+  LinearGradientDirection direction_;
+
+  bool is_linear_gradient_;
 };
 
 // Represents the different supported text alignment. Keep this enum in sync with its Java
