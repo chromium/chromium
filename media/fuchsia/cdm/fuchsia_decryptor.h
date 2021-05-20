@@ -5,8 +5,6 @@
 #ifndef MEDIA_FUCHSIA_CDM_FUCHSIA_DECRYPTOR_H_
 #define MEDIA_FUCHSIA_CDM_FUCHSIA_DECRYPTOR_H_
 
-#include <memory>
-
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -17,7 +15,6 @@
 namespace media {
 
 class FuchsiaCdmContext;
-class FuchsiaClearStreamDecryptor;
 
 class FuchsiaDecryptor : public Decryptor {
  public:
@@ -44,8 +41,6 @@ class FuchsiaDecryptor : public Decryptor {
 
  private:
   FuchsiaCdmContext* const cdm_context_;
-
-  std::unique_ptr<FuchsiaClearStreamDecryptor> audio_decryptor_;
 
   // TaskRunner for the thread on which |audio_decryptor_| was created.
   scoped_refptr<base::SingleThreadTaskRunner> audio_decryptor_task_runner_;

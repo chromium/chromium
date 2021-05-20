@@ -22,32 +22,16 @@ FuchsiaDecryptor::FuchsiaDecryptor(FuchsiaCdmContext* cdm_context)
 }
 
 FuchsiaDecryptor::~FuchsiaDecryptor() {
-  if (audio_decryptor_) {
-    audio_decryptor_task_runner_->DeleteSoon(FROM_HERE,
-                                             std::move(audio_decryptor_));
-  }
 }
 
 void FuchsiaDecryptor::Decrypt(StreamType stream_type,
                                scoped_refptr<DecoderBuffer> encrypted,
                                DecryptCB decrypt_cb) {
-  if (stream_type != StreamType::kAudio) {
-    std::move(decrypt_cb).Run(Status::kError, nullptr);
-    return;
-  }
-
-  if (!audio_decryptor_) {
-    audio_decryptor_task_runner_ = base::ThreadTaskRunnerHandle::Get();
-    audio_decryptor_ = cdm_context_->CreateAudioDecryptor();
-  }
-
-  audio_decryptor_->Decrypt(std::move(encrypted), std::move(decrypt_cb));
+  std::move(decrypt_cb).Run(Status::kError, nullptr);
 }
 
 void FuchsiaDecryptor::CancelDecrypt(StreamType stream_type) {
-  if (stream_type == StreamType::kAudio && audio_decryptor_) {
-    audio_decryptor_->CancelDecrypt();
-  }
+  NOTREACHED();
 }
 
 void FuchsiaDecryptor::InitializeAudioDecoder(const AudioDecoderConfig& config,

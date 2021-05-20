@@ -15,10 +15,8 @@ class FuchsiaCdmContext {
   FuchsiaCdmContext() = default;
 
   // Creates FuchsiaSecureStreamDecryptor instance for the CDM context.
-  virtual std::unique_ptr<FuchsiaSecureStreamDecryptor> CreateVideoDecryptor(
-      FuchsiaSecureStreamDecryptor::Client* client) = 0;
-  virtual std::unique_ptr<FuchsiaClearStreamDecryptor>
-  CreateAudioDecryptor() = 0;
+  virtual std::unique_ptr<FuchsiaStreamDecryptor> CreateStreamDecryptor(
+      bool secure_mode) = 0;
 
  protected:
   virtual ~FuchsiaCdmContext() = default;

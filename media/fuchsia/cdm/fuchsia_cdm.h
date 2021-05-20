@@ -71,9 +71,8 @@ class FuchsiaCdm : public ContentDecryptionModule,
   FuchsiaCdmContext* GetFuchsiaCdmContext() override;
 
   // FuchsiaCdmContext implementation:
-  std::unique_ptr<FuchsiaSecureStreamDecryptor> CreateVideoDecryptor(
-      FuchsiaSecureStreamDecryptor::Client* client) override;
-  std::unique_ptr<FuchsiaClearStreamDecryptor> CreateAudioDecryptor() override;
+  std::unique_ptr<FuchsiaStreamDecryptor> CreateStreamDecryptor(
+      bool secure_mode) override;
 
  private:
   class CdmSession;
@@ -112,9 +111,9 @@ class FuchsiaCdm : public ContentDecryptionModule,
 
   FuchsiaDecryptor decryptor_;
 
-  base::Lock new_key_cb_for_video_lock_;
-  base::RepeatingClosure new_key_cb_for_video_
-      GUARDED_BY(new_key_cb_for_video_lock_);
+  base::Lock new_key_callbacks_lock_;
+  std::vector<base::RepeatingClosure> new_key_callbacks_
+      GUARDED_BY(new_key_callbacks_lock_);
 
   CallbackRegistry<EventCB::RunType> event_callbacks_;
 

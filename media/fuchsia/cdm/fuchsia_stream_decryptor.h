@@ -11,126 +11,31 @@
 
 #include "base/sequence_checker.h"
 #include "media/base/decryptor.h"
+#include "media/base/media_export.h"
 #include "media/fuchsia/common/stream_processor_helper.h"
+#include "media/fuchsia/common/sysmem_buffer_stream.h"
 #include "media/fuchsia/common/sysmem_client.h"
 #include "media/fuchsia/common/vmo_buffer_writer_queue.h"
 
 namespace media {
 
-// Base class for media stream decryptor implementations.
-class FuchsiaStreamDecryptorBase : public StreamProcessorHelper::Client {
+// Stream decryptor used to decrypt protected media streams on Fuchsia. Must be
+// created an used on the same thread.
+class MEDIA_EXPORT FuchsiaStreamDecryptor
+    : public SysmemBufferStream,
+      public StreamProcessorHelper::Client {
  public:
-  FuchsiaStreamDecryptorBase(fuchsia::media::StreamProcessorPtr processor,
-                             size_t min_buffer_size);
-  ~FuchsiaStreamDecryptorBase() override;
+  // Number of buffers that the decryptor allocates for input buffer
+  // collection. Decryptors provided by fuchsia.media.drm API normally decrypt a
+  // single buffer at a time. Second buffer is useful to allow reading/writing a
+  // packet while the decryptor is working on another one.
+  static constexpr size_t kInputBufferCount = 2;
 
-  int GetMaxDecryptRequests() const;
+  explicit FuchsiaStreamDecryptor(fuchsia::media::StreamProcessorPtr processor);
+  ~FuchsiaStreamDecryptor() override;
 
- protected:
-  // StreamProcessorHelper::Client overrides.
-  void OnOutputFormat(fuchsia::media::StreamOutputFormat format) final;
-
-  void AllocateInputBuffers();
-  void DecryptInternal(scoped_refptr<DecoderBuffer> encrypted);
-  void ResetStream();
-
-  StreamProcessorHelper processor_;
-
-  const size_t min_buffer_size_;
-
-  SysmemAllocatorClient allocator_;
-
-  VmoBufferWriterQueue input_writer_queue_;
-
-  // Key ID for which we received the last OnNewKey() event.
-  std::string last_new_key_id_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
- private:
-  void OnInputBuffersAcquired(
-      std::vector<VmoBuffer> buffers,
-      const fuchsia::sysmem::SingleBufferSettings& buffer_settings);
-  void SendInputPacket(const DecoderBuffer* buffer,
-                       StreamProcessorHelper::IoPacket packet);
-  void ProcessEndOfStream();
-
-  std::unique_ptr<SysmemCollectionClient> input_buffer_collection_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuchsiaStreamDecryptorBase);
-};
-
-// Stream decryptor that copies output to clear DecodeBuffer's. Used for audio
-// streams.
-class FuchsiaClearStreamDecryptor : public FuchsiaStreamDecryptorBase {
- public:
-  static std::unique_ptr<FuchsiaClearStreamDecryptor> Create(
-      fuchsia::media::drm::ContentDecryptionModule* cdm,
-      size_t min_buffer_size);
-
-  FuchsiaClearStreamDecryptor(fuchsia::media::StreamProcessorPtr processor,
-                              size_t min_buffer_size);
-  ~FuchsiaClearStreamDecryptor() override;
-
-  // Decrypt() behavior should match media::Decryptor interface.
-  void Decrypt(scoped_refptr<DecoderBuffer> encrypted,
-               Decryptor::DecryptCB decrypt_cb);
-  void CancelDecrypt();
-
- private:
-  // StreamProcessorHelper::Client overrides.
-  void AllocateOutputBuffers(
-      const fuchsia::media::StreamBufferConstraints& stream_constraints) final;
-  void OnProcessEos() final;
-  void OnOutputPacket(StreamProcessorHelper::IoPacket packet) final;
-  void OnNoKey() final;
-  void OnError() final;
-
-  void OnOutputBuffersAcquired(
-      std::vector<VmoBuffer> buffers,
-      const fuchsia::sysmem::SingleBufferSettings& buffer_settings);
-
-  Decryptor::DecryptCB decrypt_cb_;
-
-  std::unique_ptr<SysmemCollectionClient> output_buffer_collection_;
-  std::vector<VmoBuffer> output_buffers_;
-
-  // Used to re-assemble decrypted output that was split between multiple sysmem
-  // buffers.
-  Decryptor::Status current_status_ = Decryptor::kSuccess;
-  std::vector<uint8_t> output_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuchsiaClearStreamDecryptor);
-};
-
-// Stream decryptor that decrypts data to protected sysmem buffers. Used for
-// video stream.
-class FuchsiaSecureStreamDecryptor : public FuchsiaStreamDecryptorBase {
- public:
-  class Client {
-   public:
-    virtual size_t GetInputBufferSize() = 0;
-    virtual void OnDecryptorOutputPacket(
-        StreamProcessorHelper::IoPacket packet) = 0;
-    virtual void OnDecryptorEndOfStreamPacket() = 0;
-    virtual void OnDecryptorError() = 0;
-    virtual void OnDecryptorNoKey() = 0;
-
-   protected:
-    virtual ~Client() = default;
-  };
-
-  FuchsiaSecureStreamDecryptor(fuchsia::media::StreamProcessorPtr processor,
-                               Client* client);
-  ~FuchsiaSecureStreamDecryptor() override;
-
-  void SetOutputBufferCollectionToken(
-      fuchsia::sysmem::BufferCollectionTokenPtr token);
-
-  // Enqueues the specified buffer to the input queue. Caller is allowed to
-  // queue as many buffers as it needs without waiting for results from the
-  // previous Decrypt() calls.
-  void Decrypt(scoped_refptr<DecoderBuffer> encrypted);
+  FuchsiaStreamDecryptor(const FuchsiaStreamDecryptor&) = delete;
+  FuchsiaStreamDecryptor& operator=(const FuchsiaStreamDecryptor&) = delete;
 
   // Returns closure that should be called when the key changes. This class
   // uses this notification to handle NO_KEY errors. Note that this class can
@@ -141,42 +46,66 @@ class FuchsiaSecureStreamDecryptor : public FuchsiaStreamDecryptorBase {
   // the key is updated.
   base::RepeatingClosure GetOnNewKeyClosure();
 
-  // Drops all pending decryption requests.
-  void Reset();
+  // SysmemBufferStream implementation.
+  void Initialize(Sink* sink,
+                  size_t min_buffer_size,
+                  size_t min_buffer_count) override;
+  void EnqueueBuffer(scoped_refptr<DecoderBuffer> buffer) override;
+  void Reset() override;
 
  private:
   // StreamProcessorHelper::Client overrides.
   void AllocateOutputBuffers(
       const fuchsia::media::StreamBufferConstraints& stream_constraints) final;
   void OnProcessEos() final;
+  void OnOutputFormat(fuchsia::media::StreamOutputFormat format) final;
   void OnOutputPacket(StreamProcessorHelper::IoPacket packet) final;
   void OnNoKey() final;
   void OnError() final;
+
+  void OnInputBuffersAcquired(
+      std::vector<VmoBuffer> buffers,
+      const fuchsia::sysmem::SingleBufferSettings& buffer_settings);
+  void SendInputPacket(const DecoderBuffer* buffer,
+                       StreamProcessorHelper::IoPacket packet);
+  void ProcessEndOfStream();
 
   // Callback returned by GetOnNewKeyClosure(). When waiting for a key this
   // method unpauses the stream to decrypt any pending buffers.
   void OnNewKey();
 
-  Client* const client_;
+  StreamProcessorHelper processor_;
 
-  bool waiting_output_buffers_ = false;
-  base::OnceClosure complete_buffer_allocation_callback_;
+  SysmemAllocatorClient allocator_;
+
+  Sink* sink_ = nullptr;
+
+  size_t min_buffer_size_ = 0;
+  size_t min_buffer_count_ = 0;
+
+  std::unique_ptr<SysmemCollectionClient> input_buffer_collection_;
+  VmoBufferWriterQueue input_writer_queue_;
+
+  std::unique_ptr<SysmemCollectionClient> output_buffer_collection_;
+
+  // Key ID for which we received the last OnNewKey() event.
+  std::string last_new_key_id_;
 
   // Set to true if some keys have been updated recently. New key notifications
   // are received from a LicenseSession, while DECRYPTOR_NO_KEY error is
   // received from StreamProcessor. These are separate FIDL connections that are
   // handled on different threads, so they are not synchronized. As result
   // OnNewKey() may be called before we get OnNoKey(). To handle this case
-  // correctly OnNewKey() sets |retry_on_no_key_| and then OnNoKey() tries to
-  // restart the stream immediately if this flag is set.
-  bool retry_on_no_key_ = false;
+  // correctly OnNewKey() sets |retry_on_no_key_event_| and then OnNoKey() tries
+  // to restart the stream immediately if this flag is set.
+  bool retry_on_no_key_event_ = false;
 
   // Set to true if the stream is paused while we are waiting for new keys.
   bool waiting_for_key_ = false;
 
-  base::WeakPtrFactory<FuchsiaSecureStreamDecryptor> weak_factory_{this};
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  DISALLOW_COPY_AND_ASSIGN(FuchsiaSecureStreamDecryptor);
+  base::WeakPtrFactory<FuchsiaStreamDecryptor> weak_factory_{this};
 };
 
 }  // namespace media

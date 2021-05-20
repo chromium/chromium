@@ -12,8 +12,10 @@
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "media/base/cdm_context.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/renderer_client.h"
+#include "media/fuchsia/cdm/fuchsia_cdm_context.h"
 #include "media/fuchsia/common/decrypting_sysmem_buffer_stream.h"
 #include "media/fuchsia/common/passthrough_sysmem_buffer_stream.h"
 
@@ -126,11 +128,21 @@ void FuchsiaAudioRenderer::Initialize(DemuxerStream* stream,
     stream->EnableBitstreamConverter();
   }
 
-  // DecryptingSysmemBufferStream handles both encrypted and clear streams, so
-  // initialize it long as we have |cdm_context|.
-  if (cdm_context) {
-    sysmem_buffer_stream_ = std::make_unique<DecryptingSysmemBufferStream>(
-        &sysmem_allocator_, cdm_context, Decryptor::kAudio);
+  if (stream->audio_decoder_config().is_encrypted()) {
+    if (!cdm_context) {
+      DLOG(ERROR) << "No cdm context for encrypted stream.";
+      OnError(AUDIO_RENDERER_ERROR);
+      return;
+    }
+
+    FuchsiaCdmContext* fuchsia_cdm = cdm_context->GetFuchsiaCdmContext();
+    if (fuchsia_cdm) {
+      sysmem_buffer_stream_ = fuchsia_cdm->CreateStreamDecryptor(false);
+    } else {
+      sysmem_buffer_stream_ = std::make_unique<DecryptingSysmemBufferStream>(
+          &sysmem_allocator_, cdm_context, Decryptor::kAudio);
+    }
+
   } else {
     sysmem_buffer_stream_ =
         std::make_unique<PassthroughSysmemBufferStream>(&sysmem_allocator_);
