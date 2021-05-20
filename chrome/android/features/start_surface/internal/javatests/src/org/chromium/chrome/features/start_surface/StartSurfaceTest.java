@@ -157,7 +157,15 @@ public class StartSurfaceTest {
     @Rule
     public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
 
+    /**
+     * Whether feature {@link ChromeFeatureList.INSTANT_START} is enabled.
+     */
     private final boolean mUseInstantStart;
+
+    /**
+     * Whether feature {@link ChromeFeatureList.TAB_SWITCHER_ON_RETURN} is enabled as "immediately".
+     * When immediate return is enabled, the Start surface is showing when Chrome is launched.
+     */
     private final boolean mImmediateReturn;
 
     private CallbackHelper mLayoutChangedCallbackHelper;
@@ -201,25 +209,29 @@ public class StartSurfaceTest {
             // Create fake TabState files to emulate having one tab in previous session.
             TabAttributeCache.setTitleForTesting(0, "tab title");
             StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-
-            // Assume start surface is shown immediately.
-            mCurrentlyActiveLayout = LayoutType.TAB_SWITCHER;
         } else {
             assertFalse(ReturnToChromeExperimentsUtil.shouldShowTabSwitcher(-1));
             // Cannot use StartSurfaceTestUtils.startMainActivityFromLauncher().
             // Otherwise tab switcher could be shown immediately if single-pane is enabled.
             mActivityTestRule.startMainActivityOnBlankPage();
             onViewWaiting(withId(R.id.home_button));
-
-            mLayoutObserver = new LayoutStateProvider.LayoutStateObserver() {
-                @Override
-                public void onFinishedShowing(@LayoutType int layoutType) {
-                    mCurrentlyActiveLayout = layoutType;
-                    mLayoutChangedCallbackHelper.notifyCalled();
-                }
-            };
-            mActivityTestRule.getActivity().getLayoutManager().addObserver(mLayoutObserver);
         }
+
+        if (isInstantReturn()) {
+            // Assume start surface is shown immediately, and the LayoutStateObserver may miss the
+            // first onFinishedShowing event.
+            mCurrentlyActiveLayout = LayoutType.TAB_SWITCHER;
+        }
+
+        mLayoutObserver = new LayoutStateProvider.LayoutStateObserver() {
+            @Override
+            public void onFinishedShowing(@LayoutType int layoutType) {
+                mCurrentlyActiveLayout = layoutType;
+                mLayoutChangedCallbackHelper.notifyCalled();
+            }
+        };
+        mActivityTestRule.getActivity().getLayoutManagerSupplier().addObserver(
+                (obs) -> { obs.addObserver(mLayoutObserver); });
     }
 
     @Test
@@ -1788,8 +1800,12 @@ public class StartSurfaceTest {
     }
     /* MV tiles context menu tests ends. */
 
+    /**
+     * @return Whether both features {@link ChromeFeatureList.InstantStart} and
+     * {@link ChromeFeatureList.TAB_SWITCHER_ON_RETURN} are enabled.
+     */
     private boolean isInstantReturn() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START) && mImmediateReturn;
+        return mUseInstantStart && mImmediateReturn;
     }
 
     private void pressHome() {
