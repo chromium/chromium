@@ -17,7 +17,9 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -170,28 +172,38 @@ TEST_F(SaveAddressProfilePromptControllerTest,
 
 TEST_F(SaveAddressProfilePromptControllerTest,
        ShouldReturnDataToDisplayWhenSave) {
-  EXPECT_EQ(u"Save address?", controller_->GetTitle());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE),
+            controller_->GetTitle());
   EXPECT_EQ(
       u"John H. Doe\nUnderworld\n666 Erebus St.\nApt 8\nElysium, CA "
       u"91111\nUnited States",
       controller_->GetAddress());
   EXPECT_EQ(u"johndoe@hades.com", controller_->GetEmail());
   EXPECT_EQ(u"16502111111", controller_->GetPhoneNumber());
-  EXPECT_EQ(u"Save", controller_->GetPositiveButtonText());
-  EXPECT_EQ(u"Cancel", controller_->GetNegativeButtonText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
+            controller_->GetPositiveButtonText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ANDROID_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL),
+            controller_->GetNegativeButtonText());
 }
 
 TEST_F(SaveAddressProfilePromptControllerTest,
        ShouldReturnDataToDisplayWhenUpdate) {
   SetUpController(/*is_update=*/true);
-  EXPECT_EQ(u"Update address?", controller_->GetTitle());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE),
+            controller_->GetTitle());
   EXPECT_EQ(u"John Doe, 666 Erebus St.", controller_->GetSubtitle());
   std::pair<std::u16string, std::u16string> differences =
       controller_->GetDiffFromOldToNewProfile();
   EXPECT_EQ(u"John Doe", differences.first);
   EXPECT_EQ(u"John H. Doe\n16502111111", differences.second);
-  EXPECT_EQ(u"Update", controller_->GetPositiveButtonText());
-  EXPECT_EQ(u"Cancel", controller_->GetNegativeButtonText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
+            controller_->GetPositiveButtonText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ANDROID_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL),
+            controller_->GetNegativeButtonText());
 }
 
 TEST_F(SaveAddressProfilePromptControllerTest,

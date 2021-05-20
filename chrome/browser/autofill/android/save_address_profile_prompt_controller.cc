@@ -15,6 +15,8 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -55,19 +57,20 @@ void SaveAddressProfilePromptController::DisplayPrompt() {
 }
 
 std::u16string SaveAddressProfilePromptController::GetTitle() {
-  // TODO(crbug.com/1167061): Replace with proper localized strings.
-  // TODO(crbug.com/1167061): Make update title reflect fields to be updated.
-  return original_profile_ ? u"Update address?" : u"Save address?";
+  return l10n_util::GetStringUTF16(
+      original_profile_ ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE
+                        : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
 }
 
 std::u16string SaveAddressProfilePromptController::GetPositiveButtonText() {
-  // TODO(crbug.com/1167061): Replace with proper localized strings.
-  return original_profile_ ? u"Update" : u"Save";
+  return l10n_util::GetStringUTF16(
+      original_profile_ ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL
+                        : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
 }
 
 std::u16string SaveAddressProfilePromptController::GetNegativeButtonText() {
-  // TODO(crbug.com/1167061): Replace with proper localized string.
-  return u"Cancel";
+  return l10n_util::GetStringUTF16(
+      IDS_ANDROID_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
 }
 
 std::u16string SaveAddressProfilePromptController::GetAddress() {

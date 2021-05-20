@@ -22,7 +22,7 @@
         android:layout_marginEnd="8dp"
         android:padding="12dp"
         android:background="?attr/selectableItemBackground"
-        android:contentDescription="@string/payments_edit_address"
+        android:contentDescription="@string/autofill_save_address_prompt_edit_button_tooltip"
         android:scaleType="fitCenter"
         app:srcCompat="@drawable/edit_icon"
         app:tint="@color/default_icon_color_tint_list"

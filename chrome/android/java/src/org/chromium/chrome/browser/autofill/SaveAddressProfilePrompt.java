@@ -61,8 +61,6 @@ public class SaveAddressProfilePrompt {
                                 new SimpleModalDialogController(
                                         modalDialogManager, this::onDismiss))
                         .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
-                        // TODO(crbug.com/1167061): Revisit whether the dialog should be modal.
-                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView);
         mDialogModel = builder.build();
 

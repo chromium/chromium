@@ -15,8 +15,10 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -132,8 +134,11 @@ SaveAddressProfileMessageControllerTest::GetMessageWrapper() {
 TEST_F(SaveAddressProfileMessageControllerTest, SaveMessageContent) {
   EnqueueSaveMessage(profile_, save_callback_.Get(), action_callback_.Get());
 
-  EXPECT_EQ(u"Save address?", GetMessageWrapper()->GetTitle());
-  EXPECT_EQ(u"Save…", GetMessageWrapper()->GetPrimaryButtonText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE),
+            GetMessageWrapper()->GetTitle());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
+            GetMessageWrapper()->GetPrimaryButtonText());
   EXPECT_EQ(u"John H. Doe, 666 Erebus St.",
             GetMessageWrapper()->GetDescription());
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS),
@@ -148,8 +153,11 @@ TEST_F(SaveAddressProfileMessageControllerTest, UpdateMessageContent) {
   EnqueueUpdateMessage(profile_, &original_profile_, save_callback_.Get(),
                        action_callback_.Get());
 
-  EXPECT_EQ(u"Update address?", GetMessageWrapper()->GetTitle());
-  EXPECT_EQ(u"Update…", GetMessageWrapper()->GetPrimaryButtonText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE),
+            GetMessageWrapper()->GetTitle());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
+            GetMessageWrapper()->GetPrimaryButtonText());
   EXPECT_EQ(u"Jane A. Smith, 123 Main Street",
             GetMessageWrapper()->GetDescription());
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS),

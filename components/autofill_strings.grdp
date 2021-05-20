@@ -324,10 +324,10 @@
   <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to update an existing address.">
     Update
   </message>
-  <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_NEW_VALUES_SECTION_LABEL" meaning="In the address update prompt" desc="Label shown next to the section that displays the new address values in the prompt that offers the user to update an existing address.">
+  <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_NEW_VALUES_SECTION_LABEL" meaning="In the address update prompt" desc="Label shown next to the section that displays the new address values in the prompt that offers the user to update an existing address." formatter_data="android_java">
     New
   </message>
-  <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OLD_VALUES_SECTION_LABEL" meaning="In the address update prompt" desc="Label shown next to the section that displays the old address values in the prompt that offers the user to update an existing address.">
+  <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OLD_VALUES_SECTION_LABEL" meaning="In the address update prompt" desc="Label shown next to the section that displays the old address values in the prompt that offers the user to update an existing address." formatter_data="android_java">
     Old
   </message>
   <!-- Used on Android: -->
@@ -341,10 +341,10 @@
     <message name="IDS_ANDROID_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the negative button in the modal dialog that offers the user to save a new address.">
       Cancel
     </message>
-    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP" desc="Tooltip of the Edit button in the prompt that offers the user to save a new address.">
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP" desc="Tooltip of the Edit button in the prompt that offers the user to save a new address." formatter_data="android_java">
       Edit address
     </message>
-    <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_TITLE" desc="Title shown at the top of dialog that edits an address before saving it">
+    <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_TITLE" desc="Title shown at the top of dialog that edits an address before saving it" formatter_data="android_java">
       Edit address
     </message>
   </if>

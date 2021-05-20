@@ -159,7 +159,7 @@ public class AddressEditor
             editTitle = mContext.getString(R.string.autofill_create_profile);
         } else {
             address = toEdit;
-            editTitle = mContext.getString(R.string.payments_edit_address);
+            editTitle = mContext.getString(R.string.autofill_edit_address_dialog_title);
         }
 
         mEditor = new EditorModel(editTitle, mCustomDoneButtonText);
