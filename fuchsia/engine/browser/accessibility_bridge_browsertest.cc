@@ -7,6 +7,7 @@
 #include <zircon/types.h>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/test/frame_test_util.h"
@@ -1041,10 +1042,17 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, UpdatesFocusInformation) {
       ->GetMainFrame()
       ->AccessibilityPerformAction(action_data);
 
-  base::RunLoop run_loop;
-  semantics_manager_.semantic_tree()->SetNodeUpdatedCallback(
-      0u, run_loop.QuitClosure());
-  run_loop.Run();
+  auto* semantic_tree = semantics_manager_.semantic_tree();
+
+  semantic_tree->RunUntilCondititionIsTrue(
+      base::BindLambdaForTesting([semantic_tree]() {
+        auto* node = semantic_tree->GetNodeWithId(0u);
+        if (!node)
+          return false;
+
+        return node->has_states() && node->states().has_has_input_focus() &&
+               node->states().has_input_focus();
+      }));
 
   ASSERT_TRUE(semantics_manager_.semantic_tree()
                   ->GetNodeWithId(0u)
@@ -1063,10 +1071,20 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, UpdatesFocusInformation) {
       ->GetMainFrame()
       ->AccessibilityPerformAction(action_data);
 
-  base::RunLoop run_loop2;
-  semantics_manager_.semantic_tree()->SetNodeUpdatedCallback(
-      new_focus_id, run_loop2.QuitClosure());
-  run_loop2.Run();
+  semantic_tree->RunUntilCondititionIsTrue(
+      base::BindLambdaForTesting([semantic_tree, new_focus_id]() {
+        auto* root = semantic_tree->GetNodeWithId(0u);
+        auto* node = semantic_tree->GetNodeWithId(new_focus_id);
+
+        if (!node || !root)
+          return false;
+
+        // Node has the focus, root does not.
+        return (node->has_states() && node->states().has_has_input_focus() &&
+                node->states().has_input_focus()) &&
+               (root->has_states() && root->states().has_has_input_focus() &&
+                !root->states().has_input_focus());
+      }));
 
   ASSERT_FALSE(semantics_manager_.semantic_tree()
                    ->GetNodeWithId(0u)

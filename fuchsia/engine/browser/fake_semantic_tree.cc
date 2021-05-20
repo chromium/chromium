@@ -177,3 +177,19 @@ void FakeSemanticTree::NotImplemented_(const std::string& name) {
 void FakeSemanticTree::Clear() {
   nodes_.clear();
 }
+
+void FakeSemanticTree::RunUntilCondititionIsTrue(
+    base::RepeatingCallback<bool()> condition) {
+  DCHECK(!on_commit_updates_);
+  if (condition.Run())
+    return;
+
+  base::RunLoop run_loop;
+  base::AutoReset<base::RepeatingClosure> auto_reset(
+      &on_commit_updates_,
+      base::BindLambdaForTesting([&condition, &run_loop]() {
+        if (condition.Run())
+          run_loop.Quit();
+      }));
+  run_loop.Run();
+}
