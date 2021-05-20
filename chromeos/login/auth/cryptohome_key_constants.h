@@ -15,6 +15,9 @@ extern const char kCryptohomeGaiaKeyLabel[];
 COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH)
 extern const char kCryptohomePinLabel[];
 
+COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH)
+extern const char kCryptohomeWildcardLabel[];
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_LOGIN_AUTH_CRYPTOHOME_KEY_CONSTANTS_H_

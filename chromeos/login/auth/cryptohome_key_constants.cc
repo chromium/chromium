@@ -17,4 +17,6 @@ const char kCryptohomeGaiaKeyLabel[] = "gaia";
 
 const char kCryptohomePinLabel[] = "pin";
 
+const char kCryptohomeWildcardLabel[] = "";
+
 }  // namespace chromeos
