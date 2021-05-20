@@ -1093,7 +1093,7 @@
     },
     {
       name: "accent-color",
-      property_methods: ["ParseSingleValue"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: true,
       field_group: "*",
@@ -1108,7 +1108,7 @@
       runtime_flag: "CSSAccentColor",
       default_value: "StyleAutoColor::AutoColor()",
       style_builder_custom_functions: ["initial", "inherit", "value"],
-      computable: false,
+      computable: true,
     },
     {
       name: "align-content",

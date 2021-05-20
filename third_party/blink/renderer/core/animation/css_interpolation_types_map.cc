@@ -204,6 +204,7 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
         applicable_types->push_back(
             std::make_unique<CSSNumberInterpolationType>(used_property));
         break;
+      case CSSPropertyID::kAccentColor:
       case CSSPropertyID::kBackgroundColor:
       case CSSPropertyID::kBorderBottomColor:
       case CSSPropertyID::kBorderLeftColor:

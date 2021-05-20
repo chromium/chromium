@@ -18,6 +18,10 @@ OptionalStyleColor ColorPropertyFunctions::GetUnvisitedColor(
     const CSSProperty& property,
     const ComputedStyle& style) {
   switch (property.PropertyID()) {
+    case CSSPropertyID::kAccentColor:
+      if (style.AccentColor().IsAutoColor())
+        return nullptr;
+      return style.AccentColor().ToStyleColor();
     case CSSPropertyID::kBackgroundColor:
       return style.BackgroundColor();
     case CSSPropertyID::kBorderLeftColor:
@@ -64,6 +68,8 @@ OptionalStyleColor ColorPropertyFunctions::GetVisitedColor(
     const CSSProperty& property,
     const ComputedStyle& style) {
   switch (property.PropertyID()) {
+    case CSSPropertyID::kAccentColor:
+      return style.AccentColor();
     case CSSPropertyID::kBackgroundColor:
       return style.InternalVisitedBackgroundColor();
     case CSSPropertyID::kBorderLeftColor:
@@ -113,6 +119,9 @@ void ColorPropertyFunctions::SetUnvisitedColor(const CSSProperty& property,
                                                const Color& color) {
   StyleColor style_color(color);
   switch (property.PropertyID()) {
+    case CSSPropertyID::kAccentColor:
+      style.SetAccentColor(StyleAutoColor(color));
+      return;
     case CSSPropertyID::kBackgroundColor:
       style.SetBackgroundColor(style_color);
       return;
@@ -166,6 +175,9 @@ void ColorPropertyFunctions::SetVisitedColor(const CSSProperty& property,
                                              const Color& color) {
   StyleColor style_color(color);
   switch (property.PropertyID()) {
+    case CSSPropertyID::kAccentColor:
+      // The accent-color property is not valid for :visited.
+      return;
     case CSSPropertyID::kBackgroundColor:
       style.SetInternalVisitedBackgroundColor(style_color);
       return;

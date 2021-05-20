@@ -85,8 +85,9 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       }
       return nullptr;
     }
+    case CSSPropertyID::kAccentColor:
     case CSSPropertyID::kCaretColor: {
-      // caret-color also supports 'auto'
+      // caret-color and accent-color also support 'auto'
       auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
       if (identifier_value &&
           identifier_value->GetValueID() == CSSValueID::kAuto)

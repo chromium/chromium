@@ -50,6 +50,7 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 -webkit-user-drag: auto
 -webkit-user-modify: read-only
 -webkit-writing-mode: horizontal-tb
+accent-color: auto
 align-content: normal
 align-items: normal
 align-self: auto

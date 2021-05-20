@@ -4911,6 +4911,19 @@ const CSSValue* AccentColor::ParseSingleValue(
   return css_parsing_utils::ConsumeColor(range, context);
 }
 
+const CSSValue* AccentColor::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  StyleAutoColor auto_color = style.AccentColor();
+  if (auto_color.IsAutoColor()) {
+    return CSSIdentifierValue::Create(CSSValueID::kAuto);
+  }
+
+  return ComputedStyleUtils::ValueForStyleAutoColor(
+      style, style.AccentColor(), CSSValuePhase::kComputedValue);
+}
+
 void AccentColor::ApplyInitial(StyleResolverState& state) const {
   state.Style()->SetAccentColor(StyleAutoColor::AutoColor());
 }

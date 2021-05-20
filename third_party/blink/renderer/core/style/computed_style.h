@@ -208,6 +208,7 @@ class ComputedStyle : public ComputedStyleBase,
   // Accesses GetColor().
   friend class ComputedStyleUtils;
   // These get visited and unvisited colors separately.
+  friend class css_longhand::AccentColor;
   friend class css_longhand::BackgroundColor;
   friend class css_longhand::BorderBottomColor;
   friend class css_longhand::BorderLeftColor;
