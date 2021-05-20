@@ -35,6 +35,10 @@ void CommitDeferringConditionRunner::AddConditionForTesting(
   AddCondition(std::move(condition));
 }
 
+bool CommitDeferringConditionRunner::is_deferred_for_testing() const {
+  return is_deferred_;
+}
+
 void CommitDeferringConditionRunner::ResumeProcessing() {
   DCHECK(is_deferred_);
   is_deferred_ = false;

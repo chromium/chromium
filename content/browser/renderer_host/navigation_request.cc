@@ -1487,6 +1487,10 @@ void NavigationRequest::RegisterCommitDeferringConditionForTesting(
   commit_deferrer_->AddConditionForTesting(std::move(condition));  // IN-TEST
 }
 
+bool NavigationRequest::IsCommitDeferringConditionDeferredForTesting() {
+  return commit_deferrer_->is_deferred_for_testing();  // IN-TEST
+}
+
 void NavigationRequest::BeginNavigation() {
   EnterChildTraceEvent("BeginNavigation", this);
   DCHECK(!loader_);

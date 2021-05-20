@@ -2081,6 +2081,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   EXPECT_FALSE(observer.ReadyToCommitNavigationWasCalled());
   EXPECT_TRUE(condition1.WasInvoked());
   EXPECT_FALSE(condition2.WasInvoked());
+  EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
 
   // Resume from the first condition. This should now block on the second
   // condition.
@@ -2094,6 +2095,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   condition2.CallResumeClosure();
   EXPECT_TRUE(observer.ReadyToCommitNavigationWasCalled());
   EXPECT_EQ(request->state(), NavigationRequest::READY_TO_COMMIT);
+  EXPECT_FALSE(request->IsCommitDeferringConditionDeferredForTesting());
   manager.WaitForNavigationFinished();
 }
 
@@ -2127,6 +2129,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   // committing by |condition|.
   EXPECT_LT(request->state(), NavigationRequest::READY_TO_COMMIT);
   EXPECT_TRUE(condition.WasInvoked());
+  EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
 
   // While the commit is deferred, cancel the navigation. This should delete
   // the navigation request.
