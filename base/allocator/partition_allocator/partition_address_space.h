@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ADDRESS_SPACE_H_
 
 #include <algorithm>
+#include <array>
 
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
@@ -25,6 +26,47 @@ namespace internal {
 
 // The feature is not applicable to 32-bit address space.
 #if defined(PA_HAS_64_BITS_POINTERS)
+
+struct GigaCageProperties {
+  size_t size;
+  size_t alignment;
+  size_t alignment_offset;
+};
+
+template <size_t N>
+GigaCageProperties CalculateGigaCageProperties(
+    const std::array<size_t, N>& pool_sizes) {
+  size_t size_sum = 0;
+  size_t alignment = 0;
+  size_t alignment_offset;
+  // The goal is to find properties such that each pool's start address is
+  // aligned to its own size. To achieve that, the largest pool will serve
+  // as an anchor (the first one, if there are more) and it'll be used to
+  // determine the core alignment. The sizes of pools before the anchor will
+  // determine the offset within the core alignment at which the GigaCage will
+  // start.
+  // If this algorithm doesn't find the proper alignment, it means such an
+  // alignment doesn't exist.
+  for (size_t pool_size : pool_sizes) {
+    PA_CHECK(bits::IsPowerOfTwo(pool_size));
+    if (pool_size > alignment) {
+      alignment = pool_size;
+      // This may underflow, leading to a very high value, so use modulo
+      // |alignment| to bring it down.
+      alignment_offset = (alignment - size_sum) & (alignment - 1);
+    }
+    size_sum += pool_size;
+  }
+  // Use PA_CHECK because we can't correctly proceed if any pool's start address
+  // isn't aligned to its own size. Exact initial value of |sample_address|
+  // doesn't matter as long as |address % alignment == alignment_offset|.
+  uintptr_t sample_address = alignment_offset + 7 * alignment;
+  for (size_t pool_size : pool_sizes) {
+    PA_CHECK(!(sample_address & (pool_size - 1)));
+    sample_address += pool_size;
+  }
+  return GigaCageProperties{size_sum, alignment, alignment_offset};
+}
 
 // Reserves address space for PartitionAllocator.
 class BASE_EXPORT PartitionAddressSpace {
@@ -101,37 +143,24 @@ class BASE_EXPORT PartitionAddressSpace {
 
   static constexpr size_t kGigaBytes = 1024 * 1024 * 1024;
 
-  // Pool sizes are flexible, as long as each pool is aligned on its own size
-  // boundary and the size is a power of two. The entire region is aligned on
-  // the max pool size boundary, so the further pools only need to care about
-  // the shift from the beginning of the region (for clarity, the pool sizes are
-  // declared in the order the pools are allocated).
+  // Pool sizes have to be the power of two. Each pool will be aligned at its
+  // own size boundary.
   //
-  // For example, [8GiB,4GiB,4GiB], [8GiB,4GiB,2GiB,1GiB] would work, but
-  // [4GiB,8GiB] wouldn't (the 2nd pool is aligned on 4GiB but needs 8GiB),
-  // and [4GiB,4GiB,8GiB] would.
+  // In theory, pools can be allocated separately in the address space. However,
+  // due to the above restriction to have BRP pool be preceded by another pool,
+  // better to have them occupy contiguous addresses. Therefore, care has to be
+  // taken when choosing sizes, if more than 2 pools are needed. For example,
+  // with sizes [8GiB,4GiB,8GiB], it'd be impossible to align each pool at its
+  // own size boundary while keeping them next to each other.
+  // CalculateGigaCageProperties() has non-debug run-time checks to ensure that.
   static constexpr size_t kNonBRPPoolSize = 8 * kGigaBytes;
   static constexpr size_t kBRPPoolSize = 8 * kGigaBytes;
-
-  static constexpr size_t kDesiredAddressSpaceSize =
-      kNonBRPPoolSize + kBRPPoolSize;
-  static constexpr size_t kReservedAddressSpaceAlignment =
-      std::max(kNonBRPPoolSize, kBRPPoolSize);
+  static constexpr std::array<size_t, 2> kPoolSizes = {kNonBRPPoolSize,
+                                                       kBRPPoolSize};
 
   static_assert(bits::IsPowerOfTwo(kNonBRPPoolSize) &&
                     bits::IsPowerOfTwo(kBRPPoolSize),
                 "Each pool size should be a power of two.");
-  static_assert(bits::IsPowerOfTwo(kReservedAddressSpaceAlignment),
-                "kReservedAddressSpaceAlignment should be a power of two.");
-  static_assert(kReservedAddressSpaceAlignment >= kNonBRPPoolSize &&
-                    kReservedAddressSpaceAlignment >= kBRPPoolSize,
-                "kReservedAddressSpaceAlignment should be larger or equal to "
-                "each pool size.");
-  static_assert(kReservedAddressSpaceAlignment % kNonBRPPoolSize == 0 &&
-                    (kReservedAddressSpaceAlignment + kNonBRPPoolSize) %
-                            kBRPPoolSize ==
-                        0,
-                "Each pool should be aligned to its own size");
 
   // Masks used to easy determine belonging to a pool.
   static constexpr uintptr_t kNonBRPPoolOffsetMask =

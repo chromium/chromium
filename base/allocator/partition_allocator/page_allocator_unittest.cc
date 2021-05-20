@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <algorithm>
+#include <cstdint>
 #include <string>
 #include <vector>
 #include "base/cpu.h"
@@ -87,6 +88,16 @@ TEST(PageAllocatorTest, Rounding) {
                 2 * PageAllocationGranularity() - 1));
 }
 
+TEST(PageAllocatorTest, NextAlignedWithOffset) {
+  EXPECT_EQ(1024u, NextAlignedWithOffset(1024, 1, 0));
+  EXPECT_EQ(2024u, NextAlignedWithOffset(1024, 1024, 1000));
+  EXPECT_EQ(2024u, NextAlignedWithOffset(2024, 1024, 1000));
+  EXPECT_EQ(3048u, NextAlignedWithOffset(2025, 1024, 1000));
+  EXPECT_EQ(2048u, NextAlignedWithOffset(1024, 2048, 0));
+  EXPECT_EQ(2148u, NextAlignedWithOffset(1024, 2048, 100));
+  EXPECT_EQ(2000u, NextAlignedWithOffset(1024, 2048, 2000));
+}
+
 // Test that failed page allocations invoke base::ReleaseReservation().
 // We detect this by making a reservation and ensuring that after failure, we
 // can make a new reservation.
@@ -153,6 +164,24 @@ TEST(PageAllocatorTest, AllocAndFreePages) {
   *buffer0 = 42;
   EXPECT_EQ(42, *buffer0);
   FreePages(buffer, PageAllocationGranularity());
+}
+
+TEST(PageAllocatorTest, AllocPagesAligned) {
+  size_t alignment = 8 * PageAllocationGranularity();
+  size_t sizes[] = {PageAllocationGranularity(),
+                    alignment - PageAllocationGranularity(), alignment,
+                    alignment + PageAllocationGranularity(), alignment * 4};
+  size_t offsets[] = {0, PageAllocationGranularity(), alignment / 2,
+                      alignment - PageAllocationGranularity()};
+  for (size_t size : sizes) {
+    for (size_t offset : offsets) {
+      void* buffer = AllocPagesWithAlignOffset(
+          nullptr, size, alignment, offset, PageReadWrite, PageTag::kChromium);
+      EXPECT_TRUE(buffer);
+      EXPECT_EQ(reinterpret_cast<uintptr_t>(buffer) % alignment, offset);
+      FreePages(buffer, size);
+    }
+  }
 }
 
 TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadWriteTagged) {
@@ -458,21 +487,27 @@ TEST(PageAllocatorTest, DecommitErasesMemory) {
 
 TEST(PageAllocatorTest, MappedPagesAccounting) {
   size_t size = PageAllocationGranularity();
-  size_t mapped_size_before = GetTotalMappedSize();
-
   // Ask for a large alignment to make sure that trimming doesn't change the
   // accounting.
-  void* data = AllocPages(nullptr, size, 128 * PageAllocationGranularity(),
-                          PageInaccessible, PageTag::kChromium);
-  ASSERT_TRUE(data);
+  size_t alignment = 128 * PageAllocationGranularity();
+  size_t offsets[] = {0, PageAllocationGranularity(), alignment / 2,
+                      alignment - PageAllocationGranularity()};
 
-  EXPECT_EQ(mapped_size_before + size, GetTotalMappedSize());
+  size_t mapped_size_before = GetTotalMappedSize();
 
-  DecommitSystemPages(data, size, PageKeepPermissionsIfPossible);
-  EXPECT_EQ(mapped_size_before + size, GetTotalMappedSize());
+  for (size_t offset : offsets) {
+    void* data = AllocPagesWithAlignOffset(
+        nullptr, size, alignment, offset, PageInaccessible, PageTag::kChromium);
+    ASSERT_TRUE(data);
 
-  FreePages(data, size);
-  EXPECT_EQ(mapped_size_before, GetTotalMappedSize());
+    EXPECT_EQ(mapped_size_before + size, GetTotalMappedSize());
+
+    DecommitSystemPages(data, size, PageKeepPermissionsIfPossible);
+    EXPECT_EQ(mapped_size_before + size, GetTotalMappedSize());
+
+    FreePages(data, size);
+    EXPECT_EQ(mapped_size_before, GetTotalMappedSize());
+  }
 }
 
 }  // namespace base

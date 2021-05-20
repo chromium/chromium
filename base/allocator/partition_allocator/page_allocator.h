@@ -53,18 +53,24 @@ enum class PageTag {
   kLast = kV8             // Maximum tag value.
 };
 
+BASE_EXPORT uintptr_t NextAlignedWithOffset(uintptr_t ptr,
+                                            uintptr_t alignment,
+                                            uintptr_t requested_offset);
+
 // Allocate one or more pages.
 //
 // The requested |address| is just a hint; the actual address returned may
-// differ. The returned address will be aligned at least to |align| bytes.
-// |length| is in bytes, and must be a multiple of
-// |PageAllocationGranularity()|. |align| is in bytes, and must be a
-// power-of-two multiple of |PageAllocationGranularity()|.
+// differ. The returned address will be aligned to |align_offset| modulo |align|
+// bytes.
+//
+// |length|, |align| and |align_offset| are in bytes, and must be a multiple of
+// |PageAllocationGranularity()|. |length| and |align| must be non-zero.
+// |align_offset| must be less than |align|. |align| must be a power of two.
 //
 // If |address| is null, then a suitable and randomized address will be chosen
 // automatically.
 //
-// |page_accessibility| controls the permission of the allocated pages.
+// |accessibility| controls the permission of the allocated pages.
 // PageInaccessible means uncommitted.
 //
 // |page_tag| is used on some platforms to identify the source of the
@@ -74,8 +80,15 @@ enum class PageTag {
 BASE_EXPORT void* AllocPages(void* address,
                              size_t length,
                              size_t align,
-                             PageAccessibilityConfiguration page_accessibility,
-                             PageTag tag);
+                             PageAccessibilityConfiguration accessibility,
+                             PageTag page_tag);
+BASE_EXPORT void* AllocPagesWithAlignOffset(
+    void* address,
+    size_t length,
+    size_t align,
+    size_t align_offset,
+    PageAccessibilityConfiguration page_accessibility,
+    PageTag page_tag);
 
 // Free one or more pages starting at |address| and continuing for |length|
 // bytes.
