@@ -49,6 +49,10 @@
     margin-top: var(--cr-section-vertical-margin);
   }
 
+  #flocExplanation {
+    margin-block-end: 8px;
+  }
+
   #overscroll {
     padding-top: 64px;
   }
@@ -131,7 +135,7 @@
           $i18n{privacySandboxPageSettingExplanation1Phase2}
         </div>
       </div>
-      <div class="cr-row continuation">
+      <div class="cr-row continuation box-last">
         <div class="secondary">
           <ul>
             <li>
@@ -156,7 +160,7 @@
       <settings-toggle-button pref="{{prefs.generated.floc_enabled}}"
           label="$i18n{privacySandboxPageFlocHeading}">
       </settings-toggle-button>
-      <div class="cr-row continuation">
+      <div id="flocExplanation" class="cr-row continuation">
         <div class="secondary">$i18nRaw{privacySandboxPageFlocExplanation}</div>
       </div>
       <div class="cr-row continuation">
