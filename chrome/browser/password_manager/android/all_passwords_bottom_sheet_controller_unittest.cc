@@ -24,6 +24,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Pointee;
@@ -83,6 +85,8 @@ class MockPasswordManagerClient
               (),
               (override));
 };
+
+}  // namespace
 
 UiCredential MakeUiCredential(const std::u16string& username,
                               const std::u16string& password) {

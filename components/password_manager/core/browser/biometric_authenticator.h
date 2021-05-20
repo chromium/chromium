@@ -37,6 +37,9 @@ enum class BiometricAuthRequester {
   // The list displaying all saved passwords. Can be used for filling on
   // Android.
   kAllPasswordsList = 3,
+
+  // The dialog displayed via the Credential Management API.
+  kAccountChooserDialog = 4,
 };
 
 // This interface encapsulates operations related to biometric authentication.

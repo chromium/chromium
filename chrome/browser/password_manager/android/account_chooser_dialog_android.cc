@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/passwords/account_avatar_fetcher.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -28,6 +29,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/range/range.h"
+
+using password_manager::metrics_util::AccountChooserUserAction;
 
 namespace {
 
@@ -100,20 +103,34 @@ void FetchAvatar(const base::android::ScopedJavaGlobalRef<jobject>& java_dialog,
 
 AccountChooserDialogAndroid::AccountChooserDialogAndroid(
     content::WebContents* web_contents,
+    password_manager::PasswordManagerClient* client,
     std::vector<std::unique_ptr<password_manager::PasswordForm>>
         local_credentials,
     const url::Origin& origin,
     ManagePasswordsState::CredentialsCallback callback)
     : content::WebContentsObserver(web_contents),
       web_contents_(web_contents),
+      client_(client),
       origin_(origin) {
-  passwords_data_.set_client(
-      ChromePasswordManagerClient::FromWebContents(web_contents_));
+  DCHECK(client);
+  passwords_data_.set_client(client);
   passwords_data_.OnRequestCredentials(std::move(local_credentials), origin);
   passwords_data_.set_credentials_callback(std::move(callback));
 }
 
-AccountChooserDialogAndroid::~AccountChooserDialogAndroid() {}
+AccountChooserDialogAndroid::~AccountChooserDialogAndroid() {
+  if (authenticator_) {
+    authenticator_->Cancel(
+        password_manager::BiometricAuthRequester::kAccountChooserDialog);
+  }
+
+  // |dialog_jobject_| can be null in tests or if the dialog could not
+  // be shown.
+  if (dialog_jobject_) {
+    Java_AccountChooserDialog_notifyNativeDestroyed(
+        base::android::AttachCurrentThread(), dialog_jobject_);
+  }
+}
 
 bool AccountChooserDialogAndroid::ShowDialog() {
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents_);
@@ -158,21 +175,17 @@ void AccountChooserDialogAndroid::OnCredentialClicked(
     const base::android::JavaParamRef<jobject>& obj,
     jint credential_item,
     jboolean signin_button_clicked) {
-  ChooseCredential(credential_item,
-                   password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD,
-                   signin_button_clicked);
-}
-
-void AccountChooserDialogAndroid::Destroy(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
-  delete this;
+  bool credential_handled =
+      HandleCredentialChosen(credential_item, signin_button_clicked);
+  if (credential_handled)
+    delete this;
 }
 
 void AccountChooserDialogAndroid::CancelDialog(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
   OnDialogCancel();
+  delete this;
 }
 
 void AccountChooserDialogAndroid::OnLinkClicked(
@@ -182,27 +195,29 @@ void AccountChooserDialogAndroid::OnLinkClicked(
       GURL(password_manager::kPasswordManagerHelpCenterSmartLock),
       content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK, false /* is_renderer_initiated */));
+  delete this;
 }
 
 void AccountChooserDialogAndroid::WebContentsDestroyed() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AccountChooserDialog_dismissDialog(env, dialog_jobject_);
+  delete this;
 }
 
 void AccountChooserDialogAndroid::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN) {
-    // TODO(https://crbug.com/610700): once bug is fixed, this code should be
-    // gone.
+  if (visibility != content::Visibility::HIDDEN)
+    return;
+
+  // If an authentication is in progress, the user already selected a
+  // credential so the dialog action should not be marked as cancel.
+  if (!authenticator_) {
     OnDialogCancel();
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_AccountChooserDialog_dismissDialog(env, dialog_jobject_);
   }
+  delete this;
 }
 
 void AccountChooserDialogAndroid::OnDialogCancel() {
-  ChooseCredential(-1, password_manager::CredentialType::CREDENTIAL_TYPE_EMPTY,
-                   false /* signin_button_clicked */);
+  passwords_data_.ChooseCredential(nullptr);
+  LogAction(password_manager::metrics_util::ACCOUNT_CHOOSER_DISMISSED);
 }
 
 const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
@@ -210,26 +225,58 @@ AccountChooserDialogAndroid::local_credentials_forms() const {
   return passwords_data_.GetCurrentForms();
 }
 
-void AccountChooserDialogAndroid::ChooseCredential(
+bool AccountChooserDialogAndroid::HandleCredentialChosen(
     size_t index,
-    password_manager::CredentialType type,
     bool signin_button_clicked) {
-  namespace metrics = password_manager::metrics_util;
+  AccountChooserUserAction action =
+      signin_button_clicked
+          ? password_manager::metrics_util::ACCOUNT_CHOOSER_SIGN_IN
+          : password_manager::metrics_util::ACCOUNT_CHOOSER_CREDENTIAL_CHOSEN;
+  LogAction(action);
 
-  metrics::AccountChooserUserAction action;
-  if (type == password_manager::CredentialType::CREDENTIAL_TYPE_EMPTY) {
-    passwords_data_.ChooseCredential(nullptr);
-    action = metrics::ACCOUNT_CHOOSER_DISMISSED;
-  } else {
-    action = signin_button_clicked ? metrics::ACCOUNT_CHOOSER_SIGN_IN
-                                   : metrics::ACCOUNT_CHOOSER_CREDENTIAL_CHOSEN;
-    const auto& credentials_forms = local_credentials_forms();
-    if (index < credentials_forms.size())
-      passwords_data_.ChooseCredential(credentials_forms[index].get());
+  const auto& credentials_forms = local_credentials_forms();
+  if (index >= credentials_forms.size()) {
+    // There is nothing more to handle.
+    return true;
   }
 
-  if (local_credentials_forms().size() == 1)
-    metrics::LogAccountChooserUserActionOneAccount(action);
-  else
-    metrics::LogAccountChooserUserActionManyAccounts(action);
+  scoped_refptr<password_manager::BiometricAuthenticator> authenticator =
+      client_->GetBiometricAuthenticator();
+  if (authenticator &&
+      authenticator->CanAuthenticate() ==
+          password_manager::BiometricsAvailability::kAvailable) {
+    authenticator_ = std::move(authenticator);
+    authenticator_->Authenticate(
+        password_manager::BiometricAuthRequester::kAccountChooserDialog,
+        base::BindOnce(&AccountChooserDialogAndroid::OnReauthCompleted,
+                       base::Unretained(this), index));
+    // The credential handling will only happen after the authentication
+    // finishes.
+    return false;
+  }
+
+  passwords_data_.ChooseCredential(credentials_forms[index].get());
+  return true;
+}
+
+void AccountChooserDialogAndroid::OnReauthCompleted(size_t index,
+                                                    bool auth_succeeded) {
+  authenticator_.reset();
+  if (auth_succeeded) {
+    const auto& credentials_forms = local_credentials_forms();
+    passwords_data_.ChooseCredential(credentials_forms[index].get());
+  } else {
+    passwords_data_.ChooseCredential(nullptr);
+  }
+  delete this;
+}
+
+void AccountChooserDialogAndroid::LogAction(AccountChooserUserAction action) {
+  if (local_credentials_forms().size() == 1) {
+    password_manager::metrics_util::LogAccountChooserUserActionOneAccount(
+        action);
+    return;
+  }
+  password_manager::metrics_util::LogAccountChooserUserActionManyAccounts(
+      action);
 }

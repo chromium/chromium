@@ -57,8 +57,6 @@ public class AccountChooserDialog
     private final String mOrigin;
     private final String mSigninButtonText;
     private ArrayAdapter<Credential> mAdapter;
-    private boolean mIsDestroyed;
-    private boolean mWasDismissedByNative;
 
     /**
      * Holds the reference to the credentials which were chosen by the user.
@@ -179,8 +177,10 @@ public class AccountChooserDialog
             spanableTitle.setSpan(new ClickableSpan() {
                 @Override
                 public void onClick(View view) {
-                    AccountChooserDialogJni.get().onLinkClicked(
-                            mNativeAccountChooserDialog, AccountChooserDialog.this);
+                    if (mNativeAccountChooserDialog != 0) {
+                        AccountChooserDialogJni.get().onLinkClicked(
+                                mNativeAccountChooserDialog, AccountChooserDialog.this);
+                    }
                     mDialog.dismiss();
                 }
             }, mTitleLinkStart, mTitleLinkEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
@@ -263,7 +263,7 @@ public class AccountChooserDialog
 
     @CalledByNative
     private void imageFetchComplete(int index, Bitmap avatarBitmap) {
-        if (mIsDestroyed) return;
+        if (mNativeAccountChooserDialog == 0) return;
         assert index >= 0 && index < mCredentials.length;
         assert mCredentials[index] != null;
         Drawable avatar = AvatarGenerator.makeRoundAvatar(
@@ -279,21 +279,10 @@ public class AccountChooserDialog
         }
     }
 
-    private void destroy() {
-        assert mNativeAccountChooserDialog != 0;
-        assert !mIsDestroyed;
-        mIsDestroyed = true;
-        AccountChooserDialogJni.get().destroy(
-                mNativeAccountChooserDialog, AccountChooserDialog.this);
-        mNativeAccountChooserDialog = 0;
-        mDialog = null;
-    }
-
     @CalledByNative
-    private void dismissDialog() {
-        assert !mWasDismissedByNative;
-        mWasDismissedByNative = true;
-        mDialog.dismiss();
+    private void notifyNativeDestroyed() {
+        mNativeAccountChooserDialog = 0;
+        if (mDialog != null) mDialog.dismiss();
     }
 
     @Override
@@ -306,16 +295,15 @@ public class AccountChooserDialog
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        if (!mWasDismissedByNative) {
-            if (mCredential != null) {
-                AccountChooserDialogJni.get().onCredentialClicked(mNativeAccountChooserDialog,
-                        AccountChooserDialog.this, mCredential.getIndex(), mSigninButtonClicked);
-            } else {
-                AccountChooserDialogJni.get().cancelDialog(
-                        mNativeAccountChooserDialog, AccountChooserDialog.this);
-            }
+        mDialog = null;
+        if (mNativeAccountChooserDialog == 0) return;
+        if (mCredential != null) {
+            AccountChooserDialogJni.get().onCredentialClicked(mNativeAccountChooserDialog,
+                    AccountChooserDialog.this, mCredential.getIndex(), mSigninButtonClicked);
+        } else {
+            AccountChooserDialogJni.get().cancelDialog(
+                    mNativeAccountChooserDialog, AccountChooserDialog.this);
         }
-        destroy();
     }
 
     @NativeMethods
@@ -323,7 +311,6 @@ public class AccountChooserDialog
         void onCredentialClicked(long nativeAccountChooserDialogAndroid,
                 AccountChooserDialog caller, int credentialId, boolean signinButtonClicked);
         void cancelDialog(long nativeAccountChooserDialogAndroid, AccountChooserDialog caller);
-        void destroy(long nativeAccountChooserDialogAndroid, AccountChooserDialog caller);
         void onLinkClicked(long nativeAccountChooserDialogAndroid, AccountChooserDialog caller);
     }
 }
