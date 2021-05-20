@@ -121,6 +121,8 @@ class WTF_EXPORT SingleThreadedBitField {
     bits_ = Value::update(bits_, value);
   }
 
+  BitFieldType bits() const { return bits_; }
+
  protected:
   BitFieldType bits_;
 };

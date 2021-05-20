@@ -306,6 +306,9 @@ void CanvasRenderingContext2DTest::TearDown() {
   // Must be torn down after WebViewHelper since its destructor can create a
   // fresh context provider otherwise.
   SharedGpuContext::ResetForTesting();
+
+  // Prevent CanvasPerformanceMonitor state from leaking between tests.
+  CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
 }
 
 std::unique_ptr<Canvas2DLayerBridge> CanvasRenderingContext2DTest::MakeBridge(

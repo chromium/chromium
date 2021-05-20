@@ -30,6 +30,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/layout/hit_test_canvas_result.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
@@ -241,6 +242,8 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
 
   virtual bool IdentifiabilityEncounteredSensitiveOps() const { return false; }
 
+  static CanvasPerformanceMonitor& GetCanvasPerformanceMonitor();
+
  protected:
   CanvasRenderingContext(CanvasRenderingContextHost*,
                          const CanvasContextCreationAttributesCore&);
@@ -252,9 +255,9 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
   CanvasColorParams color_params_;
   CanvasContextCreationAttributesCore creation_attributes_;
 
-  void StartListeningForDidProcessTask();
-  void StopListeningForDidProcessTask();
-  bool listening_for_did_process_task_ = false;
+  void DidDrawCommon();
+  void RenderTaskEnded();
+  bool did_draw_in_current_task_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(CanvasRenderingContext);
 };

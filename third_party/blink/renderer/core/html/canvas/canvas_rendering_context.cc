@@ -44,7 +44,7 @@ CanvasRenderingContext::CanvasRenderingContext(
       creation_attributes_(attrs) {}
 
 void CanvasRenderingContext::Dispose() {
-  StopListeningForDidProcessTask();
+  RenderTaskEnded();
 
   // HTMLCanvasElement and CanvasRenderingContext have a circular reference.
   // When the pair is no longer reachable, their destruction order is non-
@@ -60,17 +60,17 @@ void CanvasRenderingContext::Dispose() {
 
 void CanvasRenderingContext::DidDraw(const SkIRect& dirty_rect) {
   Host()->DidDraw(SkRect::Make(dirty_rect));
-  StartListeningForDidProcessTask();
+  DidDrawCommon();
 }
 
 void CanvasRenderingContext::DidDraw() {
   Host()->DidDraw();
-  StartListeningForDidProcessTask();
+  DidDrawCommon();
 }
 
 void CanvasRenderingContext::DidProcessTask(
     const base::PendingTask& /* pending_task */) {
-  StopListeningForDidProcessTask();
+  RenderTaskEnded();
 
   // The end of a script task that drew content to the canvas is the point
   // at which the current frame may be considered complete.
@@ -161,20 +161,28 @@ void CanvasRenderingContext::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-void CanvasRenderingContext::StartListeningForDidProcessTask() {
-  if (listening_for_did_process_task_)
+void CanvasRenderingContext::DidDrawCommon() {
+  if (did_draw_in_current_task_)
     return;
 
-  listening_for_did_process_task_ = true;
+  GetCanvasPerformanceMonitor().CurrentTaskDrawsToContext(this);
+  did_draw_in_current_task_ = true;
   Thread::Current()->AddTaskObserver(this);
 }
 
-void CanvasRenderingContext::StopListeningForDidProcessTask() {
-  if (!listening_for_did_process_task_)
+void CanvasRenderingContext::RenderTaskEnded() {
+  if (!did_draw_in_current_task_)
     return;
 
   Thread::Current()->RemoveTaskObserver(this);
-  listening_for_did_process_task_ = false;
+  did_draw_in_current_task_ = false;
+}
+
+CanvasPerformanceMonitor&
+CanvasRenderingContext::GetCanvasPerformanceMonitor() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<CanvasPerformanceMonitor>,
+                                  monitor, ());
+  return *monitor;
 }
 
 }  // namespace blink

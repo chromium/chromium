@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
@@ -13,7 +14,15 @@ class HTMLCanvasElementTest : public RenderingTest {
  public:
   HTMLCanvasElementTest()
       : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
+
+ protected:
+  void TearDown() override;
 };
+
+void HTMLCanvasElementTest::TearDown() {
+  RenderingTest::TearDown();
+  CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+}
 
 TEST_F(HTMLCanvasElementTest, CreateLayerUpdatesCompositing) {
   // Enable script so that the canvas will create a LayoutHTMLCanvas.

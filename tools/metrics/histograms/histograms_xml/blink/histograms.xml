@@ -3115,6 +3115,49 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram base="true"
+    name="Blink.{Host}.RenderTaskDuration.{Thread}.{Context}.{Resource}.{Filter}"
+    units="microseconds" expires_after="2022-05-11">
+  <owner>junov@chromium.org</owner>
+  <owner>fserb@chromium.org</owner>
+  <owner>aaronhk@chromium.org</owner>
+  <summary>
+    Time spent executing a script task that draws content to a rendering context
+    of a canvas element or OffscreenCanvas.
+
+    Note: This metric drops reports on clients with low-resolution clocks, which
+    means these reports will be biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
+  </summary>
+  <token key="Host">
+    <variant name="Canvas"/>
+    <variant name="OffscreenCanvas"/>
+  </token>
+  <token key="Thread">
+    <variant name="MainThread"/>
+    <variant name="Worker"/>
+  </token>
+  <token key="Context">
+    <variant name="2D"/>
+    <variant name="ImageBitmap"/>
+    <variant name="WebGL"/>
+    <variant name="WebGL2"/>
+    <variant name="WebGPU"/>
+  </token>
+  <token key="Resource">
+    <variant name="Bitmap"/>
+    <variant name="PassThrough"/>
+    <variant name="SharedBitmap"/>
+    <variant name="SharedImage"/>
+    <variant name="SkiaDawnSharedImage"/>
+    <variant name="SwapChain"/>
+  </token>
+  <token key="Filter">
+    <variant name="All"/>
+    <variant name="Animation"/>
+  </token>
+</histogram>
+
 <histogram name="BlinkGC.CollectionRate" units="%" expires_after="M84">
   <owner>haraken@chromium.org</owner>
   <summary>

@@ -36,6 +36,7 @@ class CanvasRenderingContext2DAPITest : public PageTestBase {
  protected:
   CanvasRenderingContext2DAPITest();
   void SetUp() override;
+  void TearDown() override;
 
   HTMLCanvasElement& CanvasElement() const { return *canvas_element_; }
   CanvasRenderingContext2D* Context2D() const;
@@ -71,6 +72,10 @@ void CanvasRenderingContext2DAPITest::SetUp() {
       "<body><canvas id='c'></canvas></body>");
   UpdateAllLifecyclePhasesForTest();
   canvas_element_ = To<HTMLCanvasElement>(GetDocument().getElementById("c"));
+}
+
+void CanvasRenderingContext2DAPITest::TearDown() {
+  CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, SetShadowColor_Clamping) {
