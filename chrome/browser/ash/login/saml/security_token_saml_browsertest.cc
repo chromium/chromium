@@ -128,6 +128,10 @@ class SecurityTokenSamlTest : public OobeBaseTest {
 
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
+    // Make sure the Gaia login frame is loaded before any other run loop is
+    // executed, in order to avoid flakiness due to spurious error screens.
+    WaitForSigninScreen();
+
     PrepareCertProviderExtension();
     gaia_mixin_.fake_gaia()->RegisterSamlUser(
         saml_test_users::kFirstUserCorpExampleComEmail,
@@ -248,7 +252,6 @@ class SecurityTokenSamlTest : public OobeBaseTest {
 // Tests the successful login scenario with the correct PIN.
 // TODO(crbug.com/1033936): Fix the flakiness and enable it.
 IN_PROC_BROWSER_TEST_F(SecurityTokenSamlTest, NEVER_ENABLED_Basic) {
-  WaitForSigninScreen();
   test::OobeJS().ExpectHiddenPath({"gaia-signin", "pinDialog"});
 
   StartSignIn();
