@@ -954,7 +954,7 @@ _BANNED_CPP_FUNCTIONS = (
           'Please use base::ScopedObservation for observing a single source,',
           'or base::ScopedMultiSourceObservation for observing multple sources',
       ),
-      False,
+      True,
       (),
     ),
     (
