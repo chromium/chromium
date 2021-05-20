@@ -334,7 +334,7 @@ scoped_refptr<media::VideoFrame> MakeScaledNV12VideoFrame(
                     dst_frame->data(media::VideoFrame::kUVPlane),
                     nv12_planes[media::VideoFrame::kUVPlane].stride,
                     dst_frame->coded_size().width(),
-                    dst_frame->coded_size().height(), libyuv::kFilterBox);
+                    dst_frame->coded_size().height(), libyuv::kFilterBilinear);
   return dst_frame;
 }
 

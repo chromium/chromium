@@ -1133,7 +1133,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
       // Do a strided copy and scale (if necessary) the input frame to match
       // the input requirements for the encoder.
       // TODO(sheu): Support zero-copy from WebRTC. http://crbug.com/269312
-      // TODO(magjed): Downscale with kFilterBox in an image pyramid instead.
+      // TODO(magjed): Downscale with an image pyramid instead.
       rtc::scoped_refptr<webrtc::I420BufferInterface> i420_buffer =
           next_frame->video_frame_buffer()->ToI420();
       if (libyuv::I420Scale(i420_buffer->DataY(), i420_buffer->StrideY(),
@@ -1148,7 +1148,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
                             frame->stride(media::VideoFrame::kVPlane),
                             frame->visible_rect().width(),
                             frame->visible_rect().height(),
-                            libyuv::kFilterBox)) {
+                            libyuv::kFilterBilinear)) {
         LogAndNotifyError(FROM_HERE, "Failed to copy buffer",
                           media::VideoEncodeAccelerator::kPlatformFailureError);
         async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
