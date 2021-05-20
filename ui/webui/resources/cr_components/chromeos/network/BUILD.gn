@@ -72,6 +72,7 @@ js_library("network_apnlist") {
     "//ui/webui/resources/js:i18n_behavior",
     "//ui/webui/resources/js:load_time_data",
   ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
 js_library("network_choose_mobile") {
@@ -356,6 +357,7 @@ js_library("network_apnlist.m") {
     "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":network_apnlist_module" ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
 js_library("network_choose_mobile.m") {
