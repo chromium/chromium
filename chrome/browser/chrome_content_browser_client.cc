@@ -4985,6 +4985,56 @@ void ChromeContentBrowserClient::CreateWebSocket(
 #endif
 }
 
+void ChromeContentBrowserClient::WillCreateWebTransport(
+    content::RenderFrameHost* frame,
+    const GURL& url,
+    WillCreateWebTransportCallback callback) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  if (!frame) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  int frame_tree_node_id = frame->GetFrameTreeNodeId();
+  content::WebContents* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+  DCHECK(web_contents);
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  DCHECK(profile);
+  auto checker = std::make_unique<safe_browsing::WebApiHandshakeChecker>(
+      base::BindOnce(
+          &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
+          base::Unretained(this),
+          safe_browsing::IsSafeBrowsingEnabled(*profile->GetPrefs()),
+          /*should_check_on_sb_disabled=*/false,
+          safe_browsing::GetURLAllowlistByPolicy(profile->GetPrefs())),
+      base::BindRepeating(&content::WebContents::FromFrameTreeNodeId,
+                          frame_tree_node_id),
+      frame_tree_node_id);
+  auto* raw_checker = checker.get();
+  raw_checker->Check(
+      url,
+      base::BindOnce(
+          &ChromeContentBrowserClient::SafeBrowsingWebApiHandshakeChecked,
+          weak_factory_.GetWeakPtr(), std::move(checker), std::move(callback)));
+#else
+  std::move(callback).Run(absl::nullopt);
+#endif
+}
+
+void ChromeContentBrowserClient::SafeBrowsingWebApiHandshakeChecked(
+    std::unique_ptr<safe_browsing::WebApiHandshakeChecker> checker,
+    WillCreateWebTransportCallback callback,
+    safe_browsing::WebApiHandshakeChecker::CheckResult result) {
+  if (result == safe_browsing::WebApiHandshakeChecker::CheckResult::kProceed) {
+    std::move(callback).Run(absl::nullopt);
+  } else {
+    std::move(callback).Run(network::mojom::WebTransportError::New(
+        net::ERR_ABORTED, quic::QUIC_INTERNAL_ERROR,
+        "SafeBrowsing check failed", false));
+  }
+}
+
 bool ChromeContentBrowserClient::WillCreateRestrictedCookieManager(
     network::mojom::RestrictedCookieManagerRole role,
     content::BrowserContext* browser_context,

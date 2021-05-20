@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEBTRANSPORT_WEB_TRANSPORT_CONNECTOR_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -38,10 +39,20 @@ class WebTransportConnectorImpl final
           handshake_client) override;
 
  private:
+  void OnWillCreateWebTransportCompleted(
+      const GURL& url,
+      std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
+          fingerprints,
+      mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
+          handshake_client,
+      absl::optional<network::mojom::WebTransportErrorPtr> error);
+
   const int process_id_;
   const base::WeakPtr<RenderFrameHostImpl> frame_;
   const url::Origin origin_;
   const net::NetworkIsolationKey network_isolation_key_;
+
+  base::WeakPtrFactory<WebTransportConnectorImpl> weak_factory_{this};
 };
 
 }  // namespace content

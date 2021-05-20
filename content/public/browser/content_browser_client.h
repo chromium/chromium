@@ -49,6 +49,7 @@
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "services/network/public/mojom/web_transport.mojom-forward.h"
 #include "services/network/public/mojom/websocket.mojom-forward.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -1476,6 +1477,14 @@ class CONTENT_EXPORT ContentBrowserClient {
       const absl::optional<std::string>& user_agent,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client);
+
+  // Allows the embedder to control if establishing a WebTransport connection is
+  // allowed. When the connection is blocked, `callback` is called with `error`.
+  using WillCreateWebTransportCallback = base::OnceCallback<void(
+      absl::optional<network::mojom::WebTransportErrorPtr> error)>;
+  virtual void WillCreateWebTransport(RenderFrameHost* frame,
+                                      const GURL& url,
+                                      WillCreateWebTransportCallback callback);
 
   // Allows the embedder to intercept or replace the mojo objects used for
   // preference-following access to cookies. This is primarily used for objects

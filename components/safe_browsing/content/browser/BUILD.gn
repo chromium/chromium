@@ -16,6 +16,8 @@ source_set("browser") {
     "threat_details_cache.h",
     "threat_details_history.cc",
     "threat_details_history.h",
+    "web_api_handshake_checker.cc",
+    "web_api_handshake_checker.h",
   ]
   deps = [
     "//components/back_forward_cache",
@@ -69,6 +71,7 @@ source_set("unit_tests") {
   sources = [
     "client_side_model_loader_unittest.cc",
     "client_side_phishing_model_unittest.cc",
+    "web_api_handshake_checker_unittest.cc",
   ]
 
   deps = [
@@ -77,9 +80,13 @@ source_set("unit_tests") {
     "//base:base",
     "//base/test:test_support",
     "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/content/browser:browser",
     "//components/safe_browsing/core:client_model_proto",
     "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/browser:browser",
+    "//components/safe_browsing/core/db:test_database_manager",
+    "//components/security_interstitials/core:unsafe_resource",
     "//components/variations",
     "//content/test:test_support",
     "//services/network:test_support",

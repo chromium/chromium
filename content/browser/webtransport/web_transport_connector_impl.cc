@@ -4,9 +4,13 @@
 
 #include "content/browser/webtransport/web_transport_connector_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_client.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/quic/quic_transport_client.h"
 
@@ -77,6 +81,28 @@ void WebTransportConnectorImpl::Connect(
     return;
   }
 
+  GetContentClient()->browser()->WillCreateWebTransport(
+      frame_.get(), url,
+      base::BindOnce(
+          &WebTransportConnectorImpl::OnWillCreateWebTransportCompleted,
+          weak_factory_.GetWeakPtr(), url, std::move(fingerprints),
+          std::move(handshake_client)));
+}
+
+void WebTransportConnectorImpl::OnWillCreateWebTransportCompleted(
+    const GURL& url,
+    std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
+        fingerprints,
+    mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
+        handshake_client,
+    absl::optional<network::mojom::WebTransportErrorPtr> error) {
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+
+  RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
+  if (!process) {
+    return;
+  }
+
   mojo::PendingRemote<WebTransportHandshakeClient> handshake_client_to_pass;
   // TODO(yhirano): Stop using MakeSelfOwnedReceiver here, because the
   // WebTransport implementation in the network service won't notice that
@@ -85,6 +111,16 @@ void WebTransportConnectorImpl::Connect(
       std::make_unique<InterceptingHandshakeClient>(
           frame_, url, std::move(handshake_client)),
       handshake_client_to_pass.InitWithNewPipeAndPassReceiver());
+
+  if (error) {
+    mojo::Remote<WebTransportHandshakeClient> remote(
+        std::move(handshake_client_to_pass));
+    remote->OnHandshakeFailed(net::WebTransportError(
+        error.value()->net_error,
+        static_cast<quic::QuicErrorCode>(error.value()->quic_error),
+        error.value()->details, error.value()->safe_to_report_details));
+    return;
+  }
 
   process->GetStoragePartition()->GetNetworkContext()->CreateWebTransport(
       url, origin_, network_isolation_key_, std::move(fingerprints),

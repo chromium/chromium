@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/startup_data.h"
+#include "components/safe_browsing/content/browser/web_api_handshake_checker.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
@@ -519,6 +520,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const absl::optional<std::string>& user_agent,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client) override;
+  void WillCreateWebTransport(content::RenderFrameHost* frame,
+                              const GURL& url,
+                              WillCreateWebTransportCallback callback) override;
+
   bool WillCreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole role,
       content::BrowserContext* browser_context,
@@ -792,6 +797,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       bool is_enterprise_lookup_enabled,
       bool is_consumer_lookup_enabled);
+
+  void SafeBrowsingWebApiHandshakeChecked(
+      std::unique_ptr<safe_browsing::WebApiHandshakeChecker> checker,
+      WillCreateWebTransportCallback callback,
+      safe_browsing::WebApiHandshakeChecker::CheckResult result);
 
 #if !defined(OS_ANDROID)
   void OnKeepaliveTimerFired(

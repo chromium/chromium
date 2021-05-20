@@ -816,6 +816,13 @@ void ContentBrowserClient::CreateWebSocket(
   NOTREACHED();
 }
 
+void ContentBrowserClient::WillCreateWebTransport(
+    RenderFrameHost* frame,
+    const GURL& url,
+    WillCreateWebTransportCallback callback) {
+  std::move(callback).Run(absl::nullopt);
+}
+
 bool ContentBrowserClient::WillCreateRestrictedCookieManager(
     network::mojom::RestrictedCookieManagerRole role,
     BrowserContext* browser_context,
