@@ -50,32 +50,12 @@ void AddDispatcher(PlatformEventDispatcher* dispatcher) {
 
 class TestPlatformEventSource : public PlatformEventSource {
  public:
-  TestPlatformEventSource()
-      : stop_stream_(false) {
-  }
-  ~TestPlatformEventSource() override {}
+  TestPlatformEventSource() = default;
+  TestPlatformEventSource(const TestPlatformEventSource&) = delete;
+  TestPlatformEventSource& operator=(const TestPlatformEventSource&) = delete;
+  ~TestPlatformEventSource() override = default;
 
   uint32_t Dispatch(const PlatformEvent& event) { return DispatchEvent(event); }
-
-  // Dispatches the stream of events, and returns the number of events that are
-  // dispatched before it is requested to stop.
-  size_t DispatchEventStream(
-      const std::vector<std::unique_ptr<PlatformEvent>>& events) {
-    stop_stream_ = false;
-    for (size_t count = 0; count < events.size(); ++count) {
-      DispatchEvent(*events[count]);
-      if (stop_stream_)
-        return count + 1;
-    }
-    return events.size();
-  }
-
-  // PlatformEventSource:
-  void StopCurrentEventStream() override { stop_stream_ = true; }
-
- private:
-  bool stop_stream_;
-  DISALLOW_COPY_AND_ASSIGN(TestPlatformEventSource);
 };
 
 class TestPlatformEventDispatcher : public PlatformEventDispatcher {
@@ -597,84 +577,6 @@ class DestroyScopedHandleDispatcher : public TestPlatformEventDispatcher {
 
   DISALLOW_COPY_AND_ASSIGN(DestroyScopedHandleDispatcher);
 };
-
-// Tests that resetting an overridden dispatcher causes the nested message-loop
-// iteration to stop and the rest of the events are dispatched in the next
-// iteration.
-class DestroyedNestedOverriddenDispatcherQuitsNestedLoopIteration
-    : public PlatformEventTestWithMessageLoop {
- public:
-  void NestedTask(std::vector<int>* list,
-                  TestPlatformEventDispatcher* dispatcher) {
-    std::vector<std::unique_ptr<PlatformEvent>> events;
-    events.push_back(CreatePlatformEvent());
-    events.push_back(CreatePlatformEvent());
-
-    // Attempt to dispatch a couple of events. Dispatching the first event will
-    // have terminated the ScopedEventDispatcher object, which will terminate
-    // the current iteration of the message-loop.
-    size_t count = source()->DispatchEventStream(events);
-    EXPECT_EQ(1u, count);
-    ASSERT_EQ(2u, list->size());
-    EXPECT_EQ(15, (*list)[0]);
-    EXPECT_EQ(20, (*list)[1]);
-    list->clear();
-
-    ASSERT_LT(count, events.size());
-    events.erase(events.begin(), events.begin() + count);
-
-    count = source()->DispatchEventStream(events);
-    EXPECT_EQ(1u, count);
-    ASSERT_EQ(2u, list->size());
-    EXPECT_EQ(15, (*list)[0]);
-    EXPECT_EQ(10, (*list)[1]);
-    list->clear();
-
-    // Terminate the run loop.
-    run_loop_.Quit();
-  }
-
-  // PlatformEventTestWithMessageLoop:
-  void RunTestImpl() override {
-    std::vector<int> list;
-    TestPlatformEventDispatcher dispatcher(10, &list);
-    TestPlatformEventObserver observer(15, &list);
-
-    DestroyScopedHandleDispatcher overriding(20, &list);
-    source()->RemovePlatformEventDispatcher(&overriding);
-    std::unique_ptr<ScopedEventDispatcher> override_handle =
-        source()->OverrideDispatcher(&overriding);
-
-    std::unique_ptr<PlatformEvent> event = CreatePlatformEvent();
-    source()->Dispatch(*event);
-    ASSERT_EQ(2u, list.size());
-    EXPECT_EQ(15, list[0]);
-    EXPECT_EQ(20, list[1]);
-    list.clear();
-
-    overriding.SetScopedHandle(std::move(override_handle));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &DestroyedNestedOverriddenDispatcherQuitsNestedLoopIteration::
-                NestedTask,
-            base::Unretained(this), base::Unretained(&list),
-            base::Unretained(&overriding)));
-    run_loop_.Run();
-
-    // Dispatching the event should now reach the default dispatcher.
-    source()->Dispatch(*event);
-    ASSERT_EQ(2u, list.size());
-    EXPECT_EQ(15, list[0]);
-    EXPECT_EQ(10, list[1]);
-  }
-
- private:
-  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
-};
-
-RUN_TEST_IN_MESSAGE_LOOP(
-    DestroyedNestedOverriddenDispatcherQuitsNestedLoopIteration)
 
 // Tests that resetting an overridden dispatcher, and installing another
 // overridden dispatcher before the nested message-loop completely unwinds

@@ -36,7 +36,7 @@ void X11EventWatcherFdWatch::StopWatching() {
 }
 
 void X11EventWatcherFdWatch::OnFileCanReadWithoutBlocking(int fd) {
-  event_source_->DispatchXEvents();
+  event_source_->DispatchXEvent();
 }
 
 void X11EventWatcherFdWatch::OnFileCanWriteWithoutBlocking(int fd) {

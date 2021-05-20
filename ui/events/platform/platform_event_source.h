@@ -67,11 +67,6 @@ class EVENTS_EXPORT PlatformEventSource {
   std::unique_ptr<ScopedEventDispatcher> OverrideDispatcher(
       PlatformEventDispatcher* dispatcher);
 
-  // Called to indicate that the source should stop dispatching the current
-  // stream of events and wait until the next iteration of the message-loop to
-  // dispatch the rest of the events.
-  virtual void StopCurrentEventStream();
-
   void AddPlatformEventObserver(PlatformEventObserver* observer);
   void RemovePlatformEventObserver(PlatformEventObserver* observer);
 

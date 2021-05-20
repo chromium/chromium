@@ -39,7 +39,7 @@ gboolean XSourceDispatch(GSource* source,
                          GSourceFunc unused_func,
                          gpointer data) {
   X11EventSource* x11_source = static_cast<X11EventSource*>(data);
-  x11_source->DispatchXEvents();
+  x11_source->DispatchXEvent();
   return TRUE;
 }
 
