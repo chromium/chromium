@@ -119,7 +119,6 @@ Layer::Layer()
       force_render_surface_for_testing_(false),
       subtree_property_changed_(false),
       may_contain_video_(false),
-      needs_show_scrollbars_(false),
       has_transform_node_(false),
       has_clip_node_(false),
       subtree_has_copy_request_(false) {}
@@ -1380,9 +1379,6 @@ void Layer::PushPropertiesTo(LayerImpl* layer) {
     trees->scroll_tree.SetScrollOffsetClobberActiveValue(layer->element_id());
   }
 
-  if (needs_show_scrollbars_)
-    layer->set_needs_show_scrollbars(true);
-
   layer->UnionUpdateRect(inputs_.update_rect);
   layer->SetNeedsPushProperties();
 
@@ -1390,7 +1386,6 @@ void Layer::PushPropertiesTo(LayerImpl* layer) {
   layer->UpdateDebugInfo(debug_info_.get());
 
   // Reset any state that should be cleared for the next update.
-  needs_show_scrollbars_ = false;
   subtree_property_changed_ = false;
   inputs_.update_rect = gfx::Rect();
 }

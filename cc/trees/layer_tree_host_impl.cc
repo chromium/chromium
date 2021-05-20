@@ -599,7 +599,7 @@ void LayerTreeHostImpl::CommitComplete() {
     input_delegate_->DidCommit();
 
   if (CommitToActiveTree()) {
-    active_tree_->HandleScrollbarShowRequestsFromMain();
+    active_tree_->HandleScrollbarShowRequests();
 
     // Property tree nodes have been updated by the commit. Update elements
     // available on active tree to start/stop ticking animations.

@@ -651,7 +651,7 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
 
   // Note: this needs to happen after SetPropertyTrees.
   target_tree->HandleTickmarksVisibilityChange();
-  target_tree->HandleScrollbarShowRequestsFromMain();
+  target_tree->HandleScrollbarShowRequests();
   target_tree->AddPresentationCallbacks(std::move(presentation_callbacks_));
   presentation_callbacks_.clear();
 
@@ -689,7 +689,7 @@ void LayerTreeImpl::HandleTickmarksVisibilityChange() {
   }
 }
 
-void LayerTreeImpl::HandleScrollbarShowRequestsFromMain() {
+void LayerTreeImpl::HandleScrollbarShowRequests() {
   for (auto* layer : *this) {
     if (!layer->needs_show_scrollbars())
       continue;
@@ -697,7 +697,7 @@ void LayerTreeImpl::HandleScrollbarShowRequestsFromMain() {
         host_impl_->ScrollbarAnimationControllerForElementId(
             layer->element_id());
     if (controller) {
-      controller->DidRequestShowFromMainThread();
+      controller->DidRequestShow();
       layer->set_needs_show_scrollbars(false);
     }
   }

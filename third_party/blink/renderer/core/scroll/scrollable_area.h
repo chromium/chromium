@@ -450,9 +450,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
     return scroll_corner_needs_paint_invalidation_;
   }
 
-  bool NeedsShowScrollbarLayers() const { return needs_show_scrollbar_layers_; }
-  void DidShowScrollbarLayers() { needs_show_scrollbar_layers_ = false; }
-
   void CancelScrollAnimation();
   virtual void CancelProgrammaticScrollAnimation();
 
@@ -652,10 +649,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   unsigned scrollbar_captured_ : 1;
   unsigned mouse_over_scrollbar_ : 1;
   unsigned has_been_disposed_ : 1;
-
-  // Indicates that the next compositing update needs to call
-  // cc::Layer::ShowScrollbars() on our scroll layer. Ignored if not composited.
-  unsigned needs_show_scrollbar_layers_ : 1;
   unsigned uses_composited_scrolling_ : 1;
 
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;

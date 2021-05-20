@@ -866,11 +866,8 @@ void VisualViewport::UpdateScrollOffset(const ScrollOffset& position,
                              FloatPoint(position))) {
     return;
   }
-  if (IsExplicitScrollType(scroll_type)) {
+  if (IsExplicitScrollType(scroll_type))
     NotifyRootFrameViewport();
-    if (scroll_type != mojom::blink::ScrollType::kCompositor && scroll_layer_)
-      scroll_layer_->ShowScrollbars();
-  }
 }
 
 cc::Layer* VisualViewport::LayerForScrolling() const {

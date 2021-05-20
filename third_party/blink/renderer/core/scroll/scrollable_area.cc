@@ -107,7 +107,6 @@ ScrollableArea::ScrollableArea(
       scrollbar_captured_(false),
       mouse_over_scrollbar_(false),
       has_been_disposed_(false),
-      needs_show_scrollbar_layers_(false),
       uses_composited_scrolling_(false),
       compositor_task_runner_(std::move(compositor_task_runner)) {
   DCHECK(compositor_task_runner_);
@@ -758,7 +757,6 @@ void ScrollableArea::ShowNonMacOverlayScrollbars() {
     return;
 
   SetScrollbarsHiddenIfOverlay(false);
-  needs_show_scrollbar_layers_ = true;
 
   const base::TimeDelta time_until_disable =
       GetPageScrollbarTheme().OverlayScrollbarFadeOutDelay() +

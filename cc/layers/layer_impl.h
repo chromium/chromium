@@ -538,11 +538,11 @@ class CC_EXPORT LayerImpl {
   mutable std::unique_ptr<Region> all_touch_action_regions_;
 
   bool needs_push_properties_ : 1;
-  bool scrollbars_hidden_ : 1;
 
-  // The needs_show_scrollbars_ bit tracks a pending request from Blink to show
-  // the overlay scrollbars. It's set on the scroll layer (not the scrollbar
-  // layers) and consumed by LayerTreeImpl::PushPropertiesTo during activation.
+  // The needs_show_scrollbars_ bit tracks a pending request to show the overlay
+  // scrollbars. It's set by UpdateScrollable() on the scroll layer (not the
+  // scrollbar layers) and consumed by LayerTreeImpl::PushPropertiesTo() and
+  // LayerTreeImpl::HandleScrollbarShowRequests().
   bool needs_show_scrollbars_ : 1;
 
   // This is set for layers that have a property because of which they are not

@@ -210,7 +210,7 @@ void ScrollbarAnimationController::WillUpdateScroll() {
     UpdateScrollbarState();
 }
 
-void ScrollbarAnimationController::DidRequestShowFromMainThread() {
+void ScrollbarAnimationController::DidRequestShow() {
   UpdateScrollbarState();
 }
 

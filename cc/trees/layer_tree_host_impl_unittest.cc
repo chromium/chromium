@@ -5043,7 +5043,7 @@ class LayerTreeHostImplTestScrollbarAnimation : public LayerTreeHostImplTest {
     SetupScrollbarLayer(OuterViewportScrollLayer(), scrollbar);
 
     host_impl_->active_tree()->DidBecomeActive();
-    host_impl_->active_tree()->HandleScrollbarShowRequestsFromMain();
+    host_impl_->active_tree()->HandleScrollbarShowRequests();
     host_impl_->active_tree()->SetLocalSurfaceIdFromParent(
         viz::LocalSurfaceId(1, base::UnguessableToken::Deserialize(2u, 3u)));
 
@@ -5720,7 +5720,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollbarRegistration) {
   animation_task_.Reset();
   child->set_needs_show_scrollbars(true);
   UpdateDrawProperties(host_impl_->active_tree());
-  host_impl_->active_tree()->HandleScrollbarShowRequestsFromMain();
+  host_impl_->active_tree()->HandleScrollbarShowRequests();
   EXPECT_FALSE(animation_task_.is_null());
   animation_task_.Reset();
 

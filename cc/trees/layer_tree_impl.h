@@ -707,7 +707,7 @@ class CC_EXPORT LayerTreeImpl {
   void ResetAllChangeTracking();
 
   void HandleTickmarksVisibilityChange();
-  void HandleScrollbarShowRequestsFromMain();
+  void HandleScrollbarShowRequests();
 
   void InvalidateRegionForImages(
       const PaintImageIdFlatSet& images_to_invalidate);

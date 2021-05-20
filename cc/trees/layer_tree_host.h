@@ -516,8 +516,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   bool TakeForceSendMetadataRequest();
 
   // Used externally by blink for setting the PropertyTrees when
-  // UseLayerLists() is true, which also implies that Slimming Paint
-  // v2 is enabled.
+  // UseLayerLists() is true.
   PropertyTrees* property_trees() { return &property_trees_; }
   const PropertyTrees* property_trees() const { return &property_trees_; }
 

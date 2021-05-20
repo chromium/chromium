@@ -597,9 +597,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
     return layer_tree_inputs() ? layer_tree_inputs()->mirror_count : 0;
   }
 
-  // Called on the scroll layer to trigger showing the overlay scrollbars.
-  void ShowScrollbars() { needs_show_scrollbars_ = true; }
-
   // Captures text content within the given |rect| and returns the associated
   // NodeInfo in |content|.
   virtual void CaptureContent(const gfx::Rect& rect,
@@ -969,7 +966,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   bool force_render_surface_for_testing_ : 1;
   bool subtree_property_changed_ : 1;
   bool may_contain_video_ : 1;
-  bool needs_show_scrollbars_ : 1;
   bool has_transform_node_ : 1;
   bool has_clip_node_ : 1;
   // This value is valid only when LayerTreeHost::has_copy_request() is true

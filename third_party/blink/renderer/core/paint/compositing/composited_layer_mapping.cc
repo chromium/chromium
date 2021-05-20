@@ -979,12 +979,6 @@ bool CompositedLayerMapping::UpdateOverflowControlsLayers(
           CompositingReason::kLayerForVerticalScrollbar);
     }
     scrollable_area->ResetRebuildScrollbarLayerFlags();
-
-    if (scrolling_contents_layer_ &&
-        scrollable_area->NeedsShowScrollbarLayers()) {
-      scrolling_contents_layer_->CcLayer().ShowScrollbars();
-      scrollable_area->DidShowScrollbarLayers();
-    }
   }
 
   // If the subtree is invisible, we don't actually need scrollbar layers.
