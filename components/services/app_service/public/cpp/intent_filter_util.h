@@ -87,6 +87,10 @@ void UpgradeFilter(apps::mojom::IntentFilterPtr& filter);
 // or http scheme.
 bool IsBrowserFilter(const apps::mojom::IntentFilterPtr& filter);
 
+// Convert an intent filter to a list of its supported links.
+std::set<std::string> AppManagementGetSupportedLinks(
+    const apps::mojom::IntentFilterPtr& intent_filter);
+
 }  // namespace apps_util
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INTENT_FILTER_UTIL_H_

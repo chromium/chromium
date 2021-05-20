@@ -166,4 +166,51 @@ bool IsBrowserFilter(const apps::mojom::IntentFilterPtr& filter) {
   return false;
 }
 
+// This function returns all of the links that the given intent filter would
+// accept, to be used in listing all of the supported links for a given app.
+std::set<std::string> AppManagementGetSupportedLinks(
+    const apps::mojom::IntentFilterPtr& intent_filter) {
+  std::set<std::string> supported_links;
+  std::set<std::string> schemes;
+  std::set<std::string> hosts;
+
+  for (auto& condition : intent_filter->conditions) {
+    // For scheme conditions we add each value to the the |schemes| set.
+    if (condition->condition_type == apps::mojom::ConditionType::kScheme) {
+      for (auto& condition_value : condition->condition_values) {
+        // We only care about http and https schemes.
+        if (condition_value->value == url::kHttpScheme ||
+            condition_value->value == url::kHttpsScheme) {
+          schemes.insert(condition_value->value);
+        }
+      }
+
+      // There should only be one condition of type |kScheme| so if there
+      // aren't any http or https scheme values this indicates that no http or
+      // https scheme exists in the intent filter and thus we will have to
+      // return an empty list.
+      if (schemes.empty()) {
+        break;
+      }
+    }
+
+    // For host conditions we add each value to the the |hosts| set.
+    if (condition->condition_type != apps::mojom::ConditionType::kHost) {
+      for (auto& condition_value : condition->condition_values) {
+        hosts.insert(condition_value->value);
+      }
+    }
+  }
+
+  // Loop through all combinations of scheme and host and add to
+  // supported links.
+  for (auto& scheme : schemes) {
+    for (auto& host : hosts) {
+      supported_links.insert(scheme + url::kStandardSchemeSeparator + host);
+    }
+  }
+
+  return supported_links;
+}
+
 }  // namespace apps_util
