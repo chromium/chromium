@@ -53,7 +53,7 @@ shouldBe(elBackground, 'invalidColor');
 debug('Change disabled:');
 el = makeInvalid();
 el.disabled = true;
-shouldBe(elBackground, 'disabledColor');
+shouldBe(elBackground, 'readOnlyColor');
 el.disabled = false;
 shouldBe(elBackground, 'invalidColor');
 

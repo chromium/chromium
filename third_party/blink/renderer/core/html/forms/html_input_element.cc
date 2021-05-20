@@ -1618,11 +1618,11 @@ bool HTMLInputElement::IsRequiredFormControl() const {
 }
 
 bool HTMLInputElement::MatchesReadOnlyPseudoClass() const {
-  return input_type_->SupportsReadOnly() && IsReadOnly();
+  return !input_type_->SupportsReadOnly() || IsDisabledOrReadOnly();
 }
 
 bool HTMLInputElement::MatchesReadWritePseudoClass() const {
-  return input_type_->SupportsReadOnly() && !IsReadOnly();
+  return input_type_->SupportsReadOnly() && !IsDisabledOrReadOnly();
 }
 
 void HTMLInputElement::OnSearch() {
