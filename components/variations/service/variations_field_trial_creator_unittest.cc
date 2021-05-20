@@ -16,6 +16,9 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/metrics/clean_exit_beacon.h"
+#include "components/metrics/client_info.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/pref_names.h"
@@ -50,6 +53,12 @@ const char kTestSeedSerialNumber[] = "123";
 // Constants used to mock the serialized seed state.
 const char kTestSeedData[] = "a serialized seed, 100% realistic";
 const char kTestSeedSignature[] = "a totally valid signature, I swear!";
+
+// No-op functions used to create a MetricsStateManager.
+void NoOpStoreClientInfoBackup(const metrics::ClientInfo&) {}
+std::unique_ptr<metrics::ClientInfo> NoOpLoadClientInfoBackup() {
+  return nullptr;
+}
 
 // Populates |seed| with simple test data. The resulting seed will contain one
 // study called "test", which contains one experiment called "abc" with
@@ -238,8 +247,14 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
             client,
             std::make_unique<VariationsSeedStore>(local_state),
             UIStringOverrider()),
+        enabled_state_provider_(/*consent=*/true, /*enabled=*/true),
         seed_store_(local_state),
-        safe_seed_manager_(safe_seed_manager) {}
+        safe_seed_manager_(safe_seed_manager) {
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        local_state, &enabled_state_provider_, std::wstring(),
+        base::BindRepeating(&NoOpStoreClientInfoBackup),
+        base::BindRepeating(&NoOpLoadClientInfoBackup));
+  }
 
   ~TestVariationsFieldTrialCreator() override = default;
 
@@ -250,8 +265,8 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
     return VariationsFieldTrialCreator::SetupFieldTrials(
         "", "", "", std::vector<std::string>(),
         std::vector<base::FeatureList::FeatureOverrideInfo>(), nullptr,
-        std::make_unique<base::FeatureList>(), &platform_field_trials,
-        safe_seed_manager_, absl::nullopt);
+        std::make_unique<base::FeatureList>(), metrics_state_manager_.get(),
+        &platform_field_trials, safe_seed_manager_, absl::nullopt);
   }
 
   TestVariationsSeedStore* seed_store() { return &seed_store_; }
@@ -259,8 +274,10 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
  private:
   VariationsSeedStore* GetSeedStore() override { return &seed_store_; }
 
+  metrics::TestEnabledStateProvider enabled_state_provider_;
   TestVariationsSeedStore seed_store_;
   SafeSeedManager* const safe_seed_manager_;
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(TestVariationsFieldTrialCreator);
 };
@@ -271,6 +288,7 @@ class FieldTrialCreatorTest : public ::testing::Test {
  protected:
   FieldTrialCreatorTest() {
     metrics::CleanExitBeacon::RegisterPrefs(prefs_.registry());
+    metrics::MetricsStateManager::RegisterPrefs(prefs_.registry());
     VariationsService::RegisterPrefs(prefs_.registry());
     global_feature_list_ = base::FeatureList::ClearInstanceForTesting();
   }
@@ -495,6 +513,13 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
       &prefs_, &variations_service_client, std::move(seed_store),
       UIStringOverrider());
 
+  metrics::TestEnabledStateProvider enabled_state_provider(/*consent=*/true,
+                                                           /*enabled=*/true);
+  auto metrics_state_manager = metrics::MetricsStateManager::Create(
+      &prefs_, &enabled_state_provider, std::wstring(),
+      base::BindRepeating(&NoOpStoreClientInfoBackup),
+      base::BindRepeating(&NoOpLoadClientInfoBackup));
+
   // Check that field trials are created from the seed. The test seed contains a
   // single study with an experiment targeting 100% of users in India. Since
   // |initial_seed| included the country code for India, this study should be
@@ -502,8 +527,8 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
   EXPECT_TRUE(field_trial_creator.SetupFieldTrials(
       "", "", "", std::vector<std::string>(),
       std::vector<base::FeatureList::FeatureOverrideInfo>(), nullptr,
-      std::make_unique<base::FeatureList>(), &platform_field_trials,
-      &safe_seed_manager, absl::nullopt));
+      std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
+      &platform_field_trials, &safe_seed_manager, absl::nullopt));
 
   EXPECT_EQ(kTestSeedExperimentName,
             base::FieldTrialList::FindFullName(kTestSeedStudyName));
