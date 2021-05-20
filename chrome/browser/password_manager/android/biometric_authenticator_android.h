@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
+#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
+#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/password_manager/chrome_biometric_authenticator.h"
@@ -49,4 +49,4 @@ class BiometricAuthenticatorAndroid : public ChromeBiometricAuthenticator {
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
+#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
