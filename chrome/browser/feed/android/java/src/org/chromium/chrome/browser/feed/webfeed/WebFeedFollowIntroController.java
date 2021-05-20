@@ -143,7 +143,7 @@ public class WebFeedFollowIntroController {
                         result
                         -> mMeetsVisitRequirement = result.visits >= numVisitMin
                                 && result.dailyVisits >= dailyVisitMin);
-                webFeedBridge.getWebFeedMetadataForPage(url, result -> {
+                webFeedBridge.getWebFeedMetadataForPage(tab, url, result -> {
                     // Shouldn't be recommended if there's no metadata or if the ID doesn't exist.
                     if (result == null || result.id == null || result.id.length == 0) {
                         mIsRecommended = false;

@@ -156,7 +156,8 @@ public class WebFeedSnackbarController {
             @Override
             public void onAction(Object actionData) {
                 if (followId == null || followId.length == 0) {
-                    mWebFeedBridge.followFromUrl(url, result -> {
+                    // TODO(harringtond): How will we get the RSS information for this call?
+                    mWebFeedBridge.followFromUrl(/*tab=*/null, url, result -> {
                         byte[] followId = result.metadata != null ? result.metadata.id : null;
                         showPostFollowHelp(result, followId, url, title);
                     });

@@ -12,6 +12,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.url.GURL;
 
@@ -102,11 +103,13 @@ public class WebFeedBridge {
     /**
      * Returns the Web Feed metadata for the web feed associated with this page. May return a
      * subscribed, recently subscribed, or recommended Web Feed.
+     * @param tab The tab showing the page.
      * @param url The URL for which the status is being requested.
      * @param callback The callback to receive the Web Feed metadata, or null if it is not found.
      */
-    public void getWebFeedMetadataForPage(GURL url, Callback<WebFeedMetadata> callback) {
-        WebFeedBridgeJni.get().findWebFeedInfoForPage(new WebFeedPageInformation(url), callback);
+    public void getWebFeedMetadataForPage(Tab tab, GURL url, Callback<WebFeedMetadata> callback) {
+        WebFeedBridgeJni.get().findWebFeedInfoForPage(
+                new WebFeedPageInformation(url, tab), callback);
     }
 
     /**
@@ -176,11 +179,12 @@ public class WebFeedBridge {
 
     /**
      * Requests to follow of the most relevant Web Feed represented by the provided URL.
+     * @param tab The tab with the loaded page that should be followed.
      * @param url The URL that indicates the Web Feed to be followed.
      * @param callback The callback to receive the follow results.
      */
-    public void followFromUrl(GURL url, Callback<FollowResults> callback) {
-        WebFeedBridgeJni.get().followWebFeed(new WebFeedPageInformation(url), callback);
+    public void followFromUrl(Tab tab, GURL url, Callback<FollowResults> callback) {
+        WebFeedBridgeJni.get().followWebFeed(new WebFeedPageInformation(url, tab), callback);
     }
     public void followFromUrlFake(GURL url, Callback<FollowResults> callback) {
         // TODO(crbug/1152592): remove mock implementation.
@@ -264,13 +268,20 @@ public class WebFeedBridge {
 
     static class WebFeedPageInformation {
         final GURL mUrl;
-        WebFeedPageInformation(GURL url) {
+        final Tab mTab;
+        WebFeedPageInformation(GURL url, Tab tab) {
             mUrl = url;
+            mTab = tab;
         }
 
         @CalledByNative("WebFeedPageInformation")
         GURL getUrl() {
             return mUrl;
+        }
+
+        @CalledByNative("WebFeedPageInformation")
+        Tab getTab() {
+            return mTab;
         }
     }
 

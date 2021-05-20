@@ -7,10 +7,13 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/android/feed/v2/feed_service_factory.h"
+#include "chrome/browser/android/feed/v2/rss_links_fetcher.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/feed/android/jni_headers/WebFeedBridge_jni.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,6 +22,7 @@
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
+#include "components/feed/mojom/rss_link_reader.mojom.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -26,20 +30,28 @@
 
 namespace feed {
 namespace {
+
+struct PageInformation {
+  GURL url;
+  TabAndroid* tab = nullptr;
+};
+
 base::CancelableTaskTracker& TaskTracker() {
   static base::NoDestructor<base::CancelableTaskTracker> task_tracker;
   return *task_tracker;
 }
 
-feed::WebFeedPageInformation ToNativePageInformation(
+PageInformation ToNativePageInformation(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& pageInfo) {
   std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(
       env, Java_WebFeedPageInformation_getUrl(env, pageInfo));
-  WebFeedPageInformation result;
-  if (gurl) {
-    result.SetUrl(*gurl);
-  }
+
+  PageInformation result;
+  if (gurl)
+    result.url = *gurl;
+  result.tab = TabAndroid::GetNativeTab(
+      env, Java_WebFeedPageInformation_getTab(env, pageInfo));
   return result;
 }
 
@@ -156,16 +168,24 @@ static void JNI_WebFeedBridge_FollowWebFeed(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& pageInfo,
     const base::android::JavaParamRef<jobject>& j_callback) {
-  WebFeedSubscriptions* subscriptions = GetSubscriptions();
   auto callback =
       AdaptCallbackForJava<WebFeedSubscriptions::FollowWebFeedResult>(
           env, j_callback);
-  if (!subscriptions) {
-    std::move(callback).Run({});
-    return;
-  }
-  subscriptions->FollowWebFeed(ToNativePageInformation(env, pageInfo),
-                               std::move(callback));
+
+  auto on_rss_fetched =
+      [](base::OnceCallback<void(WebFeedSubscriptions::FollowWebFeedResult)>
+             callback,
+         WebFeedPageInformation page_info) {
+        WebFeedSubscriptions* subscriptions = GetSubscriptions();
+        if (!subscriptions) {
+          std::move(callback).Run({});
+          return;
+        }
+        subscriptions->FollowWebFeed(page_info, std::move(callback));
+      };
+  PageInformation page_info = ToNativePageInformation(env, pageInfo);
+  FetchRssLinks(page_info.url, page_info.tab,
+                base::BindOnce(on_rss_fetched, std::move(callback)));
 }
 
 static void JNI_WebFeedBridge_FollowWebFeedById(
@@ -206,13 +226,19 @@ static void JNI_WebFeedBridge_FindWebFeedInfoForPage(
     const base::android::JavaParamRef<jobject>& j_callback) {
   base::OnceCallback<void(WebFeedMetadata)> callback =
       AdaptCallbackForJava<WebFeedMetadata>(env, j_callback);
-  WebFeedSubscriptions* subscriptions = GetSubscriptions();
-  if (!subscriptions) {
-    std::move(callback).Run({});
-    return;
-  }
-  subscriptions->FindWebFeedInfoForPage(ToNativePageInformation(env, pageInfo),
-                                        std::move(callback));
+
+  auto on_rss_fetched = [](base::OnceCallback<void(WebFeedMetadata)> callback,
+                           WebFeedPageInformation page_info) {
+    WebFeedSubscriptions* subscriptions = GetSubscriptions();
+    if (!subscriptions) {
+      std::move(callback).Run({});
+      return;
+    }
+    subscriptions->FindWebFeedInfoForPage(page_info, std::move(callback));
+  };
+  PageInformation page_info = ToNativePageInformation(env, pageInfo);
+  FetchRssLinks(page_info.url, page_info.tab,
+                base::BindOnce(on_rss_fetched, std::move(callback)));
 }
 
 static void JNI_WebFeedBridge_FindWebFeedInfoForWebFeedId(

@@ -94,7 +94,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     public void onFooterViewInflated(AppMenuHandler appMenuHandler, View view) {
         if (view instanceof WebFeedMainMenuItem) {
             ((WebFeedMainMenuItem) view)
-                    .initialize(mActivityTabProvider.get().getOriginalUrl(), appMenuHandler,
+                    .initialize(mActivityTabProvider.get(), appMenuHandler,
                             new LargeIconBridge(Profile.getLastUsedRegularProfile()), mFeedLauncher,
                             mModalDialogManager, mSnackbarManager, mWebFeedBridge);
         }

@@ -254,12 +254,12 @@ public final class WebFeedFollowIntroControllerTest {
 
     private void invokePageLoad(WebFeedBridge.WebFeedMetadata webFeedMetadata) {
         doAnswer(invocation -> {
-            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(
+            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(2).onResult(
                     webFeedMetadata);
             return null;
         })
                 .when(mWebFeedBridge)
-                .getWebFeedMetadataForPage(eq(sTestUrl), any(Callback.class));
+                .getWebFeedMetadataForPage(any(), eq(sTestUrl), any(Callback.class));
 
         mEmptyTabObserver.onPageLoadStarted(mTab, sTestUrl);
         mEmptyTabObserver.didFirstVisuallyNonEmptyPaint(mTab);

@@ -719,6 +719,17 @@ if (is_android) {
       sources += [ "../browser/android/vr/webxr_policy_browsertest.cc" ]
     }
 
+    if (enable_feed_v2) {
+      sources +=
+          [ "../browser/android/feed/v2/rss_links_fetcher_browsertest.cc" ]
+      deps += [
+        "//components/feed:feature_list",
+        "//components/feed/core/v2:feed_core_base",
+        "//components/feed/core/v2:test_helpers",
+        "//components/feed/mojom:mojo_bindings",
+      ]
+    }
+
     data = [
       "$root_gen_dir/chrome/android/chrome_apk_paks/chrome_100_percent.pak",
       "$root_gen_dir/chrome/android/chrome_apk_paks/locales/en-US.pak",
@@ -4119,6 +4130,7 @@ test("unit_tests") {
       "../browser/android/explore_sites/ntp_json_fetcher_unittest.cc",
       "../browser/android/explore_sites/record_site_click_task_unittest.cc",
       "../browser/android/favicon_helper_unittest.cc",
+      "../browser/android/feed/v2/rss_links_fetcher_unittest.cc",
       "../browser/android/history/history_deletion_bridge_unittest.cc",
       "../browser/android/history_report/data_observer_unittest.cc",
       "../browser/android/history_report/delta_file_backend_leveldb_unittest.cc",
@@ -4654,6 +4666,7 @@ test("unit_tests") {
       "//components/download/internal/common:internal_java",
       "//components/externalauth/android:google_delegate_public_impl_java",
       "//components/favicon/core/test:test_support",
+      "//components/feed/core/v2:test_helpers",
       "//components/gcm_driver/instance_id/android:instance_id_driver_java",
       "//components/gcm_driver/instance_id/android:instance_id_driver_test_support_java",
       "//components/location/android:test_support",

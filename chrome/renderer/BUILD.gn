@@ -165,6 +165,9 @@ static_library("renderer") {
     "//components/contextual_search/content:renderer",
     "//components/data_reduction_proxy/core/common",
     "//components/dom_distiller/content/renderer",
+    "//components/feed:buildflags",
+    "//components/feed:feature_list",
+    "//components/feed/content/renderer:feed_renderer",
     "//components/network_hints/renderer",
     "//components/no_state_prefetch/common",
     "//components/no_state_prefetch/renderer",
@@ -287,6 +290,10 @@ static_library("renderer") {
   if (safe_browsing_mode != 0) {
     deps +=
         [ "//components/safe_browsing/content/renderer/phishing_classifier" ]
+  }
+
+  if (enable_feed_v2) {
+    deps += [ "//components/feed/content/renderer:feed_renderer" ]
   }
 
   if (enable_extensions) {

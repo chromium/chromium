@@ -254,7 +254,7 @@ public final class WebFeedSnackbarControllerTest {
         verify(mWebFeedBridge,
                 description("FollowFromUrl should be called on follow try again when ID is not "
                         + "available."))
-                .followFromUrl(eq(sTestUrl), any());
+                .followFromUrl(eq(null), eq(sTestUrl), any());
     }
 
     @Test

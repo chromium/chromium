@@ -84,6 +84,7 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/localized_error.h"
+#include "components/feed/buildflags.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
@@ -177,6 +178,11 @@
 #if defined(OS_WIN)
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_hstring.h"
+#endif
+
+#if BUILDFLAG(ENABLE_FEED_V2)
+#include "components/feed/content/renderer/rss_link_reader.h"
+#include "components/feed/feed_feature_list.h"
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -672,6 +678,12 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #if BUILDFLAG(HAS_SPELLCHECK_PANEL)
   new SpellCheckPanel(render_frame, registry, this);
 #endif  // BUILDFLAG(HAS_SPELLCHECK_PANEL)
+#endif
+#if BUILDFLAG(ENABLE_FEED_V2)
+  if (render_frame->IsMainFrame() &&
+      base::FeatureList::IsEnabled(feed::kWebFeed)) {
+    new feed::RssLinkReader(render_frame, registry);
+  }
 #endif
 }
 

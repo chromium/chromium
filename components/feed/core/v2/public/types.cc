@@ -33,6 +33,17 @@ void WebFeedPageInformation::SetRssUrls(const std::vector<GURL>& rss_urls) {
   rss_urls_ = rss_urls;
 }
 
+std::ostream& operator<<(std::ostream& os,
+                         const WebFeedPageInformation& value) {
+  os << "{ " << value.url() << " ";
+  os << "RSS:\n";
+  for (const GURL& url : value.GetRssUrls()) {
+    os << url << '\n';
+  }
+  os << "}";
+  return os;
+}
+
 // operator<< functions below are for test purposes, and shouldn't be called
 // from production code to avoid a binary size impact.
 

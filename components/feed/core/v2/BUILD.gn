@@ -155,6 +155,18 @@ source_set("common") {
   deps = []
 }
 
+source_set("test_helpers") {
+  testonly = true
+  sources = [
+    "test/callback_receiver.cc",
+    "test/callback_receiver.h",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+  ]
+}
+
 source_set("core_unit_tests") {
   testonly = true
   sources = [
@@ -177,8 +189,6 @@ source_set("core_unit_tests") {
     "request_throttler_unittest.cc",
     "scheduling_unittest.cc",
     "stream_model_unittest.cc",
-    "test/callback_receiver.cc",
-    "test/callback_receiver.h",
     "test/callback_receiver_unittest.cc",
     "test/proto_printer.cc",
     "test/proto_printer.h",
@@ -189,6 +199,7 @@ source_set("core_unit_tests") {
     "web_feed_subscriptions/web_feed_index_unittest.cc",
   ]
 
+  public_deps = [ ":test_helpers" ]
   deps = [
     ":common",
     ":feed_core_base_unit_tests",

@@ -9,7 +9,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -35,6 +38,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -70,21 +74,18 @@ public final class WebFeedMainMenuItemTest {
     private ModalDialogManager mDialogManager;
     private SnackbarManager mSnackBarManager;
     private WebFeedMainMenuItem mWebFeedMainMenuItem;
+    private Tab mTab;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
+        mTab = spy(mActivityTestRule.getActivity().getActivityTab());
         mAppMenuHandler = mActivityTestRule.getAppMenuCoordinator().getAppMenuHandler();
         mDialogManager = mActivityTestRule.getActivity().getModalDialogManager();
         mSnackBarManager = mActivityTestRule.getActivity().getSnackbarManager();
-        doAnswer(invocation -> {
-            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(null);
-            return null;
-        })
-                .when(mWebFeedBridge)
-                .getWebFeedMetadataForPage(any(GURL.class), any(Callback.class));
+        setGetWebFeedMetadataForPageRepsonse(null);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mWebFeedMainMenuItem = (WebFeedMainMenuItem) (LayoutInflater.from(mActivity).inflate(
@@ -120,9 +121,9 @@ public final class WebFeedMainMenuItemTest {
     @MediumTest
     @UiThreadTest
     public void initialize_emptyUrl_removesIcon() {
-        mWebFeedMainMenuItem.initialize(GURL.emptyGURL(), mAppMenuHandler,
-                new MockLargeIconBridge(null), mFeedLauncher, mDialogManager, mSnackBarManager,
-                mWebFeedBridge);
+        doReturn(GURL.emptyGURL()).when(mTab).getOriginalUrl();
+        mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, new MockLargeIconBridge(null),
+                mFeedLauncher, mDialogManager, mSnackBarManager, mWebFeedBridge);
 
         ImageView imageView = mWebFeedMainMenuItem.findViewById(R.id.icon);
         assertEquals("Icon should be gone.", View.GONE, imageView.getVisibility());
@@ -144,12 +145,7 @@ public final class WebFeedMainMenuItemTest {
     @MediumTest
     @UiThreadTest
     public void initialize_noMetadata_displaysFollowChip() {
-        doAnswer(invocation -> {
-            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(null);
-            return null;
-        })
-                .when(mWebFeedBridge)
-                .getWebFeedMetadataForPage(any(GURL.class), any(Callback.class));
+        setGetWebFeedMetadataForPageRepsonse(null);
 
         initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
@@ -160,15 +156,8 @@ public final class WebFeedMainMenuItemTest {
     @MediumTest
     @UiThreadTest
     public void initialize_notFollowed_displaysFollowChip() {
-        WebFeedBridge.WebFeedMetadata webFeedMetadata =
-                createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED);
-        doAnswer(invocation -> {
-            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(
-                    webFeedMetadata);
-            return null;
-        })
-                .when(mWebFeedBridge)
-                .getWebFeedMetadataForPage(any(GURL.class), any(Callback.class));
+        setGetWebFeedMetadataForPageRepsonse(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED));
 
         initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
@@ -179,15 +168,8 @@ public final class WebFeedMainMenuItemTest {
     @MediumTest
     @UiThreadTest
     public void initialize_unknownFollowStatus_displaysFollowChip() {
-        WebFeedBridge.WebFeedMetadata webFeedMetadata =
-                createWebFeedMetadata(WebFeedSubscriptionStatus.UNKNOWN);
-        doAnswer(invocation -> {
-            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(
-                    webFeedMetadata);
-            return null;
-        })
-                .when(mWebFeedBridge)
-                .getWebFeedMetadataForPage(any(GURL.class), any(Callback.class));
+        setGetWebFeedMetadataForPageRepsonse(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.UNKNOWN));
 
         initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
@@ -198,15 +180,8 @@ public final class WebFeedMainMenuItemTest {
     @MediumTest
     @UiThreadTest
     public void initialize_followed_displaysFollowingChip() {
-        WebFeedBridge.WebFeedMetadata webFeedMetadata =
-                createWebFeedMetadata(WebFeedSubscriptionStatus.SUBSCRIBED);
-        doAnswer(invocation -> {
-            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(
-                    webFeedMetadata);
-            return null;
-        })
-                .when(mWebFeedBridge)
-                .getWebFeedMetadataForPage(any(GURL.class), any(Callback.class));
+        setGetWebFeedMetadataForPageRepsonse(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.SUBSCRIBED));
 
         initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
@@ -225,15 +200,8 @@ public final class WebFeedMainMenuItemTest {
     @MediumTest
     @UiThreadTest
     public void initialize_unfollowInProgress_displaysLoadingFollowingChip() {
-        WebFeedBridge.WebFeedMetadata webFeedMetadata =
-                createWebFeedMetadata(WebFeedSubscriptionStatus.UNSUBSCRIBE_IN_PROGRESS);
-        doAnswer(invocation -> {
-            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(
-                    webFeedMetadata);
-            return null;
-        })
-                .when(mWebFeedBridge)
-                .getWebFeedMetadataForPage(any(GURL.class), any(Callback.class));
+        setGetWebFeedMetadataForPageRepsonse(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.UNSUBSCRIBE_IN_PROGRESS));
 
         initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
@@ -252,15 +220,8 @@ public final class WebFeedMainMenuItemTest {
     @MediumTest
     @UiThreadTest
     public void initialize_followInProgress_displaysLoadingFollowChip() {
-        WebFeedBridge.WebFeedMetadata webFeedMetadata =
-                createWebFeedMetadata(WebFeedSubscriptionStatus.SUBSCRIBE_IN_PROGRESS);
-        doAnswer(invocation -> {
-            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(
-                    webFeedMetadata);
-            return null;
-        })
-                .when(mWebFeedBridge)
-                .getWebFeedMetadataForPage(any(GURL.class), any(Callback.class));
+        setGetWebFeedMetadataForPageRepsonse(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.SUBSCRIBE_IN_PROGRESS));
 
         initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
@@ -298,7 +259,8 @@ public final class WebFeedMainMenuItemTest {
      * @param bitmap Bitmap returned by the {@link MockLargeIconBridge}.
      */
     private void initializeWebFeedMainMenuItem(Bitmap bitmap) {
-        mWebFeedMainMenuItem.initialize(TEST_URL, mAppMenuHandler, new MockLargeIconBridge(bitmap),
+        doReturn(TEST_URL).when(mTab).getOriginalUrl();
+        mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, new MockLargeIconBridge(bitmap),
                 mFeedLauncher, mDialogManager, mSnackBarManager, mWebFeedBridge);
     }
 
@@ -311,6 +273,15 @@ public final class WebFeedMainMenuItemTest {
             @WebFeedSubscriptionStatus int subscriptionStatus) {
         return new WebFeedBridge.WebFeedMetadata("id".getBytes(), "title", TEST_URL,
                 subscriptionStatus, /*isActive=*/false, /*isRecommended=*/false);
+    }
+
+    private void setGetWebFeedMetadataForPageRepsonse(WebFeedBridge.WebFeedMetadata metadata) {
+        doAnswer(invocation -> {
+            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(2).onResult(metadata);
+            return null;
+        })
+                .when(mWebFeedBridge)
+                .getWebFeedMetadataForPage(eq(mTab), any(GURL.class), any(Callback.class));
     }
 
     private static class MockLargeIconBridge extends LargeIconBridge {
