@@ -63,6 +63,7 @@ class USER_MANAGER_EXPORT User : public UserInfo {
     OAUTH2_TOKEN_STATUS_VALID = 4,
   } OAuthTokenStatus;
 
+  // TODO(jasontt): Explore adding a new value for image taken from camera.
   // These special values are used instead of actual default image indices.
   typedef enum {
     USER_IMAGE_INVALID = -3,

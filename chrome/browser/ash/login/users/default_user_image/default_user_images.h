@@ -48,11 +48,14 @@ extern const int kFirstDefaultImageIndex;
 // Histogram value for user image selected from file or photo.
 extern const int kHistogramImageExternal;
 
+// Histogram value for a user image taken from the camera.
+extern const int kHistogramImageFromCamera;
+
 // Histogram value for user image from G+ profile.
 extern const int kHistogramImageFromProfile;
 
-// Number of special histogram values for user images.
-extern const int kHistogramSpecialImagesCount;
+// Max number of special histogram values for user images.
+extern const int kHistogramSpecialImagesMaxCount;
 
 // Number of possible histogram values for user images.
 extern const int kHistogramImagesCount;

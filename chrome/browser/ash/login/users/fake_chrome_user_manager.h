@@ -205,6 +205,9 @@ class FakeChromeUserManager : public ChromeUserManager {
   }
 
  private:
+  using UserImageManagerMap =
+      std::map<AccountId, std::unique_ptr<UserImageManager>>;
+
   // Lazily creates default user flow.
   UserFlow* GetDefaultUserFlow() const;
 
@@ -239,6 +242,9 @@ class FakeChromeUserManager : public ChromeUserManager {
 
   // Whether the current user can lock.
   bool current_user_can_lock_ = false;
+
+  // User avatar managers.
+  UserImageManagerMap user_image_managers_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeChromeUserManager);
 };

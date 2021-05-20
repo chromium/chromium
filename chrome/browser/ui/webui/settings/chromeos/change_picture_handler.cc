@@ -80,7 +80,21 @@ ui::SelectFileDialog::FileTypeInfo GetUserImageFileTypeInfo() {
   return file_type_info;
 }
 
+void RecordUserImageChanged(int sample) {
+  // Although |ChangePictureHandler::kUserImageChangedHistogramName| is an
+  // enumerated histogram, we intentionally use UmaHistogramExactLinear() to
+  // emit the metric rather than UmaHistogramEnumeration(). This is because the
+  // enums.xml values correspond to (a) special constants and (b) indexes of an
+  // array containing resource IDs.
+  base::UmaHistogramExactLinear(
+      ChangePictureHandler::kUserImageChangedHistogramName, sample,
+      default_user_image::kHistogramImagesCount + 1);
+}
+
 }  // namespace
+
+const char ChangePictureHandler::kUserImageChangedHistogramName[] =
+    "UserImage.Changed2";
 
 ChangePictureHandler::ChangePictureHandler()
     : previous_image_index_(user_manager::User::USER_IMAGE_INVALID) {
@@ -312,7 +326,7 @@ void ChangePictureHandler::HandleSelectImage(const base::ListValue* args) {
       ChromeUserManager::Get()->GetUserImageManager(GetUser()->GetAccountId());
   bool waiting_for_camera_photo = false;
 
-  // track the index of previous selected message to be compared with the index
+  // Track the index of previous selected message to be compared with the index
   // of the new image.
   int previous_image_index = GetUser()->image_index();
 
@@ -342,14 +356,6 @@ void ChangePictureHandler::HandleSelectImage(const base::ListValue* args) {
     } else {
       LOG(WARNING) << "Invalid image_url for default image type: " << image_url;
     }
-  } else if (image_type == "camera") {
-    // Camera image is selected.
-    if (user_photo_.isNull()) {
-      waiting_for_camera_photo = true;
-      VLOG(1) << "Still waiting for camera image to decode";
-    } else {
-      SetImageFromCamera(user_photo_, user_photo_data_.get());
-    }
   } else if (image_type == "profile") {
     // Profile image selected. Could be previous (old) user image.
     user_image_manager->SaveUserImageFromProfileImage();
@@ -359,12 +365,10 @@ void ChangePictureHandler::HandleSelectImage(const base::ListValue* args) {
 
   int image_index = GetUser()->image_index();
   // `previous_image_index` is used instead of `previous_image_index_` as the
-  // latter has the same value of `image_index` after new image is selected
+  // latter has the same value of `image_index` after new image is selected.
   if (previous_image_index != image_index) {
-    base::UmaHistogramExactLinear(
-        "UserImage.Changed",
-        user_image_manager->ImageIndexToHistogramIndex(image_index),
-        default_user_image::kHistogramImagesCount + 1);
+    RecordUserImageChanged(
+        user_image_manager->ImageIndexToHistogramIndex(image_index));
   }
 
   // Ignore the result of the previous decoding if it's no longer needed.
@@ -380,9 +384,13 @@ void ChangePictureHandler::HandleRequestSelectedImage(
 void ChangePictureHandler::FileSelected(const base::FilePath& path,
                                         int index,
                                         void* params) {
-  ChromeUserManager::Get()
-      ->GetUserImageManager(GetUser()->GetAccountId())
-      ->SaveUserImageFromFile(path);
+  auto* user_image_manager =
+      ChromeUserManager::Get()->GetUserImageManager(GetUser()->GetAccountId());
+
+  // Log an impression if image is selected from a file.
+  RecordUserImageChanged(user_image_manager->ImageIndexToHistogramIndex(
+      user_manager::User::USER_IMAGE_EXTERNAL));
+  user_image_manager->SaveUserImageFromFile(path);
   VLOG(1) << "Selected image from file";
 }
 
@@ -396,6 +404,9 @@ void ChangePictureHandler::SetImageFromCamera(
   ChromeUserManager::Get()
       ->GetUserImageManager(GetUser()->GetAccountId())
       ->SaveUserImage(std::move(user_image));
+
+  // Log an impression if image is taken from photo.
+  RecordUserImageChanged(default_user_image::kHistogramImageFromCamera);
   VLOG(1) << "Selected camera photo";
 }
 

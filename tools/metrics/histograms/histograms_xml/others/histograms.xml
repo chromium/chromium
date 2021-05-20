@@ -17434,12 +17434,30 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UserImage.Changed" enum="ChromeOSUserImageId"
+    expires_after="M92">
+  <obsolete>
+    Removed in M92. Replaced by UserImage.Changed2, with the enum
+    ChromeOSUserImageId2.
+  </obsolete>
+  <owner>jasontt@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Distribution of the device images that users changed (Chrome OS). The
+    statistic is recorded each time the user changes their device image to a
+    different one in Settings.
+  </summary>
+</histogram>
+
+<histogram name="UserImage.Changed2" enum="ChromeOSUserImageId2"
     expires_after="2022-03-30">
   <owner>jasontt@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
-    Distribution of the images that users changed (Chrome OS). One sample is
-    taken each time the user changes their image to a different one in Settings.
+    Distribution of the device images that users changed (Chrome OS). The
+    statistic is recorded each time the user changes their device image to a
+    different one in Settings.
+
+    This metric supersedes UserImage.Changed due to a change in enum values.
   </summary>
 </histogram>
 
@@ -17457,13 +17475,32 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UserImage.LoggedIn2" enum="ChromeOSUserImageId"
-    expires_after="2022-03-30">
+    expires_after="M92">
+  <obsolete>
+    Removed in M92. Replaced by UserImage.LoggedIn3, with new enum
+    ChromeOSUserImageId2.
+  </obsolete>
   <owner>achuith@chromium.org</owner>
   <owner>alemate@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Distribution of the default images that existing users login with (Chrome
     OS). One sample is taken each time the user logs in.
+  </summary>
+</histogram>
+
+<histogram name="UserImage.LoggedIn3" enum="ChromeOSUserImageId2"
+    expires_after="2022-03-30">
+  <owner>achuith@chromium.org</owner>
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Distribution of the default images that existing users log in with (Chrome
+    OS). One sample is taken each time the user logs in.
+
+    This metric supersedes UserImage.LoggedIn2 due to a change in enum values.
+    Special value 0 (Camera image) of ChromeOSUserImageId2 is never recorded in
+    this histogram.
   </summary>
 </histogram>
 

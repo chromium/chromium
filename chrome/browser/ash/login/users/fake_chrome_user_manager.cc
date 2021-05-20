@@ -13,8 +13,10 @@
 #include "base/command_line.h"
 #include "base/single_thread_task_runner.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
+#include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/login/users/fake_supervised_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -25,6 +27,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
@@ -210,8 +213,15 @@ SupervisedUserManager* FakeChromeUserManager::GetSupervisedUserManager() {
 }
 
 UserImageManager* FakeChromeUserManager::GetUserImageManager(
-    const AccountId& /* account_id */) {
-  return nullptr;
+    const AccountId& account_id) {
+  UserImageManagerMap::iterator user_image_manager_it =
+      user_image_managers_.find(account_id);
+  if (user_image_manager_it != user_image_managers_.end())
+    return user_image_manager_it->second.get();
+  auto mgr = std::make_unique<UserImageManagerImpl>(account_id, this);
+  UserImageManagerImpl* mgr_raw = mgr.get();
+  user_image_managers_[account_id] = std::move(mgr);
+  return mgr_raw;
 }
 
 void FakeChromeUserManager::SetUserFlow(const AccountId& account_id,
@@ -380,8 +390,7 @@ void FakeChromeUserManager::ScheduleResolveLocale(
 }
 
 bool FakeChromeUserManager::IsValidDefaultUserImageId(int image_index) const {
-  NOTIMPLEMENTED();
-  return false;
+  return default_user_image::IsValidIndex(image_index);
 }
 
 // UserManager implementation:
@@ -390,7 +399,11 @@ void FakeChromeUserManager::Initialize() {
 }
 
 void FakeChromeUserManager::Shutdown() {
-  return ChromeUserManager::Shutdown();
+  ChromeUserManager::Shutdown();
+
+  for (auto& user_image_manager : user_image_managers_) {
+    user_image_manager.second->Shutdown();
+  }
 }
 
 const user_manager::UserList& FakeChromeUserManager::GetUsers() const {
@@ -451,6 +464,15 @@ const user_manager::User* FakeChromeUserManager::FindUser(
 
 user_manager::User* FakeChromeUserManager::FindUserAndModify(
     const AccountId& account_id) {
+  if (active_user_ != nullptr && active_user_->GetAccountId() == account_id)
+    return active_user_;
+
+  const user_manager::UserList& users = GetUsers();
+  for (auto* user : users) {
+    if (user->GetAccountId() == account_id)
+      return user;
+  }
+
   return nullptr;
 }
 

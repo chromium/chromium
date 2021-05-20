@@ -122,11 +122,7 @@ int UserImageManager::ImageIndexToHistogramIndex(int image_index) {
     case user_manager::User::USER_IMAGE_PROFILE:
       return default_user_image::kHistogramImageFromProfile;
     default:
-      // Create a gap in histogram values for
-      // [kHistogramImageExternal and kHistogramImageFromProfile] block to fit.
-      if (image_index < default_user_image::kHistogramImageExternal)
-        return image_index;
-      return image_index + default_user_image::kHistogramSpecialImagesCount;
+      return image_index + default_user_image::kHistogramSpecialImagesMaxCount;
   }
 }
 
@@ -564,8 +560,13 @@ void UserImageManagerImpl::UserLoggedIn(bool user_is_new, bool user_is_local) {
       DownloadProfileImage();
     }
   } else {
+    // Although UserImage.LoggedIn3 is an enumerated histogram, we intentionally
+    // use UmaHistogramExactLinear() to emit the metric rather than
+    // UmaHistogramEnumeration(). This is because the enums.xml values
+    // correspond to (a) special constants and (b) indexes of an array
+    // containing resource IDs.
     base::UmaHistogramExactLinear(
-        "UserImage.LoggedIn2", ImageIndexToHistogramIndex(user->image_index()),
+        "UserImage.LoggedIn3", ImageIndexToHistogramIndex(user->image_index()),
         default_user_image::kHistogramImagesCount + 1);
   }
 
