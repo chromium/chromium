@@ -22,8 +22,10 @@ V4L2FrameRateControl::V4L2FrameRateControl(
       current_frame_duration_avg_ms_(0),
       last_frame_display_time_(base::TimeTicks::Now()),
       frame_duration_moving_average_(kMovingAverageWindowSize),
-      weak_this_factory_(this),
-      task_runner_(task_runner) {}
+      task_runner_(task_runner),
+      weak_this_factory_(this) {}
+
+V4L2FrameRateControl::~V4L2FrameRateControl() = default;
 
 void V4L2FrameRateControl::UpdateFrameRate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

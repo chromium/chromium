@@ -25,6 +25,7 @@ class V4L2FrameRateControl {
  public:
   V4L2FrameRateControl(scoped_refptr<V4L2Device> device,
                        scoped_refptr<base::SequencedTaskRunner> task_runner);
+  ~V4L2FrameRateControl();
 
   // Trampoline method for VideoFrame destructor callbacks to be directed
   // to this class' task runner.
@@ -49,8 +50,8 @@ class V4L2FrameRateControl {
   base::TimeTicks last_frame_display_time_;
   MovingAverage frame_duration_moving_average_;
 
-  base::WeakPtrFactory<V4L2FrameRateControl> weak_this_factory_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::WeakPtrFactory<V4L2FrameRateControl> weak_this_factory_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
