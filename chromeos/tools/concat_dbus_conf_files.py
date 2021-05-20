@@ -9,7 +9,7 @@ import sys
 import xml.etree.ElementTree
 
 
-_BUSCONFIG_FILE_HEADER="""<!DOCTYPE busconfig
+_BUSCONFIG_FILE_HEADER = b"""<!DOCTYPE busconfig
   PUBLIC "-//freedesktop//DTD D-Bus Bus Configuration 1.0//EN"
   "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
 """
@@ -35,7 +35,7 @@ def main():
       tree.getroot().append(child)
 
   # Output the result.
-  with open(out_path, "w") as f:
+  with open(out_path, "wb") as f:
     f.write(_BUSCONFIG_FILE_HEADER)
     tree.write(f)
 

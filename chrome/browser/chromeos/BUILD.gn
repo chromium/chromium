@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//chromeos/components/sensors/buildflags.gni")
@@ -3361,8 +3360,7 @@ source_set("chromeos") {
   }
 }
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("dbus_service_files") {
+action("dbus_service_files") {
   sources = [
     "dbus/org.chromium.ChromeFeaturesService.conf",
     "dbus/org.chromium.ComponentUpdaterService.conf",
