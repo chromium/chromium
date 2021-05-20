@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
@@ -31,12 +32,12 @@
 
 namespace {
 
-constexpr int kPaddingBetweenNavigationButtons = 9;
+constexpr int kPaddingBetweenNavigationButtons = 5;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr int kWebAppFrameLeftMargin = 4;
+constexpr int kWebAppFrameLeftMargin = 2;
 #else
-constexpr int kWebAppFrameLeftMargin = 9;
+constexpr int kWebAppFrameLeftMargin = 7;
 #endif
 
 template <class BaseClass>
@@ -152,7 +153,8 @@ END_METADATA
 }  // namespace
 
 WebAppNavigationButtonContainer::WebAppNavigationButtonContainer(
-    BrowserView* browser_view)
+    BrowserView* browser_view,
+    ToolbarButtonProvider* toolbar_button_provider)
     : browser_(browser_view->browser()) {
   views::BoxLayout& layout =
       *SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -176,7 +178,8 @@ WebAppNavigationButtonContainer::WebAppNavigationButtonContainer(
   back_button_->set_tag(IDC_BACK);
 
   const bool is_browser_focus_mode = browser_->is_focus_mode();
-  SetInsetsForWebAppToolbarButton(back_button_, is_browser_focus_mode);
+  ConfigureWebAppToolbarButton(back_button_, toolbar_button_provider,
+                               is_browser_focus_mode);
   views::SetHitTestComponent(back_button_, static_cast<int>(HTCLIENT));
   chrome::AddCommandObserver(browser_, IDC_BACK, this);
 
@@ -186,7 +189,8 @@ WebAppNavigationButtonContainer::WebAppNavigationButtonContainer(
         browser_->command_controller()));
     reload_button_->set_tag(IDC_RELOAD);
 
-    SetInsetsForWebAppToolbarButton(reload_button_, is_browser_focus_mode);
+    ConfigureWebAppToolbarButton(reload_button_, toolbar_button_provider,
+                                 is_browser_focus_mode);
     views::SetHitTestComponent(reload_button_, static_cast<int>(HTCLIENT));
     chrome::AddCommandObserver(browser_, IDC_RELOAD, this);
   }

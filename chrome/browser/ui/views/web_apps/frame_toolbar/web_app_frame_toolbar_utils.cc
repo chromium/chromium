@@ -5,15 +5,22 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/views/layout/layout_provider.h"
 
-// An ink drop with round corners in shown when the user hovers over the button.
-// Insets are kept small to avoid increasing web app frame toolbar height.
-void SetInsetsForWebAppToolbarButton(ToolbarButton* toolbar_button,
-                                     bool is_browser_focus_mode) {
+void ConfigureWebAppToolbarButton(
+    ToolbarButton* toolbar_button,
+    ToolbarButtonProvider* toolbar_button_provider,
+    bool is_browser_focus_mode) {
+  // An ink drop with round corners in shown when the user hovers over the
+  // button. Eliminate the insets to avoid increasing web app frame toolbar
+  // height. The size of the button is set below.
   if (!is_browser_focus_mode)
-    toolbar_button->SetLayoutInsets(gfx::Insets(2));
+    toolbar_button->SetLayoutInsets(gfx::Insets());
+
+  toolbar_button->SetMinSize(toolbar_button_provider->GetToolbarButtonSize());
+  toolbar_button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
 }
 
 int WebAppFrameRightMargin() {

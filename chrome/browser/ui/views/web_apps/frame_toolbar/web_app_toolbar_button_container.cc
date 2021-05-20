@@ -130,12 +130,8 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     web_app_menu_button_ =
         AddChildView(std::make_unique<WebAppMenuButton>(browser_view_));
     web_app_menu_button_->SetID(VIEW_ID_APP_MENU);
-    const bool is_browser_focus_mode =
-        browser_view_->browser()->is_focus_mode();
-    SetInsetsForWebAppToolbarButton(web_app_menu_button_,
-                                    is_browser_focus_mode);
-    web_app_menu_button_->SetMinSize(
-        toolbar_button_provider_->GetToolbarButtonSize());
+    ConfigureWebAppToolbarButton(web_app_menu_button_, toolbar_button_provider_,
+                                 browser_view_->browser()->is_focus_mode());
     web_app_menu_button_->SetProperty(views::kFlexBehaviorKey,
                                       views::FlexSpecification());
   }

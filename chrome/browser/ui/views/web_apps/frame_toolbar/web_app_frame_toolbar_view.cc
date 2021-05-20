@@ -44,8 +44,9 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(views::Widget* widget,
   const auto* app_controller = browser_view_->browser()->app_controller();
 
   if (app_controller->HasMinimalUiButtons()) {
-    left_container_ = AddChildView(
-        std::make_unique<WebAppNavigationButtonContainer>(browser_view_));
+    left_container_ =
+        AddChildView(std::make_unique<WebAppNavigationButtonContainer>(
+            browser_view_, /*toolbar_button_provider=*/this));
     left_container_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(

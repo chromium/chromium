@@ -8,15 +8,17 @@
 #include "build/build_config.h"
 
 class ToolbarButton;
+class ToolbarButtonProvider;
 
 #if defined(OS_MAC)
 constexpr int kWebAppMenuMargin = 7;
 #endif
 
-// An ink drop with round corners in shown when the user hovers over the button.
-// Insets are kept small to avoid increasing web app frame toolbar height.
-void SetInsetsForWebAppToolbarButton(ToolbarButton* toolbar_button,
-                                     bool is_browser_focus_mode);
+// Makes adjustments to |toolbar_button| for display in a web app frame.
+void ConfigureWebAppToolbarButton(
+    ToolbarButton* toolbar_button,
+    ToolbarButtonProvider* toolbar_button_provider,
+    bool is_browser_focus_mode);
 
 int WebAppFrameRightMargin();
 

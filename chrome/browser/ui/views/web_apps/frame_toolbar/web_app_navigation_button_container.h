@@ -19,13 +19,16 @@ class BackForwardButton;
 class ReloadButton;
 class Browser;
 class BrowserView;
+class ToolbarButtonProvider;
 
 // Holds controls in the far left of the toolbar.
 class WebAppNavigationButtonContainer : public views::View,
                                         public CommandObserver {
  public:
   METADATA_HEADER(WebAppNavigationButtonContainer);
-  explicit WebAppNavigationButtonContainer(BrowserView* browser_view);
+  WebAppNavigationButtonContainer(
+      BrowserView* browser_view,
+      ToolbarButtonProvider* toolbar_button_provider);
   ~WebAppNavigationButtonContainer() override;
 
   BackForwardButton* back_button();
