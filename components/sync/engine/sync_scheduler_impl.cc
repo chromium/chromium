@@ -86,26 +86,6 @@ bool IsActionableError(const SyncProtocolError& error) {
 
 }  // namespace
 
-ConfigurationParams::ConfigurationParams()
-    : origin(sync_pb::SyncEnums::UNKNOWN_ORIGIN) {}
-
-ConfigurationParams::ConfigurationParams(
-    sync_pb::SyncEnums::GetUpdatesOrigin origin,
-    ModelTypeSet types_to_download,
-    base::OnceClosure ready)
-    : origin(origin),
-      types_to_download(types_to_download),
-      ready_task(std::move(ready)) {
-  DCHECK(!ready_task.is_null());
-}
-
-ConfigurationParams::ConfigurationParams(ConfigurationParams&&) = default;
-
-ConfigurationParams& ConfigurationParams::operator=(ConfigurationParams&&) =
-    default;
-
-ConfigurationParams::~ConfigurationParams() = default;
-
 #define SDVLOG(verbose_level) DVLOG(verbose_level) << name_ << ": "
 
 SyncSchedulerImpl::SyncSchedulerImpl(
@@ -257,11 +237,14 @@ void SyncSchedulerImpl::SendInitialSnapshot() {
     observer.OnSyncCycleEvent(event);
 }
 
-void SyncSchedulerImpl::ScheduleConfiguration(ConfigurationParams params) {
+void SyncSchedulerImpl::ScheduleConfiguration(
+    sync_pb::SyncEnums::GetUpdatesOrigin origin,
+    ModelTypeSet types_to_download,
+    base::OnceClosure ready_task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsConfigRelatedUpdateOriginValue(params.origin));
+  DCHECK(IsConfigRelatedUpdateOriginValue(origin));
   DCHECK_EQ(CONFIGURATION_MODE, mode_);
-  DCHECK(!params.ready_task.is_null());
+  DCHECK(!ready_task.is_null());
   DCHECK(started_) << "Scheduler must be running to configure.";
   SDVLOG(2) << "Reconfiguring syncer.";
 
@@ -270,13 +253,14 @@ void SyncSchedulerImpl::ScheduleConfiguration(ConfigurationParams params) {
   DCHECK(!pending_configure_params_);
 
   // Only reconfigure if we have types to download.
-  if (!params.types_to_download.Empty()) {
-    pending_configure_params_ =
-        std::make_unique<ConfigurationParams>(std::move(params));
+  if (!types_to_download.Empty()) {
+    // Cache configuration parameters since TrySyncCycleJob() posts a task.
+    pending_configure_params_ = std::make_unique<ConfigurationParams>(
+        origin, types_to_download, std::move(ready_task));
     TrySyncCycleJob();
   } else {
     SDVLOG(2) << "No change in routing info, calling ready task directly.";
-    std::move(params.ready_task).Run();
+    std::move(ready_task).Run();
   }
 }
 
@@ -421,6 +405,18 @@ void SyncSchedulerImpl::ForceShortNudgeDelayForTest() {
   // for integration test then server is not able to increase delays.
   force_short_nudge_delay_for_test_ = true;
 }
+
+SyncSchedulerImpl::ConfigurationParams::ConfigurationParams(
+    sync_pb::SyncEnums::GetUpdatesOrigin origin,
+    ModelTypeSet types_to_download,
+    base::OnceClosure ready)
+    : origin(origin),
+      types_to_download(types_to_download),
+      ready_task(std::move(ready)) {
+  DCHECK(!ready_task.is_null());
+}
+
+SyncSchedulerImpl::ConfigurationParams::~ConfigurationParams() = default;
 
 void SyncSchedulerImpl::DoNudgeSyncCycleJob(JobPriority priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

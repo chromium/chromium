@@ -552,9 +552,8 @@ TEST_F(SyncSchedulerImplTest, Config) {
 
   base::MockOnceClosure ready_task;
   EXPECT_CALL(ready_task, Run).Times(1);
-  ConfigurationParams params(sync_pb::SyncEnums::RECONFIGURATION,
-                             ModelTypeSet(THEMES), ready_task.Get());
-  scheduler()->ScheduleConfiguration(std::move(params));
+  scheduler()->ScheduleConfiguration(sync_pb::SyncEnums::RECONFIGURATION,
+                                     ModelTypeSet(THEMES), ready_task.Get());
   PumpLoop();
 }
 
@@ -575,9 +574,8 @@ TEST_F(SyncSchedulerImplTest, ConfigWithBackingOff) {
 
   base::MockOnceClosure ready_task;
   EXPECT_CALL(ready_task, Run).Times(1);
-  ConfigurationParams params(sync_pb::SyncEnums::RECONFIGURATION,
-                             ModelTypeSet(THEMES), ready_task.Get());
-  scheduler()->ScheduleConfiguration(std::move(params));
+  scheduler()->ScheduleConfiguration(sync_pb::SyncEnums::RECONFIGURATION,
+                                     ModelTypeSet(THEMES), ready_task.Get());
   RunLoop();
 
   // RunLoop() will trigger TryCanaryJob which will retry configuration.
@@ -611,9 +609,8 @@ TEST_F(SyncSchedulerImplTest, ConfigWithStop) {
 
   base::MockOnceClosure ready_task;
   EXPECT_CALL(ready_task, Run).Times(0);
-  ConfigurationParams params(sync_pb::SyncEnums::RECONFIGURATION,
-                             ModelTypeSet(THEMES), ready_task.Get());
-  scheduler()->ScheduleConfiguration(std::move(params));
+  scheduler()->ScheduleConfiguration(sync_pb::SyncEnums::RECONFIGURATION,
+                                     ModelTypeSet(THEMES), ready_task.Get());
   PumpLoop();
 }
 
@@ -625,9 +622,8 @@ TEST_F(SyncSchedulerImplTest, ConfigNoAccessToken) {
 
   base::MockOnceClosure ready_task;
   EXPECT_CALL(ready_task, Run).Times(0);
-  ConfigurationParams params(sync_pb::SyncEnums::RECONFIGURATION,
-                             ModelTypeSet(THEMES), ready_task.Get());
-  scheduler()->ScheduleConfiguration(std::move(params));
+  scheduler()->ScheduleConfiguration(sync_pb::SyncEnums::RECONFIGURATION,
+                                     ModelTypeSet(THEMES), ready_task.Get());
   PumpLoop();
 }
 
@@ -646,9 +642,8 @@ TEST_F(SyncSchedulerImplTest, ConfigNoAccessTokenLocalSync) {
 
   base::MockOnceClosure ready_task;
   EXPECT_CALL(ready_task, Run).Times(1);
-  ConfigurationParams params(sync_pb::SyncEnums::RECONFIGURATION,
-                             ModelTypeSet(THEMES), ready_task.Get());
-  scheduler()->ScheduleConfiguration(std::move(params));
+  scheduler()->ScheduleConfiguration(sync_pb::SyncEnums::RECONFIGURATION,
+                                     ModelTypeSet(THEMES), ready_task.Get());
   PumpLoop();
 }
 
@@ -669,9 +664,9 @@ TEST_F(SyncSchedulerImplTest, NudgeWithConfigWithBackingOff) {
   base::MockOnceClosure ready_task;
   EXPECT_CALL(ready_task, Run).Times(0);
   const ModelType model_type = THEMES;
-  ConfigurationParams params(sync_pb::SyncEnums::RECONFIGURATION,
-                             ModelTypeSet(model_type), ready_task.Get());
-  scheduler()->ScheduleConfiguration(std::move(params));
+  scheduler()->ScheduleConfiguration(sync_pb::SyncEnums::RECONFIGURATION,
+                                     ModelTypeSet(model_type),
+                                     ready_task.Get());
   RunLoop();
   Mock::VerifyAndClearExpectations(syncer());
   Mock::VerifyAndClearExpectations(&ready_task);
@@ -921,9 +916,8 @@ TEST_F(SyncSchedulerImplTest, ThrottlingDoesThrottle) {
 
   base::MockOnceClosure ready_task;
   EXPECT_CALL(ready_task, Run).Times(0);
-  ConfigurationParams params(sync_pb::SyncEnums::RECONFIGURATION,
-                             ModelTypeSet(type), ready_task.Get());
-  scheduler()->ScheduleConfiguration(std::move(params));
+  scheduler()->ScheduleConfiguration(sync_pb::SyncEnums::RECONFIGURATION,
+                                     ModelTypeSet(type), ready_task.Get());
   PumpLoop();
 }
 
@@ -993,9 +987,8 @@ TEST_F(SyncSchedulerImplTest, ThrottlingExpiresFromConfigure) {
 
   base::MockOnceClosure ready_task;
   EXPECT_CALL(ready_task, Run).Times(0);
-  ConfigurationParams params(sync_pb::SyncEnums::RECONFIGURATION,
-                             ModelTypeSet(THEMES), ready_task.Get());
-  scheduler()->ScheduleConfiguration(std::move(params));
+  scheduler()->ScheduleConfiguration(sync_pb::SyncEnums::RECONFIGURATION,
+                                     ModelTypeSet(THEMES), ready_task.Get());
   PumpLoop();
   Mock::VerifyAndClearExpectations(&ready_task);
   EXPECT_TRUE(scheduler()->IsGlobalThrottle());
@@ -1309,9 +1302,8 @@ TEST_F(SyncSchedulerImplTest, ConfigurationMode) {
       .RetiresOnSaturation();
   base::MockOnceClosure ready_task;
   EXPECT_CALL(ready_task, Run).Times(1);
-  ConfigurationParams params(sync_pb::SyncEnums::RECONFIGURATION,
-                             ModelTypeSet(THEMES), ready_task.Get());
-  scheduler()->ScheduleConfiguration(std::move(params));
+  scheduler()->ScheduleConfiguration(sync_pb::SyncEnums::RECONFIGURATION,
+                                     ModelTypeSet(THEMES), ready_task.Get());
   RunLoop();
 
   Mock::VerifyAndClearExpectations(syncer());
@@ -1390,9 +1382,8 @@ TEST_F(BackoffTriggersSyncSchedulerImplTest, FailGetEncryptionKey) {
 
   base::MockOnceClosure ready_task;
   EXPECT_CALL(ready_task, Run).Times(0);
-  ConfigurationParams params(sync_pb::SyncEnums::RECONFIGURATION,
-                             ModelTypeSet(THEMES), ready_task.Get());
-  scheduler()->ScheduleConfiguration(std::move(params));
+  scheduler()->ScheduleConfiguration(sync_pb::SyncEnums::RECONFIGURATION,
+                                     ModelTypeSet(THEMES), ready_task.Get());
   RunLoop();
 
   EXPECT_TRUE(scheduler()->IsGlobalBackoff());
@@ -1437,9 +1428,8 @@ TEST_F(SyncSchedulerImplTest, BackoffDropsJobs) {
 
   base::MockOnceClosure ready_task;
   EXPECT_CALL(ready_task, Run).Times(0);
-  ConfigurationParams params(sync_pb::SyncEnums::RECONFIGURATION,
-                             ModelTypeSet(type), ready_task.Get());
-  scheduler()->ScheduleConfiguration(std::move(params));
+  scheduler()->ScheduleConfiguration(sync_pb::SyncEnums::RECONFIGURATION,
+                                     ModelTypeSet(type), ready_task.Get());
   PumpLoop();
 }
 
@@ -1683,9 +1673,8 @@ TEST_F(SyncSchedulerImplTest, DoubleCanaryInConfigure) {
   connection()->SetServerNotReachable();
   connection()->UpdateConnectionStatus();
 
-  ConfigurationParams params(sync_pb::SyncEnums::RECONFIGURATION,
-                             ModelTypeSet(THEMES), base::DoNothing());
-  scheduler()->ScheduleConfiguration(std::move(params));
+  scheduler()->ScheduleConfiguration(sync_pb::SyncEnums::RECONFIGURATION,
+                                     ModelTypeSet(THEMES), base::DoNothing());
 
   scheduler()->OnConnectionStatusChange(
       network::mojom::ConnectionType::CONNECTION_WIFI);

@@ -114,11 +114,10 @@ void SyncManagerImpl::ConfigureSyncer(ConfigureReason reason,
   DVLOG(1) << "Configuring -"
            << "\n\t"
            << "types to download: " << ModelTypeSetToString(to_download);
-  ConfigurationParams params(GetOriginFromReason(reason), to_download,
-                             std::move(ready_task));
 
   scheduler_->Start(SyncScheduler::CONFIGURATION_MODE, base::Time());
-  scheduler_->ScheduleConfiguration(std::move(params));
+  scheduler_->ScheduleConfiguration(GetOriginFromReason(reason), to_download,
+                                    std::move(ready_task));
   if (sync_feature_state != SyncFeatureState::INITIALIZING) {
     cycle_context_->set_is_sync_feature_enabled(sync_feature_state ==
                                                 SyncFeatureState::ON);

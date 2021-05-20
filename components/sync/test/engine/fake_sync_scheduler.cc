@@ -24,8 +24,11 @@ void FakeSyncScheduler::ScheduleInvalidationNudge(
     ModelType type,
     std::unique_ptr<InvalidationInterface> interface) {}
 
-void FakeSyncScheduler::ScheduleConfiguration(ConfigurationParams params) {
-  std::move(params.ready_task).Run();
+void FakeSyncScheduler::ScheduleConfiguration(
+    sync_pb::SyncEnums::GetUpdatesOrigin origin,
+    ModelTypeSet types_to_download,
+    base::OnceClosure ready_task) {
+  std::move(ready_task).Run();
 }
 
 void FakeSyncScheduler::ScheduleInitialSyncNudge(ModelType model_type) {}

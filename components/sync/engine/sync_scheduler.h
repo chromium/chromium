@@ -16,25 +16,6 @@
 
 namespace syncer {
 
-struct ConfigurationParams {
-  ConfigurationParams();
-  ConfigurationParams(sync_pb::SyncEnums::GetUpdatesOrigin origin,
-                      ModelTypeSet types_to_download,
-                      base::OnceClosure ready_task);
-  ConfigurationParams(const ConfigurationParams&) = delete;
-  ConfigurationParams(ConfigurationParams&& other);
-  ConfigurationParams& operator=(const ConfigurationParams&) = delete;
-  ConfigurationParams& operator=(ConfigurationParams&&);
-  ~ConfigurationParams();
-
-  // Origin for the configuration.
-  sync_pb::SyncEnums::GetUpdatesOrigin origin;
-  // The types that should be downloaded.
-  ModelTypeSet types_to_download;
-  // Callback to invoke on configuration completion.
-  base::OnceClosure ready_task;
-};
-
 // A class to schedule syncer tasks intelligently.
 class SyncScheduler : public SyncCycle::Delegate {
  public:
@@ -61,14 +42,13 @@ class SyncScheduler : public SyncCycle::Delegate {
   // be used to decide what the poll timer should be initialized with.
   virtual void Start(Mode mode, base::Time last_poll_time) = 0;
 
-  // Schedules the configuration task specified by |params|. Returns true if
-  // the configuration task executed immediately, false if it had to be
-  // scheduled for a later attempt. |params.ready_task| is invoked whenever the
-  // configuration task executes. |params.retry_task| is invoked once if the
-  // configuration task could not execute. |params.ready_task| will still be
-  // called when configuration finishes.
+  // Schedules the configuration task. |ready_task| is invoked when the
+  // configuration finishes.
   // Note: must already be in CONFIGURATION mode.
-  virtual void ScheduleConfiguration(ConfigurationParams params) = 0;
+  virtual void ScheduleConfiguration(
+      sync_pb::SyncEnums::GetUpdatesOrigin origin,
+      ModelTypeSet types_to_download,
+      base::OnceClosure ready_task) = 0;
 
   // Request that the syncer avoid starting any new tasks and prepare for
   // shutdown.

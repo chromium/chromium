@@ -44,7 +44,9 @@ class SyncSchedulerImpl : public SyncScheduler {
   ~SyncSchedulerImpl() override;
 
   void Start(Mode mode, base::Time last_poll_time) override;
-  void ScheduleConfiguration(ConfigurationParams params) override;
+  void ScheduleConfiguration(sync_pb::SyncEnums::GetUpdatesOrigin origin,
+                             ModelTypeSet types_to_download,
+                             base::OnceClosure ready_task) override;
   void Stop() override;
   void ScheduleLocalNudge(ModelType type) override;
   void ScheduleLocalRefreshRequest(ModelTypeSet types) override;
@@ -82,6 +84,21 @@ class SyncSchedulerImpl : public SyncScheduler {
   void ForceShortNudgeDelayForTest();
 
  private:
+  struct ConfigurationParams {
+    ConfigurationParams(sync_pb::SyncEnums::GetUpdatesOrigin origin,
+                        ModelTypeSet types_to_download,
+                        base::OnceClosure ready_task);
+    ~ConfigurationParams();
+
+    ConfigurationParams(const ConfigurationParams&) = delete;
+    ConfigurationParams& operator=(const ConfigurationParams&) = delete;
+
+    const sync_pb::SyncEnums::GetUpdatesOrigin origin;
+    const ModelTypeSet types_to_download;
+    // Callback to invoke on configuration completion.
+    base::OnceClosure ready_task;
+  };
+
   enum JobPriority {
     // Non-canary jobs respect exponential backoff.
     NORMAL_PRIORITY,
