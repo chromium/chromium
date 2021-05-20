@@ -164,6 +164,24 @@ class StandaloneTrustedVaultBackend
   // vault server.
   absl::optional<CoreAccountInfo> primary_account_;
 
+  // If AddTrustedRecoveryMethod() gets invoked before SetPrimaryAccount(), the
+  // execution gets deferred until SetPrimaryAccount() is invoked.
+  struct PendingTrustedRecoveryMethod {
+    PendingTrustedRecoveryMethod();
+    PendingTrustedRecoveryMethod(PendingTrustedRecoveryMethod&) = delete;
+    PendingTrustedRecoveryMethod& operator=(PendingTrustedRecoveryMethod&) =
+        delete;
+    PendingTrustedRecoveryMethod(PendingTrustedRecoveryMethod&&);
+    PendingTrustedRecoveryMethod& operator=(PendingTrustedRecoveryMethod&&);
+    ~PendingTrustedRecoveryMethod();
+
+    std::string gaia_id;
+    std::vector<uint8_t> public_key;
+    int method_type_hint;
+    base::OnceClosure completion_callback;
+  };
+  absl::optional<PendingTrustedRecoveryMethod> pending_trusted_recovery_method_;
+
   // Used to plumb FetchKeys() result to the caller.
   FetchKeysCallback ongoing_fetch_keys_callback_;
 

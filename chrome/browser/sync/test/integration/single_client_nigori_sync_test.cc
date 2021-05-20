@@ -196,6 +196,7 @@ class TrustedVaultRecoverabilityNotDegradedChecker
  protected:
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting until trusted vault recoverability is not degraded";
     return !service()
                 ->GetUserSettings()
                 ->IsTrustedVaultRecoverabilityDegraded();
@@ -1109,6 +1110,45 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
   // Verify the profile-menu error string is empty.
   EXPECT_FALSE(sync_ui_util::GetAvatarSyncErrorType(GetProfile(0)).has_value());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
+                       ShouldDeferAddingTrustedVaultRecoverabilityMethod) {
+  const std::vector<uint8_t> kTestEncryptionKey = {1, 2, 3, 4};
+  const std::vector<uint8_t> kTestRecoveryMethodPublicKey = {1, 2, 3, 4};
+  const int kTestMethodTypeHint = 8;
+
+  // Mimic the account being already using a trusted vault passphrase.
+  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
+                        GetFakeServer());
+  ASSERT_TRUE(SetupClients());
+
+  syncer::StandaloneTrustedVaultClient* const trusted_vault_client =
+      static_cast<syncer::StandaloneTrustedVaultClient*>(
+          GetSyncService(0)->GetSyncClientForTest()->GetTrustedVaultClient());
+
+  // Mimic the key being available upon startup but recoverability degraded.
+  trusted_vault_client->SetRecoverabilityDegradedForTesting();
+  GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
+      kGaiaId, {kTestEncryptionKey}, /*last_key_version=*/1);
+
+  // Mimic a recovery method being added before or during sign-in, which should
+  // be deferred until sign-in completes.
+  base::RunLoop run_loop;
+  GetSyncService(0)->AddTrustedVaultRecoveryMethodFromWeb(
+      kGaiaId, kTestRecoveryMethodPublicKey, kTestMethodTypeHint,
+      run_loop.QuitClosure());
+
+  // Sign in now and wait until sync initializes.
+  ASSERT_TRUE(SetupSync());
+
+  // Wait until AddTrustedVaultRecoveryMethodFromWeb() completes.
+  run_loop.Run();
+
+  // TODO(crbug.com/1081649): This should verify that
+  // |kTestRecoveryMethodPublicKey| is now registered on the server.
+  EXPECT_TRUE(
+      TrustedVaultRecoverabilityNotDegradedChecker(GetSyncService(0)).Wait());
 }
 
 class SingleClientNigoriSyncTestWithSecurityDomainsServer : public SyncTest {

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
@@ -62,6 +63,19 @@ absl::optional<TrustedVaultKeyAndVersion> GetLastTrustedVaultKeyAndVersion(
 }
 
 }  // namespace
+
+StandaloneTrustedVaultBackend::PendingTrustedRecoveryMethod::
+    PendingTrustedRecoveryMethod() = default;
+
+StandaloneTrustedVaultBackend::PendingTrustedRecoveryMethod::
+    PendingTrustedRecoveryMethod(PendingTrustedRecoveryMethod&&) = default;
+
+StandaloneTrustedVaultBackend::PendingTrustedRecoveryMethod&
+StandaloneTrustedVaultBackend::PendingTrustedRecoveryMethod::operator=(
+    PendingTrustedRecoveryMethod&&) = default;
+
+StandaloneTrustedVaultBackend::PendingTrustedRecoveryMethod::
+    ~PendingTrustedRecoveryMethod() = default;
 
 StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
     const base::FilePath& file_path,
@@ -179,6 +193,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   primary_account_ = primary_account;
   AbandonConnectionRequest();
   if (!primary_account_.has_value()) {
+    DCHECK(!pending_trusted_recovery_method_.has_value());
     return;
   }
 
@@ -189,6 +204,17 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     per_user_vault->set_gaia_id(primary_account->gaia);
   }
   MaybeRegisterDevice(primary_account_->gaia);
+
+  if (pending_trusted_recovery_method_.has_value()) {
+    PendingTrustedRecoveryMethod recovery_method =
+        std::move(*pending_trusted_recovery_method_);
+    pending_trusted_recovery_method_.reset();
+
+    AddTrustedRecoveryMethod(recovery_method.gaia_id,
+                             recovery_method.public_key,
+                             recovery_method.method_type_hint,
+                             std::move(recovery_method.completion_callback));
+  }
 }
 
 bool StandaloneTrustedVaultBackend::MarkKeysAsStale(
@@ -218,7 +244,24 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure cb) {
-  if (primary_account_->gaia == gaia_id && !public_key.empty()) {
+  if (public_key.empty()) {
+    std::move(cb).Run();
+    return;
+  }
+
+  if (!primary_account_.has_value()) {
+    // Defer until SetPrimaryAccount() gets called.
+    pending_trusted_recovery_method_ = PendingTrustedRecoveryMethod();
+    pending_trusted_recovery_method_->gaia_id = gaia_id;
+    pending_trusted_recovery_method_->public_key = public_key;
+    pending_trusted_recovery_method_->method_type_hint = method_type_hint;
+    pending_trusted_recovery_method_->completion_callback = std::move(cb);
+    return;
+  }
+
+  DCHECK(!pending_trusted_recovery_method_.has_value());
+
+  if (primary_account_->gaia == gaia_id) {
     // TODO(crbug.com/1081649): Implement logic.
     NOTIMPLEMENTED();
     last_added_recovery_method_public_key_for_testing_ = public_key;
