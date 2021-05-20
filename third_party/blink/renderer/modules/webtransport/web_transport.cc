@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "v8/include/v8.h"
 
 namespace blink {
 
@@ -347,7 +348,19 @@ class WebTransport::BidirectionalStreamVendor final
     auto* bidirectional_stream = MakeGarbageCollected<BidirectionalStream>(
         script_state_, web_transport_, stream_id, std::move(outgoing_producer),
         std::move(incoming_consumer));
-    bidirectional_stream->Init();
+
+    auto* isolate = script_state_->GetIsolate();
+    ExceptionState exception_state(
+        isolate, ExceptionState::kConstructionContext, "BidirectionalStream");
+    v8::MicrotasksScope microtasks_scope(
+        isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+    bidirectional_stream->Init(exception_state);
+    if (exception_state.HadException()) {
+      // Just throw away the stream.
+      exception_state.ClearException();
+      return;
+    }
+
     // 0xfffffffe and 0xffffffff are reserved values in stream_map_.
     CHECK_LT(stream_id, 0xfffffffe);
     web_transport_->stream_map_.insert(stream_id, bidirectional_stream);
@@ -858,7 +871,18 @@ void WebTransport::OnCreateSendStreamResponse(
 
   auto* send_stream = MakeGarbageCollected<SendStream>(
       script_state_, this, stream_id, std::move(producer));
-  send_stream->Init();
+
+  auto* isolate = script_state_->GetIsolate();
+  ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
+                                 "SendStream");
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+  send_stream->Init(exception_state);
+  if (exception_state.HadException()) {
+    resolver->Reject(exception_state.GetException());
+    exception_state.ClearException();
+    return;
+  }
 
   // 0xfffffffe and 0xffffffff are reserved values in stream_map_.
   CHECK_LT(stream_id, 0xfffffffe);
@@ -885,9 +909,10 @@ void WebTransport::OnCreateBidirectionalStreamResponse(
     return;
 
   ScriptState::Scope scope(script_state_);
+  auto* isolate = script_state_->GetIsolate();
   if (!succeeded) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state_->GetIsolate(), DOMExceptionCode::kNetworkError,
+        isolate, DOMExceptionCode::kNetworkError,
         "Failed to create bidirectional stream."));
     return;
   }
@@ -895,7 +920,17 @@ void WebTransport::OnCreateBidirectionalStreamResponse(
   auto* bidirectional_stream = MakeGarbageCollected<BidirectionalStream>(
       script_state_, this, stream_id, std::move(outgoing_producer),
       std::move(incoming_consumer));
-  bidirectional_stream->Init();
+
+  ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
+                                 "BidirectionalStream");
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+  bidirectional_stream->Init(exception_state);
+  if (exception_state.HadException()) {
+    resolver->Reject(exception_state.GetException());
+    exception_state.ClearException();
+    return;
+  }
 
   // 0xfffffffe and 0xffffffff are reserved values in stream_map_.
   CHECK_LT(stream_id, 0xfffffffe);

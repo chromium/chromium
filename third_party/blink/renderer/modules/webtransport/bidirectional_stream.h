@@ -34,7 +34,7 @@ class MODULES_EXPORT BidirectionalStream final : public ScriptWrappable,
                                mojo::ScopedDataPipeProducerHandle,
                                mojo::ScopedDataPipeConsumerHandle);
 
-  void Init();
+  void Init(ExceptionState&);
 
   // Implementation of bidirectional_stream.idl. As noted in the IDL file, these
   // properties are implemented on OutgoingStream and IncomingStream in the

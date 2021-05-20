@@ -981,8 +981,17 @@ TEST_F(WebTransportTest, SendStreamGarbageCollectionLocalClose) {
 
   auto* script_state = scope.GetScriptState();
 
-  ScriptPromise close_promise =
-      send_stream->writable()->close(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromise close_promise;
+
+  {
+    // The close() method also creates v8 handles referencing the
+    // SendStream via the base class.
+    v8::HandleScope handle_scope(scope.GetIsolate());
+
+    close_promise =
+        send_stream->writable()->close(script_state, ASSERT_NO_EXCEPTION);
+  }
+
   ScriptPromiseTester tester(script_state, close_promise);
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());

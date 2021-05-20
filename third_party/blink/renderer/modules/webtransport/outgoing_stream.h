@@ -24,6 +24,7 @@ class Isolate;
 
 namespace blink {
 
+class ExceptionState;
 class ScriptState;
 class StreamAbortInfo;
 class WritableStream;
@@ -61,8 +62,11 @@ class MODULES_EXPORT OutgoingStream final
   OutgoingStream(ScriptState*, Client*, mojo::ScopedDataPipeProducerHandle);
   ~OutgoingStream();
 
-  // Init() must be called before the stream is used.
-  void Init();
+  // Init() or InitWithExistingWritableStream() must be called before the stream
+  // is used.
+  void Init(ExceptionState&);
+
+  void InitWithExistingWritableStream(WritableStream*, ExceptionState&);
 
   // Implementation of OutgoingStream IDL, used by client classes to implement
   // it. https://wicg.github.io/web-transport/#outgoing-stream

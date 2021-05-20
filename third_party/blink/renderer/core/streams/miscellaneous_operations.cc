@@ -405,6 +405,20 @@ CORE_EXPORT StreamAlgorithm* CreateTrivialStreamAlgorithm() {
   return MakeGarbageCollected<TrivialStreamAlgorithm>();
 }
 
+CORE_EXPORT ScriptValue CreateTrivialQueuingStrategy(v8::Isolate* isolate,
+                                                     size_t high_water_mark) {
+  v8::Local<v8::Name> high_water_mark_string =
+      V8AtomicString(isolate, "highWaterMark");
+  v8::Local<v8::Value> high_water_mark_value =
+      v8::Number::New(isolate, high_water_mark);
+
+  auto strategy =
+      v8::Object::New(isolate, v8::Null(isolate), &high_water_mark_string,
+                      &high_water_mark_value, 1);
+
+  return ScriptValue(isolate, strategy);
+}
+
 CORE_EXPORT v8::MaybeLocal<v8::Value> CallOrNoop1(
     ScriptState* script_state,
     v8::Local<v8::Object> object,

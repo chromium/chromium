@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -129,9 +130,15 @@ OutgoingStream::OutgoingStream(ScriptState* script_state,
 
 OutgoingStream::~OutgoingStream() = default;
 
-void OutgoingStream::Init() {
+void OutgoingStream::Init(ExceptionState& exception_state) {
   DVLOG(1) << "OutgoingStream::Init() this=" << this;
+  auto* stream = MakeGarbageCollected<WritableStream>();
+  InitWithExistingWritableStream(stream, exception_state);
+}
 
+void OutgoingStream::InitWithExistingWritableStream(
+    WritableStream* stream,
+    ExceptionState& exception_state) {
   write_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
                        MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
                        WTF::BindRepeating(&OutgoingStream::OnHandleReady,
@@ -146,8 +153,10 @@ void OutgoingStream::Init() {
   writing_aborted_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
   writing_aborted_ = writing_aborted_resolver_->Promise();
-  writable_ = WritableStream::CreateWithCountQueueingStrategy(
-      script_state_, MakeGarbageCollected<UnderlyingSink>(this), 1);
+  writable_ = stream;
+  stream->InitWithCountQueueingStrategy(
+      script_state_, MakeGarbageCollected<UnderlyingSink>(this), 1,
+      /*optimizer=*/nullptr, exception_state);
 }
 
 void OutgoingStream::AbortWriting(StreamAbortInfo* stream_abort_info) {

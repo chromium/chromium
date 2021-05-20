@@ -1266,7 +1266,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter statusCode
 [Worker]     getter violatedDirective
 [Worker]     method constructor
-[Worker] interface SendStream
+[Worker] interface SendStream : WritableStream
 [Worker]     attribute @@toStringTag
 [Worker]     getter writable
 [Worker]     getter writingAborted

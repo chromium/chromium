@@ -50,7 +50,7 @@ void SendStream::OnOutgoingStreamAbort() {
 void SendStream::Trace(Visitor* visitor) const {
   visitor->Trace(outgoing_stream_);
   visitor->Trace(web_transport_);
-  ScriptWrappable::Trace(visitor);
+  WritableStream::Trace(visitor);
   WebTransportStream::Trace(visitor);
   OutgoingStream::Client::Trace(visitor);
 }

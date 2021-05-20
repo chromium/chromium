@@ -78,6 +78,15 @@ class CORE_EXPORT WritableStream : public ScriptWrappable {
   WritableStream();
   ~WritableStream() override;
 
+  // This should only be used with freshly-constructed streams. It expects to be
+  // called in a valid microtask scope.
+  void InitWithCountQueueingStrategy(
+      ScriptState*,
+      UnderlyingSinkBase*,
+      size_t high_water_mark,
+      std::unique_ptr<WritableStreamTransferringOptimizer>,
+      ExceptionState&);
+
   // IDL defined functions
 
   // https://streams.spec.whatwg.org/#ws-locked
@@ -229,6 +238,7 @@ class CORE_EXPORT WritableStream : public ScriptWrappable {
  protected:
   // Used when creating a stream from JavaScript. Called from Create().
   // https://streams.spec.whatwg.org/#ws-constructor
+  // TODO(ricea): Port external callers to InitWithCountQueuingStrategy().
   void InitInternal(ScriptState*,
                     ScriptValue raw_underlying_sink,
                     ScriptValue raw_strategy,

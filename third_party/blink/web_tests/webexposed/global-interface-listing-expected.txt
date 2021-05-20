@@ -8221,7 +8221,7 @@ interface Selection
     method setBaseAndExtent
     method setPosition
     method toString
-interface SendStream
+interface SendStream : WritableStream
     attribute @@toStringTag
     getter writable
     getter writingAborted

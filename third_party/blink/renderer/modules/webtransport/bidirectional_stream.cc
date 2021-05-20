@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -32,8 +33,11 @@ BidirectionalStream::BidirectionalStream(
       web_transport_(web_transport),
       stream_id_(stream_id) {}
 
-void BidirectionalStream::Init() {
-  outgoing_stream_->Init();
+void BidirectionalStream::Init(ExceptionState& exception_state) {
+  outgoing_stream_->Init(exception_state);
+  if (exception_state.HadException())
+    return;
+
   incoming_stream_->Init();
 }
 

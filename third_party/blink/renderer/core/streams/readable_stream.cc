@@ -1116,19 +1116,7 @@ ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
     std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer) {
   auto* isolate = script_state->GetIsolate();
 
-  // It's safer to use a workalike rather than a real CountQueuingStrategy
-  // object. We use the default "size" function as it is implemented in C++ and
-  // so much faster than calling into JavaScript. Since the create object has a
-  // null prototype, there is no danger of us finding some other "size" function
-  // via the prototype chain.
-  v8::Local<v8::Name> high_water_mark_string =
-      V8AtomicString(isolate, "highWaterMark");
-  v8::Local<v8::Value> high_water_mark_value =
-      v8::Number::New(isolate, high_water_mark);
-
-  auto strategy_object =
-      v8::Object::New(isolate, v8::Null(isolate), &high_water_mark_string,
-                      &high_water_mark_value, 1);
+  auto strategy = CreateTrivialQueuingStrategy(isolate, high_water_mark);
 
   ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "ReadableStream");
@@ -1140,8 +1128,7 @@ ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
 
   auto* stream = MakeGarbageCollected<ReadableStream>();
   stream->InitInternal(script_state, ScriptValue(isolate, underlying_source_v8),
-                       ScriptValue(isolate, strategy_object), true,
-                       exception_state);
+                       strategy, true, exception_state);
 
   if (exception_state.HadException()) {
     exception_state.ClearException();

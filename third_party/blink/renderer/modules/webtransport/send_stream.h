@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webtransport/outgoing_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_stream.h"
@@ -17,10 +18,11 @@
 
 namespace blink {
 
+class ExceptionState;
 class WebTransport;
 class ScriptState;
 
-class MODULES_EXPORT SendStream final : public ScriptWrappable,
+class MODULES_EXPORT SendStream final : public WritableStream,
                                         public WebTransportStream,
                                         public OutgoingStream::Client {
   DEFINE_WRAPPERTYPEINFO();
@@ -34,11 +36,13 @@ class MODULES_EXPORT SendStream final : public ScriptWrappable,
                       mojo::ScopedDataPipeProducerHandle);
   ~SendStream() override;
 
-  void Init() { outgoing_stream_->Init(); }
+  void Init(ExceptionState& exception_state) {
+    outgoing_stream_->InitWithExistingWritableStream(this, exception_state);
+  }
 
-  // Implementation of send_stream.idl. As noted in the IDL file, these
-  // properties are implemented on OutgoingStream in the standard.
-  WritableStream* writable() const { return outgoing_stream_->Writable(); }
+  // Methods for backwards compatibility.
+  // TODO(ricea): Remove them when they have been removed from the IDL file.
+  SendStream* writable() { return this; }
 
   ScriptPromise writingAborted() const {
     return outgoing_stream_->WritingAborted();

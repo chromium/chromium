@@ -84,6 +84,13 @@ CORE_EXPORT StreamStartAlgorithm* CreateTrivialStartAlgorithm();
 // undefined.
 CORE_EXPORT StreamAlgorithm* CreateTrivialStreamAlgorithm();
 
+// Returns a strategy object that has no size() function and the supplied
+// highWaterMark. It has a null prototype so that it won't be affected by
+// changes to the global Object prototype. It behaves the same as a
+// CountQueuingStrategy but is faster and safer to use from C++.
+CORE_EXPORT ScriptValue CreateTrivialQueuingStrategy(v8::Isolate*,
+                                                     size_t high_water_mark);
+
 // Used in place of InvokeOrNoop in spec. Always takes 1 argument.
 // https://streams.spec.whatwg.org/#invoke-or-noop
 CORE_EXPORT v8::MaybeLocal<v8::Value> CallOrNoop1(ScriptState*,

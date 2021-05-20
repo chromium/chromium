@@ -6,11 +6,10 @@
 
 [ Exposed=(Window,Worker),
   RuntimeEnabled=WebTransport ]
-interface SendStream {
-  // OutgoingStream interface. In the standard this is a mixin, but we can't use
-  // a mixin in the implementation because BidirectionalStream would end up
-  // inheriting from two mixins, causing diamond inheritance.
-  readonly attribute WritableStream writable;
+interface SendStream : WritableStream {
+  // These attributes and method are for backwards compatibility.
+  // TODO(ricea): Remove them once the origin trial is over.
+  readonly attribute SendStream writable;
   readonly attribute Promise<StreamAbortInfo> writingAborted;
   void abortWriting(optional StreamAbortInfo abortInfo = {});
 };
