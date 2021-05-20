@@ -10,7 +10,7 @@ import WebSocket from 'ws';
 
 export class MapperServer implements IServer {
     private _handlers: ((messageObj: any) => void)[] = new Array()
-    private _commandCallbacks: ((messageObj: any) => void)[] = new Array()
+    private _commandCallbacks: Map<number, (messageObj: any) => void> = new Map();
     private _ws: WebSocket
     private _mapperSessionId;
 
@@ -63,8 +63,8 @@ export class MapperServer implements IServer {
     private _onCdpMessage(dataStr: string): void {
         const data = JSON.parse(dataStr);
         debugRecv(data);
-        if (this._commandCallbacks.hasOwnProperty(data.id)) {
-            this._commandCallbacks[data.id](data.result);
+        if (this._commandCallbacks.has(data.id)) {
+            this._commandCallbacks.get(data.id)(data.result);
             return;
         } else {
             if (data.method === "Runtime.bindingCalled" && data.params && data.params.name === "sendBidiResponse") {
@@ -80,8 +80,8 @@ export class MapperServer implements IServer {
 
     private async _sendCdpCommand(command: any): Promise<any> {
         return new Promise((resolve) => {
-            const id = this._commandCallbacks.length;
-            this._commandCallbacks[id] = resolve;
+            const id = this._commandCallbacks.size;
+            this._commandCallbacks.set(id, resolve);
             command.id = id;
             debugSend(command);
             this._ws.send(JSON.stringify(command));
