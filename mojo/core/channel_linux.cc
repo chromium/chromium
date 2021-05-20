@@ -778,6 +778,7 @@ void ChannelLinux::SharedMemReadReady() {
   CHECK(read_buffer_);
   if (read_buffer_->TryLockForReading()) {
     read_notifier_->Clear();
+    bool read_fail = false;
     do {
       uint32_t bytes_read = 0;
       SharedBuffer::Error read_res = read_buffer_->TryReadLocked(
@@ -785,7 +786,6 @@ void ChannelLinux::SharedMemReadReady() {
       if (read_res == SharedBuffer::Error::kControlCorruption) {
         // This is an error we cannot recover from.
         OnError(Error::kReceivedMalformedData);
-        read_buffer_->UnlockForReading();
         break;
       }
 
@@ -809,6 +809,7 @@ void ChannelLinux::SharedMemReadReady() {
         // full message if we get one something has gone horribly wrong.
         if (result != DispatchResult::kOK) {
           LOG(ERROR) << "Recevied a bad message via shared memory";
+          read_fail = true;
           OnError(Error::kReceivedMalformedData);
           break;
         }
@@ -819,7 +820,7 @@ void ChannelLinux::SharedMemReadReady() {
         // starts.
         data_offset += read_size_hint;
       }
-    } while (true);
+    } while (!read_fail);
     read_buffer_->UnlockForReading();
   }
 }
