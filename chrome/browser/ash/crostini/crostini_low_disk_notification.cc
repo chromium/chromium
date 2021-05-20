@@ -57,14 +57,22 @@ CrostiniLowDiskNotification::~CrostiniLowDiskNotification() {
 
 void CrostiniLowDiskNotification::OnLowDiskSpaceTriggered(
     const vm_tools::cicerone::LowDiskSpaceTriggeredSignal& signal) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (signal.vm_name() != kCrostiniDefaultVmName) {
     // TODO(crbug/1189009): Support VMs with different names
     return;
   }
+  ShowNotificationIfAppropriate(signal.free_bytes());
+}
 
+void CrostiniLowDiskNotification::ShowNotificationIfAppropriate(
+    uint64_t free_bytes) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   bool show_low_disk_space_notification = true;
+  Severity severity = GetSeverity(free_bytes);
+  if (severity == Severity::NONE) {
+    return;
+  }
   if (!chromeos::CrosSettings::Get()->GetBoolean(
           chromeos::kDeviceShowLowDiskSpaceNotification,
           &show_low_disk_space_notification)) {
@@ -80,10 +88,9 @@ void CrostiniLowDiskNotification::OnLowDiskSpaceTriggered(
                  << "suppressed on a managed device.";
     return;
   }
-  Severity severity = GetSeverity(signal.free_bytes());
   base::Time now = base::Time::Now();
   if (severity != last_notification_severity_ ||
-      (severity == HIGH &&
+      (severity == Severity::HIGH &&
        now - last_notification_time_ > notification_interval_)) {
     SystemNotificationHelper::GetInstance()->Display(
         *CreateNotification(severity));

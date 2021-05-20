@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
+#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -129,6 +130,8 @@ class CrostiniInstallerTest : public testing::Test {
 
     g_browser_process->platform_part()
         ->InitializeSchedulerConfigurationManager();
+    TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
+        std::make_unique<SystemNotificationHelper>());
   }
 
   void TearDown() override {

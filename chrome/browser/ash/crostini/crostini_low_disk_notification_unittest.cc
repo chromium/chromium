@@ -173,4 +173,9 @@ TEST_F(CrostiniLowDiskNotificationTest, SupressedForMultipleUsersWhenEnrolled) {
   EXPECT_EQ(0, notification_count_);
 }
 
+TEST_F(CrostiniLowDiskNotificationTest, NoNotificationWhenEnoughFreeSpace) {
+  low_disk_notification_->ShowNotificationIfAppropriate(1024 * 1024 * 1024);
+  EXPECT_EQ(0, notification_count_);
+}
+
 }  // namespace crostini

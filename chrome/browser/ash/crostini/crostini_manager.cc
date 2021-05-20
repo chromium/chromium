@@ -2273,6 +2273,14 @@ void CrostiniManager::OnStartTerminaVm(
       break;
   }
 
+  // The UI can only resize the default VM, so only (maybe) show the
+  // notification for the default VM and only if there wasn't an error getting
+  // free space.
+  if (vm_name == ContainerId::GetDefault().vm_name &&
+      response->free_bytes() != -1) {
+    low_disk_notifier_->ShowNotificationIfAppropriate(response->free_bytes());
+  }
+
   // If the vm is already marked "running" run the callback.
   if (response->status() == vm_tools::concierge::VM_STATUS_RUNNING) {
     running_vms_[vm_name] =

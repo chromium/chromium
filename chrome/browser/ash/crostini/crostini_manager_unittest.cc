@@ -28,6 +28,7 @@
 #include "chrome/browser/chromeos/policy/powerwash_requirements_checker.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -244,6 +245,8 @@ class CrostiniManagerTest : public testing::Test {
     chromeos::CryptohomeMiscClient::InitializeFake();
     chromeos::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(false);
     policy::PowerwashRequirementsChecker::InitializeSynchronouslyForTesting();
+    TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
+        std::make_unique<SystemNotificationHelper>());
   }
 
   void TearDown() override {
@@ -503,6 +506,21 @@ TEST_F(CrostiniManagerTest, StartTerminaVmSuccess) {
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
   histogram_tester.ExpectTotalCount(kCrostiniCorruptionHistogram, 0);
+}
+
+TEST_F(CrostiniManagerTest, StartTerminaVmLowDiskNotification) {
+  const base::FilePath& disk_path = base::FilePath(kVmName);
+  NotificationDisplayServiceTester notification_service(nullptr);
+
+  EnsureTerminaInstalled();
+  crostini_manager()->StartTerminaVm(
+      ContainerId::GetDefault().vm_name, disk_path, 0,
+      base::BindOnce(&ExpectSuccess, run_loop()->QuitClosure()));
+  run_loop()->Run();
+
+  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  auto notification = notification_service.GetNotification("crostini_low_disk");
+  EXPECT_NE(absl::nullopt, notification);
 }
 
 TEST_F(CrostiniManagerTest, OnStartTremplinRecordsRunningVm) {
