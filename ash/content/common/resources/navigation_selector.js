@@ -4,15 +4,18 @@
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import './navigation_icons.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 /**
  * @typedef {{
  *   name: string,
  *   pageIs: string,
+ *   icon: string,
  * }}
  */
 export let SelectorItem;
@@ -139,6 +142,15 @@ export class NavigationSelectorElement extends PolymerElement {
    */
   isCollapsible_(item) {
     return item.properties.isCollapsible;
+  }
+
+  /**
+   * @param {!SelectorItem} item
+   * @return {string}
+   * @protected
+   */
+  getIcon_(item) {
+    return item.icon;
   }
 }
 

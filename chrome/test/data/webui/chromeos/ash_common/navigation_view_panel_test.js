@@ -151,7 +151,7 @@ export function navigationViewPanelTestSuite() {
     let subItem =
         /** @type {SelectorItem} */ ({'name': 'subItem', 'pageIs': subPage});
 
-    viewElement.addSelector('dummyPage1', dummyPage1, [subItem]);
+    viewElement.addSelector('dummyPage1', dummyPage1, '', [subItem]);
     viewElement.addSelector('dummyPage2', dummyPage2);
 
     assertFalse(viewElement.shadowRoot.querySelector(`#${subPage}`).hidden);

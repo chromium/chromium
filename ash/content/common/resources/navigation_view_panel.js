@@ -54,10 +54,12 @@ export class NavigationViewPanelElement extends PolymerElement {
   /**
    * @param {string} name
    * @param {string} pageIs
+   * @param {string} icon
    * @param {!Array<SelectorItem>} subItems
    */
-  addSelector(name, pageIs, subItems=[]) {
-    let item = /** @type {SelectorItem} */ ({'name': name, 'pageIs': pageIs});
+  addSelector(name, pageIs, icon='', subItems=[]) {
+    let item = /** @type {SelectorItem} */ ({
+        'name': name, 'pageIs': pageIs, 'icon': icon});
     let property = /** @type {SelectorProperties} */ ({
         'isCollapsible': subItems.length,
         'isExpanded': false,

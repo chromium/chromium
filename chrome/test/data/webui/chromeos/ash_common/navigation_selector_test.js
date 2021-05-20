@@ -26,10 +26,12 @@ export function navigationSelectorTestSuite() {
   /**
    * @param {string} name
    * @param {string} pageIs
+   * @param {string} icon
    * @return {!SelectorItem}
    */
-  function createSelectorItem(name, pageIs) {
-    let item = /** @type{SelectorItem} */ ({'name': name, 'pageIs': pageIs});
+  function createSelectorItem(name, pageIs, icon) {
+    let item = /** @type{SelectorItem} */ (
+        {'name': name, 'pageIs': pageIs, 'icon': icon});
     return item;
   }
 
@@ -62,8 +64,8 @@ export function navigationSelectorTestSuite() {
   }
 
   test('navigationSelectorLoadEntries', async () => {
-    const item1 = createSelectorItem('test1', 'test-page1');
-    const item2 = createSelectorItem('test2', 'test-page2');
+    const item1 = createSelectorItem('test1', 'test-page1', '');
+    const item2 = createSelectorItem('test2', 'test-page2', '');
 
     const property1 = createProperty(false, false, []);
     const property2 = createProperty(false, false, []);
@@ -85,8 +87,12 @@ export function navigationSelectorTestSuite() {
   });
 
   test('navigationSelectorLoadsCollapsibleEntries', async () => {
-    const item1 = createSelectorItem('test1', 'test-page1');
-    const item2 = createSelectorItem('Advanced', '');
+    const item1 = createSelectorItem(
+        'test1',
+        'test-page1',
+        '',
+    );
+    const item2 = createSelectorItem('Advanced', '', '');
 
     const property = createProperty(true, false, [item1]);
 

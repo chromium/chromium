@@ -28,11 +28,15 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
   ready() {
     super.ready();
     this.$.navigationPanel.addSelector('Chrome OS',
-                                       'chromeos-shortcuts-page');
-    this.$.navigationPanel.addSelector('Browser', 'browser-shortcuts-page');
-    this.$.navigationPanel.addSelector('Android', 'android-shortcuts-page');
+                                       'chromeos-shortcuts-page',
+                                       'navigation-selector:laptop-chromebook');
+    this.$.navigationPanel.addSelector('Browser', 'browser-shortcuts-page',
+                                       'navigation-selector:laptop-chromebook');
+    this.$.navigationPanel.addSelector('Android', 'android-shortcuts-page',
+                                       'navigation-selector:laptop-chromebook');
     this.$.navigationPanel.addSelector('Accessibility',
-                                       'accessibility-shortcuts-page');
+                                       'accessibility-shortcuts-page',
+                                       'navigation-selector:laptop-chromebook');
   }
 }
 

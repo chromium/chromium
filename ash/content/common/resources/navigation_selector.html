@@ -31,6 +31,17 @@ div:hover:not(.selected).navigation-item {
   color: var(--google-blue-600);
 }
 
+iron-icon {
+  --iron-icon-fill-color: var(--google-grey-700);
+  margin-inline-end: 16px;
+  pointer-events: none;
+  vertical-align: top;
+}
+
+.navigation-item.selected > iron-icon {
+  --iron-icon-fill-color: var(--google-blue-600);
+}
+
 cr-expand-button {
   padding-inline-start: 20px;
 }
@@ -42,6 +53,8 @@ cr-expand-button {
     <template id="menuItems" is="dom-repeat" items="{{menuItems}}">
       <template is="dom-if" if="[[!isCollapsible_(item)]]">
         <div class="navigation-item" tabindex="0" on-click="onSelected_">
+          <iron-icon class="icon" icon="[[item.selectorItem.icon]]" alt="">
+          </iron-icon>
           [[item.selectorItem.name]]
         </div>
       </template>
@@ -54,6 +67,8 @@ cr-expand-button {
               items="{{item.properties.subMenuItems}}">
             <div class="navigation-item nested-item" tabindex="0"
                 on-click="onNestedSelected_">
+              <iron-icon class="icon" icon="[[getIcon_(item)]]" alt="">
+              </iron-icon>
               [[item.name]]
             </div>
           </template>
