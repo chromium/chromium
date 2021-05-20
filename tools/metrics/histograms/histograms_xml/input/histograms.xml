@@ -771,6 +771,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>How long the virtual keyboard was visible.</summary>
 </histogram>
 
+<histogram name="InputMethod.VirtualKeyboard.Emoji.Delay" units="ms"
+    expires_after="M95">
+  <owner>jopalmer@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Time between when emoji shown in VK and when the emoji is inserted.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.VirtualKeyboard.Emoji.TriggerType"
     enum="VirtualKeyboardEmojiTriggerType" expires_after="M95">
   <owner>shend@chromium.org</owner>
