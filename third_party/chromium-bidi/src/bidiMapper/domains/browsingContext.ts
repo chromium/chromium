@@ -13,135 +13,128 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { log } from "../log";
-const logContext = log("context");
+import { log } from '../log';
+const logContext = log('context');
 
 export default class Context {
-    private static _contexts: Map<string, Context> = new Map();
-    private static _sessionToTargets: Map<string, Context> = new Map();
+  private static _contexts: Map<string, Context> = new Map();
+  private static _sessionToTargets: Map<string, Context> = new Map();
 
-    // Set from outside.
-    static cdpClient: any;
-    static getCurrentContextId: () => string;
+  // Set from outside.
+  static cdpClient: any;
+  static getCurrentContextId: () => string;
 
-    static onContextCreated: (t: Context) => Promise<void>;
-    static onContextDestroyed: (t: Context) => Promise<void>;
+  static onContextCreated: (t: Context) => Promise<void>;
+  static onContextDestroyed: (t: Context) => Promise<void>;
 
-    private static _getOrCreateContext(contextId: string): Context {
-        if (!Context._isKnownContext(contextId))
-            Context._contexts.set(contextId, new Context(contextId));
-        return Context._getContext(contextId);
-    }
+  private static _getOrCreateContext(contextId: string): Context {
+    if (!Context._isKnownContext(contextId))
+      Context._contexts.set(contextId, new Context(contextId));
+    return Context._getContext(contextId);
+  }
 
-    private static _getContext(contextId: string): Context {
-        if (!Context._isKnownContext(contextId))
-            throw new Error('context not found');
-        return Context._contexts.get(contextId);
-    }
+  private static _getContext(contextId: string): Context {
+    if (!Context._isKnownContext(contextId))
+      throw new Error('context not found');
+    return Context._contexts.get(contextId);
+  }
 
-    private static _isKnownContext(contextId: string): boolean {
-        return Context._contexts.has(contextId);
-    }
+  private static _isKnownContext(contextId: string): boolean {
+    return Context._contexts.has(contextId);
+  }
 
-    static handleAttachedToTargetEvent(eventData: any) {
-        logContext("AttachedToTarget event recevied", eventData);
+  static handleAttachedToTargetEvent(eventData: any) {
+    logContext('AttachedToTarget event recevied', eventData);
 
-        const targetInfo: TargetInfo = eventData.params.targetInfo;
-        if (!Context._isValidTarget(targetInfo))
-            return;
+    const targetInfo: TargetInfo = eventData.params.targetInfo;
+    if (!Context._isValidTarget(targetInfo)) return;
 
-        const context = Context._getOrCreateContext(targetInfo.targetId);
-        context._updateTargetInfo(targetInfo);
-        context._setSessionId(eventData.params.sessionId);
+    const context = Context._getOrCreateContext(targetInfo.targetId);
+    context._updateTargetInfo(targetInfo);
+    context._setSessionId(eventData.params.sessionId);
 
-        Context.onContextCreated(context);
-    }
+    Context.onContextCreated(context);
+  }
 
-    static handleInfoChangedEvent(eventData: any) {
-        logContext("infoChangedEvent event recevied", eventData);
+  static handleInfoChangedEvent(eventData: any) {
+    logContext('infoChangedEvent event recevied', eventData);
 
-        const targetInfo: TargetInfo = eventData.params.targetInfo;
-        if (!Context._isValidTarget(targetInfo))
-            return;
+    const targetInfo: TargetInfo = eventData.params.targetInfo;
+    if (!Context._isValidTarget(targetInfo)) return;
 
-        const context = Context._getOrCreateContext(targetInfo.targetId);
-        context._onInfoChangedEvent(targetInfo);
-    }
+    const context = Context._getOrCreateContext(targetInfo.targetId);
+    context._onInfoChangedEvent(targetInfo);
+  }
 
-    // { "method": "Target.detachedFromTarget", "params": { "sessionId": "7EFBFB2A4942A8989B3EADC561BC46E9", "targetId": "19416886405CBA4E03DBB59FA67FF4E8" } }
-    static async handleDetachedFromTargetEvent(eventData: any) {
-        logContext("detachedFromTarget event recevied", eventData);
+  // { "method": "Target.detachedFromTarget", "params": { "sessionId": "7EFBFB2A4942A8989B3EADC561BC46E9", "targetId": "19416886405CBA4E03DBB59FA67FF4E8" } }
+  static async handleDetachedFromTargetEvent(eventData: any) {
+    logContext('detachedFromTarget event recevied', eventData);
 
-        const targetId = eventData.params.targetId;
-        if (!Context._isKnownContext(targetId))
-            return;
+    const targetId = eventData.params.targetId;
+    if (!Context._isKnownContext(targetId)) return;
 
-        const context = Context._getOrCreateContext(targetId);
-        Context.onContextDestroyed(context);
+    const context = Context._getOrCreateContext(targetId);
+    Context.onContextDestroyed(context);
 
-        if (context._sessionId)
-            Context._sessionToTargets.delete(context._sessionId);
+    if (context._sessionId)
+      Context._sessionToTargets.delete(context._sessionId);
 
-        delete Context._contexts[context._contextId];
-    }
+    delete Context._contexts[context._contextId];
+  }
 
-    static async process_createContext(params: any): Promise<any> {
-        const { targetId } = await Context.cdpClient.sendCdpCommand({
-            method: "Target.createTarget",
-            params: { url: params.url }
-        });
-        return Context._getOrCreateContext(targetId).toBidi();
+  static async process_createContext(params: any): Promise<any> {
+    const { targetId } = await Context.cdpClient.sendCdpCommand({
+      method: 'Target.createTarget',
+      params: { url: params.url },
+    });
+    return Context._getOrCreateContext(targetId).toBidi();
+  }
+
+  static _isValidTarget = (target: TargetInfo) => {
+    if (target.targetId === Context.getCurrentContextId()) return false;
+    if (!target.type || target.type !== 'page') return false;
+    return true;
+  };
+
+  private _targetInfo: TargetInfo;
+  private _contextId: string;
+  private _sessionId: string;
+
+  constructor(contextId: string) {
+    Context._contexts[contextId] = this;
+  }
+
+  private _setSessionId(sessionId: string): void {
+    if (this._sessionId) Context._sessionToTargets.delete(sessionId);
+
+    this._sessionId = sessionId;
+    Context._sessionToTargets.set(sessionId, this);
+  }
+
+  private _updateTargetInfo(targetInfo: TargetInfo) {
+    this._targetInfo = targetInfo;
+  }
+
+  private _onInfoChangedEvent(targetInfo: TargetInfo) {
+    this._updateTargetInfo(targetInfo);
+  }
+
+  getId(): string {
+    return this._contextId;
+  }
+
+  toBidi(): any {
+    return {
+      context: this._targetInfo.targetId,
+      parent: this._targetInfo.openerId ? this._targetInfo.openerId : null,
+      url: this._targetInfo.url,
     };
-
-    static _isValidTarget = (target: TargetInfo) => {
-        if (target.targetId === Context.getCurrentContextId())
-            return false;
-        if (!target.type || target.type !== "page")
-            return false;
-        return true;
-    }
-
-    private _targetInfo: TargetInfo;
-    private _contextId: string;
-    private _sessionId: string;
-
-    constructor(contextId: string) {
-        Context._contexts[contextId] = this;
-    }
-
-    private _setSessionId(sessionId: string): void {
-        if (this._sessionId)
-            Context._sessionToTargets.delete(sessionId);
-
-        this._sessionId = sessionId;
-        Context._sessionToTargets.set(sessionId, this);
-
-    }
-
-    private _updateTargetInfo(targetInfo: TargetInfo) {
-        this._targetInfo = targetInfo;
-    }
-
-    private _onInfoChangedEvent(targetInfo: TargetInfo) {
-        this._updateTargetInfo(targetInfo);
-    }
-
-    getId(): string {
-        return this._contextId;
-    }
-
-    toBidi(): any {
-        return {
-            context: this._targetInfo.targetId,
-            parent: this._targetInfo.openerId ? this._targetInfo.openerId : null,
-            url: this._targetInfo.url
-        };
-    }
+  }
 }
 
 class TargetInfo {
-    targetId: string
-    openerId: string | null
-    url: string | null
-    type: string
+  targetId: string;
+  openerId: string | null;
+  url: string | null;
+  type: string;
 }

@@ -42,18 +42,19 @@ Running:
 
     python3 -m pytest --rootdir=tests
 
-This will run the tests against an already running server on port
-8080. Use the `PORT` environment variable to connect to another port:
+This will run the tests against an already running server on port 8080. Use the `PORT` environment variable to connect to another port:
 
     PORT=8081 python3 -m pytest --rootdir=tests
 
 ## How does it work?
+
 The architecture is described in the [WebDriver BiDi in Chrome Context implementation plan](https://docs.google.com/document/d/1VfQ9tv0wPSnb5TI-MOobjoQ5CXLnJJx9F_PxOMQc8kY).
 
 There are 2 main modules:
+
 1. backend WS server in `src`. It runs webSocket server, and for each ws connection runs an instance of browser with BiDi Mapper.
 2. front-end BiDi Mapper in `src/bidiMapper`. Gets BiDi commands from the backend, and map them to CDP commands.
 
-
 ## Contributing
+
 The BiDi commands are processed in the `src/bidiMapper/bidiCommandsProcessor.js`. To add a new command, add it to `processCommand`, write and call processor for it.

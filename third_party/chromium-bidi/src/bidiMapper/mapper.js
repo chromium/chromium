@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createCdpClient } from "./cdpClient.js";
-import { runBidiCommandsProcessor } from "./bidiCommandsProcessor.js";
-import { createBidiClient } from "./bidiClient.js";
-import { log } from "./log";
-const logSystem = log("system");
-
+import { createCdpClient } from './cdpClient.js';
+import { runBidiCommandsProcessor } from './bidiCommandsProcessor.js';
+import { createBidiClient } from './bidiClient.js';
+import { log } from './log';
+const logSystem = log('system');
 
 // `currentTargetId` is set by `setCurrentTargetId` + `Runtime.evaluate`.
 let currentTargetId;
@@ -28,28 +27,31 @@ const cdpBinding = window.cdp;
 const sendBidiResponse = window.sendBidiResponse;
 // Needed to filter out info related to BiDi target.
 window.setCurrentTargetId = function (targetId) {
-    logSystem("current target ID: " + targetId);
-    currentTargetId = targetId;
-}
+  logSystem('current target ID: ' + targetId);
+  currentTargetId = targetId;
+};
 
 // Run via `Runtime.evaluate` from the bidi server side.
 window.onBidiMessage = function (messageStr) {
-    bidiClient.onBidiMessageReceived(messageStr);
+  bidiClient.onBidiMessageReceived(messageStr);
 };
 
 const cdpClient = createCdpClient(cdpBinding);
 const bidiClient = createBidiClient(sendBidiResponse);
 
 const runBidiMapper = async function () {
-    window.document.documentElement.innerHTML = `<h1>Bidi mapper runs here!</h1><h2>Don't close.</h2>`;
+  window.document.documentElement.innerHTML = `<h1>Bidi mapper runs here!</h1><h2>Don't close.</h2>`;
 
-    window.document.title = "BiDi Mapper";
+  window.document.title = 'BiDi Mapper';
 
-    await runBidiCommandsProcessor(cdpClient, bidiClient, () => currentTargetId);
+  await runBidiCommandsProcessor(cdpClient, bidiClient, () => currentTargetId);
 
-    await cdpClient.sendCdpCommand({ "method": "Target.setDiscoverTargets", "params": { "discover": true } });
+  await cdpClient.sendCdpCommand({
+    method: 'Target.setDiscoverTargets',
+    params: { discover: true },
+  });
 
-    logSystem("launched");
+  logSystem('launched');
 };
 
 runBidiMapper();

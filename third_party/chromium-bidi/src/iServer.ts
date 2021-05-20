@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 export interface IServer {
-    setOnMessage: (handler: ((messageObj: any) => Promise<void>)) => void
-    sendMessage: (messageObj: any) => Promise<void>
+  setOnMessage: (handler: (messageObj: any) => Promise<void>) => void;
+  sendMessage: (messageObj: any) => Promise<void>;
 }
