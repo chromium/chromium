@@ -212,6 +212,7 @@ void ProfileImportProcess::SetUserDecision(
       // If the import candidate is supplied, the 'edited_profile' must be
       // supplied.
       DCHECK(edited_profile.has_value());
+      edited_profile->FinalizeAfterImport();
       // The `edited_profile` has to have the same `guid` as the original import
       // candidate.
       DCHECK_EQ(import_candidate_.value().guid(), edited_profile->guid());
