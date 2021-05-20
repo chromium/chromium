@@ -271,9 +271,11 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
     remote_to_engine_.reset();
     receiver_from_engine_.reset();
 
+    // Pass an extra parameter to indicate that this connection is from
+    // NativeInputMethodEngine.
     remote_manager_->ConnectToImeEngine(
         new_engine_id, remote_to_engine_.BindNewPipeAndPassReceiver(),
-        receiver_from_engine_.BindNewPipeAndPassRemote(), {},
+        receiver_from_engine_.BindNewPipeAndPassRemote(), /*extra=*/{0},
         base::BindOnce(&ImeObserver::OnConnected, base::Unretained(this),
                        base::Time::Now(), new_engine_id));
 

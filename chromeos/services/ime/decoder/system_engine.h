@@ -70,6 +70,9 @@ class SystemEngine : public InputEngine {
 
   mojo::Receiver<mojom::InputChannel> decoder_channel_receiver_;
 
+  // Whether `decoder_channel_receiver_` is connected.
+  bool is_decoder_receiver_connected_ = false;
+
   // Sequence ID for protobuf messages sent from the engine.
   uint64_t current_seq_id_ = 0;
 

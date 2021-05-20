@@ -114,6 +114,26 @@ bool SystemEngine::BindRequest(
     mojo::PendingRemote<mojom::InputChannel> remote,
     const std::vector<uint8_t>& extra) {
   if (IsImeSupportedByDecoder(ime_spec)) {
+    // There can only be one client using the decoder at any time. There are two
+    // possible clients: NativeInputMethodEngine (for physical keyboard) and the
+    // XKB extension (for virtual keyboard). The XKB extension may try to
+    // connect the decoder even when it's not supposed to (due to race
+    // conditions), so we must prevent the extension from taking over the
+    // NativeInputMethodEngine connection.
+    //
+    // This is a hack to to determine whether a connection came from
+    // NativeInputMethodEngine or the extension. NativeInputMethodEngine will
+    // send some extra bytes, whereas the extension doesn't. Thus, we can
+    // prevent the extension from taking over the NativeInputMethodEngine's
+    // connection to the decoder. NativeInputMethodEngine will voluntarily give
+    // up its connection when tswitching to tablet mode, allowing the extension
+    // to connect again.
+    // TODO(b/184115850): Create a separate Mojo API for NativeInputMethodEngine
+    // so that we don't need to inspect `extra` to distinguish the client.
+    if (is_decoder_receiver_connected_ && extra.size() == 0) {
+      return false;
+    }
+
     // Activates an IME engine via the shared library. Passing a
     // |ClientDelegate| for engine instance created by the shared library to
     // make safe calls on the client.
@@ -123,9 +143,15 @@ bool SystemEngine::BindRequest(
                                base::BindRepeating(&SystemEngine::OnReply,
                                                    base::Unretained(this))))) {
       decoder_channel_receiver_.Bind(std::move(receiver));
-      // TODO(https://crbug.com/837156): Registry connection error handler.
+      is_decoder_receiver_connected_ = true;
+      decoder_channel_receiver_.set_disconnect_handler(base::BindOnce(
+          [](bool& is_decoder_receiver_connected) {
+            is_decoder_receiver_connected = false;
+          },
+          std::ref(is_decoder_receiver_connected_)));
       return true;
     }
+    is_decoder_receiver_connected_ = false;
     return false;
   }
 
