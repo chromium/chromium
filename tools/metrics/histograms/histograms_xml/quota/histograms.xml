@@ -21,7 +21,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
-<histogram name="Quota.AgeOfDataInDays" units="days" expires_after="2021-05-18">
+<histogram name="Quota.AgeOfDataInDays" units="days" expires_after="2022-05-18">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -146,8 +146,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.NumberOfEvictedOriginsPerRound" units="units"
-    expires_after="2021-05-18">
+    expires_after="2022-05-18">
   <owner>jarrydg@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>Number of evicted origins per round.</summary>
 </histogram>
 
