@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/password_manager/core/browser/android_affiliation/lookup_affiliation_response_parser.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -69,6 +70,9 @@ void AffiliationFetcherBase::FinalizeRequest(
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->method = "POST";
+
+  variations::AppendVariationsHeaderUnknownSignedIn(
+      query_url, variations::InIncognito::kNo, resource_request.get());
 
   DCHECK(!simple_url_loader_);
   simple_url_loader_ = network::SimpleURLLoader::Create(

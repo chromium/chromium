@@ -17,6 +17,7 @@ include_rules = [
   "+components/ukm",
   "+components/url_formatter",
   "+components/webdata/common",
+  "+components/variations/net",
   "+crypto",
   "+google_apis",
   "+grit",
