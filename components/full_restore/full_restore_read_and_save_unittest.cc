@@ -116,11 +116,11 @@ class FullRestoreSaveHandlerTestApi {
     if (it == session_id_to_app_launch_info.end())
       return;
 
-    // If there is no task created for the session id in 30 seconds, the session
-    // id record is removed. So set the record time as 31 seconds ago, so that
-    // CheckTasksForAppLaunching can remove the session id record to simulate
-    // the task is not created for the session id.
-    it->second.second = it->second.second - base::TimeDelta::FromSeconds(31);
+    // If there is no task created for the session id in 600 seconds, the
+    // session id record is removed. So set the record time as 601 seconds ago,
+    // so that CheckTasksForAppLaunching can remove the session id record to
+    // simulate the task is not created for the session id.
+    it->second.second = it->second.second - base::TimeDelta::FromSeconds(601);
   }
 
   base::RepeatingTimer* GetArcCheckTimer() {
