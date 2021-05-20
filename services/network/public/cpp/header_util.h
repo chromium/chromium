@@ -8,15 +8,11 @@
 #include "base/component_export.h"
 #include "base/strings/string_piece.h"
 
-class GURL;
 namespace net {
 class HttpRequestHeaders;
 }  // namespace net
 
 namespace network {
-namespace mojom {
-class URLResponseHead;
-}  // namespace mojom
 
 // Checks if a single request header is safe to send.
 COMPONENT_EXPORT(NETWORK_CPP)
@@ -28,12 +24,6 @@ bool IsRequestHeaderSafe(const base::StringPiece& key,
 // individually.
 COMPONENT_EXPORT(NETWORK_CPP)
 bool AreRequestHeadersSafe(const net::HttpRequestHeaders& request_headers);
-
-// Checks whether mime type sniffing should be enabled, considering response
-// headers, current mime type and URL scheme.
-COMPONENT_EXPORT(NETWORK_CPP)
-bool ShouldSniffContent(const GURL& url,
-                        const mojom::URLResponseHead& response);
 
 }  // namespace network
 
