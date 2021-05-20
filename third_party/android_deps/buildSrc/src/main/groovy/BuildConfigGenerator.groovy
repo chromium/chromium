@@ -819,7 +819,7 @@ class BuildConfigGenerator extends DefaultTask {
 
     static String makeOwners() {
         // Make it easier to upgrade existing dependencies without full third_party review.
-        return "file://third_party/android_deps/OWNERS"
+        return "file://third_party/android_deps/OWNERS\n"
     }
 
     static String makeReadme(ChromiumDepGraph.DependencyDescription dependency) {
