@@ -89,7 +89,8 @@ public class RunningInChromeTest {
                     notificationManagerProxySupplier, tabContentManagerSupplier,
                     activityTabStartupMetricsTrackerSupplier, compositorViewHolderInitializer,
                     chromeActivityNativeDelegate, modalDialogManagerSupplier,
-                    browserControlsStateProvider, savedInstanceStateSupplier) -> {
+                    browserControlsStateProvider, savedInstanceStateSupplier,
+                    autofillUiBottomInsetSupplier) -> {
                 return new ChromeActivityCommonsModule(activity, bottomSheetController,
                         tabModelSelectorSupplier, browserControlsManager,
                         browserControlsVisibilityManager, browserControlsSizer, fullscreenManager,
@@ -103,7 +104,7 @@ public class RunningInChromeTest {
                         tabContentManagerSupplier, activityTabStartupMetricsTrackerSupplier,
                         compositorViewHolderInitializer, chromeActivityNativeDelegate,
                         modalDialogManagerSupplier, browserControlsStateProvider,
-                        savedInstanceStateSupplier);
+                        savedInstanceStateSupplier, autofillUiBottomInsetSupplier);
             });
 
     @Rule

@@ -80,6 +80,7 @@ public class ChromeActivityCommonsModule {
     private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
+    private final ObservableSupplier<Integer> mmAutofillUiBottomInsetSupplier;
 
     /** See {@link ModuleFactoryOverrides} */
     public interface Factory {
@@ -106,7 +107,8 @@ public class ChromeActivityCommonsModule {
                 ChromeActivityNativeDelegate chromeActivityNativeDelegate,
                 Supplier<ModalDialogManager> modalDialogManagerSupplier,
                 BrowserControlsStateProvider browserControlsStateProvider,
-                Supplier<Bundle> savedInstanceStateSupplier);
+                Supplier<Bundle> savedInstanceStateSupplier,
+                ObservableSupplier<Integer> autofillUiBottomInsetSupplier);
     }
 
     public ChromeActivityCommonsModule(ChromeActivity activity,
@@ -132,7 +134,8 @@ public class ChromeActivityCommonsModule {
             ChromeActivityNativeDelegate chromeActivityNativeDelegate,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
-            Supplier<Bundle> savedInstanceStateSupplier) {
+            Supplier<Bundle> savedInstanceStateSupplier,
+            ObservableSupplier<Integer> autofillUiBottomInsetSupplier) {
         mActivity = activity;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
@@ -160,6 +163,7 @@ public class ChromeActivityCommonsModule {
         mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
+        mmAutofillUiBottomInsetSupplier = autofillUiBottomInsetSupplier;
     }
 
     @Provides
@@ -336,5 +340,10 @@ public class ChromeActivityCommonsModule {
     @Named(SAVED_INSTANCE_SUPPLIER)
     public Supplier<Bundle> savedInstanceStateSupplier() {
         return mSavedInstanceStateSupplier;
+    }
+
+    @Provides
+    public ObservableSupplier<Integer> provideAutofillUiBottomInsetSupplier() {
+        return mmAutofillUiBottomInsetSupplier;
     }
 }

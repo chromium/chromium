@@ -11,6 +11,7 @@ import android.view.ViewStub;
 
 import androidx.annotation.Px;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.components.autofill.AutofillDelegate;
@@ -192,6 +193,12 @@ public interface ManualFillingComponent {
      * @param view A {@link View} that is used to find the window root.
      */
     boolean isFillingViewShown(View view);
+
+    /**
+     * The filling UI extends or
+     * @return A {@link ObservableSupplier<Integer>} providing an inset to shrink the page by.
+     */
+    ObservableSupplier<Integer> getBottomInsetSupplier();
 
     /**
      * @param observer An {@link Observer} to add.

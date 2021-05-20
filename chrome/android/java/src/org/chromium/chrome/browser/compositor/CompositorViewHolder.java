@@ -40,6 +40,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.compat.ApiHelperForO;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -169,6 +170,7 @@ public class CompositorViewHolder extends FrameLayout
     private @Nullable ControlContainer mControlContainer;
 
     private InsetObserverView mInsetObserverView;
+    private ObservableSupplier<Integer> mAutofillUiBottomInsetSupplier;
     private boolean mShowingFullscreen;
     private Runnable mSystemUiFullscreenResizeRunnable;
 
@@ -200,7 +202,7 @@ public class CompositorViewHolder extends FrameLayout
     private boolean mInGesture;
     private boolean mContentViewScrolling;
     private ApplicationViewportInsetSupplier mApplicationBottomInsetSupplier;
-    private Callback<Integer> mViewportInsetObserver;
+    private Callback<Integer> mBottomInsetObserver = (inset) -> updateViewportSize();
 
     /**
      * Tracks whether geometrychange event is fired for the active tab when the keyboard
@@ -526,6 +528,17 @@ public class CompositorViewHolder extends FrameLayout
         }
     }
 
+    /**
+     * A supplier providing an inset that resizes the page in addition or instead of the keyboard.
+     * This is inset is used by autofill UI as addition to bottom controls.
+     * @param autofillUiBottomInsetSupplier A {@link ObservableSupplier<Integer>}.
+     */
+    public void setAutofillUiBottomInsetSupplier(
+            ObservableSupplier<Integer> autofillUiBottomInsetSupplier) {
+        mAutofillUiBottomInsetSupplier = autofillUiBottomInsetSupplier;
+        mAutofillUiBottomInsetSupplier.addObserver(mBottomInsetObserver);
+    }
+
     @Override
     public void onInsetChanged(int left, int top, int right, int bottom) {
         if (mShowingFullscreen) handleWindowInsetChanged();
@@ -551,8 +564,11 @@ public class CompositorViewHolder extends FrameLayout
      */
     public void shutDown() {
         setTab(null);
-        if (mApplicationBottomInsetSupplier != null && mViewportInsetObserver != null) {
-            mApplicationBottomInsetSupplier.removeObserver(mViewportInsetObserver);
+        if (mApplicationBottomInsetSupplier != null && mBottomInsetObserver != null) {
+            mApplicationBottomInsetSupplier.removeObserver(mBottomInsetObserver);
+        }
+        if (mAutofillUiBottomInsetSupplier != null && mBottomInsetObserver != null) {
+            mAutofillUiBottomInsetSupplier.removeObserver(mBottomInsetObserver);
         }
 
         if (mLayerTitleCache != null) mLayerTitleCache.shutDown();
@@ -588,8 +604,7 @@ public class CompositorViewHolder extends FrameLayout
         }
 
         mApplicationBottomInsetSupplier = windowAndroid.getApplicationBottomInsetProvider();
-        mViewportInsetObserver = (inset) -> updateViewportSize();
-        mApplicationBottomInsetSupplier.addObserver(mViewportInsetObserver);
+        mApplicationBottomInsetSupplier.addObserver(mBottomInsetObserver);
     }
 
     /**
@@ -793,10 +808,12 @@ public class CompositorViewHolder extends FrameLayout
         // The view size takes into account of the browser controls whose height
         // should be subtracted from the view if they are visible, therefore shrink
         // Blink-side view size.
-        final int totalMinHeight = mBrowserControlsManager != null
-                ? mBrowserControlsManager.getTopControlsMinHeight()
-                        + mBrowserControlsManager.getBottomControlsMinHeight()
-                : 0;
+        // TODO(https://crbug.com/1211066): Centralize the logic for calculating bottom insets.
+        final int totalMinHeight = getKeyboardBottomInsetForControlsPixels()
+                + (mBrowserControlsManager != null
+                                ? mBrowserControlsManager.getTopControlsMinHeight()
+                                        + mBrowserControlsManager.getBottomControlsMinHeight()
+                                : 0);
         int controlsHeight = mControlsResizeView
                 ? getTopControlsHeightPixels() + getBottomControlsHeightPixels()
                 : totalMinHeight;
@@ -1110,8 +1127,8 @@ public class CompositorViewHolder extends FrameLayout
         if (mBrowserControlsManager != null) {
             // All of these values are in pixels.
             outRect.top += mBrowserControlsManager.getTopControlsHeight();
-            outRect.bottom -= mBrowserControlsManager.getBottomControlsHeight();
         }
+        outRect.bottom -= getBottomControlsHeightPixels();
     }
 
     @Override
@@ -1256,8 +1273,22 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public int getBottomControlsHeightPixels() {
-        return mBrowserControlsManager != null ? mBrowserControlsManager.getBottomControlsHeight()
-                                               : 0;
+        return getKeyboardBottomInsetForControlsPixels()
+                + (mBrowserControlsManager != null
+                                ? mBrowserControlsManager.getBottomControlsHeight()
+                                : 0);
+    }
+
+    /**
+     * If there is keyboard extension or replacement available, this method returns the inset that
+     * resizes the page in addition to the bottom controls height.
+     * @return The inset height in pixels.
+     */
+    private int getKeyboardBottomInsetForControlsPixels() {
+        return mAutofillUiBottomInsetSupplier != null
+                        && mAutofillUiBottomInsetSupplier.get() != null
+                ? mAutofillUiBottomInsetSupplier.get()
+                : 0;
     }
 
     /**
