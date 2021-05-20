@@ -407,7 +407,7 @@ TEST_F(
 
         key.performAction('select');
 
-        if (!input.automationNode.value !== 'q') {
+        if (input.automationNode.value !== 'q') {
           // Wait for the potential value change.
           await new Promise(resolve => {
             input.automationNode.addEventListener(
