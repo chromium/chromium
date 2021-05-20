@@ -1,0 +1,16 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+
+// This interface is used to query the DriveIntegrationService for the local
+// Google Drive mount associated with the current Ash profile.
+[Stable, Uuid="60fd345d-0f72-4941-a035-910b93c141fa"]
+interface DriveIntegrationService {
+  // Returns the path of the mount point for Google Drive. Returns an empty file
+  // path if the Google Drive mount is not available.
+  GetMountPointPath@0() => (mojo_base.mojom.FilePath drive_path);
+};

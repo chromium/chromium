@@ -1104,6 +1104,8 @@ source_set("chromeos") {
     "../ash/crosapi/device_attributes_ash.h",
     "../ash/crosapi/download_controller_ash.cc",
     "../ash/crosapi/download_controller_ash.h",
+    "../ash/crosapi/drive_integration_service_ash.cc",
+    "../ash/crosapi/drive_integration_service_ash.h",
     "../ash/crosapi/environment_provider.cc",
     "../ash/crosapi/environment_provider.h",
     "../ash/crosapi/fake_browser_manager.cc",

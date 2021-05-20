@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/crosapi/content_protection_ash.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/download_controller_ash.h"
+#include "chrome/browser/ash/crosapi/drive_integration_service_ash.h"
 #include "chrome/browser/ash/crosapi/feedback_ash.h"
 #include "chrome/browser/ash/crosapi/file_manager_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
@@ -46,6 +47,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
+#include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
@@ -91,6 +93,8 @@ CrosapiAsh::CrosapiAsh()
       content_protection_ash_(std::make_unique<ContentProtectionAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       download_controller_ash_(std::make_unique<DownloadControllerAsh>()),
+      drive_integration_service_ash_(
+          std::make_unique<DriveIntegrationServiceAsh>()),
       feedback_ash_(std::make_unique<FeedbackAsh>()),
       file_manager_ash_(std::make_unique<FileManagerAsh>()),
       idle_service_ash_(std::make_unique<IdleServiceAsh>()),
@@ -316,6 +320,11 @@ void CrosapiAsh::BindAppPublisher(
   apps::WebAppsCrosapi* web_apps =
       apps::WebAppsCrosapiFactory::GetForProfile(profile);
   web_apps->RegisterWebAppsCrosapiHost(std::move(receiver));
+}
+
+void CrosapiAsh::BindDriveIntegrationService(
+    mojo::PendingReceiver<crosapi::mojom::DriveIntegrationService> receiver) {
+  drive_integration_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::OnBrowserStartup(mojom::BrowserInfoPtr browser_info) {
