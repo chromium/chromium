@@ -332,9 +332,6 @@ class ECKEncryptedMediaTest : public EncryptedMediaTestBase,
   // e.g. kExternalClearKeyFileIOTestKeySystem is used to test file IO.
   void TestNonPlaybackCases(const std::string& key_system,
                             const std::string& expected_title) {
-    // Make sure the Clear Key CDM is properly registered in CdmRegistry.
-    EXPECT_TRUE(IsLibraryCdmRegistered(media::kClearKeyCdmGuid));
-
     // Since we do not test playback, arbitrarily choose a test file and source
     // type.
     RunEncryptedMediaTest(kDefaultEmePlayer, "bear-a_enc-a.webm", key_system,
@@ -369,9 +366,6 @@ class ECKEncryptedMediaOutputProtectionTest
       public testing::WithParamInterface<const char*> {
  public:
   void TestOutputProtection(bool create_recorder_before_media_keys) {
-    // Make sure the Clear Key CDM is properly registered in CdmRegistry.
-    EXPECT_TRUE(IsLibraryCdmRegistered(media::kClearKeyCdmGuid));
-
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // QueryOutputProtectionStatus() is known to fail on Linux Chrome OS builds.
     std::string expected_title = kEmeUnitTestFailure;
@@ -405,9 +399,6 @@ class ECKIncognitoEncryptedMediaTest : public EncryptedMediaTestBase {
   // e.g. kExternalClearKeyFileIOTestKeySystem is used to test file IO.
   void TestNonPlaybackCases(const std::string& key_system,
                             const std::string& expected_title) {
-    // Make sure the Clear Key CDM is properly registered in CdmRegistry.
-    EXPECT_TRUE(IsLibraryCdmRegistered(media::kClearKeyCdmGuid));
-
     // Since we do not test playback, arbitrarily choose a test file and source
     // type.
     RunEncryptedMediaTest(kDefaultEmePlayer, "bear-a_enc-a.webm", key_system,

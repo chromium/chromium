@@ -56,11 +56,6 @@ void CdmRegistryImpl::RegisterCdm(const CdmInfo& info) {
   cdms_.push_back(info);
 }
 
-const std::vector<CdmInfo>& CdmRegistryImpl::GetAllRegisteredCdms() {
-  base::AutoLock auto_lock(lock_);
-  return cdms_;
-}
-
 std::unique_ptr<CdmInfo> CdmRegistryImpl::GetCdmInfo(
     const std::string& key_system,
     CdmInfo::Robustness robustness) {
@@ -103,6 +98,11 @@ bool CdmRegistryImpl::FinalizeCdmCapability(
 
   itr->capability = cdm_capability.value();
   return true;
+}
+
+const std::vector<CdmInfo>& CdmRegistryImpl::GetAllRegisteredCdmsForTesting() {
+  base::AutoLock auto_lock(lock_);
+  return cdms_;
 }
 
 void CdmRegistryImpl::ResetForTesting() {

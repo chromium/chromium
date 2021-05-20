@@ -104,7 +104,7 @@ class CdmRegistryImplTest : public testing::Test {
   }
 
   bool IsRegistered(const std::string& name, const std::string& version) {
-    for (const auto& cdm : cdm_registry_.GetAllRegisteredCdms()) {
+    for (const auto& cdm : cdm_registry_.GetAllRegisteredCdmsForTesting()) {
       if (cdm.name == name && cdm.version.GetString() == version)
         return true;
     }
@@ -113,7 +113,7 @@ class CdmRegistryImplTest : public testing::Test {
 
   std::vector<std::string> GetVersions(const base::Token& guid) {
     std::vector<std::string> versions;
-    for (const auto& cdm : cdm_registry_.GetAllRegisteredCdms()) {
+    for (const auto& cdm : cdm_registry_.GetAllRegisteredCdmsForTesting()) {
       if (cdm.guid == guid)
         versions.push_back(cdm.version.GetString());
     }
@@ -127,7 +127,7 @@ class CdmRegistryImplTest : public testing::Test {
 TEST_F(CdmRegistryImplTest, Register) {
   Register(GetTestCdmInfo());
 
-  auto cdms = cdm_registry_.GetAllRegisteredCdms();
+  auto cdms = cdm_registry_.GetAllRegisteredCdmsForTesting();
   ASSERT_EQ(1u, cdms.size());
   CdmInfo cdm = cdms[0];
   EXPECT_EQ(kTestCdmName, cdm.name);
@@ -194,7 +194,7 @@ TEST_F(CdmRegistryImplTest, SupportedEncryptionSchemes) {
                                              EncryptionScheme::kCbcs};
   Register(cdm_info);
 
-  std::vector<CdmInfo> cdms = cdm_registry_.GetAllRegisteredCdms();
+  std::vector<CdmInfo> cdms = cdm_registry_.GetAllRegisteredCdmsForTesting();
   ASSERT_EQ(1u, cdms.size());
   const CdmInfo& cdm = cdms[0];
   EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc, EncryptionScheme::kCbcs);

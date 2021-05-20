@@ -26,7 +26,6 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
   // CdmRegistry implementation.
   void Init() override;
   void RegisterCdm(const CdmInfo& info) override;
-  const std::vector<CdmInfo>& GetAllRegisteredCdms() override;
 
   // Returns CdmInfo registered for `key_system` and `robustness`. Returns null
   // if no CdmInfo is registered, or if the CdmInfo registered is invalid.
@@ -43,6 +42,8 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
       const std::string& key_system,
       CdmInfo::Robustness robustness,
       absl::optional<media::CdmCapability> cdm_capability);
+
+  const std::vector<CdmInfo>& GetAllRegisteredCdmsForTesting();
 
  private:
   friend class CdmRegistryImplTest;
