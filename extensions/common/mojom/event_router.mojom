@@ -28,4 +28,19 @@ interface EventRouter {
                               string event_name,
                               int64 service_worker_version_id,
                               int32 worker_thread_id);
+
+  // Notifies the browser that the given |extension_id| or |listener_url|
+  // removed a listener to an event. If it has |extension_id| in |param|, the
+  // listener is removed for the extension. Otherwise, it has a |listener_url|
+  // in |param| and the listener is removed for the URL.
+  RemoveListenerForMainThread(EventListenerParam param,
+                              string event_name);
+
+  // Notifies the browser that the given extension removed a listener from an
+  // event in a service worker.
+  RemoveListenerForServiceWorker(string extension_id,
+                                 url.mojom.Url worker_scope_url,
+                                 string event_name,
+                                 int64 service_worker_version_id,
+                                 int32 worker_thread_id);
 };

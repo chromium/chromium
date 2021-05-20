@@ -154,6 +154,15 @@ class EventRouter : public KeyedService,
                                    int64_t service_worker_version_id,
                                    int32_t worker_thread_id) override;
 
+  void RemoveListenerForMainThread(mojom::EventListenerParamPtr param,
+                                   const std::string& name) override;
+
+  void RemoveListenerForServiceWorker(const std::string& extension_id,
+                                      const GURL& worker_scope_url,
+                                      const std::string& name,
+                                      int64_t service_worker_version_id,
+                                      int32_t worker_thread_id) override;
+
   // Removes an extension as an event listener for |event_name|.
   //
   // Note that multiple extensions can share a process due to process

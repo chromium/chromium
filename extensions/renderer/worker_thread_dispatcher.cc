@@ -55,6 +55,19 @@ void AddEventListenerOnIO(const std::string& extension_id,
       worker_thread_id);
 }
 
+// Calls mojom::EventRouter::RemoveListenerForServiceWorker(). It should be
+// called on the IO thread.
+void RemoveEventListenerOnIO(const std::string& extension_id,
+                             const GURL& scope,
+                             const std::string& event_name,
+                             int64_t service_worker_version_id,
+                             int worker_thread_id) {
+  auto* dispatcher = WorkerThreadDispatcher::Get();
+  dispatcher->GetEventRouterOnIO()->RemoveListenerForServiceWorker(
+      extension_id, scope, event_name, service_worker_version_id,
+      worker_thread_id);
+}
+
 }  // namespace
 
 WorkerThreadDispatcher::WorkerThreadDispatcher() {}
@@ -163,6 +176,18 @@ void WorkerThreadDispatcher::SendAddEventListener(
   io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&AddEventListenerOnIO, extension_id, scope, event_name,
+                     service_worker_version_id, worker_thread_id));
+}
+
+void WorkerThreadDispatcher::SendRemoveEventListener(
+    const std::string& extension_id,
+    const GURL& scope,
+    const std::string& event_name,
+    int64_t service_worker_version_id,
+    int worker_thread_id) {
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RemoveEventListenerOnIO, extension_id, scope, event_name,
                      service_worker_version_id, worker_thread_id));
 }
 

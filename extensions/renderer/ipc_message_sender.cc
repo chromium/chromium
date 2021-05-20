@@ -77,9 +77,15 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    render_thread_->Send(new ExtensionHostMsg_RemoveListener(
-        context->GetExtensionID(), context->url(), event_name,
-        blink::mojom::kInvalidServiceWorkerVersionId, kMainThreadId));
+    if (!context->GetExtensionID().empty()) {
+      GetEventRouter()->RemoveListenerForMainThread(
+          mojom::EventListenerParam::NewExtensionId(context->GetExtensionID()),
+          event_name);
+    } else {
+      GetEventRouter()->RemoveListenerForMainThread(
+          mojom::EventListenerParam::NewListenerUrl(context->url()),
+          event_name);
+    }
   }
 
   void SendAddUnfilteredLazyEventListenerIPC(
@@ -274,10 +280,10 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
               context->service_worker_version_id());
 
-    dispatcher_->Send(new ExtensionHostMsg_RemoveListener(
+    dispatcher_->SendRemoveEventListener(
         context->GetExtensionID(), context->service_worker_scope(), event_name,
         context->service_worker_version_id(),
-        content::WorkerThread::GetCurrentId()));
+        content::WorkerThread::GetCurrentId());
   }
 
   void SendAddUnfilteredLazyEventListenerIPC(
