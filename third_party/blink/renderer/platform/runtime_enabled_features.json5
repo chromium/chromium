@@ -1969,7 +1969,7 @@
     // https://crbug.com/1190167
     {
       name: "SpeculationRulesPrefetchProxy",
-      origin_trial_feature_name: "SpeculationRulesPrefetchProxy",
+      origin_trial_feature_name: "SpeculationRulesPrefetch",
     },
     {
       name: "SrcsetMaxDensity",

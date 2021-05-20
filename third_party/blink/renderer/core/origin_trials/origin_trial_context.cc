@@ -456,7 +456,7 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
       !base::FeatureList::IsEnabled(features::kInterestCohortAPIOriginTrial)) {
     return false;
   }
-  if (trial_name == "SpeculationRulesPrefetchProxy" &&
+  if (trial_name == "SpeculationRulesPrefetch" &&
       !base::FeatureList::IsEnabled(features::kSpeculationRulesPrefetchProxy)) {
     return false;
   }
