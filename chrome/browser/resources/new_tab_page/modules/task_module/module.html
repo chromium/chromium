@@ -184,6 +184,18 @@
     margin-inline-end: 12px;
     margin-inline-start: 8px;
   }
+
+  ntp-info-dialog a {
+    color: var(--cr-link-color);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  ntp-info-dialog a:focus {
+    border-radius: 2px;
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
+  }
 </style>
 <ntp-module-header
     dismiss-text="[[i18n('modulesDismissButtonText', dismissName_)]]"
