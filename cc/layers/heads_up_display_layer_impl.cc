@@ -642,6 +642,13 @@ void HeadsUpDisplayLayerImpl::DrawHudContents(PaintCanvas* canvas) {
                              std::max<SkScalar>(area.width(), 150));
   }
 
+  // For the web vital and smoothness HUD on the top right corner, if the width
+  // of the screen is smaller than the default width of the HUD, scale it down.
+  if (bounds().width() < metrics_sizes.kWidth) {
+    double scale_to_bounds = static_cast<double>(bounds().width()) /
+                             static_cast<double>(metrics_sizes.kWidth);
+    canvas->scale(scale_to_bounds, scale_to_bounds);
+  }
   SkRect metrics_area = SkRect::MakeXYWH(
       std::max<SkScalar>(0, bounds().width() - metrics_sizes.kWidth), 0,
       metrics_sizes.kWidth, 0);
