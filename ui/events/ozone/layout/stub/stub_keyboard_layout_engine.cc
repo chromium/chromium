@@ -48,4 +48,9 @@ bool StubKeyboardLayoutEngine::Lookup(DomCode dom_code,
   return DomCodeToUsLayoutDomKey(dom_code, flags, out_dom_key, out_key_code);
 }
 
+void StubKeyboardLayoutEngine::SetInitCallbackForTest(
+    base::OnceClosure closure) {
+  std::move(closure).Run();
+}
+
 }  // namespace ui

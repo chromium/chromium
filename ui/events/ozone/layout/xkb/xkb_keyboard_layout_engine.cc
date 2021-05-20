@@ -808,6 +808,16 @@ bool XkbKeyboardLayoutEngine::Lookup(DomCode dom_code,
   return true;
 }
 
+void XkbKeyboardLayoutEngine::SetInitCallbackForTest(
+    base::OnceClosure closure) {
+  if (xkb_state_) {
+    std::move(closure).Run();
+    return;
+  }
+
+  keymap_init_closure_for_test_ = std::move(closure);
+}
+
 bool XkbKeyboardLayoutEngine::SetCurrentLayoutFromBuffer(
     const char* keymap_string,
     size_t size) {
@@ -885,6 +895,9 @@ void XkbKeyboardLayoutEngine::SetKeymap(xkb_keymap* keymap) {
 #endif
   shift_mod_mask_ = EventFlagsToXkbFlags(ui::EF_SHIFT_DOWN);
   altgr_mod_mask_ = EventFlagsToXkbFlags(ui::EF_ALTGR_DOWN);
+
+  if (keymap_init_closure_for_test_)
+    std::move(keymap_init_closure_for_test_).Run();
 }
 
 xkb_mod_mask_t XkbKeyboardLayoutEngine::EventFlagsToXkbFlags(

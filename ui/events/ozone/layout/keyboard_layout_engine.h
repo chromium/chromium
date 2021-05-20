@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -70,6 +71,11 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) KeyboardLayoutEngine {
                       int event_flags,
                       DomKey* dom_key,
                       KeyboardCode* key_code) const = 0;
+
+  // Tests may need to wait for the keyboard layout to be fully initialised.
+  // The implementation should run |closure| when it is ready to handle calls to
+  // Lookup().
+  virtual void SetInitCallbackForTest(base::OnceClosure closure) = 0;
 };
 
 }  // namespace ui

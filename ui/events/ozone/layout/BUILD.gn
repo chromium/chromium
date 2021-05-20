@@ -75,3 +75,17 @@ source_set("unittests") {
     "//ui/events:dom_keycode_converter",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "keyboard_layout_engine_test_utils.cc",
+    "keyboard_layout_engine_test_utils.h", ]
+
+  deps = [
+    ":layout",
+    "//base",
+    "//ui/base:features",
+  ]
+}

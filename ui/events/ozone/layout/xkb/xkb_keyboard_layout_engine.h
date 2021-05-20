@@ -49,6 +49,8 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
               DomKey* dom_key,
               KeyboardCode* key_code) const override;
 
+  void SetInitCallbackForTest(base::OnceClosure closure) override;
+
   int UpdateModifiers(uint32_t depressed,
                       uint32_t latched,
                       uint32_t locked,
@@ -141,6 +143,8 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
   std::string current_layout_name_;
 
   xkb_layout_index_t layout_index_ = 0;
+
+  base::OnceClosure keymap_init_closure_for_test_;
 
   // Support weak pointers for attach & detach callbacks.
   base::WeakPtrFactory<XkbKeyboardLayoutEngine> weak_ptr_factory_;
