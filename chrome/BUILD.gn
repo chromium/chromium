@@ -1553,8 +1553,10 @@ if (!is_android) {
       files_to_hash = [
         "resources.pak",
         "chrome_100_percent.pak",
-        "chrome_200_percent.pak",
       ]
+      if (enable_hidpi) {
+        files_to_hash += [ "chrome_200_percent.pak" ]
+      }
     }
   }
 }
