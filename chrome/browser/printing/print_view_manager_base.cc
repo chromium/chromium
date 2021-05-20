@@ -154,6 +154,7 @@ void GetDefaultPrintSettingsReply(
     mojom::PrintManagerHost::GetDefaultPrintSettingsCallback callback,
     mojom::PrintParamsPtr params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(params);
   std::move(callback).Run(std::move(params));
 }
 
@@ -204,6 +205,12 @@ void GetDefaultPrintSettingsOnIO(
                      std::move(printer_query), std::move(callback)));
 }
 
+mojom::PrintPagesParamsPtr CreateEmptyPrintPagesParamsPtr() {
+  auto params = mojom::PrintPagesParams::New();
+  params->params = mojom::PrintParams::New();
+  return params;
+}
+
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 // Runs |callback| with |params| to reply to
 // mojom::PrintManagerHost::UpdatePrintSettings.
@@ -212,11 +219,7 @@ void UpdatePrintSettingsReply(
     mojom::PrintPagesParamsPtr params,
     bool canceled) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!params) {
-    // Fills |params| with initial values.
-    params = mojom::PrintPagesParams::New();
-    params->params = mojom::PrintParams::New();
-  }
+  DCHECK(params);
   std::move(callback).Run(std::move(params), canceled);
 }
 
@@ -254,8 +257,7 @@ void UpdatePrintSettingsReplyOnIO(
     int routing_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(printer_query);
-  auto params = mojom::PrintPagesParams::New();
-  params->params = mojom::PrintParams::New();
+  mojom::PrintPagesParamsPtr params = CreateEmptyPrintPagesParamsPtr();
   if (printer_query->last_status() == PrintingContext::OK) {
     RenderParamsFromPrintSettings(printer_query->settings(),
                                   params->params.get());
@@ -326,8 +328,7 @@ void ScriptedPrintReplyOnIO(
     mojom::PrintManagerHost::ScriptedPrintCallback callback,
     int process_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  auto params = mojom::PrintPagesParams::New();
-  params->params = mojom::PrintParams::New();
+  mojom::PrintPagesParamsPtr params = CreateEmptyPrintPagesParamsPtr();
   if (printer_query->last_status() == PrintingContext::OK &&
       printer_query->settings().dpi()) {
     RenderParamsFromPrintSettings(printer_query->settings(),
@@ -637,8 +638,8 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
     GetDefaultPrintSettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!printing_enabled_.GetValue()) {
-    auto params = mojom::PrintParams::New();
-    GetDefaultPrintSettingsReply(std::move(callback), std::move(params));
+    GetDefaultPrintSettingsReply(std::move(callback),
+                                 mojom::PrintParams::New());
     return;
   }
 
@@ -657,12 +658,14 @@ void PrintViewManagerBase::UpdatePrintSettings(
     UpdatePrintSettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!printing_enabled_.GetValue()) {
-    UpdatePrintSettingsReply(std::move(callback), nullptr, false);
+    UpdatePrintSettingsReply(std::move(callback),
+                             CreateEmptyPrintPagesParamsPtr(), false);
     return;
   }
 
   if (!job_settings.FindIntKey(kSettingPrinterType)) {
-    UpdatePrintSettingsReply(std::move(callback), nullptr, false);
+    UpdatePrintSettingsReply(std::move(callback),
+                             CreateEmptyPrintPagesParamsPtr(), false);
     return;
   }
 
