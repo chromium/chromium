@@ -63,8 +63,6 @@ static void RecordAutoplaySourceMetrics(HTMLMediaElement* element,
                                         AutoplaySource source) {
   if (IsA<HTMLVideoElement>(element)) {
     base::UmaHistogramEnumeration("Media.Video.Autoplay", source);
-    if (element->muted())
-      base::UmaHistogramEnumeration("Media.Video.Autoplay.Muted", source);
     return;
   }
   base::UmaHistogramEnumeration("Media.Audio.Autoplay", source);

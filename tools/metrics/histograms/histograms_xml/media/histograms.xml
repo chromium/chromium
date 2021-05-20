@@ -4013,6 +4013,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.Video.Autoplay.Muted" enum="AutoplaySource"
     expires_after="2021-06-01">
+  <obsolete>
+    Removed in May 2021.
+  </obsolete>
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>Records the autoplay source of muted videos.</summary>
