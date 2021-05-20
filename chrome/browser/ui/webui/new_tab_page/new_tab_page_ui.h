@@ -41,6 +41,7 @@ class FooHandler;
 class GURL;
 class InstantService;
 class NewTabPageHandler;
+class PrefRegistrySimple;
 class Profile;
 class PromoBrowserCommandHandler;
 class RealboxHandler;
@@ -59,6 +60,7 @@ class NewTabPageUI
   ~NewTabPageUI() override;
 
   static bool IsNewTabPageOrigin(const GURL& url);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.

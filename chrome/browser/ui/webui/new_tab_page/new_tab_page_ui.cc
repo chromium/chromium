@@ -7,7 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,6 +38,7 @@
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
@@ -60,6 +63,8 @@ using content::BrowserContext;
 using content::WebContents;
 
 namespace {
+
+constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";
 
 content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
     Profile* profile,
@@ -336,6 +341,11 @@ bool NewTabPageUI::IsNewTabPageOrigin(const GURL& url) {
   return url.GetOrigin() == GURL(chrome::kChromeUINewTabPageURL).GetOrigin();
 }
 
+// static
+void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(kPrevNavigationTimePrefName, base::Time());
+}
+
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<new_tab_page::mojom::PageHandlerFactory>
         pending_receiver) {
@@ -427,12 +437,23 @@ void NewTabPageUI::MostVisitedInfoChanged(const InstantMostVisitedInfo& info) {}
 
 void NewTabPageUI::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInMainFrame()) {
+  if (navigation_handle->IsInMainFrame() &&
+      navigation_handle->GetURL() == GURL(chrome::kChromeUINewTabPageURL)) {
     navigation_start_time_ = base::Time::Now();
     std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
     update->SetDouble("navigationStartTime", navigation_start_time_.ToJsTime());
     content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                      std::move(update));
+    auto prev_navigation_time =
+        profile_->GetPrefs()->GetTime(kPrevNavigationTimePrefName);
+    if (!prev_navigation_time.is_null()) {
+      base::UmaHistogramCustomTimes(
+          "NewTabPage.TimeSinceLastNTP",
+          navigation_start_time_ - prev_navigation_time,
+          base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(1), 100);
+    }
+    profile_->GetPrefs()->SetTime(kPrevNavigationTimePrefName,
+                                  navigation_start_time_);
   }
 }
 

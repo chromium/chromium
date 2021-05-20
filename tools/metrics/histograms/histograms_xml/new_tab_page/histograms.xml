@@ -1806,6 +1806,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.TimeSinceLastNTP" units="ms"
+    expires_after="2022-01-01">
+  <owner>tiborg@chromium.org</owner>
+  <owner>yyushkina@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logged when a 1P NTP starts loading. Logs the time since the last time a 1P
+    NTP in the same profile started loading. Note the following: (a) The first
+    NTP load ever is not counted. (b) This value is computed using a client-side
+    clock and stored in prefs. As such, (i) it works across sessions and (ii) it
+    can show strange values if a user changes their clock. (c) Even if the user
+    has Google as their default search engine, Incognito and Guest mode NTPs are
+    not considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.TimeSpent" units="ms" expires_after="2021-11-07">
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
