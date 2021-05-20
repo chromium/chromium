@@ -2482,11 +2482,11 @@ void View::AddChildViewAtImpl(View* view, int index) {
   }
 
   // Remove |view| from its parent, if any.
-  ui::NativeTheme* old_theme = nullptr;
   Widget* old_widget = nullptr;
+  ui::NativeTheme* old_theme = nullptr;
   if (parent) {
-    old_theme = view->GetNativeTheme();
     old_widget = view->GetWidget();
+    old_theme = old_widget ? view->GetNativeTheme() : nullptr;
     parent->DoRemoveChildView(view, true, false, this);
   }
 
