@@ -1252,6 +1252,7 @@ class AXImageAnnotatorTest : public RenderAccessibilityImplTest {
     GetRenderAccessibilityImpl()->tree_source_->RemoveImageAnnotator();
     GetRenderAccessibilityImpl()->tree_source_->AddImageAnnotator(
         GetRenderAccessibilityImpl()->ax_image_annotator_.get());
+    BlinkAXTreeSource::IgnoreProtocolChecksForTesting();
   }
 
   void TearDown() override {

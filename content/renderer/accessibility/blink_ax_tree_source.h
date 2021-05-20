@@ -126,6 +126,10 @@ class CONTENT_EXPORT BlinkAXTreeSource
 
   blink::WebDocument GetMainDocument() const;
 
+  // Ignore code that limits based on the protocol (like https, file, etc.)
+  // to enable tests to run.
+  static void IgnoreProtocolChecksForTesting();
+
  private:
   const blink::WebDocument& document() const {
     DCHECK(frozen_);

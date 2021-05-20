@@ -325,6 +325,20 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, ImagesInLinks) {
                            "image Appears to say: green.png Annotation"));
 }
 
+IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, ImagesInIframe) {
+  FakeAnnotator::SetReturnOcrResults(true);
+  ui_test_utils::NavigateToURL(
+      browser(),
+      https_server_.GetURL("/accessibility/image_annotation_iframe.html"));
+
+  // Block until the accessibility tree has the annotated image from the
+  // iframe in it. The test times out if it never appears.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WaitForAccessibilityTreeToContainNodeWithName(
+      web_contents, "Appears to say: green.png Annotation");
+}
+
 IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, AugmentImageNames) {
   FakeAnnotator::SetReturnLabelResults(true);
   FakeAnnotator::AddCustomLabelResultMapping("frog.jpg", "Tadpole");
