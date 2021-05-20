@@ -111,12 +111,15 @@ class MetaBuildWrapper(object):
       self.args.expectations_dir = os.path.join(
           os.path.dirname(self.args.config_file), 'mb_config_expectations')
 
+    banned_from_rts_map = json.loads(
+        self.ReadFile(
+            self.PathJoin(self.chromium_src_dir, 'tools', 'mb',
+                          'rts_banned_suites.json')))
+    self.banned_from_rts.update(banned_from_rts_map.get('*', set()))
+
     if getattr(self.args, 'builder', None):
-      banned_from_rts_map = json.loads(
-          self.ReadFile(
-              self.PathJoin(self.chromium_src_dir, 'tools', 'mb',
-                            'rts_banned_suites.json')))
-      self.banned_from_rts = banned_from_rts_map.get(self.args.builder, set())
+      self.banned_from_rts.update(
+          banned_from_rts_map.get(self.args.builder, set()))
 
   def Main(self, args):
     self.ParseArgs(args)

@@ -1,66 +1,17 @@
 {
-  "linux-rel-rts": [
+
+  "*": [
     "xr_browser_tests",
-    "hardware_accelerated_feature_tests",
+    "telemetry_gpu_integration_test",
+    "metrics_python_tests",
+    "mojo_python_unittests",
+    "blink_python_tests",
+    "grit_python_unittests",
     "telemetry_perf_unittests",
-    "pixel_skia_gold_passthrough_test",
-    "gl_renderer_screenshot_sync_tests",
-    "mojo_python_unittests",
-    "blink_python_tests",
-    "info_collection_tests",
-    "telemetry_gpu_unittests",
-    "depth_capture_tests",
-    "metrics_python_tests",
-    "grit_python_unittests",
-    "webgl_conformance_tests",
-    "gpu_process_launch_tests",
-    "maps_pixel_passthrough_test",
-    "trace_test",
-    "context_lost_passthrough_tests",
-    "screenshot_sync_passthrough_tests"
-  ],
-  "win10_chromium_x64_rel_ng_rts": [
-    "trace_test",
-    "webgl_conformance_d3d11_passthrough_tests",
-    "xr_browser_tests",
-    "info_collection_tests",
-    "maps_pixel_passthrough_test",
-    "pixel_skia_gold_passthrough_test",
-    "metrics_python_tests",
-    "screenshot_sync_passthrough_tests",
-    "blink_python_tests",
-    "gpu_process_launch_tests",
-    "mojo_python_unittests",
-    "depth_capture_tests",
-    "grit_python_unittests",
-    "hardware_accelerated_feature_tests",
-    "telemetry_gpu_unittests",
-    "telemetry_desktop_minidump_unittests",
-    "context_lost_passthrough_tests"
+    "maps_tests",
+    "telemetry_gpu_unittests"
   ],
   "fuchsia_x64_rts": [
-    "maps_tests",
-    "hardware_accelerated_feature_tests",
-    "webgl_conformance_tests",
-    "trace_test",
-    "blink_web_tests",
-    "gpu_process_launch_tests",
-    "context_lost_validating_tests"
-  ],
-  "mac-rel-rts": [
-    "trace_test",
-    "maps_pixel_validating_test",
-    "screenshot_sync_validating_tests",
-    "hardware_accelerated_feature_tests",
-    "webgl_conformance_tests",
-    "pixel_skia_gold_validating_test",
-    "info_collection_tests",
-    "context_lost_validating_tests",
-    "depth_capture_tests",
-    "gpu_process_launch_tests"
-  ],
-  "chromeos-amd64-generic-rel-rts": [
-    "telemetry_perf_unittests",
-    "webgl_conformance_tests"
+    "blink_web_tests"
   ]
 }
