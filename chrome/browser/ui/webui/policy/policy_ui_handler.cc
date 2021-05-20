@@ -957,14 +957,25 @@ void PolicyUIHandler::SendStatus() {
   updater_status_provider_->GetStatus(updater_status.get());
 
   base::DictionaryValue status;
-  if (!device_status->DictEmpty())
+  if (!device_status->DictEmpty()) {
+    device_status->SetString("boxLegendKey", "statusDevice");
     status.Set("device", std::move(device_status));
-  if (!machine_status->DictEmpty())
+  }
+
+  if (!machine_status->DictEmpty()) {
+    machine_status->SetString("boxLegendKey", "statusMachine");
     status.Set("machine", std::move(machine_status));
-  if (!user_status->DictEmpty())
+  }
+
+  if (!user_status->DictEmpty()) {
+    user_status->SetString("boxLegendKey", "statusUser");
     status.Set("user", std::move(user_status));
-  if (!updater_status->DictEmpty())
+  }
+
+  if (!updater_status->DictEmpty()) {
+    updater_status->SetString("boxLegendKey", "statusUpdater");
     status.Set("updater", std::move(updater_status));
+  }
 
   FireWebUIListener("status-updated", status);
 }

@@ -208,8 +208,10 @@ void PolicyUIHandler::SendStatus() {
     machine_status->RemoveKey("machine");
 
   base::DictionaryValue status;
-  if (!machine_status->empty())
+  if (!machine_status->empty()) {
+    machine_status->SetString("boxLegendKey", "statusDevice");
     status.Set("machine", std::move(machine_status));
+  }
 
   std::vector<const base::Value*> args = {&status};
   web_ui()->FireWebUIListener("status-updated", args);
