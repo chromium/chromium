@@ -60,7 +60,8 @@ enum class ExpectedRemoteBookmarkUpdateError {
   kUnexpectedGuid = 9,
   kParentNotFolder = 10,
   kUnsupportedPermanentFolder = 13,
-  kMaxValue = kUnsupportedPermanentFolder,
+  kDescendantOfRootNodeWithoutPermanentFolder = 14,
+  kMaxValue = kDescendantOfRootNodeWithoutPermanentFolder,
 };
 
 // |*arg| must be of type std::vector<std::unique_ptr<bookmarks::BookmarkNode>>.
@@ -1789,6 +1790,44 @@ TEST(BookmarkModelMergerTest, ShouldLogMetricsForUnsupportedServerTag) {
       "Sync.ProblematicServerSideBookmarksDuringMerge",
       /*sample=*/ExpectedRemoteBookmarkUpdateError::kUnsupportedPermanentFolder,
       /*count=*/1);
+}
+
+TEST(BookmarkModelMergerTest, ShouldLogMetricsForkDescendantOfRootNode) {
+  const std::string kRootNodeId = "test_root_node_id";
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model =
+      bookmarks::TestBookmarkClient::CreateModel();
+
+  // -------- The remote model --------
+  // root node
+  //  | - bookmark (url1/Title1)
+  //  | - bookmark (url2/Title2)
+  syncer::UpdateResponseDataList updates;
+  updates.push_back(CreateBookmarkBarNodeUpdateData());
+  updates.back().entity.id = kRootNodeId;
+  updates.back().entity.server_defined_unique_tag =
+      syncer::ModelTypeToRootTag(syncer::BOOKMARKS);
+
+  updates.push_back(CreateUpdateResponseData(
+      /*server_id=*/"Id1", /*parent_id=*/kRootNodeId, "Title1",
+      /*url=*/"http://url1",
+      /*is_folder=*/false,
+      /*unique_position=*/MakeRandomPosition(),
+      /*guid=*/base::GUID::GenerateRandomV4()));
+  updates.push_back(CreateUpdateResponseData(
+      /*server_id=*/"Id2", /*parent_id=*/kRootNodeId, "Title2",
+      /*url=*/"http://url2",
+      /*is_folder=*/false,
+      /*unique_position=*/MakeRandomPosition(),
+      /*guid=*/base::GUID::GenerateRandomV4()));
+
+  base::HistogramTester histogram_tester;
+  Merge(std::move(updates), bookmark_model.get());
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ProblematicServerSideBookmarksDuringMerge",
+      /*sample=*/
+      ExpectedRemoteBookmarkUpdateError::
+          kDescendantOfRootNodeWithoutPermanentFolder,
+      /*count=*/2);
 }
 
 TEST(BookmarkModelMergerTest, ShouldRemoveMatchingDuplicatesByGUID) {
