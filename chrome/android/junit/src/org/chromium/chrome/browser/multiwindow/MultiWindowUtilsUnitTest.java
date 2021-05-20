@@ -26,7 +26,6 @@ public class MultiWindowUtilsUnitTest {
     private boolean mIsMultipleInstanceRunning;
     private boolean mIsApi31;
     private boolean mCustomMultiWindowSupported;
-    private boolean mIsTabletScreen;
 
     @Before
     public void setUp() {
@@ -57,11 +56,6 @@ public class MultiWindowUtilsUnitTest {
             }
 
             @Override
-            public boolean isTabletScreen(Context context) {
-                return mIsTabletScreen;
-            }
-
-            @Override
             public Class<? extends Activity> getOpenInOtherWindowActivity(Activity current) {
                 return Activity.class;
             }
@@ -70,61 +64,35 @@ public class MultiWindowUtilsUnitTest {
 
     @Test
     public void testCanEnterMultiWindowMode() {
-        // Chrome can enter multi-window mode through menu when it is not already in it
-        // on the platform that supports it (Android S or certain vendor-customized platform).
-        // Cannot enter it if there are already multiple instances running in multiple windows.
-        boolean[][] flags = {
-                // multi-instances, multi-window, Android S, Vendor, result
-                {false, false, false, false, false},
-                {false, false, false, true, true},
-                {false, false, true, false, true},
-                {false, false, true, true, true},
-                {false, true, false, false, false},
-                {false, true, false, true, true},
-                {false, true, true, false, true},
-                {false, true, true, true, true},
-                {true, false, false, false, false},
-                {true, false, false, true, false},
-                {true, false, true, false, false},
-                {true, false, true, true, false},
-                {true, true, false, false, false},
-                {true, true, false, true, false},
-                {true, true, true, false, false},
-                {true, true, true, true, false},
-        };
+        // Chrome can enter multi-window mode through menu on the platform that supports it
+        // (Android S or certain vendor-customized platform).
+        for (int i = 0; i < 32; ++i) {
+            mIsInMultiWindowMode = ((i >> 0) & 1) == 1;
+            mIsInMultiDisplayMode = ((i >> 1) & 1) == 1;
+            mIsMultipleInstanceRunning = ((i >> 2) & 1) == 1;
+            mIsApi31 = ((i >> 3) & 1) == 1;
+            mCustomMultiWindowSupported = ((i >> 4) & 1) == 1;
 
-        mIsTabletScreen = true;
-        for (int i = 0; i < flags.length; ++i) {
-            mIsMultipleInstanceRunning = flags[i][0];
-            mIsInMultiWindowMode = flags[i][1];
-            mIsApi31 = flags[i][2];
-            mCustomMultiWindowSupported = flags[i][3];
-
-            boolean canEnter = flags[i][4];
-            assertEquals("multi-instance: " + mIsMultipleInstanceRunning
-                            + " multi-window: " + mIsInMultiWindowMode + " api-s: " + mIsApi31
-                            + " vendor: " + mCustomMultiWindowSupported,
+            boolean canEnter = mIsApi31 || mCustomMultiWindowSupported;
+            assertEquals(" api-s: " + mIsApi31 + " vendor: " + mCustomMultiWindowSupported,
                     canEnter, mUtils.canEnterMultiWindowMode(null));
         }
     }
 
     @Test
-    public void testIsOpenInOtherWindowSupported() {
-        for (int i = 0; i < 16; ++i) {
-            // Check all the combinations.
+    public void testIsOpenInOtherWindowEnabled() {
+        for (int i = 0; i < 32; ++i) {
             mIsInMultiWindowMode = ((i >> 0) & 1) == 1;
             mIsInMultiDisplayMode = ((i >> 1) & 1) == 1;
             mIsMultipleInstanceRunning = ((i >> 2) & 1) == 1;
-            mIsTabletScreen = ((i >> 3) & 1) == 1;
+            mIsApi31 = ((i >> 3) & 1) == 1;
+            mCustomMultiWindowSupported = ((i >> 4) & 1) == 1;
 
-            // 'OpenInOtherWindow' is supported as long as the platform supports it
-            // and we have another instance to move the window to.
-            // Multi-display device always can open in other window as well.
-            boolean openInOtherWindow = (mIsInMultiWindowMode || mIsInMultiDisplayMode)
-                    && (!mIsTabletScreen || mIsMultipleInstanceRunning);
+            // 'openInOtherWindow' is supported if we are already in multi-window/display mode.
+            boolean openInOtherWindow = (mIsInMultiWindowMode || mIsInMultiDisplayMode);
             assertEquals("multi-window: " + mIsInMultiWindowMode
-                            + " multi-display: " + mIsInMultiDisplayMode + " multi-instance: "
-                            + mIsMultipleInstanceRunning + " tablet-screen: " + mIsTabletScreen,
+                            + " multi-display: " + mIsInMultiDisplayMode
+                            + " multi-instance: " + mIsMultipleInstanceRunning,
                     openInOtherWindow, mUtils.isOpenInOtherWindowSupported(null));
         }
     }

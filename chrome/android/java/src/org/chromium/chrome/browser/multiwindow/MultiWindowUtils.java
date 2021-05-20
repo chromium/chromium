@@ -31,12 +31,9 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.ukm.UkmRecorder;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.display.DisplayAndroidManager;
 
 import java.lang.annotation.Retention;
@@ -120,10 +117,7 @@ public class MultiWindowUtils implements ActivityStateListener {
     public boolean isOpenInOtherWindowSupported(Activity activity) {
         if (!isInMultiWindowMode(activity) && !isInMultiDisplayMode(activity)) return false;
 
-        // Supported only in multi-window mode and if activity supports side-by-side instances.
-        return (!CachedFeatureFlags.isEnabled(ChromeFeatureList.NEW_WINDOW_APP_MENU)
-                       || !isTabletScreen(activity) || areMultipleChromeInstancesRunning(activity))
-                && getOpenInOtherWindowActivity(activity) != null;
+        return getOpenInOtherWindowActivity(activity) != null;
     }
 
     /**
@@ -132,7 +126,6 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return {@code True} if Chrome can get itself into multi-window mode.
      */
     public boolean canEnterMultiWindowMode(Activity activity) {
-        if (areMultipleChromeInstancesRunning(activity)) return false;
         return isBuildAtLeastS() || customMultiWindowModeSupported();
     }
 
@@ -145,11 +138,6 @@ public class MultiWindowUtils implements ActivityStateListener {
     boolean customMultiWindowModeSupported() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
                 && Build.MANUFACTURER.toUpperCase(Locale.ENGLISH).equals("SAMSUNG");
-    }
-
-    @VisibleForTesting
-    boolean isTabletScreen(Context context) {
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     /**

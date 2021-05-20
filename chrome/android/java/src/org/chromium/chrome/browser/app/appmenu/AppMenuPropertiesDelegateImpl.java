@@ -300,10 +300,10 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             UpdateMenuItemHelper.getInstance().registerObserver(mAppMenuInvalidator);
         }
 
-        boolean shouldShowMoveToOtherWindow = shouldShowMoveToOtherWindow();
-        menu.findItem(R.id.new_window_menu_id)
-                .setVisible(shouldShowNewWindow(shouldShowMoveToOtherWindow));
-        menu.findItem(R.id.move_to_other_window_menu_id).setVisible(shouldShowMoveToOtherWindow);
+        boolean showNewWindow = shouldShowNewWindow();
+        boolean showMoveToOtherWindow = !showNewWindow && shouldShowMoveToOtherWindow();
+        menu.findItem(R.id.new_window_menu_id).setVisible(showNewWindow);
+        menu.findItem(R.id.move_to_other_window_menu_id).setVisible(showMoveToOtherWindow);
 
         // Don't allow either "chrome://" pages or interstitial pages to be shared.
         menu.findItem(R.id.share_row_menu_id).setVisible(mShareUtils.shouldEnableShare(currentTab));
@@ -499,9 +499,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     /**
      * @return Whether the "New window" menu item should be displayed.
      */
-    protected boolean shouldShowNewWindow(boolean showMoveToOtherWindow) {
-        if (!isNewWindowMenuFeatureEnabled()) return false;
-        if (showMoveToOtherWindow || !isTabletSizeScreen()) return false;
+    protected boolean shouldShowNewWindow() {
+        if (!isNewWindowMenuFeatureEnabled() || !isTabletSizeScreen()) return false;
+        if (mMultiWindowModeStateDispatcher.isMultiInstanceRunning()) return false;
         return mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiDisplayMode();
