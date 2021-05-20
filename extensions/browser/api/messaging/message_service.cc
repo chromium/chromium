@@ -237,9 +237,6 @@ void MessageService::OpenChannelToExtension(
   BrowserContext* context = source.browser_context();
   DCHECK(ExtensionsBrowserClient::Get()->IsSameContext(context, context_));
 
-  // Disable back forward cache.
-  DisableBackForwardCacheForMessaging(source_render_frame_host);
-
   if (!opener_port) {
     DCHECK(source_endpoint.type == MessagingEndpoint::Type::kTab ||
            source_endpoint.type == MessagingEndpoint::Type::kExtension);
@@ -900,6 +897,10 @@ void MessageService::OnOpenChannelAllowed(
     params->opener_port->DispatchOnDisconnect(kReceivingEndDoesntExistError);
     return;
   }
+
+  content::RenderFrameHost* source_rfh =
+      source.is_for_render_frame() ? source.GetRenderFrameHost() : nullptr;
+  DisableBackForwardCacheForMessaging(source_rfh);
 
   // The target might be a lazy background page or a Service Worker. In that
   // case, we have to check if it is loaded and ready, and if not, queue up the
