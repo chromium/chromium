@@ -83,6 +83,9 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // files system URLs as GURLs.
   std::vector<GURL> GetPinnedFiles() const;
 
+  // Adds a diagnostics log item backed by the provided absolute file path.
+  void AddDiagnosticsLog(const base::FilePath& diagnostics_log_path);
+
   // Adds a download item of the specified `type` backed by the provided
   // absolute file path.
   // NOTE: `type` must refer to a download type.

@@ -1731,6 +1731,9 @@ class HoldingSpaceKeyedServiceAddItemTest
     ASSERT_TRUE(holding_space_service);
 
     switch (type) {
+      case HoldingSpaceItem::Type::kDiagnosticsLog:
+        holding_space_service->AddDiagnosticsLog(file_path);
+        break;
       case HoldingSpaceItem::Type::kArcDownload:
       case HoldingSpaceItem::Type::kDownload:
         holding_space_service->AddDownload(type, file_path);

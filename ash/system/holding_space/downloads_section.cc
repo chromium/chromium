@@ -130,6 +130,7 @@ DownloadsSection::DownloadsSection(HoldingSpaceItemViewDelegate* delegate)
     : HoldingSpaceItemViewsSection(delegate,
                                    /*supported_types=*/
                                    {HoldingSpaceItem::Type::kArcDownload,
+                                    HoldingSpaceItem::Type::kDiagnosticsLog,
                                     HoldingSpaceItem::Type::kDownload,
                                     HoldingSpaceItem::Type::kNearbyShare,
                                     HoldingSpaceItem::Type::kPrintedPdf},

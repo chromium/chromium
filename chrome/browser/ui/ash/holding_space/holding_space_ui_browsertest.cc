@@ -980,6 +980,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
 
   // Right clicking a pinned item should cause a context menu to show.
   ASSERT_FALSE(views::MenuController::GetActiveInstance());
+  ViewDrawnWaiter().Wait(pinned_file_chips.front());
   RightClick(pinned_file_chips.front());
   ASSERT_TRUE(views::MenuController::GetActiveInstance());
 
@@ -994,6 +995,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
   ASSERT_GT(download_chips.size(), 1u);
 
   // Add a download item to the selection and show the context menu.
+  ViewDrawnWaiter().Wait(download_chips.front());
   Click(download_chips.front(), ui::EF_CONTROL_DOWN);
   RightClick(download_chips.front());
   ASSERT_TRUE(views::MenuController::GetActiveInstance());
@@ -1048,6 +1050,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
   ASSERT_GT(screen_capture_views.size(), 1u);
 
   // Select a screen capture item and show the context menu.
+  ViewDrawnWaiter().Wait(screen_capture_views.front());
   Click(screen_capture_views.front());
   RightClick(screen_capture_views.front());
   ASSERT_TRUE(views::MenuController::GetActiveInstance());
@@ -1085,12 +1088,16 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
   // due to max visibility count restrictions.
   while (!download_chips.empty() || !screen_capture_views.empty()) {
     // Select all visible download items.
-    for (views::View* download_chip : download_chips)
+    for (views::View* download_chip : download_chips) {
+      ViewDrawnWaiter().Wait(download_chip);
       Click(download_chip, ui::EF_CONTROL_DOWN);
+    }
 
     // Select all visible screen capture items.
-    for (views::View* screen_capture_view : screen_capture_views)
+    for (views::View* screen_capture_view : screen_capture_views) {
+      ViewDrawnWaiter().Wait(screen_capture_view);
       Click(screen_capture_view, ui::EF_CONTROL_DOWN);
+    }
 
     // Show the context menu. There should be a `kRemoveItem` command.
     RightClick(download_chips.size() ? download_chips.front()
@@ -1230,6 +1237,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, TogglePreviews) {
 
   // Right click the tray icon, and expect a context menu to be shown which will
   // allow the user to hide previews.
+  ViewDrawnWaiter().Wait(previews_tray_icon);
   RightClick(previews_tray_icon);
   ASSERT_TRUE(views::MenuController::GetActiveInstance());
 
@@ -1249,6 +1257,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, TogglePreviews) {
 
   // Right click the tray icon, and expect a context menu to be shown which will
   // allow the user to show previews.
+  ViewDrawnWaiter().Wait(default_tray_icon);
   RightClick(default_tray_icon);
   ASSERT_TRUE(views::MenuController::GetActiveInstance());
 

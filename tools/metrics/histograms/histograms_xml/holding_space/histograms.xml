@@ -35,6 +35,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <variants name="HoldingSpaceItemType">
   <variant name="All" summary="Includes all item types."/>
   <variant name="ArcDownload" summary="Items backed by an ARC download file."/>
+  <variant name="DiagnosticsLog"
+      summary="Items backed by a diagnostics log file."/>
   <variant name="Download" summary="Items backed by a download file."/>
   <variant name="NearbyShare" summary="Items backed by a nearby shared file."/>
   <variant name="PinnedFile" summary="Items pinned explicitly by the user."/>

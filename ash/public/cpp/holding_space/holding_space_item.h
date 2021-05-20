@@ -38,7 +38,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     kScreenRecording = 4,
     kArcDownload = 5,
     kPrintedPdf = 6,
-    kMaxValue = kPrintedPdf,
+    kDiagnosticsLog = 7,
+    kMaxValue = kDiagnosticsLog,
   };
 
   HoldingSpaceItem(const HoldingSpaceItem&) = delete;
