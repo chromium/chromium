@@ -48,6 +48,7 @@ Polymer({
       case AppType.kArc:
         return AppManagementEntryPoint.MainViewArc;
       case AppType.kExtension:
+      case AppType.kStandaloneBrowser:
         return AppManagementEntryPoint.MainViewChromeApp;
       case AppType.kWeb:
         return AppManagementEntryPoint.MainViewWebApp;

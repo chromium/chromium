@@ -45,7 +45,7 @@ apps::mojom::AppPtr StandaloneBrowserApps::GetStandaloneBrowserApp(
   app->show_in_launcher = apps::mojom::OptionalBool::kTrue;
   app->show_in_shelf = apps::mojom::OptionalBool::kTrue;
   app->show_in_search = apps::mojom::OptionalBool::kTrue;
-  app->show_in_management = apps::mojom::OptionalBool::kFalse;
+  app->show_in_management = apps::mojom::OptionalBool::kTrue;
   return app;
 }
 

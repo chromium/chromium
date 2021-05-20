@@ -225,6 +225,7 @@ cr.define('app_management.util', function() {
       case AppType.kArc:
         return 'AppManagement.AppDetailViews.ArcApp';
       case AppType.kExtension:
+      case AppType.kStandaloneBrowser:
         return 'AppManagement.AppDetailViews.ChromeApp';
       case AppType.kWeb:
         return 'AppManagement.AppDetailViews.WebApp';

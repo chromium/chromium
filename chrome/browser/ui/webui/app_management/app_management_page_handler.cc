@@ -42,7 +42,8 @@ constexpr char const* kAppIdsWithHiddenMoreSettings[] = {
 };
 
 constexpr char const* kAppIdsWithHiddenPinToShelf[] = {
-  extension_misc::kChromeAppId,
+    extension_misc::kChromeAppId,
+    extension_misc::kLacrosAppId,
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
