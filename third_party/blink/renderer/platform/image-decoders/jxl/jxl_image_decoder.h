@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 
 #include "third_party/libjxl/src/lib/include/jxl/decode.h"
+#include "third_party/libjxl/src/lib/include/jxl/decode_cxx.h"
 
 namespace blink {
 
@@ -46,8 +47,6 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
                   const ColorBehavior&,
                   size_t max_decoded_bytes);
 
-  ~JXLImageDecoder() override;
-
   // ImageDecoder:
   String FilenameExtension() const override { return "jxl"; }
   bool ImageIsHighBitDepth() override { return is_hdr_; }
@@ -57,20 +56,33 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
 
  private:
   // ImageDecoder:
-  void DecodeSize() override { Decode(true); }
-  size_t DecodeFrameCount() override {
-    Decode(true);
-    return 1;
-  }
-  void Decode(size_t) override { Decode(false); }
+  void DecodeSize() override { DecodeImpl(0, true); }
+  size_t DecodeFrameCount() override;
+  void Decode(size_t frame) override { DecodeImpl(frame); }
   void InitializeNewFrame(size_t) override;
+  // TODO(http://crbug.com/1211339): We never clear the frame buffer for now,
+  // as we'd need to restart the decoder from scratch. This can lead to
+  // excessive memory use on web site such as forums, or image collection
+  // sites. This should be fixed to use the existing frame cache disposal
+  // methods when the JPEG XL API can handle resuming decoding from
+  // intermediate frames.
+  void ClearFrameBuffer(size_t frame_index) override {}
 
-  // Decodes the image.  If |only_size| is true, stops decoding after
+  // Decodes up to a given frame.  If |only_size| is true, stops decoding after
   // calculating the image size. If decoding fails but there is no more
   // data coming, sets the "decode failure" flag.
-  void Decode(bool only_size);
+  void DecodeImpl(size_t frame, bool only_size = false);
 
-  JxlDecoder* dec_ = nullptr;
+  bool FrameIsReceivedAtIndex(size_t) const override;
+  base::TimeDelta FrameDurationAtIndex(size_t) const override;
+  int RepetitionCount() const override;
+  bool CanReusePreviousFrameBuffer(size_t) const override { return false; }
+
+  JxlDecoderPtr dec_ = nullptr;
+  size_t offset_ = 0;
+
+  JxlDecoderPtr frame_count_dec_ = nullptr;
+  size_t frame_count_offset_ = 0;
 
   // The image is considered to be HDR, such as using PQ or HLG transfer
   // function in the color space.
@@ -78,11 +90,17 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   bool decode_to_half_float_ = false;
 
   JxlBasicInfo info_;
-  size_t offset_ = 0;
   bool have_color_info_ = false;
 
   // Preserved for JXL pixel callback. Not owned.
   ColorProfileTransform* xform_;
+
+  // For animation support.
+  size_t num_decoded_frames_ = 0;
+  bool finished_ = false;
+  bool has_full_frame_count_ = false;
+  size_t size_at_last_frame_count_ = 0;
+  WTF::Vector<float> frame_durations_;
 };
 
 }  // namespace blink

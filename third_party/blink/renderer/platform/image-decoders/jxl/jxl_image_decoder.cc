@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/jxl/jxl_image_decoder.h"
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 
 namespace blink {
@@ -43,13 +44,11 @@ JXLImageDecoder::JXLImageDecoder(
     : ImageDecoder(alpha_option,
                    high_bit_depth_decoding_option,
                    color_behavior,
-                   max_decoded_bytes) {}
-
-JXLImageDecoder::~JXLImageDecoder() {
-  JxlDecoderDestroy(dec_);
+                   max_decoded_bytes) {
+  info_.have_animation = false;
 }
 
-void JXLImageDecoder::Decode(bool only_size) {
+void JXLImageDecoder::DecodeImpl(size_t index, bool only_size) {
   if (Failed())
     return;
 
@@ -58,19 +57,27 @@ void JXLImageDecoder::Decode(bool only_size) {
     return;
   }
 
+  DCHECK_LE(num_decoded_frames_, frame_buffer_cache_.size());
+
+  if (finished_ ||
+      (num_decoded_frames_ > index &&
+       frame_buffer_cache_[index].GetStatus() == ImageFrame::kFrameComplete)) {
+    return;
+  }
+
   if (!dec_) {
-    dec_ = JxlDecoderCreate(nullptr);
+    dec_ = JxlDecoderMake(nullptr);
     // Subscribe to color encoding event even when only getting size, because
     // SetSize must be called after SetEmbeddedColorProfile
     const int events =
         JXL_DEC_BASIC_INFO | JXL_DEC_COLOR_ENCODING | JXL_DEC_FULL_IMAGE;
 
-    if (JXL_DEC_SUCCESS != JxlDecoderSubscribeEvents(dec_, events)) {
+    if (JXL_DEC_SUCCESS != JxlDecoderSubscribeEvents(dec_.get(), events)) {
       SetFailed();
       return;
     }
   } else {
-    offset_ -= JxlDecoderReleaseInput(dec_);
+    offset_ -= JxlDecoderReleaseInput(dec_.get());
   }
 
   FastSharedBufferReader reader(data_.get());
@@ -89,7 +96,7 @@ void JXLImageDecoder::Decode(bool only_size) {
   for (;;) {
     if (only_size && have_color_info_)
       return;
-    JxlDecoderStatus status = JxlDecoderProcessInput(dec_);
+    JxlDecoderStatus status = JxlDecoderProcessInput(dec_.get());
     switch (status) {
       case JXL_DEC_ERROR: {
         DVLOG(1) << "Decoder error " << status;
@@ -97,7 +104,7 @@ void JXLImageDecoder::Decode(bool only_size) {
         return;
       }
       case JXL_DEC_NEED_MORE_INPUT: {
-        const size_t remaining = JxlDecoderReleaseInput(dec_);
+        const size_t remaining = JxlDecoderReleaseInput(dec_.get());
         offset_ -= remaining;
         if (offset_ >= reader.size()) {
           if (IsAllDataReceived()) {
@@ -112,8 +119,8 @@ void JXLImageDecoder::Decode(bool only_size) {
         const char* buffer = nullptr;
         size_t read = reader.GetSomeData(buffer, offset_);
         if (JXL_DEC_SUCCESS !=
-            JxlDecoderSetInput(dec_, reinterpret_cast<const uint8_t*>(buffer),
-                               read)) {
+            JxlDecoderSetInput(
+                dec_.get(), reinterpret_cast<const uint8_t*>(buffer), read)) {
           DVLOG(1) << "JxlDecoderSetInput failed";
           SetFailed();
           return;
@@ -122,13 +129,14 @@ void JXLImageDecoder::Decode(bool only_size) {
         break;
       }
       case JXL_DEC_BASIC_INFO: {
-        if (JXL_DEC_SUCCESS != JxlDecoderGetBasicInfo(dec_, &info_)) {
+        if (JXL_DEC_SUCCESS != JxlDecoderGetBasicInfo(dec_.get(), &info_)) {
           DVLOG(1) << "JxlDecoderGetBasicInfo failed";
           SetFailed();
           return;
         }
-        if (!size_available && !SetSize(info_.xsize, info_.ysize))
+        if (!size_available && !SetSize(info_.xsize, info_.ysize)) {
           return;
+        }
         break;
       }
       case JXL_DEC_COLOR_ENCODING: {
@@ -152,7 +160,7 @@ void JXLImageDecoder::Decode(bool only_size) {
         }
         JxlColorEncoding color_encoding;
         if (JXL_DEC_SUCCESS == JxlDecoderGetColorAsEncodedProfile(
-                                   dec_, &format,
+                                   dec_.get(), &format,
                                    JXL_COLOR_PROFILE_TARGET_ORIGINAL,
                                    &color_encoding)) {
           if (color_encoding.transfer_function == JXL_TRANSFER_FUNCTION_PQ ||
@@ -169,9 +177,10 @@ void JXLImageDecoder::Decode(bool only_size) {
         }
 
         bool have_data_profile = false;
-        if (JXL_DEC_SUCCESS == JxlDecoderGetColorAsEncodedProfile(
-                                   dec_, &format, JXL_COLOR_PROFILE_TARGET_DATA,
-                                   &color_encoding)) {
+        if (JXL_DEC_SUCCESS ==
+            JxlDecoderGetColorAsEncodedProfile(dec_.get(), &format,
+                                               JXL_COLOR_PROFILE_TARGET_DATA,
+                                               &color_encoding)) {
           bool known_transfer_function = true;
           bool known_gamut = true;
           skcms_Matrix3x3 gamut;
@@ -216,14 +225,15 @@ void JXLImageDecoder::Decode(bool only_size) {
         if (!have_data_profile) {
           size_t icc_size;
           bool got_size =
-              JXL_DEC_SUCCESS ==
-              JxlDecoderGetICCProfileSize(
-                  dec_, &format, JXL_COLOR_PROFILE_TARGET_DATA, &icc_size);
+              JXL_DEC_SUCCESS == JxlDecoderGetICCProfileSize(
+                                     dec_.get(), &format,
+                                     JXL_COLOR_PROFILE_TARGET_DATA, &icc_size);
           std::vector<uint8_t> icc_profile(icc_size);
-          if (got_size && JXL_DEC_SUCCESS ==
-                              JxlDecoderGetColorAsICCProfile(
-                                  dec_, &format, JXL_COLOR_PROFILE_TARGET_DATA,
-                                  icc_profile.data(), icc_profile.size())) {
+          if (got_size &&
+              JXL_DEC_SUCCESS == JxlDecoderGetColorAsICCProfile(
+                                     dec_.get(), &format,
+                                     JXL_COLOR_PROFILE_TARGET_DATA,
+                                     icc_profile.data(), icc_profile.size())) {
             profile =
                 ColorProfile::Create(icc_profile.data(), icc_profile.size());
             have_data_profile = true;
@@ -266,8 +276,7 @@ void JXLImageDecoder::Decode(bool only_size) {
         break;
       }
       case JXL_DEC_NEED_IMAGE_OUT_BUFFER: {
-        // Always 0 because animation is not yet implemented.
-        const size_t frame_index = 0;
+        const size_t frame_index = num_decoded_frames_++;
         ImageFrame& frame = frame_buffer_cache_[frame_index];
         // This is guaranteed to occur after JXL_DEC_BASIC_INFO so the size
         // is correct.
@@ -280,7 +289,7 @@ void JXLImageDecoder::Decode(bool only_size) {
 
         size_t buffer_size;
         if (JXL_DEC_SUCCESS !=
-            JxlDecoderImageOutBufferSize(dec_, &format, &buffer_size)) {
+            JxlDecoderImageOutBufferSize(dec_.get(), &format, &buffer_size)) {
           DVLOG(1) << "JxlDecoderImageOutBufferSize failed";
           SetFailed();
           return;
@@ -297,7 +306,8 @@ void JXLImageDecoder::Decode(bool only_size) {
         auto callback = [](void* opaque, size_t x, size_t y, size_t num_pixels,
                            const void* pixels) {
           JXLImageDecoder* self = reinterpret_cast<JXLImageDecoder*>(opaque);
-          ImageFrame& frame = self->frame_buffer_cache_[0];
+          ImageFrame& frame =
+              self->frame_buffer_cache_[self->num_decoded_frames_ - 1];
           void* row_dst = self->decode_to_half_float_
                               ? reinterpret_cast<void*>(frame.GetAddrF16(x, y))
                               : reinterpret_cast<void*>(frame.GetAddr(x, y));
@@ -326,8 +336,8 @@ void JXLImageDecoder::Decode(bool only_size) {
             DCHECK(color_conversion_successful);
           }
         };
-        if (JXL_DEC_SUCCESS !=
-            JxlDecoderSetImageOutCallback(dec_, &format, callback, this)) {
+        if (JXL_DEC_SUCCESS != JxlDecoderSetImageOutCallback(
+                                   dec_.get(), &format, callback, this)) {
           DVLOG(1) << "JxlDecoderSetImageOutCallback failed";
           SetFailed();
           return;
@@ -335,16 +345,18 @@ void JXLImageDecoder::Decode(bool only_size) {
         break;
       }
       case JXL_DEC_FULL_IMAGE: {
-        ImageFrame& frame = frame_buffer_cache_[0];
+        ImageFrame& frame = frame_buffer_cache_[num_decoded_frames_ - 1];
         frame.SetPixelsChanged(true);
         frame.SetStatus(ImageFrame::kFrameComplete);
-        // We do not support animated images yet, so return after the first
-        // frame rather than wait for JXL_DEC_SUCCESS.
-        JxlDecoderReset(dec_);
-        return;
+        // All required frames were decoded.
+        if (num_decoded_frames_ > index) {
+          return;
+        }
+        break;
       }
       case JXL_DEC_SUCCESS: {
-        JxlDecoderReset(dec_);
+        dec_ = nullptr;
+        finished_ = true;
         return;
       }
       default: {
@@ -376,6 +388,124 @@ void JXLImageDecoder::InitializeNewFrame(size_t index) {
   auto& buffer = frame_buffer_cache_[index];
   if (decode_to_half_float_)
     buffer.SetPixelFormat(ImageFrame::PixelFormat::kRGBA_F16);
+  buffer.SetHasAlpha(info_.alpha_bits != 0);
+  buffer.SetPremultiplyAlpha(premultiply_alpha_);
+}
+
+bool JXLImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
+  return IsAllDataReceived() ||
+         (index < num_decoded_frames_ &&
+          frame_buffer_cache_[index].GetStatus() == ImageFrame::kFrameComplete);
+}
+
+int JXLImageDecoder::RepetitionCount() const {
+  if (!info_.have_animation)
+    return kAnimationNone;
+
+  if (info_.animation.num_loops == 0)
+    return kAnimationLoopInfinite;
+
+  if (info_.animation.num_loops == 1)
+    return kAnimationLoopOnce;
+
+  return info_.animation.num_loops;
+}
+
+base::TimeDelta JXLImageDecoder::FrameDurationAtIndex(size_t index) const {
+  if (index < frame_durations_.size())
+    return base::TimeDelta::FromSecondsD(frame_durations_[index]);
+
+  return base::TimeDelta();
+}
+
+size_t JXLImageDecoder::DecodeFrameCount() {
+  DecodeSize();
+  if (!info_.have_animation) {
+    frame_durations_.resize(1);
+    frame_durations_[0] = 0;
+    return 1;
+  }
+
+  FastSharedBufferReader reader(data_.get());
+  if (finished_ || size_at_last_frame_count_ == reader.size() ||
+      has_full_frame_count_) {
+    return frame_buffer_cache_.size();
+  }
+  size_at_last_frame_count_ = reader.size();
+
+  // Decode the metadata of every frame that is available.
+  if (frame_count_dec_ == nullptr) {
+    frame_durations_.clear();
+    frame_count_dec_ = JxlDecoderMake(nullptr);
+    frame_count_offset_ = 0;
+    if (JXL_DEC_SUCCESS !=
+        JxlDecoderSubscribeEvents(frame_count_dec_.get(), JXL_DEC_FRAME)) {
+      SetFailed();
+      return frame_buffer_cache_.size();
+    }
+  }
+
+  for (;;) {
+    JxlDecoderStatus status = JxlDecoderProcessInput(frame_count_dec_.get());
+    switch (status) {
+      case JXL_DEC_ERROR: {
+        DVLOG(1) << "Decoder error " << status;
+        SetFailed();
+        return frame_buffer_cache_.size();
+      }
+      case JXL_DEC_NEED_MORE_INPUT: {
+        frame_count_offset_ -= JxlDecoderReleaseInput(frame_count_dec_.get());
+        if (frame_count_offset_ >= reader.size()) {
+          if (IsAllDataReceived()) {
+            DVLOG(1) << "need more input but all data received";
+            SetFailed();
+            return frame_buffer_cache_.size();
+          }
+          return frame_durations_.size();
+        }
+        const char* buffer = nullptr;
+        size_t read = reader.GetSomeData(buffer, frame_count_offset_);
+        if (JXL_DEC_SUCCESS !=
+            JxlDecoderSetInput(frame_count_dec_.get(),
+                               reinterpret_cast<const uint8_t*>(buffer),
+                               read)) {
+          DVLOG(1) << "JxlDecoderSetInput failed";
+          SetFailed();
+          return frame_buffer_cache_.size();
+        }
+        frame_count_offset_ += read;
+        break;
+      }
+      case JXL_DEC_FRAME: {
+        JxlFrameHeader frame_header;
+        if (JxlDecoderGetFrameHeader(frame_count_dec_.get(), &frame_header) !=
+            JXL_DEC_SUCCESS) {
+          DVLOG(1) << "GetFrameHeader failed";
+          SetFailed();
+          return frame_buffer_cache_.size();
+        }
+        if (frame_header.is_last) {
+          has_full_frame_count_ = true;
+        }
+        frame_durations_.push_back(1.0f * frame_header.duration *
+                                   info_.animation.tps_denominator /
+                                   info_.animation.tps_numerator);
+        break;
+      }
+      case JXL_DEC_SUCCESS: {
+        // If the file is fully processed, we won't need to run the decoder
+        // anymore: we can free the memory.
+        frame_count_dec_ = nullptr;
+        DCHECK(has_full_frame_count_);
+        return frame_durations_.size();
+      }
+      default: {
+        DVLOG(1) << "Unexpected decoder status " << status;
+        SetFailed();
+        return frame_buffer_cache_.size();
+      }
+    }
+  }
 }
 
 }  // namespace blink

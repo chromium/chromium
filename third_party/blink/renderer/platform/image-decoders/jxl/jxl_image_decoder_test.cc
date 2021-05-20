@@ -133,27 +133,36 @@ void TestSize(const char* jxl_file, IntSize expected_size) {
   EXPECT_EQ(expected_size, decoder->Size());
 }
 
+struct FramePoint {
+  size_t frame;
+  IntPoint point;
+};
+
 void TestPixel(const char* jxl_file,
                IntSize expected_size,
-               const WTF::Vector<IntPoint>& coordinates,
+               const WTF::Vector<FramePoint>& coordinates,
                const WTF::Vector<SkColor>& expected_colors,
                ImageDecoder::AlphaOption alpha_option,
                ColorBehavior color_behavior,
-               int accuracy) {
+               int accuracy,
+               size_t num_frames = 1) {
   EXPECT_EQ(coordinates.size(), expected_colors.size());
   auto decoder = CreateJXLDecoderWithArguments(
       jxl_file, alpha_option, ImageDecoder::kDefaultBitDepth, color_behavior);
   EXPECT_TRUE(decoder->IsSizeAvailable());
   EXPECT_EQ(expected_size, decoder->Size());
-  EXPECT_EQ(1u, decoder->FrameCount());
-  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  ASSERT_EQ(num_frames, decoder->FrameCount());
+  for (size_t i = 0; i < num_frames; ++i) {
+    ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(i);
+    ASSERT_TRUE(frame);
+    EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  }
   EXPECT_FALSE(decoder->Failed());
-  const SkBitmap& bitmap = frame->Bitmap();
   for (size_t i = 0; i < coordinates.size(); ++i) {
-    int x = coordinates[i].X();
-    int y = coordinates[i].Y();
+    const SkBitmap& bitmap =
+        decoder->DecodeFrameBufferAtIndex(coordinates[i].frame)->Bitmap();
+    int x = coordinates[i].point.X();
+    int y = coordinates[i].point.Y();
     SkColor frame_color = bitmap.getColor(x, y);
     int r_expected = (expected_colors[i] >> 16) & 255;
     int g_expected = (expected_colors[i] >> 8) & 255;
@@ -177,36 +186,37 @@ TEST(JXLTests, SizeTest) {
 
 TEST(JXLTests, PixelTest) {
   TestPixel("/images/resources/jxl/red-10-default.jxl", IntSize(10, 10),
-            {{0, 0}}, {SkColorSetARGB(255, 255, 0, 0)},
+            {{0, {0, 0}}}, {SkColorSetARGB(255, 255, 0, 0)},
             ImageDecoder::AlphaOption::kAlphaNotPremultiplied,
             ColorBehavior::Tag(), 0);
   TestPixel("/images/resources/jxl/red-10-lossless.jxl", IntSize(10, 10),
-            {{0, 1}}, {SkColorSetARGB(255, 255, 0, 0)},
+            {{0, {0, 1}}}, {SkColorSetARGB(255, 255, 0, 0)},
             ImageDecoder::AlphaOption::kAlphaNotPremultiplied,
             ColorBehavior::Tag(), 0);
   TestPixel("/images/resources/jxl/red-10-container.jxl", IntSize(10, 10),
-            {{1, 0}}, {SkColorSetARGB(255, 255, 0, 0)},
+            {{0, {1, 0}}}, {SkColorSetARGB(255, 255, 0, 0)},
             ImageDecoder::AlphaOption::kAlphaNotPremultiplied,
             ColorBehavior::Tag(), 0);
   TestPixel("/images/resources/jxl/green-10-lossless.jxl", IntSize(10, 10),
-            {{2, 3}}, {SkColorSetARGB(255, 0, 255, 0)},
+            {{0, {2, 3}}}, {SkColorSetARGB(255, 0, 255, 0)},
             ImageDecoder::AlphaOption::kAlphaNotPremultiplied,
             ColorBehavior::Tag(), 0);
   TestPixel("/images/resources/jxl/blue-10-lossless.jxl", IntSize(10, 10),
-            {{9, 9}}, {SkColorSetARGB(255, 0, 0, 255)},
+            {{0, {9, 9}}}, {SkColorSetARGB(255, 0, 0, 255)},
             ImageDecoder::AlphaOption::kAlphaNotPremultiplied,
             ColorBehavior::Tag(), 0);
   TestPixel("/images/resources/jxl/alpha-lossless.jxl", IntSize(2, 10),
-            {{0, 1}}, {SkColorSetARGB(0, 255, 255, 255)},
+            {{0, {0, 1}}}, {SkColorSetARGB(0, 255, 255, 255)},
             ImageDecoder::AlphaOption::kAlphaNotPremultiplied,
             ColorBehavior::Tag(), 0);
   TestPixel("/images/resources/jxl/alpha-lossless.jxl", IntSize(2, 10),
-            {{0, 1}}, {SkColorSetARGB(0, 0, 0, 0)},
+            {{0, {0, 1}}}, {SkColorSetARGB(0, 0, 0, 0)},
             ImageDecoder::AlphaOption::kAlphaPremultiplied,
             ColorBehavior::Tag(), 0);
 
-  WTF::Vector<IntPoint> coordinates_3x3 = {
-      {0, 0}, {1, 0}, {2, 0}, {0, 1}, {1, 1}, {2, 1}, {0, 2}, {1, 2}, {2, 2},
+  WTF::Vector<FramePoint> coordinates_3x3 = {
+      {0, {0, 0}}, {0, {1, 0}}, {0, {2, 0}}, {0, {0, 1}}, {0, {1, 1}},
+      {0, {2, 1}}, {0, {0, 2}}, {0, {1, 2}}, {0, {2, 2}},
   };
 
   TestPixel("/images/resources/jxl/3x3_srgb_lossless.jxl", IntSize(3, 3),
@@ -478,6 +488,15 @@ TEST(JXLTests, ColorProfileTest) {
   TestColorProfile("/images/resources/jxl/icc-v2-gbr.jxl",
                    ColorBehavior::Ignore(),
                    SkColorSetARGB(255, 0xaf, 0xfe, 0x6b));
+}
+
+TEST(JXLTests, AnimatedPixelTest) {
+  TestPixel(
+      "/images/resources/jxl/animated.jxl", IntSize(16, 16),
+      {{0, {0, 0}}, {1, {0, 0}}},
+      {SkColorSetARGB(255, 204, 0, 153), SkColorSetARGB(255, 0, 102, 102)},
+      ImageDecoder::AlphaOption::kAlphaNotPremultiplied, ColorBehavior::Tag(),
+      0, 2);
 }
 
 TEST(JXLTests, JXLHDRTest) {

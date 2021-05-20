@@ -11,6 +11,7 @@ blue-10.png
 png_per_row_alpha.png
 icc-v2-gbr.jpg
 dice.png
+animated.gif
 jxl/3x3.png
 jxl/3x3a.png
 ```
@@ -65,4 +66,6 @@ cjxl 3x3a.png temp.jxl -x icc_pathname=icc-v2-gbr.icc -d 0
 djxl temp.jxl 3x3a_gbr.png
 cjxl 3x3a_gbr.png 3x3a_gbr_lossy.jxl -d 0.1 -s 3
 cjxl 3x3a_gbr.png 3x3a_gbr_lossless.jxl -d 0
+
+cjxl animated.gif animated.jxl
 ```
