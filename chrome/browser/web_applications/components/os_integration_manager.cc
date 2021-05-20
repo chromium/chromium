@@ -314,6 +314,14 @@ absl::optional<GURL> OsIntegrationManager::TranslateProtocolUrl(
   return protocol_handler_manager_->TranslateProtocolUrl(app_id, protocol_url);
 }
 
+std::vector<ProtocolHandler> OsIntegrationManager::GetHandlersForProtocol(
+    const std::string& protocol) {
+  if (!protocol_handler_manager_)
+    return std::vector<ProtocolHandler>();
+
+  return protocol_handler_manager_->GetHandlersFor(protocol);
+}
+
 FileHandlerManager& OsIntegrationManager::file_handler_manager_for_testing() {
   DCHECK(file_handler_manager_);
   return *file_handler_manager_;

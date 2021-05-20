@@ -18,7 +18,6 @@
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/policy_path_parser.h"
@@ -90,27 +89,6 @@ bool CanSetAsDefaultBrowser() {
 }
 
 #if !defined(OS_WIN)
-void AddAppProtocolClients(const AppProtocolMap& app_protocols,
-                           const base::FilePath& profile_path,
-                           AppProtocolWorkerCallback protocol_worker_callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(protocol_worker_callback), /*success=*/false));
-}
-
-void RemoveAppProtocolClients(const std::vector<std::string>& protocols,
-                              const base::FilePath& profile_path) {}
-
-void CheckAppIsProtocolClient(
-    const std::string& app_id,
-    const std::string& protocol,
-    const base::FilePath& profile_path,
-    AppProtocolWorkerCallback protocol_worker_callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(protocol_worker_callback), /*success=*/false));
-}
-
 bool IsElevationNeededForSettingDefaultProtocolClient() {
   return false;
 }

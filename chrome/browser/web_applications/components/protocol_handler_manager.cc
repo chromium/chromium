@@ -93,16 +93,7 @@ void ProtocolHandlerManager::RegisterOsProtocolHandlers(
 }
 
 void ProtocolHandlerManager::UnregisterOsProtocolHandlers(const AppId& app_id) {
-  const std::vector<apps::ProtocolHandlerInfo> handlers =
-      GetAppProtocolHandlerInfos(app_id);
-  UnregisterOsProtocolHandlers(app_id, handlers);
-}
-
-void ProtocolHandlerManager::UnregisterOsProtocolHandlers(
-    const AppId& app_id,
-    const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers) {
-  if (!protocol_handlers.empty())
-    UnregisterProtocolHandlersWithOs(app_id, profile_, protocol_handlers);
+  UnregisterProtocolHandlersWithOs(app_id, profile_);
 }
 
 }  // namespace web_app

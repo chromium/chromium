@@ -65,25 +65,20 @@ void RegisterProtocolHandlersWithOSInBackground(
   base::FilePath icon_path = web_app::internals::GetIconFilePath(
       web_app_path, base::AsString16(app_name));
 
-  ShellUtil::AddApplicationClass(web_app::GetProgIdForApp(profile_path, app_id),
-                                 app_specific_launcher_command,
+  std::wstring prog_id = web_app::GetProgIdForApp(profile_path, app_id);
+  ShellUtil::AddApplicationClass(prog_id, app_specific_launcher_command,
                                  user_visible_app_name, user_visible_app_name,
                                  icon_path);
 
-  // Post to UI thread to access ProtocolHandlerRegistry.
-  // TODO(crbug.com/1174805): We should move this to ProtocolHandlerManager and
-  // use a callback instead.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](Profile* profile, const web_app::AppId& app_id,
-             std::vector<apps::ProtocolHandlerInfo> protocol_handlers) {
-            ProtocolHandlerRegistry* registry =
-                ProtocolHandlerRegistryFactory::GetForBrowserContext(profile);
+  std::vector<std::wstring> wstring_protocols;
+  wstring_protocols.reserve(protocol_handlers.size());
 
-            registry->RegisterAppProtocolHandlers(app_id, protocol_handlers);
-          },
-          profile, app_id, std::move(protocol_handlers)));
+  for (const auto& protocol_handler : protocol_handlers) {
+    wstring_protocols.push_back(base::UTF8ToWide(protocol_handler.protocol));
+  }
+
+  // Add protocol associations to the Windows registry.
+  ShellUtil::AddAppProtocolAssociations(wstring_protocols, prog_id);
 }
 
 void UnregisterProtocolHandlersWithOsInBackground(
@@ -102,19 +97,13 @@ void UnregisterProtocolHandlersWithOsInBackground(
   // by default doesn't remove the web application directory.
   base::DeleteFile(app_specific_launcher_path);
 
-  // Clean up application class registry key.
+  // Remove application class registry key.
   ShellUtil::DeleteApplicationClass(prog_id);
-}
 
-// TODO(crbug/1019239): Update CheckAndUpdateExternalInstallations
-// to receive a callback that returns a bool. For now, return the call back
-// below for test purposes (StartupBrowserWebAppProtocolHandlingTest).
-void VerifyExternalInstallations(const base::FilePath& cur_profile_path,
-                                 const web_app::AppId& app_id,
-                                 base::OnceCallback<void(bool)> callback) {
-  web_app::CheckAndUpdateExternalInstallations(cur_profile_path, app_id,
-                                               base::DoNothing::Once<bool>());
-  std::move(callback).Run(true);
+  // Remove protocol associations from the Windows registry.
+  ShellUtil::RemoveAppProtocolAssociations(
+      web_app::GetProgIdForApp(profile_path, app_id),
+      /*elevate_if_not_admin=*/true);
 }
 
 }  // namespace
@@ -133,25 +122,19 @@ void RegisterProtocolHandlersWithOs(
   std::wstring app_name_extension =
       GetAppNameExtensionForNextInstall(app_id, profile->GetPath());
 
+  // TODO(crbug/1019239): Update CheckAndUpdateExternalInstallations
+  // to receive a callback that returns a bool.
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&RegisterProtocolHandlersWithOSInBackground, app_id,
                      base::UTF8ToWide(app_name), profile, profile->GetPath(),
                      std::move(protocol_handlers), app_name_extension),
-      base::BindOnce(&VerifyExternalInstallations, profile->GetPath(), app_id,
-                     std::move(callback)));
+      base::BindOnce(&CheckAndUpdateExternalInstallations, profile->GetPath(),
+                     app_id, std::move(callback)));
 }
 
-void UnregisterProtocolHandlersWithOs(
-    const AppId& app_id,
-    Profile* profile,
-    std::vector<apps::ProtocolHandlerInfo> protocol_handlers) {
-  ProtocolHandlerRegistry* registry =
-      ProtocolHandlerRegistryFactory::GetForBrowserContext(profile);
-
-  registry->DeregisterAppProtocolHandlers(app_id, protocol_handlers);
-
+void UnregisterProtocolHandlersWithOs(const AppId& app_id, Profile* profile) {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},

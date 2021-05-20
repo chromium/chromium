@@ -159,7 +159,6 @@ extern const char kConfigureUserSettings[];
 extern const char kCriticalUpdateVersion[];
 extern const char kDeleteOldVersions[];
 extern const char kDeleteProfile[];
-extern const char kDeregisterURLProtocol[];
 extern const char kDisableLogging[];
 extern const char kDoNotLaunchChrome[];
 extern const char kDoNotRegisterForUpdateLaunch[];
@@ -184,6 +183,7 @@ extern const char kRegisterChromeBrowser[];
 extern const char kRegisterChromeBrowserSuffix[];
 extern const char kRegisterDevChrome[];
 extern const char kRegisterURLProtocol[];
+extern const char kRegisterWebAppURLProtocols[];
 extern const char kRemoveChromeRegistration[];
 extern const char kRenameChromeExe[];
 extern const char kRunAsAdmin[];
@@ -195,6 +195,7 @@ extern const char kTriggerActiveSetup[];
 extern const char kUncompressedArchive[];
 extern const char kUninstall[];
 extern const char kUpdateSetupExe[];
+extern const char kUnregisterWebAppProgId[];
 extern const char kVerboseLogging[];
 
 }  // namespace switches

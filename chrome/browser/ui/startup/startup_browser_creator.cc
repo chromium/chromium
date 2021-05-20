@@ -63,6 +63,8 @@
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
+#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -437,19 +439,12 @@ bool MaybeLaunchProtocolHandlerWebApp(
   if (protocol_url.is_empty())
     return false;
 
-  // Check the ProtocolHandlerRegistry for an entry that matches the appId
-  // and the protocol_url provided in the command line. We want to make sure
-  // that we only handle protocol handlers that we've registered for when
-  // installing a web app. This check also filters out file handler url
-  // activation and other unregistered protocol urls that will be handled
-  // by other startup code paths.
-  // TODO::(crbug/1105257) Adjust this once we no longer use
-  // the ProtocolHandlerRegistry to store protocol handler
-  // registration info for web apps.
-  ProtocolHandlerRegistry* handler_registry =
-      ProtocolHandlerRegistryFactory::GetForBrowserContext(profile);
+  web_app::WebAppProviderBase* provider =
+      web_app::WebAppProviderBase::GetProviderBase(profile);
+  web_app::OsIntegrationManager& os_integration_manager =
+      provider->os_integration_manager();
   const std::vector<ProtocolHandler> handlers =
-      handler_registry->GetHandlersFor(protocol_url.scheme());
+      os_integration_manager.GetHandlersForProtocol(protocol_url.scheme());
 
   // Nothing to do if there are no handlers with a web_app_id.
   if (!base::Contains(handlers, true, [](const auto& handler) {

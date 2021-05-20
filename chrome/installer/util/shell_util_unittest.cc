@@ -42,6 +42,7 @@ const wchar_t kOtherIco[] = L"other.ico";
 const wchar_t kTestProgid[] = L"TestApp";
 const wchar_t kTestOpenCommand[] = L"C:\\test.exe";
 const wchar_t kTestApplicationName[] = L"Test Application";
+const wchar_t kTestApplicationDescription[] = L"Application Description";
 const wchar_t kTestFileTypeName[] = L"Test File Type";
 const wchar_t kTestIconPath[] = L"D:\\test.ico";
 const wchar_t* kTestFileExtensions[] = {
@@ -1097,14 +1098,6 @@ class ShellUtilRegistryTest : public testing::Test {
 
   base::FilePath& chrome_exe() { return chrome_exe_; }
 
-  std::wstring url_associations_key_name() {
-    std::wstring browser_installation_key =
-        install_static::GetBaseAppName().append(
-            ShellUtil::GetCurrentInstallationSuffix(chrome_exe()));
-    return std::wstring(ShellUtil::kRegStartMenuInternet) + L"\\" +
-           browser_installation_key + L"\\Capabilities\\URLAssociations";
-  }
-
  private:
   registry_util::RegistryOverrideManager registry_overrides_;
   base::ScopedTempDir temp_dir_;
@@ -1283,36 +1276,90 @@ TEST_F(ShellUtilRegistryTest, GetFileAssociationsAndAppName) {
   EXPECT_EQ(file_associations_and_app_name.file_associations, FileExtensions());
 }
 
+TEST_F(ShellUtilRegistryTest, GetApplicationInfoForProgId) {
+  ShellUtil::ApplicationInfo empty_application_info(
+      ShellUtil::GetApplicationInfoForProgId(kTestProgid));
+  EXPECT_TRUE(empty_application_info.application_name.empty());
+
+  // Add application class and test that GetApplicationInfoForProgId returns
+  // the registered application properties.
+  EXPECT_TRUE(ShellUtil::AddApplicationClass(
+      std::wstring(kTestProgid), OpenCommand(), kTestApplicationName,
+      kTestApplicationDescription, base::FilePath(kTestIconPath)));
+
+  ShellUtil::ApplicationInfo app_info(
+      ShellUtil::GetApplicationInfoForProgId(kTestProgid));
+
+  EXPECT_EQ(kTestProgid, app_info.prog_id);
+
+  EXPECT_EQ(app_info.application_description, app_info.file_type_name);
+  EXPECT_EQ(base::FilePath(kTestIconPath), app_info.file_type_icon_path);
+  EXPECT_EQ(0, app_info.file_type_icon_index);
+
+  EXPECT_EQ(L"\"C:\\test.exe\" --single-argument %1", app_info.command_line);
+
+  if (base::win::GetVersion() >= base::win::Version::WIN8)
+    EXPECT_EQ(L"", app_info.app_id);
+
+  EXPECT_EQ(kTestApplicationName, app_info.application_name);
+  EXPECT_EQ(kTestApplicationDescription, app_info.application_description);
+  EXPECT_EQ(L"", app_info.publisher_name);
+
+  EXPECT_EQ(base::FilePath(kTestIconPath), app_info.application_icon_path);
+  EXPECT_EQ(0, app_info.application_icon_index);
+}
+
 TEST_F(ShellUtilRegistryTest, AddAppProtocolAssociations) {
-  // Create protocol associations.
-  std::wstring app_progid1 = L"app_progid1";
-  std::wstring app_progid2 = L"app_progid2";
+  // Create test protocol associations.
+  const std::wstring app_progid = L"app_progid1";
+  const std::vector<std::wstring> app_protocols = {L"web+test", L"mailto"};
 
-  ShellUtil::ProtocolAssociations protocol_associations;
-  protocol_associations.associations[L"web+test"] = app_progid1;
-  protocol_associations.associations[L"mailto"] = app_progid2;
+  ASSERT_TRUE(ShellUtil::AddAppProtocolAssociations(app_protocols, app_progid));
 
-  ASSERT_TRUE(ShellUtil::AddAppProtocolAssociations(protocol_associations,
-                                                    chrome_exe()));
-
-  // Ensure that the registry keys have been correctly set.
+  // Ensure that classes were created for each protocol.
+  // HKEY_CURRENT_USER\Software\Classes\<protocol>\URL Protocol
   base::win::RegKey key;
   std::wstring value;
   ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER,
                                     L"Software\\Classes\\web+test", KEY_READ));
   EXPECT_TRUE(key.HasValue(L"URL Protocol"));
+  ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER,
+                                    L"Software\\Classes\\mailto", KEY_READ));
+  EXPECT_TRUE(key.HasValue(L"URL Protocol"));
+
+  // Ensure that URLAssociations entries were created for each protocol.
+  // "<root_hkey>\Software\[CompanyPathName\]ProductPathName[install_suffix]\AppProtocolHandlers\|prog_id|\Capabilities\URLAssociations\<protocol>".
+  std::wstring capabilities_path(install_static::GetRegistryPath());
+  capabilities_path.append(ShellUtil::kRegAppProtocolHandlers);
+  capabilities_path.push_back(base::FilePath::kSeparators[0]);
+  capabilities_path.append(app_progid);
+  capabilities_path.append(L"\\Capabilities");
+
+  const std::wstring url_associations_key_name =
+      capabilities_path + L"\\URLAssociations";
 
   HKEY root = base::win::GetVersion() == base::win::Version::WIN7
                   ? HKEY_LOCAL_MACHINE
                   : HKEY_CURRENT_USER;
   ASSERT_EQ(ERROR_SUCCESS,
-            key.Open(root, url_associations_key_name().c_str(), KEY_READ));
+            key.Open(root, url_associations_key_name.c_str(), KEY_READ));
 
   ASSERT_EQ(ERROR_SUCCESS, key.ReadValue(L"web+test", &value));
-  EXPECT_EQ(app_progid1, std::wstring(value));
+  EXPECT_EQ(app_progid, std::wstring(value));
 
   ASSERT_EQ(ERROR_SUCCESS, key.ReadValue(L"mailto", &value));
-  EXPECT_EQ(app_progid2, std::wstring(value));
+  EXPECT_EQ(app_progid, std::wstring(value));
+
+  // Ensure that app was registered correctly under RegisteredApplications.
+  // <root hkey>\RegisteredApplications\<prog_id>
+  ASSERT_EQ(
+      ERROR_SUCCESS,
+      key.Open(root,
+               std::wstring(ShellUtil::kRegRegisteredApplications).c_str(),
+               KEY_READ));
+
+  ASSERT_EQ(ERROR_SUCCESS, key.ReadValue(app_progid.c_str(), &value));
+  EXPECT_EQ(capabilities_path, std::wstring(value));
 }
 
 TEST_F(ShellUtilRegistryTest, ToAndFromCommandLineArgument) {
@@ -1323,9 +1370,6 @@ TEST_F(ShellUtilRegistryTest, ToAndFromCommandLineArgument) {
   ShellUtil::ProtocolAssociations protocol_associations;
   protocol_associations.associations[L"web+test"] = app_progid1;
   protocol_associations.associations[L"mailto"] = app_progid2;
-
-  ASSERT_TRUE(ShellUtil::AddAppProtocolAssociations(protocol_associations,
-                                                    chrome_exe()));
 
   // Ensure the above protocol_associations creates correct command line
   // arguments correctly.
@@ -1342,45 +1386,39 @@ TEST_F(ShellUtilRegistryTest, ToAndFromCommandLineArgument) {
             parsed_protocol_associations.value().associations[L"web+test"]);
 }
 
-TEST_F(ShellUtilRegistryTest, DoesAppProtocolAssocationExist) {
-  std::wstring app_progid = L"app_progid";
-  ShellUtil::ProtocolAssociations protocol_associations;
-  protocol_associations.associations[L"web+test"] = app_progid;
-
-  // Create protocol associations and ensure that
-  // DoesAppProtocolAssociationExist returns true.
-  ASSERT_TRUE(ShellUtil::AddAppProtocolAssociations(protocol_associations,
-                                                    chrome_exe()));
-  EXPECT_TRUE(ShellUtil::DoesAppProtocolAssociationExist(
-      L"web+test", app_progid, chrome_exe()));
-
-  // Delete protocol associations and ensure that
-  // DoesAppProtocolAssociationExist returns false.
-  ASSERT_TRUE(ShellUtil::RemoveAppProtocolAssociations({L"web+test"},
-                                                       chrome_exe(), false));
-  EXPECT_FALSE(ShellUtil::DoesAppProtocolAssociationExist(
-      L"web+test", app_progid, chrome_exe()));
-}
-
 TEST_F(ShellUtilRegistryTest, RemoveAppProtocolAssociations) {
-  std::wstring app_progid = L"app_progid";
-  ShellUtil::ProtocolAssociations protocol_associations;
-  protocol_associations.associations[L"web+test"] = app_progid;
-  ASSERT_TRUE(ShellUtil::AddAppProtocolAssociations(protocol_associations,
-                                                    chrome_exe()));
+  // Create test protocol associations.
+  const std::wstring app_progid = L"app_progid1";
+  const std::vector<std::wstring> app_protocols = {L"web+test"};
+
+  ASSERT_TRUE(ShellUtil::AddAppProtocolAssociations(app_protocols, app_progid));
 
   // Delete associations and ensure that the protocol entry does not exist.
-  EXPECT_TRUE(ShellUtil::RemoveAppProtocolAssociations({L"web+test"},
-                                                       chrome_exe(), false));
+  EXPECT_TRUE(ShellUtil::RemoveAppProtocolAssociations(app_progid, false));
+
+  // Ensure that the software registration key was removed.
+  // "<root_hkey>\Software\[CompanyPathName\]ProductPathName[install_suffix]\AppProtocolHandlers\|prog_id|".
+  std::wstring capabilities_path(install_static::GetRegistryPath());
+  capabilities_path.append(ShellUtil::kRegAppProtocolHandlers);
+  capabilities_path.push_back(base::FilePath::kSeparators[0]);
+  capabilities_path.append(app_progid);
 
   HKEY root = base::win::GetVersion() == base::win::Version::WIN7
                   ? HKEY_LOCAL_MACHINE
                   : HKEY_CURRENT_USER;
   base::win::RegKey key;
-  std::wstring value;
-  ASSERT_EQ(ERROR_SUCCESS,
-            key.Open(root, url_associations_key_name().c_str(), KEY_READ));
-  EXPECT_FALSE(key.HasValue(L"web+test"));
+
+  ASSERT_EQ(ERROR_FILE_NOT_FOUND,
+            key.Open(root, capabilities_path.c_str(), KEY_READ));
+
+  // Ensure that the RegisteredApplications entry was removed.
+  // <root hkey>\RegisteredApplications\<prog_id>
+  ASSERT_EQ(
+      ERROR_SUCCESS,
+      key.Open(root,
+               std::wstring(ShellUtil::kRegRegisteredApplications).c_str(),
+               KEY_READ));
+  EXPECT_FALSE(key.HasValue(app_progid.c_str()));
 
   // Protocol class entry should still exist after the deleted association is
   // removed so that other associations are not affected.
