@@ -128,6 +128,39 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                              Comparator(LESS_THAN, 1), 1, 360));
     return config;
   }
+  if (kIPHAddToHomescreenMessageFeature.name == feature->name) {
+    // A config that allows the Add to homescreen message IPH to be shown:
+    // * Once per 15 days
+    // * Up to 2 times but only if unused in the last 15 days.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger = EventConfig("add_to_homescreen_message_iph_trigger",
+                                  Comparator(LESS_THAN, 2), 90, 90);
+    config->used = EventConfig("add_to_homescreen_dialog_shown",
+                               Comparator(EQUAL, 0), 90, 90);
+    config->event_configs.insert(EventConfig(
+        "add_to_homescreen_message_iph_trigger", Comparator(EQUAL, 0), 15, 90));
+    return config;
+  }
+  if (kIPHAddToHomescreenTextBubbleFeature.name == feature->name) {
+    // A config that allows the Add to homescreen text bubble IPH to be shown:
+    // * Once per 15 days
+    // * Up to 2 times but only if unused in the last 15 days.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger = EventConfig("add_to_homescreen_text_bubble_iph_trigger",
+                                  Comparator(LESS_THAN, 2), 90, 90);
+    config->used = EventConfig("add_to_homescreen_dialog_shown",
+                               Comparator(EQUAL, 0), 90, 90);
+    config->event_configs.insert(
+        EventConfig("add_to_homescreen_text_bubble_iph_trigger",
+                    Comparator(EQUAL, 0), 15, 90));
+    return config;
+  }
 
   if (kIPHFeedHeaderMenuFeature.name == feature->name) {
     // A config that allows the feed header menu IPH to be shown only once when
