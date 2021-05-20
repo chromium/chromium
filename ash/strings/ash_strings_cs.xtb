@@ -82,6 +82,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="15373452373711364">Velký kurzor myši</translation>
 <translation id="1546492247443594934">Plocha 2</translation>
 <translation id="1550523713251050646">Kliknutím zobrazíte další možnosti</translation>
+<translation id="1555130319947370107">Modrá</translation>
 <translation id="1570871743947603115">Přepnout Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Získat přístup k veškeré vaší aktivitě v této relaci</translation>
 <translation id="1611993646327628135">Zap</translation>
@@ -140,6 +141,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2067602449040652523">Jas klávesnice</translation>
 <translation id="2078034614700056995">Na další plochu přejdete přejetím čtyřmi prsty doprava</translation>
 <translation id="2079504693865562705">Skrýt aplikace v poličce</translation>
+<translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="2083190527011054446">Dobrou noc, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Nejste připojeni k síti</translation>
 <translation id="2108303511227308752">Klávesová zkratka Alt + Backspace se změnila. Pokud chcete použít klávesu Delete, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
@@ -210,6 +212,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2704781753052663061">Připojit se k dalším sítím Wi-Fi</translation>
 <translation id="2705001408393684014">Přepnout mikrofon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Nahoru</translation>
+<translation id="2713444072780614174">Bílá</translation>
 <translation id="2718395828230677721">Noční režim</translation>
 <translation id="2726420622004325180">Aby telefon mohl sloužit jako hotspot, musí v něm být zapnutá mobilní data</translation>
 <translation id="2727175239389218057">Odpovědět</translation>
@@ -582,6 +585,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5805809050170488595">Kliknutím aktivujete síť <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Nastavení připojených zařízení</translation>
+<translation id="583281660410589416">Neznámé</translation>
 <translation id="5837036133683224804">Zastavit <ph name="ROUTE_TITLE" /> na přijímači <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Vypnuto</translation>
 <translation id="5860491529813859533">Zapnout</translation>
@@ -787,6 +791,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7561982940498449837">Zavřít nabídku</translation>
 <translation id="7564874036684306347">Přesunutí oken na jinou plochu může vést k neočekávanému chování. Následná oznámení, okna a dialogy mohou být rozděleny mezi plochy.</translation>
 <translation id="7569509451529460200">Jsou zapnuty funkce Braille a ChromeVox</translation>
+<translation id="7569983096843329377">Černá</translation>
 <translation id="7579778809502851308">Snímky obrazovky</translation>
 <translation id="7590883480672980941">Nastavení zadávání</translation>
 <translation id="7593891976182323525">Vyhledávání nebo Shift</translation>

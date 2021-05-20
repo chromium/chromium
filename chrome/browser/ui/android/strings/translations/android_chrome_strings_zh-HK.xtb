@@ -202,6 +202,7 @@
 <ph name="BEGIN_LIST_ITEM1" />廣告客戶能夠在數千位使用者擁有類似興趣時學習 (類似演唱會中的群眾)，並為群眾 (而非單一使用者) 選取廣告。<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />廣告客戶無需追蹤您的網站瀏覽記錄，就能瞭解廣告成效。<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">預先載入 Chrome 認為您可能會瀏覽的頁面。為此，Chrome 可能會使用 Cookie (如果您允許的話)，亦可能加密網頁並透過 Google 傳送，以便向網站隱藏您的身分。</translation>
 <translation id="234265804618409743">無法開啟攝錄機。發生錯誤。</translation>
 <translation id="2345671828921229300">如要搜尋，請輕觸並按住字詞</translation>
 <translation id="2349710944427398404">Chrome 使用的資料總量，包括帳戶、書籤和已儲存的設定</translation>
@@ -783,6 +784,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6138832295072039549">在此變更網站設定</translation>
 <translation id="6140709049082532940">強化保護功能：</translation>
 <translation id="6140912465461743537">國家/地區</translation>
+<translation id="6141988275892716286">確認下載</translation>
 <translation id="614940544461990577">建議做法：</translation>
 <translation id="6154478581116148741">在「設定」中開啟螢幕鎖定功能，即可從此裝置匯出您的密碼</translation>
 <translation id="6159335304067198720">節省 <ph name="PERCENT" /> 的數據用量</translation>
@@ -994,6 +996,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7493994139787901920"><ph name="VERSION" /> (上次更新： <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">已節省的數據用量</translation>
 <translation id="7498271377022651285">請稍候…</translation>
+<translation id="750228856503700085">無法取得更新</translation>
 <translation id="7507207699631365376">查看此供應商的<ph name="BEGIN_LINK" />私隱權政策<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">下載</translation>
 <translation id="751961395872307827">無法連接網站</translation>
@@ -1041,6 +1044,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7791543448312431591">新增</translation>
 <translation id="7798392620021911922">還原咗 <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
+<translation id="7805768142964895445">狀態</translation>
 <translation id="7808889146555843082">刪除此密碼不會刪除您在 <ph name="SITE" /> 的帳戶。請變更密碼或刪除您在 <ph name="SITE" /> 的帳戶，以免被他人盜用。</translation>
 <translation id="7810647596859435254">選擇開啟應用程式…</translation>
 <translation id="7815484226266492798">長螢幕截圖</translation>
@@ -1095,6 +1099,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8078096376109663956">只分享文字</translation>
 <translation id="8084114998886531721">已儲存的密碼</translation>
+<translation id="8084285576995584326">控制 Google 帳戶資料</translation>
 <translation id="808747664143081553">已連接裝置</translation>
 <translation id="8103578431304235997">無痕式分頁</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1190,6 +1195,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="8712637175834984815">我知道了</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8730621377337864115">完成</translation>
+<translation id="8746155870861185046">分享突顯項目</translation>
 <translation id="8748850008226585750">內容已隱藏</translation>
 <translation id="8773160212632396039">正在處理要求</translation>
 <translation id="8788265440806329501">導覽記錄閂咗</translation>

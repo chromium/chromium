@@ -2300,7 +2300,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="346298925039590474">Rețeaua mobilă va fi disponibilă tuturor utilizatorilor acestui dispozitiv</translation>
 <translation id="3464145797867108663">Adaugă un profil de serviciu</translation>
 <translation id="346431825526753">Acesta este un cont pentru copii gestionat de <ph name="CUSTODIAN_EMAIL" />.</translation>
-<translation id="3465480292013046659">A apărut o problemă la descărcarea actualizării. Încearcă din nou mai târziu.</translation>
 <translation id="3468298837301810372">Etichetă</translation>
 <translation id="3468999815377931311">Telefon Android</translation>
 <translation id="3470442499439619530">Ștergeți acest utilizator</translation>
@@ -2422,7 +2421,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3600792891314830896">Dezactivează sunetul pentru site-urile care îl redau</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="360180734785106144">să ofere noi caracteristici pe măsură ce devin disponibile;</translation>
-<translation id="3602179428782502464">Actualizarea este blocată de administrator</translation>
 <translation id="3602290021589620013">Previzualizare</translation>
 <translation id="3602870520245633055">Printează și scanează</translation>
 <translation id="3603622770190368340">Obțineți certificatul de rețea</translation>

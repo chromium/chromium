@@ -82,6 +82,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="15373452373711364">Malaking mouse cursor</translation>
 <translation id="1546492247443594934">Desk 2</translation>
 <translation id="1550523713251050646">Mag-click para sa higit pang mga opsyon</translation>
+<translation id="1555130319947370107">Asul</translation>
 <translation id="1570871743947603115">I-toggle ang Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">I-access ang lahat ng iyong aktibidad sa session na ito</translation>
 <translation id="1611993646327628135">Naka-on</translation>
@@ -140,6 +141,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2067602449040652523">Liwanag ng keyboard</translation>
 <translation id="2078034614700056995">Mag-swipe pakanan gamit ang apat na daliri para lumipat sa susunod na desk</translation>
 <translation id="2079504693865562705">Itago ang mga app sa shelf</translation>
+<translation id="2079545284768500474">I-undo</translation>
 <translation id="2083190527011054446">Magandang gabi <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Hindi nakakonekta sa network</translation>
 <translation id="2108303511227308752">Nagbago ang keyboard shortcut na Alt + Backspace. Para magamit ang Delete key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + backspace.</translation>
@@ -210,6 +212,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2704781753052663061">Sumali sa iba pang Wi-Fi network</translation>
 <translation id="2705001408393684014">I-toggle ang Mikropono. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
+<translation id="2713444072780614174">Puti</translation>
 <translation id="2718395828230677721">Night Light</translation>
 <translation id="2726420622004325180">Dapat na mayroong mobile data ang iyong telepono para makapagbigay ito ng hotspot</translation>
 <translation id="2727175239389218057">Sumagot</translation>
@@ -582,6 +585,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5805809050170488595">I-click para ma-activate ang <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Mga setting ng mga nakakonektang device</translation>
+<translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5837036133683224804">Ihinto ang <ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Naka-off</translation>
 <translation id="5860491529813859533">I-on</translation>
@@ -787,6 +791,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7561982940498449837">Isara ang menu</translation>
 <translation id="7564874036684306347">Kapag inilipat ang mga window sa isa pang desktop, maaari itong magresulta sa hindi inaasahang gawi. Maaaring hatiin ang mga susunod na notification, window, at dialog sa pagitan ng mga desktop.</translation>
 <translation id="7569509451529460200">Na-enable ang Braille at ChromeVox</translation>
+<translation id="7569983096843329377">Itim</translation>
 <translation id="7579778809502851308">Screen capture</translation>
 <translation id="7590883480672980941">Mga setting ng input</translation>
 <translation id="7593891976182323525">Search or Shift</translation>

@@ -1406,7 +1406,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6218753634732582820">Adresse aus Chromium entfernen?</translation>
 <translation id="622039917539443112">Parallele Faltung</translation>
 <translation id="6221345481584921695">Google Safe Browsing hat kürzlich <ph name="BEGIN_LINK" />Malware<ph name="END_LINK" /> auf <ph name="SITE" /> gefunden. Websites, die in der Regel sicher sind, können gelegentlich mit Malware infiziert sein. Der schädliche Inhalt stammt von <ph name="SUBRESOURCE_HOST" />, einem bekannten Verteiler von Malware.</translation>
-<translation id="6232619828520900263">ID derzeit ungültig</translation>
 <translation id="6234122620015464377">Nach jedem Dokument zuschneiden</translation>
 <translation id="6240447795304464094">Google Pay-Logo</translation>
 <translation id="6241121617266208201">Vorschläge ausblenden</translation>
@@ -1915,6 +1914,7 @@ Weitere Details:
 <translation id="8202097416529803614">Zusammenfassung der Bestellung</translation>
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8206978196348664717">Prc4 (Umschlag)</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Wenn Sie die ID zurücksetzen, wird Ihre aktuelle ID ungültig. Eine neue ID wird in weniger als 1 Tag ausgestellt.}=1{Wenn Sie die ID zurücksetzen, wird Ihre aktuelle ID ungültig. Eine neue ID wird in 1 Tag ausgestellt.}other{Wenn Sie die ID zurücksetzen, wird Ihre aktuelle ID ungültig. Eine neue ID wird in {NUM_DAYS} Tagen ausgestellt.}}</translation>
 <translation id="8211406090763984747">Verbindung ist sicher</translation>
 <translation id="8213464188712611711">Erinnerungen</translation>
 <translation id="8218327578424803826">Zugewiesener Standort: </translation>

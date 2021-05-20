@@ -48,6 +48,7 @@
 <translation id="4852878756222711218">如要充分運用 Chromium 的所有功能，請登入你的 Google 帳戶</translation>
 <translation id="4985291216379576555">目前處於離線狀態，因此 Chromium 無法檢查更新</translation>
 <translation id="4999538639245140991">由於你即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 所管理的帳戶，系統將刪除你在這個裝置上的 Chromium 資料，但這些資料仍會保留在你的 Google 帳戶中。</translation>
+<translation id="5171868502429358653">登入 Chromium</translation>
 <translation id="5224391634244552924">未儲存任何密碼。你必須先儲存密碼，才能使用 Chromium 的密碼檢查功能。</translation>
 <translation id="5308226104666789935">Chromium 無法檢查更新</translation>
 <translation id="5396916991083608703">要將 Chromium 設為預設瀏覽器嗎？</translation>
@@ -63,6 +64,7 @@
 1. 開啟「設定」
 2. 輕觸 [預設瀏覽器 App]
 3. 選取 [Chromium]</translation>
+<translation id="6155422572367400359">登入這個網站、Google 帳戶和 Chromium。你可以稍後再開啟同步功能。</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
 <translation id="632825460376924298">允許登入 Chromium</translation>
 <translation id="6337530241089703714">選擇是否要清除你在這部裝置上的 Chromium 資料</translation>

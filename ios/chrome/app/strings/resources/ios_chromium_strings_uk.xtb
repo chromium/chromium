@@ -48,6 +48,7 @@
 <translation id="4852878756222711218">Щоб користуватися всіма можливостями Chromium, увійдіть в обліковий запис Google</translation>
 <translation id="4985291216379576555">Офлайн, Chromium не може перевірити наявність оновлень</translation>
 <translation id="4999538639245140991">Оскільки ви виходите з облікового запису, зареєстрованого в домені <ph name="SIGNOUT_MANAGED_DOMAIN" />, ваші дані Chromium буде видалено з цього пристрою. Вони залишаться в обліковому записі Google.</translation>
+<translation id="5171868502429358653">Увійдіть у Chromium</translation>
 <translation id="5224391634244552924">Немає збережених паролів. Chromium зможе перевірити ваші паролі, коли ви їх збережете.</translation>
 <translation id="5308226104666789935">Chromium не може перевірити наявність оновлень</translation>
 <translation id="5396916991083608703">Зробити Chromium веб-переглядачем за умовчанням?</translation>
@@ -63,6 +64,7 @@
 1. Відкрийте налаштування
 2. Натисніть "Веб-переглядач за умовчанням"
 3. Виберіть Chromium.</translation>
+<translation id="6155422572367400359">Увійдіть в облікові записи цього сайту, Google і Chromium. Синхронізацію можна ввімкнути пізніше.</translation>
 <translation id="6268381023930128611">Вийти з Chromium?</translation>
 <translation id="632825460376924298">Дозволити вхід у Chromium</translation>
 <translation id="6337530241089703714">Видалити дані Chromium із цього пристрою чи зберігати їх?</translation>

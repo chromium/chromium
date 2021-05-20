@@ -1404,7 +1404,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6218753634732582820">Adres verwijderen uit Chromium?</translation>
 <translation id="622039917539443112">Parallelvouw</translation>
 <translation id="6221345481584921695">Google Safe Browsing heeft onlangs <ph name="BEGIN_LINK" />malware gedetecteerd<ph name="END_LINK" /> op <ph name="SITE" />. Websites die normaal gesproken veilig zijn, worden soms geïnfecteerd met malware. De schadelijke content is afkomstig van <ph name="SUBRESOURCE_HOST" />, een bekende distributeur van malware.</translation>
-<translation id="6232619828520900263">ID momenteel ongeldig</translation>
 <translation id="6234122620015464377">Bijsnijden na elk document</translation>
 <translation id="6240447795304464094">Google Pay-logo</translation>
 <translation id="6241121617266208201">Suggesties verbergen</translation>
@@ -1913,6 +1912,7 @@ Aanvullende informatie:
 <translation id="8202097416529803614">Besteloverzicht</translation>
 <translation id="8202370299023114387">Conflict</translation>
 <translation id="8206978196348664717">Prc4 (envelop)</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Als je de ID reset, wordt je huidige ID ongeldig en wordt er binnen 1 dag een nieuwe ID uitgegeven}=1{Als je de ID reset, wordt je huidige ID ongeldig en wordt er over 1 dag een nieuwe ID uitgegeven}other{Als je de ID reset, wordt je huidige ID ongeldig en wordt er binnen {NUM_DAYS} dagen een nieuwe ID uitgegeven}}</translation>
 <translation id="8211406090763984747">Verbinding is beveiligd</translation>
 <translation id="8213464188712611711">Herinneringen</translation>
 <translation id="8218327578424803826">Toegewezen locatie:</translation>

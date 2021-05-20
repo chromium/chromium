@@ -48,6 +48,7 @@
 <translation id="4852878756222711218">Untuk mengoptimalkan Chromium, login dengan Akun Google Anda</translation>
 <translation id="4985291216379576555">Offline, Chromium tidak dapat memeriksa update</translation>
 <translation id="4999538639245140991">Karena Anda logout dari akun yang dikelola oleh <ph name="SIGNOUT_MANAGED_DOMAIN" />, data Chromium Anda akan dihapus dari perangkat ini. Data Anda akan tetap tersedia di Akun Google Anda.</translation>
+<translation id="5171868502429358653">Login ke Chromium</translation>
 <translation id="5224391634244552924">Tidak ada sandi yang tersimpan. Chromium dapat memeriksa sandi Anda jika Anda menyimpannya.</translation>
 <translation id="5308226104666789935">Chromium tidak dapat memeriksa update</translation>
 <translation id="5396916991083608703">Setel Chromium sebagai Default?</translation>
@@ -63,6 +64,7 @@
 1. Buka Setelan
 2. Ketuk Aplikasi Browser Default
 3. Pilih Chromium.</translation>
+<translation id="6155422572367400359">Login ke situs ini, Akun Google Anda, dan Chromium. Anda dapat mengaktifkan sinkronisasi nanti.</translation>
 <translation id="6268381023930128611">Keluar dari Chromium?</translation>
 <translation id="632825460376924298">Izinkan Login Chromium</translation>
 <translation id="6337530241089703714">Pilih apakah akan menghapus data Chromium dari perangkat ini atau menyimpannya</translation>

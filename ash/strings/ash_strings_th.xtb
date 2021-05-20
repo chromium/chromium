@@ -82,6 +82,7 @@
 <translation id="15373452373711364">เคอร์เซอร์เมาส์ขนาดใหญ่</translation>
 <translation id="1546492247443594934">เดสก์ที่ 2</translation>
 <translation id="1550523713251050646">คลิกเพื่อดูตัวเลือกเพิ่มเติม</translation>
+<translation id="1555130319947370107">สีน้ำเงิน</translation>
 <translation id="1570871743947603115">เปิด/ปิดบลูทูธ <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">เข้าถึงกิจกรรมทั้งหมดของคุณในเซสชันนี้</translation>
 <translation id="1611993646327628135">เปิด</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">ความสว่างของแป้นพิมพ์</translation>
 <translation id="2078034614700056995">ใช้ 4 นิ้วเลื่อนไปทางขวาเพื่อเปลี่ยนไปใช้เดสก์ถัดไป</translation>
 <translation id="2079504693865562705">ซ่อนแอปในแถบ</translation>
+<translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2083190527011054446">ราตรีสวัสดิ์ <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">ไม่ได้เชื่อมต่อกับเครือข่าย</translation>
 <translation id="2108303511227308752">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Alt + Backspace หากต้องการใช้แป้น Delete ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">เข้าร่วมเครือข่าย Wi-Fi อื่น</translation>
 <translation id="2705001408393684014">เปิด/ปิดไมค์ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ขึ้น</translation>
+<translation id="2713444072780614174">สีขาว</translation>
 <translation id="2718395828230677721">แสงตอนกลางคืน</translation>
 <translation id="2726420622004325180">โทรศัพท์ต้องมืออินเทอร์เน็ตมือถือเพื่อการใช้งานเป็นฮอตสปอต</translation>
 <translation id="2727175239389218057">ตอบ</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595">คลิกเพื่อเปิดใช้ <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">การตั้งค่าอุปกรณ์ที่เชื่อมต่อ</translation>
+<translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5837036133683224804">หยุด <ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">ปิด</translation>
 <translation id="5860491529813859533">เปิด</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">ปิดเมนู</translation>
 <translation id="7564874036684306347">การย้ายหน้าต่างไปยังเดสก์ท็อปอื่นอาจส่งผลให้ลักษณะการทำงานผิกปกติ การแจ้งเตือน หน้าต่าง และกล่องโต้ตอบที่ตามมาอาจแสดงแยกส่วนในเดสก์ท็อปทั้งสอง</translation>
 <translation id="7569509451529460200">เปิดใช้เบรลล์และ ChromeVox แล้ว</translation>
+<translation id="7569983096843329377">สีดำ</translation>
 <translation id="7579778809502851308">จับภาพหน้าจอ</translation>
 <translation id="7590883480672980941">การตั้งค่าการป้อนข้อมูล</translation>
 <translation id="7593891976182323525">ค้นหาหรือ Shift</translation>

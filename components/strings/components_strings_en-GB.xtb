@@ -1418,7 +1418,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6218753634732582820">Remove address from Chromium?</translation>
 <translation id="622039917539443112">Parallel fold</translation>
 <translation id="6221345481584921695">Google Safe Browsing recently <ph name="BEGIN_LINK" />detected malware<ph name="END_LINK" /> on <ph name="SITE" />. Websites that are normally safe are sometimes infected with malware. The malicious content comes from <ph name="SUBRESOURCE_HOST" />, a known malware distributor.</translation>
-<translation id="6232619828520900263">ID currently invalid</translation>
 <translation id="6234122620015464377">Trim after each document</translation>
 <translation id="6240447795304464094">Google Pay logo</translation>
 <translation id="6241121617266208201">Hide suggestions</translation>

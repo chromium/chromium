@@ -48,6 +48,7 @@
 <translation id="4852878756222711218">ลงชื่อเข้าใช้ด้วยบัญชี Google เพื่อรับประโยชน์สูงสุดจาก Chromium</translation>
 <translation id="4985291216379576555">ออฟไลน์อยู่ Chromium ตรวจหาอัปเดตไม่ได้</translation>
 <translation id="4999538639245140991">เนื่องจากคุณกำลังออกจากระบบบัญชีที่จัดการโดย <ph name="SIGNOUT_MANAGED_DOMAIN" /> ข้อมูล Chromium ของคุณจะถูกลบออกจากอุปกรณ์นี้ แต่ข้อมูลจะยังคงอยู่ในบัญชี Google</translation>
+<translation id="5171868502429358653">ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="5224391634244552924">ไม่มีรหัสผ่านที่บันทึกไว้ Chromium จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกรหัสผ่านไว้</translation>
 <translation id="5308226104666789935">Chromium ตรวจหาอัปเดตไม่ได้</translation>
 <translation id="5396916991083608703">ตั้งค่า Chromium เป็นค่าเริ่มต้นไหม</translation>
@@ -63,6 +64,7 @@
 1. เปิดการตั้งค่า
 2. แตะแอปเบราว์เซอร์เริ่มต้น
 3. เลือก Chromium</translation>
+<translation id="6155422572367400359">ลงชื่อเข้าใช้เว็บไซต์นี้ บัญชี Google และ Chromium คุณเปิดการซิงค์ภายหลังได้</translation>
 <translation id="6268381023930128611">ต้องการออกจาก Chromium ใช่ไหม</translation>
 <translation id="632825460376924298">อนุญาตให้ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="6337530241089703714">เลือกว่าจะล้างข้อมูล Chromium จากอุปกรณ์นี้หรือเก็บไว้</translation>

@@ -1423,7 +1423,6 @@
 <translation id="6218753634732582820">‏Chromium سے پتہ ہٹائیں؟</translation>
 <translation id="622039917539443112">متوازی فولڈ</translation>
 <translation id="6221345481584921695">‏Google محفوظ براؤزنگ کو حال ہی میں <ph name="SITE" /> پر <ph name="BEGIN_LINK" />میلویئر کا پتہ لگا<ph name="END_LINK" />۔ جو ویب سائٹس عام طور پر محفوظ ہوتی ہیں وہ کبھی کبھی میلویئر سے متاثر ہو جاتی ہیں۔ نقصان دہ مواد <ph name="SUBRESOURCE_HOST" /> سے آتا ہے جو ایک معلوم میلویئر تقسیم کار ہے۔</translation>
-<translation id="6232619828520900263">‏فی الحال ID غلط ہے</translation>
 <translation id="6234122620015464377">ہر دستاویز کے بعد تراشیں</translation>
 <translation id="6240447795304464094">‏Google pay کا لوگو</translation>
 <translation id="6241121617266208201">تجاویز چھپائیں</translation>
@@ -1932,6 +1931,7 @@
 <translation id="8202097416529803614">آرڈر کا خلاصہ</translation>
 <translation id="8202370299023114387">تصادم</translation>
 <translation id="8206978196348664717">Prc4 ‎(Envelope‎)‎</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{‏ID ری سیٹ کرنے پر آپ کی موجودہ ID ناقابل استعمال ہو جائے گی اور 1 دن سے بھی کم وقت میں ایک نئی ID جاری کر دی جائے گی}=1{‏ID ری سیٹ کرنے پر آپ کی موجودہ ID ناقابل استعمال ہو جائے گی اور 1 دن میں ایک نئی ID جاری کر دی جائے گی}other{‏ID ری سیٹ کرنے پر آپ کی موجودہ ID ناقابل استعمال ہو جائے گی اور {NUM_DAYS} دنوں میں ایک نئی ID جاری کر دی جائے گی}}</translation>
 <translation id="8211406090763984747">کنکشن محفوظ ہے</translation>
 <translation id="8213464188712611711">میموریز</translation>
 <translation id="8218327578424803826">تفویض کردہ مقام</translation>

@@ -82,6 +82,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="15373452373711364">Suur hiirekursor</translation>
 <translation id="1546492247443594934">Töölaud 2</translation>
 <translation id="1550523713251050646">Klõpsake lisavalikute nägemiseks</translation>
+<translation id="1555130319947370107">Sinine</translation>
 <translation id="1570871743947603115">Lülitab Bluetoothi sisse või välja. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Juurdepääs kõigile teie tegevustele selle seansi ajal</translation>
 <translation id="1611993646327628135">Sees</translation>
@@ -140,6 +141,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2067602449040652523">Klaviatuuri eredus</translation>
 <translation id="2078034614700056995">Järgmisele töölauale lülitumiseks pühkige nelja sõrmega paremale</translation>
 <translation id="2079504693865562705">Peida riiulil olevad rakendused</translation>
+<translation id="2079545284768500474">Võta tagasi</translation>
 <translation id="2083190527011054446">Head ööd, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Pole võrguga ühendatud</translation>
 <translation id="2108303511227308752">Klaviatuuri otseteed Alt + tagasilükkeklahv on muudetud. Kustutusklahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + tagasilükkeklahvi.</translation>
@@ -210,6 +212,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2704781753052663061">Muude WiFi-võrkudega liitumine</translation>
 <translation id="2705001408393684014">Lülitage mikrofoni. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Üles</translation>
+<translation id="2713444072780614174">Valge</translation>
 <translation id="2718395828230677721">Öövalgus</translation>
 <translation id="2726420622004325180">Teie telefonil peab kuumkoha pakkumiseks olema mobiilne andmesideühendus</translation>
 <translation id="2727175239389218057">Vasta</translation>
@@ -583,6 +586,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5805809050170488595">Klõpsake võrgu <ph name="NETWORK_NAME" /> aktiveerimiseks</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Ühendatud seadmete seaded</translation>
+<translation id="583281660410589416">Tundmatu</translation>
 <translation id="5837036133683224804">Katkesta <ph name="ROUTE_TITLE" /> asukohas <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Väljas</translation>
 <translation id="5860491529813859533">Lülita sisse</translation>
@@ -788,6 +792,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7561982940498449837">Sule menüü</translation>
 <translation id="7564874036684306347">Kui teisaldate aknad teisele töölauale, võib tagajärjeks olla ootamatu käitumine. Järgmised märguanded, aknad ja dialoogid võivad jaguneda eri töölaudade vahel.</translation>
 <translation id="7569509451529460200">Punktkiri ja ChromeVox on lubatud</translation>
+<translation id="7569983096843329377">Must</translation>
 <translation id="7579778809502851308">Ekraanikuva jäädvustamine</translation>
 <translation id="7590883480672980941">Sisendi seaded</translation>
 <translation id="7593891976182323525">Otsinguklahv või tõstuklahv</translation>

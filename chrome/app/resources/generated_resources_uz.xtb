@@ -1220,7 +1220,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2285942871162473373">Barmoq izingiz qabul qilinmadi. Qayta urining.</translation>
 <translation id="2287944065963043964">Kirish ekrani</translation>
 <translation id="2288181517385084064">Video rejimiga o‘tish</translation>
-<translation id="2288697980820156726">Sahifadagi keyingi elementga oʻtish uchun bu kalit tugmani “Keyingi” amaliga tayinlash</translation>
+<translation id="2288697980820156726">Sahifadagi keyingi elementga oʻtish uchun bu kalit tugmani “Keyingisi” amaliga tayinlash</translation>
 <translation id="2288735659267887385">Maxsus imkoniyatlar</translation>
 <translation id="2289270750774289114">Sayt atrofdagi Bluetooth qurilmalarni tekshirmoqchi boʻlsa, xabar berilsin (tavsiya etiladi)</translation>
 <translation id="2290615375132886363">Planshet rejimida navigatsiya tugmalari</translation>
@@ -2302,7 +2302,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="346298925039590474">Bu mobil tarmoqdan qurilmadagi barcha foydalanuvchilar foydalana oladi</translation>
 <translation id="3464145797867108663">Ish profilini kiritish</translation>
 <translation id="346431825526753">Bu bolalar hisobi <ph name="CUSTODIAN_EMAIL" /> tomonidan boshqariladi.</translation>
-<translation id="3465480292013046659">Yangilanish yuklab olinmadi. Keyinroq qayta urining.</translation>
 <translation id="3468298837301810372">Yorliq</translation>
 <translation id="3468999815377931311">Android telefon</translation>
 <translation id="3470442499439619530">Bu foydalanuvchini o‘chirish</translation>
@@ -2424,7 +2423,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3600792891314830896">Saytlardagi ovozni o‘chirib qo‘yish</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="360180734785106144">Yangi funksiyalar ularning chiqishiga taklif qilinadi</translation>
-<translation id="3602179428782502464">Bu yangilanish administratoringiz tomonidan bloklangan</translation>
 <translation id="3602290021589620013">Razm solish</translation>
 <translation id="3602870520245633055">Chop etish va skanerlash</translation>
 <translation id="3603622770190368340">Tarmoq sertifikatini qabul qilish</translation>
@@ -2694,7 +2692,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3867134342671430205">Displeyni sichqoncha yoki yon strelkalar yordamida suring</translation>
 <translation id="3867944738977021751">Sertifikat maydoni</translation>
 <translation id="3869917919960562512">Noto‘g‘ri indeks.</translation>
-<translation id="3870553315777000268">Sahifadagi elementlarni almashtirish uchun ularni “Keyingi” va “Avvalgi” amallariga tayinlang</translation>
+<translation id="3870553315777000268">Sahifadagi elementlarni almashtirish uchun ularni “Keyingisi” va “Avvalgisi” amallariga tayinlang</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" /> uchun saqlangan parollar yo‘q</translation>
 <translation id="3871350334636688135">24 soatdan keyin qurilmangizga administrator tomonidan bir martalik yangilanish oʻrnatiladi va mahalliy maʼlumotlar tozalanadi. Kerakli maʼlumotlarni 24 soat ichida bulut omborlariga zaxiralab oling.</translation>
 <translation id="3872220884670338524">Qo‘shimcha amallar, <ph name="DOMAIN" /> domenidagi <ph name="USERNAME" /> hisobi uchun profil</translation>
@@ -7235,7 +7233,7 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> maʼlumotlaringizni zaxiralash va bu <ph name="DEVICE_TYPE" /> qurilmasini bugunoq qaytarishingizni talab qilmoqda.}other{<ph name="MANAGER" /> maʼlumotlaringizni zaxiralash va bu <ph name="DEVICE_TYPE" /> qurilmasini bugunoq qaytarishingizni talab qilmoqda.}}</translation>
 <translation id="8902667442496790482">Teginib tinglash sozlamalarini ochish</translation>
 <translation id="8903263458134414071">Kirish uchun hisobni tanlang</translation>
-<translation id="8905899393736723380">Qoʻsimcha kalit tugmalar tayinlansinmi?</translation>
+<translation id="8905899393736723380">Qoʻshimcha kalit tugmalar tayinlansinmi?</translation>
 <translation id="890616557918890486">Manbani almashtirish</translation>
 <translation id="8907787635362884532">Noshir: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome kompyuteringizni zararli dasturlarni aniqlash uchun tekshira oladi</translation>

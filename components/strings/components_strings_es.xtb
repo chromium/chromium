@@ -1419,7 +1419,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6218753634732582820">¿Quitar dirección de Chromium?</translation>
 <translation id="622039917539443112">Plegado en paralelo</translation>
 <translation id="6221345481584921695">Recientemente, la función de Navegación segura de Google <ph name="BEGIN_LINK" />ha detectado software malicioso<ph name="END_LINK" /> en <ph name="SITE" />. En ocasiones, los sitios web que normalmente son seguros contienen software malicioso. Este contenido malintencionado procede de <ph name="SUBRESOURCE_HOST" />, un conocido distribuidor de software malicioso.</translation>
-<translation id="6232619828520900263">ID no válido actualmente</translation>
 <translation id="6234122620015464377">Recortar después de cada documento</translation>
 <translation id="6240447795304464094">Logotipo de Google Pay</translation>
 <translation id="6241121617266208201">Ocultar sugerencias</translation>
@@ -1928,6 +1927,7 @@ Más información:
 <translation id="8202097416529803614">Resumen del pedido</translation>
 <translation id="8202370299023114387">Conflicto</translation>
 <translation id="8206978196348664717">Prc4 (sobre)</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Cuando restableces el ID, tu ID actual deja de ser válido y el nuevo se emite en menos de 1 día.}=1{Cuando restableces el ID, tu ID actual deja de ser válido y el nuevo se emite en 1 día.}other{Cuando restableces el ID, tu ID actual deja de ser válido y el nuevo se emite en {NUM_DAYS} días.}}</translation>
 <translation id="8211406090763984747">La conexión es segura</translation>
 <translation id="8213464188712611711">Recuerdos</translation>
 <translation id="8218327578424803826">Ubicación asignada:</translation>

@@ -82,6 +82,7 @@
 <translation id="15373452373711364">Чоң чычкан курсору</translation>
 <translation id="1546492247443594934">2-иш такта</translation>
 <translation id="1550523713251050646">Көбүрөөк опциялар үчүн чыкылдатыңыз</translation>
+<translation id="1555130319947370107">Көк</translation>
 <translation id="1570871743947603115">Bluetooth'ду өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Бул сеанста аткарган иш-аракеттериңизди көрөт</translation>
 <translation id="1611993646327628135">Күйүк</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">Баскычтоптун жарыктыгы</translation>
 <translation id="2078034614700056995">Кийинки иш тактага которулуу үчүн экранды төрт манжаңыз менен оңго сүрүп коюңуз</translation>
 <translation id="2079504693865562705">Текчедеги колдонмолорду жашыруу</translation>
+<translation id="2079545284768500474">Кайтаруу</translation>
 <translation id="2083190527011054446">Түнүңүз бейпил болсун, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Тармакка туташпай турат</translation>
 <translation id="2108303511227308752">Alt + Backspace ыкчам баскычы өзгөртүлдү. Delete баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> + backspace баскычтарын басыңыз.</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">Башка Wi-Fi тармактарына кошулуу</translation>
 <translation id="2705001408393684014">Микрофонду өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Өйдө</translation>
+<translation id="2713444072780614174">Ак</translation>
 <translation id="2718395828230677721">Түнкү режим</translation>
 <translation id="2726420622004325180">Хотспот катары колдонуу үчүн телефонуңузда мобилдик Интернет болушу керек.</translation>
 <translation id="2727175239389218057">Жооп берүү</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> тармагын жандыруу үчүн басыңыз</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Туташтырылган түзмөктөрдүн жөндөөлөрү</translation>
+<translation id="583281660410589416">Белгисиз</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> бөлмөсүндөгү <ph name="ROUTE_TITLE" /> токтотулсун</translation>
 <translation id="5860033963881614850">Өчүк</translation>
 <translation id="5860491529813859533">Күйгүзүү</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">Менюну жабуу</translation>
 <translation id="7564874036684306347">Терезелер башка иш тактасына жылдырылганда күтүлбөгөн аракеттер орун алышы мүмкүн. Кийинки билдирмелер, терезелер жана диалог кутучалары иш такталардын ортосунда бөлүнүп калышы мүмкүн.</translation>
 <translation id="7569509451529460200">Брайль жана ChromeVox иштетилди</translation>
+<translation id="7569983096843329377">Кара</translation>
 <translation id="7579778809502851308">Экранды тартып алуу</translation>
 <translation id="7590883480672980941">Киргизүү жөндөөлөрү</translation>
 <translation id="7593891976182323525">Издөө же Shift</translation>

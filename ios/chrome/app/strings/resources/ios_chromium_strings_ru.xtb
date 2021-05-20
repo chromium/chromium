@@ -48,6 +48,7 @@
 <translation id="4852878756222711218">Чтобы получить доступ ко всем возможностям Chromium, войдите в аккаунт Google</translation>
 <translation id="4985291216379576555">Вы не в Сети, Chromium не может проверить наличие обновлений</translation>
 <translation id="4999538639245140991">Вы выходите из аккаунта, которым управляет администратор домена <ph name="SIGNOUT_MANAGED_DOMAIN" />. Обратите внимание, что данные Chromium будут удалены с устройства, но останутся в вашем аккаунте Google.</translation>
+<translation id="5171868502429358653">Вход в Chromium</translation>
 <translation id="5224391634244552924">Сохраненных паролей нет. Чтобы браузер Chromium мог проверять пароли, сохраните их.</translation>
 <translation id="5308226104666789935">Браузеру Chromium не удалось проверить наличие обновлений</translation>
 <translation id="5396916991083608703">Сделать Chromium браузером по умолчанию?</translation>
@@ -63,6 +64,7 @@
 1. Откройте настройки устройства.
 2. Найдите раздел, где выбирается браузер по умолчанию.
 3. Выберите Chromium.</translation>
+<translation id="6155422572367400359">Войдите на этот сайт, в аккаунт Google и в Chromium. Синхронизацию можно включить позже.</translation>
 <translation id="6268381023930128611">Выйти из Chromium?</translation>
 <translation id="632825460376924298">Разрешить вход в Chromium</translation>
 <translation id="6337530241089703714">Удалить данные Chromium с этого устройства?</translation>

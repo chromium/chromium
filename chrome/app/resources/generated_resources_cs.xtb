@@ -2298,7 +2298,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="346298925039590474">Tato mobilní síť bude k dispozici všem uživatelům tohoto zařízení</translation>
 <translation id="3464145797867108663">Přidat pracovní profil</translation>
 <translation id="346431825526753">Toto je dětský účet spravovaný uživatelem <ph name="CUSTODIAN_EMAIL" />.</translation>
-<translation id="3465480292013046659">Při stahování aktualizace došlo k problému. Zkuste to později.</translation>
 <translation id="3468298837301810372">Štítek</translation>
 <translation id="3468999815377931311">Telefon Android</translation>
 <translation id="3470442499439619530">Odebrat tohoto uživatele</translation>
@@ -2420,7 +2419,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3600792891314830896">Ztlumit weby, které přehrávají zvuky</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="360180734785106144">Nabízet nové funkce, až budou k dispozici</translation>
-<translation id="3602179428782502464">Tato aktualizace je blokována administrátorem</translation>
 <translation id="3602290021589620013">Náhled</translation>
 <translation id="3602870520245633055">Tisk a skenování</translation>
 <translation id="3603622770190368340">Získání certifikátu sítě</translation>

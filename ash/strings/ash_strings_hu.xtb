@@ -82,6 +82,7 @@
 <translation id="15373452373711364">Nagy egérmutató</translation>
 <translation id="1546492247443594934">2. asztal</translation>
 <translation id="1550523713251050646">Kattintson további lehetőségekért</translation>
+<translation id="1555130319947370107">Kék</translation>
 <translation id="1570871743947603115">Bluetooth ki- és bekapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Hozzáférés az Ön jelen munkamenetben végzett összes tevékenységéhez</translation>
 <translation id="1611993646327628135">Be</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">Billentyűzet világossága</translation>
 <translation id="2078034614700056995">Csúsztasson jobbra négy ujjal a következő asztalra váltáshoz</translation>
 <translation id="2079504693865562705">A polcon található alkalmazások elrejtése</translation>
+<translation id="2079545284768500474">Visszavonás</translation>
 <translation id="2083190527011054446">Jó éjszakát, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Nincs hálózati kapcsolat</translation>
 <translation id="2108303511227308752">Az Alt + Backspace billentyűparancs módosult. A Delete billentyű használatához nyomja le a(z) <ph name="LAUNCHER_KEY_NAME" /> + Backspace billentyűparancsot.</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">Csatlakozás másik Wi-Fi-hálózatokhoz</translation>
 <translation id="2705001408393684014">Mikrofon be-/kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Fel</translation>
+<translation id="2713444072780614174">Fehér</translation>
 <translation id="2718395828230677721">Éjszakai fény</translation>
 <translation id="2726420622004325180">Hotspot biztosításához telefonján engedélyeznie kell a mobiladat-használatot</translation>
 <translation id="2727175239389218057">Válasz</translation>
@@ -583,6 +586,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5805809050170488595">Kattintson a(z) <ph name="NETWORK_NAME" /> aktiválásához</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Csatlakoztatott eszközök beállításai</translation>
+<translation id="583281660410589416">Ismeretlen</translation>
 <translation id="5837036133683224804">A(z) <ph name="ROUTE_TITLE" /> leállítása itt: <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
 <translation id="5860491529813859533">Bekapcsolás</translation>
@@ -788,6 +792,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="7561982940498449837">Menü bezárása</translation>
 <translation id="7564874036684306347">Az ablakok másik asztalra történő áthelyezése váratlan viselkedést eredményezhet. Az ezt követő értesítéseket, ablakokat és párbeszédpaneleket a rendszer megoszthatja az asztalok között.</translation>
 <translation id="7569509451529460200">Braille és ChromeVox bekapcsolva</translation>
+<translation id="7569983096843329377">Fekete</translation>
 <translation id="7579778809502851308">Képernyőfelvétel</translation>
 <translation id="7590883480672980941">Beviteli beállítások</translation>
 <translation id="7593891976182323525">Keresés vagy Shift</translation>

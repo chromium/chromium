@@ -82,6 +82,7 @@
 <translation id="15373452373711364">Голем курсор на глувчето</translation>
 <translation id="1546492247443594934">Биро 2</translation>
 <translation id="1550523713251050646">Кликни за повеќе опции</translation>
+<translation id="1555130319947370107">Сина</translation>
 <translation id="1570871743947603115">Вклучи/исклучи Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Пристапете до целата ваша активност во сесијава</translation>
 <translation id="1611993646327628135">Вклучено</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">Осветленост на тастатурата</translation>
 <translation id="2078034614700056995">Повлечете надесно со четири прста за да се префрлите на следната работна површина</translation>
 <translation id="2079504693865562705">Сокриј ги апликациите од полицата</translation>
+<translation id="2079545284768500474">Врати</translation>
 <translation id="2083190527011054446">Добра ноќ <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Не е поврзан на мрежа</translation>
 <translation id="2108303511227308752">Кратенката од тастатура Alt + Backspace се промени. За да го користите копчето Delete, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">Поврзете се на други Wi-Fi мрежи</translation>
 <translation id="2705001408393684014">Вклучете/исклучете го микрофонот. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Нагоре</translation>
+<translation id="2713444072780614174">Бела</translation>
 <translation id="2718395828230677721">Ноќно светло</translation>
 <translation id="2726420622004325180">Телефонот мора да има мобилен интернет за да обезбеди точка на пристап</translation>
 <translation id="2727175239389218057">Одговори</translation>
@@ -583,6 +586,7 @@
 <translation id="5805809050170488595">Кликнете за активирање на <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Поставки за поврзани уреди</translation>
+<translation id="583281660410589416">Непознат</translation>
 <translation id="5837036133683224804">Престани со емитување на <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Исклучено</translation>
 <translation id="5860491529813859533">Вклучи</translation>
@@ -788,6 +792,7 @@
 <translation id="7561982940498449837">Затвори го менито</translation>
 <translation id="7564874036684306347">Преместувањето на прозорците на друга работна површина може да доведе до неочекувано однесување. Следните известувања, прозорци и дијалози може да се поделат помеѓу работните површини.</translation>
 <translation id="7569509451529460200">Брајовото писмо и ChromeVox се овозможени</translation>
+<translation id="7569983096843329377">Црна</translation>
 <translation id="7579778809502851308">Снимање на екранот</translation>
 <translation id="7590883480672980941">Поставки за внесување</translation>
 <translation id="7593891976182323525">Search или Shift</translation>

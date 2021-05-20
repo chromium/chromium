@@ -82,6 +82,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="15373452373711364">Con trỏ chuột lớn</translation>
 <translation id="1546492247443594934">Không gian làm việc 2</translation>
 <translation id="1550523713251050646">Nhấp để xem các tùy chọn khác</translation>
+<translation id="1555130319947370107">Xanh lam</translation>
 <translation id="1570871743947603115">Bật/tắt Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Truy cập vào tất cả hoạt động của bạn trong phiên này</translation>
 <translation id="1611993646327628135">Bật</translation>
@@ -140,6 +141,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2067602449040652523">Độ sáng bàn phím</translation>
 <translation id="2078034614700056995">Hãy vuốt sang phải bằng 4 ngón tay để chuyển sang không gian làm việc tiếp theo</translation>
 <translation id="2079504693865562705">Ẩn các ứng dụng trên kệ</translation>
+<translation id="2079545284768500474">Hoàn tác</translation>
 <translation id="2083190527011054446">Xin chào <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Chưa kết nối với mạng</translation>
 <translation id="2108303511227308752">Phím tắt Alt + Backspace đã thay đổi. Để sử dụng phím Delete, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
@@ -210,6 +212,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2704781753052663061">Dùng các mạng Wi-Fi khác</translation>
 <translation id="2705001408393684014">Bật tắt micrô. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Lên</translation>
+<translation id="2713444072780614174">Trắng</translation>
 <translation id="2718395828230677721">Ánh sáng đêm</translation>
 <translation id="2726420622004325180">Điện thoại của bạn phải có dữ liệu di động thì mới dùng làm điểm phát sóng được</translation>
 <translation id="2727175239389218057">Trả lời</translation>
@@ -582,6 +585,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5805809050170488595">Nhấp để kích hoạt <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Hệ điều hành Chromium</translation>
 <translation id="5825969630400862129">Cài đặt thiết bị đã kết nối</translation>
+<translation id="583281660410589416">Không xác định</translation>
 <translation id="5837036133683224804">Dừng <ph name="ROUTE_TITLE" /> trên <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Tắt</translation>
 <translation id="5860491529813859533">Bật</translation>
@@ -787,6 +791,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7561982940498449837">Đóng trình đơn</translation>
 <translation id="7564874036684306347">Di chuyển cửa sổ sang màn hình khác có thể gây ra hoạt động không mong muốn. Các thông báo, cửa sổ và hộp thoại tiếp theo có thể bị phân tách giữa các màn hình.</translation>
 <translation id="7569509451529460200">Đã bật chữ nổi Braille và ChromeVox</translation>
+<translation id="7569983096843329377">Đen</translation>
 <translation id="7579778809502851308">Chụp ảnh màn hình</translation>
 <translation id="7590883480672980941">Cài đặt phương thức nhập</translation>
 <translation id="7593891976182323525">Search hoặc Shift</translation>

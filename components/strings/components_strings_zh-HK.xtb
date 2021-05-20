@@ -1407,7 +1407,6 @@
 <translation id="6218753634732582820">要從 Chromium 移除地址嗎？</translation>
 <translation id="622039917539443112">雙對摺</translation>
 <translation id="6221345481584921695">Google 安全瀏覽功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />偵測到惡意軟件<ph name="END_LINK" />。即使是平常可以安全使用的網站，有時也會被惡意軟件感染。這些惡意內容來自已知的惡意軟件散佈網站 <ph name="SUBRESOURCE_HOST" />。</translation>
-<translation id="6232619828520900263">ID 目前無效</translation>
 <translation id="6234122620015464377">完成每份文件後修剪</translation>
 <translation id="6240447795304464094">Google Pay 標誌</translation>
 <translation id="6241121617266208201">隱藏建議</translation>
@@ -1916,6 +1915,7 @@
 <translation id="8202097416529803614">訂單摘要</translation>
 <translation id="8202370299023114387">衝突</translation>
 <translation id="8206978196348664717">Prc4 (信封)</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{重設 ID 後，目前的 ID 就會失效，而系統將會在 1 天內發出新的 ID}=1{重設 ID 後，目前的 ID 就會失效，而系統將會在 1 天後發出新的 ID}other{重設 ID 後，目前的 ID 就會失效，而系統將會在 {NUM_DAYS} 天後發出新的 ID}}</translation>
 <translation id="8211406090763984747">己建立安全連線</translation>
 <translation id="8213464188712611711">記憶體</translation>
 <translation id="8218327578424803826">已指派的位置：</translation>

@@ -82,6 +82,7 @@
 <translation id="15373452373711364">বড় মাউস কার্সার</translation>
 <translation id="1546492247443594934">ডেস্ক ২</translation>
 <translation id="1550523713251050646">আরও বিকল্পের জন্য ক্লিক করুন</translation>
+<translation id="1555130319947370107">নীল</translation>
 <translation id="1570871743947603115">ব্লুটুথ টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">এই সেশনে আপনার সব অ্যাক্টিভিটি অ্যাক্সেস করুন</translation>
 <translation id="1611993646327628135">চালু আছে</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">কীবোর্ডের উজ্জ্বলতা</translation>
 <translation id="2078034614700056995">পরবর্তী ডেস্কে সুইচ করতে, চার আঙুল ব্যবহার করে ডানদিকে সোয়াইপ করুন</translation>
 <translation id="2079504693865562705">শেল্ফে অ্যাপ লুকিয়ে রাখুন</translation>
+<translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
 <translation id="2083190527011054446">শুভরাত্রি <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">কোনও নেটওয়ার্কে কানেক্ট করা নেই</translation>
 <translation id="2108303511227308752">Alt + Backspace কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Delete কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Backspace কী প্রেস করুন।</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">অন্য ওয়াই-ফাই নেটওয়ার্কে যোগ দিন</translation>
 <translation id="2705001408393684014">মাইক্রোফোন টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">উপরের</translation>
+<translation id="2713444072780614174">সাদা</translation>
 <translation id="2718395828230677721">নাইট লাইট</translation>
 <translation id="2726420622004325180">হটস্পট দেওয়ার জন্য আপনার ফোনে মোবাইল ডেটার অ্যাক্সেস থাকতে হবে</translation>
 <translation id="2727175239389218057">উত্তর দিন</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> চালু করতে ক্লিক করুন</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">কানেক্ট করা ডিভাইসের সেটিংস</translation>
+<translation id="583281660410589416">অজানা</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-এ <ph name="ROUTE_TITLE" /> বন্ধ করুন</translation>
 <translation id="5860033963881614850">বন্ধ করুন</translation>
 <translation id="5860491529813859533">চালু করুন</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">মেনু বন্ধ করুন</translation>
 <translation id="7564874036684306347">কোনও উইন্ডো অন্য ডেস্কটপে সরানো হলে সেটির আচরণে অপ্রত্যাশিত পরিবর্তন হতে পারে। পরবর্তী বিজ্ঞপ্তি, উইন্ডো এবং ডায়ালগ দুটি ডেস্কটপ মিলিয়ে দেখানো হতে পারে।</translation>
 <translation id="7569509451529460200">ব্রেল এবং ChromeVox সক্ষম করেছেন</translation>
+<translation id="7569983096843329377">কালো</translation>
 <translation id="7579778809502851308">স্ক্রিন ক্যাপচার করুন</translation>
 <translation id="7590883480672980941">ইনপুট সেটিংস</translation>
 <translation id="7593891976182323525">Search অথবা Shift</translation>

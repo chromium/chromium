@@ -24,6 +24,7 @@
 <translation id="2695886661449553974">Chrome no ha podido comprobar si hay actualizaciones. Prueba de nuevo más tarde.</translation>
 <translation id="2732745070297234559">Chrome no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
 <translation id="2740105938841089077">Usar Chrome para abrir enlaces</translation>
+<translation id="2869959624320573933">Iniciar sesión en Chrome</translation>
 <translation id="2919738076569633423">Al usar Chrome, aceptas los <ph name="BEGIN_LINK_TOS" />Términos del Servicio<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Al cerrar sesión en una cuenta gestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, se eliminan tus datos de Chrome en este dispositivo, pero permanecen en tu cuenta de Google.</translation>
 <translation id="3167189358072330585">Tu cuenta no funciona en Google Chrome. Ponte en contacto con el administrador del dominio o utiliza una cuenta de Google normal para iniciar sesión.</translation>
@@ -90,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome está actualizado</translation>
 <translation id="8022947259858476807">Usa Chrome de forma predeterminada para abrir enlaces, hacer búsquedas desde widgets y autocompletar contraseñas en otras aplicaciones</translation>
 <translation id="8160472928944011082">No se puede actualizar Chrome</translation>
+<translation id="8263079278049777200">Inicia sesión en este sitio, en tu cuenta de Google y en Chrome. Puedes activar la sincronización más tarde.</translation>
 <translation id="8357607116237445042">Elige si quieres borrar o conservar tus datos de Chrome en este dispositivo</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="840168496893712993">Algunos complementos hacen que Chrome falle. Prueba a desinstalarlos.</translation>

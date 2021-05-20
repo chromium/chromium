@@ -82,6 +82,7 @@
 <translation id="15373452373711364">Большой курсор мыши</translation>
 <translation id="1546492247443594934">Рабочий стол 2</translation>
 <translation id="1550523713251050646">Чтобы изменить источник питания, нажмите здесь.</translation>
+<translation id="1555130319947370107">Синий</translation>
 <translation id="1570871743947603115">Изменить настройки Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="1589090746204042747">Получать доступ к данным о ваших действиях во время этого сеанса.</translation>
 <translation id="1611993646327628135">Включено</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">Яркость клавиатуры</translation>
 <translation id="2078034614700056995">Чтобы перейти на следующий рабочий стол, проведите четырьмя пальцами вправо.</translation>
 <translation id="2079504693865562705">Скрыть приложения на панели запуска</translation>
+<translation id="2079545284768500474">Отмена</translation>
 <translation id="2083190527011054446">Доброй ночи, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Нет подключения к сети</translation>
 <translation id="2108303511227308752">Функция сочетания клавиш Alt + Backspace изменилась. Чтобы выполнить действие клавиши Delete, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">Подключиться к другим сетям Wi-Fi</translation>
 <translation id="2705001408393684014">Кнопка включения и отключения микрофона. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Вверх</translation>
+<translation id="2713444072780614174">Белый</translation>
 <translation id="2718395828230677721">Ночной свет</translation>
 <translation id="2726420622004325180">Чтобы включить точку доступа на телефоне, требуется подключение к мобильному Интернету</translation>
 <translation id="2727175239389218057">Ответить</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595">Нажмите, чтобы активировать <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Настройки подключенных устройств</translation>
+<translation id="583281660410589416">Неизвестно</translation>
 <translation id="5837036133683224804">Остановить трансляцию <ph name="ROUTE_TITLE" /> на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
 <translation id="5860491529813859533">Включить</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">Закрыть меню</translation>
 <translation id="7564874036684306347">При переносе окон на другой рабочий стол иногда возникают ошибки. Уведомления и диалоговые окна могут появляться на разных рабочих столах.</translation>
 <translation id="7569509451529460200">Шрифт Брайля и функция ChromeVox включены</translation>
+<translation id="7569983096843329377">Черный</translation>
 <translation id="7579778809502851308">Запись экрана</translation>
 <translation id="7590883480672980941">Настройки ввода</translation>
 <translation id="7593891976182323525">Search или Shift</translation>

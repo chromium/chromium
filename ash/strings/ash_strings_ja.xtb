@@ -82,6 +82,7 @@
 <translation id="15373452373711364">大きいマウスカーソル</translation>
 <translation id="1546492247443594934">デスク 2</translation>
 <translation id="1550523713251050646">クリックするとその他のオプションが表示されます</translation>
+<translation id="1555130319947370107">青</translation>
 <translation id="1570871743947603115">Bluetooth を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">このセッションのすべてのアクティビティにアクセスする</translation>
 <translation id="1611993646327628135">オン</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">キーボードの明るさ</translation>
 <translation id="2078034614700056995">次のデスクに切り替えるには 4 本の指で右にスワイプします</translation>
 <translation id="2079504693865562705">シェルフのアプリを非表示</translation>
+<translation id="2079545284768500474">元に戻す</translation>
 <translation id="2083190527011054446">おやすみなさい、<ph name="GIVEN_NAME" /> さん</translation>
 <translation id="209965399369889474">ネットワークに接続されていません</translation>
 <translation id="2108303511227308752">キーボード ショートカット「Alt+Backspace」が変更されました。Delete キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+Backspace キーを押してください。</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">他の Wi-Fi ネットワークに接続</translation>
 <translation id="2705001408393684014">マイクを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">上矢印キー</translation>
+<translation id="2713444072780614174">白</translation>
 <translation id="2718395828230677721">夜間モード</translation>
 <translation id="2726420622004325180">ホットスポットを提供するにはスマートフォンにモバイルデータが必要です</translation>
 <translation id="2727175239389218057">返信</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595">クリックすると <ph name="NETWORK_NAME" /> が有効になります</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">接続済みデバイスの設定</translation>
+<translation id="583281660410589416">不明</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> の「<ph name="ROUTE_TITLE" />」を停止します</translation>
 <translation id="5860033963881614850">オフ</translation>
 <translation id="5860491529813859533">オンにする</translation>
@@ -788,6 +792,7 @@
 <translation id="7561982940498449837">メニューを閉じる</translation>
 <translation id="7564874036684306347">ウィンドウを別のデスクトップに移動すると、予期しない動作が起こることがあります。以降の通知、ウィンドウ、ダイアログは、複数のデスクトップに分かれて表示される可能性があります。</translation>
 <translation id="7569509451529460200">Braille と ChromeVox が有効になっています</translation>
+<translation id="7569983096843329377">黒</translation>
 <translation id="7579778809502851308">スクリーン キャプチャ</translation>
 <translation id="7590883480672980941">入力設定</translation>
 <translation id="7593891976182323525">検索/Shift</translation>

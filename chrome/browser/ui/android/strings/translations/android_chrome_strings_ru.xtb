@@ -202,6 +202,7 @@
 <ph name="BEGIN_LIST_ITEM1" />Рекламодатели смогут видеть, что интересно тысячам пользователей, и подбирать рекламные объявления для целой группы людей, а не одного человека.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Рекламодатели смогут оценивать эффективность объявлений, не отслеживая ваши действия в интернете.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Выполняется предзагрузка страниц, которые, возможно, вы будете посещать. Для этого Chrome может использовать файлы cookie (при наличии вашего разрешения), а также шифровать и отправлять страницы через Google, чтобы скрыть ваши идентификационные данные от сайтов.</translation>
 <translation id="234265804618409743">Произошла ошибка. Не удается открыть камеру.</translation>
 <translation id="2345671828921229300">Для поиска нажмите на слово и удерживайте</translation>
 <translation id="2349710944427398404">Общее количество данных Chrome, включая аккаунты, закладки и сохраненные настройки</translation>
@@ -783,6 +784,7 @@
 <translation id="6138832295072039549">Изменить настройки сайта можно здесь</translation>
 <translation id="6140709049082532940">Улучшенная защита:</translation>
 <translation id="6140912465461743537">Страна/регион</translation>
+<translation id="6141988275892716286">Подтвердите скачивание</translation>
 <translation id="614940544461990577">Попробуйте сделать следующее:</translation>
 <translation id="6154478581116148741">Чтобы экспортировать пароли с этого устройства, включите блокировку экрана в настройках.</translation>
 <translation id="6159335304067198720">Сэкономлено: <ph name="PERCENT" /></translation>
@@ -994,6 +996,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (последнее обновление: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">сэкономлено</translation>
 <translation id="7498271377022651285">Подождите…</translation>
+<translation id="750228856503700085">Обновления недоступны</translation>
 <translation id="7507207699631365376">Посмотреть <ph name="BEGIN_LINK" />политику конфиденциальности<ph name="END_LINK" /> этого поставщика услуг</translation>
 <translation id="7514365320538308">Скачать</translation>
 <translation id="751961395872307827">Не удалось подключиться к сайту</translation>
@@ -1041,6 +1044,7 @@
 <translation id="7791543448312431591">Добавить</translation>
 <translation id="7798392620021911922">Восстановлено вкладок: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Спасибо, не надо</translation>
+<translation id="7805768142964895445">Состояние</translation>
 <translation id="7808889146555843082">Это действие не приведет к удалению вашего аккаунта на сайте <ph name="SITE" />. Чтобы защитить от злоумышленников свои данные на сайте <ph name="SITE" />, удалите аккаунт или измените пароль.</translation>
 <translation id="7810647596859435254">Открыть с помощью...</translation>
 <translation id="7815484226266492798">Длинный скриншот</translation>
@@ -1095,6 +1099,7 @@
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8078096376109663956">Поделитесь только текстом.</translation>
 <translation id="8084114998886531721">Сохраненный пароль</translation>
+<translation id="8084285576995584326">Управляйте данными своего аккаунта Google</translation>
 <translation id="808747664143081553">Подключено к устройству</translation>
 <translation id="8103578431304235997">Вкладка инкогнито</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1190,6 +1195,7 @@
 <translation id="8712637175834984815">Готово</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>
 <translation id="8730621377337864115">Готово</translation>
+<translation id="8746155870861185046">Поделиться выделенным</translation>
 <translation id="8748850008226585750">Содержимое скрыто</translation>
 <translation id="8773160212632396039">Запрос обрабатывается</translation>
 <translation id="8788265440806329501">История переходов закрыта</translation>

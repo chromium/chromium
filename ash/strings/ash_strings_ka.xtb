@@ -82,6 +82,7 @@
 <translation id="15373452373711364">დიდი მაუსის კურსორი</translation>
 <translation id="1546492247443594934">დესკტოპი 2</translation>
 <translation id="1550523713251050646">დააწკაპუნეთ დამატებითი ვარიანტების სანახავად</translation>
+<translation id="1555130319947370107">ლურჯი</translation>
 <translation id="1570871743947603115">Bluetooth-ის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ამ სესიის დროს თქვენს მთელ აქტივობაზე წვდომა</translation>
 <translation id="1611993646327628135">ჩართული</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">კლავიატურის სიკაშკაშე</translation>
 <translation id="2078034614700056995">შემდეგ სამუშაო მაგიდაზე გადასართველად გადაფურცლეთ მარჯვნივ ოთხი თითით</translation>
 <translation id="2079504693865562705">თაროზე აპების დამალვა</translation>
+<translation id="2079545284768500474">მოქმედების გაუქმება</translation>
 <translation id="2083190527011054446">ღამე მშვიდობის, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">ქსელთან კავშირი არ არის</translation>
 <translation id="2108303511227308752">კლავიატურის მალსახმობი Alt + Backspace შეიცვალა. წაშლის კლავიშით სარგებლობისთვის გამოიყენეთ კლავიშთა კომბინაცია <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">სხვა Wi-Fi ქსელებში გაწევრიანება</translation>
 <translation id="2705001408393684014">მიკროფონის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ზემოთ</translation>
+<translation id="2713444072780614174">თეთრი</translation>
 <translation id="2718395828230677721">ღამის განათება</translation>
 <translation id="2726420622004325180">უსადენო ქსელის უზრუნველსაყოფად თქვენს ტელეფონს უნდ ჰქონდეს მობილური ინტერნეტი</translation>
 <translation id="2727175239389218057">პასუხი</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595">დააწკაპუნეთ, <ph name="NETWORK_NAME" /> რომ გაააქტიუროთ</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">დაკავშირებული მოწყობილობების პარამეტრები</translation>
+<translation id="583281660410589416">უცნობი</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" />-ის შეწყვეტა „<ph name="RECEIVER_NAME" />“-ში</translation>
 <translation id="5860033963881614850">გამორთვა</translation>
 <translation id="5860491529813859533">ჩართვა</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">მენიუს დახურვა</translation>
 <translation id="7564874036684306347">ფანჯრების სხვა დესკტოპზე გადატანამ შეიძლება მოულოდნელი ქცევა გამოიწვიოს. შემდგომი შეტყობინებები, ფანჯრები და დიალოგები შეიძლება გაიყოს დესკტოპებს შორის.</translation>
 <translation id="7569509451529460200">ბრაილის შრიფტი და ChromeVox ჩართულია</translation>
+<translation id="7569983096843329377">შავი</translation>
 <translation id="7579778809502851308">ეკრანის აღბეჭდვა</translation>
 <translation id="7590883480672980941">შეყვანის პარამეტრები</translation>
 <translation id="7593891976182323525">ძიება ან Shift</translation>

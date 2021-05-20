@@ -24,6 +24,7 @@
 <translation id="2695886661449553974">Chrome konnte nicht nach Updates suchen. Versuchen Sie es später noch einmal.</translation>
 <translation id="2732745070297234559">Chrome konnte nicht alle Passwörter prüfen. Versuchen Sie es morgen noch einmal.</translation>
 <translation id="2740105938841089077">Chrome zum Öffnen von Links verwenden</translation>
+<translation id="2869959624320573933">In Chrome anmelden</translation>
 <translation id="2919738076569633423">Wenn Sie Chrome nutzen, stimmen Sie damit den <ph name="BEGIN_LINK_TOS" />Nutzungsbedingungen<ph name="END_LINK_TOS" /> zu.</translation>
 <translation id="3030414234702425231">Sie melden sich von einem Konto ab, das von <ph name="SIGNOUT_MANAGED_DOMAIN" /> verwaltet wird. Dadurch werden Ihre Chrome-Daten von diesem Gerät gelöscht. Sie bleiben jedoch in Ihrem Google-Konto erhalten.</translation>
 <translation id="3167189358072330585">Dieses Konto funktioniert in Google Chrome nicht. Wenden Sie sich an Ihren Domainadministrator oder melden Sie sich mit einem Google-Standardkonto an.</translation>
@@ -90,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome ist auf dem neuesten Stand.</translation>
 <translation id="8022947259858476807">Chrome standardmäßig verwenden, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch auszufüllen</translation>
 <translation id="8160472928944011082">Update nicht möglich</translation>
+<translation id="8263079278049777200">Melden Sie sich bei dieser Website, in Ihrem Google-Konto und in Chrome an. Sie können die Synchronisierung später aktivieren.</translation>
 <translation id="8357607116237445042">Möchten Sie Ihre Chrome-Daten von diesem Gerät löschen oder sie behalten?</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="840168496893712993">Einige Add-ons führen zum Ausfall von Chrome. Bitte deinstallieren Sie diese Add-ons.</translation>

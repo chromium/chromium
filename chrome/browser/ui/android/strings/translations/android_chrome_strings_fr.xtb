@@ -202,6 +202,7 @@ Appuyez sur n'importe quel mot pour lancer une recherche. Pour affiner la recher
 <ph name="BEGIN_LIST_ITEM1" />Les annonceurs peuvent déterminer que des milliers d'utilisateurs partagent un centre d'intérêt commun (à l'instar d'une foule rassemblée à un concert) et sélectionner des annonces pour ce groupe plutôt que pour une personne spécifique.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Les annonceurs peuvent évaluer l'efficacité des annonces sans utiliser le suivi intersites.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Chrome précharge les pages susceptibles de vous intéresser. Pour cela, il peut utiliser des cookies (si vous les autorisez) et envoyer ces pages via Google en les chiffrant pour cacher votre identité aux sites.</translation>
 <translation id="234265804618409743">Impossible d'ouvrir l'appareil photo. Un problème est survenu.</translation>
 <translation id="2345671828921229300">Pour faire une recherche, appuyez de manière prolongée sur un mot</translation>
 <translation id="2349710944427398404">Espace de stockage utilisé pour l'ensemble des données Chrome, y compris les comptes, favoris et paramètres enregistrés</translation>
@@ -783,6 +784,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6138832295072039549">Modifiez les paramètres des sites ici</translation>
 <translation id="6140709049082532940">Protection renforcée :</translation>
 <translation id="6140912465461743537">Pays/Région</translation>
+<translation id="6141988275892716286">Confirmer le téléchargement</translation>
 <translation id="614940544461990577">Voici quelques conseils :</translation>
 <translation id="6154478581116148741">Activez le verrouillage de l'écran dans les paramètres pour exporter vos mots de passe à partir de cet appareil</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> de données économisées</translation>
@@ -994,6 +996,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="7493994139787901920"><ph name="VERSION" /> (Dernière mise à jour <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">de données économisées</translation>
 <translation id="7498271377022651285">Veuillez patienter…</translation>
+<translation id="750228856503700085">Aucune nouvelle information</translation>
 <translation id="7507207699631365376">Afficher les <ph name="BEGIN_LINK" />Règles de confidentialité<ph name="END_LINK" /> de ce fournisseur</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="751961395872307827">Impossible de se connecter au site</translation>
@@ -1041,6 +1044,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> onglets sont restaurés</translation>
 <translation id="780301667611848630">Non merci</translation>
+<translation id="7805768142964895445">État</translation>
 <translation id="7808889146555843082">La suppression de ce mot de passe n'entraînera pas la suppression de votre compte sur <ph name="SITE" />. Modifiez votre mot de passe ou supprimez votre compte sur <ph name="SITE" /> pour le protéger des autres utilisateurs.</translation>
 <translation id="7810647596859435254">Ouvrir avec…</translation>
 <translation id="7815484226266492798">Capture d'écran pleine page</translation>
@@ -1095,6 +1099,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8078096376109663956">Partagez uniquement le texte</translation>
 <translation id="8084114998886531721">Mot de passe enregistré</translation>
+<translation id="8084285576995584326">Gérer les données de votre compte Google</translation>
 <translation id="808747664143081553">Connecté à l'appareil</translation>
 <translation id="8103578431304235997">Onglet de navigation privée</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1190,6 +1195,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="8712637175834984815">OK</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8730621377337864115">OK</translation>
+<translation id="8746155870861185046">Partager le texte mis en surbrillance</translation>
 <translation id="8748850008226585750">Contenu masqué</translation>
 <translation id="8773160212632396039">Traitement de la requête…</translation>
 <translation id="8788265440806329501">Historique de navigation fermé</translation>

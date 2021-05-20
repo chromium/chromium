@@ -82,6 +82,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="15373452373711364">Büyük fare imleci</translation>
 <translation id="1546492247443594934">Çalışma Masası 2</translation>
 <translation id="1550523713251050646">Daha fazla seçenek için tıklayın</translation>
+<translation id="1555130319947370107">Mavi</translation>
 <translation id="1570871743947603115">Bluetooth'u aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Bu oturumdaki tüm etkinliğinize erişme</translation>
 <translation id="1611993646327628135">Açık</translation>
@@ -140,6 +141,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2067602449040652523">Klavye parlaklığı</translation>
 <translation id="2078034614700056995">Sonraki masaya geçmek için dört parmakla sağa kaydırın</translation>
 <translation id="2079504693865562705">Raftaki uygulamaları gizle</translation>
+<translation id="2079545284768500474">Geri al</translation>
 <translation id="2083190527011054446">İyi geceler <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Ağa bağlı değilsiniz</translation>
 <translation id="2108303511227308752">Alt + Geri tuşu klavye kısayolu değişti. Delete tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + geri tuşlarına basın.</translation>
@@ -210,6 +212,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2704781753052663061">Başka kablosuz ağlara katıl</translation>
 <translation id="2705001408393684014">Mikrofonu aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Yukarı</translation>
+<translation id="2713444072780614174">Beyaz</translation>
 <translation id="2718395828230677721">Gece Işığı</translation>
 <translation id="2726420622004325180">Hotspot sunabilmesi için telefonunuzun mobil verisi olmalıdır</translation>
 <translation id="2727175239389218057">Yanıtla</translation>
@@ -582,6 +585,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ağını etkinleştirmek için tıklayın</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Bağlı cihaz ayarları</translation>
+<translation id="583281660410589416">Bilinmiyor</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> adlı alıcıya <ph name="ROUTE_TITLE" /> yayınını durdur</translation>
 <translation id="5860033963881614850">Kapalı</translation>
 <translation id="5860491529813859533">Etkinleştir</translation>
@@ -788,6 +792,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7561982940498449837">Menüyü kapat</translation>
 <translation id="7564874036684306347">Pencereleri başka bir masaüstüne taşımak, beklenmeyen davranışlara neden olabilir. Pencereler taşındıktan sonra gelen bildirimler, pencereler ve iletişim kutuları masaüstleri arasında bölünebilir.</translation>
 <translation id="7569509451529460200">Braille ve ChromeVox etkinleştirildi</translation>
+<translation id="7569983096843329377">Siyah</translation>
 <translation id="7579778809502851308">Ekran görüntüsü</translation>
 <translation id="7590883480672980941">Giriş ayarları</translation>
 <translation id="7593891976182323525">Arama veya Üst Karakter</translation>

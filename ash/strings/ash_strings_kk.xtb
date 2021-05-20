@@ -82,6 +82,7 @@
 <translation id="15373452373711364">Үлкен тінтуір курсоры</translation>
 <translation id="1546492247443594934">2-ші жұмыс үстелі</translation>
 <translation id="1550523713251050646">Қосымша опциялар үшін басыңыз</translation>
+<translation id="1555130319947370107">Көк</translation>
 <translation id="1570871743947603115">Bluetooth функциясын қосу/өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Осы сеанстағы барлық әрекеттеріңізге кіріңіз</translation>
 <translation id="1611993646327628135">Қосулы</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">Пернетақта ашықтығы</translation>
 <translation id="2078034614700056995">Келесі жұмыс үстеліне ауысу үшін төрт саусақпен оңға сырғытыңыз.</translation>
 <translation id="2079504693865562705">Сөредегі қолданбаларды жасыру</translation>
+<translation id="2079545284768500474">Қайтару</translation>
 <translation id="2083190527011054446">Қайырлы түн, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Желіге жалғанбаған.</translation>
 <translation id="2108303511227308752">Alt + Backspace пернелер тіркесімінің функциясы өзгерді. Delete пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + Backspace пернесі тіркесімін басыңыз.</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">Басқа Wi-Fi желілеріне қосылу</translation>
 <translation id="2705001408393684014">Микрофонды қосу/өшіру түймесі. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Жоғары</translation>
+<translation id="2713444072780614174">Ақ</translation>
 <translation id="2718395828230677721">Түнгі жарық</translation>
 <translation id="2726420622004325180">Хотспотты ұсыну үшін телефоныңызда мобильдік интернет болуы керек.</translation>
 <translation id="2727175239389218057">Жауап беру</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> іске қосу үшін басыңыз</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Байланыстырылған құрылғылар параметрлері</translation>
+<translation id="583281660410589416">Белгісіз</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> қабылдағышында <ph name="ROUTE_TITLE" /> трансляциясын тоқтату</translation>
 <translation id="5860033963881614850">Өшірулі</translation>
 <translation id="5860491529813859533">Қосу</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">Мәзірді жабу</translation>
 <translation id="7564874036684306347">Терезелерді басқа жұмыс үстеліне ауыстырғанда, күтпеген қате шығуы мүмкін. Хабарландырулар, терезелер мен диалогтік терезелер түрлі жұмыс үстелдерінде көрсетілуі ықтимал.</translation>
 <translation id="7569509451529460200">Брайль және ChromeVox қосулы</translation>
+<translation id="7569983096843329377">Қара</translation>
 <translation id="7579778809502851308">Экран суреті</translation>
 <translation id="7590883480672980941">Енгізу параметрлері</translation>
 <translation id="7593891976182323525">Search немесе Shift</translation>

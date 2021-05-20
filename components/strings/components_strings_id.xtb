@@ -1409,7 +1409,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6218753634732582820">Hapus alamat dari Chromium?</translation>
 <translation id="622039917539443112">Lipatan paralel</translation>
 <translation id="6221345481584921695">Google Safe Browsing baru saja <ph name="BEGIN_LINK" />mendeteksi software perusak<ph name="END_LINK" /> di <ph name="SITE" />. Situs web yang biasanya aman terkadang terinfeksi software perusak. Konten berbahaya datang dari <ph name="SUBRESOURCE_HOST" />, yang dikenal luas sebagai distributor software perusak.</translation>
-<translation id="6232619828520900263">ID saat ini tidak valid</translation>
 <translation id="6234122620015464377">Trim setelah setiap dokumen tercetak</translation>
 <translation id="6240447795304464094">Logo Google Pay</translation>
 <translation id="6241121617266208201">Sembunyikan saran</translation>
@@ -1916,6 +1915,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8202097416529803614">Ringkasan pesanan</translation>
 <translation id="8202370299023114387">Konflik</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Jika Anda mereset ID, ID saat ini akan menjadi tidak valid dan ID baru akan dikirimkan dalam waktu kurang dari 1 hari}=1{Jika Anda mereset ID, ID saat ini akan menjadi tidak valid dan ID baru akan dikirimkan dalam waktu 1 hari}other{Jika Anda mereset ID, ID saat ini akan menjadi tidak valid dan ID baru akan dikirimkan dalam waktu {NUM_DAYS} hari}}</translation>
 <translation id="8211406090763984747">Koneksi aman</translation>
 <translation id="8213464188712611711">Memori</translation>
 <translation id="8218327578424803826">Lokasi yang Ditetapkan:</translation>

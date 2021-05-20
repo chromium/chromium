@@ -82,6 +82,7 @@
 <translation id="15373452373711364">විශාල මවුස කර්සරය</translation>
 <translation id="1546492247443594934">2 වෙනි මේසය</translation>
 <translation id="1550523713251050646">තවත් විකල්ප සඳහා ක්ලික් කරන්න</translation>
+<translation id="1555130319947370107">නිල්</translation>
 <translation id="1570871743947603115">බ්ලූටූත් ටොගල කරන්න. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">මෙම සැසියෙහි ඔබේ සියලු ක්‍රියාකාරකම්වලට ප්‍රවේශය</translation>
 <translation id="1611993646327628135">ක්‍රියාත්මකයි</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">යතුරු පුවරුවේ දීප්තිය</translation>
 <translation id="2078034614700056995">ඊළඟ මේසයට මාරු වීමට ඇඟිලි හතරකින් දකුණට ස්වයිප් කරන්න</translation>
 <translation id="2079504693865562705">රාක්කය තුළ යෙදුම් සඟවන්න</translation>
+<translation id="2079545284768500474">පසුගමනය</translation>
 <translation id="2083190527011054446">සුබ රාත්‍රියක් <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">ජාලයට සම්බන්ධ වී නැත</translation>
 <translation id="2108303511227308752">Alt + Backspace යතුරු පුවරු කෙටි මග වෙනස් වී ඇත. Delete යතුර භාවිත කිරීමට, <ph name="LAUNCHER_KEY_NAME" /> යතුර + Backspace ඔබන්න.</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">වෙනත් Wi-Fi ජාලවලට එක් වන්න</translation>
 <translation id="2705001408393684014">මයිකය ටොගල් කරන්න. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ඉහළ</translation>
+<translation id="2713444072780614174">සුදු</translation>
 <translation id="2718395828230677721">රාත්‍රී ආලෝකය</translation>
 <translation id="2726420622004325180">හොට්ස්පොට් එකක් ලබා දීමට ඔබගේ දුරකථනයේ ජංගම දත්ත තිබිය යුතුය</translation>
 <translation id="2727175239389218057">පිළිතුරු දෙන්න</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> සක්‍රිය කිරීමට ක්ලික් කරන්න</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">සම්බන්ධිත උපාංග සැකසීම්</translation>
+<translation id="583281660410589416">නොදනී</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> මත <ph name="ROUTE_TITLE" /> නවත්වන්න</translation>
 <translation id="5860033963881614850">අක්‍රීය</translation>
 <translation id="5860491529813859533">ක්‍රියාත්මක කරන්න</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">මෙනුව වසන්න</translation>
 <translation id="7564874036684306347">කවුළු වෙනත් ඩෙස්ක්ටොප් එකකට මාරු කිරීමෙන් අනපේක්ෂිත හැසිරීමකට හේතු විය හැකිය. පසුකාලීන දැනුම්දීම්, කවුළු සහ සංවාද ඩෙස්ක්ටොප් අතර බෙදී යනු ඇත.</translation>
 <translation id="7569509451529460200">බ්‍රේල් සහ ChromeVox සබලයි</translation>
+<translation id="7569983096843329377">කළු</translation>
 <translation id="7579778809502851308">තිර ග්‍රහණය</translation>
 <translation id="7590883480672980941">ආදාන සැකසීම්</translation>
 <translation id="7593891976182323525">Search හෝ Shift</translation>

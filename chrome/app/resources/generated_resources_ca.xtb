@@ -2299,7 +2299,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="346298925039590474">Aquesta xarxa mòbil estarà disponible per a tots els usuaris d'aquest dispositiu</translation>
 <translation id="3464145797867108663">Afegeix un perfil de treball</translation>
 <translation id="346431825526753">Aquest és un compte infantil gestionat per <ph name="CUSTODIAN_EMAIL" />.</translation>
-<translation id="3465480292013046659">S'ha produït un problema en baixar l'actualització. Torna-ho a provar més tard.</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Telèfon Android</translation>
 <translation id="3470442499439619530">Suprimeix aquest usuari</translation>
@@ -2421,7 +2420,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3600792891314830896">Silencia els llocs web que reprodueixen so</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> (<ph name="CARRIER_NAME" />)</translation>
 <translation id="360180734785106144">Oferir funcions noves a mesura que estiguin disponibles.</translation>
-<translation id="3602179428782502464">L'administrador ha bloquejat aquesta actualització</translation>
 <translation id="3602290021589620013">Previsualitza</translation>
 <translation id="3602870520245633055">Imprimeix i escaneja</translation>
 <translation id="3603622770190368340">Obtenció del certificat de xarxa</translation>

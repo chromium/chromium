@@ -82,6 +82,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="15373452373711364">Sichqonchaning katta kursori</translation>
 <translation id="1546492247443594934">Desk 2</translation>
 <translation id="1550523713251050646">Qo‘shimcha parametrlarni ko‘rish</translation>
+<translation id="1555130319947370107">Ko‘k</translation>
 <translation id="1570871743947603115">Bluetooth qurilmasini yoqish/o‘chirish <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Bu seansdagi barcha harakatlaringizga ruxsat</translation>
 <translation id="1611993646327628135">Yoniq</translation>
@@ -140,6 +141,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2067602449040652523">Klaviatura yorqinligi</translation>
 <translation id="2078034614700056995">Keyingi ish stoliga qaytish uchun 4 ta barmoq bilan oʻngga suring</translation>
 <translation id="2079504693865562705">Ilovalar ishga tushirish panelida chiqmasin</translation>
+<translation id="2079545284768500474">Bekor qilish</translation>
 <translation id="2083190527011054446">Xayrli tun, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Tarmoqqa ulanmagan</translation>
 <translation id="2108303511227308752">Alt + Backspace tezkor tugmasi oʻzgardi. Delete tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Backspace tugmasini bosing.</translation>
@@ -210,6 +212,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2704781753052663061">Boshqa Wi-Fi tarmoqlarga ulanish</translation>
 <translation id="2705001408393684014">Mikrofon: <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Yuqoriga</translation>
+<translation id="2713444072780614174">Oq</translation>
 <translation id="2718395828230677721">Tungi rejim</translation>
 <translation id="2726420622004325180">Telefon mobil internetsiz hotspot tarqata olmaydi</translation>
 <translation id="2727175239389218057">Javob berish</translation>
@@ -582,6 +585,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> nomli tarmoqni faollashtirish uchun bosing</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Ulangan qurilmalar sozlamalari</translation>
+<translation id="583281660410589416">Noma’lum</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> <ph name="RECEIVER_NAME" /> qurilmasiga translatsiya qilinishi to‘xtatilsin</translation>
 <translation id="5860033963881614850">O‘chiq</translation>
 <translation id="5860491529813859533">Yoqish</translation>
@@ -787,6 +791,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7561982940498449837">Menyuni yopish</translation>
 <translation id="7564874036684306347">Oynalarni boshqa ish stoliga ko‘chirish oqibatida kutilmagan xatti-harakatlar sodir bo‘lishi mumkin. Bildirishnomalar va muloqot oynalari turli ekranlarda ko‘rsatiladi.</translation>
 <translation id="7569509451529460200">Brayl yozuvi va ChromeVox yoqildi</translation>
+<translation id="7569983096843329377">Qora</translation>
 <translation id="7579778809502851308">Ekranni suratga olish</translation>
 <translation id="7590883480672980941">Kiritish sozlamalari</translation>
 <translation id="7593891976182323525">Search yoki Shift</translation>

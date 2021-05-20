@@ -82,6 +82,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="15373452373711364">Böyük maus kursoru</translation>
 <translation id="1546492247443594934">Masa 2</translation>
 <translation id="1550523713251050646">Əlavə seçimlər üçün klikləyin</translation>
+<translation id="1555130319947370107">Mavi</translation>
 <translation id="1570871743947603115">Bluetooth'u aktiv edin. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Sessiyadakı bütün fəaliyyətlərə daxil olun</translation>
 <translation id="1611993646327628135">Aktiv</translation>
@@ -140,6 +141,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2067602449040652523">Klaviatura parlaqlığı</translation>
 <translation id="2078034614700056995">Növbəti masaya keçmək üçün dörd barmaqla sağa çəkin</translation>
 <translation id="2079504693865562705">Rəfdə tətbiqləri gizlədin</translation>
+<translation id="2079545284768500474">Geri qaytarın</translation>
 <translation id="2083190527011054446">Gecəniz xeyir, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Şəbəkəyə qoşulmayıb</translation>
 <translation id="2108303511227308752">Alt + Geri klaviatura qısayolu dəyişib. Silmə düyməsindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + geri düyməsini basın.</translation>
@@ -210,6 +212,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2704781753052663061">Digər Wi-Fi şəbəkələrinə qoşulun</translation>
 <translation id="2705001408393684014">Mikrofonu dəyişdirin. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Yuxarı</translation>
+<translation id="2713444072780614174">Ağ</translation>
 <translation id="2718395828230677721">Gecə İşığı</translation>
 <translation id="2726420622004325180">Hotspot təmin etmək üçün telefonunuzda mobil data olmalıdır</translation>
 <translation id="2727175239389218057">Cavablayın</translation>
@@ -582,6 +585,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> şəbəkəsini aktiv etmək üçün toxunun</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Qoşulmuş cihazların ayarları</translation>
+<translation id="583281660410589416">Naməlum</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> pəncərəsində <ph name="ROUTE_TITLE" /> dayandırma düyməsi</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
 <translation id="5860491529813859533">Aktiv edin</translation>
@@ -787,6 +791,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7561982940498449837">Menyunu bağlayın</translation>
 <translation id="7564874036684306347">Pəncərənin digər masaüstünə köçürülməsi gözlənilməz nəticələr verə bilər. Növbəti bildirişlər, pəncərə və dialoqlar masaüstülər arasında bölüşdürülə bilər.</translation>
 <translation id="7569509451529460200">Brayl və ChromeVox aktiv edildi</translation>
+<translation id="7569983096843329377">Qara</translation>
 <translation id="7579778809502851308">Ekran çəkimi</translation>
 <translation id="7590883480672980941">Daxiletmə ayarları</translation>
 <translation id="7593891976182323525">Axtarın və ya Dəyişin</translation>

@@ -82,6 +82,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="15373452373711364">Large mouse cursor</translation>
 <translation id="1546492247443594934">Desk 2</translation>
 <translation id="1550523713251050646">Click for more options</translation>
+<translation id="1555130319947370107">Blue</translation>
 <translation id="1570871743947603115">Toggle Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Access all your activity in this session</translation>
 <translation id="1611993646327628135">On</translation>
@@ -140,6 +141,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2067602449040652523">Keyboard brightness</translation>
 <translation id="2078034614700056995">Swipe right with four fingers to switch to the next desk</translation>
 <translation id="2079504693865562705">Hide apps in shelf</translation>
+<translation id="2079545284768500474">Undo</translation>
 <translation id="2083190527011054446">Good night <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Not connected to network</translation>
 <translation id="2108303511227308752">The Alt + backspace keyboard shortcut has changed. To use the delete key, press the <ph name="LAUNCHER_KEY_NAME" /> key + backspace.</translation>
@@ -210,6 +212,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2704781753052663061">Join other Wi-Fi networks</translation>
 <translation id="2705001408393684014">Toggle mic. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
+<translation id="2713444072780614174">White</translation>
 <translation id="2718395828230677721">Night Light</translation>
 <translation id="2726420622004325180">Your phone must have mobile data to provide a hotspot</translation>
 <translation id="2727175239389218057">Reply</translation>
@@ -582,6 +585,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5805809050170488595">Click to activate <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Connected devices settings</translation>
+<translation id="583281660410589416">Unknown</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> on <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Turn on</translation>
@@ -787,6 +791,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7561982940498449837">Close menu</translation>
 <translation id="7564874036684306347">Moving windows to another desktop may result in unexpected behaviour. Subsequent notifications, windows and dialogues may be split between desktops.</translation>
 <translation id="7569509451529460200">Braille and ChromeVox are enabled</translation>
+<translation id="7569983096843329377">Black</translation>
 <translation id="7579778809502851308">Screen capture</translation>
 <translation id="7590883480672980941">Input settings</translation>
 <translation id="7593891976182323525">Search or Shift</translation>

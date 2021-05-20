@@ -48,6 +48,7 @@
 <translation id="4852878756222711218">Pour tirer pleinement parti de Chromium, connectez-vous avec votre compte Google</translation>
 <translation id="4985291216379576555">Chromium ne parvient pas à rechercher les mises à jour, car vous êtes hors connexion</translation>
 <translation id="4999538639245140991">Comme vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
+<translation id="5171868502429358653">Se connecter à Chromium</translation>
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="5308226104666789935">Chromium ne parvient pas à rechercher les mises à jour</translation>
 <translation id="5396916991083608703">Utiliser Chromium par défaut ?</translation>
@@ -62,6 +63,7 @@
 <translation id="6119647025869519954">Pour définir Chromium comme votre navigateur par défaut, procédez comme suit :
 1. Accédez à "Réglages" Appuyez sur "Navigateur par défaut"
 3. Sélectionnez "Chromium".</translation>
+<translation id="6155422572367400359">Connectez-vous à ce site, à votre compte Google et à Chromium. Vous pourrez activer la synchronisation plus tard.</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium ?</translation>
 <translation id="632825460376924298">Autoriser la connexion à Chromium</translation>
 <translation id="6337530241089703714">Indiquez si vous voulez effacer ou garder les données Chromium de cet appareil</translation>

@@ -1407,7 +1407,6 @@
 <translation id="6218753634732582820">ต้องการนำที่อยู่ออกจาก Chromium ใช่ไหม</translation>
 <translation id="622039917539443112">พับแบบขนาน</translation>
 <translation id="6221345481584921695">เมื่อเร็วๆ นี้ Google Safe Browsing <ph name="BEGIN_LINK" />ตรวจพบมัลแวร์<ph name="END_LINK" />ใน <ph name="SITE" /> เว็บไซต์ที่โดยปกติจะปลอดภัยบางครั้งอาจติดมัลแวร์ เนื้อหาที่เป็นอันตรายมาจาก <ph name="SUBRESOURCE_HOST" /> ซึ่งเป็นผู้เผยแพร่มัลแวร์ที่เป็นที่รู้จัก</translation>
-<translation id="6232619828520900263">ใช้รหัสดังกล่าวไม่ได้ในขณะนี้</translation>
 <translation id="6234122620015464377">ตัดออกหลังเอกสารแต่ละฉบับ</translation>
 <translation id="6240447795304464094">โลโก้ Google Pay</translation>
 <translation id="6241121617266208201">ซ่อนคำแนะนำ</translation>
@@ -1916,6 +1915,7 @@
 <translation id="8202097416529803614">ข้อมูลสรุปคำสั่งซื้อ</translation>
 <translation id="8202370299023114387">ความขัดแย้ง</translation>
 <translation id="8206978196348664717">Prc4 (ซองจดหมาย)</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{เมื่อรีเซ็ตรหัส รหัสปัจจุบันจะใช้ไม่ได้อีกและระบบจะออกรหัสใหม่ให้ภายในไม่เกิน 1 วัน}=1{เมื่อรีเซ็ตรหัส รหัสปัจจุบันจะใช้ไม่ได้อีกและระบบจะออกรหัสใหม่ให้ภายใน 1 วัน}other{เมื่อรีเซ็ตรหัส รหัสปัจจุบันจะใช้ไม่ได้อีกและระบบจะออกรหัสใหม่ให้ภายใน {NUM_DAYS} วัน}}</translation>
 <translation id="8211406090763984747">การเชื่อมต่อปลอดภัย</translation>
 <translation id="8213464188712611711">ความทรงจำ</translation>
 <translation id="8218327578424803826">ตำแหน่งที่มอบหมาย:</translation>

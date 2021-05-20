@@ -82,6 +82,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="15373452373711364">Puntatore del mouse grande</translation>
 <translation id="1546492247443594934">Scrivania 2</translation>
 <translation id="1550523713251050646">Fai clic per visualizzare altre opzioni</translation>
+<translation id="1555130319947370107">Blu</translation>
 <translation id="1570871743947603115">Attiva/disattiva Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Accedere a tutte le tue attività in questa sessione.</translation>
 <translation id="1611993646327628135">On</translation>
@@ -140,6 +141,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2067602449040652523">Luminosità della tastiera</translation>
 <translation id="2078034614700056995">Scorri verso destra con quattro dita per passare alla scrivania successiva</translation>
 <translation id="2079504693865562705">Nascondi app nella barra delle app</translation>
+<translation id="2079545284768500474">Annulla</translation>
 <translation id="2083190527011054446">Buonanotte <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Nessuna connessione alla rete</translation>
 <translation id="2108303511227308752">La scorciatoia da tastiera Alt + Backspace è cambiata. Per usare il tasto Canc, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
@@ -210,6 +212,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2704781753052663061">Visualizza altre reti Wi-Fi</translation>
 <translation id="2705001408393684014">Attiva/disattiva il microfono. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Su</translation>
+<translation id="2713444072780614174">Bianco</translation>
 <translation id="2718395828230677721">Luce notturna</translation>
 <translation id="2726420622004325180">Il telefono deve avere i dati mobili per poter fornire un hotspot</translation>
 <translation id="2727175239389218057">Rispondi</translation>
@@ -583,6 +586,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5805809050170488595">Fai clic per attivare <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Impostazioni dei dispositivi connessi</translation>
+<translation id="583281660410589416">Sconosciuto</translation>
 <translation id="5837036133683224804">Interrompi <ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Attiva</translation>
@@ -788,6 +792,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7561982940498449837">Chiudi menu</translation>
 <translation id="7564874036684306347">Lo spostamento delle finestre su un altro desktop potrebbe causare comportamenti imprevisti. Le finestre, le notifiche e le finestre di dialogo successive potrebbero essere divise tra i desktop.</translation>
 <translation id="7569509451529460200">Braille e ChromeVox attivati</translation>
+<translation id="7569983096843329377">Nero</translation>
 <translation id="7579778809502851308">Acquisizione schermo</translation>
 <translation id="7590883480672980941">Impostazioni di immissione</translation>
 <translation id="7593891976182323525">Tasto per la ricerca o Maiusc</translation>

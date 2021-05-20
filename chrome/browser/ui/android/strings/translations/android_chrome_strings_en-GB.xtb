@@ -784,6 +784,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="6138832295072039549">Change your site settings here</translation>
 <translation id="6140709049082532940">Enhanced protection:</translation>
 <translation id="6140912465461743537">Country/Region</translation>
+<translation id="6141988275892716286">Confirm download</translation>
 <translation id="614940544461990577">Try:</translation>
 <translation id="6154478581116148741">Turn on screen lock in Settings to export your passwords from this device</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> data savings</translation>
@@ -1043,6 +1044,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7791543448312431591">Add</translation>
 <translation id="7798392620021911922">Restored <ph name="TAB_COUNT" /> tabs</translation>
 <translation id="780301667611848630">No, thanks</translation>
+<translation id="7805768142964895445">Status</translation>
 <translation id="7808889146555843082">Deleting this password will not delete your account on <ph name="SITE" />. Change your password or delete your account on <ph name="SITE" /> to keep it safe from others.</translation>
 <translation id="7810647596859435254">Open with…</translation>
 <translation id="7815484226266492798">Long screenshot</translation>

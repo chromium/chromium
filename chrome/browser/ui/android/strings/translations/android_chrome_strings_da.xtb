@@ -784,6 +784,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="6138832295072039549">Skift indstillinger for websites her</translation>
 <translation id="6140709049082532940">Forbedret beskyttelse:</translation>
 <translation id="6140912465461743537">Land/region</translation>
+<translation id="6141988275892716286">Bekræft download</translation>
 <translation id="614940544461990577">Prøv at:</translation>
 <translation id="6154478581116148741">Aktivér skærmlåsen i Indstillinger for at eksportere dine adgangskoder fra denne enhed</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> sparet data</translation>
@@ -1043,6 +1044,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="7791543448312431591">Tilføj</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> faner blev gendannet</translation>
 <translation id="780301667611848630">Nej tak</translation>
+<translation id="7805768142964895445">Status</translation>
 <translation id="7808889146555843082">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="SITE" />. Skift din adgangskode, eller slet din konto på <ph name="SITE" /> for at beskytte den mod andre.</translation>
 <translation id="7810647596859435254">Åbn med…</translation>
 <translation id="7815484226266492798">Langt screenshot</translation>

@@ -24,6 +24,7 @@
 <translation id="2695886661449553974">Браузеру Chrome не удалось проверить наличие обновлений. Повторите попытку позже.</translation>
 <translation id="2732745070297234559">Браузеру Chrome не удается проверить все пароли. Повторите попытку завтра.</translation>
 <translation id="2740105938841089077">Открывайте ссылки в Chrome</translation>
+<translation id="2869959624320573933">Вход в Chrome</translation>
 <translation id="2919738076569633423">Начиная работу с Chrome, вы соглашаетесь с <ph name="BEGIN_LINK_TOS" />Условиями использования<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Вы выходите из аккаунта, которым управляет администратор домена <ph name="SIGNOUT_MANAGED_DOMAIN" />. Обратите внимание, что данные Chrome будут удалены с устройства, но останутся в вашем аккаунте Google.</translation>
 <translation id="3167189358072330585">Ваш аккаунт не поддерживается в Google Chrome. Обратитесь к администратору домена или войдите с помощью обычного аккаунта Google.</translation>
@@ -90,6 +91,7 @@
 <translation id="7855730255114109580">Последняя версия Google Chrome уже установлена</translation>
 <translation id="8022947259858476807">Сделайте Chrome браузером по умолчанию, чтобы открывать ссылки, выполнять поиск прямо из виджетов и автозаполнять пароли в других приложениях.</translation>
 <translation id="8160472928944011082">Не удается обновить Chrome</translation>
+<translation id="8263079278049777200">Войдите на этот сайт, в аккаунт Google и в Chrome. Синхронизацию можно включить позже.</translation>
 <translation id="8357607116237445042">Удалить данные Chrome с этого устройства?</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" />. Все права защищены.</translation>
 <translation id="840168496893712993">Некоторые дополнения вызывают сбой Chrome. Попробуйте удалить их.</translation>

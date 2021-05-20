@@ -1415,7 +1415,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6218753634732582820">Eltávolítja a címet a Chromiumból?</translation>
 <translation id="622039917539443112">Paralel hajtás</translation>
 <translation id="6221345481584921695">A Google – Biztonságos böngészés nemrég <ph name="BEGIN_LINK" />rosszindulatú programokat<ph name="END_LINK" /> észlelt a következő webhelyen: <ph name="SITE" />. A rendes esetben biztonságos webhelyek néha rosszindulatú programokkal fertőződnek. A rosszindulatú tartalom az ilyen programok következő ismert terjesztőjétől származik: <ph name="SUBRESOURCE_HOST" />.</translation>
-<translation id="6232619828520900263">Az azonosító jelenleg érvénytelen</translation>
 <translation id="6234122620015464377">Vágás minden dokumentum után</translation>
 <translation id="6240447795304464094">Google Pay-embléma</translation>
 <translation id="6241121617266208201">Javaslatok elrejtése</translation>
@@ -1924,6 +1923,7 @@ További részletek:
 <translation id="8202097416529803614">Rendelés összegzése</translation>
 <translation id="8202370299023114387">Ütközés</translation>
 <translation id="8206978196348664717">Prc4 (boríték)</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Az azonosító visszaállításakor jelenlegi azonosítója érvénytelenné válik, és 1 napon belül újat kap a rendszertől.}=1{Az azonosító visszaállításakor jelenlegi azonosítója érvénytelenné válik, és 1 napon belül újat kap a rendszertől.}other{Az azonosító visszaállításakor jelenlegi azonosítója érvénytelenné válik, és {NUM_DAYS} napon belül újat kap a rendszertől.}}</translation>
 <translation id="8211406090763984747">A kapcsolat biztonságos</translation>
 <translation id="8213464188712611711">Emlékek</translation>
 <translation id="8218327578424803826">Hozzárendelt helyszín:</translation>

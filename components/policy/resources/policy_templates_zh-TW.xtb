@@ -2086,6 +2086,11 @@
 
       如未設定這些政策，使用者可自行選擇 Proxy 設定。</translation>
 <translation id="3758249152301468420">停用開發人員工具</translation>
+<translation id="3759650373178711405">除非將 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策設為一律還原先前工作階段的網址，否則你可以透過 <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> 政策建立網址模式清單，用來指定網站是否可為單一工作階段設定 Cookie。
+
+      如果未設定這項政策，系統會針對所有網站使用 <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> (如果已設定)；否則系統會套用使用者的個人設定。如果網址不符合指定的模式，系統也會使用預設值。
+
+      如果沒有優先執行的政策，請參閱 <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />。這 3 個政策中的網址模式不可衝突。</translation>
 <translation id="3760148113224469113">一律要求使用者確認外部通訊協定提示</translation>
 <translation id="3760231600118073732">鎖定目前的工作階段。</translation>
 <translation id="3761222804122755011">WebRTC 只會使用連線至公開網際網路的介面，但可能會使用私人 IP 位址進行連線。</translation>
@@ -2172,6 +2177,19 @@
 <translation id="3838094946886335701">你可以透過這項政策 (只能設為「建議」) 註冊通訊協定處理常式的清單，其中的通訊協定處理常式會與使用者所註冊的合併，二種皆可供使用。請將「protocol」(通訊協定) 屬性設為「mailto」等類型的網路通訊協定配置，並將「URL」(網址) 屬性設為處理該網路通訊協定的應用程式所使用的網址模式 (這裡的網路通訊協定指的是「通訊協定」欄位中所指定的網路通訊協定配置)。模式可包含「%s」預留位置，將替換為受處理的網址。
 
       使用者無法移除透過政策註冊的通訊協定處理常式，但可透過安裝新的預設處理常式，變更透過政策安裝的通訊協定處理常式。</translation>
+<translation id="3857816702027059082">針對清單中的網址啟用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
+
+      透過這項政策，你可以指定要讓哪些網址加入認證流程，接收裝置傳送的信號。
+
+      如果不設定這項政策或設為空白，就沒有端點能啟動認證流程，以及接收裝置傳送的信號。
+
+      網址必須採用 HTTPS 架構，例如「https://example.com」。
+
+      注意：可以使用萬用字元 <ph name="WILDCARD_VALUE" />。
+
+      就 Chrome 作業系統而言，與這項政策相關的是遠端認證，其中的憑證會自動產生並上傳至裝置管理伺服器。
+
+      如果想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="3858128774616573616">如果將這項政策設為啟用，系統會在工具列或溢位選單上顯示 Cast 工具列圖示，且使用者無法將其移除。
 
       如果將這項政策設為停用或不設定，使用者可以透過內容選單來固定或移除該圖示。
@@ -2448,6 +2466,15 @@
 <translation id="4248277954659222481">允許符合網址模式許可清單的網頁自動播放媒體</translation>
 <translation id="4250680216510889253">否</translation>
 <translation id="4261820385751181068">裝置登入畫面語言代碼</translation>
+<translation id="4266547484666068234">如果設定這項政策，使用者可以存取許可清單中的網址，這些網址是 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外項目。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許使用者存取一些特定的網址。請使用 https://www.chromium.org/administrators/url-blocklist-filter-format 網頁中所指定的格式，透過這項政策將特定的網路通訊協定、其他網域的子網域、通訊埠或特定路徑設為例外。系統需要判定是否封鎖某一個網址時，會以最精確的篩選條件為依據。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的優先順序高於 <ph name="URL_BLOCKLIST_POLICY_NAME" />。這項政策最多只能輸入 1,000 個項目。
+
+      這項政策還可以讓瀏覽器自動叫用已註冊為通訊協定處理常式的外部應用程式，用於處理許可清單中的「tel:」或「ssh:」等通訊協定。
+
+      如果未設定這項政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 就不會有例外項目。
+
+      自 <ph name="PRODUCT_NAME" /> 92 版起，系統在無頭模式下也會支援這項政策。
+
+      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="4269859918103560644">允許使用者決定</translation>
 <translation id="4274691295133617461">如果將這項政策設為 3，網站即可要求透過 File System API 讀取主機作業系統中檔案系統的檔案和目錄。如果將這項政策設為 2，系統會拒絕網站存取。
 
@@ -3053,6 +3080,13 @@
           如果啟用這項設定，<ph name="PRODUCT_NAME" /> 會忽略所有從指令列指定的 Proxy 相關選項。
 
           如果不設定這項政策，使用者將可自行選擇 Proxy 設定。</translation>
+<translation id="5172841243186654432">除非將 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策設為一律還原先前工作階段的網址，否則你可以透過 <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> 政策建立網址模式清單，用來指定網站是否可為單一工作階段設定 Cookie。
+
+      如果未設定這項政策，系統會針對所有網站使用 <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> (如果已設定)；否則系統會套用使用者的個人設定。如果網址不符合指定的模式，系統也會使用預設值。
+
+      如果沒有優先執行的政策，請參閱 <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />。這 3 個政策中的網址模式不可發生衝突。
+
+      如要進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="5177260184597743704">OnSecurityEvent Chrome Enterprise Connector 的配置政策</translation>
 <translation id="5178479074002209469">布林值標記，表示這項政策要求進行更新時，是否要讓未受管理的使用者工作階段接收通知並強制登出。</translation>
 <translation id="5182055907976889880">設定在 <ph name="PRODUCT_OS_NAME" /> 中使用 Google 雲端硬碟。</translation>
@@ -4466,6 +4500,11 @@
       * PasswordProtectionWarningOnPhishingReuse：當使用者在網路詐騙網站上重複使用受保護的密碼時，系統會顯示密碼保護警告訊息。
 
       如果不設定這項政策，則密碼保護服務只會保護 Google 密碼，但使用者可以變更這項設定。</translation>
+<translation id="6969079025604591591">如果將這項政策設為 Enabled 或不設定，系統會啟用轉譯器程式碼完整性功能。
+
+      將這項政策設為 Disabled 會對 <ph name="PRODUCT_NAME" /> 的安全性和穩定性造成負面影響，因為這樣一來，<ph name="PRODUCT_NAME" /> 會允許轉譯器程序載入可能具有惡意的未知程式碼。建議只有必須在 <ph name="PRODUCT_NAME" /> 的轉譯器程序中執行的第三方軟體發生相容性問題時，才停用這項政策。
+
+      注意：如要進一步瞭解程序寬鬆檢查機制政策，請前往 https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies。</translation>
 <translation id="6969131408525928234">設定這項政策後，系統不會要求指定網址中的主機名稱依憑證透明化規定公開憑證。雖然這會讓系統更難以偵測到誤用憑證的情形，但也因此可讓主機繼續使用因為未依規定對外公開而不受信任的憑證。
 
       如果未設定這項政策，凡是應依憑證透明化規定公開而未公開的憑證，<ph name="PRODUCT_NAME" /> 都會將其視為不受信任的憑證。
@@ -5693,6 +5732,13 @@
       如果將這項政策設為 True，系統可能會凍結在背景執行 5 分鐘以上的分頁。凍結分頁可降低 CPU、電力和記憶體的使用量。<ph name="PRODUCT_NAME" /> 會根據經驗法則判斷，不會凍結在背景執行實用作業 (例如顯示通知、播放音效、串流播放影片) 的分頁。網站開發人員也可以將自己的網站設為禁止凍結 (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md)。
 
       如果將這項政策設為 False，系統將不會凍結任何分頁。</translation>
+<translation id="8619480582976056396">你可以透過這項政策，禁止系統載入網址遭到禁止的網頁。這項政策可提供網址模式清單，用於指定要禁止的網址。如果未設定這項政策，則瀏覽器不會禁止任何網址。網址模式如下：https://www.chromium.org/administrators/url-blocklist-filter-format。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 中最多可定義 1000 個例外網址。
+
+      自 <ph name="PRODUCT_NAME" /> 73 版開始，你可以封鎖 javascript://* 網址。不過，這項設定只適用於在網址列 (或書籤小程式等) 輸入的 JavaScript，動態載入資料的網頁內 JavaScript 網址不會受到這項政策影響。舉例來說，即使你封鎖了 example.com/abc，example.com 仍可透過 XMLHTTPRequest 載入 example.com/abc。
+
+      自 <ph name="PRODUCT_NAME" /> 92 版起，系統在無頭模式下也會支援這項政策。
+
+      注意：封鎖內部的 chrome://* 網址可能會導致非預期的錯誤。</translation>
 <translation id="8631434304112909927">到第 <ph name="UNTIL_VERSION" /> 版為止</translation>
 <translation id="8631437968147930597"><ph name="PRODUCT_OS_NAME" />螢幕鎖定畫面上允許的筆記應用程式清單</translation>
 <translation id="8637566476051166626">明確允許的網路通訊埠</translation>
@@ -6171,6 +6217,11 @@
       注意：封鎖內部的 chrome://* 網址可能會導致非預期的錯誤。</translation>
 <translation id="957778406002650056">可下載 <ph name="PLUGIN_VM_NAME" /> 圖片的網址。</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 範本</translation>
+<translation id="980218166381006412">如果將這項政策設為啟用，系統會開啟背景模式。在背景模式中，<ph name="PRODUCT_NAME" /> 處理程序會在使用者登入作業系統時啟動，並在最後一個瀏覽器視窗關閉後持續執行，讓背景應用程式和瀏覽工作階段維持運作。背景處理程序會在系統匣中顯示相應圖示，使用者隨時可從該處關閉處理程序。
+
+      如果將這項政策設為停用，系統將關閉背景模式。
+
+      如果設定這項政策，使用者將無法在瀏覽器設定中予以變更。如果不設定，系統會先關閉背景模式，但使用者可進行變更。</translation>
 <translation id="981346395360763138">Google 定位服務已停用</translation>
 <translation id="982497069985795632">啟用拼字檢查</translation>
 <translation id="983256325512298435">定義一組通訊協定清單，其中的通訊協定無須提示使用者，即可啟動已列出來源的外部應用程式</translation>

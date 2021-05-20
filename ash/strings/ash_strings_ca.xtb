@@ -82,6 +82,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="15373452373711364">Cursor del ratolí gran</translation>
 <translation id="1546492247443594934">Escriptori 2</translation>
 <translation id="1550523713251050646">Feu clic per veure més opcions</translation>
+<translation id="1555130319947370107">Blau</translation>
 <translation id="1570871743947603115">Activa o desactiva el Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Accedir a tota la teva activitat d'aquesta sessió.</translation>
 <translation id="1611993646327628135">Activat</translation>
@@ -140,6 +141,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2067602449040652523">Brillantor del teclat</translation>
 <translation id="2078034614700056995">Fes lliscar quatre dits cap a la dreta per canviar a l'escriptori següent</translation>
 <translation id="2079504693865562705">Amaga les aplicacions del prestatge</translation>
+<translation id="2079545284768500474">Desfés</translation>
 <translation id="2083190527011054446">Bona nit, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">No hi ha connexió a la xarxa</translation>
 <translation id="2108303511227308752">La tecla de drecera Alt+Retrocés ha canviat. Per fer servir la tecla de suprimir, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+Retrocés.</translation>
@@ -210,6 +212,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2704781753052663061">Uneix-te a altres xarxes Wi-Fi</translation>
 <translation id="2705001408393684014">Commuta el micròfon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Amunt</translation>
+<translation id="2713444072780614174">Blanc</translation>
 <translation id="2718395828230677721">Llum nocturna</translation>
 <translation id="2726420622004325180">El telèfon ha de tenir dades mòbils per proporcionar un punt d'accés</translation>
 <translation id="2727175239389218057">Respon</translation>
@@ -582,6 +585,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5805809050170488595">Fes clic per activar <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Configuració dels dispositius connectats</translation>
+<translation id="583281660410589416">Desconegut</translation>
 <translation id="5837036133683224804">Atura <ph name="ROUTE_TITLE" /> a <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="5860491529813859533">Activa</translation>
@@ -787,6 +791,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7561982940498449837">Tanca el menú</translation>
 <translation id="7564874036684306347">Moure finestres a un altre escriptori pot provocar un comportament imprevist. És possible que les notificacions, les finestres i els quadres de diàleg següents quedin dividits entre escriptoris.</translation>
 <translation id="7569509451529460200">S'ha activat el braille i ChromeVox</translation>
+<translation id="7569983096843329377">Negre</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>
 <translation id="7590883480672980941">Configuració de l'entrada</translation>
 <translation id="7593891976182323525">Cerca o Maj</translation>

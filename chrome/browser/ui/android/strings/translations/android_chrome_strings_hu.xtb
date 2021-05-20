@@ -202,6 +202,7 @@ A kereséshez koppintson a kívánt szóra. A keresés finomításához ujja nyo
 <ph name="BEGIN_LIST_ITEM1" />A hirdetők tudomást szerezhetnek arról, ha több ezer felhasználó érdeklődési köre egyezik – pl. egy koncert közönségében –, és az egyes személyek helyett a teljes tömeg számára választhatnak ki hirdetéseket.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />A hirdetők úgy tanulmányozhatják a hirdetések hatékonyságát, hogy nem követik nyomon Önt a webhelyeken.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Azoknak az oldalaknak az előtöltése, amelyeket a Chrome szerint Ön felkereshet. Ehhez a Chrome cookie-kat használhat, ha Ön engedélyezte őket, valamint titkosíthatja és a Google-on keresztül elküldheti az oldalakat, hogy elrejtse az Ön személyazonosságát a webhelyek elől.</translation>
 <translation id="234265804618409743">Nem lehet megnyitni a kamerát. Hiba történt.</translation>
 <translation id="2345671828921229300">A kereséshez tartsa lenyomva a kívánt szót</translation>
 <translation id="2349710944427398404">A Chrome által használt teljes adatmennyiség, beleértve a fiókokat, könyvjelzőket és mentett beállításokat is</translation>
@@ -783,6 +784,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="6138832295072039549">Itt módosíthatja a webhelybeállításokat</translation>
 <translation id="6140709049082532940">Speciális védelem:</translation>
 <translation id="6140912465461743537">Ország/régió</translation>
+<translation id="6141988275892716286">Letöltés megerősítése</translation>
 <translation id="614940544461990577">Próbálja ki a következőket:</translation>
 <translation id="6154478581116148741">Kapcsolja be a képernyőzárat a Beállítások menüben, hogy exportálhassa az ezen az eszközön tárolt jelszavait</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" />-os adatmegtakarítás</translation>
@@ -994,6 +996,7 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="7493994139787901920"><ph name="VERSION" /> (Frissítve: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">megtakarított adatmennyiség</translation>
 <translation id="7498271377022651285">Kérjük, várjon…</translation>
+<translation id="750228856503700085">Nincsenek rendelkezésre álló frissítések</translation>
 <translation id="7507207699631365376">Olvassa el a szolgáltató <ph name="BEGIN_LINK" />adatvédelmi irányelveit<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Letöltés</translation>
 <translation id="751961395872307827">Nem lehet csatlakozni a webhelyhez</translation>
@@ -1041,6 +1044,7 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="7791543448312431591">Hozzáadás</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> lap visszaállítva</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>
+<translation id="7805768142964895445">Állapot</translation>
 <translation id="7808889146555843082">A jelszó eltávolításával nem törli fiókját a következő domainről: <ph name="SITE" />. Ha szeretné megőrizni fiókja biztonságát, módosítsa a jelszót, vagy törölje a fiókot a(z) <ph name="SITE" /> domainről.</translation>
 <translation id="7810647596859435254">Megnyitás ezzel:</translation>
 <translation id="7815484226266492798">Hosszú képernyőkép</translation>
@@ -1095,6 +1099,7 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="8076492880354921740">Lapok</translation>
 <translation id="8078096376109663956">Csak szöveg megosztása.</translation>
 <translation id="8084114998886531721">Mentett jelszó</translation>
+<translation id="8084285576995584326">Google-fiókadatok vezérlése</translation>
 <translation id="808747664143081553">Csatlakoztatva az eszközhöz</translation>
 <translation id="8103578431304235997">Inkognitó lap</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1190,6 +1195,7 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="8712637175834984815">Sikerült</translation>
 <translation id="8725066075913043281">Újrapróbálás</translation>
 <translation id="8730621377337864115">Kész</translation>
+<translation id="8746155870861185046">Kiemelés megosztása</translation>
 <translation id="8748850008226585750">Tartalom elrejtve</translation>
 <translation id="8773160212632396039">Kérés feldolgozása folyamatban van</translation>
 <translation id="8788265440806329501">Bezárta a navigációs előzményeket</translation>

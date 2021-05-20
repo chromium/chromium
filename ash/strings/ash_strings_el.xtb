@@ -82,6 +82,7 @@
 <translation id="15373452373711364">Μεγάλος δείκτης ποντικιού</translation>
 <translation id="1546492247443594934">Γραφείο 2</translation>
 <translation id="1550523713251050646">Κάντε κλικ για περισσότερες επιλογές</translation>
+<translation id="1555130319947370107">Μπλε</translation>
 <translation id="1570871743947603115">Εναλλαγή Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Αποκτήσει πρόσβαση σε όλη τη δραστηριότητά σας από αυτήν την περίοδο λειτουργίας</translation>
 <translation id="1611993646327628135">Ενεργό</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">Φωτεινότητα πληκτρολογίου</translation>
 <translation id="2078034614700056995">Σύρετε προς τα δεξιά με τέσσερα δάχτυλα για μετάβαση στο επόμενο γραφείο</translation>
 <translation id="2079504693865562705">Απόκρυψη εφαρμογών στο ράφι</translation>
+<translation id="2079545284768500474">Αναίρεση</translation>
 <translation id="2083190527011054446">Καληνύχτα <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Δεν υπάρχει σύνδεση στο δίκτυο</translation>
 <translation id="2108303511227308752">Η συντόμευση πληκτρολογίου Alt + Backspace άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Delete, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">Σύνδεση σε άλλα δίκτυα Wi-Fi</translation>
 <translation id="2705001408393684014">Εναλλαγή μικροφώνου. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Πάνω</translation>
+<translation id="2713444072780614174">Λευκό</translation>
 <translation id="2718395828230677721">Νυχτ. φωτισμός</translation>
 <translation id="2726420622004325180">Το τηλέφωνό σας πρέπει να διαθέτει σύνδεση δεδομένων κινητής τηλεφωνίας για να παρέχει σημείο πρόσβασης Wi-Fi</translation>
 <translation id="2727175239389218057">Απάντηση</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595">Κλικ για ενεργοποίηση <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Ρυθμίσεις συνδεδεμένων συσκευών</translation>
+<translation id="583281660410589416">Άγνωστο</translation>
 <translation id="5837036133683224804">Διακοπή <ph name="ROUTE_TITLE" /> σε <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
 <translation id="5860491529813859533">Ενεργοποίηση</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">Κλείσιμο μενού</translation>
 <translation id="7564874036684306347">Η μετακίνηση των παραθύρων σε άλλη επιφάνεια εργασίας ενδέχεται να οδηγήσει σε μη αναμενόμενη συμπεριφορά. Ενδέχεται να γίνει διαχωρισμός μεταγενέστερων ειδοποιήσεων, παραθύρων και παραθύρων διαλόγου μεταξύ των επιφανειών εργασίας.</translation>
 <translation id="7569509451529460200">Το Braille και το ChromeVox ενεργοποιήθηκαν</translation>
+<translation id="7569983096843329377">Μαύρο</translation>
 <translation id="7579778809502851308">Λήψη οθόνης</translation>
 <translation id="7590883480672980941">Ρυθμίσεις εισαγωγής</translation>
 <translation id="7593891976182323525">Search ή Shift</translation>

@@ -82,6 +82,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="15373452373711364">Duży kursor myszy</translation>
 <translation id="1546492247443594934">Biurko 2</translation>
 <translation id="1550523713251050646">Kliknij, by wyświetlić więcej opcji</translation>
+<translation id="1555130319947370107">Niebieski</translation>
 <translation id="1570871743947603115">Włącz lub wyłącz Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">uzyskiwać dostęp do całej Twojej aktywności w tej sesji;</translation>
 <translation id="1611993646327628135">Włączono</translation>
@@ -140,6 +141,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2067602449040652523">Jasność klawiatury</translation>
 <translation id="2078034614700056995">Aby przełączyć się na następne biurko, przesuń 4 palcami w prawo</translation>
 <translation id="2079504693865562705">Ukryj aplikacje na półce</translation>
+<translation id="2079545284768500474">Cofnij</translation>
 <translation id="2083190527011054446">Dobranoc <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Brak połączenia z siecią</translation>
 <translation id="2108303511227308752">Skrót klawiszowy Alt + Backspace został zmieniony. Aby użyć klawisza Delete, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
@@ -210,6 +212,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2704781753052663061">Połącz z innymi sieciami Wi-Fi</translation>
 <translation id="2705001408393684014">Przełącz stan mikrofonu. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">W górę</translation>
+<translation id="2713444072780614174">Biały</translation>
 <translation id="2718395828230677721">Podświetlenie</translation>
 <translation id="2726420622004325180">Aby telefon mógł działać jako punkt dostępu, musi korzystać z mobilnej transmisji danych</translation>
 <translation id="2727175239389218057">Odpowiedz</translation>
@@ -582,6 +585,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5805809050170488595">Kliknij, aby włączyć sieć <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">System operacyjny Chromium</translation>
 <translation id="5825969630400862129">Ustawienia połączonych urządzeń</translation>
+<translation id="583281660410589416">Nieznany</translation>
 <translation id="5837036133683224804">Zatrzymaj usługę <ph name="ROUTE_TITLE" /> na urządzeniu <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5860491529813859533">Włącz</translation>
@@ -787,6 +791,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7561982940498449837">Zamknij menu</translation>
 <translation id="7564874036684306347">Przenoszenie okien na inny pulpit może spowodować nieoczekiwane zachowanie. Kolejne powiadomienia, okna i okna dialogowe mogą pojawiać się na różnych pulpitach.</translation>
 <translation id="7569509451529460200">Włączono Braille'a i ChromeVox</translation>
+<translation id="7569983096843329377">Czarny</translation>
 <translation id="7579778809502851308">Zrzut ekranu</translation>
 <translation id="7590883480672980941">Ustawienia wprowadzania</translation>
 <translation id="7593891976182323525">Szukaj lub Shift</translation>

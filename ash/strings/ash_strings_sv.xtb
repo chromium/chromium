@@ -82,6 +82,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="15373452373711364">Stor muspekare</translation>
 <translation id="1546492247443594934">Skrivbord 2</translation>
 <translation id="1550523713251050646">Klicka här för fler alternativ</translation>
+<translation id="1555130319947370107">Blå</translation>
 <translation id="1570871743947603115">Aktivera och inaktivera Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
 <translation id="1611993646327628135">På</translation>
@@ -140,6 +141,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2067602449040652523">Ljusstyrka för tangentbordet</translation>
 <translation id="2078034614700056995">Svep till höger med fyra fingrar för att byta till nästa skrivbord</translation>
 <translation id="2079504693865562705">Dölj appar på hyllan</translation>
+<translation id="2079545284768500474">Ångra</translation>
 <translation id="2083190527011054446">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Ingen nätverksanslutning</translation>
 <translation id="2108303511227308752">Kortkommandot Alt + backsteg har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + backsteg för att använda Delete-tangenten.</translation>
@@ -210,6 +212,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2704781753052663061">Anslut till andra wifi-nätverk</translation>
 <translation id="2705001408393684014">Aktivera eller inaktivera mikrofonen. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Upp</translation>
+<translation id="2713444072780614174">Vit</translation>
 <translation id="2718395828230677721">Nattljus</translation>
 <translation id="2726420622004325180">Telefonen måste ha mobildata för att användas som surfzon</translation>
 <translation id="2727175239389218057">Svara</translation>
@@ -582,6 +585,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5805809050170488595">Klicka för att aktivera <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Inställningar för anslutna enheter</translation>
+<translation id="583281660410589416">Okänd</translation>
 <translation id="5837036133683224804">Sluta casta <ph name="ROUTE_TITLE" /> till <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Aktivera</translation>
@@ -787,6 +791,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7561982940498449837">Stäng meny</translation>
 <translation id="7564874036684306347">Om du flyttar fönster till ett annat skrivbord kan det leda till oväntat beteende. Efterföljande meddelanden, fönster och dialogrutor kan delas upp mellan skrivborden.</translation>
 <translation id="7569509451529460200">Punktskrift och ChromeVox har aktiverats</translation>
+<translation id="7569983096843329377">Svart</translation>
 <translation id="7579778809502851308">Skärmbild</translation>
 <translation id="7590883480672980941">Inmatningsinställningar</translation>
 <translation id="7593891976182323525">Sök eller Skift</translation>

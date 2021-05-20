@@ -82,6 +82,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="15373452373711364">Grand curseur</translation>
 <translation id="1546492247443594934">Bureau 2</translation>
 <translation id="1550523713251050646">Cliquez pour afficher plus d'options</translation>
+<translation id="1555130319947370107">Bleu</translation>
 <translation id="1570871743947603115">Activer/désactiver le Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Accédez à toute l'activité de votre session</translation>
 <translation id="1611993646327628135">Activé</translation>
@@ -140,6 +141,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2067602449040652523">Luminosité du clavier</translation>
 <translation id="2078034614700056995">Balayez vers la droite avec quatre doigts pour passer au bureau suivant</translation>
 <translation id="2079504693865562705">Masquer les applications sur l'étagère</translation>
+<translation id="2079545284768500474">Annuler</translation>
 <translation id="2083190527011054446">Bonne nuit <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Aucune connexion réseau</translation>
 <translation id="2108303511227308752">Le raccourci-clavier Alt+Retour arrière a changé. Pour utiliser la touche Suppression, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+Retour arrière.</translation>
@@ -210,6 +212,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2704781753052663061">Se connecter à d'autres réseaux Wi-Fi</translation>
 <translation id="2705001408393684014">Activer/Désactiver le microphone. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Haut</translation>
+<translation id="2713444072780614174">Blanc</translation>
 <translation id="2718395828230677721">Éclairage nocturne</translation>
 <translation id="2726420622004325180">Les données cellulaires doivent être activées sur votre téléphone pour que celui-ci puisse offrir un point d'accès sans fil</translation>
 <translation id="2727175239389218057">Répondre</translation>
@@ -581,6 +584,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5805809050170488595">Cliquez pour activer <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Paramètres des appareils connectés</translation>
+<translation id="583281660410589416">Inconnu</translation>
 <translation id="5837036133683224804">Arrêter <ph name="ROUTE_TITLE" /> sur <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
@@ -786,6 +790,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Si vous déplacez des fenêtres sur un autre bureau, elles peuvent présenter des comportements inattendus. À la suite d'une telle opération, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
 <translation id="7569509451529460200">Braille et ChromeVox activés</translation>
+<translation id="7569983096843329377">Noir</translation>
 <translation id="7579778809502851308">Capture d'écran</translation>
 <translation id="7590883480672980941">Paramètres d'entrée</translation>
 <translation id="7593891976182323525">Recherche ou Majuscule</translation>

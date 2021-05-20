@@ -82,6 +82,7 @@
 <translation id="15373452373711364">Великий курсор миші</translation>
 <translation id="1546492247443594934">Робочий стіл 2</translation>
 <translation id="1550523713251050646">Натисніть, щоб побачити більше опцій</translation>
+<translation id="1555130319947370107">Синій</translation>
 <translation id="1570871743947603115">Увімкнути/вимкнути Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">мати доступ до всіх ваших дій у цьому сеансі</translation>
 <translation id="1611993646327628135">Увімкнено</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">Яскравість клавіатури</translation>
 <translation id="2078034614700056995">Проведіть чотирма пальцями праворуч, щоб перейти до наступного робочого столу</translation>
 <translation id="2079504693865562705">Приховати додатки на полиці</translation>
+<translation id="2079545284768500474">Відмінити</translation>
 <translation id="2083190527011054446">Доброї ночі, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Немає з’єднання з мережею</translation>
 <translation id="2108303511227308752">Комбінацію клавіш Alt + Backspace змінено. Щоб скористатися клавішею Delete, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">Підключитися до інших мереж Wi-Fi</translation>
 <translation id="2705001408393684014">Перемикач мікрофона. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Вгору</translation>
+<translation id="2713444072780614174">Білий</translation>
 <translation id="2718395828230677721">Нічний екран</translation>
 <translation id="2726420622004325180">Щоб увімкнути функцію "Точка доступу", на телефоні має бути мобільний Інтернет</translation>
 <translation id="2727175239389218057">Відповісти</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595">Натисніть, щоб активувати мережу <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">ОС Chromium</translation>
 <translation id="5825969630400862129">Налаштування підключених пристроїв</translation>
+<translation id="583281660410589416">Невідомий</translation>
 <translation id="5837036133683224804">Зупинити трансляцію <ph name="ROUTE_TITLE" /> на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="5860033963881614850">Вимк.</translation>
 <translation id="5860491529813859533">Увімкнути</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">Закрити меню</translation>
 <translation id="7564874036684306347">Переміщення вікон на інший робочий стіл може спричинити неочікувану поведінку. Нові сповіщення та вікна можуть розділятися між робочими столами.</translation>
 <translation id="7569509451529460200">Шрифт Брайля та ChromeVox увімкнено</translation>
+<translation id="7569983096843329377">Чорний</translation>
 <translation id="7579778809502851308">Знімок екрана</translation>
 <translation id="7590883480672980941">Налаштування введення</translation>
 <translation id="7593891976182323525">Клавіша пошуку або Shift</translation>

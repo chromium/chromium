@@ -2299,7 +2299,6 @@
 <translation id="346298925039590474">このデバイスのすべてのユーザーがこのモバイル ネットワークを使用できます</translation>
 <translation id="3464145797867108663">仕事用プロファイルを追加</translation>
 <translation id="346431825526753">これは <ph name="CUSTODIAN_EMAIL" /> によって管理されている子供向けのアカウントです。</translation>
-<translation id="3465480292013046659">アップデートのダウンロード中に問題が発生しました。しばらくしてからもう一度お試しください。</translation>
 <translation id="3468298837301810372">ラベル</translation>
 <translation id="3468999815377931311">Android スマートフォン</translation>
 <translation id="3470442499439619530">このユーザーを削除</translation>
@@ -2421,7 +2420,6 @@
 <translation id="3600792891314830896">音声が再生されるサイトをミュートする</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="360180734785106144">新機能が利用可能になったときにメッセージを表示する</translation>
-<translation id="3602179428782502464">この更新は管理者によってブロックされています</translation>
 <translation id="3602290021589620013">プレビュー</translation>
 <translation id="3602870520245633055">印刷とスキャン</translation>
 <translation id="3603622770190368340">ネットワーク証明書を取得</translation>

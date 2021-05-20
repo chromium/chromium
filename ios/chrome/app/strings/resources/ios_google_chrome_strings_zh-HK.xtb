@@ -24,6 +24,7 @@
 <translation id="2695886661449553974">Chrome 無法檢查更新，請稍後再試。</translation>
 <translation id="2732745070297234559">Chrome 無法檢查所有密碼。請明天再試。</translation>
 <translation id="2740105938841089077">使用 Chrome 開啟連結</translation>
+<translation id="2869959624320573933">登入 Chrome</translation>
 <translation id="2919738076569633423">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK_TOS" />服務條款<ph name="END_LINK_TOS" />》。</translation>
 <translation id="3030414234702425231">由於您即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理的帳戶，系統將刪除您在此裝置上的 Chrome 資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
 <translation id="3167189358072330585">您的帳戶不適用於 Google Chrome。請聯絡網域管理員，或使用一般的 Google 帳戶登入。</translation>
@@ -90,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
 <translation id="8022947259858476807">預設使用 Chrome 來開啟連結、從小工具搜尋，以及在其他應用程式中自動填入密碼</translation>
 <translation id="8160472928944011082">Chrome 無法更新</translation>
+<translation id="8263079278049777200">登入此網站、您的 Google 帳戶及 Chrome。您可稍後再開啟同步功能。</translation>
 <translation id="8357607116237445042">選擇要從此裝置上清除 Chrome 資料，還是要保留資料</translation>
 <translation id="8370517070665726704">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
 <translation id="840168496893712993">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式。</translation>

@@ -82,6 +82,7 @@
 <translation id="15373452373711364">ព្រួញកណ្តុរធំ</translation>
 <translation id="1546492247443594934">តុទី 2</translation>
 <translation id="1550523713251050646">ចុចសម្រាប់ជម្រើសជាច្រើនទៀត</translation>
+<translation id="1555130319947370107">ខៀវ</translation>
 <translation id="1570871743947603115">បិទ/បើកប៊្លូធូស។ <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ចូលប្រើសកម្មភាព​ទាំងអស់របស់អ្នកនៅក្នុង​រយៈពេលចូលប្រើនេះ</translation>
 <translation id="1611993646327628135">បើក</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">ពន្លឺកា្តរចុច</translation>
 <translation id="2078034614700056995">អូសទៅស្ដាំ​ដោយប្រើម្រាមដៃបួន ដើម្បីប្ដូរទៅតុបន្ទាប់</translation>
 <translation id="2079504693865562705">លាក់កម្មវិធីនៅក្នុងធ្នើរ</translation>
+<translation id="2079545284768500474">ត្រឡប់វិញ</translation>
 <translation id="2083190527011054446">រាត្រីសួស្ដី <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">មិនបាន​ភ្ជាប់ទៅ​បណ្ដាញ​ទេ</translation>
 <translation id="2108303511227308752">បានប្ដូរ​ផ្លូវកាត់ក្ដារចុច Alt + Backspace។ ដើម្បីប្រើ​គ្រាប់ចុច Delete សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + backspace។</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">ភ្ជាប់​បណ្ដាញ Wi-Fi ផ្សេងទៀត</translation>
 <translation id="2705001408393684014">បិទ/បើកមីក្រូហ្វូន។ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
+<translation id="2713444072780614174">ស</translation>
 <translation id="2718395828230677721">ពន្លឺពេលយប់</translation>
 <translation id="2726420622004325180">ទូរសព្ទ​របស់អ្នក​ត្រូវតែមាន​ទិន្នន័យទូរសព្ទចល័ត ដើម្បីផ្ដល់​ហតស្ប៉ត</translation>
 <translation id="2727175239389218057">ឆ្លើយតប</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595">ចុចដើម្បីបើកដំណើរការ <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">ការកំណត់​ឧបករណ៍ដែល​បានភ្ជាប់</translation>
+<translation id="583281660410589416">មិនស្គាល់</translation>
 <translation id="5837036133683224804">បញ្ឈប់ <ph name="ROUTE_TITLE" /> នៅលើ <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">បិទ</translation>
 <translation id="5860491529813859533">បើក</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">បិទ​ម៉ឺនុយ</translation>
 <translation id="7564874036684306347">ការផ្លាស់ទីវិនដូទៅកុំព្យូទ័រ​ផ្សេងទៀតអាចបណ្តាលឱ្យមានសកម្មភាពខុសប្រក្រតី។ ការជូនដំណឹងបន្តបន្ទាប់ វិនដូ និងប្រអប់បញ្ចូលអាចត្រូវបានបំបែកពីកុំព្យូទ័រនីមួយៗ។</translation>
 <translation id="7569509451529460200">បានបើកប្រ៊ែល និង ChromeVox</translation>
+<translation id="7569983096843329377">ខ្មៅ</translation>
 <translation id="7579778809502851308">ការថត​អេក្រង់</translation>
 <translation id="7590883480672980941">ការកំណត់ការបញ្ចូល</translation>
 <translation id="7593891976182323525">ស្វែងរក ឬ Shift</translation>

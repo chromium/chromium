@@ -24,6 +24,7 @@
 <translation id="2695886661449553974">Chrome ตรวจหาอัปเดตไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="2732745070297234559">Chrome ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้</translation>
 <translation id="2740105938841089077">ใช้ Chrome เพื่อเปิดลิงก์</translation>
+<translation id="2869959624320573933">ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="2919738076569633423">การใช้ Chrome หมายความว่าคุณยอมรับ<ph name="BEGIN_LINK_TOS" />ข้อกำหนดในการให้บริการ<ph name="END_LINK_TOS" /></translation>
 <translation id="3030414234702425231">เนื่องจากคุณกำลังออกจากระบบบัญชีที่จัดการโดย <ph name="SIGNOUT_MANAGED_DOMAIN" /> ข้อมูล Chrome ของคุณจะถูกลบออกจากอุปกรณ์นี้ แต่ข้อมูลจะยังคงอยู่ในบัญชี Google</translation>
 <translation id="3167189358072330585">บัญชีของคุณใช้งานไม่ได้บน Google Chrome โปรดติดต่อผู้ดูแลระบบโดเมนหรือใช้บัญชี Google ปกติเพื่อลงชื่อเข้าใช้</translation>
@@ -90,6 +91,7 @@
 <translation id="7855730255114109580">Google Chrome อัปเดตแล้ว</translation>
 <translation id="8022947259858476807">ใช้ Chrome โดยค่าเริ่มต้นเพื่อเปิดลิงก์ ค้นหาจากวิดเจ็ต และป้อนรหัสผ่านอัตโนมัติในแอปอื่นๆ</translation>
 <translation id="8160472928944011082">อัปเดต Chrome ไม่ได้</translation>
+<translation id="8263079278049777200">ลงชื่อเข้าใช้เว็บไซต์นี้ บัญชี Google และ Chrome คุณเปิดการซิงค์ภายหลังได้</translation>
 <translation id="8357607116237445042">เลือกว่าจะล้างข้อมูล Chrome จากอุปกรณ์นี้หรือเก็บไว้</translation>
 <translation id="8370517070665726704">ลิขสิทธิ์ <ph name="YEAR" /> Google LLC สงวนลิขสิทธิ์</translation>
 <translation id="840168496893712993">ส่วนเสริมบางรายการทำให้ Chrome ขัดข้อง โปรดลองถอนการติดตั้งส่วนเสริมนั้น</translation>

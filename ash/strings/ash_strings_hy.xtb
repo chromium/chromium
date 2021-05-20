@@ -82,6 +82,7 @@
 <translation id="15373452373711364">Մկնիկի մեծ նշորդ</translation>
 <translation id="1546492247443594934">Աշխատասեղան 2</translation>
 <translation id="1550523713251050646">Լրացուցիչ ընտրանքների համար սեղմեք</translation>
+<translation id="1555130319947370107">Կապույտ</translation>
 <translation id="1570871743947603115">Միացնել/անջատել Bluetooth-ը: <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Դիտեք այս աշխատաշրջանում ձեր գործողությունների վիճակագրությունը</translation>
 <translation id="1611993646327628135">Միացված է</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">Ստեղնաշարի պայծառություն</translation>
 <translation id="2078034614700056995">Հաջորդ աշխատասեղանին անցնելու համար չորս մատով սահեցրեք աջ</translation>
 <translation id="2079504693865562705">Թաքցնել դարակի հավելվածները</translation>
+<translation id="2079545284768500474">Հետարկել</translation>
 <translation id="2083190527011054446">Բարի գիշեր, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Սարքը միացած չէ ցանցին</translation>
 <translation id="2108303511227308752">«Alt + Backspace» ստեղնային դյուրանցումը փոփոխվել է։ Delete ստեղնի գործողությունն օգտագործելու համար սեղմեք <ph name="LAUNCHER_KEY_NAME" /> + Backspace։</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">Միացեք այլ Wi-Fi ցանցերի</translation>
 <translation id="2705001408393684014">Միացնել/անջատել խոսափողը։ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
+<translation id="2713444072780614174">Սպիտակ</translation>
 <translation id="2718395828230677721">Գիշերային ռեժիմ</translation>
 <translation id="2726420622004325180">Թեժ կետն ակտիվացնելու համար հեռախոսում պետք է միացված լինի բջջային ինտերնետը</translation>
 <translation id="2727175239389218057">Պատասխանել</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595">Սեղմել՝ <ph name="NETWORK_NAME" /> ցանցն ակտիվացնելու համար</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Կապված սարքերի կարգավորումներ</translation>
+<translation id="583281660410589416">Անհայտ</translation>
 <translation id="5837036133683224804">Դադարեցնել <ph name="ROUTE_TITLE" /> ներդիրի հեռարձակումը «<ph name="RECEIVER_NAME" />» սարքին</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
 <translation id="5860491529813859533">Միացնել</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">Փակել ընտրացանկը</translation>
 <translation id="7564874036684306347">Պատուհանների տեղափոխումն այլ աշխատասեղան կարող է անսպասելի արդյունքներ ունենալ: Հետագա ծանուցումները, պատուհանները և երկխոսությունները կարող են տրոհվել աշխատասեղանների միջև:</translation>
 <translation id="7569509451529460200">Բրայլյան գրատիպն ու ChromeVox-ը միացված են</translation>
+<translation id="7569983096843329377">Սև</translation>
 <translation id="7579778809502851308">Էկրանի լուսանկարում</translation>
 <translation id="7590883480672980941">Ներածման կարգավորումներ</translation>
 <translation id="7593891976182323525">Search կամ Shift</translation>

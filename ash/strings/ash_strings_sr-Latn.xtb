@@ -82,6 +82,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="15373452373711364">Veliki kursor</translation>
 <translation id="1546492247443594934">Radna površina 2</translation>
 <translation id="1550523713251050646">Kliknite za više opcija</translation>
+<translation id="1555130319947370107">Plava</translation>
 <translation id="1570871743947603115">Uključite/isključite Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Pristupite svim aktivnostima u ovoj sesiji</translation>
 <translation id="1611993646327628135">Uključeno</translation>
@@ -140,6 +141,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2067602449040652523">Osvetljenost tastature</translation>
 <translation id="2078034614700056995">Prevucite udesno pomoću četiri prsta da biste prešli na sledeću radnu površinu</translation>
 <translation id="2079504693865562705">Sakrij aplikacije na polici</translation>
+<translation id="2079545284768500474">Opozovi</translation>
 <translation id="2083190527011054446">Laku noć, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Niste povezani na mrežu</translation>
 <translation id="2108303511227308752">Tasterska prečica Alt + Backspace je promenjena. Da biste koristili taster Delete, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
@@ -210,6 +212,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2704781753052663061">Pridruži se drugim WiFi mrežama</translation>
 <translation id="2705001408393684014">Uključite/isključite mikrofon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Nagore</translation>
+<translation id="2713444072780614174">Bela</translation>
 <translation id="2718395828230677721">Noćno svetlo</translation>
 <translation id="2726420622004325180">Telefon mora da ima mobilne podatke da bi pružao funkciju hotspota</translation>
 <translation id="2727175239389218057">Odgovori</translation>
@@ -582,6 +585,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5805809050170488595">Kliknite da biste aktivirali <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Podešavanja povezanih uređaja</translation>
+<translation id="583281660410589416">Nepoznato</translation>
 <translation id="5837036133683224804">Zaustavi <ph name="ROUTE_TITLE" /> na uređaju <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Isključeno</translation>
 <translation id="5860491529813859533">Uključi</translation>
@@ -787,6 +791,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="7561982940498449837">Zatvori meni</translation>
 <translation id="7564874036684306347">Premeštanje prozora na drugi računar može da dovede do neočekivanog ponašanja. Naknadna obaveštenja, prozori i dijalozi će možda biti podeljeni između računara.</translation>
 <translation id="7569509451529460200">Brajeva azbuka i ChromeVox su omogućeni</translation>
+<translation id="7569983096843329377">Crna</translation>
 <translation id="7579778809502851308">Snimanje ekrana</translation>
 <translation id="7590883480672980941">Podešavanja unosa</translation>
 <translation id="7593891976182323525">Taster za pretragu ili Shift</translation>

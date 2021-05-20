@@ -82,6 +82,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="15373452373711364">Stór músarbendill</translation>
 <translation id="1546492247443594934">Skrifborð 2</translation>
 <translation id="1550523713251050646">Smelltu til að sjá fleiri valkosti</translation>
+<translation id="1555130319947370107">Blár</translation>
 <translation id="1570871743947603115">Kveikja/slökkva á Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Fengið aðgang að öllum aðgerðum þínum í þessari lotu</translation>
 <translation id="1611993646327628135">Kveikt</translation>
@@ -140,6 +141,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2067602449040652523">Birtustig lyklaborðs</translation>
 <translation id="2078034614700056995">Strjúktu til hægri með fjórum fingrum til að skipta yfir í næsta skrifborð</translation>
 <translation id="2079504693865562705">Fela forrit á hillu</translation>
+<translation id="2079545284768500474">Afturkalla</translation>
 <translation id="2083190527011054446">Góða nótt <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Engin nettenging</translation>
 <translation id="2108303511227308752">Flýtilyklinum „Alt + bakklykill“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + bakklykilinn til að nota Delete-lykilinn.</translation>
@@ -210,6 +212,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2704781753052663061">Tengjast við önnur Wi-Fi net</translation>
 <translation id="2705001408393684014">Kveikja/slökkva á hljóðnema. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Upp</translation>
+<translation id="2713444072780614174">Hvítur</translation>
 <translation id="2718395828230677721">Næturljós</translation>
 <translation id="2726420622004325180">Síminn verður að vera með farsímagögn til að útvega heitan reit</translation>
 <translation id="2727175239389218057">Svara</translation>
@@ -582,6 +585,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5805809050170488595">Smelltu til að kveikja á <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Stillingar tengdra tækja</translation>
+<translation id="583281660410589416">Óþekkt</translation>
 <translation id="5837036133683224804">Stöðva <ph name="ROUTE_TITLE" /> í <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Slökkt</translation>
 <translation id="5860491529813859533">Kveikja</translation>
@@ -787,6 +791,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7561982940498449837">Loka valmynd</translation>
 <translation id="7564874036684306347">Ef gluggar eru færðir á annað skjáborð getur það valdið óvæntri hegðun. Frekari tilkynningum, gluggum og svargluggum verður hugsanlega deilt á milli skjáborða.</translation>
 <translation id="7569509451529460200">Kveikt á blindraletri og ChromeVox</translation>
+<translation id="7569983096843329377">Svartur</translation>
 <translation id="7579778809502851308">Skjámyndataka</translation>
 <translation id="7590883480672980941">Inntaksstillingar</translation>
 <translation id="7593891976182323525">Leit eða Shift</translation>

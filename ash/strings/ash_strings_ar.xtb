@@ -82,6 +82,7 @@
 <translation id="15373452373711364">مؤشر الماوس الكبير</translation>
 <translation id="1546492247443594934">مكتب 2</translation>
 <translation id="1550523713251050646">انقر للحصول على المزيد من الخيارات</translation>
+<translation id="1555130319947370107">أزرق</translation>
 <translation id="1570871743947603115">تبديل البلوتوث. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">الوصول إلى جميع أنشطتك في جلسة واحدة</translation>
 <translation id="1611993646327628135">مُفعَّل</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">سطوع لوحة المفاتيح</translation>
 <translation id="2078034614700056995">يمكنك التمرير سريعًا لليسار بأربعة أصابع للتبديل إلى سطح المكتب التالي.</translation>
 <translation id="2079504693865562705">إخفاء التطبيقات في الرفّ</translation>
+<translation id="2079545284768500474">تراجع</translation>
 <translation id="2083190527011054446">ليلة سعيدة <ph name="GIVEN_NAME" />،</translation>
 <translation id="209965399369889474">لا يتوفّر اتصال بالشبكة</translation>
 <translation id="2108303511227308752">‏تم تغيير اختصارات لوحة المفاتيح "Alt + Backspace". لاستخدام مفتاح Delete، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + Backspace".</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">‏الانضمام إلى شبكات Wi-Fi أخرى</translation>
 <translation id="2705001408393684014">تبديل الميكروفون: <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">أعلى</translation>
+<translation id="2713444072780614174">أبيض</translation>
 <translation id="2718395828230677721">الإضاءة الليلية</translation>
 <translation id="2726420622004325180">يجب أن يتوفّر في هاتفك اتصال بيانات الجوّال لتتمكّن من تفعيل ميزة "نقطة الاتصال".</translation>
 <translation id="2727175239389218057">الرّد</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595">انقر لتفعيل <ph name="NETWORK_NAME" />.</translation>
 <translation id="5820394555380036790">‏نظام التشغيل Chromium</translation>
 <translation id="5825969630400862129">إعدادات الأجهزة المتّصلة</translation>
+<translation id="583281660410589416">غير معروف</translation>
 <translation id="5837036133683224804">إيقاف <ph name="ROUTE_TITLE" /> في <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">غير مفعّل</translation>
 <translation id="5860491529813859533">تفعيل</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">إغلاق القائمة</translation>
 <translation id="7564874036684306347">قد ينتج عن نقل النوافذ إلى سطح مكتب آخر سلوك غير متوقع. من الممكن أن يتم تقسيم مربعات الحوار والنوافذ والإشعارات المتتالية بين سطحَي المكتب.</translation>
 <translation id="7569509451529460200">‏تم تفعيل Braille وChromeVox</translation>
+<translation id="7569983096843329377">أسود</translation>
 <translation id="7579778809502851308">لقطة الشاشة</translation>
 <translation id="7590883480672980941">إعدادات الإدخال</translation>
 <translation id="7593891976182323525">‏مفتاح البحث أو Shift</translation>

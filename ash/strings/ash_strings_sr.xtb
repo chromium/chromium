@@ -82,6 +82,7 @@
 <translation id="15373452373711364">Велики курсор</translation>
 <translation id="1546492247443594934">Радна површина 2</translation>
 <translation id="1550523713251050646">Кликните за више опција</translation>
+<translation id="1555130319947370107">Плава</translation>
 <translation id="1570871743947603115">Укључите/искључите Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Приступите свим активностима у овој сесији</translation>
 <translation id="1611993646327628135">Укључено</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">Осветљеност тастатуре</translation>
 <translation id="2078034614700056995">Превуците удесно помоћу четири прста да бисте прешли на следећу радну површину</translation>
 <translation id="2079504693865562705">Сакриј апликације на полици</translation>
+<translation id="2079545284768500474">Опозови</translation>
 <translation id="2083190527011054446">Лаку ноћ, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Нисте повезани на мрежу</translation>
 <translation id="2108303511227308752">Тастерска пречица Alt + Backspace је промењена. Да бисте користили тастер Delete, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">Придружи се другим WiFi мрежама</translation>
 <translation id="2705001408393684014">Укључите/искључите микрофон. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Нагоре</translation>
+<translation id="2713444072780614174">Бела</translation>
 <translation id="2718395828230677721">Ноћно светло</translation>
 <translation id="2726420622004325180">Телефон мора да има мобилне податке да би пружао функцију хотспота</translation>
 <translation id="2727175239389218057">Одговори</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595">Кликните да бисте активирали <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium ОС</translation>
 <translation id="5825969630400862129">Подешавања повезаних уређаја</translation>
+<translation id="583281660410589416">Непознато</translation>
 <translation id="5837036133683224804">Заустави <ph name="ROUTE_TITLE" /> на уређају <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Искључено</translation>
 <translation id="5860491529813859533">Укључи</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">Затвори мени</translation>
 <translation id="7564874036684306347">Премештање прозора на други рачунар може да доведе до неочекиваног понашања. Накнадна обавештења, прозори и дијалози ће можда бити подељени између рачунара.</translation>
 <translation id="7569509451529460200">Брајева азбука и ChromeVox су омогућени</translation>
+<translation id="7569983096843329377">Црна</translation>
 <translation id="7579778809502851308">Снимање екрана</translation>
 <translation id="7590883480672980941">Подешавања уноса</translation>
 <translation id="7593891976182323525">Тастер за претрагу или Shift</translation>

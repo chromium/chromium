@@ -24,6 +24,7 @@
 <translation id="2695886661449553974">A Chrome nem tudott frissítéseket keresni. Próbálja újra később.</translation>
 <translation id="2732745070297234559">A Chrome nem tudta ellenőrizni az összes jelszót. Próbálkozzon újra holnap.</translation>
 <translation id="2740105938841089077">A Chrome használata linkek megnyitására</translation>
+<translation id="2869959624320573933">Bejelentkezés a Chrome-ba</translation>
 <translation id="2919738076569633423">A Chrome használatával elfogadja az <ph name="BEGIN_LINK_TOS" />általános szerződési feltételeket<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Mivel kijelentkezik a(z) <ph name="SIGNOUT_MANAGED_DOMAIN" /> által felügyelt fiókból, törli az eszközön található Chrome-adatokat. Ezek az adatok Google-fiókjában továbbra is megmaradnak.</translation>
 <translation id="3167189358072330585">Fiókja nem működik a Google Chrome-on. Lépjen kapcsolatba domainrendszergazdájával, vagy használjon normál Google-fiókot a bejelentkezéshez.</translation>
@@ -90,6 +91,7 @@
 <translation id="7855730255114109580">A Google Chrome naprakész</translation>
 <translation id="8022947259858476807">A Chrome-ot alapértelmezett böngészőként használva linkek nyithatók meg, modulokban lehet keresni, és jelszavak tölthetők be automatikusan az egyéb alkalmazásokban</translation>
 <translation id="8160472928944011082">Nem lehet frissíteni a Chrome-ot</translation>
+<translation id="8263079278049777200">Jelentkezzen be erre a webhelyre, a Google-fiókjába és a Chrome-ba. A szinkronizálást később is bekapcsolhatja.</translation>
 <translation id="8357607116237445042">Döntse el, hogy törli-e a Chrome adatait erről az eszközről, vagy megtartja őket.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Minden jog fenntartva.</translation>
 <translation id="840168496893712993">Bizonyos bővítmények a Chrome összeomlását eredményezik. Próbálja meg eltávolítani őket.</translation>

@@ -82,6 +82,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="15373452373711364">Kursor i madh</translation>
 <translation id="1546492247443594934">Tavolina e punës 2</translation>
 <translation id="1550523713251050646">Kliko për opsione të tjera</translation>
+<translation id="1555130319947370107">E kaltër</translation>
 <translation id="1570871743947603115">Aktivizo/çaktivizo Bluetooth-in. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Qasu te të gjitha aktivitetet e tua në këtë sesion</translation>
 <translation id="1611993646327628135">Aktive</translation>
@@ -140,6 +141,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2067602449040652523">Ndriçimi i tastierës</translation>
 <translation id="2078034614700056995">Rrëshqit shpejt djathtas me katër gishta për të kaluar te tavolina tjetër e punës</translation>
 <translation id="2079504693865562705">Fshih aplikacionet në raft</translation>
+<translation id="2079545284768500474">Zhbëj</translation>
 <translation id="2083190527011054446">Natën e mirë <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Nuk është lidhur në rrjet</translation>
 <translation id="2108303511227308752">Shkurtorja për Alt + Backspace është ndryshuar. Për të përdorur tastin Delete, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> key + Backspace.</translation>
@@ -210,6 +212,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2704781753052663061">Bashkohu me rrjete të tjera Wi-Fi</translation>
 <translation id="2705001408393684014">Aktivizo/çaktivizo mikrofonin. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Lart</translation>
+<translation id="2713444072780614174">E bardhë</translation>
 <translation id="2718395828230677721">Drita e natës</translation>
 <translation id="2726420622004325180">Telefoni yt duhet të përdorë të dhënat celulare për të ofruar një zonë qasjeje për internet</translation>
 <translation id="2727175239389218057">Përgjigju</translation>
@@ -582,6 +585,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5805809050170488595">Kliko për të aktivizuar <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Cilësimet e pajisjeve të lidhura</translation>
+<translation id="583281660410589416">E panjohur</translation>
 <translation id="5837036133683224804">Ndalo <ph name="ROUTE_TITLE" /> në <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
 <translation id="5860491529813859533">Aktivizo</translation>
@@ -787,6 +791,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7561982940498449837">Mbyll menynë</translation>
 <translation id="7564874036684306347">Zhvendosja e dritareve te një desktop tjetër mund të shkaktojë një sjellje të papritur. Njoftimet pasuese, dritarja dhe dialogët mund të ndahen mes desktopëve.</translation>
 <translation id="7569509451529460200">Braille dhe ChromeVox janë aktivizuar</translation>
+<translation id="7569983096843329377">E zezë</translation>
 <translation id="7579778809502851308">Regjistrimi i ekranit</translation>
 <translation id="7590883480672980941">Cilësimet e hyrjes</translation>
 <translation id="7593891976182323525">Kërko ose Shift</translation>

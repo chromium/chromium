@@ -1410,7 +1410,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6218753634732582820">Adres Chromium'dan kaldırılsın mı?</translation>
 <translation id="622039917539443112">Paralel katlama</translation>
 <translation id="6221345481584921695">Google Güvenli Tarama yakın bir zamanda <ph name="SITE" /> sitesinde <ph name="BEGIN_LINK" />kötü amaçlı yazılım tespit etti<ph name="END_LINK" />. Normalde güvenli olan web sitelerine bazen kötü amaçlı yazılımlar bulaşır. Kötü amaçlı içerik, kötü amaçlı yazılım dağıtımcısı olduğu bilinen <ph name="SUBRESOURCE_HOST" /> kaynağından gelmektedir.</translation>
-<translation id="6232619828520900263">Kimlik şu anda geçersiz</translation>
 <translation id="6234122620015464377">Her dokümandan sonra kırp</translation>
 <translation id="6240447795304464094">Google Pay logosu</translation>
 <translation id="6241121617266208201">Önerileri gizle</translation>
@@ -1919,6 +1918,7 @@ Ek ayrıntılar:
 <translation id="8202097416529803614">Sipariş özeti</translation>
 <translation id="8202370299023114387">Çakışma</translation>
 <translation id="8206978196348664717">Prc4 (Zarf)</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Kimliği sıfırladığınızda mevcut kimliğiniz geçersiz olacak ve 1 günden kısa bir sürede yeni bir kimlik işlenecektir}=1{Kimliği sıfırladığınızda mevcut kimliğiniz geçersiz olacak ve 1 gün içinde yeni bir kimlik işlenecektir}other{Kimliği sıfırladığınızda mevcut kimliğiniz geçersiz olacak ve {NUM_DAYS} gün içinde yeni bir kimlik işlenecektir}}</translation>
 <translation id="8211406090763984747">Bağlantı güvenli</translation>
 <translation id="8213464188712611711">Bellek</translation>
 <translation id="8218327578424803826">Atanan Konum:</translation>

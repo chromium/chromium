@@ -82,6 +82,7 @@
 <translation id="15373452373711364">Голям курсор на мишката</translation>
 <translation id="1546492247443594934">Работен кът 2</translation>
 <translation id="1550523713251050646">Кликнете за още опции</translation>
+<translation id="1555130319947370107">синьо</translation>
 <translation id="1570871743947603115">Превключване на Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">да осъществява достъп до цялата ви активност в тази сесия;</translation>
 <translation id="1611993646327628135">Вкл.</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">Яркост на клавиатурата</translation>
 <translation id="2078034614700056995">Прекарайте четири пръста надясно, за да превключите към следващия работен кът</translation>
 <translation id="2079504693865562705">Скриване на приложенията в лавицата</translation>
+<translation id="2079545284768500474">Отмяна</translation>
 <translation id="2083190527011054446">Добър вечер, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Няма връзка с мрежа</translation>
 <translation id="2108303511227308752">Клавишната комбинация Alt + Backspace се промени. За да използвате клавиша за изтриване, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + Backspace.</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">Присъединяване към други Wi-Fi мрежи</translation>
 <translation id="2705001408393684014">Превключване на микрофона. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Клавиш за нагоре</translation>
+<translation id="2713444072780614174">бяло</translation>
 <translation id="2718395828230677721">Нощно осветление</translation>
 <translation id="2726420622004325180">За да предостави точка за достъп, телефонът ви трябва да има мобилни данни</translation>
 <translation id="2727175239389218057">Отговор</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595">Кликнете за активиране на <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Настройки за свързани устройства</translation>
+<translation id="583281660410589416">Неизвестно</translation>
 <translation id="5837036133683224804">Спиране на предаването на <ph name="ROUTE_TITLE" /> към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5860491529813859533">Включване</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">Затваряне на менюто</translation>
 <translation id="7564874036684306347">Преместването на прозорци към друг работен плот може да предизвика неочаквано поведение. Последващите известия, прозорци и диалогови прозорци може да бъдат разделени между работните плотове.</translation>
 <translation id="7569509451529460200">Активирахте функцията за брайлово писмо и ChromeVox</translation>
+<translation id="7569983096843329377">черно</translation>
 <translation id="7579778809502851308">Заснемане на екрана</translation>
 <translation id="7590883480672980941">Настройки за въвеждане</translation>
 <translation id="7593891976182323525">„търсене“ или „Shift“</translation>

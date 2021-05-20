@@ -82,6 +82,7 @@
 <translation id="15373452373711364">Вялікі курсор мышы</translation>
 <translation id="1546492247443594934">Стол 2</translation>
 <translation id="1550523713251050646">Націсніце, каб убачыць дадатковыя параметры</translation>
+<translation id="1555130319947370107">Сіні</translation>
 <translation id="1570871743947603115">Уключыць або выключыць Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Атрымліваць доступ да ўсіх вашых дзеянняў у гэтым сеансе</translation>
 <translation id="1611993646327628135">Уключана</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">Яркасць клавіятуры</translation>
 <translation id="2078034614700056995">Правядзіце па сэнсарнай панэлі чатырма пальцамі ўправа, каб перайсці на наступны працоўны стол</translation>
 <translation id="2079504693865562705">Не паказваць праграмы на паліцы</translation>
+<translation id="2079545284768500474">Адрабіць</translation>
 <translation id="2083190527011054446">Добрай ночы, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Няма падключэння да сеткі</translation>
 <translation id="2108303511227308752">Змянілася прызначэнне спалучэння клавіш Alt + Backspace. Каб выканаць дзеянне клавішы Delete, націсніце <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">Падключыцца да іншых сетак Wi-Fi</translation>
 <translation id="2705001408393684014">Уключыць або выключыць мікрафон. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Уверх</translation>
+<translation id="2713444072780614174">Белы</translation>
 <translation id="2718395828230677721">Начная падсветка</translation>
 <translation id="2726420622004325180">Каб тэлефон мог дзейнічаць як хот-спот, ён павінен выкарыстоўваць мабільную перадачу даных</translation>
 <translation id="2727175239389218057">Адказаць</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595">Націсніце, каб актываваць сетку <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Налады падключаных прылад</translation>
+<translation id="583281660410589416">Невядома</translation>
 <translation id="5837036133683224804">Спыніць трансляцыю <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Выключана</translation>
 <translation id="5860491529813859533">Уключыць</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">Закрыць меню</translation>
 <translation id="7564874036684306347">Перамяшчэнне акна на іншы працоўны стол можа прывесці да непрадказальных паводзін. Пасля гэтага паведамленні і вокны могуць раздзяліцца паміж працоўнымі сталамі.</translation>
 <translation id="7569509451529460200">Сістэма Брайля і ChromeVox уключаны</translation>
+<translation id="7569983096843329377">Чорны</translation>
 <translation id="7579778809502851308">Здымак экрана</translation>
 <translation id="7590883480672980941">Налады ўводу</translation>
 <translation id="7593891976182323525">"Пошук" або Shift</translation>

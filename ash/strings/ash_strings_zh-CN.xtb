@@ -82,6 +82,7 @@
 <translation id="15373452373711364">大号鼠标光标</translation>
 <translation id="1546492247443594934">桌面 2</translation>
 <translation id="1550523713251050646">点击即可查看更多选项</translation>
+<translation id="1555130319947370107">蓝色</translation>
 <translation id="1570871743947603115">切换蓝牙设置。<ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">访问您在此次会话中的所有活动</translation>
 <translation id="1611993646327628135">开启</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">键盘亮度</translation>
 <translation id="2078034614700056995">若要切换到下一个桌面，请用四根手指向右滑动</translation>
 <translation id="2079504693865562705">隐藏任务栏中的应用</translation>
+<translation id="2079545284768500474">撤消</translation>
 <translation id="2083190527011054446"><ph name="GIVEN_NAME" />，晚安！</translation>
 <translation id="209965399369889474">未连接到网络</translation>
 <translation id="2108303511227308752">键盘快捷键“Alt + 退格键”已更改。若要使用 Delete 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 退格键。</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">连接到其他 Wi-Fi 网络</translation>
 <translation id="2705001408393684014">开启/关闭麦克风。<ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">向上箭头键</translation>
+<translation id="2713444072780614174">白色</translation>
 <translation id="2718395828230677721">护眼模式</translation>
 <translation id="2726420622004325180">您的手机必须有移动数据网络，才能提供热点</translation>
 <translation id="2727175239389218057">回复</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595">点击即可激活“<ph name="NETWORK_NAME" />”</translation>
 <translation id="5820394555380036790">Chromium 操作系统</translation>
 <translation id="5825969630400862129">设置已连接的设备</translation>
+<translation id="583281660410589416">未知</translation>
 <translation id="5837036133683224804">停止将“<ph name="ROUTE_TITLE" />”投射至“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5860491529813859533">启用</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">关闭菜单</translation>
 <translation id="7564874036684306347">将窗口移至另一桌面可能会导致出现意外行为 - 后续的通知、窗口和对话框可能会被拆分到不同的桌面中。</translation>
 <translation id="7569509451529460200">已启用盲文和 ChromeVox</translation>
+<translation id="7569983096843329377">黑色</translation>
 <translation id="7579778809502851308">截取屏幕</translation>
 <translation id="7590883480672980941">输入设置</translation>
 <translation id="7593891976182323525">搜索键或 Shift</translation>

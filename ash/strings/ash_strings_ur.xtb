@@ -82,6 +82,7 @@
 <translation id="15373452373711364">بڑا ماؤس کرسر</translation>
 <translation id="1546492247443594934">ڈیسک 2</translation>
 <translation id="1550523713251050646">مزید اختیارات کیلئے کلک کریں</translation>
+<translation id="1555130319947370107">نیلا</translation>
 <translation id="1570871743947603115">بلوٹوتھ ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">اس سیشن کی اپنی ہر سرگرمی تک رسائی حاصل کریں</translation>
 <translation id="1611993646327628135">آن</translation>
@@ -140,6 +141,7 @@
 <translation id="2067602449040652523">کی بورڈ کی چمک</translation>
 <translation id="2078034614700056995">اگلے ڈیسک پر سوئچ کرنے کے لیے چار انگلیوں سے دائیں سوائپ کریں۔</translation>
 <translation id="2079504693865562705">شیلف میں ایپس چھپائیں</translation>
+<translation id="2079545284768500474">کالعدم کریں</translation>
 <translation id="2083190527011054446">شب بخیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="209965399369889474">نیٹ ورک سے منسلک نہیں ہے</translation>
 <translation id="2108303511227308752">‏Alt + Backspace کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ Delete کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + بیک اسپیس کو دبائیں۔</translation>
@@ -210,6 +212,7 @@
 <translation id="2704781753052663061">‏Wi-Fi کے دیگر نیٹ ورکس میں شامل ہوں</translation>
 <translation id="2705001408393684014">مائیک ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">اوپر</translation>
+<translation id="2713444072780614174">سفید</translation>
 <translation id="2718395828230677721">نائٹ لائٹ</translation>
 <translation id="2726420622004325180">ہاٹ سپاٹ فراہم کرنے کے لیے آپ کے فون میں موبائل ڈیٹا کا ہونا ضروری ہے</translation>
 <translation id="2727175239389218057">جواب دیں</translation>
@@ -582,6 +585,7 @@
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> کو فعال کرنے کیلئے کلک کریں</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">منسلک کردہ آلات کی ترتیبات</translation>
+<translation id="583281660410589416">نامعلوم</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> پر <ph name="ROUTE_TITLE" /> کو روکیں</translation>
 <translation id="5860033963881614850">آف</translation>
 <translation id="5860491529813859533">آن کریں</translation>
@@ -787,6 +791,7 @@
 <translation id="7561982940498449837">مینو بند کریں</translation>
 <translation id="7564874036684306347">ونڈوز کو کسی دوسرے ڈیسک ٹاپ پر منتقل کرنا غیر متوقع برتاؤ کا سبب بن سکتا ہے۔ بعد کی اطلاعات، ونڈوز اور ڈائیلاگز ڈیسک ٹاپ کے بیچ منقسم ہو سکتے ہیں۔</translation>
 <translation id="7569509451529460200">‏بریل اور ChromeVox فعال ہیں</translation>
+<translation id="7569983096843329377">سیاہ</translation>
 <translation id="7579778809502851308">اسکرین کیپچر</translation>
 <translation id="7590883480672980941">ان پٹ کی ترتیبات</translation>
 <translation id="7593891976182323525">تلاش یا شفٹ</translation>

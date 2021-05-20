@@ -1419,7 +1419,6 @@
 <translation id="6218753634732582820">Да се отстрани адресата од Chromium?</translation>
 <translation id="622039917539443112">Паралелно превиткување</translation>
 <translation id="6221345481584921695">Google Safe Browsing неодамна <ph name="BEGIN_LINK" />откри злонамерен софтвер<ph name="END_LINK" /> на <ph name="SITE" />. Веб-локациите што обично се безбедни понекогаш се инфицираат со злонамерен софтвер. Злонамерната содржина доаѓа од <ph name="SUBRESOURCE_HOST" />, познат дистрибутер на злонамерен софтвер.</translation>
-<translation id="6232619828520900263">ID е моментално неважечки</translation>
 <translation id="6234122620015464377">Кратење по секој документ</translation>
 <translation id="6240447795304464094">Лого на Google Pay</translation>
 <translation id="6241121617266208201">Сокриј ги предлозите</translation>
@@ -1928,6 +1927,7 @@
 <translation id="8202097416529803614">Краток преглед на нарачка</translation>
 <translation id="8202370299023114387">Конфликт</translation>
 <translation id="8206978196348664717">Prc4 (плик)</translation>
+<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Кога ќе го ресетирате ID, вашиот тековен ID ќе стане неважечки, а нов ќе се издаде за помалку од еден ден}=1{Кога ќе го ресетирате ID, вашиот тековен ID ќе стане неважечки, а нов ќе се издаде за еден ден}one{Кога ќе го ресетирате ID, вашиот тековен ID ќе стане неважечки, а нов ќе се издаде за {NUM_DAYS} ден}other{Кога ќе го ресетирате ID, вашиот тековен ID ќе стане неважечки, а нов ќе се издаде за {NUM_DAYS} дена}}</translation>
 <translation id="8211406090763984747">Врската е безбедна</translation>
 <translation id="8213464188712611711">Спомени</translation>
 <translation id="8218327578424803826">Доделена локација:</translation>

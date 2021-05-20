@@ -202,6 +202,7 @@
 <ph name="BEGIN_LIST_ITEM1" />Огласувачите може да дознаат дека илјадници корисници споделуваат сличен интерес, како што е публиката на концерт, па да изберат реклами за публиката наместо за поединечно лице.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Огласувачите може да ја проучуваат ефикасноста на рекламите на начин што не ве следи на сајтовите.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Однапред ги вчитува страниците што Chrome мисли дека ќе ги посетите. За да го направи ова, Chrome може да користи колачиња, ако дозволите колачиња и може да шифрира и испраќа страници преку Google за да го сокрие вашиот идентитет од сајтовите.</translation>
 <translation id="234265804618409743">Камерата не може да се отвори. Нешто не е во ред.</translation>
 <translation id="2345671828921229300">За пребарување, допрете и задржете збор</translation>
 <translation id="2349710944427398404">Вкупен сообраќај искористен од Chrome, вклучувајќи сметки, обележувачи и зачувани поставки</translation>
@@ -783,6 +784,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6138832295072039549">Променете ги поставките за сајтот тука</translation>
 <translation id="6140709049082532940">Подобрена заштита:</translation>
 <translation id="6140912465461743537">Држава/регион</translation>
+<translation id="6141988275892716286">Потврдете го преземањето</translation>
 <translation id="614940544461990577">Обидете се:</translation>
 <translation id="6154478581116148741">Вклучете го заклучувањето на екранот во „Поставки“ за да ги извезете лозинките од уредов</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> заштеда на податоци</translation>
@@ -994,6 +996,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7493994139787901920"><ph name="VERSION" /> (Ажурирано <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">заштеден сообраќај</translation>
 <translation id="7498271377022651285">Почекајте…</translation>
+<translation id="750228856503700085">Ажурирања не се достапни</translation>
 <translation id="7507207699631365376">Погледнете ја <ph name="BEGIN_LINK" />Политиката за приватност<ph name="END_LINK" /> на операторов</translation>
 <translation id="7514365320538308">Преземи</translation>
 <translation id="751961395872307827">Не може да се поврзе со сајтот</translation>
@@ -1041,6 +1044,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7791543448312431591">Додај</translation>
 <translation id="7798392620021911922">Вратени се <ph name="TAB_COUNT" /> картички</translation>
 <translation id="780301667611848630">Не, фала</translation>
+<translation id="7805768142964895445">Статус</translation>
 <translation id="7808889146555843082">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="SITE" />. Променете ја лозинката или избришете ја сметката на <ph name="SITE" /> за да ја заштитите од другите.</translation>
 <translation id="7810647596859435254">Отвори со…</translation>
 <translation id="7815484226266492798">Копче за долга слика од екранот</translation>
@@ -1095,6 +1099,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8076492880354921740">Картички</translation>
 <translation id="8078096376109663956">Споделете само текст</translation>
 <translation id="8084114998886531721">Зачувана лозинка</translation>
+<translation id="8084285576995584326">Контролирајте ги податоците од вашата сметка на Google</translation>
 <translation id="808747664143081553">Поврзано со уредот</translation>
 <translation id="8103578431304235997">Инкогнито-картичка</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1190,6 +1195,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8712637175834984815">Сфатив</translation>
 <translation id="8725066075913043281">Обидете се повторно</translation>
 <translation id="8730621377337864115">Готово</translation>
+<translation id="8746155870861185046">Споделете го нагласениот текст</translation>
 <translation id="8748850008226585750">Содржината е скриена</translation>
 <translation id="8773160212632396039">Се обработува барањето</translation>
 <translation id="8788265440806329501">Историјата на навигација е затворена</translation>
