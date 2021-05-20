@@ -6,8 +6,8 @@
 
 namespace ash {
 
-MockUserImageManager::MockUserImageManager(const std::string& user_id)
-    : UserImageManager(user_id) {}
+MockUserImageManager::MockUserImageManager(const AccountId& account_id)
+    : UserImageManager(account_id) {}
 
 MockUserImageManager::~MockUserImageManager() {}
 

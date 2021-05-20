@@ -455,8 +455,7 @@ UserImageManager* ChromeUserManagerImpl::GetUserImageManager(
   UserImageManagerMap::iterator ui = user_image_managers_.find(account_id);
   if (ui != user_image_managers_.end())
     return ui->second.get();
-  auto mgr =
-      std::make_unique<UserImageManagerImpl>(account_id.GetUserEmail(), this);
+  auto mgr = std::make_unique<UserImageManagerImpl>(account_id, this);
   UserImageManagerImpl* mgr_raw = mgr.get();
   user_image_managers_[account_id] = std::move(mgr);
   return mgr_raw;

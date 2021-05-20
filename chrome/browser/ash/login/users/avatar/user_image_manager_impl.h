@@ -20,6 +20,7 @@
 #include "components/user_manager/user.h"
 #include "ui/gfx/image/image_skia.h"
 
+class AccountId;
 class ProfileDownloader;
 
 namespace base {
@@ -40,7 +41,7 @@ class UserImageManagerImpl : public UserImageManager,
                              public ProfileDownloaderDelegate {
  public:
   // UserImageManager:
-  UserImageManagerImpl(const std::string& user_id,
+  UserImageManagerImpl(const AccountId& account_id,
                        user_manager::UserManager* user_manager);
   ~UserImageManagerImpl() override;
 

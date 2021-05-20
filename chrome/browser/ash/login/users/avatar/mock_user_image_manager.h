@@ -5,18 +5,18 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_MOCK_USER_IMAGE_MANAGER_H_
 #define CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_MOCK_USER_IMAGE_MANAGER_H_
 
-#include <string>
-
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class AccountId;
+
 namespace ash {
 
 class MockUserImageManager : public UserImageManager {
  public:
-  explicit MockUserImageManager(const std::string& user_id);
+  explicit MockUserImageManager(const AccountId& account_id);
   virtual ~MockUserImageManager();
 
   MOCK_METHOD1(SaveUserDefaultImageIndex, void(int));
