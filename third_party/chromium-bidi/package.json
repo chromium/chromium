@@ -11,7 +11,7 @@
     "clean": "rm -rf ./src/.build"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "dependencies": {
     "@types/rollup": "^0.54.0",
     "@types/websocket": "^1.0.2",
