@@ -327,6 +327,28 @@ void MediaStreamSource::ConsumeAudio(AudioBus* bus, size_t number_of_frames) {
     consumer->ConsumeAudio(bus, number_of_frames);
 }
 
+void MediaStreamSource::OnDeviceCaptureHandleChange(
+    const MediaStreamDevice& device) {
+  if (!platform_source_) {
+    return;
+  }
+
+  auto capture_handle = media::mojom::CaptureHandle::New();
+  if (device.display_media_info.has_value()) {
+    capture_handle = device.display_media_info.value()->capture_handle.Clone();
+  }
+
+  platform_source_->SetCaptureHandle(capture_handle.Clone());
+
+  // Observers may dispatch events which create and add new Observers;
+  // take a snapshot so as to safely iterate.
+  HeapVector<Member<Observer>> observers;
+  CopyToVector(observers_, observers);
+  for (auto observer : observers) {
+    observer->SourceChangedCaptureHandle(capture_handle.Clone());
+  }
+}
+
 void MediaStreamSource::Trace(Visitor* visitor) const {
   visitor->Trace(observers_);
 }

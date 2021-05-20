@@ -44,6 +44,7 @@ enum MediaStreamTrackState {
     attribute EventHandler onunmute;
     readonly attribute MediaStreamTrackState readyState;
     attribute EventHandler onended;
+    [RuntimeEnabled = CaptureHandle] attribute EventHandler oncapturehandlechange;
 
     [CallWith=ScriptState] MediaStreamTrack clone();
     [ImplementedAs=stopTrack, CallWith=ExecutionContext] void stop();

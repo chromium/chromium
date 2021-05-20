@@ -37,6 +37,8 @@ generate_event_interfaces("modules_bindings_generated_event_interfaces") {
     "//third_party/blink/renderer/modules/hid/hid_input_report_event.idl",
     "//third_party/blink/renderer/modules/indexeddb/idb_version_change_event.idl",
     "//third_party/blink/renderer/modules/mediarecorder/blob_event.idl",
+    "//third_party/blink/renderer/modules/mediastream/capture_handle_change_event.idl",
+    "//third_party/blink/renderer/modules/mediastream/capture_handle_change_event_init.idl",
     "//third_party/blink/renderer/modules/mediastream/media_stream_event.idl",
     "//third_party/blink/renderer/modules/mediastream/media_stream_track_event.idl",
     "//third_party/blink/renderer/modules/nfc/ndef_reading_event.idl",

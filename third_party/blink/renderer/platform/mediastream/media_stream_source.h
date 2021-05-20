@@ -61,6 +61,7 @@ class PLATFORM_EXPORT MediaStreamSource final
    public:
     virtual ~Observer() = default;
     virtual void SourceChangedState() = 0;
+    virtual void SourceChangedCaptureHandle(media::mojom::CaptureHandlePtr) = 0;
   };
 
   enum StreamType { kTypeAudio, kTypeVideo };
@@ -144,6 +145,8 @@ class PLATFORM_EXPORT MediaStreamSource final
   const HashSet<AudioDestinationConsumer*>& AudioConsumers() {
     return audio_consumers_;
   }
+
+  void OnDeviceCaptureHandleChange(const MediaStreamDevice& device);
 
   void Trace(Visitor*) const;
 

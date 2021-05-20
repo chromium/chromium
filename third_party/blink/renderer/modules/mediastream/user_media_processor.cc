@@ -1260,17 +1260,7 @@ void UserMediaProcessor::OnDeviceCaptureHandleChange(
     return;
   }
 
-  auto capture_handle = media::mojom::CaptureHandle::New();
-  if (device.display_media_info.has_value()) {
-    capture_handle = device.display_media_info.value()->capture_handle.Clone();
-  }
-
-  WebPlatformMediaStreamSource* const source_impl = source->GetPlatformSource();
-  if (!source_impl) {
-    return;
-  }
-
-  source_impl->SetCaptureHandle(std::move(capture_handle));
+  source->OnDeviceCaptureHandleChange(device);
 }
 
 void UserMediaProcessor::Trace(Visitor* visitor) const {

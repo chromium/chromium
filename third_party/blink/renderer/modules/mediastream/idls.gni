@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 modules_idl_files = [
+  "capture_handle_change_event.idl",
   "input_device_info.idl",
   "media_device_info.idl",
   "media_devices.idl",
@@ -15,6 +16,7 @@ modules_idl_files = [
 
 modules_dictionary_idl_files = [
   "capture_handle.idl",
+  "capture_handle_change_event_init.idl",
   "capture_handle_config.idl",
   "constrain_boolean_parameters.idl",
   "constrain_dom_string_parameters.idl",

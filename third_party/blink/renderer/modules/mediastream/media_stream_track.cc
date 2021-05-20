@@ -34,6 +34,8 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_change_event.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_change_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
@@ -803,6 +805,25 @@ void MediaStreamTrack::SourceChangedState() {
   SendLogMessage(String::Format("%s()", __func__));
 }
 
+void MediaStreamTrack::SourceChangedCaptureHandle(
+    media::mojom::CaptureHandlePtr capture_handle_ptr) {
+  if (Ended()) {
+    return;
+  }
+
+  CaptureHandle* capture_handle = CaptureHandle::Create();
+  if (!capture_handle_ptr->origin.opaque()) {
+    capture_handle->setOrigin(capture_handle_ptr->origin.Serialize().c_str());
+  }
+  capture_handle->setHandle(capture_handle_ptr->capture_handle.c_str());
+
+  CaptureHandleChangeEventInit* init = CaptureHandleChangeEventInit::Create();
+  init->setCaptureHandle(capture_handle);
+
+  DispatchEvent(*CaptureHandleChangeEvent::Create(
+      event_type_names::kCapturehandlechange, init));
+}
+
 void MediaStreamTrack::PropagateTrackEnded() {
   CHECK(!is_iterating_registered_media_streams_);
   is_iterating_registered_media_streams_ = true;
@@ -856,6 +877,14 @@ const AtomicString& MediaStreamTrack::InterfaceName() const {
 
 ExecutionContext* MediaStreamTrack::GetExecutionContext() const {
   return execution_context_.Get();
+}
+
+void MediaStreamTrack::AddedEventListener(
+    const AtomicString& event_type,
+    RegisteredEventListener& registered_listener) {
+  if (event_type == event_type_names::kCapturehandlechange) {
+    UseCounter::Count(GetExecutionContext(), WebFeature::kCaptureHandle);
+  }
 }
 
 void MediaStreamTrack::Trace(Visitor* visitor) const {

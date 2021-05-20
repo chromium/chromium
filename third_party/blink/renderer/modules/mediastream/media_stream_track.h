@@ -95,6 +95,7 @@ class MODULES_EXPORT MediaStreamTrack
   DEFINE_ATTRIBUTE_EVENT_LISTENER(mute, kMute)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(unmute, kUnmute)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(ended, kEnded)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(capturehandlechange, kCapturehandlechange)
 
   // Returns the enum value of the ready state.
   MediaStreamSource::ReadyState GetReadyState() { return ready_state_; }
@@ -108,6 +109,8 @@ class MODULES_EXPORT MediaStreamTrack
   // EventTarget
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
+  void AddedEventListener(const AtomicString&,
+                          RegisteredEventListener&) override;
 
   // ScriptWrappable
   bool HasPendingActivity() const final;
@@ -124,8 +127,9 @@ class MODULES_EXPORT MediaStreamTrack
  private:
   friend class CanvasCaptureMediaStreamTrack;
 
-  // MediaStreamSourceObserver
+  // MediaStreamSource::Observer
   void SourceChangedState() override;
+  void SourceChangedCaptureHandle(media::mojom::CaptureHandlePtr) override;
 
   void PropagateTrackEnded();
   void applyConstraintsImageCapture(ScriptPromiseResolver*,
