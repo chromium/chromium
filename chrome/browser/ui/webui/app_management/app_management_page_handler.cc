@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
@@ -92,9 +93,14 @@ AppManagementPageHandler::AppManagementPageHandler(
       ,
       shelf_delegate_(this, profile)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-{
-  Observe(&apps::AppServiceProxyFactory::GetForProfile(profile_)
-               ->AppRegistryCache());
+      ,
+      preferred_apps_list_(apps::AppServiceProxyFactory::GetForProfile(profile)
+                               ->PreferredApps()) {
+  apps::AppRegistryCache::Observer::Observe(
+      &apps::AppServiceProxyFactory::GetForProfile(profile_)
+           ->AppRegistryCache());
+  apps::PreferredAppsList::Observer::Observe(
+      &apps::AppServiceProxyFactory::GetForProfile(profile_)->PreferredApps());
 }
 
 AppManagementPageHandler::~AppManagementPageHandler() {}
@@ -211,7 +217,8 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
                               ? OptionalBool::kTrue
                               : OptionalBool::kFalse;
 #endif
-
+  app->is_preferred_app =
+      preferred_apps_list_.IsPreferredAppForSupportedLinks(update.AppId());
   app->hide_more_settings = ShouldHideMoreSettings(app->id);
   app->hide_pin_to_shelf =
       update.ShowInShelf() == apps::mojom::OptionalBool::kFalse ||
@@ -238,5 +245,30 @@ void AppManagementPageHandler::OnAppUpdate(const apps::AppUpdate& update) {
 
 void AppManagementPageHandler::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  Observe(nullptr);
+  cache->RemoveObserver(this);
+}
+
+void AppManagementPageHandler::OnPreferredAppChanged(const std::string& app_id,
+                                                     bool is_preferred_app) {
+  app_management::mojom::AppPtr app;
+
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
+        if (update.Readiness() == apps::mojom::Readiness::kReady)
+          app = CreateUIAppPtr(update);
+      });
+
+  // If an app with this id is not already installed, do nothing.
+  if (!app)
+    return;
+
+  app->is_preferred_app = is_preferred_app;
+
+  page_->OnAppChanged(std::move(app));
+}
+
+void AppManagementPageHandler::OnPreferredAppsListWillBeDestroyed(
+    apps::PreferredAppsList* list) {
+  list->RemoveObserver(this);
 }

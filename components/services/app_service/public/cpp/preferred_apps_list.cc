@@ -237,4 +237,16 @@ size_t PreferredAppsList::GetEntrySize() {
   return preferred_apps_.size();
 }
 
+bool PreferredAppsList::IsPreferredAppForSupportedLinks(
+    const std::string& app_id) {
+  for (const auto& preferred_app : preferred_apps_) {
+    if (preferred_app->app_id == app_id &&
+        IsSupportedLink(preferred_app->intent_filter)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace apps

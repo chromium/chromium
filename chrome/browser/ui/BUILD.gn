@@ -1604,6 +1604,7 @@ static_library("ui") {
       "//components/safety_check",
       "//components/search_provider_logos",
       "//components/services/app_service/public/cpp:app_update",
+      "//components/services/app_service/public/cpp:preferred_apps",
       "//components/services/app_service/public/mojom",
       "//components/ui_metrics",
       "//components/url_formatter",

@@ -104,6 +104,7 @@ cr.define('app_management', function() {
         permissions: {},
         hideMoreSettings: false,
         hidePinToShelf: false,
+        isPreferredApp: false,
       };
 
       if (optConfig) {

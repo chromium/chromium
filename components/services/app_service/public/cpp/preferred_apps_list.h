@@ -105,6 +105,8 @@ class PreferredAppsList {
   // Get the entry size of the preferred app list.
   size_t GetEntrySize();
 
+  bool IsPreferredAppForSupportedLinks(const std::string& app_id);
+
  private:
   PreferredApps preferred_apps_;
   base::ObserverList<Observer> observers_;
