@@ -41,6 +41,23 @@ Polymer({
       value: false,
     },
 
+    /**
+     * Whether an errorMessage can be shown beneath the input.
+     */
+    allowErrorMessage: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * Error message shown beneath input (only shown if allowErrorMessage is
+     * true).
+     */
+    errorMessage: {
+      type: String,
+      value: '',
+    },
+
     showPolicyIndicator_: {
       type: Boolean,
       value: false,

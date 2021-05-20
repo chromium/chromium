@@ -483,7 +483,11 @@ Polymer({
     if (this.$.enterPinDialog.open) {
       this.$.enterPin.focus();
     } else if (this.$.changePinDialog.open) {
-      this.$.changePinOld.focus();
+      if (this.isSecondNewPinInvalid_()) {
+        this.$.changePinNew2.focus();
+      } else {
+        this.$.changePinOld.focus();
+      }
     } else if (this.$.unlockPinDialog.open) {
       this.$.unlockPin.focus();
     } else if (this.$.unlockPukDialog.open) {
@@ -590,6 +594,47 @@ Polymer({
     }
 
     return this.i18n('networkSimEnterPinSubtext');
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isOldPinInvalid_() {
+    return this.error_ === ErrorType.INCORRECT_PIN ||
+        this.error_ === ErrorType.INVALID_PIN;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getOldPinErrorMessage_() {
+    if (this.isOldPinInvalid_()) {
+      return this.getErrorMsg_();
+    }
+
+    return '';
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isSecondNewPinInvalid_() {
+    return this.error_ === ErrorType.MISMATCHED_PIN;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getSecondNewPinErrorMessage_() {
+    if (this.isSecondNewPinInvalid_()) {
+      return this.getErrorMsg_();
+    }
+
+    return '';
   },
 });
 })();

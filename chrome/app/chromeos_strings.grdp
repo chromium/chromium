@@ -2013,7 +2013,7 @@
     Enter PIN
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_ENTER_OLD_PIN" desc="Settings > Internet > Network details > Lock/unlock SIM card: Label for entering an old (current) PIN.">
-    Enter old PIN
+    Enter current PIN
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_ENTER_NEW_PIN" desc="Settings > Internet > Network details > Lock/unlock SIM card: Label for entering a new PIN.">
     Enter new PIN

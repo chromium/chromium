@@ -34,6 +34,10 @@
       :host([has-error-text_]) #pinEntrySubtext {
         color: red;
       }
+
+      #changePinOld {
+        margin-top: 24px;
+      }
     </style>
     <!-- Enter PIN dialog -->
     <cr-dialog id="enterPinDialog"
@@ -77,22 +81,26 @@
         <network-password-input id="changePinOld"
             value="{{pin_}}"
             label="[[i18n('networkSimEnterOldPin')]]"
-            disabled="[[inProgress_]]">
+            disabled="[[inProgress_]]"
+            invalid="[[isOldPinInvalid_(error_, deviceState)]]"
+            error-message="[[getOldPinErrorMessage_(error_, deviceState)]]"
+            allow-error-message>
         </network-password-input>
         <network-password-input id="changePinNew1"
             value="{{pin_new1_}}"
             label="[[i18n('networkSimEnterNewPin')]]"
-            disabled="[[inProgress_]]">
+            disabled="[[inProgress_]]"
+            allow-error-message>
         </network-password-input>
         <network-password-input id="changePinNew2"
             value="{{pin_new2_}}"
             label="[[i18n('networkSimReEnterNewPin')]]"
             on-enter="sendChangePin_"
-            disabled="[[inProgress_]]">
+            disabled="[[inProgress_]]"
+            invalid="[[isSecondNewPinInvalid_(error_, deviceState)]]"
+            error-message="[[getSecondNewPinErrorMessage_(error_, deviceState)]]"
+            allow-error-message>
         </network-password-input>
-        <div class="dialog-error" aria-live="assertive">
-          [[getErrorMsg_(error_, deviceState)]]
-        </div>
       </div>
       <div slot="button-container">
         <cr-button class="cancel-button" on-click="onCancel_">
