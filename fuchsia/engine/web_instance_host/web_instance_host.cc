@@ -47,6 +47,7 @@
 #include "components/viz/common/switches.h"
 #include "content/public/common/content_switches.h"
 #include "fuchsia/base/config_reader.h"
+#include "fuchsia/base/feedback_registration.h"
 #include "fuchsia/base/string_util.h"
 #include "fuchsia/engine/features.h"
 #include "fuchsia/engine/switches.h"
@@ -81,6 +82,24 @@ constexpr char kMixedContentAutoupgradeFeatureName[] =
     "AutoupgradeMixedContent";
 constexpr char kDisableMixedContentAutoupgradeOrigin[] =
     "disable-mixed-content-autoupgrade";
+
+// Registers product data for the web_instance Component, ensuring it is
+// registered regardless of how the Component is launched and without requiring
+// all of its clients to provide the required services (until a better solution
+// is available - see crbug.com/1211174). This should only be called once per
+// process, and the calling thread must have an async_dispatcher.
+void RegisterWebInstanceProductData() {
+  // TODO(fxbug.dev/51490): Use a programmatic mechanism to obtain this.
+  constexpr char kComponentUrl[] =
+      "fuchsia-pkg://fuchsia.com/web_engine#meta/web_instance.cmx";
+  constexpr char kCrashProductName[] = "FuchsiaWebEngine";
+  constexpr char kFeedbackAnnotationsNamespace[] = "web-engine";
+
+  cr_fuchsia::RegisterProductDataForCrashReporting(kComponentUrl,
+                                                   kCrashProductName);
+
+  cr_fuchsia::RegisterProductDataForFeedback(kFeedbackAnnotationsNamespace);
+}
 
 // Returns the underlying channel if |directory| is a client endpoint for a
 // |fuchsia::io::Directory| protocol. Otherwise, returns an empty channel.
@@ -389,7 +408,11 @@ std::vector<std::string> LoadWebInstanceSandboxServices() {
 const char WebInstanceHost::kComponentUrl[] =
     "fuchsia-pkg://fuchsia.com/web_engine#meta/web_instance.cmx";
 
-WebInstanceHost::WebInstanceHost() = default;
+WebInstanceHost::WebInstanceHost() {
+  // Ensure WebInstance is registered before launching it.
+  // TODO(crbug.com/1211174): Replace with a different mechanism when available.
+  RegisterWebInstanceProductData();
+}
 
 WebInstanceHost::~WebInstanceHost() = default;
 

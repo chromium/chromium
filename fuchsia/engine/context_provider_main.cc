@@ -24,7 +24,6 @@
 
 namespace {
 
-constexpr char kFeedbackAnnotationsNamespace[] = "web-engine";
 constexpr char kCrashProductName[] = "FuchsiaWebEngine";
 // TODO(https://fxbug.dev/51490): Use a programmatic mechanism to obtain this.
 constexpr char kComponentUrl[] =
@@ -50,11 +49,6 @@ int ContextProviderMain() {
           *base::CommandLine::ForCurrentProcess())) {
     return 1;
   }
-
-  // Populate feedback annotations for this component.
-  // TODO(crbug.com/1010222): Add annotations at Context startup, once Contexts
-  // are moved out to run in their own components.
-  cr_fuchsia::RegisterProductDataForFeedback(kFeedbackAnnotationsNamespace);
 
   LOG(INFO) << "Starting WebEngine " << GetVersionString();
 
