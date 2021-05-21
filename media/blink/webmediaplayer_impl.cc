@@ -2745,6 +2745,7 @@ std::unique_ptr<Renderer> WebMediaPlayerImpl::CreateRenderer(
 
   reported_renderer_type_ =
       renderer_factory_selector_->GetCurrentRendererType();
+  media_metrics_provider_->SetRendererType(reported_renderer_type_);
 
   return renderer_factory_selector_->GetCurrentFactory()->CreateRenderer(
       media_task_runner_, worker_task_runner_, audio_source_provider_.get(),

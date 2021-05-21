@@ -72,6 +72,7 @@ MediaMetricsProvider::~MediaMetricsProvider() {
   builder.SetIsTopFrame(is_top_frame_);
   builder.SetIsEME(uma_info_.is_eme);
   builder.SetIsMSE(is_mse_);
+  builder.SetRendererType(static_cast<int>(renderer_type_));
   builder.SetFinalPipelineStatus(uma_info_.last_pipeline_status);
   if (!is_mse_) {
     builder.SetURLScheme(static_cast<int64_t>(url_scheme_));
@@ -259,6 +260,10 @@ void MediaMetricsProvider::SetContainerName(
   DCHECK(initialized_);
   DCHECK(!container_name_.has_value());
   container_name_ = container_name;
+}
+
+void MediaMetricsProvider::SetRendererType(RendererType renderer_type) {
+  renderer_type_ = renderer_type;
 }
 
 void MediaMetricsProvider::AcquireWatchTimeRecorder(

@@ -10,6 +10,7 @@
 
 #include "media/base/container_names.h"
 #include "media/base/pipeline_status.h"
+#include "media/base/renderer_factory_selector.h"
 #include "media/base/timestamp_constants.h"
 #include "media/learning/common/learning_session.h"
 #include "media/learning/common/value.h"
@@ -108,6 +109,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   void SetAudioPipelineInfo(const AudioDecoderInfo& info) override;
   void SetContainerName(
       container_names::MediaContainerName container_name) override;
+  void SetRendererType(RendererType renderer_type) override;
   void SetHasAudio(AudioCodec audio_codec) override;
   void SetHasPlayed() override;
   void SetHasVideo(VideoCodec video_codec) override;
@@ -155,6 +157,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   bool is_mse_;
   mojom::MediaURLScheme url_scheme_;
   mojom::MediaStreamType media_stream_type_;
+  RendererType renderer_type_ = RendererType::kDefault;
 
   base::TimeDelta time_to_metadata_ = kNoTimestamp;
   base::TimeDelta time_to_first_frame_ = kNoTimestamp;

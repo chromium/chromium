@@ -8958,7 +8958,7 @@ be describing additional metrics about the same event.
       back; E.g., mp4, avi, mp3, etc.
     </summary>
   </metric>
-  <metric name="FinalPipelineStatus">
+  <metric name="FinalPipelineStatus" enum="PipelineStatus">
     <summary>
       media::PipelineStatus enum value. Always 0 if the playback succeeded; all
       other values indicate the playback ended in an error.
@@ -8989,6 +8989,12 @@ be describing additional metrics about the same event.
     <summary>
       ID which corresponds to a given WebMediaPlayerImpl instance. May be linked
       with Media.BasicPlayback events to understand a playback more deeply.
+    </summary>
+  </metric>
+  <metric name="RendererType" enum="MediaRendererType">
+    <summary>
+      Type of media::Renderer used for the playback. In most cases we do not
+      support dynamically changing RendererType during one playback.
     </summary>
   </metric>
   <metric name="TimeToFirstFrame">

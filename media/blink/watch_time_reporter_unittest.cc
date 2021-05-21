@@ -275,6 +275,7 @@ class WatchTimeReporterTest
     void SetTimeToPlayReady(base::TimeDelta elapsed) override {}
     void SetContainerName(
         container_names::MediaContainerName container_name) override {}
+    void SetRendererType(RendererType renderer_type) override {}
     void SetHasPlayed() override {}
     void SetHaveEnough() override {}
     void SetHasAudio(AudioCodec audio_codec) override {}

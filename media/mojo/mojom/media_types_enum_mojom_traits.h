@@ -6,6 +6,7 @@
 #define MEDIA_MOJO_MOJOM_MEDIA_TYPES_ENUM_MOJOM_TRAITS_H_
 
 #include "base/notreached.h"
+#include "media/base/renderer_factory_selector.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_transformation.h"
 #include "media/mojo/mojom/media_types.mojom-shared.h"
@@ -90,6 +91,79 @@ struct EnumTraits<media::mojom::CopyMode,
 
     NOTREACHED();
     *output = static_cast<::media::VideoFrameMetadata::CopyMode>(input);
+    return false;
+  }
+};
+
+template <>
+struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
+  static media::mojom::RendererType ToMojom(::media::RendererType input) {
+    switch (input) {
+      case ::media::RendererType::kDefault:
+        return media::mojom::RendererType::kDefault;
+      case ::media::RendererType::kMojo:
+        return media::mojom::RendererType::kMojo;
+      case ::media::RendererType::kMediaPlayer:
+        return media::mojom::RendererType::kMediaPlayer;
+      case ::media::RendererType::kCourier:
+        return media::mojom::RendererType::kCourier;
+      case ::media::RendererType::kFlinging:
+        return media::mojom::RendererType::kFlinging;
+      case ::media::RendererType::kCast:
+        return media::mojom::RendererType::kCast;
+      case ::media::RendererType::kMediaFoundation:
+        return media::mojom::RendererType::kMediaFoundation;
+      case ::media::RendererType::kFuchsia:
+        return media::mojom::RendererType::kFuchsia;
+      case ::media::RendererType::kRemoting:
+        return media::mojom::RendererType::kRemoting;
+      case ::media::RendererType::kCastStreaming:
+        return media::mojom::RendererType::kCastStreaming;
+    }
+
+    NOTREACHED();
+    return static_cast<media::mojom::RendererType>(input);
+  }
+
+  // Returning false results in deserialization failure and causes the
+  // message pipe receiving it to be disconnected.
+  static bool FromMojom(media::mojom::RendererType input,
+                        ::media::RendererType* output) {
+    switch (input) {
+      case media::mojom::RendererType::kDefault:
+        *output = ::media::RendererType::kDefault;
+        return true;
+      case media::mojom::RendererType::kMojo:
+        *output = ::media::RendererType::kMojo;
+        return true;
+      case media::mojom::RendererType::kMediaPlayer:
+        *output = ::media::RendererType::kMediaPlayer;
+        return true;
+      case media::mojom::RendererType::kCourier:
+        *output = ::media::RendererType::kCourier;
+        return true;
+      case media::mojom::RendererType::kFlinging:
+        *output = ::media::RendererType::kFlinging;
+        return true;
+      case media::mojom::RendererType::kCast:
+        *output = ::media::RendererType::kCast;
+        return true;
+      case media::mojom::RendererType::kMediaFoundation:
+        *output = ::media::RendererType::kMediaFoundation;
+        return true;
+      case media::mojom::RendererType::kFuchsia:
+        *output = ::media::RendererType::kFuchsia;
+        return true;
+      case media::mojom::RendererType::kRemoting:
+        *output = ::media::RendererType::kRemoting;
+        return true;
+      case media::mojom::RendererType::kCastStreaming:
+        *output = ::media::RendererType::kCastStreaming;
+        return true;
+    }
+
+    NOTREACHED();
+    *output = static_cast<::media::RendererType>(input);
     return false;
   }
 };

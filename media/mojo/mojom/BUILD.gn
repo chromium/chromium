@@ -548,6 +548,15 @@ mojom("mojom") {
       traits_sources = [ "cdm_capability_mojom_traits.cc" ]
       traits_public_deps = [ "//media" ]
     },
+    {
+      types = [
+        {
+          mojom = "media.mojom.RendererType"
+          cpp = "::media::RendererType"
+        },
+      ]
+      traits_headers = [ "media_types_enum_mojom_traits.h" ]
+    },
   ]
 
   cpp_typemaps += shared_typemaps

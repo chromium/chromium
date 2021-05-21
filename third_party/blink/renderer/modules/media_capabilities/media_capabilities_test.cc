@@ -183,6 +183,8 @@ class FakeMediaMetricsProvider
   void SetTimeToPlayReady(base::TimeDelta elapsed) override {}
   void SetContainerName(
       media::mojom::blink::MediaContainerName container_name) override {}
+  void SetRendererType(
+      media::mojom::blink::RendererType renderer_type) override {}
   void SetHasPlayed() override {}
   void SetHaveEnough() override {}
   void SetHasAudio(media::mojom::AudioCodec audio_codec) override {}
