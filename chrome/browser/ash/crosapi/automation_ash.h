@@ -39,11 +39,16 @@ class AutomationAsh : public mojom::Automation,
   // crosapi::mojom::Automation:
   void RegisterAutomationClientDeprecated(
       mojo::PendingRemote<mojom::AutomationClient> client,
-      const base::UnguessableToken& token) override;
-  void ReceiveEventPrototype(const std::string& event_bundle,
-                             bool root,
-                             const base::UnguessableToken& token,
-                             const std::string& window_id) override;
+      const base::UnguessableToken& token) override {}
+  void ReceiveEventPrototypeDeprecated(const std::string& event_bundle,
+                                       bool root,
+                                       const base::UnguessableToken& token,
+                                       const std::string& window_id) override {}
+  void DispatchAccessibilityEvents(
+      const base::UnguessableToken& tree_id,
+      const std::vector<ui::AXTreeUpdate>& updates,
+      const gfx::Point& mouse_location,
+      const std::vector<ui::AXEvent>& events) override;
   void DispatchTreeDestroyedEvent(
       const base::UnguessableToken& tree_id) override;
   void DispatchActionResult(const ui::AXActionData& already_handled_action_data,

@@ -4,16 +4,9 @@
 
 #include "chrome/browser/ash/crosapi/automation_ash.h"
 
-#include "base/bind.h"
-#include "base/pickle.h"
-#include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/common/channel_info.h"
-#include "components/exo/shell_surface_base.h"
 #include "components/version_info/channel.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
-#include "extensions/common/extension_messages.h"
-#include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_delegate.h"
 
 namespace crosapi {
 
@@ -49,35 +42,18 @@ void AutomationAsh::EnableTree(const ui::AXTreeID& tree_id) {
   }
 }
 
-void AutomationAsh::RegisterAutomationClientDeprecated(
-    mojo::PendingRemote<mojom::AutomationClient> client,
-    const base::UnguessableToken& token) {}
-
-void AutomationAsh::ReceiveEventPrototype(
-    const std::string& event_bundle_string,
-    bool root,
-    const base::UnguessableToken& token,
-    const std::string& window_id) {
+void AutomationAsh::DispatchAccessibilityEvents(
+    const base::UnguessableToken& tree_id,
+    const std::vector<ui::AXTreeUpdate>& updates,
+    const gfx::Point& mouse_location,
+    const std::vector<ui::AXEvent>& events) {
   // This prototype method is only implemented on developer builds of Chrome. We
   // check for this by checking that the build of Chrome is unbranded.
   if (chrome::GetChannel() != version_info::Channel::UNKNOWN)
     return;
 
-  base::Pickle pickle(event_bundle_string.data(), event_bundle_string.size());
-  base::PickleIterator iterator(pickle);
-  ExtensionMsg_AccessibilityEventBundleParams event_bundle;
-  bool success =
-      IPC::ParamTraits<ExtensionMsg_AccessibilityEventBundleParams>::Read(
-          &pickle, &iterator, &event_bundle);
-  if (!success) {
-    LOG(ERROR) << "ExtensionMsg_AccessibilityEventBundleParams deserialization "
-                  "failure";
-    return;
-  }
-
   extensions::AutomationEventRouter::GetInstance()->DispatchAccessibilityEvents(
-      event_bundle.tree_id, std::move(event_bundle.updates),
-      event_bundle.mouse_location, std::move(event_bundle.events));
+      ui::AXTreeID::FromToken(tree_id), updates, mouse_location, events);
 }
 
 void AutomationAsh::DispatchTreeDestroyedEvent(

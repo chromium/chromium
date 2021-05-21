@@ -41,6 +41,7 @@ struct Rect {
   int32 height;
 };
 
+[Stable]
 struct RectF {
   float x;
   float y;

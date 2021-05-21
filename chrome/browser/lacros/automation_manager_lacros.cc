@@ -4,12 +4,10 @@
 
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 
-#include "base/pickle.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "extensions/browser/api/automation_internal/automation_internal_api.h"
-#include "extensions/common/extension_messages.h"
 #include "ui/accessibility/ax_tree_id.h"
 
 AutomationManagerLacros::AutomationManagerLacros() {
@@ -43,18 +41,23 @@ void AutomationManagerLacros::DispatchAccessibilityEvents(
   if (!automation_remote_)
     return;
 
-  ExtensionMsg_AccessibilityEventBundleParams event_bundle;
-  event_bundle.tree_id = tree_id;
-  event_bundle.updates = std::move(updates);
-  event_bundle.mouse_location = mouse_location;
-  event_bundle.events = std::move(events);
-  base::Pickle pickle;
-  IPC::ParamTraits<ExtensionMsg_AccessibilityEventBundleParams>::Write(
-      &pickle, event_bundle);
-  std::string result(static_cast<const char*>(pickle.data()), pickle.size());
-  automation_remote_->ReceiveEventPrototype(std::move(result), false,
-                                            base::UnguessableToken::Create(),
-                                            std::string());
+  if (!tree_id.token())
+    return;
+
+  // TODO: we probably don't want to check every time but only once and cache
+  // the value(s). Also, we need to check all accessibility enums, structs
+  // reachable from AXTreeUpdate and AXEvent.
+  int remote_version =
+      chromeos::LacrosChromeServiceImpl::Get()->GetInterfaceVersion(
+          crosapi::mojom::Automation::Uuid_);
+  if (remote_version < 0 ||
+      crosapi::mojom::Automation::kDispatchAccessibilityEventsMinVersion >
+          static_cast<uint32_t>(remote_version)) {
+    return;
+  }
+
+  automation_remote_->DispatchAccessibilityEvents(*tree_id.token(), updates,
+                                                  mouse_location, events);
 }
 
 void AutomationManagerLacros::DispatchAccessibilityLocationChange(

@@ -7,6 +7,7 @@ module ax.mojom;
 import "ui/accessibility/ax_enums.mojom";
 
 // See ui::AXEventIntent for documentation.
+[Stable, Uuid="8b5d72a9-a584-4c28-8ad1-8b1a45956c7e"]
 struct EventIntent {
   Command command;
   InputEventType input_event_type;

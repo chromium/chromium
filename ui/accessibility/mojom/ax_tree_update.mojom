@@ -10,6 +10,7 @@ import "ui/accessibility/mojom/ax_node_data.mojom";
 import "ui/accessibility/mojom/ax_tree_data.mojom";
 
 // See ui::AXTreeUpdate for comments / explanations of these fields.
+[Stable, Uuid="add7185a-6b62-4f4f-ac43-2c6894a99dbc"]
 struct AXTreeUpdate {
   bool has_tree_data;
   AXTreeData tree_data;
