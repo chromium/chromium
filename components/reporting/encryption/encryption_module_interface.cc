@@ -21,7 +21,7 @@ namespace {
 // Temporary: enable/disable encryption.
 const base::Feature kEncryptedReportingFeature{
     EncryptionModuleInterface::kEncryptedReporting,
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace
 
