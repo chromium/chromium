@@ -199,30 +199,33 @@ TEST_F(SaveAddressProfileMessageControllerTest,
 }
 
 // Tests that the save callback is triggered with
-// |SaveAddressProfileOfferUserDecision::kDeclined| when the user dismisses the
-// message.
-TEST_F(SaveAddressProfileMessageControllerTest, DeclineOnGestureDismiss) {
+// |SaveAddressProfileOfferUserDecision::kMessageDeclined| when the user
+// dismisses the message via gesture.
+TEST_F(SaveAddressProfileMessageControllerTest,
+       DecisionIsMessageDeclinedOnGestureDismiss) {
   EnqueueSaveMessage(profile_, save_callback_.Get(), action_callback_.Get());
   EXPECT_NE(nullptr, GetMessageWrapper());
 
   EXPECT_CALL(
       save_callback_,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
+      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kMessageDeclined,
           profile_));
   TriggerMessageDismissedCallback(messages::DismissReason::GESTURE);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
 // Tests that the save callback is triggered with
-// |SaveAddressProfileOfferUserDecision::kIgnored| when the message is
-// autodismissed.
-TEST_F(SaveAddressProfileMessageControllerTest, IgnoreOnTimerAutodismiss) {
+// |SaveAddressProfileOfferUserDecision::kMessageTimeout| when the message is
+// auto-dismissed after a timeout.
+TEST_F(SaveAddressProfileMessageControllerTest,
+       DecisionIsMessageTimeoutOnTimerAutodismiss) {
   EnqueueSaveMessage(profile_, save_callback_.Get(), action_callback_.Get());
   EXPECT_NE(nullptr, GetMessageWrapper());
 
-  EXPECT_CALL(save_callback_,
-              Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-                  profile_));
+  EXPECT_CALL(
+      save_callback_,
+      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kMessageTimeout,
+          profile_));
   TriggerMessageDismissedCallback(messages::DismissReason::TIMER);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
