@@ -392,9 +392,6 @@ IN_PROC_BROWSER_TEST_F(
     ConversionRegistrationBrowserTest,
     RegisterWithDifferentUrlTypes_ConversionReceivedOrIgnored) {
   const char kSecureHost[] = "a.test";
-  // TODO(crbug.com/1137113): Should include a test where an insecure request is
-  // blocked from conversion registration if it is made on a secure page. Note
-  // that this can't work for image requests due to image auto-upgrade.
   struct {
     std::string page_host;
     std::string redirect_host;
@@ -409,6 +406,8 @@ IN_PROC_BROWSER_TEST_F(
       {kSecureHost /* page_host */, kSecureHost /* redirect_host */,
        true /* conversion_expected */},
       {"insecure.com" /* page_host */, kSecureHost /* redirect_host */,
+       false /* conversion_expected */},
+      {kSecureHost /* page_host */, "insecure.com" /* redirect_host */,
        false /* conversion_expected */}};
 
   for (const auto& test_case : kTestCases) {
@@ -429,19 +428,13 @@ IN_PROC_BROWSER_TEST_F(
     GURL redirect_url = redirect_server->GetURL(
         test_case.redirect_host,
         "/server-redirect?" + kWellKnownUrl + "?trigger-data=200");
-    ResourceLoadObserver load_observer(shell());
-    EXPECT_TRUE(ExecJs(web_contents(),
-                       JsReplace("createTrackingPixel($1);", redirect_url)));
+    EXPECT_TRUE(ExecJs(
+        web_contents(),
+        JsReplace("window.fetch($1, {mode: 'no-cors'}).catch(console.log);",
+                  redirect_url)));
 
-    // Either wait for a conversion redirect to be received, or wait for the url
-    // to finish loading if we are not expecting a conversions. Because
-    // conversion redirects are blocked, we do not receive completed load
-    // information for them.
-    if (test_case.expected_conversion) {
+    if (test_case.expected_conversion)
       EXPECT_EQ(200UL, host->WaitForNumConversions(1));
-    } else {
-      load_observer.WaitForResourceCompletion(redirect_url);
-    }
 
     // Navigate the page. By the time the navigation finishes, we will have
     // received any conversion mojo messages.
