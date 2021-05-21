@@ -213,6 +213,7 @@ export class PTZPanel extends View {
         nav.close(this.name);
       }
     });
+
     [this.panRight_, this.panLeft_, this.tiltUp_, this.tiltDown_].forEach(
         (btn) => {
           btn.addEventListener(tooltip.TOOLTIP_POSITION_EVENT_NAME, (e) => {
@@ -233,6 +234,10 @@ export class PTZPanel extends View {
             e.preventDefault();
           });
         });
+
+    this.setMirrorObserver_(() => {
+      this.checkDisabled_();
+    });
   }
 
   /**
@@ -262,23 +267,9 @@ export class PTZPanel extends View {
    * @return {!AsyncJobQueue}
    */
   bind_(attr, incBtn, decBtn) {
-    let needMirror = false;
     const {min, max, step} = this.track_.getCapabilities()[attr];
     const getCurrent = () => this.track_.getSettings()[attr];
-    const checkDisabled = () => {
-      const current = getCurrent();
-      (needMirror ? incBtn : decBtn).disabled = current - step < min;
-      (needMirror ? decBtn : incBtn).disabled = current + step > max;
-    };
-
-    if (attr === 'pan') {
-      needMirror = state.get(state.State.MIRROR);
-      this.setMirrorObserver_((mirrored) => {
-        needMirror = mirrored;
-        checkDisabled();
-      });
-    }
-    checkDisabled();
+    this.checkDisabled_();
 
     const queue = new AsyncJobQueue();
 
@@ -300,13 +291,14 @@ export class PTZPanel extends View {
             return;
           }
           const current = getCurrent();
+          const needMirror = attr === 'pan' && state.get(state.State.MIRROR);
           const next = Math.max(
               min, Math.min(max, current + delta * (needMirror ? -1 : 1)));
           if (current === next) {
             return;
           }
           await this.track_.applyConstraints({advanced: [{[attr]: next}]});
-          checkDisabled();
+          this.checkDisabled_();
         });
       };
     };
@@ -357,6 +349,38 @@ export class PTZPanel extends View {
    */
   canZoom_() {
     return this.track_.getCapabilities().zoom !== undefined;
+  }
+
+  /**
+   * @private
+   */
+  checkDisabled_() {
+    if (this.track_ === null) {
+      return;
+    }
+    const capabilities = this.track_.getCapabilities();
+    const settings = this.track_.getSettings();
+    const updateDisable = (incBtn, decBtn, attr) => {
+      const current = settings[attr];
+      const {min, max, step} = capabilities[attr];
+      decBtn.disabled = current - step < min;
+      incBtn.disabled = current + step > max;
+    };
+    if (capabilities.zoom !== undefined) {
+      updateDisable(this.zoomIn_, this.zoomOut_, 'zoom');
+    }
+
+    if (capabilities.tilt !== undefined) {
+      updateDisable(this.tiltUp_, this.tiltDown_, 'tilt');
+    }
+    if (capabilities.pan !== undefined) {
+      let incBtn = this.panRight_;
+      let decBtn = this.panLeft_;
+      if (state.get(state.State.MIRROR)) {
+        ([incBtn, decBtn] = [decBtn, incBtn]);
+      }
+      updateDisable(incBtn, decBtn, 'pan');
+    }
   }
 
   /**
@@ -450,6 +474,7 @@ export class PTZPanel extends View {
         return;
       }
       await this.track_.applyConstraints({advanced: [this.defaultPTZ_]});
+      this.checkDisabled_();
     };
   }
 
