@@ -14,6 +14,12 @@
 namespace ash {
 namespace accelerators {
 
+// Cycle backwards in the MRU window list. Usually Alt-Shift-Tab.
+ASH_EXPORT void CycleBackwardMru();
+
+// Cycle forwards in the MRU window list. Usually Alt-Tab.
+ASH_EXPORT void CycleForwardMru();
+
 // Reset the display zooming to the default state.
 ASH_EXPORT void ResetDisplayZoom();
 

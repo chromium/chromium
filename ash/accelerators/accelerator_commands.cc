@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -22,6 +23,16 @@
 // Keep the functions in this file in alphabetical order.
 namespace ash {
 namespace accelerators {
+
+void CycleBackwardMru() {
+  Shell::Get()->window_cycle_controller()->HandleCycleWindow(
+      WindowCycleController::WindowCyclingDirection::kBackward);
+}
+
+void CycleForwardMru() {
+  Shell::Get()->window_cycle_controller()->HandleCycleWindow(
+      WindowCycleController::WindowCyclingDirection::kForward);
+}
 
 void ResetDisplayZoom() {
   base::RecordAction(base::UserMetricsAction("Accel_Scale_Ui_Reset"));
