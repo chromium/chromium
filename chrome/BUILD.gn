@@ -175,9 +175,11 @@ if (!is_android && !is_mac) {
         ":chrome_dll",
         ":chrome_exe_version",
         ":copy_first_run",
+        ":packed_resources_integrity",
         ":visual_elements_resources",
         "//base",
         "//build:branding_buildflags",
+        "//chrome/app:chrome_exe_main_exports",
         "//chrome/app/version_assembly:chrome_exe_manifest",
         "//chrome/browser:active_use_util",
         "//chrome/browser:chrome_process_finder",
@@ -211,6 +213,8 @@ if (!is_android && !is_mac) {
         "//chrome/elevation_service",
         "//chrome/notification_helper",
       ]
+
+      defines += [ "CHROME_EXE_MAIN" ]
 
       if (win_console_app) {
         defines += [ "WIN_CONSOLE_APP" ]
@@ -1549,14 +1553,12 @@ if (!is_android) {
       public_deps = [ ":preinstalled_apps" ]
     }
 
-    if (enable_pak_file_integrity_checks) {
-      files_to_hash = [
-        "resources.pak",
-        "chrome_100_percent.pak",
-      ]
-      if (enable_hidpi) {
-        files_to_hash += [ "chrome_200_percent.pak" ]
-      }
+    files_to_hash = [
+      "resources.pak",
+      "chrome_100_percent.pak",
+    ]
+    if (enable_hidpi) {
+      files_to_hash += [ "chrome_200_percent.pak" ]
     }
   }
 }

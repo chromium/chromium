@@ -9,6 +9,8 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
+#include "chrome/app/packed_resources_integrity.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,7 +66,20 @@ TEST_F(CheckResourceIntegrityTest, NonExistentFile) {
   loop.Quit();
 }
 
-#if BUILDFLAG(ENABLE_PAK_FILE_INTEGRITY_CHECKS)
+#if defined(OS_WIN)
+// On Windows, CheckPakFileIntegrity() dynamically finds this symbol from its
+// main exe module (normally chrome.exe). In unit_tests.exe, provide the same
+// export.
+extern "C" __declspec(dllexport) __cdecl void GetPakFileHashes(
+    const uint8_t** resources_pak,
+    const uint8_t** chrome_100_pak,
+    const uint8_t** chrome_200_pak) {
+  *resources_pak = kSha256_resources_pak.data();
+  *chrome_100_pak = kSha256_chrome_100_percent_pak.data();
+  *chrome_200_pak = kSha256_chrome_200_percent_pak.data();
+}
+#endif  // defined(OS_WIN)
+
 TEST_F(CheckResourceIntegrityTest, ChromePaks) {
   base::HistogramTester tester;
   CheckPakFileIntegrity();
@@ -73,4 +88,3 @@ TEST_F(CheckResourceIntegrityTest, ChromePaks) {
   tester.ExpectBucketCount("SafeBrowsing.PakIntegrity.Chrome100", 1, 1);
   tester.ExpectBucketCount("SafeBrowsing.PakIntegrity.Chrome200", 1, 1);
 }
-#endif  // BUILDFLAG(ENABLE_PAK_FILE_INTEGRITY_CHECKS)

@@ -6,6 +6,12 @@
 
 #include <array>
 
+#include "build/build_config.h"
+
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/memory/page_size.h"
@@ -16,9 +22,11 @@
 #include "chrome/common/chrome_paths.h"
 #include "crypto/secure_hash.h"
 
-#if BUILDFLAG(ENABLE_PAK_FILE_INTEGRITY_CHECKS)
-#include "chrome/app/packed_resources_integrity.h"
-#endif
+#if defined(OS_WIN)
+#include "chrome/app/chrome_exe_main_win.h"
+#else
+#include "chrome/app/packed_resources_integrity.h"  // nogncheck
+#endif                                              // defined(OS_WIN)
 
 namespace {
 
@@ -50,11 +58,9 @@ bool CheckResourceIntegrityInternal(
   return base::ranges::equal(digest, expected_signature);
 }
 
-#if BUILDFLAG(ENABLE_PAK_FILE_INTEGRITY_CHECKS)
 void ReportPakIntegrity(const std::string& histogram_name, bool hash_matches) {
   base::UmaHistogramBoolean(histogram_name, hash_matches);
 }
-#endif
 
 }  // namespace
 
@@ -70,23 +76,55 @@ void CheckResourceIntegrity(
       std::move(callback));
 }
 
-#if BUILDFLAG(ENABLE_PAK_FILE_INTEGRITY_CHECKS)
 void CheckPakFileIntegrity() {
   base::FilePath resources_pack_path;
   base::PathService::Get(chrome::FILE_RESOURCES_PACK, &resources_pack_path);
 
-  CheckResourceIntegrity(resources_pack_path, kSha256_resources_pak,
+  // On Windows, the hashes cannot be embedded in the chrome.dll target that
+  // this file is a part of, because it creates a cyclic build dependency
+  // with the Grit resource allow-list generation. Instead, the hashes are
+  // embedded in chrome.exe, which provides an exported function to
+  // access them.
+#if defined(OS_WIN)
+  auto get_pak_file_hashes = reinterpret_cast<decltype(&GetPakFileHashes)>(
+      ::GetProcAddress(::GetModuleHandle(nullptr), "GetPakFileHashes"));
+  if (!get_pak_file_hashes) {
+    // This is only exported by chrome.exe and unit_tests.exe, so in
+    // other tests, like browser_tests.exe, this export will not be available.
+    return;
+  }
+
+  const uint8_t *resources_hash_raw = nullptr, *chrome_100_hash_raw = nullptr,
+                *chrome_200_hash_raw = nullptr;
+  get_pak_file_hashes(&resources_hash_raw, &chrome_100_hash_raw,
+                      &chrome_200_hash_raw);
+
+  base::span<const uint8_t, crypto::kSHA256Length> resources_hash(
+      resources_hash_raw, crypto::kSHA256Length);
+  base::span<const uint8_t, crypto::kSHA256Length> chrome_100_hash(
+      chrome_100_hash_raw, crypto::kSHA256Length);
+  base::span<const uint8_t, crypto::kSHA256Length> chrome_200_hash(
+      chrome_200_hash_raw, crypto::kSHA256Length);
+#else
+  base::span<const uint8_t, crypto::kSHA256Length> resources_hash =
+      kSha256_resources_pak;
+  base::span<const uint8_t, crypto::kSHA256Length> chrome_100_hash =
+      kSha256_chrome_100_percent_pak;
+  base::span<const uint8_t, crypto::kSHA256Length> chrome_200_hash =
+      kSha256_chrome_200_percent_pak;
+#endif  // defined(OS_WIN)
+
+  CheckResourceIntegrity(resources_pack_path, resources_hash,
                          base::BindOnce(&ReportPakIntegrity,
                                         "SafeBrowsing.PakIntegrity.Resources"));
   CheckResourceIntegrity(
       resources_pack_path.DirName().AppendASCII("chrome_100_percent.pak"),
-      kSha256_chrome_100_percent_pak,
+      chrome_100_hash,
       base::BindOnce(&ReportPakIntegrity,
                      "SafeBrowsing.PakIntegrity.Chrome100"));
   CheckResourceIntegrity(
       resources_pack_path.DirName().AppendASCII("chrome_200_percent.pak"),
-      kSha256_chrome_200_percent_pak,
+      chrome_200_hash,
       base::BindOnce(&ReportPakIntegrity,
                      "SafeBrowsing.PakIntegrity.Chrome200"));
 }
-#endif

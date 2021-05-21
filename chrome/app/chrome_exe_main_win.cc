@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/app/chrome_exe_main_win.h"
+
 #include <windows.h>
 #include <malloc.h>
 #include <stddef.h>
@@ -33,6 +35,7 @@
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "chrome/app/main_dll_loader_win.h"
+#include "chrome/app/packed_resources_integrity.h"
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "chrome/browser/win/chrome_process_finder.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
@@ -216,6 +219,15 @@ void WINAPI FiberBinder(void* params) {
 #endif  // defined(ARCH_CPU_32_BITS)
 
 }  // namespace
+
+__declspec(dllexport) __cdecl void GetPakFileHashes(
+    const uint8_t** resources_pak,
+    const uint8_t** chrome_100_pak,
+    const uint8_t** chrome_200_pak) {
+  *resources_pak = kSha256_resources_pak.data();
+  *chrome_100_pak = kSha256_chrome_100_percent_pak.data();
+  *chrome_200_pak = kSha256_chrome_200_percent_pak.data();
+}
 
 #if !defined(WIN_CONSOLE_APP)
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t*, int) {

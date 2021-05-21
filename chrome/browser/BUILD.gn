@@ -96,7 +96,6 @@ buildflag_header("buildflags") {
     "ENABLE_CHROMIUM_UPDATER=$enable_chromium_updater",
     "ENABLE_APP_SESSION_SERVICE=$enable_app_session_service",
     "USE_THIN_LTO=$use_thin_lto",
-    "ENABLE_PAK_FILE_INTEGRITY_CHECKS=$enable_pak_file_integrity_checks",
   ]
   if (is_win) {
     flags += [ "ENABLE_SEGMENT_HEAP=$enable_segment_heap" ]
@@ -4294,7 +4293,9 @@ static_library("browser") {
       ]
     }
 
-    if (enable_pak_file_integrity_checks) {
+    # On Windows, the hashes are embedded in //chrome:chrome_initial rather
+    # than here in :chrome_dll.
+    if (!is_win) {
       deps += [ "//chrome:packed_resources_integrity" ]
     }
 
@@ -4965,6 +4966,7 @@ static_library("browser") {
     deps += [
       ":chrome_process_finder",
       "//base/win:base_win_buildflags",
+      "//chrome/app:chrome_exe_main_exports",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/safe_browsing/chrome_cleaner",
       "//chrome/browser/safe_browsing/chrome_cleaner:public",

@@ -19,11 +19,9 @@ void CheckResourceIntegrity(
     const base::span<const uint8_t, crypto::kSHA256Length> expected_signature,
     base::OnceCallback<void(bool)> callback);
 
-#if BUILDFLAG(ENABLE_PAK_FILE_INTEGRITY_CHECKS)
 // Checks the main Chrome .pak files for corruption by calling
 // CheckResourceIntegrity(), using hashes generated from the
 // GN target //chrome:packed_resources_integrity.
 void CheckPakFileIntegrity();
-#endif
 
 #endif  // CHROME_BROWSER_RESOURCES_INTEGRITY_H_

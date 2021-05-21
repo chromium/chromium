@@ -58,6 +58,12 @@ source_set("chrome_dll_resources") {
   }
 }
 
+if (is_win) {
+  source_set("chrome_exe_main_exports") {
+    sources = [ "chrome_exe_main_win.h" ]
+  }
+}
+
 if (is_android) {
   import("//build/config/android/rules.gni")
   android_generated_java_resources =

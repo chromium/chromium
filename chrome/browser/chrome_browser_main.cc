@@ -190,6 +190,7 @@
 #else
 #include "chrome/browser/resource_coordinator/tab_activity_watcher.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
+#include "chrome/browser/resources_integrity.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/uma_browsing_activity_observer.h"
@@ -320,10 +321,6 @@
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-
-#if BUILDFLAG(ENABLE_PAK_FILE_INTEGRITY_CHECKS)
-#include "chrome/browser/resources_integrity.h"
-#endif
 
 namespace {
 
@@ -1109,9 +1106,7 @@ void ChromeBrowserMainParts::PreBrowserStart() {
   // Start the tab manager here so that we give the most amount of time for the
   // other services to start up before we start adjusting the oom priority.
   g_browser_process->GetTabManager()->Start();
-#endif
 
-#if BUILDFLAG(ENABLE_PAK_FILE_INTEGRITY_CHECKS)
   CheckPakFileIntegrity();
 #endif
 
