@@ -234,6 +234,13 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsPdf) {
 // present.
 #if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
 namespace {
+// icon-button ids are calculated from a hash of the button labels. Id is used
+// because the UI toolkit has loose guarantees about where the actual label
+// appears in the shadow DOM.
+const std::string kInfoButtonSelector = "#icon-button-2283726";
+const std::string kAnnotationButtonSelector = "#icon-button-3709949292";
+const std::string kCropAndRotateButtonSelector = "#icon-button-2723030533";
+
 // Clicks the button on the app bar with the specified selector.
 void clickAppBarButton(content::WebContents* app, const std::string& selector) {
   constexpr char kClickButton[] = R"(
@@ -270,10 +277,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
                                                 TestFile(kFileJpeg640x480));
   PrepareAppForTest(app);
 
-  // icon-button ids are calculated from a hash of the button labels. Id is used
-  // because the UI toolkit has loose guarantees about where the actual label
-  // appears in the shadow DOM.
-  clickAppBarButton(app, "#icon-button-3709949292");
+  clickAppBarButton(app, kAnnotationButtonSelector);
 
   // Checks ink is loaded for images by ensuring the ink engine canvas has a non
   // zero width and height attributes (checking <canvas.width/height is
@@ -314,10 +318,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
   )";
   EXPECT_EQ(false,
             MediaAppUiBrowserTest::EvalJsInAppFrame(app, kHasInfoPanelOpen));
-  // icon-button ids are calculated from a hash of the button labels. Id is used
-  // because the UI toolkit has loose guarantees about where the actual label
-  // appears in the shadow DOM.
-  const std::string kInfoButtonSelector = "#icon-button-2283726";
   EXPECT_EQ(false, isAppBarButtonOn(app, kInfoButtonSelector));
 
   // Expect info panel to be open after clicking info button.
@@ -340,6 +340,94 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
   EXPECT_EQ(false,
             MediaAppUiBrowserTest::EvalJsInAppFrame(app, kHasInfoPanelOpen));
   EXPECT_EQ(false, isAppBarButtonOn(app, kInfoButtonSelector));
+}
+
+// Tests that the media app is able to overwrite the original file on save.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
+                       SavesToOriginalFile) {
+  WaitForTestSystemAppInstall();
+  file_manager::test::FolderInMyFiles folder(profile());
+  folder.Add({TestFile(kFilePng800x600)});
+
+  const auto kTestFile = folder.files()[0];
+  // Stamp the file with a time far in the past, so it can be "updated".
+  // Note: Add a bit to the epoch to workaround https://crbug.com/1080434.
+  TouchFileSync(kTestFile,
+                base::Time::UnixEpoch() + base::TimeDelta::FromDays(1));
+
+  folder.Open(kTestFile);
+  content::WebContents* app = PrepareActiveBrowserForTest();
+  EXPECT_EQ("800x600", WaitForImageAlt(app, kFilePng800x600));
+
+  constexpr char kHasSaveDiscardButtons[] = R"(
+    (async () => {
+      const discardButton = await getNode('ea-button[label="Discard edits"]',
+          ['backlight-app-bar', 'backlight-app']);
+      const saveButton = await getNode('backlight-split-button[label="Save"]',
+          ['backlight-app-bar', 'backlight-app']);
+      return !!discardButton && !!saveButton;
+    })();
+  )";
+  // The save/discard buttons should not show when the file is unchanged.
+  EXPECT_EQ(false, MediaAppUiBrowserTest::EvalJsInAppFrame(
+                       app, kHasSaveDiscardButtons));
+
+  // Make a change to the file (rotate image), then check the save/discard
+  // buttons now exist.
+  clickAppBarButton(app, kCropAndRotateButtonSelector);
+  constexpr char kRotateImage[] = R"(
+    (async () => {
+      await waitForNode('backlight-crop-panel', ['backlight-image-handler']);
+      const rotateAntiClockwiseButton = await getNode('#icon-button-427243323',
+          ['backlight-crop-panel', 'backlight-image-handler']);
+      rotateAntiClockwiseButton.click();
+      const doneButton = await waitForNode(
+          'ea-button[label="Done"]', ['backlight-app-bar', 'backlight-app']);
+      doneButton.click();
+      await waitForNode('backlight-split-button[label="Save"]',
+          ['backlight-app-bar', 'backlight-app']);
+    })();
+  )";
+  MediaAppUiBrowserTest::EvalJsInAppFrame(app, kRotateImage);
+  EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(
+                      app, kHasSaveDiscardButtons));
+
+  // Save the changes, then wait for the save to go through.
+  constexpr char kClickSaveButton[] = R"(
+    (async () => {
+      const saveButton = await getNode('ea-button[label="Save"]',
+          ['backlight-split-button[label="Save"]', 'backlight-app-bar',
+          'backlight-app']);
+      saveButton.click();
+      window['savedToastPromise'] = new Promise(resolve => {
+        document.addEventListener('show-toast', (event) => {
+          if (event.detail.message === 'Saved') {
+            resolve(true);
+          }
+        });
+      });
+      saveButton.click();
+    })();
+  )";
+  MediaAppUiBrowserTest::EvalJsInAppFrame(app, kClickSaveButton);
+
+  constexpr char kWaitForSaveToast[] = R"(
+    (async () => {
+      const savedToast = await window['savedToastPromise'];
+      return !!savedToast;
+    })();
+  )";
+  EXPECT_EQ(true,
+            MediaAppUiBrowserTest::EvalJsInAppFrame(app, kWaitForSaveToast));
+  MediaAppUiBrowserTest::EvalJsInAppFrame(app, kWaitForSaveToast);
+
+  // Verify the contents of the file is different to the original.
+  std::string original_contents, rotated_contents;
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(
+      base::ReadFileToString(TestFile(kFilePng800x600), &original_contents));
+  EXPECT_TRUE(base::ReadFileToString(kTestFile, &rotated_contents));
+  EXPECT_NE(original_contents, rotated_contents);
 }
 #endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
 
