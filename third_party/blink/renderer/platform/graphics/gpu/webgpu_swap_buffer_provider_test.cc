@@ -237,7 +237,136 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyInsertAndWaitSyncTokenCorrectly) {
   gpu::SyncToken release_token;
   webgpu_->GenSyncTokenCHROMIUM(release_token.GetData());
   std::move(release_callback).Run(release_token, false /* lostResource */);
+
+  // Release the unused swap buffers held by the provider.
+  provider_ = nullptr;
+
   EXPECT_EQ(sii_->MostRecentDestroyToken(), release_token);
+}
+
+// Ensures swap buffers will be recycled.
+// Creates two swap buffers, destroys them, then creates them again.
+TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBuffers) {
+  const IntSize kSize(10, 10);
+
+  base::flat_set<gpu::Mailbox> shared_images = {};
+
+  viz::TransferableResource resource;
+  gpu::webgpu::ReservedTexture reservation = {
+      reinterpret_cast<WGPUTexture>(&resource), 1, 1};
+
+  // Produce swap buffers
+  viz::ReleaseCallback release_callback_1;
+  EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
+      .WillOnce(Return(reservation));
+  provider_->GetNewTexture(static_cast<IntSize>(kSize));
+
+  EXPECT_TRUE(
+      shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
+
+  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
+                                                     &release_callback_1));
+
+  viz::ReleaseCallback release_callback_2;
+  EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
+      .WillOnce(Return(reservation));
+  provider_->GetNewTexture(static_cast<IntSize>(kSize));
+
+  EXPECT_TRUE(
+      shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
+
+  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
+                                                     &release_callback_2));
+
+  // Destroy the swap buffers.
+  std::move(release_callback_1).Run(gpu::SyncToken(), false /* lostResource */);
+  std::move(release_callback_2).Run(gpu::SyncToken(), false /* lostResource */);
+
+  // Produce swap buffers again
+  EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
+      .WillOnce(Return(reservation));
+  provider_->GetNewTexture(static_cast<IntSize>(kSize));
+
+  EXPECT_FALSE(
+      shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
+
+  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
+                                                     &release_callback_1));
+
+  EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
+      .WillOnce(Return(reservation));
+  provider_->GetNewTexture(static_cast<IntSize>(kSize));
+
+  EXPECT_FALSE(
+      shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
+
+  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
+                                                     &release_callback_2));
+}
+
+// Ensures swap buffers will NOT be recycled if resized.
+// Creates two swap buffers of a size, destroys them, then creates them again
+// with a different size.
+TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBufferResize) {
+  base::flat_set<gpu::Mailbox> shared_images = {};
+
+  viz::TransferableResource resource;
+  gpu::webgpu::ReservedTexture reservation = {
+      reinterpret_cast<WGPUTexture>(&resource), 1, 1};
+
+  // Create swap buffers
+  const IntSize kSize(10, 10);
+
+  viz::ReleaseCallback release_callback_1;
+  EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
+      .WillOnce(Return(reservation));
+  provider_->GetNewTexture(static_cast<IntSize>(kSize));
+
+  EXPECT_TRUE(
+      shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
+
+  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
+                                                     &release_callback_1));
+
+  viz::ReleaseCallback release_callback_2;
+  EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
+      .WillOnce(Return(reservation));
+  provider_->GetNewTexture(static_cast<IntSize>(kSize));
+
+  EXPECT_TRUE(
+      shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
+
+  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
+                                                     &release_callback_2));
+
+  // Destroy swap buffers
+  std::move(release_callback_1).Run(gpu::SyncToken(), false /* lostResource */);
+  std::move(release_callback_2).Run(gpu::SyncToken(), false /* lostResource */);
+
+  // Create swap buffers again with different size.
+  const IntSize kOtherSize(20, 20);
+
+  viz::ReleaseCallback release_callback_3;
+  EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
+      .WillOnce(Return(reservation));
+  provider_->GetNewTexture(static_cast<IntSize>(kOtherSize));
+
+  EXPECT_TRUE(
+      shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
+
+  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
+                                                     &release_callback_3));
+
+  viz::ReleaseCallback release_callback_4;
+  EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
+      .WillOnce(Return(reservation));
+  provider_->GetNewTexture(static_cast<IntSize>(kOtherSize));
+
+  EXPECT_TRUE(
+      shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
+
+  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
+                                                     &release_callback_4));
 }
 
 }  // namespace blink

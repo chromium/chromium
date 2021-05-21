@@ -95,28 +95,59 @@ void WebGPUSwapBufferProvider::Neuter() {
   neutered_ = true;
 }
 
+std::unique_ptr<WebGPUSwapBufferProvider::SwapBuffer>
+WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(const gfx::Size& size) {
+  // Recycled SwapBuffers must be the same size.
+  if (!unused_swap_buffers_.IsEmpty() &&
+      unused_swap_buffers_.back()->size != size) {
+    unused_swap_buffers_.clear();
+  }
+
+  if (unused_swap_buffers_.IsEmpty()) {
+    gpu::SharedImageInterface* sii =
+        dawn_control_client_->GetContextProvider()->SharedImageInterface();
+
+    gpu::Mailbox mailbox = sii->CreateSharedImage(
+        format_, static_cast<gfx::Size>(size), gfx::ColorSpace::CreateSRGB(),
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+        gpu::SHARED_IMAGE_USAGE_WEBGPU |
+            gpu::SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
+            gpu::SHARED_IMAGE_USAGE_DISPLAY,
+        gpu::kNullSurfaceHandle);
+    gpu::SyncToken creation_token = sii->GenUnverifiedSyncToken();
+
+    unused_swap_buffers_.push_back(
+        std::make_unique<SwapBuffer>(this, mailbox, creation_token, size));
+    DCHECK_EQ(unused_swap_buffers_.back()->size, size);
+  }
+
+  std::unique_ptr<SwapBuffer> swap_buffer =
+      std::move(unused_swap_buffers_.back());
+  unused_swap_buffers_.pop_back();
+
+  return swap_buffer;
+}
+
+void WebGPUSwapBufferProvider::RecycleSwapBuffer(
+    std::unique_ptr<SwapBuffer> swap_buffer) {
+  // We don't want to keep an arbitrary large number of swap buffers.
+  if (unused_swap_buffers_.size() >
+      static_cast<unsigned int>(kMaxRecycledSwapBuffers))
+    return;
+
+  unused_swap_buffers_.push_back(std::move(swap_buffer));
+}
+
 WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const IntSize& size) {
   DCHECK(!current_swap_buffer_);
 
   gpu::webgpu::WebGPUInterface* webgpu = dawn_control_client_->GetInterface();
-  gpu::SharedImageInterface* sii =
-      dawn_control_client_->GetContextProvider()->SharedImageInterface();
 
   // Create a new swap buffer.
-  // TODO(cwallez@chromium.org): have some recycling mechanism.
-  gpu::Mailbox mailbox = sii->CreateSharedImage(
-      format_, static_cast<gfx::Size>(size), gfx::ColorSpace::CreateSRGB(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_WEBGPU |
-          gpu::SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
-          gpu::SHARED_IMAGE_USAGE_DISPLAY,
-      gpu::kNullSurfaceHandle);
-  gpu::SyncToken creation_token = sii->GenUnverifiedSyncToken();
+  current_swap_buffer_ = NewOrRecycledSwapBuffer(gfx::Size(size));
 
-  current_swap_buffer_ = base::AdoptRef(new SwapBuffer(
-      this, mailbox, creation_token, static_cast<gfx::Size>(size)));
-
-  // Ensure the shared image is allocated service-side before working with it
+  // Ensure the shared image is allocated and not in use service-side before
+  // working with it
   webgpu->WaitSyncTokenCHROMIUM(
       current_swap_buffer_->access_finished_token.GetConstData());
 
@@ -188,11 +219,11 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
 
   // This holds a ref on the SwapBuffers that will keep it alive until the
   // mailbox is released (and while the release callback is running).
-  *out_release_callback = WTF::Bind(
-      &WebGPUSwapBufferProvider::MailboxReleased,
-      scoped_refptr<WebGPUSwapBufferProvider>(this), current_swap_buffer_);
+  *out_release_callback =
+      WTF::Bind(&WebGPUSwapBufferProvider::MailboxReleased,
+                scoped_refptr<WebGPUSwapBufferProvider>(this),
+                std::move(current_swap_buffer_));
 
-  current_swap_buffer_ = nullptr;
   wire_texture_id_ = 0;
   wire_texture_generation_ = 0;
 
@@ -200,12 +231,15 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
 }
 
 void WebGPUSwapBufferProvider::MailboxReleased(
-    scoped_refptr<SwapBuffer> swap_buffer,
+    std::unique_ptr<SwapBuffer> swap_buffer,
     const gpu::SyncToken& sync_token,
     bool lost_resource) {
   // Update the SyncToken to ensure that we will wait for it even if we
   // immediately destroy this buffer.
   swap_buffer->access_finished_token = sync_token;
+
+  if (!lost_resource)
+    RecycleSwapBuffer(std::move(swap_buffer));
 }
 
 WebGPUSwapBufferProvider::SwapBuffer::SwapBuffer(
@@ -225,4 +259,8 @@ WebGPUSwapBufferProvider::SwapBuffer::~SwapBuffer() {
   sii->DestroySharedImage(access_finished_token, mailbox);
 }
 
+gpu::Mailbox WebGPUSwapBufferProvider::GetCurrentMailboxForTesting() const {
+  DCHECK(current_swap_buffer_);
+  return current_swap_buffer_->mailbox;
+}
 }  // namespace blink

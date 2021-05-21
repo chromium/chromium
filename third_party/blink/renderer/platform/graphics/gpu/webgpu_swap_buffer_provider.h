@@ -54,9 +54,11 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback) override;
 
+  gpu::Mailbox GetCurrentMailboxForTesting() const;
+
  private:
   // Holds resources and synchronization for one of the swapchain images.
-  struct SwapBuffer : public RefCounted<SwapBuffer> {
+  struct SwapBuffer {
     SwapBuffer(WebGPUSwapBufferProvider*,
                gpu::Mailbox mailbox,
                gpu::SyncToken creation_token,
@@ -66,10 +68,12 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     gfx::Size size;
     gpu::Mailbox mailbox;
 
-    // A reference back to the swap buffers to keep it alive while this image
-    // is in flight so that the destructor can access data in the swap
-    // buffers.
-    scoped_refptr<WebGPUSwapBufferProvider> swap_buffers;
+    // A reference back to the swap buffers so that the destructor can access
+    // data in the swap buffers. This is a weak reference since the swap buffer
+    // is held alive by both the provider and the TransferableResource. If the
+    // swap chain gets destroyed, the TransferableResource release CB
+    // keeps the in-flight swap buffer alive.
+    WebGPUSwapBufferProvider* swap_buffers = nullptr;
 
     // A token signaled when the previous user of the image is finished using
     // it. It could be WebGPU, the compositor or the shared image creation.
@@ -79,7 +83,12 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     DISALLOW_COPY_AND_ASSIGN(SwapBuffer);
   };
 
-  void MailboxReleased(scoped_refptr<SwapBuffer> swap_buffer,
+  std::unique_ptr<WebGPUSwapBufferProvider::SwapBuffer> NewOrRecycledSwapBuffer(
+      const gfx::Size& size);
+
+  void RecycleSwapBuffer(std::unique_ptr<SwapBuffer> swap_buffer);
+
+  void MailboxReleased(std::unique_ptr<SwapBuffer> swap_buffer,
                        const gpu::SyncToken& sync_token,
                        bool lost_resource);
 
@@ -91,9 +100,15 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
 
   WGPUTextureUsage usage_;
 
+  // The maximum number of in-flight swap-buffers waiting to be used for
+  // recycling.
+  static constexpr int kMaxRecycledSwapBuffers = 3;
+
+  WTF::Vector<std::unique_ptr<SwapBuffer>> unused_swap_buffers_;
+
   uint32_t wire_texture_id_ = 0;
   uint32_t wire_texture_generation_ = 0;
-  scoped_refptr<SwapBuffer> current_swap_buffer_;
+  std::unique_ptr<SwapBuffer> current_swap_buffer_;
   viz::ResourceFormat format_;
 };
 
