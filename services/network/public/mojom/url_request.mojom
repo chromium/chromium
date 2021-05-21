@@ -579,6 +579,32 @@ interface DevToolsObserver {
     url.mojom.Url url,
     CorsErrorStatus status);
 
+  // Called when parsing the .wbn file has succeeded. The event
+  // contains the information about the web bundle contents.
+  OnSubresourceWebBundleMetadata(
+    string devtool_request_id,
+    array<url.mojom.Url> urls);
+
+  // Called when parsing the .wbn file has failed.
+  OnSubresourceWebBundleMetadataError(
+    string devtool_request_id,
+    string error_message);
+
+  // Called when handling requests for resources within a .wbn file.
+  // Note: this will only be fired for resources that are requested by the
+  // webpage.
+  OnSubresourceWebBundleInnerResponse(
+    string inner_request_devtools_id,
+    url.mojom.Url url,
+    string? bundle_request_devtools_id);
+
+  // Called when an error occurs while handling a request within a .wbn file.
+  OnSubresourceWebBundleInnerResponseError(
+    string inner_request_devtools_id,
+    url.mojom.Url url,
+    string error_message,
+    string? bundle_request_devtools_id);
+
   // Used by the NetworkService to create a copy of this observer.
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's
   // observer).

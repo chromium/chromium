@@ -14,6 +14,7 @@
 #include "services/network/public/mojom/http_raw_headers.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/url_request.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace network {
 
@@ -65,6 +66,33 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   void OnTrustTokenOperationDone(
       const std::string& devtool_request_id,
       network::mojom::TrustTokenOperationResultPtr result) override;
+
+  MOCK_METHOD(void,
+              OnSubresourceWebBundleMetadata,
+              (const std::string& devtools_request_id,
+               const std::vector<GURL>& urls),
+              (override));
+
+  MOCK_METHOD(void,
+              OnSubresourceWebBundleMetadataError,
+              (const std::string& devtools_request_id,
+               const std::string& error_message),
+              (override));
+
+  MOCK_METHOD(void,
+              OnSubresourceWebBundleInnerResponse,
+              (const std::string& inner_request_devtools_id,
+               const GURL& url,
+               const absl::optional<std::string>& bundle_request_devtools_id),
+              (override));
+
+  MOCK_METHOD(void,
+              OnSubresourceWebBundleInnerResponseError,
+              (const std::string& inner_request_devtools_id,
+               const GURL& url,
+               const std::string& error_message,
+               const absl::optional<std::string>& bundle_request_devtools_id),
+              (override));
 
   void OnCorsError(const absl::optional<std::string>& devtool_request_id,
                    const absl::optional<::url::Origin>& initiator_origin,

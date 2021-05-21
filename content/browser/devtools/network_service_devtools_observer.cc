@@ -212,6 +212,54 @@ void NetworkServiceDevToolsObserver::OnCorsError(
       ftn->current_frame_host(), issue.get());
 }
 
+void NetworkServiceDevToolsObserver::OnSubresourceWebBundleMetadata(
+    const std::string& devtools_request_id,
+    const std::vector<GURL>& urls) {
+  auto* host = GetDevToolsAgentHost();
+  if (!host)
+    return;
+  DispatchToAgents(host,
+                   &protocol::NetworkHandler::OnSubresourceWebBundleMetadata,
+                   devtools_request_id, urls);
+}
+
+void NetworkServiceDevToolsObserver::OnSubresourceWebBundleMetadataError(
+    const std::string& devtools_request_id,
+    const std::string& error_message) {
+  auto* host = GetDevToolsAgentHost();
+  if (!host)
+    return;
+  DispatchToAgents(
+      host, &protocol::NetworkHandler::OnSubresourceWebBundleMetadataError,
+      devtools_request_id, error_message);
+}
+
+void NetworkServiceDevToolsObserver::OnSubresourceWebBundleInnerResponse(
+    const std::string& inner_request_devtools_id,
+    const GURL& url,
+    const absl::optional<std::string>& bundle_request_devtools_id) {
+  auto* host = GetDevToolsAgentHost();
+  if (!host)
+    return;
+  DispatchToAgents(
+      host, &protocol::NetworkHandler::OnSubresourceWebBundleInnerResponse,
+      inner_request_devtools_id, url, bundle_request_devtools_id);
+}
+
+void NetworkServiceDevToolsObserver::OnSubresourceWebBundleInnerResponseError(
+    const std::string& inner_request_devtools_id,
+    const GURL& url,
+    const std::string& error_message,
+    const absl::optional<std::string>& bundle_request_devtools_id) {
+  auto* host = GetDevToolsAgentHost();
+  if (!host)
+    return;
+  DispatchToAgents(
+      host, &protocol::NetworkHandler::OnSubresourceWebBundleInnerResponseError,
+      inner_request_devtools_id, url, error_message,
+      bundle_request_devtools_id);
+}
+
 void NetworkServiceDevToolsObserver::Clone(
     mojo::PendingReceiver<network::mojom::DevToolsObserver> observer) {
   mojo::MakeSelfOwnedReceiver(

@@ -322,6 +322,25 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
     if (wait_for_completed_)
       std::move(wait_for_completed_).Run();
   }
+
+  void OnSubresourceWebBundleMetadata(const std::string& devtools_request_id,
+                                      const std::vector<GURL>& urls) override {}
+
+  void OnSubresourceWebBundleMetadataError(
+      const std::string& devtools_request_id,
+      const std::string& error_message) override {}
+
+  void OnSubresourceWebBundleInnerResponse(
+      const std::string& inner_request_devtools_id,
+      const ::GURL& url,
+      const absl::optional<std::string>& bundle_request_devtools_id) override {}
+
+  void OnSubresourceWebBundleInnerResponseError(
+      const std::string& inner_request_devtools_id,
+      const ::GURL& url,
+      const std::string& error_message,
+      const absl::optional<std::string>& bundle_request_devtools_id) override {}
+
   void OnCorsError(const absl::optional<std::string>& devtool_request_id,
                    const absl::optional<::url::Origin>& initiator_origin,
                    const GURL& url,

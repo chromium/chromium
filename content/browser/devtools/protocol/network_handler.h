@@ -229,6 +229,20 @@ class NetworkHandler : public DevToolsDomainHandler,
   void OnTrustTokenOperationDone(
       const std::string& devtools_request_id,
       const network::mojom::TrustTokenOperationResult& result);
+  void OnSubresourceWebBundleMetadata(const std::string& devtools_request_id,
+                                      const std::vector<GURL>& urls);
+  void OnSubresourceWebBundleMetadataError(
+      const std::string& devtools_request_id,
+      const std::string& error_message);
+  void OnSubresourceWebBundleInnerResponse(
+      const std::string& inner_request_devtools_id,
+      const GURL& url,
+      const absl::optional<std::string>& bundle_request_devtools_id);
+  void OnSubresourceWebBundleInnerResponseError(
+      const std::string& inner_request_devtools_id,
+      const GURL& url,
+      const std::string& error_message,
+      const absl::optional<std::string>& bundle_request_devtools_id);
 
   bool enabled() const { return enabled_; }
 

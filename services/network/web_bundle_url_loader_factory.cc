@@ -163,6 +163,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
         request_mode_(request.mode),
         request_initiator_(request.request_initiator),
         request_initiator_origin_lock_(request_initiator_origin_lock),
+        devtools_request_id_(request.devtools_request_id),
         receiver_(this, std::move(loader)),
         client_(std::move(client)),
         trusted_header_client_(std::move(trusted_header_client)) {
@@ -178,6 +179,9 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
 
   const GURL& url() const { return url_; }
   const mojom::RequestMode& request_mode() const { return request_mode_; }
+  const absl::optional<std::string>& devtools_request_id() const {
+    return devtools_request_id_;
+  }
 
   const absl::optional<url::Origin>& request_initiator() const {
     return request_initiator_;
@@ -278,6 +282,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   // (via URLLoaderFactory -> WebBundleManager -> WebBundleURLLoaderFactory
   // -> WebBundleURLLoader).
   const absl::optional<url::Origin> request_initiator_origin_lock_;
+  absl::optional<std::string> devtools_request_id_;
   mojo::Receiver<mojom::URLLoader> receiver_;
   mojo::Remote<mojom::URLLoaderClient> client_;
   mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client_;
@@ -616,10 +621,24 @@ void WebBundleURLLoaderFactory::OnMetadataParsed(
     ReportErrorAndCancelPendingLoaders(
         SubresourceWebBundleLoadResult::kMetadataParseError,
         mojom::WebBundleErrorType::kMetadataParseError, error->message);
+    if (devtools_request_id_) {
+      devtools_observer_->OnSubresourceWebBundleMetadataError(
+          *devtools_request_id_, error->message);
+    }
     return;
   }
 
   metadata_ = std::move(metadata);
+  if (devtools_observer_ && devtools_request_id_) {
+    std::vector<GURL> urls;
+    urls.reserve(metadata_->requests.size());
+    for (const auto& item : metadata_->requests) {
+      urls.push_back(item.first);
+    }
+    devtools_observer_->OnSubresourceWebBundleMetadata(*devtools_request_id_,
+                                                       std::move(urls));
+  }
+
   if (data_completed_)
     MaybeReportLoadResult(SubresourceWebBundleLoadResult::kSuccess);
   for (auto loader : pending_loaders_)
@@ -635,10 +654,27 @@ void WebBundleURLLoaderFactory::OnResponseParsed(
   if (!loader)
     return;
   if (error) {
+    if (devtools_observer_ && loader->devtools_request_id()) {
+      devtools_observer_->OnSubresourceWebBundleInnerResponseError(
+          *loader->devtools_request_id(), loader->url(), error->message,
+          devtools_request_id_);
+    }
     web_bundle_handle_->OnWebBundleError(
         mojom::WebBundleErrorType::kResponseParseError, error->message);
     loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
     return;
+  }
+  if (devtools_observer_) {
+    std::vector<network::mojom::HttpRawHeaderPairPtr> headers;
+    headers.reserve(response->response_headers.size());
+    for (const auto& it : response->response_headers) {
+      headers.push_back(
+          network::mojom::HttpRawHeaderPair::New(it.first, it.second));
+    }
+    if (loader->devtools_request_id()) {
+      devtools_observer_->OnSubresourceWebBundleInnerResponse(
+          *loader->devtools_request_id(), loader->url(), devtools_request_id_);
+    }
   }
   // Add an artificial "X-Content-Type-Options: "nosniff" header, which is
   // explained at

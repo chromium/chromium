@@ -54,7 +54,7 @@
             {
                 "domain": "Network",
                 "include": ["enable", "disable", "clearBrowserCache", "clearBrowserCookies", "getCookies", "getAllCookies", "deleteCookies", "setCookie", "setCookies", "setExtraHTTPHeaders", "canEmulateNetworkConditions", "emulateNetworkConditions", "setBypassServiceWorker", "setRequestInterception", "continueInterceptedRequest", "getResponseBodyForInterception", "setCacheDisabled", "takeResponseBodyForInterceptionAsStream", "getSecurityIsolationStatus", "loadNetworkResource", "setAcceptedEncodings", "clearAcceptedEncodingsOverride"],
-                "include_events": ["requestWillBeSent", "responseReceived", "loadingFinished", "loadingFailed", "requestIntercepted", "signedExchangeReceived", "requestWillBeSentExtraInfo", "responseReceivedExtraInfo", "trustTokenOperationDone"],
+                "include_events": ["requestWillBeSent", "responseReceived", "loadingFinished", "loadingFailed", "requestIntercepted", "signedExchangeReceived", "requestWillBeSentExtraInfo", "responseReceivedExtraInfo", "trustTokenOperationDone", "subresourceWebBundleMetadataReceived", "subresourceWebBundleMetadataError", "subresourceWebBundleInnerResponseParsed", "subresourceWebBundleInnerResponseError"],
                 "async": ["clearBrowserCookies", "clearBrowserCache", "getCookies", "getAllCookies", "deleteCookies", "setCookie", "setCookies", "continueInterceptedRequest", "getResponseBodyForInterception", "takeResponseBodyForInterceptionAsStream", "loadNetworkResource"]
             },
             {
