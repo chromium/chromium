@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "remoting/client/notification/notification_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 

@@ -7,6 +7,7 @@
 
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "services/viz/public/mojom/compositing/shared_quad_state.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/mojom/mask_filter_info_mojom_traits.h"
 #include "ui/gfx/mojom/rrect_f_mojom_traits.h"
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/views_export.h"

@@ -10,6 +10,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {

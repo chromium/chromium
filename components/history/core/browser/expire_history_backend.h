@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 

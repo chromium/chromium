@@ -13,6 +13,7 @@
 #include "services/viz/public/cpp/compositing/resource_format_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/resource_format.mojom-shared.h"
 #include "services/viz/public/mojom/compositing/transferable_resource.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 
 namespace mojo {

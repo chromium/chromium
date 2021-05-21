@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/service_manager/public/cpp/service_filter.h"
 #include "services/service_manager/public/mojom/service_filter.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 

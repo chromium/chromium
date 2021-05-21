@@ -14,6 +14,7 @@
 #include "extensions/browser/updater/manifest_fetch_data.h"
 #include "extensions/browser/updater/safe_manifest_parser.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 

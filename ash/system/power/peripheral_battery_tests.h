@@ -7,6 +7,7 @@
 
 #include "ash/system/power/peripheral_battery_listener.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Constants common to peripheral battery listener and notifier tests.
 

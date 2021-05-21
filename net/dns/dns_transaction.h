@@ -16,6 +16,7 @@
 #include "net/base/request_priority.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/record_rdata.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {

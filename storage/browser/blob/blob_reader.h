@@ -22,6 +22,7 @@
 #include "net/base/completion_once_callback.h"
 #include "services/network/public/cpp/data_pipe_to_source_stream.h"
 #include "storage/browser/blob/blob_storage_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/macros.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

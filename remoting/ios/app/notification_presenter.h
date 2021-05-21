@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "remoting/client/notification/notification_client.h"
 #include "remoting/client/notification/notification_message.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 

@@ -25,6 +25,7 @@
 #include "storage/browser/file_system/file_system_options.h"
 #include "storage/browser/file_system/file_system_quota_util.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;

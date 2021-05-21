@@ -9,6 +9,7 @@
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace display {
 class Display;

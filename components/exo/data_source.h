@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/exo/surface.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace exo {
 

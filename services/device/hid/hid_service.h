@@ -19,6 +19,7 @@
 #include "base/task/task_traits.h"
 #include "services/device/hid/hid_device_info.h"
 #include "services/device/public/mojom/hid.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 

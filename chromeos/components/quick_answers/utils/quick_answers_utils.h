@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_QUICK_ANSWERS_UTILS_QUICK_ANSWERS_UTILS_H_
 
 #include "chromeos/components/quick_answers/quick_answers_model.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace quick_answers {

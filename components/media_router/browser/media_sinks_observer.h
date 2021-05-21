@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace media_router {

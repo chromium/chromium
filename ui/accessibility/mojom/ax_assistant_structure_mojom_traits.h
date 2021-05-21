@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom-shared.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"

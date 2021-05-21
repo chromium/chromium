@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_main_runner.h"
 #include "media/media_buildflags.h"
 #include "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

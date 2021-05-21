@@ -14,6 +14,7 @@
 #include "services/viz/public/cpp/compositing/bitmap_in_shared_memory_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/copy_output_result.mojom-shared.h"
 #include "services/viz/public/mojom/compositing/texture_releaser.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"

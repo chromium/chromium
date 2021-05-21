@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "components/discardable_memory/common/discardable_memory_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class DiscardableSharedMemory;

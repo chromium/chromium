@@ -19,6 +19,7 @@
 #include "base/sequence_checker.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace android_webview {
 

@@ -10,6 +10,7 @@
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
 #include "services/viz/public/mojom/compositing/paint_filter.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 class PaintFilter;

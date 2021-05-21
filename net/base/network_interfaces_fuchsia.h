@@ -11,6 +11,7 @@
 
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_interfaces.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 namespace internal {

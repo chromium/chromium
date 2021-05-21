@@ -8,6 +8,7 @@
 #include "components/cast_streaming/mojo/cast_streaming_session.mojom.h"
 #include "media/base/demuxer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;

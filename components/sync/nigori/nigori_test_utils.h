@@ -11,6 +11,7 @@
 
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/nigori/nigori.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 

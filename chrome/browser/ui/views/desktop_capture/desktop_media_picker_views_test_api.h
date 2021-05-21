@@ -7,6 +7,7 @@
 
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class DesktopMediaPickerViews;
 

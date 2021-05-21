@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/update_delta.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace offline_items_collection {
 namespace android {

@@ -22,6 +22,7 @@
 #include "components/viz/common/quads/quad_list.h"
 #include "components/viz/common/quads/render_pass_internal.h"
 #include "components/viz/common/viz_common_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/rrect_f.h"

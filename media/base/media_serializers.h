@@ -18,6 +18,7 @@
 #include "media/base/status_codes.h"
 #include "media/base/text_track_config.h"
 #include "media/base/video_decoder_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"
 

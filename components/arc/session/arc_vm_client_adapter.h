@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "components/arc/session/arc_client_adapter.h"
 #include "components/arc/session/file_system_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 

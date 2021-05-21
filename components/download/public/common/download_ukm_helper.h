@@ -13,6 +13,7 @@
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/resume_mode.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 

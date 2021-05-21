@@ -8,6 +8,7 @@
 #include "base/containers/mru_cache.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/renderer/subresource_redirect/robots_rules_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

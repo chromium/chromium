@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_METRICS_UTILS_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_METRICS_UTILS_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {

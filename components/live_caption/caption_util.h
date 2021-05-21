@@ -6,6 +6,7 @@
 #define COMPONENTS_LIVE_CAPTION_CAPTION_UTIL_H_
 
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/native_theme/caption_style.h"
 
 class PrefService;

@@ -18,6 +18,7 @@
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync_sessions/synced_session_tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_sessions {
 

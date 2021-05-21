@@ -14,6 +14,7 @@
 #include "components/autofill_assistant/browser/website_login_manager.h"
 #include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 

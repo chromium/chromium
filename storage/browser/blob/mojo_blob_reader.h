@@ -15,6 +15,7 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_byte_range.h"
 #include "storage/browser/blob/blob_reader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class NetToMojoPendingBuffer;

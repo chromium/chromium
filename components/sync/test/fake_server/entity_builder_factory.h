@@ -11,6 +11,7 @@
 
 #include "base/strings/string_util.h"
 #include "components/sync/test/fake_server/bookmark_entity_builder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace fake_server {

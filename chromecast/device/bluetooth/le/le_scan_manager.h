@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/device/bluetooth/le/le_scan_result.h"
 #include "chromecast/device/bluetooth/le/scan_filter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;

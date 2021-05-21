@@ -10,6 +10,7 @@
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "media/mojo/mojom/video_color_space_mojom_traits.h"
 #include "media/mojo/mojom/video_transformation_mojom_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
 

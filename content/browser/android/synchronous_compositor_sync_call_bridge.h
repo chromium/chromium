@@ -12,6 +12,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "content/public/browser/android/synchronous_compositor.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/input/synchronous_compositor.mojom.h"
 
 namespace content {

@@ -15,6 +15,7 @@
 #include "base/time/clock.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class NetworkConnectionTracker;

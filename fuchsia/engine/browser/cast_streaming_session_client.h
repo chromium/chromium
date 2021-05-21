@@ -11,6 +11,7 @@
 #include "components/cast_streaming/mojo/cast_streaming_session.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Owns the CastStreamingSession and sends buffers to the renderer process via
 // a Mojo service.

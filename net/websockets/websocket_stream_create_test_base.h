@@ -18,6 +18,7 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_test_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 

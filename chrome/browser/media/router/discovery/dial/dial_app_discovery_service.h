@@ -18,6 +18,7 @@
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_app_info.h"
 #include "chrome/browser/media/router/discovery/dial/safe_dial_app_info_parser.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace media_router {

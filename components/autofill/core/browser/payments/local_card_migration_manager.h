@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/local_card_migration_strike_database.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 

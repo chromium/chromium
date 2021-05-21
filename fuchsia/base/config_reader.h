@@ -6,6 +6,7 @@
 #define FUCHSIA_BASE_CONFIG_READER_H_
 
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cr_fuchsia {
 

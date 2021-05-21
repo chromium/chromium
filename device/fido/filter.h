@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 namespace fido_filter {

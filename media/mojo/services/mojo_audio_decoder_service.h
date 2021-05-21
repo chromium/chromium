@@ -18,6 +18,7 @@
 #include "media/mojo/services/media_mojo_export.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

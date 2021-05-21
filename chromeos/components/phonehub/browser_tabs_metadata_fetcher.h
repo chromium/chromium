@@ -8,6 +8,7 @@
 #include <vector>
 #include "base/callback.h"
 #include "chromeos/components/phonehub/browser_tabs_model.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_sessions {
 struct SyncedSession;

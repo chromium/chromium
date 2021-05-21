@@ -7,6 +7,7 @@
 
 #include "base/run_loop.h"
 #include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_app {

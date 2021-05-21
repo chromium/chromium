@@ -9,6 +9,7 @@
 #include "components/viz/common/surfaces/surface_range.h"
 #include "services/viz/public/cpp/compositing/surface_id_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/surface_range.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 

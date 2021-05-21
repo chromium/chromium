@@ -13,6 +13,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace chromeos {

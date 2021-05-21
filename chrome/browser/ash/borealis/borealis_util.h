@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget.h"
 
 class Profile;

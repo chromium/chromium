@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 

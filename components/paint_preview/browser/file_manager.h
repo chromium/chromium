@@ -12,6 +12,7 @@
 #include "base/sequenced_task_runner.h"
 #include "components/paint_preview/browser/directory_key.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace paint_preview {

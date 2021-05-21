@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_web_ui_controller_factory.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 

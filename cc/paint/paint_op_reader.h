@@ -11,6 +11,7 @@
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 struct Mailbox;

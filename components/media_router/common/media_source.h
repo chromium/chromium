@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/hash/hash.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace media_router {

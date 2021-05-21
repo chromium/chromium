@@ -13,6 +13,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
 #include "media/base/output_device_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

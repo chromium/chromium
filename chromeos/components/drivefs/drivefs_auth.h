@@ -14,6 +14,7 @@
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 class GoogleServiceAuthError;

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
 class GURL;

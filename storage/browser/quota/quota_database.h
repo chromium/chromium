@@ -21,6 +21,7 @@
 #include "base/timer/timer.h"
 #include "base/util/type_safety/id_type.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "url/origin.h"
 

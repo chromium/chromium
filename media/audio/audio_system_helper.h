@@ -7,6 +7,7 @@
 
 #include "media/audio/audio_system.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class AudioManager;

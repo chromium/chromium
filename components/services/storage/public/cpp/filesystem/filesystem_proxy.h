@@ -17,6 +17,7 @@
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
 

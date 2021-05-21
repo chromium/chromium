@@ -14,6 +14,7 @@
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;

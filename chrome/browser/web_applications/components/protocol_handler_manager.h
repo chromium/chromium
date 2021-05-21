@@ -9,6 +9,7 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/common/custom_handlers/protocol_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <vector>
 

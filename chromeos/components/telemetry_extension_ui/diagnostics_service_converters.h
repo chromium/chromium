@@ -16,6 +16,7 @@
 #include "chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom-forward.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "mojo/public/cpp/system/handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace converters {

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_clipping_behavior.h"
 #include "ui/accessibility/ax_offscreen_result.h"
 #include "ui/accessibility/ax_role_properties.h"

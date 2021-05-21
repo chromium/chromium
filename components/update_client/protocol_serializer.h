@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/update_client/protocol_definition.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Version;

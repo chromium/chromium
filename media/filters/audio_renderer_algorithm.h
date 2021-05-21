@@ -33,6 +33,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/media_log.h"
 #include "media/base/multi_channel_resampler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

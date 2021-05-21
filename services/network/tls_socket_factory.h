@@ -18,6 +18,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class ClientSocketFactory;

@@ -15,6 +15,7 @@
 #include "net/cert/internal/certificate_policies.h"
 #include "net/cert/internal/parse_certificate.h"
 #include "net/der/input.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace net {

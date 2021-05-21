@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_CONTACTS_CONTACTS_PROVIDER_H_
 
 #include "content/public/browser/contacts_picker_properties_requested.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/contacts/contacts_manager.mojom.h"
 
 namespace content {

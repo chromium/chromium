@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/util/gamepad_builder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 

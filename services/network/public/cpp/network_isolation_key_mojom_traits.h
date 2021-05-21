@@ -10,6 +10,7 @@
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/schemeful_site_mojom_traits.h"
 #include "services/network/public/mojom/network_isolation_key.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 

@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 

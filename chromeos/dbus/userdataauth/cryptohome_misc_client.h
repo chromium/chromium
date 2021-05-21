@@ -11,6 +11,7 @@
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 class Bus;

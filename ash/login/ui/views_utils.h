@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/login_constants.h"
 #include "ash/style/ash_color_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/label.h"
 
 namespace views {

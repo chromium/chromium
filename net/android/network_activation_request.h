@@ -11,6 +11,7 @@
 #include "base/sequenced_task_runner.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 namespace android {

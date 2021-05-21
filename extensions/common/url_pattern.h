@@ -11,6 +11,7 @@
 
 #include "base/strings/string_piece.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 

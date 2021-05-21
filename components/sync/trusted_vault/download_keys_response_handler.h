@@ -11,6 +11,7 @@
 
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "components/sync/trusted_vault/trusted_vault_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 

@@ -24,6 +24,7 @@
 #include "media/remoting/rpc_broker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
 namespace media {

@@ -15,6 +15,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/shortcut.h"
 #include "chrome/chrome_cleaner/parsers/shortcut_parser/target/lnk_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_cleaner {
 

@@ -10,6 +10,7 @@
 #include "base/trace_event/traced_value.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

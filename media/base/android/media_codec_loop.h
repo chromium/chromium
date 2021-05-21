@@ -22,6 +22,7 @@
 #include "media/base/media_export.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/waiting.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // MediaCodecLoop is based on Android's MediaCodec API.
 // The MediaCodec API is required to play encrypted (as in EME) content on

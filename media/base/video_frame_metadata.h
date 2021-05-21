@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "media/base/media_export.h"
 #include "media/base/video_transformation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media {

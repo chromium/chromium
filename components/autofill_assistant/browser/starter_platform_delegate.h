@@ -13,6 +13,7 @@
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script_coordinator.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
 #include "components/version_info/version_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 

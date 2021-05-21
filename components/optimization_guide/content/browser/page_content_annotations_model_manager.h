@@ -8,6 +8,7 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/optimization_guide/core/bert_model_executor.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 

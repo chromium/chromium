@@ -17,6 +17,7 @@
 #include "components/viz/test/fake_display_client.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/viz/privileged/mojom/compositing/external_begin_frame_controller.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 

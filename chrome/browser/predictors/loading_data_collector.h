@@ -15,6 +15,7 @@
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"

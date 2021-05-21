@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/value_store/lazy_leveldb.h"
 #include "extensions/browser/value_store/value_store.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // This database is used to persist values with their keys scoped within a
 // specified namespace - AKA |scope|. Values will be written as follows:

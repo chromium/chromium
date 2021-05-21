@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_METADATA_TYPE_CONVERSION_H_
 #define UI_VIEWS_METADATA_TYPE_CONVERSION_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/views/views_export.h"
 #include "url/gurl.h"

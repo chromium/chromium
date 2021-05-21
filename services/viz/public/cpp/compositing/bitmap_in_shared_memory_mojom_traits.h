@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/base/shared_memory_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/bitmap_in_shared_memory.mojom-shared.h"
 #include "skia/public/mojom/image_info_mojom_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 

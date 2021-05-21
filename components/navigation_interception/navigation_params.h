@@ -6,6 +6,7 @@
 #define COMPONENTS_NAVIGATION_INTERCEPTION_NAVIGATION_PARAMS_H_
 
 #include "content/public/common/referrer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 

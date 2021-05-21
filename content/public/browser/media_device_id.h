@@ -14,6 +14,7 @@
 
 #include "content/common/content_export.h"
 #include "content/public/browser/resource_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "url/origin.h"
 

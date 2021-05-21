@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "components/signin/public/base/multilogin_parameters.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Used for UMA logging, do not remove or reorder values.
 enum class MultiloginRequestType {

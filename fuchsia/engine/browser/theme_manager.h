@@ -12,6 +12,7 @@
 #include "base/fuchsia/process_context.h"
 #include "content/public/browser/web_contents.h"
 #include "fuchsia/engine/web_engine_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class WEB_ENGINE_EXPORT ThemeManager {
  public:

@@ -9,6 +9,7 @@
 
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 

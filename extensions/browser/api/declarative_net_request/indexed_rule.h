@@ -14,6 +14,7 @@
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 

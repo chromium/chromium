@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "components/sync/base/model_type.h"
 #include "extensions/browser/value_store/value_store_change.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 class ModelError;

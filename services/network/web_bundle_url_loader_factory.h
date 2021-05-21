@@ -12,6 +12,7 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 

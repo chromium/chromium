@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "chrome/test/data/webui/web_ui_test.mojom-forward.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;

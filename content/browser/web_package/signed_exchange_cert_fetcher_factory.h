@@ -13,6 +13,7 @@
 #include "content/browser/web_package/signed_exchange_cert_fetcher.h"
 #include "content/common/content_export.h"
 #include "net/base/isolation_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SharedURLLoaderFactory;

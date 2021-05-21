@@ -9,6 +9,7 @@
 #include <string>
 
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/native_theme/caption_style.h"
 
 namespace captions {

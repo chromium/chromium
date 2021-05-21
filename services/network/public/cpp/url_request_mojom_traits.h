@@ -34,6 +34,7 @@
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/public/mojom/url_request.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {

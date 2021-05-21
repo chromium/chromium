@@ -12,6 +12,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/media_request_state.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace apps {

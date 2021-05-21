@@ -17,6 +17,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/quota/storage_policy_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
 class QuotaManagerProxy;

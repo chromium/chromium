@@ -11,6 +11,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/cpp/schemeful_site_mojom_traits.h"
 #include "services/network/public/mojom/isolation_info.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/mojom/origin_mojom_traits.h"
 #include "url/origin.h"
 

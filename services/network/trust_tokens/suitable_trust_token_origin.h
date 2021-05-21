@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_TRUST_TOKENS_SUITABLE_TRUST_TOKEN_ORIGIN_H_
 
 #include "base/types/pass_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {

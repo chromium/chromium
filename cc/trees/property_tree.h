@@ -23,6 +23,7 @@
 #include "cc/paint/filter_operations.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/sticky_position_constraint.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/transform.h"

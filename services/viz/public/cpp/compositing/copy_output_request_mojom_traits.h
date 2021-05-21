@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/public/cpp/compositing/copy_output_result_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/copy_output_request.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
 namespace mojo {

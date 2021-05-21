@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/cpp/net_adapters.h"
 #include "storage/browser/file_system/file_stream_reader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

@@ -15,6 +15,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

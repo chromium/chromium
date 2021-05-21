@@ -21,6 +21,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/muxers/webm_muxer.h"
 #include "media/video/vpx_video_encoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {

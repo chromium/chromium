@@ -11,6 +11,7 @@
 #include "media/base/pipeline_status.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/waiting.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {

@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/media/history/media_history_table_base.h"
 #include "sql/init_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
