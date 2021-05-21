@@ -234,8 +234,8 @@ bool CanIgnoreSpaceNextTo(LayoutObject* layout_object,
   if (!child && elem) {
     // No children of inline element. Check adjacent sibling in same direction.
     Node* adjacent_node =
-        is_after ? FlatTreeTraversal::NextSkippingChildren(*elem)
-                 : FlatTreeTraversal::PreviousAbsoluteSibling(*elem);
+        is_after ? NodeTraversal::NextIncludingPseudoSkippingChildren(*elem)
+                 : NodeTraversal::PreviousAbsoluteSiblingIncludingPseudo(*elem);
     return adjacent_node &&
            CanIgnoreSpaceNextTo(adjacent_node->GetLayoutObject(), is_after,
                                 ++counter);
@@ -247,7 +247,7 @@ bool IsTextRelevantForAccessibility(const LayoutText& layout_text) {
   if (!layout_text.Parent())
     return false;
 
-  Node* node = layout_text.GetNode();
+  const Node* node = layout_text.GetNode();
   DCHECK(node);  // Anonymous text is processed earlier, doesn't reach here.
 
   // Ignore empty text.
@@ -261,12 +261,15 @@ bool IsTextRelevantForAccessibility(const LayoutText& layout_text) {
   // Will now look at sibling nodes. We need the closest element to the
   // whitespace markup-wise, e.g. tag1 in these examples:
   // [whitespace] <tag1><tag2>x</tag2></tag1>
-  // <span>[whitespace]</span> <tag1><tag2>x</tag2></tag1>
-  Node* prev_node = FlatTreeTraversal::PreviousAbsoluteSibling(*node);
+  // <span>[whitespace]</span> <tag1><tag2>x</tag2></tag1>.
+  // Do not use LayoutTreeBuilderTraversal or FlatTreeTraversal as this may need
+  // to be called during slot assignment, when flat tree traversal is forbidden.
+  Node* prev_node =
+      NodeTraversal::PreviousAbsoluteSiblingIncludingPseudo(*node);
   if (!prev_node)
     return false;
 
-  Node* next_node = FlatTreeTraversal::NextSkippingChildren(*node);
+  Node* next_node = NodeTraversal::NextIncludingPseudoSkippingChildren(*node);
   if (!next_node)
     return false;
 
