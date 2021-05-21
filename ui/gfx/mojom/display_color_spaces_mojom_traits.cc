@@ -69,6 +69,12 @@ bool StructTraits<
     return false;
 
   out->SetSDRWhiteLevel(input.sdr_white_level());
+
+  absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata(
+      out->hdr_static_metadata_);
+  if (!input.ReadHdrStaticMetadata(&hdr_static_metadata))
+    return false;
+
   return true;
 }
 

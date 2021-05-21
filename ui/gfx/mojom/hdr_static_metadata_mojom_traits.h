@@ -5,14 +5,16 @@
 #ifndef UI_GFX_MOJOM_HDR_STATIC_METADATA_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_HDR_STATIC_METADATA_MOJOM_TRAITS_H_
 
+#include "base/component_export.h"
 #include "ui/gfx/hdr_static_metadata.h"
-#include "ui/gfx/mojom/hdr_static_metadata.mojom.h"
+#include "ui/gfx/mojom/hdr_static_metadata.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-struct StructTraits<gfx::mojom::HDRStaticMetadataDataView,
-                    gfx::HDRStaticMetadata> {
+struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
+    StructTraits<gfx::mojom::HDRStaticMetadataDataView,
+                 gfx::HDRStaticMetadata> {
   static float max(const gfx::HDRStaticMetadata& input) { return input.max; }
   static float max_avg(const gfx::HDRStaticMetadata& input) {
     return input.max_avg;

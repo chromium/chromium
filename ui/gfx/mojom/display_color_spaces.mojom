@@ -6,6 +6,7 @@ module gfx.mojom;
 
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/color_space.mojom";
+import "ui/gfx/mojom/hdr_static_metadata.mojom";
 
 // See the typemapped enum gfx::ContentColorUsage.
 enum ContentColorUsage {
@@ -25,4 +26,6 @@ struct DisplayColorSpaces {
 
   // The SDR white level is used to composite SDR and HDR content on Windows.
   float sdr_white_level;
+
+  gfx.mojom.HDRStaticMetadata? hdr_static_metadata;
 };

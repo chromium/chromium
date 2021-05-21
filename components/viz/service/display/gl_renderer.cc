@@ -3677,6 +3677,8 @@ void GLRenderer::SetUseProgram(const ProgramKey& program_key_no_color,
     adjusted_src_color_space = src_color_space.GetWithSDRWhiteLevel(
         current_frame()->display_color_spaces.GetSDRWhiteLevel());
   }
+  // TODO(b/183236148): consider using the destination's HDR static metadata
+  // in current_frame()->display_color_spaces.hdr_static_metadata().
 
   ProgramKey program_key = program_key_no_color;
   const gfx::ColorTransform* color_transform =
