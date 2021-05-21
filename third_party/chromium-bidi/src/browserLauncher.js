@@ -27,9 +27,10 @@ const mkdtempAsync = promisify(fs.mkdtemp);
 
 export default async function launch() {
   const tempDir = await getTempDir();
-  const chromeExecutable = process.env.CHROME_PATH;
+  const browserExecutablePath = process.env.BROWSER_PATH;
+  const headless = process.env.HEADLESS !== 'false';
 
-  const proc = childProcess.spawn(chromeExecutable, [
+  const processFlags = [
     '--disable-background-networking',
     '--enable-features=NetworkService,NetworkServiceInProcess',
     '--disable-background-timer-throttling',
@@ -55,11 +56,13 @@ export default async function launch() {
     '--use-mock-keychain',
     '--enable-blink-features=IdleDetection',
     '--remote-debugging-port=0',
-    // TODO: get `headless` flag from env
-    // "--headless",
     '--user-data-dir=' + tempDir,
     'about:blank',
-  ]);
+  ];
+
+  if (headless) processFlags.push('--headless');
+
+  const proc = childProcess.spawn(browserExecutablePath, processFlags);
   return {
     cdpUrl: await waitForWSEndpoint(proc),
     closeBrowser: () => {
