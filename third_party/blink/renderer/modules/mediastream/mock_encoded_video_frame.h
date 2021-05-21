@@ -8,6 +8,7 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 

@@ -34,6 +34,7 @@
 #include <vector>
 
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/navigation/impression.h"

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "media/base/audio_capturer_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {

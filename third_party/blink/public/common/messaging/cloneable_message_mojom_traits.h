@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/cloneable_message.h"
 #include "third_party/blink/public/mojom/messaging/cloneable_message.mojom.h"
 #include "url/mojom/origin_mojom_traits.h"

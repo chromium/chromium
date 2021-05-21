@@ -12,6 +12,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "cc/input/touch_action.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"

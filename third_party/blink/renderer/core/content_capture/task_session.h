@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/node_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/content_capture/content_holder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

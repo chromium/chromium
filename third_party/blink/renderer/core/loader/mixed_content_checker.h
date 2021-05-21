@@ -33,6 +33,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom-blink-forward.h"

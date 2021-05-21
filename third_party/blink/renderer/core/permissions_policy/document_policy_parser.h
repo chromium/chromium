@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PERMISSIONS_POLICY_DOCUMENT_POLICY_PARSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PERMISSIONS_POLICY_DOCUMENT_POLICY_PARSER_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/renderer/core/core_export.h"

@@ -30,6 +30,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
