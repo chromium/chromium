@@ -23,7 +23,7 @@ class JavaScriptDialogCommitDeferringCondition
       NavigationRequest& navigation_request);
   ~JavaScriptDialogCommitDeferringCondition() override;
 
-  bool WillCommitNavigation(base::OnceClosure resume) override;
+  Result WillCommitNavigation(base::OnceClosure resume) override;
 
  private:
   JavaScriptDialogCommitDeferringCondition(NavigationRequest& request,

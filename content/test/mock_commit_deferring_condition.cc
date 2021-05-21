@@ -54,11 +54,11 @@ MockCommitDeferringCondition::MockCommitDeferringCondition(
 
 MockCommitDeferringCondition::~MockCommitDeferringCondition() = default;
 
-bool MockCommitDeferringCondition::WillCommitNavigation(
-    base::OnceClosure resume) {
+CommitDeferringCondition::Result
+MockCommitDeferringCondition::WillCommitNavigation(base::OnceClosure resume) {
   if (on_will_commit_navigation_)
     std::move(on_will_commit_navigation_).Run(std::move(resume));
-  return is_ready_to_commit_;
+  return is_ready_to_commit_ ? kProceed : kDefer;
 }
 
 base::WeakPtr<MockCommitDeferringCondition>

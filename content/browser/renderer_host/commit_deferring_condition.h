@@ -13,6 +13,16 @@ namespace content {
 // See commit_deferring_condition_runner.h for more details.
 class CommitDeferringCondition {
  public:
+  enum Result {
+    // Returned when the condition is satisfied and the client can
+    // synchronously proceed to commit the navigation.
+    kProceed,
+    // Returned when the condition needs to asynchronously wait before allowing
+    // a commit. If this is returned, the condition will invoke the passed in
+    // |resume| closure when it is ready.
+    kDefer
+  };
+
   CommitDeferringCondition() = default;
   virtual ~CommitDeferringCondition() = default;
 
@@ -21,7 +31,7 @@ class CommitDeferringCondition {
   // already satisfied and the navigation should be allowed to commit. If it
   // returns false, the condition will call |resume| asynchronously to
   // indicate completion.
-  virtual bool WillCommitNavigation(base::OnceClosure resume) = 0;
+  virtual Result WillCommitNavigation(base::OnceClosure resume) = 0;
 };
 
 }  // namespace content

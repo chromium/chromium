@@ -55,16 +55,17 @@ JavaScriptDialogCommitDeferringCondition::
 JavaScriptDialogCommitDeferringCondition::
     ~JavaScriptDialogCommitDeferringCondition() = default;
 
-bool JavaScriptDialogCommitDeferringCondition::WillCommitNavigation(
+CommitDeferringCondition::Result
+JavaScriptDialogCommitDeferringCondition::WillCommitNavigation(
     base::OnceClosure resume) {
   // It's possible that, depending on the order deferrals are run, the dialog
   // may have been dismissed by the time we run this check. If that's the
   // case, move on synchronously to the next deferral.
   if (!web_contents_.JavaScriptDialogDefersNavigations())
-    return true;
+    return kProceed;
 
   web_contents_.NotifyOnJavaScriptDialogDismiss(std::move(resume));
-  return false;
+  return kDefer;
 }
 
 }  // namespace content

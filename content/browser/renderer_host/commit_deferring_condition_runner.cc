@@ -76,8 +76,9 @@ void CommitDeferringConditionRunner::ProcessConditions() {
     auto resume_closure =
         base::BindOnce(&CommitDeferringConditionRunner::ResumeProcessing,
                        weak_factory_.GetWeakPtr());
-    if (!(*conditions_.begin())
-             ->WillCommitNavigation(std::move(resume_closure))) {
+    CommitDeferringCondition* condition = (*conditions_.begin()).get();
+    if (condition->WillCommitNavigation(std::move(resume_closure)) ==
+        CommitDeferringCondition::kDefer) {
       is_deferred_ = true;
       return;
     }

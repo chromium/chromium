@@ -35,7 +35,8 @@ BackForwardCacheCommitDeferringCondition::
 BackForwardCacheCommitDeferringCondition::
     ~BackForwardCacheCommitDeferringCondition() = default;
 
-bool BackForwardCacheCommitDeferringCondition::WillCommitNavigation(
+CommitDeferringCondition::Result
+BackForwardCacheCommitDeferringCondition::WillCommitNavigation(
     base::OnceClosure resume) {
   DCHECK(navigation_request_.IsServedFromBackForwardCache());
 
@@ -49,10 +50,10 @@ bool BackForwardCacheCommitDeferringCondition::WillCommitNavigation(
   BackForwardCacheImpl::Entry* bfcache_entry =
       bfcache.GetEntry(navigation_request_.nav_entry_id());
   if (!bfcache_entry)
-    return true;
+    return kProceed;
 
   bfcache.WillCommitNavigationToCachedEntry(*bfcache_entry, std::move(resume));
-  return false;
+  return kDefer;
 }
 
 }  // namespace content

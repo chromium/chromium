@@ -27,7 +27,7 @@ class BackForwardCacheCommitDeferringCondition
 
   ~BackForwardCacheCommitDeferringCondition() override;
 
-  bool WillCommitNavigation(base::OnceClosure resume) override;
+  Result WillCommitNavigation(base::OnceClosure resume) override;
 
  private:
   explicit BackForwardCacheCommitDeferringCondition(

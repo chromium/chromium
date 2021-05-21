@@ -53,7 +53,7 @@ class MockCommitDeferringCondition : public CommitDeferringCondition {
   MockCommitDeferringCondition(bool is_ready_to_commit,
                                WillCommitCallback on_will_commit_navigation);
   ~MockCommitDeferringCondition() override;
-  bool WillCommitNavigation(base::OnceClosure resume) override;
+  Result WillCommitNavigation(base::OnceClosure resume) override;
 
   base::WeakPtr<MockCommitDeferringCondition> AsWeakPtr();
 
