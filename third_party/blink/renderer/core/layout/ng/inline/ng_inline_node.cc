@@ -1008,6 +1008,7 @@ void NGInlineNode::CollectInlines(NGInlineNodeData* data,
 
     auto svg_data = std::make_unique<SVGInlineNodeData>();
     svg_data->character_data_list = svg_attr_builder.CharacterDataList();
+    svg_data->text_length_range_list = svg_attr_builder.TextLengthRangeList();
     svg_data->text_path_range_list = svg_attr_builder.TextPathRangeList();
     data->svg_node_data_ = std::move(svg_data);
 
@@ -1866,7 +1867,13 @@ NGInlineNode::SVGCharacterDataList() const {
   return Data().svg_node_data_->character_data_list;
 }
 
-const Vector<SVGTextPathRange>& NGInlineNode::SVGTextPathRangeList() const {
+const Vector<SVGTextContentRange>& NGInlineNode::SVGTextLengthRangeList()
+    const {
+  DCHECK(IsSVGText());
+  return Data().svg_node_data_->text_length_range_list;
+}
+
+const Vector<SVGTextContentRange>& NGInlineNode::SVGTextPathRangeList() const {
   DCHECK(IsSVGText());
   return Data().svg_node_data_->text_path_range_list;
 }

@@ -23,6 +23,9 @@ class NGInlineNode;
 // than during the SVG text layout algorithm because we'd like to use the
 // result of this class in NGInlineNode::CollectInlines().
 //
+// Also, this is responsible to make lists of index ranges for <textPath> and
+// textLength.
+//
 // [1] https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
 class NGSVGTextLayoutAttributesBuilder final {
   STACK_ALLOCATED();
@@ -35,7 +38,9 @@ class NGSVGTextLayoutAttributesBuilder final {
   // This function can be called just once after Build().
   Vector<std::pair<unsigned, NGSVGCharacterData>> CharacterDataList();
   // This function can be called just once after Build().
-  Vector<SVGTextPathRange> TextPathRangeList();
+  Vector<SVGTextContentRange> TextLengthRangeList();
+  // This function can be called just once after Build().
+  Vector<SVGTextContentRange> TextPathRangeList();
 
  private:
   LayoutBlockFlow* block_flow_;
@@ -48,9 +53,16 @@ class NGSVGTextLayoutAttributesBuilder final {
 
   // The result of Build().
   // A list of a pair of start addressable character index and end
+  // addressable character index (inclusive) for an SVGTextContentElement
+  // with textLength.
+  // This is used in "5. Apply ‘textLength’ attribute".
+  Vector<SVGTextContentRange> text_length_range_list_;
+
+  // The result of Build().
+  // A list of a pair of start addressable character index and end
   // addressable character index (inclusive) for a <textPath>.
   // This is used in "8. Position on path".
-  Vector<SVGTextPathRange> text_path_range_list_;
+  Vector<SVGTextContentRange> text_path_range_list_;
 };
 
 }  // namespace blink

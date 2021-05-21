@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/svg/svg_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_text_path.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
@@ -296,103 +297,13 @@ void NGSVGTextLayoutAlgorithm::AdjustPositionsDxDy(
   }
 }
 
-struct SVGTextLengthContext {
-  DISALLOW_NEW();
-  wtf_size_t start_index;
-  const LayoutObject* layout_object;
-  float text_length;
-  SVGLengthAdjustType length_adjust;
-};
-
-}  // namespace blink
-
-WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::SVGTextLengthContext)
-
-namespace blink {
-
 void NGSVGTextLayoutAlgorithm::ApplyTextLengthAttribute(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
-  // TODO(crbug.com/1179585): Traversing LayoutObject ancestors in a layout
-  // algorithm is not preferable. We should consider moving this part to
-  // NGSVGTextLayoutAttributesBuilder.
-
-  VectorOf<SVGTextLengthContext> context_stack;
   // Start indexes of the highest textLength elements which were already
   // handled by ResolveTextLength().
   Vector<wtf_size_t> resolved_descendant_node_starts;
-  const LayoutObject* last_parent = nullptr;
-  for (wtf_size_t index = 0; index < result_.size(); ++index) {
-    const LayoutObject* layout_object =
-        items[result_[index].item_index]->GetLayoutObject();
-    DCHECK(IsA<LayoutText>(layout_object));
-    if (last_parent == layout_object->Parent())
-      continue;
-    last_parent = layout_object->Parent();
-    auto text_length_ancestors =
-        CollectTextLengthAncestors(items, index, layout_object);
-
-    // Find a common part of context_stack and text_length_ancestors.
-    wtf_size_t common_size = 0;
-    for (const auto& ancestor : text_length_ancestors) {
-      if (common_size >= context_stack.size())
-        break;
-      if (context_stack[common_size].layout_object != ancestor.layout_object)
-        break;
-      ++common_size;
-    }
-    // Pop uncommon part of context_stack.
-    while (context_stack.size() > common_size) {
-      ResolveTextLength(items, context_stack.back(), index,
-                        resolved_descendant_node_starts);
-      context_stack.pop_back();
-    }
-    // Push uncommon part of text_length_ancestors.
-    for (wtf_size_t p = common_size; p < text_length_ancestors.size(); ++p) {
-      SVGTextLengthContext context = text_length_ancestors[p];
-      context.start_index = index;
-      context_stack.push_back(context);
-    }
-  }
-  while (!context_stack.IsEmpty()) {
-    ResolveTextLength(items, context_stack.back(), result_.size(),
-                      resolved_descendant_node_starts);
-    context_stack.pop_back();
-  }
-}
-
-// Collects ancestors with a valid textLength attribute up until the IFC.
-// The result is a list of pairs of scaled textLength value and LayoutObject
-// in the reversed order of distance from the specified |layout_object|.
-Vector<SVGTextLengthContext>
-NGSVGTextLayoutAlgorithm::CollectTextLengthAncestors(
-    const NGFragmentItemsBuilder::ItemWithOffsetList& items,
-    wtf_size_t index,
-    const LayoutObject* layout_object) const {
-  DCHECK(layout_object);
-  VectorOf<SVGTextLengthContext> ancestors;
-  do {
-    layout_object = layout_object->Parent();
-    if (auto* element =
-            DynamicTo<SVGTextContentElement>(layout_object->GetNode())) {
-      if (element->TextLengthIsSpecifiedByUser()) {
-        float text_length = element->textLength()->CurrentValue()->Value(
-            SVGLengthContext(element));
-        // text_length is 0.0 if the textLength attribute has an invalid
-        // string. Legacy SVG <text> skips textLength processing if the
-        // attribute is "0" or invalid. Firefox skips textLength processing if
-        // textLength value is smaller than the intrinsic width of the text.
-        // This code follows the legacy behavior.
-        if (text_length > 0.0f) {
-          ancestors.push_back(SVGTextLengthContext{
-              WTF::kNotFound, layout_object,
-              text_length * ScalingFactorAt(items, index),
-              element->lengthAdjust()->CurrentEnumValue()});
-        }
-      }
-    }
-  } while (layout_object != inline_node_.GetLayoutBlockFlow());
-  ancestors.Reverse();
-  return ancestors;
+  for (const auto& range : inline_node_.SVGTextLengthRangeList())
+    ResolveTextLength(items, range, resolved_descendant_node_starts);
 }
 
 // The implementation of step 2 of "Procedure: resolve text length"
@@ -409,10 +320,16 @@ NGSVGTextLayoutAlgorithm::CollectTextLengthAncestors(
 //    3. Called for the <text>.
 void NGSVGTextLayoutAlgorithm::ResolveTextLength(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items,
-    const SVGTextLengthContext& length_context,
-    wtf_size_t j_plus_1,
+    const SVGTextContentRange& range,
     Vector<wtf_size_t>& resolved_descendant_node_starts) {
-  const wtf_size_t i = length_context.start_index;
+  const unsigned i = range.start_index;
+  const unsigned j_plus_1 = range.end_index + 1;
+  auto* element = To<SVGTextContentElement>(range.layout_object->GetNode());
+  const float text_length =
+      element->textLength()->CurrentValue()->Value(SVGLengthContext(element)) *
+      ScalingFactorAt(items, i);
+  const SVGLengthAdjustType length_adjust =
+      element->lengthAdjust()->CurrentEnumValue();
 
   // 2.1. Let a = +Infinity and b = −Infinity.
   float min_position = std::numeric_limits<float>::infinity();
@@ -420,7 +337,7 @@ void NGSVGTextLayoutAlgorithm::ResolveTextLength(
 
   // 2.2. Let i and j be the global index of the first character and last
   // characters in node, respectively.
-  // ==> They are computed in ApplyTextLengthAttribute().
+  // ==> They are computed in NGTextLayoutAttributeBuilder.
 
   // 2.3. For each index k in the range [i, j] where the "addressable" flag of
   // result[k] is true:
@@ -446,13 +363,11 @@ void NGSVGTextLayoutAlgorithm::ResolveTextLength(
   if (min_position == std::numeric_limits<float>::infinity())
     return;
   // 2.4.1. Find the distance delta = ‘textLength’ computed value − (b − a).
-  const float delta =
-      length_context.text_length - (max_position - min_position);
+  const float delta = text_length - (max_position - min_position);
 
   float shift;
-  if (length_context.length_adjust == kSVGLengthAdjustSpacingAndGlyphs) {
-    float length_adjust_scale =
-        length_context.text_length / (max_position - min_position);
+  if (length_adjust == kSVGLengthAdjustSpacingAndGlyphs) {
+    float length_adjust_scale = text_length / (max_position - min_position);
     for (wtf_size_t k = i; k < j_plus_1; ++k) {
       NGSVGPerCharacterInfo& info = result_[k];
       if (horizontal_)
@@ -706,8 +621,10 @@ void NGSVGTextLayoutAlgorithm::PositionOnPath(
     if (range_index < ranges.size() &&
         index >= ranges[range_index].start_index &&
         index <= ranges[range_index].end_index) {
-      if (!in_path)
-        path_mapper = ranges[range_index].layout_svg_text_path->LayoutPath();
+      if (!in_path) {
+        path_mapper = To<LayoutSVGTextPath>(ranges[range_index].layout_object)
+                          ->LayoutPath();
+      }
       // 5.1.1. Set "in path" flag to true.
       in_path = true;
       info.in_text_path = true;
