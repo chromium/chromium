@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/core/html/html_all_collection.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/html_collection_or_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_htmlcollection.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 
@@ -45,7 +44,6 @@ Element* HTMLAllCollection::AnonymousIndexedGetter(unsigned index) {
   return HTMLCollection::item(index);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 V8UnionElementOrHTMLCollection* HTMLAllCollection::NamedGetter(
     const AtomicString& name) {
   HTMLCollection* items = GetDocument().DocumentAllNamedItems(name);
@@ -59,21 +57,5 @@ V8UnionElementOrHTMLCollection* HTMLAllCollection::NamedGetter(
 
   return MakeGarbageCollected<V8UnionElementOrHTMLCollection>(items);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-void HTMLAllCollection::NamedGetter(const AtomicString& name,
-                                    HTMLCollectionOrElement& return_value) {
-  HTMLCollection* items = GetDocument().DocumentAllNamedItems(name);
-
-  if (!items->length())
-    return;
-
-  if (items->length() == 1) {
-    return_value.SetElement(items->item(0));
-    return;
-  }
-
-  return_value.SetHTMLCollection(items);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace blink

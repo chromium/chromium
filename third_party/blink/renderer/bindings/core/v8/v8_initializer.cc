@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/use_counter_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_context_snapshot.h"
@@ -391,16 +390,9 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
     return {true, v8::MaybeLocal<v8::String>()};
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8UnionStringOrTrustedScript* string_or_trusted_script =
       NativeValueTraits<V8UnionStringOrTrustedScript>::NativeValue(
           context->GetIsolate(), source, exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  StringOrTrustedScript string_or_trusted_script;
-  V8StringOrTrustedScript::ToImpl(
-      context->GetIsolate(), source, string_or_trusted_script,
-      UnionTypeConversionMode::kNotNullable, exception_state);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (exception_state.HadException()) {
     exception_state.ClearException();
     // The input was a string or TrustedScript but the conversion failed.
@@ -408,18 +400,10 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
     return {false, v8::MaybeLocal<v8::String>()};
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (is_code_like && string_or_trusted_script->IsString()) {
     string_or_trusted_script->Set(MakeGarbageCollected<TrustedScript>(
         string_or_trusted_script->GetAsString()));
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  if (is_code_like && string_or_trusted_script.IsString()) {
-    string_or_trusted_script = StringOrTrustedScript::FromTrustedScript(
-        MakeGarbageCollected<TrustedScript>(
-            string_or_trusted_script.GetAsString()));
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   String stringified_source = TrustedTypesCheckForScript(
       string_or_trusted_script, ToExecutionContext(context), exception_state);

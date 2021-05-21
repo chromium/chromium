@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_all_collection.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/html_collection_or_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_htmlcollection.h"
 #include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
@@ -63,7 +62,6 @@ void GetIndexedOrNamed(const v8::FunctionCallbackInfo<v8::Value>& info) {
   }
 
   TOSTRING_VOID(V8StringResource<>, name, info[0]);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptState* script_state = ScriptState::From(info.This()->CreationContext());
   v8::Local<v8::Value> v8_value;
   if (!ToV8Traits<IDLNullable<V8UnionElementOrHTMLCollection>>::ToV8(
@@ -72,11 +70,6 @@ void GetIndexedOrNamed(const v8::FunctionCallbackInfo<v8::Value>& info) {
     return;
   }
   bindings::V8SetReturnValue(info, v8_value);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  HTMLCollectionOrElement result;
-  impl->NamedGetter(name, result);
-  V8SetReturnValue(info, result);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 void V8HTMLAllCollection::LegacyCallCustom(

@@ -24,7 +24,6 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_form_controls_collection.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/radio_node_list_or_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_radionodelist.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -173,7 +172,6 @@ void HTMLFormControlsCollection::UpdateIdNameCache() const {
   SetNamedItemCache(cache);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 V8UnionElementOrRadioNodeList* HTMLFormControlsCollection::namedGetter(
     const AtomicString& name) {
   HeapVector<Member<Element>> named_items;
@@ -195,27 +193,6 @@ V8UnionElementOrRadioNodeList* HTMLFormControlsCollection::namedGetter(
   return MakeGarbageCollected<V8UnionElementOrRadioNodeList>(
       ownerNode().GetRadioNodeList(name));
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-void HTMLFormControlsCollection::namedGetter(
-    const AtomicString& name,
-    RadioNodeListOrElement& return_value) {
-  HeapVector<Member<Element>> named_items;
-  NamedItems(name, named_items);
-
-  if (named_items.IsEmpty())
-    return;
-
-  if (named_items.size() == 1) {
-    if (!IsA<HTMLImageElement>(*named_items[0]))
-      return_value.SetElement(named_items.at(0));
-    return;
-  }
-
-  // This path never returns a RadioNodeList for <img> because
-  // onlyMatchingImgElements flag is false by default.
-  return_value.SetRadioNodeList(ownerNode().GetRadioNodeList(name));
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void HTMLFormControlsCollection::SupportedPropertyNames(Vector<String>& names) {
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/common-dom-interfaces.html#htmlformcontrolscollection-0:

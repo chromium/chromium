@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/core/script/detect_javascript_frameworks.h"
 
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 
 namespace blink {
 

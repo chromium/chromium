@@ -205,7 +205,6 @@ const CSSValue* StyleValueToCSSValue(
   return style_value.ToCSSValueWithProperty(property_id);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 const CSSValue* CoerceStyleValueOrString(
     const CSSProperty& property,
     const AtomicString& custom_property_name,
@@ -235,44 +234,11 @@ const CSSValue* CoerceStyleValueOrString(
   NOTREACHED();
   return nullptr;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-const CSSValue* CoerceStyleValueOrString(
-    const CSSProperty& property,
-    const AtomicString& custom_property_name,
-    const CSSStyleValueOrString& value,
-    const ExecutionContext& execution_context) {
-  DCHECK(!property.IsRepeated());
-  DCHECK_EQ(property.IDEquals(CSSPropertyID::kVariable),
-            !custom_property_name.IsNull());
-
-  if (value.IsCSSStyleValue()) {
-    if (!value.GetAsCSSStyleValue())
-      return nullptr;
-
-    return StyleValueToCSSValue(property, custom_property_name,
-                                *value.GetAsCSSStyleValue(), execution_context);
-  } else {
-    DCHECK(value.IsString());
-    const auto values = StyleValueFactory::FromString(
-        property.PropertyID(), custom_property_name, value.GetAsString(),
-        MakeGarbageCollected<CSSParserContext>(execution_context));
-    if (values.size() != 1U)
-      return nullptr;
-
-    return StyleValueToCSSValue(property, custom_property_name, *values[0],
-                                execution_context);
-  }
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 const CSSValue* CoerceStyleValuesOrStrings(
     const CSSProperty& property,
     const AtomicString& custom_property_name,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<Member<V8UnionCSSStyleValueOrString>>& values,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const HeapVector<CSSStyleValueOrString>& values,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const ExecutionContext& execution_context) {
   DCHECK(property.IsRepeated());
   DCHECK_EQ(property.IDEquals(CSSPropertyID::kVariable),
@@ -306,11 +272,7 @@ const CSSValue* CoerceStyleValuesOrStrings(
 void StylePropertyMap::set(
     const ExecutionContext* execution_context,
     const String& property_name,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<Member<V8UnionCSSStyleValueOrString>>& values,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const HeapVector<CSSStyleValueOrString>& values,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   const CSSPropertyID property_id =
       CssPropertyID(execution_context, property_name);
@@ -328,7 +290,6 @@ void StylePropertyMap::set(
     }
 
     String css_text;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     switch (values[0]->GetContentType()) {
       case V8UnionCSSStyleValueOrString::ContentType::kCSSStyleValue: {
         CSSStyleValue* style_value = values[0]->GetAsCSSStyleValue();
@@ -342,17 +303,6 @@ void StylePropertyMap::set(
         css_text = values[0]->GetAsString();
         break;
     }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    if (values[0].IsCSSStyleValue()) {
-      CSSStyleValue* style_value = values[0].GetAsCSSStyleValue();
-      if (style_value &&
-          CSSOMTypes::PropertyCanTake(property_id, g_null_atom, *style_value)) {
-        css_text = style_value->toString();
-      }
-    } else {
-      css_text = values[0].GetAsString();
-    }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
     if (css_text.IsEmpty() ||
         !SetShorthandProperty(property.PropertyID(), css_text,
@@ -390,11 +340,7 @@ void StylePropertyMap::set(
 void StylePropertyMap::append(
     const ExecutionContext* execution_context,
     const String& property_name,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<Member<V8UnionCSSStyleValueOrString>>& values,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const HeapVector<CSSStyleValueOrString>& values,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   if (values.IsEmpty())
     return;

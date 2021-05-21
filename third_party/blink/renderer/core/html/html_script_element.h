@@ -35,7 +35,6 @@
 
 namespace blink {
 
-class StringOrTrustedScript;
 class ExceptionState;
 
 class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
@@ -48,23 +47,14 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   // Returns attributes that should be checked against Trusted Types
   const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;
 
-  void text(StringOrTrustedScript& result);
   String text() { return TextFromChildren(); }
   void setText(const String&);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void setInnerTextForBinding(
       const V8UnionStringTreatNullAsEmptyStringOrTrustedScript*
           string_or_trusted_script,
       ExceptionState& exception_state) override;
   void setTextContentForBinding(const V8UnionStringOrTrustedScript* value,
                                 ExceptionState& exception_state) override;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void setInnerTextForBinding(
-      const StringTreatNullAsEmptyStringOrTrustedScript&,
-      ExceptionState&) override;
-  void setTextContentForBinding(const StringOrTrustedScript&,
-                                ExceptionState&) override;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void setTextContent(const String&) override;
 
   void setAsync(bool);
@@ -76,12 +66,7 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   Document& GetDocument() const override;
   ExecutionContext* GetExecutionContext() const override;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8HTMLOrSVGScriptElement* AsV8HTMLOrSVGScriptElement() override;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void SetScriptElementForBinding(
-      HTMLScriptElementOrSVGScriptElement&) override;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void Trace(Visitor*) const override;
 

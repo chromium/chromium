@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_MATRIX_READ_ONLY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_MATRIX_READ_ONLY_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/string_or_unrestricted_double_sequence.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -21,6 +21,7 @@ class DOMMatrix;
 class DOMMatrixInit;
 class DOMPoint;
 class DOMPointInit;
+class ExecutionContext;
 class V8UnionStringOrUnrestrictedDoubleSequence;
 
 class CORE_EXPORT DOMMatrixReadOnly : public ScriptWrappable {
@@ -28,16 +29,10 @@ class CORE_EXPORT DOMMatrixReadOnly : public ScriptWrappable {
 
  public:
   static DOMMatrixReadOnly* Create(ExecutionContext*, ExceptionState&);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static DOMMatrixReadOnly* Create(
       ExecutionContext* execution_context,
       const V8UnionStringOrUnrestrictedDoubleSequence* init,
       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static DOMMatrixReadOnly* Create(ExecutionContext*,
-                                   const StringOrUnrestrictedDoubleSequence&,
-                                   ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static DOMMatrixReadOnly* fromFloat32Array(NotShared<DOMFloat32Array>,
                                              ExceptionState&);
   static DOMMatrixReadOnly* fromFloat64Array(NotShared<DOMFloat64Array>,

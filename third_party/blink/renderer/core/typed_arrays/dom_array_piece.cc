@@ -21,7 +21,6 @@ DOMArrayPiece::DOMArrayPiece(DOMArrayBufferView* buffer) {
   InitWithArrayBufferView(buffer);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 DOMArrayPiece::DOMArrayPiece(
     const V8UnionArrayBufferOrArrayBufferView* array_buffer_or_view) {
   DCHECK(array_buffer_or_view);
@@ -39,7 +38,6 @@ DOMArrayPiece::DOMArrayPiece(
   NOTREACHED();
   InitNull();
 }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 // TODO(crbug.com/1181288): Remove the old IDL union version.
 DOMArrayPiece::DOMArrayPiece(

@@ -20,7 +20,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_script_element.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/html_script_element_or_svg_script_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlscriptelement_svgscriptelement.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
@@ -194,19 +193,11 @@ const AttrNameToTrustedType& SVGScriptElement::GetCheckedAttributeTypes()
   return attribute_map;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 V8HTMLOrSVGScriptElement* SVGScriptElement::AsV8HTMLOrSVGScriptElement() {
   if (IsInShadowTree())
     return nullptr;
   return MakeGarbageCollected<V8HTMLOrSVGScriptElement>(this);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-void SVGScriptElement::SetScriptElementForBinding(
-    HTMLScriptElementOrSVGScriptElement& element) {
-  if (!IsInShadowTree())
-    element.SetSVGScriptElement(this);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void SVGScriptElement::Trace(Visitor* visitor) const {
   visitor->Trace(loader_);

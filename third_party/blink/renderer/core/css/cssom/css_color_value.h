@@ -32,13 +32,8 @@ class CORE_EXPORT CSSColorValue : public CSSStyleValue {
   virtual Color ToColor() const = 0;
 
  protected:
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static CSSNumericValue* ToNumberOrPercentage(const V8CSSNumberish*);
   static CSSNumericValue* ToPercentage(const V8CSSNumberish*);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static CSSNumericValue* ToNumberOrPercentage(const CSSNumberish&);
-  static CSSNumericValue* ToPercentage(const CSSNumberish&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static float ComponentToColorInput(CSSNumericValue*);
 };
 

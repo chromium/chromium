@@ -46,7 +46,6 @@ class ExceptionState;
 class KeyframeEffectModelBase;
 class PaintArtifactCompositor;
 class SampledEffect;
-class UnrestrictedDoubleOrKeyframeEffectOptions;
 class V8UnionKeyframeEffectOptionsOrUnrestrictedDouble;
 
 // Represents the effect of an Animation on an Element's properties.
@@ -58,21 +57,12 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   enum Priority { kDefaultPriority, kTransitionPriority };
 
   // Web Animations API Bindings constructors.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static KeyframeEffect* Create(
       ScriptState* script_state,
       Element* element,
       const ScriptValue& keyframes,
       const V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* options,
       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static KeyframeEffect* Create(
-      ScriptState*,
-      Element*,
-      const ScriptValue&,
-      const UnrestrictedDoubleOrKeyframeEffectOptions&,
-      ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static KeyframeEffect* Create(ScriptState*,
                                 Element*,
                                 const ScriptValue&,

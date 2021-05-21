@@ -54,7 +54,6 @@ bool CompareParams(const std::pair<String, String>& a,
 
 }  // namespace
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 URLSearchParams* URLSearchParams::Create(const URLSearchParamsInit* init,
                                          ExceptionState& exception_state) {
   DCHECK(init);
@@ -75,28 +74,6 @@ URLSearchParams* URLSearchParams::Create(const URLSearchParamsInit* init,
   NOTREACHED();
   return nullptr;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-URLSearchParams* URLSearchParams::Create(const URLSearchParamsInit& init,
-                                         ExceptionState& exception_state) {
-  if (init.IsUSVString()) {
-    const String& query_string = init.GetAsUSVString();
-    if (query_string.StartsWith('?'))
-      return MakeGarbageCollected<URLSearchParams>(query_string.Substring(1));
-    return MakeGarbageCollected<URLSearchParams>(query_string);
-  }
-  if (init.IsUSVStringUSVStringRecord()) {
-    return URLSearchParams::Create(init.GetAsUSVStringUSVStringRecord(),
-                                   exception_state);
-  }
-  if (init.IsUSVStringSequenceSequence()) {
-    return URLSearchParams::Create(init.GetAsUSVStringSequenceSequence(),
-                                   exception_state);
-  }
-
-  DCHECK(init.IsNull());
-  return MakeGarbageCollected<URLSearchParams>(String());
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 URLSearchParams* URLSearchParams::Create(const Vector<Vector<String>>& init,
                                          ExceptionState& exception_state) {

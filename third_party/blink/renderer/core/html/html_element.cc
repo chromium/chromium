@@ -27,8 +27,6 @@
 
 #include "base/stl_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_script.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_treat_null_as_empty_string_or_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringtreatnullasemptystring_trustedscript.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -846,7 +844,6 @@ DocumentFragment* HTMLElement::TextToFragment(const String& text,
   return fragment;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 V8UnionStringTreatNullAsEmptyStringOrTrustedScript*
 HTMLElement::innerTextForBinding() {
   return MakeGarbageCollected<
@@ -870,23 +867,6 @@ void HTMLElement::setInnerTextForBinding(
   }
   setInnerText(value, exception_state);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-void HTMLElement::innerTextForBinding(
-    StringTreatNullAsEmptyStringOrTrustedScript& result) {
-  result.SetString(innerText());
-}
-
-void HTMLElement::setInnerTextForBinding(
-    const StringTreatNullAsEmptyStringOrTrustedScript& string_or_trusted_script,
-    ExceptionState& exception_state) {
-  String value;
-  if (string_or_trusted_script.IsString())
-    value = string_or_trusted_script.GetAsString();
-  else if (string_or_trusted_script.IsTrustedScript())
-    value = string_or_trusted_script.GetAsTrustedScript()->toString();
-  setInnerText(value, exception_state);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 String HTMLElement::innerText() {
   return Element::innerText();
@@ -2044,4 +2024,5 @@ void dumpInnerHTML(blink::HTMLElement*);
 void dumpInnerHTML(blink::HTMLElement* element) {
   printf("%s\n", element->innerHTML().Ascii().c_str());
 }
+
 #endif

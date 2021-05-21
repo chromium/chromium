@@ -31,7 +31,6 @@
 namespace blink {
 
 class Element;
-class HTMLCollectionOrElement;
 class V8UnionElementOrHTMLCollection;
 
 class HTMLAllCollection final : public HTMLCollection {
@@ -43,11 +42,7 @@ class HTMLAllCollection final : public HTMLCollection {
   ~HTMLAllCollection() override;
 
   Element* AnonymousIndexedGetter(unsigned index);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8UnionElementOrHTMLCollection* NamedGetter(const AtomicString& name);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void NamedGetter(const AtomicString& name, HTMLCollectionOrElement&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 };
 
 }  // namespace blink

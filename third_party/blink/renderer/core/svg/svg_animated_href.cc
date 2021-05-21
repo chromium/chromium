@@ -14,8 +14,6 @@
 
 namespace blink {
 
-class StringOrTrustedScriptURL;
-
 void SVGAnimatedHref::Trace(Visitor* visitor) const {
   visitor->Trace(xlink_href_);
   SVGAnimatedString::Trace(visitor);
@@ -45,8 +43,6 @@ const SVGString* SVGAnimatedHref::CurrentValue() const {
   return BackingString()->SVGAnimatedString::CurrentValue();
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
 V8UnionStringOrTrustedScriptURL* SVGAnimatedHref::baseVal() {
   UseCounter::Count(ContextElement()->GetDocument(),
                     WebFeature::kSVGHrefBaseVal);
@@ -59,24 +55,6 @@ void SVGAnimatedHref::setBaseVal(const V8UnionStringOrTrustedScriptURL* value,
                     WebFeature::kSVGHrefBaseVal);
   BackingString()->SVGAnimatedString::setBaseVal(value, exception_state);
 }
-
-#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
-void SVGAnimatedHref::baseVal(
-    StringOrTrustedScriptURL& string_or_trusted_script_url) {
-  UseCounter::Count(ContextElement()->GetDocument(),
-                    WebFeature::kSVGHrefBaseVal);
-  BackingString()->SVGAnimatedString::baseVal(string_or_trusted_script_url);
-}
-
-void SVGAnimatedHref::setBaseVal(const StringOrTrustedScriptURL& value,
-                                 ExceptionState& exception_state) {
-  UseCounter::Count(ContextElement()->GetDocument(),
-                    WebFeature::kSVGHrefBaseVal);
-  return BackingString()->SVGAnimatedString::setBaseVal(value, exception_state);
-}
-
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 String SVGAnimatedHref::animVal() {
   UseCounter::Count(ContextElement()->GetDocument(),

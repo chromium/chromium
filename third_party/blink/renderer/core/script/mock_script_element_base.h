@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_MOCK_SCRIPT_ELEMENT_BASE_H_
 
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/renderer/bindings/core/v8/html_script_element_or_svg_script_element.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 

@@ -20,7 +20,6 @@ DOMMatrix* DOMMatrix::Create(ExecutionContext* execution_context,
   return MakeGarbageCollected<DOMMatrix>(TransformationMatrix());
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 DOMMatrix* DOMMatrix::Create(
     ExecutionContext* execution_context,
     const V8UnionStringOrUnrestrictedDoubleSequence* init,
@@ -58,38 +57,6 @@ DOMMatrix* DOMMatrix::Create(
   NOTREACHED();
   return nullptr;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-DOMMatrix* DOMMatrix::Create(ExecutionContext* execution_context,
-                             StringOrUnrestrictedDoubleSequence& init,
-                             ExceptionState& exception_state) {
-  if (init.IsString()) {
-    if (!execution_context->IsWindow()) {
-      exception_state.ThrowTypeError(
-          "DOMMatrix can't be constructed with strings on workers.");
-      return nullptr;
-    }
-
-    DOMMatrix* matrix = MakeGarbageCollected<DOMMatrix>(TransformationMatrix());
-    matrix->SetMatrixValueFromString(execution_context, init.GetAsString(),
-                                     exception_state);
-    return matrix;
-  }
-
-  if (init.IsUnrestrictedDoubleSequence()) {
-    const Vector<double>& sequence = init.GetAsUnrestrictedDoubleSequence();
-    if (sequence.size() != 6 && sequence.size() != 16) {
-      exception_state.ThrowTypeError(
-          "The sequence must contain 6 elements for a 2D matrix or 16 elements "
-          "for a 3D matrix.");
-      return nullptr;
-    }
-    return MakeGarbageCollected<DOMMatrix>(sequence, sequence.size());
-  }
-
-  NOTREACHED();
-  return nullptr;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 DOMMatrix* DOMMatrix::Create(DOMMatrixReadOnly* other,
                              ExceptionState& exception_state) {

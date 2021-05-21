@@ -40,8 +40,6 @@ class ExceptionState;
 class FormAssociated;
 class HTMLFormElement;
 class KeyboardEvent;
-class StringOrTrustedScript;
-class StringTreatNullAsEmptyStringOrTrustedScript;
 class V8UnionStringTreatNullAsEmptyStringOrTrustedScript;
 
 enum TranslateAttributeMode {
@@ -65,18 +63,11 @@ class CORE_EXPORT HTMLElement : public Element {
 
   String innerText();
   void setInnerText(const String&, ExceptionState&);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8UnionStringTreatNullAsEmptyStringOrTrustedScript* innerTextForBinding();
   virtual void setInnerTextForBinding(
       const V8UnionStringTreatNullAsEmptyStringOrTrustedScript*
           string_or_trusted_script,
       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void innerTextForBinding(StringTreatNullAsEmptyStringOrTrustedScript& result);
-  virtual void setInnerTextForBinding(
-      const StringTreatNullAsEmptyStringOrTrustedScript&,
-      ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void setOuterText(const String&, ExceptionState&);
 
   virtual bool HasCustomFocusLogic() const;

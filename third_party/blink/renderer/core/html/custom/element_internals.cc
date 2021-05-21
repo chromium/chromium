@@ -48,8 +48,6 @@ void ElementInternals::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
 void ElementInternals::setFormValue(const V8ControlValue* value,
                                     ExceptionState& exception_state) {
   setFormValue(value, value, exception_state);
@@ -82,43 +80,6 @@ void ElementInternals::setFormValue(const V8ControlValue* value,
   }
   NotifyFormStateChanged();
 }
-
-#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
-void ElementInternals::setFormValue(const ControlValue& value,
-                                    ExceptionState& exception_state) {
-  setFormValue(value, value, exception_state);
-}
-
-void ElementInternals::setFormValue(const ControlValue& value,
-                                    const ControlValue& state,
-                                    ExceptionState& exception_state) {
-  if (!IsTargetFormAssociated()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "The target element is not a form-associated custom element.");
-    return;
-  }
-
-  if (value.IsFormData()) {
-    value_ = ControlValue::FromFormData(
-        MakeGarbageCollected<FormData>(*value.GetAsFormData()));
-  } else {
-    value_ = value;
-  }
-
-  if (&value == &state) {
-    state_ = value_;
-  } else if (state.IsFormData()) {
-    state_ = ControlValue::FromFormData(
-        MakeGarbageCollected<FormData>(*state.GetAsFormData()));
-  } else {
-    state_ = state;
-  }
-  NotifyFormStateChanged();
-}
-
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 HTMLFormElement* ElementInternals::form(ExceptionState& exception_state) const {
   if (!IsTargetFormAssociated()) {
@@ -413,7 +374,6 @@ bool ElementInternals::IsEnumeratable() const {
   return true;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void ElementInternals::AppendToFormData(FormData& form_data) {
   if (Target().IsDisabledFormControl())
     return;
@@ -445,29 +405,6 @@ void ElementInternals::AppendToFormData(FormData& form_data) {
     }
   }
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-void ElementInternals::AppendToFormData(FormData& form_data) {
-  if (Target().IsDisabledFormControl())
-    return;
-  const AtomicString& name = Target().FastGetAttribute(html_names::kNameAttr);
-  if (!value_.IsFormData()) {
-    if (name.IsEmpty())
-      return;
-    if (value_.IsFile())
-      form_data.AppendFromElement(name, value_.GetAsFile());
-    else if (value_.IsUSVString())
-      form_data.AppendFromElement(name, value_.GetAsUSVString());
-    // Append nothing for null value.
-    return;
-  }
-  for (const auto& entry : value_.GetAsFormData()->Entries()) {
-    if (entry->isFile())
-      form_data.append(entry->name(), entry->GetFile());
-    else
-      form_data.append(entry->name(), entry->Value());
-  }
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void ElementInternals::DidChangeForm() {
   ListedElement::DidChangeForm();
@@ -531,7 +468,6 @@ bool ElementInternals::ShouldSaveAndRestoreFormControlState() const {
   return Target().isConnected() && (!Form() || Form()->ShouldAutocomplete());
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 FormControlState ElementInternals::SaveFormControlState() const {
   FormControlState state;
 
@@ -557,26 +493,7 @@ FormControlState ElementInternals::SaveFormControlState() const {
   }
   return state;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-FormControlState ElementInternals::SaveFormControlState() const {
-  FormControlState state;
-  if (value_.IsUSVString()) {
-    state.Append("USVString");
-    state.Append(value_.GetAsUSVString());
-  } else if (value_.IsFile()) {
-    state.Append("File");
-    File* file = value_.GetAsFile();
-    file->AppendToControlState(state);
-  } else if (value_.IsFormData()) {
-    state.Append("FormData");
-    value_.GetAsFormData()->AppendToControlState(state);
-  }
-  // Add nothing if value_.IsNull().
-  return state;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void ElementInternals::RestoreFormControlState(const FormControlState& state) {
   if (state.ValueSize() < 2)
     return;
@@ -594,24 +511,5 @@ void ElementInternals::RestoreFormControlState(const FormControlState& state) {
   if (value_)
     CustomElement::EnqueueFormStateRestoreCallback(Target(), value_, "restore");
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-void ElementInternals::RestoreFormControlState(const FormControlState& state) {
-  if (state.ValueSize() < 2)
-    return;
-  if (state[0] == "USVString") {
-    value_ = ControlValue::FromUSVString(state[1]);
-  } else if (state[0] == "File") {
-    wtf_size_t i = 1;
-    if (auto* file = File::CreateFromControlState(state, i))
-      value_ = ControlValue::FromFile(file);
-  } else if (state[0] == "FormData") {
-    wtf_size_t i = 1;
-    if (auto* form_data = FormData::CreateFromControlState(state, i))
-      value_ = ControlValue::FromFormData(form_data);
-  }
-  if (!value_.IsNull())
-    CustomElement::EnqueueFormStateRestoreCallback(Target(), value_, "restore");
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace blink

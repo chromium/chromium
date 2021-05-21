@@ -114,13 +114,7 @@ Blob::~Blob() = default;
 
 // static
 Blob* Blob::Create(ExecutionContext* context,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                    const HeapVector<Member<V8BlobPart>>& blob_parts,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                   const HeapVector<
-                       ArrayBufferOrArrayBufferViewOrBlobOrUSVString>&
-                       blob_parts,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                    const BlobPropertyBag* options) {
   DCHECK(options->hasType());
   DCHECK(options->hasEndings());
@@ -154,7 +148,6 @@ Blob* Blob::Create(const unsigned char* data,
       BlobDataHandle::Create(std::move(blob_data), blob_size));
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 // static
 void Blob::PopulateBlobData(BlobData* blob_data,
                             const HeapVector<Member<V8BlobPart>>& parts,
@@ -185,31 +178,6 @@ void Blob::PopulateBlobData(BlobData* blob_data,
     }
   }
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-// static
-void Blob::PopulateBlobData(
-    BlobData* blob_data,
-    const HeapVector<ArrayBufferOrArrayBufferViewOrBlobOrUSVString>& parts,
-    bool normalize_line_endings_to_native) {
-  for (const auto& item : parts) {
-    if (item.IsArrayBuffer()) {
-      DOMArrayBuffer* array_buffer = item.GetAsArrayBuffer();
-      blob_data->AppendBytes(array_buffer->Data(), array_buffer->ByteLength());
-    } else if (item.IsArrayBufferView()) {
-      auto&& array_buffer_view = item.GetAsArrayBufferView();
-      blob_data->AppendBytes(array_buffer_view->BaseAddress(),
-                             array_buffer_view->byteLength());
-    } else if (item.IsBlob()) {
-      item.GetAsBlob()->AppendTo(*blob_data);
-    } else if (item.IsUSVString()) {
-      blob_data->AppendText(item.GetAsUSVString(),
-                            normalize_line_endings_to_native);
-    } else {
-      NOTREACHED();
-    }
-  }
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 // static
 void Blob::ClampSliceOffsets(uint64_t size, int64_t& start, int64_t& end) {

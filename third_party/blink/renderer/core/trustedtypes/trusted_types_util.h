@@ -14,9 +14,6 @@ namespace blink {
 
 class ExceptionState;
 class ExecutionContext;
-class StringOrTrustedHTMLOrTrustedScriptOrTrustedScriptURL;
-class StringOrTrustedScript;
-class StringTreatNullAsEmptyStringOrTrustedScript;
 class V8UnionStringOrTrustedScript;
 class V8UnionStringTreatNullAsEmptyStringOrTrustedScript;
 
@@ -29,20 +26,11 @@ enum class SpecificTrustedType {
 
 // Perform Trusted Type checks, with the IDL union types as input. All of these
 // will call String& versions below to do the heavy lifting.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 CORE_EXPORT String
 TrustedTypesCheckFor(SpecificTrustedType type,
                      const V8TrustedString* trusted,
                      const ExecutionContext* execution_context,
                      ExceptionState& exception_state) WARN_UNUSED_RESULT;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-CORE_EXPORT String TrustedTypesCheckFor(
-    SpecificTrustedType,
-    const StringOrTrustedHTMLOrTrustedScriptOrTrustedScriptURL&,
-    const ExecutionContext*,
-    ExceptionState&) WARN_UNUSED_RESULT;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 CORE_EXPORT String
 TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,
                            const ExecutionContext* execution_context,
@@ -51,16 +39,6 @@ CORE_EXPORT String TrustedTypesCheckForScript(
     const V8UnionStringTreatNullAsEmptyStringOrTrustedScript* value,
     const ExecutionContext* execution_context,
     ExceptionState& exception_state) WARN_UNUSED_RESULT;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-CORE_EXPORT String TrustedTypesCheckForScript(const StringOrTrustedScript&,
-                                              const ExecutionContext*,
-                                              ExceptionState&)
-    WARN_UNUSED_RESULT;
-CORE_EXPORT String
-TrustedTypesCheckForScript(const StringTreatNullAsEmptyStringOrTrustedScript&,
-                           const ExecutionContext*,
-                           ExceptionState&) WARN_UNUSED_RESULT;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 // Perform Trusted Type checks, for a dynamically or statically determined
 // type.

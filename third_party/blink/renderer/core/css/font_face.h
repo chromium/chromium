@@ -53,7 +53,6 @@ class DOMArrayBufferView;
 class Document;
 class ExceptionState;
 class FontFaceDescriptors;
-class StringOrArrayBufferOrArrayBufferView;
 class StyleRuleFontFace;
 class V8UnionArrayBufferOrArrayBufferViewOrString;
 struct FontMetricsOverride;
@@ -66,18 +65,11 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
  public:
   enum LoadStatusType { kUnloaded, kLoading, kLoaded, kError };
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static FontFace* Create(
       ExecutionContext* execution_context,
       const AtomicString& family,
       const V8UnionArrayBufferOrArrayBufferViewOrString* source,
       const FontFaceDescriptors* descriptors);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static FontFace* Create(ExecutionContext*,
-                          const AtomicString& family,
-                          StringOrArrayBufferOrArrayBufferView&,
-                          const FontFaceDescriptors*);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static FontFace* Create(Document*, const StyleRuleFontFace*);
 
   explicit FontFace(ExecutionContext*);

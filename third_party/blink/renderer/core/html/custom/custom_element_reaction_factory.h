@@ -14,7 +14,6 @@ namespace blink {
 class CustomElementDefinition;
 class CustomElementReaction;
 class Document;
-class FileOrUSVStringOrFormData;
 class HTMLFormElement;
 class QualifiedName;
 
@@ -45,17 +44,10 @@ class CustomElementReactionFactory {
   static CustomElementReaction& CreateFormDisabled(
       CustomElementDefinition& definition,
       bool is_disabled);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static CustomElementReaction& CreateFormStateRestore(
       CustomElementDefinition& definition,
       const V8ControlValue* value,
       const String& mode);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static CustomElementReaction& CreateFormStateRestore(
-      CustomElementDefinition& definition,
-      const FileOrUSVStringOrFormData& value,
-      const String& mode);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 };
 
 }  // namespace blink

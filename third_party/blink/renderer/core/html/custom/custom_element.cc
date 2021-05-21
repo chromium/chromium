@@ -272,7 +272,6 @@ void CustomElement::EnqueueFormDisabledCallback(Element& element,
   }
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void CustomElement::EnqueueFormStateRestoreCallback(Element& element,
                                                     const V8ControlValue* value,
                                                     const String& mode) {
@@ -282,18 +281,6 @@ void CustomElement::EnqueueFormStateRestoreCallback(Element& element,
                          definition, value, mode));
   }
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-void CustomElement::EnqueueFormStateRestoreCallback(
-    Element& element,
-    const FileOrUSVStringOrFormData& value,
-    const String& mode) {
-  auto& definition = *DefinitionForElementWithoutCheck(element);
-  if (definition.HasFormStateRestoreCallback()) {
-    Enqueue(element, CustomElementReactionFactory::CreateFormStateRestore(
-                         definition, value, mode));
-  }
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void CustomElement::TryToUpgrade(Element& element) {
   // Try to upgrade an element

@@ -23,7 +23,6 @@ const CSSValue* CSSColorValue::ToCSSValue() const {
   return cssvalue::CSSColor::Create(ToColor().Rgb());
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 CSSNumericValue* CSSColorValue::ToNumberOrPercentage(
     const V8CSSNumberish* input) {
   CSSNumericValue* value = CSSNumericValue::FromPercentish(input);
@@ -35,21 +34,7 @@ CSSNumericValue* CSSColorValue::ToNumberOrPercentage(
 
   return value;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-CSSNumericValue* CSSColorValue::ToNumberOrPercentage(
-    const CSSNumberish& input) {
-  CSSNumericValue* value = CSSNumericValue::FromPercentish(input);
-  DCHECK(value);
-  if (!CSSOMTypes::IsCSSStyleValueNumber(*value) &&
-      !CSSOMTypes::IsCSSStyleValuePercentage(*value)) {
-    return nullptr;
-  }
 
-  return value;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 CSSNumericValue* CSSColorValue::ToPercentage(const V8CSSNumberish* input) {
   CSSNumericValue* value = CSSNumericValue::FromPercentish(input);
   DCHECK(value);
@@ -58,16 +43,6 @@ CSSNumericValue* CSSColorValue::ToPercentage(const V8CSSNumberish* input) {
 
   return value;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-CSSNumericValue* CSSColorValue::ToPercentage(const CSSNumberish& input) {
-  CSSNumericValue* value = CSSNumericValue::FromPercentish(input);
-  DCHECK(value);
-  if (!CSSOMTypes::IsCSSStyleValuePercentage(*value))
-    return nullptr;
-
-  return value;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 float CSSColorValue::ComponentToColorInput(CSSNumericValue* input) {
   if (CSSOMTypes::IsCSSStyleValuePercentage(*input))

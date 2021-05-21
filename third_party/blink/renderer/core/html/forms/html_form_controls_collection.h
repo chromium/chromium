@@ -33,7 +33,6 @@
 namespace blink {
 
 class HTMLImageElement;
-class RadioNodeListOrElement;
 class V8UnionElementOrRadioNodeList;
 
 // This class is just a big hack to find form elements even in malformed HTML
@@ -53,11 +52,7 @@ class HTMLFormControlsCollection final : public HTMLCollection {
   }
 
   HTMLElement* namedItem(const AtomicString& name) const override;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8UnionElementOrRadioNodeList* namedGetter(const AtomicString& name);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void namedGetter(const AtomicString& name, RadioNodeListOrElement&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void Trace(Visitor*) const override;
 

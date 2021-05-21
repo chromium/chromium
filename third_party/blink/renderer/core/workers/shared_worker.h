@@ -33,7 +33,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_SHARED_WORKER_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_worker_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/workers/abstract_worker.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -52,18 +51,11 @@ class CORE_EXPORT SharedWorker final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static SharedWorker* Create(
       ExecutionContext* context,
       const String& url,
       const V8UnionStringOrWorkerOptions* name_or_options,
       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static SharedWorker* Create(ExecutionContext*,
-                              const String& url,
-                              const StringOrWorkerOptions&,
-                              ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   explicit SharedWorker(ExecutionContext*);
   ~SharedWorker() override;

@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/core/css/cssom/cssom_types.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
 namespace blink {
@@ -30,15 +31,9 @@ CSSHSL::CSSHSL(CSSNumericValue* h,
     : h_(h), s_(s), l_(l), alpha_(alpha) {}
 
 CSSHSL* CSSHSL::Create(CSSNumericValue* hue,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                        const V8CSSNumberish* saturation,
                        const V8CSSNumberish* lightness,
                        const V8CSSNumberish* alpha,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                       const CSSNumberish& saturation,
-                       const CSSNumberish& lightness,
-                       const CSSNumberish& alpha,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                        ExceptionState& exception_state) {
   if (!CSSOMTypes::IsCSSStyleValueAngle(*hue)) {
     exception_state.ThrowTypeError("Hue must be a CSS angle type.");
@@ -59,8 +54,6 @@ CSSHSL* CSSHSL::Create(CSSNumericValue* hue,
   return MakeGarbageCollected<CSSHSL>(hue, s, l, a);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
 V8CSSNumberish* CSSHSL::s() const {
   return MakeGarbageCollected<V8CSSNumberish>(s_);
 }
@@ -73,8 +66,6 @@ V8CSSNumberish* CSSHSL::alpha() const {
   return MakeGarbageCollected<V8CSSNumberish>(alpha_);
 }
 
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
 void CSSHSL::setH(CSSNumericValue* hue, ExceptionState& exception_state) {
   if (CSSOMTypes::IsCSSStyleValueAngle(*hue))
     h_ = hue;
@@ -83,11 +74,7 @@ void CSSHSL::setH(CSSNumericValue* hue, ExceptionState& exception_state) {
 }
 
 void CSSHSL::setS(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8CSSNumberish* saturation,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const CSSNumberish& saturation,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   if (auto* value = ToPercentage(saturation))
     s_ = value;
@@ -96,11 +83,7 @@ void CSSHSL::setS(
 }
 
 void CSSHSL::setL(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8CSSNumberish* lightness,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const CSSNumberish& lightness,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   if (auto* value = ToPercentage(lightness))
     l_ = value;
@@ -109,11 +92,7 @@ void CSSHSL::setL(
 }
 
 void CSSHSL::setAlpha(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8CSSNumberish* alpha,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const CSSNumberish& alpha,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   if (auto* value = ToPercentage(alpha))
     alpha_ = value;

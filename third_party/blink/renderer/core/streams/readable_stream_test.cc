@@ -6,7 +6,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/bindings/core/v8/readable_stream_default_reader_or_readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -251,18 +250,11 @@ TEST_F(ReadableStreamTest, GetBYOBReader) {
   auto* options = ReadableStreamGetReaderOptions::Create();
   options->setMode("byob");
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ReadableStreamBYOBReader* reader = nullptr;
   if (const auto* result =
           stream->getReader(script_state, options, ASSERT_NO_EXCEPTION)) {
     reader = result->GetAsReadableStreamBYOBReader();
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ReadableStreamDefaultReaderOrReadableStreamBYOBReader return_value;
-  stream->getReader(script_state, options, return_value, ASSERT_NO_EXCEPTION);
-  ReadableStreamBYOBReader* reader =
-      return_value.GetAsReadableStreamBYOBReader();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ASSERT_TRUE(reader);
 
   EXPECT_TRUE(stream->locked());

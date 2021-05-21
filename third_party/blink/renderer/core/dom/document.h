@@ -153,7 +153,6 @@ class HTMLFrameOwnerElement;
 class HTMLHeadElement;
 class HTMLLinkElement;
 class HTMLPopupElement;
-class HTMLScriptElementOrSVGScriptElement;
 class HitTestRequest;
 class HttpRefreshScheduler;
 class IdleRequestOptions;
@@ -196,7 +195,6 @@ class SerializedScriptValue;
 class Settings;
 class SlotAssignmentEngine;
 class SnapCoordinator;
-class StringOrElementCreationOptions;
 class StyleEngine;
 class StylePropertyMapReadOnly;
 class StyleResolver;
@@ -368,31 +366,18 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Element* CreateElementForBinding(const AtomicString& local_name,
                                    ExceptionState& = ASSERT_NO_EXCEPTION);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Element* CreateElementForBinding(
       const AtomicString& local_name,
       const V8UnionElementCreationOptionsOrString* string_or_options,
       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  Element* CreateElementForBinding(const AtomicString& local_name,
-                                   const StringOrElementCreationOptions&,
-                                   ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Element* createElementNS(const AtomicString& namespace_uri,
                            const AtomicString& qualified_name,
                            ExceptionState&);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Element* createElementNS(
       const AtomicString& namespace_uri,
       const AtomicString& qualified_name,
       const V8UnionElementCreationOptionsOrString* string_or_options,
       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  Element* createElementNS(const AtomicString& namespace_uri,
-                           const AtomicString& qualified_name,
-                           const StringOrElementCreationOptions&,
-                           ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   DocumentFragment* createDocumentFragment();
   Text* createTextNode(const String& data);
   Comment* createComment(const String& data);
@@ -1175,11 +1160,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   ScriptRunner* GetScriptRunner() { return script_runner_.Get(); }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8HTMLOrSVGScriptElement* currentScriptForBinding() const;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void currentScriptForBinding(HTMLScriptElementOrSVGScriptElement&) const;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void PushCurrentScript(ScriptElementBase*);
   void PopCurrentScript(ScriptElementBase*);
 

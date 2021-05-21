@@ -165,12 +165,7 @@ void Element::SetAttributeHinted(const AtomicString& local_name,
 
 void Element::SetAttributeHinted(const AtomicString& local_name,
                                  WTF::AtomicStringTable::WeakResult hint,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                  const V8TrustedString* trusted_string,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                 const StringOrTrustedHTMLOrTrustedScriptOrTrustedScriptURL&
-                                     string_or_trusted,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                  ExceptionState& exception_state) {
   if (!Document::IsValidName(local_name)) {
     exception_state.ThrowDOMException(
@@ -183,15 +178,9 @@ void Element::SetAttributeHinted(const AtomicString& local_name,
   wtf_size_t index;
   QualifiedName q_name = QualifiedName::Null();
   std::tie(index, q_name) = LookupAttributeQNameHinted(local_name, hint);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   AtomicString value(TrustedTypesCheckFor(
       ExpectedTrustedTypeForAttribute(q_name), trusted_string,
       GetExecutionContext(), exception_state));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  AtomicString value(TrustedTypesCheckFor(
-      ExpectedTrustedTypeForAttribute(q_name), string_or_trusted,
-      GetExecutionContext(), exception_state));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (exception_state.HadException())
     return;
   SetAttributeInternal(index, q_name, value,

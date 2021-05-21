@@ -49,7 +49,6 @@ bool operator==(const CSSNumericSumValue::Term& a, const UnitMapComparator& b) {
 
 }  // namespace
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 CSSMathSum* CSSMathSum::Create(const HeapVector<Member<V8CSSNumberish>>& args,
                                ExceptionState& exception_state) {
   if (args.IsEmpty()) {
@@ -67,18 +66,6 @@ CSSMathSum* CSSMathSum::Create(const HeapVector<Member<V8CSSNumberish>>& args,
 
   return result;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-CSSMathSum* CSSMathSum::Create(const HeapVector<CSSNumberish>& args,
-                               ExceptionState& exception_state) {
-  if (args.IsEmpty()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "Arguments can't be empty");
-    return nullptr;
-  }
-
-  return Create(CSSNumberishesToNumericValues(args), exception_state);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 CSSMathSum* CSSMathSum::Create(CSSNumericValueVector values,
                                ExceptionState& exception_state) {

@@ -49,7 +49,6 @@ namespace blink {
 class Blob;
 class ExceptionState;
 class ExecutionContext;
-class StringOrArrayBuffer;
 class V8UnionArrayBufferOrString;
 enum class FileErrorCode;
 
@@ -76,11 +75,7 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
 
   ReadyState getReadyState() const { return state_; }
   DOMException* error() { return error_; }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8UnionArrayBufferOrString* result() const;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void result(StringOrArrayBuffer& result_attribute) const;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   probe::AsyncTaskId* async_task_id() { return &async_task_id_; }
 
   // ExecutionContextLifecycleObserver

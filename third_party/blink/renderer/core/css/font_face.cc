@@ -32,7 +32,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
 #include "third_party/blink/renderer/core/css/binary_data_font_face_source.h"
@@ -123,7 +122,6 @@ const CSSValue* ConvertSizeAdjustValue(const CSSValue* parsed_value) {
 
 }  // namespace
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 FontFace* FontFace::Create(
     ExecutionContext* execution_context,
     const AtomicString& family,
@@ -147,23 +145,6 @@ FontFace* FontFace::Create(
   NOTREACHED();
   return nullptr;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-FontFace* FontFace::Create(ExecutionContext* context,
-                           const AtomicString& family,
-                           StringOrArrayBufferOrArrayBufferView& source,
-                           const FontFaceDescriptors* descriptors) {
-  if (source.IsString())
-    return Create(context, family, source.GetAsString(), descriptors);
-  if (source.IsArrayBuffer())
-    return Create(context, family, source.GetAsArrayBuffer(), descriptors);
-  if (source.IsArrayBufferView()) {
-    return Create(context, family, source.GetAsArrayBufferView().Get(),
-                  descriptors);
-  }
-  NOTREACHED();
-  return nullptr;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 FontFace* FontFace::Create(ExecutionContext* context,
                            const AtomicString& family,

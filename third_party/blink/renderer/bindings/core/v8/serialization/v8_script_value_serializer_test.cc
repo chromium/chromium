@@ -787,11 +787,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDetachedImageData) {
       ASSERT_NO_EXCEPTION);
   SkPixmap pm = image_data->GetSkPixmap();
   pm.writable_addr32(0, 0)[0] = 200u;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   image_data->data()->GetAsUint8ClampedArray()->BufferBase()->Detach();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  image_data->data().GetAsUint8ClampedArray()->BufferBase()->Detach();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   v8::Local<v8::Value> wrapper =
       ToV8(image_data, scope.GetContext()->Global(), scope.GetIsolate());

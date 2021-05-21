@@ -11,11 +11,9 @@
 
 namespace blink {
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 V8CSSNumberish* CSSMathNegate::value() {
   return MakeGarbageCollected<V8CSSNumberish>(value_);
 }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 absl::optional<CSSNumericSumValue> CSSMathNegate::SumValue() const {
   auto maybe_sum = value_->SumValue();

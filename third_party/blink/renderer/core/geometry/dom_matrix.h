@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_MATRIX_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_MATRIX_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/string_or_unrestricted_double_sequence.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix_read_only.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -13,6 +12,7 @@
 namespace blink {
 
 class DOMMatrixInit;
+class ExecutionContext;
 class V8UnionStringOrUnrestrictedDoubleSequence;
 
 class CORE_EXPORT DOMMatrix : public DOMMatrixReadOnly {
@@ -21,16 +21,10 @@ class CORE_EXPORT DOMMatrix : public DOMMatrixReadOnly {
  public:
   static DOMMatrix* Create();
   static DOMMatrix* Create(ExecutionContext*, ExceptionState&);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static DOMMatrix* Create(
       ExecutionContext* execution_context,
       const V8UnionStringOrUnrestrictedDoubleSequence* init,
       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static DOMMatrix* Create(ExecutionContext*,
-                           StringOrUnrestrictedDoubleSequence&,
-                           ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   // TODO(fserb): double check those two bellow are needed:
   static DOMMatrix* Create(DOMMatrixReadOnly*,
                            ExceptionState& = ASSERT_NO_EXCEPTION);

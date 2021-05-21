@@ -5,10 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_UNION_TYPES_TEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_UNION_TYPES_TEST_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/double_or_internal_enum.h"
-#include "third_party/blink/renderer/bindings/core/v8/double_or_string.h"
-#include "third_party/blink/renderer/bindings/core/v8/double_or_string_or_string_sequence.h"
-#include "third_party/blink/renderer/bindings/core/v8/node_list_or_element.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -25,7 +22,6 @@ class UnionTypesTest final : public ScriptWrappable {
   UnionTypesTest() = default;
   ~UnionTypesTest() override = default;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8UnionDoubleOrStringOrStringSequence*
   doubleOrStringOrStringSequenceAttribute() const;
   void setDoubleOrStringOrStringSequenceAttribute(
@@ -41,27 +37,9 @@ class UnionTypesTest final : public ScriptWrappable {
 
   String doubleOrStringOrStringSequenceArg(
       const V8UnionDoubleOrStringOrStringSequence* arg);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void doubleOrStringOrStringSequenceAttribute(DoubleOrStringOrStringSequence&);
-  void setDoubleOrStringOrStringSequenceAttribute(
-      const DoubleOrStringOrStringSequence&);
-
-  String doubleOrStringArg(DoubleOrString&);
-  String doubleOrInternalEnumArg(DoubleOrInternalEnum&);
-  String doubleOrStringSequenceArg(HeapVector<DoubleOrString>&);
-
-  String nodeListOrElementArg(NodeListOrElement&);
-  String nodeListOrElementOrNullArg(NodeListOrElement&);
-
-  String doubleOrStringOrStringSequenceArg(
-      const DoubleOrStringOrStringSequence&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
  private:
   enum AttributeSpecificType {
-#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    kSpecificTypeNone,
-#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     kSpecificTypeDouble,
     kSpecificTypeString,
     kSpecificTypeStringSequence,

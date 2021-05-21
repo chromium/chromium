@@ -20,19 +20,11 @@ class CORE_EXPORT CSSRGB final : public CSSColorValue {
 
  public:
   // Constructor defined in the IDL.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static CSSRGB* Create(const V8CSSNumberish* r,
                         const V8CSSNumberish* g,
                         const V8CSSNumberish* b,
                         const V8CSSNumberish* alpha,
                         ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static CSSRGB* Create(const CSSNumberish&,
-                        const CSSNumberish&,
-                        const CSSNumberish&,
-                        const CSSNumberish&,
-                        ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // Internal constructor used by blink.
   explicit CSSRGB(const Color&);
@@ -42,7 +34,6 @@ class CORE_EXPORT CSSRGB final : public CSSColorValue {
          CSSNumericValue*);
 
   // Getters and setters from the IDL
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8CSSNumberish* r() const;
   V8CSSNumberish* g() const;
   V8CSSNumberish* b() const;
@@ -51,16 +42,6 @@ class CORE_EXPORT CSSRGB final : public CSSColorValue {
   void setG(const V8CSSNumberish* g, ExceptionState& exception_state);
   void setB(const V8CSSNumberish* b, ExceptionState& exception_state);
   void setAlpha(const V8CSSNumberish* alpha, ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void r(CSSNumberish& r) { r.SetCSSNumericValue(r_); }
-  void g(CSSNumberish& g) { g.SetCSSNumericValue(g_); }
-  void b(CSSNumberish& b) { b.SetCSSNumericValue(b_); }
-  void alpha(CSSNumberish& alpha) { alpha.SetCSSNumericValue(alpha_); }
-  void setR(const CSSNumberish&, ExceptionState&);
-  void setG(const CSSNumberish&, ExceptionState&);
-  void setB(const CSSNumberish&, ExceptionState&);
-  void setAlpha(const CSSNumberish&, ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(r_);

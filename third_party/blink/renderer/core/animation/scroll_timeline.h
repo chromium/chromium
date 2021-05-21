@@ -15,7 +15,6 @@
 
 namespace blink {
 
-class DoubleOrScrollTimelineAutoKeyword;
 class ScrollTimelineOptions;
 class V8UnionDoubleOrScrollTimelineAutoKeyword;
 
@@ -63,21 +62,11 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // IDL API implementation.
   Element* scrollSource() const;
   String orientation();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   const HeapVector<Member<V8ScrollTimelineOffset>> scrollOffsets() const;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  const HeapVector<ScrollTimelineOffsetValue> scrollOffsets() const;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8CSSNumberish* currentTime() override;
   V8CSSNumberish* duration() override;
   V8UnionDoubleOrScrollTimelineAutoKeyword* timeRange() const;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void currentTime(CSSNumberish&) override;
-  void duration(CSSNumberish&) override;
-  void timeRange(DoubleOrScrollTimelineAutoKeyword&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // Returns the Node that should actually have the ScrollableArea (if one
   // exists). This can differ from |scrollSource| when |scroll_source_| is the

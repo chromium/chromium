@@ -30,7 +30,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_IMAGE_DATA_H_
 
 #include "base/numerics/checked_math.h"
-#include "third_party/blink/renderer/bindings/core/v8/uint8_clamped_array_or_uint16_array_or_float32_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_data_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -51,8 +50,6 @@ namespace blink {
 
 class ExceptionState;
 class ImageBitmapOptions;
-
-typedef Uint8ClampedArrayOrUint16ArrayOrFloat32Array ImageDataArray;
 
 constexpr const char* kUint8ClampedArrayStorageFormatName = "uint8";
 constexpr const char* kUint16ArrayStorageFormatName = "uint16";
@@ -194,13 +191,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   // TODO(https://crbug.com/1198606): Remove this.
   ImageDataSettings* getSettings() const;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   const V8ImageDataArray* data() const { return data_; }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ImageDataArray& data() { return data_; }
-  const ImageDataArray& data() const { return data_; }
-  void data(ImageDataArray& result) { result = data_; }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   bool IsBufferBaseDetached() const;
   CanvasColorSpace GetCanvasColorSpace() const;
@@ -227,11 +218,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   IntSize size_;
   // TODO(https://crbug.com/1198606): Remove this.
   Member<ImageDataSettings> settings_;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Member<V8ImageDataArray> data_;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ImageDataArray data_;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   NotShared<DOMUint8ClampedArray> data_u8_;
   NotShared<DOMUint16Array> data_u16_;
   NotShared<DOMFloat32Array> data_f32_;

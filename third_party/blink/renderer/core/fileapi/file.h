@@ -30,7 +30,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view_or_blob_or_usv_string.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -63,18 +62,10 @@ class CORE_EXPORT File final : public Blob {
   enum UserVisibility { kIsUserVisible, kIsNotUserVisible };
 
   // Constructor in File.idl
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static File* Create(ExecutionContext*,
                       const HeapVector<Member<V8BlobPart>>& file_bits,
                       const String& file_name,
                       const FilePropertyBag* options);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static File* Create(
-      ExecutionContext*,
-      const HeapVector<ArrayBufferOrArrayBufferViewOrBlobOrUSVString>&,
-      const String& file_name,
-      const FilePropertyBag*);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // For deserialization.
   static File* CreateFromSerialization(

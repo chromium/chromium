@@ -19,19 +19,11 @@ class CORE_EXPORT CSSHSL final : public CSSColorValue {
 
  public:
   // Constructor defined in the IDL.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static CSSHSL* Create(CSSNumericValue* hue,
                         const V8CSSNumberish* saturation,
                         const V8CSSNumberish* lightness,
                         const V8CSSNumberish* alpha,
                         ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static CSSHSL* Create(CSSNumericValue* hue,
-                        const CSSNumberish& saturation,
-                        const CSSNumberish& lightness,
-                        const CSSNumberish& alpha,
-                        ExceptionState& exception_state);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // Internal constructor used by blink.
   explicit CSSHSL(const Color&);
@@ -41,7 +33,6 @@ class CORE_EXPORT CSSHSL final : public CSSColorValue {
          CSSNumericValue*);
 
   // Getters and setters from the IDL
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Member<CSSNumericValue> h() const { return h_; }
   V8CSSNumberish* s() const;
   V8CSSNumberish* l() const;
@@ -50,16 +41,6 @@ class CORE_EXPORT CSSHSL final : public CSSColorValue {
   void setS(const V8CSSNumberish* s, ExceptionState& exception_state);
   void setL(const V8CSSNumberish* l, ExceptionState& exception_state);
   void setAlpha(const V8CSSNumberish* alpha, ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  Member<CSSNumericValue> h() { return h_; }
-  void s(CSSNumberish& g) { g.SetCSSNumericValue(s_); }
-  void l(CSSNumberish& b) { b.SetCSSNumericValue(l_); }
-  void alpha(CSSNumberish& alpha) { alpha.SetCSSNumericValue(alpha_); }
-  void setH(CSSNumericValue*, ExceptionState&);
-  void setS(const CSSNumberish&, ExceptionState&);
-  void setL(const CSSNumberish&, ExceptionState&);
-  void setAlpha(const CSSNumberish&, ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(h_);

@@ -41,20 +41,12 @@ bool CompareAnimations(const Member<Animation>& left,
       Animation::CompareAnimationsOrdering::kPointerOrder);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 V8CSSNumberish* AnimationTimeline::currentTime() {
   const absl::optional<base::TimeDelta>& result = CurrentPhaseAndTime().time;
   if (result)
     return MakeGarbageCollected<V8CSSNumberish>(result->InMillisecondsF());
   return nullptr;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-void AnimationTimeline::currentTime(CSSNumberish& currentTime) {
-  absl::optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
-  currentTime = result ? CSSNumberish::FromDouble(result->InMillisecondsF())
-                       : CSSNumberish();
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 absl::optional<AnimationTimeDelta> AnimationTimeline::CurrentTime() {
   absl::optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
@@ -73,15 +65,9 @@ absl::optional<double> AnimationTimeline::CurrentTimeSeconds() {
   return result ? absl::make_optional(result->InSecondsF()) : absl::nullopt;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 V8CSSNumberish* AnimationTimeline::duration() {
   return nullptr;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-void AnimationTimeline::duration(CSSNumberish& duration) {
-  duration = CSSNumberish();
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 String AnimationTimeline::phase() {
   switch (CurrentPhaseAndTime().phase) {

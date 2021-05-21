@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SEQUENCE_TEST_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/bindings/core/v8/double_or_double_sequence.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_food_enum.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -37,11 +36,7 @@ class SequenceTest final : public ScriptWrappable {
   HeapVector<Member<Element>> getElementSequence() const;
   void setElementSequence(const HeapVector<Member<Element>>& arg);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool unionReceivedSequence(const V8UnionDoubleOrDoubleSequence* arg);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  bool unionReceivedSequence(const DoubleOrDoubleSequence& arg);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void Trace(Visitor*) const override;
 

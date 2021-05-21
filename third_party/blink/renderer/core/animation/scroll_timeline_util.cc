@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/double_or_scroll_timeline_auto_keyword.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_scrolltimelineautokeyword.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
@@ -26,15 +25,8 @@ scoped_refptr<CompositorScrollTimeline> ToCompositorScrollTimeline(
   absl::optional<CompositorElementId> element_id =
       GetCompositorScrollElementId(scroll_source);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   auto* time_range = scroll_timeline->timeRange();
   DCHECK(time_range);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  DoubleOrScrollTimelineAutoKeyword time_range;
-  scroll_timeline->timeRange(time_range);
-  // TODO(smcgruer): Handle 'auto' time range value.
-  DCHECK(time_range.IsDouble());
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   LayoutBox* box =
       scroll_timeline->IsActive() ? scroll_source->GetLayoutBox() : nullptr;
@@ -44,12 +36,7 @@ scoped_refptr<CompositorScrollTimeline> ToCompositorScrollTimeline(
 
   return CompositorScrollTimeline::Create(
       element_id, orientation, scroll_timeline->GetResolvedScrollOffsets(),
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      time_range->GetAsDouble()
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      time_range.GetAsDouble()
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  );
+      time_range->GetAsDouble());
 }
 
 absl::optional<CompositorElementId> GetCompositorScrollElementId(

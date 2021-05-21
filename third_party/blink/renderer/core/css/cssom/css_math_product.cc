@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_invert.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -31,7 +32,6 @@ CSSNumericSumValue::UnitMap MultiplyUnitMaps(
 
 }  // namespace
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 CSSMathProduct* CSSMathProduct::Create(
     const HeapVector<Member<V8CSSNumberish>>& args,
     ExceptionState& exception_state) {
@@ -49,24 +49,6 @@ CSSMathProduct* CSSMathProduct::Create(
 
   return result;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-CSSMathProduct* CSSMathProduct::Create(const HeapVector<CSSNumberish>& args,
-                                       ExceptionState& exception_state) {
-  if (args.IsEmpty()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "Arguments can't be empty");
-    return nullptr;
-  }
-
-  CSSMathProduct* result = Create(CSSNumberishesToNumericValues(args));
-  if (!result) {
-    exception_state.ThrowTypeError("Incompatible types");
-    return nullptr;
-  }
-
-  return result;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 CSSMathProduct* CSSMathProduct::Create(CSSNumericValueVector values) {
   bool error = false;

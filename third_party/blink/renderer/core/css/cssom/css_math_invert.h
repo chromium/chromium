@@ -17,15 +17,9 @@ class CORE_EXPORT CSSMathInvert : public CSSMathValue {
 
  public:
   // The constructor defined in the IDL.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static CSSMathInvert* Create(V8CSSNumberish* arg) {
     return Create(CSSNumericValue::FromNumberish(arg));
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static CSSMathInvert* Create(const CSSNumberish& arg) {
-    return Create(CSSNumericValue::FromNumberish(arg));
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   // Blink-internal constructor
   static CSSMathInvert* Create(CSSNumericValue* value) {
     return MakeGarbageCollected<CSSMathInvert>(
@@ -39,11 +33,7 @@ class CORE_EXPORT CSSMathInvert : public CSSMathValue {
 
   String getOperator() const final { return "invert"; }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8CSSNumberish* value();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void value(CSSNumberish& value) { value.SetCSSNumericValue(value_); }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // Blink-internal methods
   const CSSNumericValue& Value() const { return *value_; }

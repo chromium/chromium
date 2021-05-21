@@ -47,6 +47,7 @@ class Request;
 class ScriptPromiseResolver;
 class ScriptState;
 
+class RequestOrUSVString;
 typedef RequestOrUSVString RequestInfo;
 
 class MODULES_EXPORT Cache : public ScriptWrappable {

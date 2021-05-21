@@ -35,12 +35,8 @@ class CORE_EXPORT Headers final : public ScriptWrappable,
   };
 
   static Headers* Create(ExceptionState& exception_state);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static Headers* Create(const V8HeadersInit* init,
                          ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static Headers* Create(const HeadersInit&, ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // Shares the FetchHeaderList. Called when creating a Request or Response.
   static Headers* Create(FetchHeaderList*);
@@ -63,10 +59,9 @@ class CORE_EXPORT Headers final : public ScriptWrappable,
 
   // These methods should only be called when size() would return 0.
   void FillWith(const Headers*, ExceptionState&);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void FillWith(const V8HeadersInit* init, ExceptionState& exception_state);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   // TODO(crbug.com/1181288): Remove the old IDL union version.
+  // Old IDL dictionaries still use old IDL unions.
   void FillWith(const HeadersInit&, ExceptionState&);
 
   // https://fetch.spec.whatwg.org/#concept-headers-remove-privileged-no-cors-request-headers

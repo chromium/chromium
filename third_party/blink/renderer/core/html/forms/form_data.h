@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_FORM_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_FORM_DATA_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/file_or_usv_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -43,12 +42,10 @@
 namespace blink {
 
 class Blob;
+class File;
 class FormControlState;
 class HTMLFormElement;
 class ScriptState;
-
-// Typedef from form_data.idl:
-typedef FileOrUSVString FormDataEntryValue;
 
 class CORE_EXPORT FormData final
     : public ScriptWrappable,
@@ -76,13 +73,8 @@ class CORE_EXPORT FormData final
               Blob*,
               const String& filename = String());
   void deleteEntry(const String& name);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8FormDataEntryValue* get(const String& name);
   HeapVector<Member<V8FormDataEntryValue>> getAll(const String& name);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void get(const String& name, FormDataEntryValue& result);
-  HeapVector<FormDataEntryValue> getAll(const String& name);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool has(const String& name);
   void set(const String& name, const String& value);
   void set(const String& name, Blob*, const String& filename = String());

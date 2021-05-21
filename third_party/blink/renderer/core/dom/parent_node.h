@@ -65,33 +65,21 @@ class ParentNode {
 
   static void prepend(
       Node& node,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      const HeapVector<NodeOrStringOrTrustedScript>& nodes,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       ExceptionState& exception_state) {
     return node.Prepend(nodes, exception_state);
   }
 
   static void append(
       Node& node,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      const HeapVector<NodeOrStringOrTrustedScript>& nodes,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       ExceptionState& exception_state) {
     return node.Append(nodes, exception_state);
   }
 
   static void replaceChildren(
       Node& node,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      const HeapVector<NodeOrStringOrTrustedScript>& nodes,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       ExceptionState& exception_state) {
     return node.ReplaceChildren(nodes, exception_state);
   }

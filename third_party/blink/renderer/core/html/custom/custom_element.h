@@ -18,7 +18,6 @@ namespace blink {
 
 class Document;
 class Element;
-class FileOrUSVStringOrFormData;
 class HTMLElement;
 class HTMLFormElement;
 class QualifiedName;
@@ -112,16 +111,9 @@ class CORE_EXPORT CustomElement {
                                             HTMLFormElement* nullable_form);
   static void EnqueueFormResetCallback(Element& element);
   static void EnqueueFormDisabledCallback(Element& element, bool is_disabled);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static void EnqueueFormStateRestoreCallback(Element& element,
                                               const V8ControlValue* value,
                                               const String& mode);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static void EnqueueFormStateRestoreCallback(
-      Element& element,
-      const FileOrUSVStringOrFormData& value,
-      const String& mode);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   static void TryToUpgrade(Element&);
 

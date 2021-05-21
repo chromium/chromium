@@ -33,7 +33,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view_or_blob_or_usv_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fileapi/url_registry.h"
@@ -62,16 +61,9 @@ class CORE_EXPORT Blob : public ScriptWrappable,
     return MakeGarbageCollected<Blob>(BlobDataHandle::Create());
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static Blob* Create(ExecutionContext* execution_context,
                       const HeapVector<Member<V8BlobPart>>& blob_parts,
                       const BlobPropertyBag* options);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static Blob* Create(
-      ExecutionContext*,
-      const HeapVector<ArrayBufferOrArrayBufferViewOrBlobOrUSVString>&,
-      const BlobPropertyBag*);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   static Blob* Create(const unsigned char* data,
                       size_t size,
@@ -128,16 +120,9 @@ class CORE_EXPORT Blob : public ScriptWrappable,
   bool IsBlob() const override { return true; }
 
  protected:
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static void PopulateBlobData(BlobData* blob_data,
                                const HeapVector<Member<V8BlobPart>>& parts,
                                bool normalize_line_endings_to_native);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static void PopulateBlobData(
-      BlobData*,
-      const HeapVector<ArrayBufferOrArrayBufferViewOrBlobOrUSVString>& parts,
-      bool normalize_line_endings_to_native);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static void ClampSliceOffsets(uint64_t size, int64_t& start, int64_t& end);
 
   // Called by the Blob and File constructors when processing the 'type'

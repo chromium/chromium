@@ -350,37 +350,20 @@ TEST_F(CSSAnimationsCompositorSyncTest, SetStartTime) {
   Animation* animation = GetAnimation();
   int compositor_group = animation->CompositorGroup();
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8CSSNumberish* start_time = animation->startTime();
   V8CSSNumberish* current_time = animation->currentTime();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  CSSNumberish start_time, current_time;
-  animation->startTime(start_time);
-  animation->currentTime(current_time);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // Partially rewind the animation via setStartTime.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8CSSNumberish* new_start_time = MakeGarbageCollected<V8CSSNumberish>(
       start_time->GetAsDouble() + (current_time->GetAsDouble() / 2));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  CSSNumberish new_start_time = CSSNumberish::FromDouble(
-      start_time.GetAsDouble() + (current_time.GetAsDouble() / 2));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   animation->setStartTime(new_start_time, ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
 
   // Verify blink updates.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   current_time = animation->currentTime();
   EXPECT_TRUE(current_time->IsDouble());
   EXPECT_NEAR(250, current_time->GetAsDouble(), kTimeToleranceMilliseconds);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  animation->currentTime(current_time);
-  EXPECT_TRUE(current_time.IsDouble());
-  EXPECT_NEAR(250, current_time.GetAsDouble(), kTimeToleranceMilliseconds);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   EXPECT_NEAR(0.75, element_->GetComputedStyle()->Opacity(), kTolerance);
 
   // Compositor animation needs to restart and will have a new compositor group.
@@ -411,25 +394,14 @@ TEST_F(CSSAnimationsCompositorSyncTest, SetCurrentTime) {
   int compositor_group = animation->CompositorGroup();
 
   // Advance current time.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(750),
                             ASSERT_NO_EXCEPTION);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  animation->setCurrentTime(CSSNumberish::FromDouble(750), ASSERT_NO_EXCEPTION);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   UpdateAllLifecyclePhasesForTest();
 
   // Verify blink updates.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8CSSNumberish* current_time = animation->currentTime();
   EXPECT_TRUE(current_time->IsDouble());
   EXPECT_NEAR(750, current_time->GetAsDouble(), kTimeToleranceMilliseconds);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  CSSNumberish current_time;
-  animation->currentTime(current_time);
-  EXPECT_TRUE(current_time.IsDouble());
-  EXPECT_NEAR(750, current_time.GetAsDouble(), kTimeToleranceMilliseconds);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   EXPECT_NEAR(0.25, element_->GetComputedStyle()->Opacity(), kTolerance);
 
   // Compositor animation needs to restart and will have a new compositor group.

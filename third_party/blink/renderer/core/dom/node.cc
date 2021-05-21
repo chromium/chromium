@@ -29,8 +29,6 @@
 #include <algorithm>
 
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/node_or_string_or_trusted_script.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_root_node_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_node_string_trustedscript.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedscript.h"
@@ -766,7 +764,6 @@ Node* Node::appendChild(Node* new_child) {
   return appendChild(new_child, ASSERT_NO_EXCEPTION);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 static bool IsNodeInNodes(
     const Node* const node,
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes) {
@@ -776,25 +773,10 @@ static bool IsNodeInNodes(
   }
   return false;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-static bool IsNodeInNodes(
-    const Node* const node,
-    const HeapVector<NodeOrStringOrTrustedScript>& nodes) {
-  for (const NodeOrStringOrTrustedScript& node_or_string : nodes) {
-    if (node_or_string.IsNode() && node_or_string.GetAsNode() == node)
-      return true;
-  }
-  return false;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 static Node* FindViablePreviousSibling(
     const Node& node,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const HeapVector<NodeOrStringOrTrustedScript>& nodes
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 ) {
   for (Node* sibling = node.previousSibling(); sibling;
        sibling = sibling->previousSibling()) {
@@ -806,11 +788,7 @@ static Node* FindViablePreviousSibling(
 
 static Node* FindViableNextSibling(
     const Node& node,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const HeapVector<NodeOrStringOrTrustedScript>& nodes
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 ) {
   for (Node* sibling = node.nextSibling(); sibling;
        sibling = sibling->nextSibling()) {
@@ -820,7 +798,6 @@ static Node* FindViableNextSibling(
   return nullptr;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 static Node* NodeOrStringToNode(
     const V8UnionNodeOrStringOrTrustedScript* node_or_string,
     Document& document,
@@ -862,54 +839,11 @@ static Node* NodeOrStringToNode(
     return nullptr;
   return Text::Create(document, string_value);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-static Node* NodeOrStringToNode(
-    const NodeOrStringOrTrustedScript& node_or_string,
-    Document& document,
-    bool needs_trusted_types_check,
-    ExceptionState& exception_state) {
-  if (!needs_trusted_types_check) {
-    // Without trusted type checks, we simply extract the string from whatever
-    // constituent type we find.
-    if (node_or_string.IsNode())
-      return node_or_string.GetAsNode();
-    if (node_or_string.IsTrustedScript()) {
-      return Text::Create(document,
-                          node_or_string.GetAsTrustedScript()->toString());
-    }
-    return Text::Create(document, node_or_string.GetAsString());
-  }
-
-  // With trusted type checks, we can process trusted script or non-text nodes
-  // directly. Strings or text nodes need to be checked.
-  if (node_or_string.IsNode() && !node_or_string.GetAsNode()->IsTextNode())
-    return node_or_string.GetAsNode();
-
-  if (node_or_string.IsTrustedScript()) {
-    return Text::Create(document,
-                        node_or_string.GetAsTrustedScript()->toString());
-  }
-
-  String string_value = node_or_string.IsString()
-                            ? node_or_string.GetAsString()
-                            : node_or_string.GetAsNode()->textContent();
-
-  string_value = TrustedTypesCheckForScript(
-      string_value, document.GetExecutionContext(), exception_state);
-  if (exception_state.HadException())
-    return nullptr;
-  return Text::Create(document, string_value);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 // Returns nullptr if an exception was thrown.
 static Node* ConvertNodesIntoNode(
     const Node* parent,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const HeapVector<NodeOrStringOrTrustedScript>& nodes,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     Document& document,
     ExceptionState& exception_state) {
   bool needs_check = IsA<HTMLScriptElement>(parent) &&
@@ -932,11 +866,7 @@ static Node* ConvertNodesIntoNode(
 }
 
 void Node::Prepend(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const HeapVector<NodeOrStringOrTrustedScript>& nodes,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   auto* this_node = DynamicTo<ContainerNode>(this);
   if (!this_node) {
@@ -952,11 +882,7 @@ void Node::Prepend(
 }
 
 void Node::Append(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const HeapVector<NodeOrStringOrTrustedScript>& nodes,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   auto* this_node = DynamicTo<ContainerNode>(this);
   if (!this_node) {
@@ -972,11 +898,7 @@ void Node::Append(
 }
 
 void Node::Before(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const HeapVector<NodeOrStringOrTrustedScript>& nodes,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   Node* parent = parentNode();
   if (!parent)
@@ -1000,11 +922,7 @@ void Node::Before(
 }
 
 void Node::After(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const HeapVector<NodeOrStringOrTrustedScript>& nodes,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   Node* parent = parentNode();
   if (!parent)
@@ -1023,11 +941,7 @@ void Node::After(
 }
 
 void Node::ReplaceWith(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const HeapVector<NodeOrStringOrTrustedScript>& nodes,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   Node* parent = parentNode();
   if (!parent)
@@ -1053,11 +967,7 @@ void Node::ReplaceWith(
 
 // https://dom.spec.whatwg.org/#dom-parentnode-replacechildren
 void Node::ReplaceChildren(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const HeapVector<NodeOrStringOrTrustedScript>& nodes,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   auto* this_node = DynamicTo<ContainerNode>(this);
   if (!this_node) {
@@ -2120,8 +2030,6 @@ String Node::textContent(bool convert_brs_to_newlines) const {
   return content.ToString();
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
 V8UnionStringOrTrustedScript* Node::textContentForBinding() const {
   const String& value = textContent();
   if (value.IsNull())
@@ -2143,28 +2051,6 @@ void Node::setTextContentForBinding(const V8UnionStringOrTrustedScript* value,
 
   NOTREACHED();
 }
-
-#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
-void Node::textContentForBinding(StringOrTrustedScript& result) {
-  String value = textContent();
-  if (!value.IsNull())
-    result.SetString(value);
-}
-
-void Node::setTextContentForBinding(
-    const StringOrTrustedScript& string_or_trusted_script,
-    ExceptionState& exception_state) {
-  String value =
-      string_or_trusted_script.IsString()
-          ? string_or_trusted_script.GetAsString()
-          : string_or_trusted_script.IsTrustedScript()
-                ? string_or_trusted_script.GetAsTrustedScript()->toString()
-                : g_empty_string;
-  setTextContent(value);
-}
-
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void Node::setTextContent(const String& text) {
   switch (getNodeType()) {

@@ -28,7 +28,6 @@ class MessagePort;
 class ReadableByteStreamController;
 class ReadableStreamController;
 class ReadableStreamDefaultController;
-class ReadableStreamDefaultReaderOrReadableStreamBYOBReader;
 class ReadableStreamGetReaderOptions;
 class ReadableStreamTransferringOptimizer;
 class ReadableWritablePair;
@@ -125,29 +124,14 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   // https://streams.spec.whatwg.org/#rs-cancel
   ScriptPromise cancel(ScriptState*, ScriptValue reason, ExceptionState&);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8ReadableStreamReader* getReader(ScriptState* script_state,
                                     ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void getReader(
-      ScriptState*,
-      ReadableStreamDefaultReaderOrReadableStreamBYOBReader& return_value,
-      ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // https://streams.spec.whatwg.org/#rs-get-reader
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8ReadableStreamReader* getReader(
       ScriptState* script_state,
       const ReadableStreamGetReaderOptions* options,
       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void getReader(
-      ScriptState*,
-      ReadableStreamGetReaderOptions* options,
-      ReadableStreamDefaultReaderOrReadableStreamBYOBReader& return_value,
-      ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   ReadableStreamDefaultReader* GetDefaultReaderForTesting(ScriptState*,
                                                           ExceptionState&);

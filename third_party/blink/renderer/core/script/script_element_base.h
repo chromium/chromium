@@ -93,12 +93,7 @@ class CORE_EXPORT ScriptElementBase : public GarbageCollectedMixin {
   virtual Document& GetDocument() const = 0;
   virtual ExecutionContext* GetExecutionContext() const = 0;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   virtual V8HTMLOrSVGScriptElement* AsV8HTMLOrSVGScriptElement() = 0;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  virtual void SetScriptElementForBinding(
-      HTMLScriptElementOrSVGScriptElement&) = 0;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   virtual void DispatchLoadEvent() = 0;
   virtual void DispatchErrorEvent() = 0;

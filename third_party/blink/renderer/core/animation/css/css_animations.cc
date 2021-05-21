@@ -1044,14 +1044,8 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
 
     // Set the current time as the start time for retargeted transitions
     if (retargeted_compositor_transitions.Contains(property)) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       animation->setStartTime(element->GetDocument().Timeline().currentTime(),
                               ASSERT_NO_EXCEPTION);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      CSSNumberish current_time;
-      element->GetDocument().Timeline().currentTime(current_time);
-      animation->setStartTime(current_time);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     }
     animation->Update(kTimingUpdateOnDemand);
     running_transition->animation = animation;
@@ -1435,32 +1429,16 @@ scoped_refptr<const ComputedStyle> CSSAnimations::CalculateBeforeChangeStyle(
 
     // Sample animations and add to the interpolatzions map.
     for (Animation* animation : animations) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       V8CSSNumberish* current_time_numberish = animation->currentTime();
       if (!current_time_numberish)
         continue;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      CSSNumberish current_time_numberish;
-      animation->currentTime(current_time_numberish);
-      if (current_time_numberish.IsNull())
-        continue;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
         // CSSNumericValue is not yet supported, verify that it is not used
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       DCHECK(!current_time_numberish->IsCSSNumericValue());
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      DCHECK(!current_time_numberish.IsCSSNumericValue());
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
       absl::optional<AnimationTimeDelta> current_time =
           AnimationTimeDelta::FromMillisecondsD(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-              current_time_numberish->GetAsDouble()
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-              current_time_numberish.GetAsDouble()
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-          );
+              current_time_numberish->GetAsDouble());
 
       auto* effect = DynamicTo<KeyframeEffect>(animation->effect());
       if (!effect)

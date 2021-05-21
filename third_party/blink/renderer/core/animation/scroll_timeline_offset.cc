@@ -210,7 +210,6 @@ absl::optional<double> ScrollTimelineOffset::ResolveOffset(
   }
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 V8ScrollTimelineOffset* ScrollTimelineOffset::ToV8ScrollTimelineOffset() const {
   if (length_based_offset_) {
     return MakeGarbageCollected<V8ScrollTimelineOffset>(
@@ -222,23 +221,6 @@ V8ScrollTimelineOffset* ScrollTimelineOffset::ToV8ScrollTimelineOffset() const {
   return MakeGarbageCollected<V8ScrollTimelineOffset>(
       CSSKeywordValue::Create("auto"));
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-ScrollTimelineOffsetValue ScrollTimelineOffset::ToScrollTimelineOffsetValue()
-    const {
-  ScrollTimelineOffsetValue result;
-  if (length_based_offset_) {
-    result.SetCSSNumericValue(
-        CSSNumericValue::FromCSSValue(*length_based_offset_.Get()));
-  } else if (element_based_offset_) {
-    result.SetScrollTimelineElementBasedOffset(element_based_offset_);
-  } else {
-    // This is the default value (i.e., 'auto' value)
-    result.SetCSSKeywordValue(CSSKeywordValue::Create("auto"));
-  }
-
-  return result;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 bool ScrollTimelineOffset::operator==(const ScrollTimelineOffset& o) const {
   return DataEquivalent(length_based_offset_, o.length_based_offset_) &&

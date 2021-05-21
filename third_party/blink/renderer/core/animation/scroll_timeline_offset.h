@@ -54,11 +54,7 @@ class CORE_EXPORT ScrollTimelineOffset final
                                        double max_offset,
                                        double default_offset);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8ScrollTimelineOffset* ToV8ScrollTimelineOffset() const;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ScrollTimelineOffsetValue ToScrollTimelineOffsetValue() const;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool IsDefaultValue() const {
     return !length_based_offset_ && !element_based_offset_;
   }

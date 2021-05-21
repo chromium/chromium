@@ -75,11 +75,7 @@ SharedWorker::SharedWorker(ExecutionContext* context)
 SharedWorker* SharedWorker::Create(
     ExecutionContext* context,
     const String& url,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8UnionStringOrWorkerOptions* name_or_options,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const StringOrWorkerOptions& name_or_options,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
@@ -116,7 +112,6 @@ SharedWorker* SharedWorker::Create(
   }
 
   auto options = mojom::blink::WorkerOptions::New();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   switch (name_or_options->GetContentType()) {
     case V8UnionStringOrWorkerOptions::ContentType::kString:
       options->name = name_or_options->GetAsString();
@@ -135,24 +130,6 @@ SharedWorker* SharedWorker::Create(
       break;
     }
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  if (name_or_options.IsString()) {
-    options->name = name_or_options.GetAsString();
-  } else if (name_or_options.IsWorkerOptions()) {
-    WorkerOptions* worker_options = name_or_options.GetAsWorkerOptions();
-    options->name = worker_options->name();
-    absl::optional<mojom::blink::ScriptType> type_result =
-        Script::ParseScriptType(worker_options->type());
-    DCHECK(type_result);
-    options->type = type_result.value();
-    absl::optional<network::mojom::CredentialsMode> credentials_result =
-        Request::ParseCredentialsMode(worker_options->credentials());
-    DCHECK(credentials_result);
-    options->credentials = credentials_result.value();
-  } else {
-    NOTREACHED();
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   DCHECK(!options->name.IsNull());
   if (options->type == mojom::blink::ScriptType::kClassic)
     UseCounter::Count(window, WebFeature::kClassicSharedWorker);

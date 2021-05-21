@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_factory.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/file_or_usv_string_or_form_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_file_formdata_usvstring.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
@@ -195,7 +194,6 @@ class CustomElementFormDisabledCallbackReaction final
 
 // ----------------------------------------------------------------
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 class CustomElementFormStateRestoreCallbackReaction final
     : public CustomElementReaction {
  public:
@@ -223,35 +221,6 @@ class CustomElementFormStateRestoreCallbackReaction final
 
   DISALLOW_COPY_AND_ASSIGN(CustomElementFormStateRestoreCallbackReaction);
 };
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-class CustomElementFormStateRestoreCallbackReaction final
-    : public CustomElementReaction {
- public:
-  CustomElementFormStateRestoreCallbackReaction(
-      CustomElementDefinition& definition,
-      const FileOrUSVStringOrFormData& value,
-      const String& mode)
-      : CustomElementReaction(definition), value_(value), mode_(mode) {
-    DCHECK(definition.HasFormStateRestoreCallback());
-    DCHECK(mode == "restore" || mode == "autocomplete");
-  }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(value_);
-    CustomElementReaction::Trace(visitor);
-  }
-
- private:
-  void Invoke(Element& element) override {
-    definition_->RunFormStateRestoreCallback(element, value_, mode_);
-  }
-
-  FileOrUSVStringOrFormData value_;
-  String mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomElementFormStateRestoreCallbackReaction);
-};
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 // ----------------------------------------------------------------
 
@@ -309,7 +278,6 @@ CustomElementReaction& CustomElementReactionFactory::CreateFormDisabled(
       definition, is_disabled);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 CustomElementReaction& CustomElementReactionFactory::CreateFormStateRestore(
     CustomElementDefinition& definition,
     const V8ControlValue* value,
@@ -317,14 +285,5 @@ CustomElementReaction& CustomElementReactionFactory::CreateFormStateRestore(
   return *MakeGarbageCollected<CustomElementFormStateRestoreCallbackReaction>(
       definition, value, mode);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-CustomElementReaction& CustomElementReactionFactory::CreateFormStateRestore(
-    CustomElementDefinition& definition,
-    const FileOrUSVStringOrFormData& value,
-    const String& mode) {
-  return *MakeGarbageCollected<CustomElementFormStateRestoreCallbackReaction>(
-      definition, value, mode);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace blink

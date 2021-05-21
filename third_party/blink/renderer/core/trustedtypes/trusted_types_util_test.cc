@@ -6,8 +6,6 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_html_or_trusted_script_or_trusted_script_url.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedscript.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -86,11 +84,7 @@ void TrustedTypesCheckForScriptURLThrows(const String& string) {
 }
 
 void TrustedTypesCheckForScriptWorks(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8UnionStringOrTrustedScript* string_or_trusted_script,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const StringOrTrustedScript& string_or_trusted_script,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     String expected) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   LocalDOMWindow* window = dummy_page_holder->GetFrame().DomWindow();
@@ -109,13 +103,8 @@ TEST(TrustedTypesUtilTest, TrustedTypesCheckForHTML_String) {
 // TrustedTypesCheckForScript tests
 TEST(TrustedTypesUtilTest, TrustedTypesCheckForScript_TrustedScript) {
   auto* script = MakeGarbageCollected<TrustedScript>("A string");
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   auto* trusted_value =
       MakeGarbageCollected<V8UnionStringOrTrustedScript>(script);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  StringOrTrustedScript trusted_value =
-      StringOrTrustedScript::FromTrustedScript(script);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   TrustedTypesCheckForScriptWorks(trusted_value, "A string");
 }
 

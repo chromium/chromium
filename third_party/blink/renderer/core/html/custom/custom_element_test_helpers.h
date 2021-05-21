@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_TEST_HELPERS_H_
 
+#include <utility>
+
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -17,8 +19,6 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-
-#include <utility>
 
 namespace blink {
 
@@ -114,19 +114,11 @@ class TestCustomElementDefinition : public CustomElementDefinition {
     NOTREACHED() << "definition does not have disabledStateChangedCallback";
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void RunFormStateRestoreCallback(Element& element,
                                    const V8ControlValue* value,
                                    const String& mode) override {
     NOTREACHED() << "definition does not have restoreValueCallback";
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void RunFormStateRestoreCallback(Element& element,
-                                   const FileOrUSVStringOrFormData& value,
-                                   const String& mode) override {
-    NOTREACHED() << "definition does not have restoreValueCallback";
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   DISALLOW_COPY_AND_ASSIGN(TestCustomElementDefinition);
 };

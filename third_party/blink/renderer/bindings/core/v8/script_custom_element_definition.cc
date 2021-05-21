@@ -327,7 +327,6 @@ void ScriptCustomElementDefinition::RunFormDisabledCallback(Element& element,
   form_disabled_callback_->InvokeAndReportException(&element, is_disabled);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void ScriptCustomElementDefinition::RunFormStateRestoreCallback(
     Element& element,
     const V8ControlValue* value,
@@ -337,16 +336,5 @@ void ScriptCustomElementDefinition::RunFormStateRestoreCallback(
   form_state_restore_callback_->InvokeAndReportException(
       &element, value, V8FormStateRestoreMode::Create(mode).value());
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-void ScriptCustomElementDefinition::RunFormStateRestoreCallback(
-    Element& element,
-    const FileOrUSVStringOrFormData& value,
-    const String& mode) {
-  if (!form_state_restore_callback_)
-    return;
-  form_state_restore_callback_->InvokeAndReportException(
-      &element, value, V8FormStateRestoreMode::Create(mode).value());
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace blink

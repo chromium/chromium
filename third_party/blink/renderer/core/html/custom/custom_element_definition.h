@@ -23,7 +23,6 @@ namespace blink {
 class Document;
 class Element;
 class ExceptionState;
-class FileOrUSVStringOrFormData;
 class HTMLElement;
 class HTMLFormElement;
 class QualifiedName;
@@ -94,16 +93,9 @@ class CORE_EXPORT CustomElementDefinition
                                          HTMLFormElement* nullable_form) = 0;
   virtual void RunFormResetCallback(Element& element) = 0;
   virtual void RunFormDisabledCallback(Element& element, bool is_disabled) = 0;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   virtual void RunFormStateRestoreCallback(Element& element,
                                            const V8ControlValue* value,
                                            const String& mode) = 0;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  virtual void RunFormStateRestoreCallback(
-      Element& element,
-      const FileOrUSVStringOrFormData& value,
-      const String& mode) = 0;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void EnqueueUpgradeReaction(Element&);
   void EnqueueConnectedCallback(Element&);

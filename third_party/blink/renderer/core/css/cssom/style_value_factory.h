@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_STYLE_VALUE_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_STYLE_VALUE_FACTORY_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/css_style_value_or_string.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -33,19 +32,11 @@ class CORE_EXPORT StyleValueFactory {
   static CSSStyleValueVector CssValueToStyleValueVector(const CSSPropertyName&,
                                                         const CSSValue&);
   // Returns an empty vector on error conditions.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static CSSStyleValueVector CoerceStyleValuesOrStrings(
       const CSSProperty& property,
       const AtomicString& custom_property_name,
       const HeapVector<Member<V8UnionCSSStyleValueOrString>>& values,
       const ExecutionContext& execution_context);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static CSSStyleValueVector CoerceStyleValuesOrStrings(
-      const CSSProperty& property,
-      const AtomicString& custom_property_name,
-      const HeapVector<CSSStyleValueOrString>& values,
-      const ExecutionContext&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   // Reify a CSSStyleValue without the context of a CSS property. For most
   // CSSValues, this will result in a CSSUnsupportedStyleValue. Note that the
   // CSSUnsupportedStyleValue returned from this function (unlike regular

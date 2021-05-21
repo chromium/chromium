@@ -35,20 +35,12 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   AnimationTimeline(Document*);
   ~AnimationTimeline() override = default;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   virtual V8CSSNumberish* currentTime();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  virtual void currentTime(CSSNumberish&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   absl::optional<AnimationTimeDelta> CurrentTime();
   absl::optional<double> CurrentTimeMilliseconds();
   absl::optional<double> CurrentTimeSeconds();
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   virtual V8CSSNumberish* duration();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  virtual void duration(CSSNumberish&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   String phase();
   TimelinePhase Phase() { return CurrentPhaseAndTime().phase; }

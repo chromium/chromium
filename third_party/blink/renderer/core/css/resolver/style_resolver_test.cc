@@ -275,12 +275,8 @@ TEST_F(StyleResolverTest,
   EXPECT_EQ("20px", ComputedValue("font-size", *StyleForId("target")));
 
   // Bump the animation time to ensure a transition reversal.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   transition->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(50),
                              ASSERT_NO_EXCEPTION);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  transition->setCurrentTime(CSSNumberish::FromDouble(50));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   transition->pause();
   UpdateAllLifecyclePhasesForTest();
   const String before_reversal_font_size =
@@ -324,12 +320,8 @@ TEST_F(StyleResolverTest, NonCachableStyleCheckDoesNotAffectBaseComputedStyle) {
   EXPECT_TRUE(transition);
 
   // Advance to the midpoint of the transition.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   transition->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(500),
                              ASSERT_NO_EXCEPTION);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  transition->setCurrentTime(CSSNumberish::FromDouble(500));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ("rgb(0, 64, 0)", ComputedValue("color", *StyleForId("target")));
   EXPECT_TRUE(element_animations->BaseComputedStyle());

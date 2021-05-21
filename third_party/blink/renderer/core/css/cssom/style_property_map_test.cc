@@ -19,7 +19,6 @@ class StylePropertyMapTest : public PageTestBase {};
 TEST_F(StylePropertyMapTest, SetRevertWithFeatureEnabled) {
   DummyExceptionStateForTesting exception_state;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   HeapVector<Member<V8UnionCSSStyleValueOrString>> revert_string;
   revert_string.push_back(
       MakeGarbageCollected<V8UnionCSSStyleValueOrString>(" revert"));
@@ -28,14 +27,6 @@ TEST_F(StylePropertyMapTest, SetRevertWithFeatureEnabled) {
   revert_style_value.push_back(
       MakeGarbageCollected<V8UnionCSSStyleValueOrString>(
           CSSKeywordValue::Create("revert", exception_state)));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  HeapVector<CSSStyleValueOrString> revert_string;
-  revert_string.push_back(CSSStyleValueOrString::FromString(" revert"));
-
-  HeapVector<CSSStyleValueOrString> revert_style_value;
-  revert_style_value.push_back(CSSStyleValueOrString::FromCSSStyleValue(
-      CSSKeywordValue::Create("revert", exception_state)));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   auto* map =
       MakeGarbageCollected<InlineStylePropertyMap>(GetDocument().body());
@@ -66,14 +57,9 @@ TEST_F(StylePropertyMapTest, SetOverflowClipString) {
 
   DummyExceptionStateForTesting exception_state;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   HeapVector<Member<V8UnionCSSStyleValueOrString>> clip_string;
   clip_string.push_back(
       MakeGarbageCollected<V8UnionCSSStyleValueOrString>(" clip"));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  HeapVector<CSSStyleValueOrString> clip_string;
-  clip_string.push_back(CSSStyleValueOrString::FromString(" clip"));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   auto* map =
       MakeGarbageCollected<InlineStylePropertyMap>(GetDocument().body());
@@ -95,15 +81,9 @@ TEST_F(StylePropertyMapTest, SetOverflowClipStyleValue) {
 
   DummyExceptionStateForTesting exception_state;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   HeapVector<Member<V8UnionCSSStyleValueOrString>> clip_style_value;
   clip_style_value.push_back(MakeGarbageCollected<V8UnionCSSStyleValueOrString>(
       CSSKeywordValue::Create("clip", exception_state)));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  HeapVector<CSSStyleValueOrString> clip_style_value;
-  clip_style_value.push_back(CSSStyleValueOrString::FromCSSStyleValue(
-      CSSKeywordValue::Create("clip", exception_state)));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   auto* map =
       MakeGarbageCollected<InlineStylePropertyMap>(GetDocument().body());

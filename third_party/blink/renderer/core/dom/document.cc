@@ -73,13 +73,11 @@
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
-#include "third_party/blink/renderer/bindings/core/v8/html_script_element_or_svg_script_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_element_creation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_creation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_registration_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_interest_cohort.h"
@@ -1046,7 +1044,6 @@ Element* Document::CreateElementForBinding(const AtomicString& name,
       QualifiedName(g_null_atom, name, g_null_atom), this);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 AtomicString GetTypeExtension(
     Document* document,
     const V8UnionElementCreationOptionsOrString* string_or_options) {
@@ -1069,48 +1066,15 @@ AtomicString GetTypeExtension(
   NOTREACHED();
   return AtomicString();
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-AtomicString GetTypeExtension(
-    Document* document,
-    const StringOrElementCreationOptions& string_or_options) {
-  if (string_or_options.IsNull())
-    return AtomicString();
-
-  if (string_or_options.IsString()) {
-    UseCounter::Count(document,
-                      WebFeature::kDocumentCreateElement2ndArgStringHandling);
-    return AtomicString(string_or_options.GetAsString());
-  }
-
-  if (string_or_options.IsElementCreationOptions()) {
-    const ElementCreationOptions& options =
-        *string_or_options.GetAsElementCreationOptions();
-    if (options.hasIs())
-      return AtomicString(options.is());
-  }
-
-  return AtomicString();
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 // https://dom.spec.whatwg.org/#dom-document-createelement
 Element* Document::CreateElementForBinding(
     const AtomicString& local_name,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8UnionElementCreationOptionsOrString* string_or_options,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const StringOrElementCreationOptions& string_or_options,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (!string_or_options) {
     return CreateElementForBinding(local_name, exception_state);
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  if (string_or_options.IsNull()) {
-    return CreateElementForBinding(local_name, exception_state);
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // 1. If localName does not match Name production, throw InvalidCharacterError
   if (!IsValidElementName(this, local_name)) {
@@ -1127,22 +1091,13 @@ Element* Document::CreateElementForBinding(
                            ? html_names::xhtmlNamespaceURI
                            : g_null_atom);
 
-#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  bool create_builtin = string_or_options.IsElementCreationOptions() ||
-                        string_or_options.IsString();
-#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
   // 3.
   const AtomicString& is = GetTypeExtension(this, string_or_options);
 
   // 5. Let element be the result of creating an element given ...
   Element* element =
       CreateElement(q_name, CreateElementFlags::ByCreateElement(),
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                     is
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                    create_builtin ? is : g_null_atom
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       );
 
   return element;
@@ -1188,29 +1143,15 @@ Element* Document::createElementNS(const AtomicString& namespace_uri,
 Element* Document::createElementNS(
     const AtomicString& namespace_uri,
     const AtomicString& qualified_name,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8UnionElementCreationOptionsOrString* string_or_options,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const StringOrElementCreationOptions& string_or_options,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   DCHECK(string_or_options);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  if (string_or_options.IsNull())
-    return createElementNS(namespace_uri, qualified_name, exception_state);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // 1. Validate and extract
   QualifiedName q_name(
       CreateQualifiedName(namespace_uri, qualified_name, exception_state));
   if (q_name == QualifiedName::Null())
     return nullptr;
-
-#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  bool create_builtin = string_or_options.IsElementCreationOptions() ||
-                        string_or_options.IsString();
-#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // 2.
   const AtomicString& is = GetTypeExtension(this, string_or_options);
@@ -1226,11 +1167,7 @@ Element* Document::createElementNS(
   // 3. Let element be the result of creating an element
   Element* element =
       CreateElement(q_name, CreateElementFlags::ByCreateElement(),
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                     is
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                    create_builtin ? is : g_null_atom
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       );
 
   return element;
@@ -6335,7 +6272,6 @@ KURL Document::OpenSearchDescriptionURL() {
   return KURL();
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 V8HTMLOrSVGScriptElement* Document::currentScriptForBinding() const {
   if (current_script_stack_.IsEmpty())
     return nullptr;
@@ -6344,15 +6280,6 @@ V8HTMLOrSVGScriptElement* Document::currentScriptForBinding() const {
     return nullptr;
   return script_element_base->AsV8HTMLOrSVGScriptElement();
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-void Document::currentScriptForBinding(
-    HTMLScriptElementOrSVGScriptElement& script_element) const {
-  if (!current_script_stack_.IsEmpty()) {
-    if (ScriptElementBase* script_element_base = current_script_stack_.back())
-      script_element_base->SetScriptElementForBinding(script_element);
-  }
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void Document::PushCurrentScript(ScriptElementBase* new_current_script) {
   current_script_stack_.push_back(new_current_script);

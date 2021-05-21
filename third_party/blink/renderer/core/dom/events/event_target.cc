@@ -35,8 +35,6 @@
 
 #include "base/format_macros.h"
 #include "third_party/blink/public/web/web_settings.h"
-#include "third_party/blink/renderer/bindings/core/v8/add_event_listener_options_or_boolean.h"
-#include "third_party/blink/renderer/bindings/core/v8/event_listener_options_or_boolean.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
@@ -447,7 +445,6 @@ bool EventTarget::addEventListener(const AtomicString& event_type,
   return addEventListener(event_type, event_listener);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 bool EventTarget::addEventListener(
     const AtomicString& event_type,
     V8EventListener* listener,
@@ -481,37 +478,6 @@ bool EventTarget::addEventListener(
   NOTREACHED();
   return false;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-bool EventTarget::addEventListener(
-    const AtomicString& event_type,
-    V8EventListener* listener,
-    const AddEventListenerOptionsOrBoolean& options_union) {
-  EventListener* event_listener = JSEventListener::CreateOrNull(listener);
-
-  if (options_union.IsBoolean()) {
-    return addEventListener(event_type, event_listener,
-                            options_union.GetAsBoolean());
-  }
-
-  if (options_union.IsAddEventListenerOptions()) {
-    auto* resolved_options =
-        MakeGarbageCollected<AddEventListenerOptionsResolved>();
-    AddEventListenerOptions* options =
-        options_union.GetAsAddEventListenerOptions();
-    if (options->hasPassive())
-      resolved_options->setPassive(options->passive());
-    if (options->hasOnce())
-      resolved_options->setOnce(options->once());
-    if (options->hasCapture())
-      resolved_options->setCapture(options->capture());
-    if (options->hasSignal())
-      resolved_options->setSignal(options->signal());
-    return addEventListener(event_type, event_listener, resolved_options);
-  }
-
-  return addEventListener(event_type, event_listener);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 bool EventTarget::addEventListener(const AtomicString& event_type,
                                    EventListener* listener,
@@ -636,7 +602,6 @@ bool EventTarget::removeEventListener(const AtomicString& event_type,
   return removeEventListener(event_type, event_listener);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 bool EventTarget::removeEventListener(
     const AtomicString& event_type,
     V8EventListener* listener,
@@ -660,26 +625,6 @@ bool EventTarget::removeEventListener(
   NOTREACHED();
   return false;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-bool EventTarget::removeEventListener(
-    const AtomicString& event_type,
-    V8EventListener* listener,
-    const EventListenerOptionsOrBoolean& options_union) {
-  EventListener* event_listener = JSEventListener::CreateOrNull(listener);
-
-  if (options_union.IsBoolean()) {
-    return removeEventListener(event_type, event_listener,
-                               options_union.GetAsBoolean());
-  }
-
-  if (options_union.IsEventListenerOptions()) {
-    EventListenerOptions* options = options_union.GetAsEventListenerOptions();
-    return removeEventListener(event_type, event_listener, options);
-  }
-
-  return removeEventListener(event_type, event_listener);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 bool EventTarget::removeEventListener(const AtomicString& event_type,
                                       const EventListener* listener,

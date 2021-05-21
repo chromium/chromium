@@ -711,7 +711,6 @@ Request* Request::CreateRequestWithRequestOrString(
   return r;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 Request* Request::Create(ScriptState* script_state,
                          const V8RequestInfo* input,
                          const RequestInit* init,
@@ -729,17 +728,6 @@ Request* Request::Create(ScriptState* script_state,
   NOTREACHED();
   return nullptr;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-Request* Request::Create(ScriptState* script_state,
-                         const RequestInfo& input,
-                         const RequestInit* init,
-                         ExceptionState& exception_state) {
-  DCHECK(!input.IsNull());
-  if (input.IsUSVString())
-    return Create(script_state, input.GetAsUSVString(), init, exception_state);
-  return Create(script_state, input.GetAsRequest(), init, exception_state);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 Request* Request::Create(ScriptState* script_state,
                          const String& input,

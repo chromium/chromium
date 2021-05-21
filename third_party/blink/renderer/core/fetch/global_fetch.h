@@ -27,11 +27,7 @@ class CORE_EXPORT GlobalFetch {
     virtual ~ScopedFetcher();
 
     virtual ScriptPromise Fetch(ScriptState*,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                 const V8RequestInfo*,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                const RequestInfo&,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                 const RequestInit*,
                                 ExceptionState&) = 0;
 
@@ -45,7 +41,6 @@ class CORE_EXPORT GlobalFetch {
     void Trace(Visitor*) const override;
   };
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static ScriptPromise fetch(ScriptState* script_state,
                              LocalDOMWindow& window,
                              const V8RequestInfo* input,
@@ -56,18 +51,6 @@ class CORE_EXPORT GlobalFetch {
                              const V8RequestInfo* input,
                              const RequestInit* init,
                              ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static ScriptPromise fetch(ScriptState*,
-                             LocalDOMWindow&,
-                             const RequestInfo&,
-                             const RequestInit*,
-                             ExceptionState&);
-  static ScriptPromise fetch(ScriptState*,
-                             WorkerGlobalScope&,
-                             const RequestInfo&,
-                             const RequestInit*,
-                             ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 };
 
 }  // namespace blink

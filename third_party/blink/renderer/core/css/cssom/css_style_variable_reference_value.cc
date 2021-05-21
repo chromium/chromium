@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/cssom/css_style_variable_reference_value.h"
 
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+
 namespace blink {
 
 CSSStyleVariableReferenceValue* CSSStyleVariableReferenceValue::Create(

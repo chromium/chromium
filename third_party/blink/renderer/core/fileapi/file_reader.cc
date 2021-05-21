@@ -33,7 +33,6 @@
 #include "base/auto_reset.h"
 #include "base/timer/elapsed_timer.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_array_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_string.h"
 #include "third_party/blink/renderer/core/events/progress_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -359,7 +358,6 @@ void FileReader::abort() {
   ThrottlingController::FinishReader(GetExecutionContext(), this, final_step);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 V8UnionArrayBufferOrString* FileReader::result() const {
   if (error_ || !loader_)
     return nullptr;
@@ -378,24 +376,6 @@ V8UnionArrayBufferOrString* FileReader::result() const {
   return MakeGarbageCollected<V8UnionArrayBufferOrString>(
       loader_->StringResult());
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-void FileReader::result(StringOrArrayBuffer& result_attribute) const {
-  if (error_ || !loader_)
-    return;
-
-  // Only set the result after |loader_| has finished loading which means that
-  // FileReader::DidFinishLoading() has also been called. This ensures that the
-  // result is not available until just before the kLoad event is fired.
-  if (!loader_->HasFinishedLoading() || state_ != ReadyState::kDone) {
-    return;
-  }
-
-  if (read_type_ == FileReaderLoader::kReadAsArrayBuffer)
-    result_attribute.SetArrayBuffer(loader_->ArrayBufferResult());
-  else
-    result_attribute.SetString(loader_->StringResult());
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void FileReader::Terminate() {
   if (loader_) {

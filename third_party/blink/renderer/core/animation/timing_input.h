@@ -13,8 +13,6 @@ namespace blink {
 
 class Document;
 class ExceptionState;
-class UnrestrictedDoubleOrKeyframeAnimationOptions;
-class UnrestrictedDoubleOrKeyframeEffectOptions;
 class V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble;
 class V8UnionKeyframeEffectOptionsOrUnrestrictedDouble;
 
@@ -26,31 +24,19 @@ class CORE_EXPORT TimingInput {
   // the 'options' parameter into timing information.
   //
   // https://drafts.csswg.org/web-animations-1/#dom-keyframeeffect-keyframeeffect
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static Timing Convert(
       const V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* options,
       Document* document,
       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static Timing Convert(const UnrestrictedDoubleOrKeyframeEffectOptions&,
-                        Document*,
-                        ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // Implements step 2 of the Animatable::animate() method, converting the
   // 'options' parameter into timing information.
   //
   // https://drafts.csswg.org/web-animations-1/#dom-animatable-animate
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static Timing Convert(
       const V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble* options,
       Document* document,
       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static Timing Convert(const UnrestrictedDoubleOrKeyframeAnimationOptions&,
-                        Document*,
-                        ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // Implements the procedure to 'update the timing properties of an animation
   // effect'.

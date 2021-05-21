@@ -331,13 +331,7 @@ blink::Animation* InspectorAnimationAgent::AnimationClone(
     id_to_animation_clone_.Set(id, clone);
     id_to_animation_.Set(String::Number(clone->SequenceNumber()), clone);
     clone->play();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     clone->setStartTime(animation->startTime(), ASSERT_NO_EXCEPTION);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    CSSNumberish start_time;
-    animation->startTime(start_time);
-    clone->setStartTime(start_time);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
     animation->SetEffectSuppressed(true);
   }

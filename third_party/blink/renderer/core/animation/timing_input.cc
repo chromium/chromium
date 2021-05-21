@@ -4,9 +4,8 @@
 
 #include "third_party/blink/renderer/core/animation/timing_input.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/unrestricted_double_or_keyframe_animation_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/unrestricted_double_or_keyframe_effect_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_effect_timing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_animation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_effect_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeanimationoptions_unrestricteddouble.h"
@@ -17,6 +16,7 @@
 
 namespace blink {
 namespace {
+
 Timing::PlaybackDirection ConvertPlaybackDirection(const String& direction) {
   if (direction == "reverse")
     return Timing::PlaybackDirection::REVERSE;
@@ -59,7 +59,6 @@ bool UpdateValueIfChanged(V& lhs, const V& rhs) {
 
 }  // namespace
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 Timing TimingInput::Convert(
     const V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* options,
     Document* document,
@@ -89,34 +88,7 @@ Timing TimingInput::Convert(
   NOTREACHED();
   return Timing();
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-Timing TimingInput::Convert(
-    const UnrestrictedDoubleOrKeyframeEffectOptions& options,
-    Document* document,
-    ExceptionState& exception_state) {
-  if (options.IsNull()) {
-    return Timing();
-  }
 
-  if (options.IsKeyframeEffectOptions()) {
-    return ConvertEffectTiming(options.GetAsKeyframeEffectOptions(), document,
-                               exception_state);
-  }
-
-  DCHECK(options.IsUnrestrictedDouble());
-
-  // https://drafts.csswg.org/web-animations-1/#dom-keyframeeffect-keyframeeffect
-  // If options is a double,
-  //   Let timing input be a new EffectTiming object with all members set to
-  //   their default values and duration set to options.
-  EffectTiming* timing_input = EffectTiming::Create();
-  timing_input->setDuration(UnrestrictedDoubleOrString::FromUnrestrictedDouble(
-      options.GetAsUnrestrictedDouble()));
-  return ConvertEffectTiming(timing_input, document, exception_state);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 Timing TimingInput::Convert(
     const V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble* options,
     Document* document,
@@ -146,31 +118,6 @@ Timing TimingInput::Convert(
   NOTREACHED();
   return Timing();
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-Timing TimingInput::Convert(
-    const UnrestrictedDoubleOrKeyframeAnimationOptions& options,
-    Document* document,
-    ExceptionState& exception_state) {
-  if (options.IsNull())
-    return Timing();
-
-  if (options.IsKeyframeAnimationOptions()) {
-    return ConvertEffectTiming(options.GetAsKeyframeAnimationOptions(),
-                               document, exception_state);
-  }
-
-  DCHECK(options.IsUnrestrictedDouble());
-
-  // https://drafts.csswg.org/web-animations-1/#dom-keyframeeffect-keyframeeffect
-  // If options is a double,
-  //   Let timing input be a new EffectTiming object with all members set to
-  //   their default values and duration set to options.
-  EffectTiming* timing_input = EffectTiming::Create();
-  timing_input->setDuration(UnrestrictedDoubleOrString::FromUnrestrictedDouble(
-      options.GetAsUnrestrictedDouble()));
-  return ConvertEffectTiming(timing_input, document, exception_state);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 template <class InputTiming>
 bool TimingInput::Update(Timing& timing,

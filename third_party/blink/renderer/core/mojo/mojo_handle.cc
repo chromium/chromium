@@ -8,7 +8,6 @@
 #include "mojo/public/c/system/message_pipe.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_create_shared_buffer_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_discard_data_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_duplicate_buffer_handle_options.h"
@@ -52,11 +51,7 @@ MojoWatcher* MojoHandle::watch(ScriptState* script_state,
 }
 
 MojoResult MojoHandle::writeMessage(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8BufferSource* buffer,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    ArrayBufferOrArrayBufferView& buffer,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<Member<MojoHandle>>& handles) {
   Vector<mojo::ScopedHandle, kHandleVectorInlineCapacity> scoped_handles;
   scoped_handles.ReserveCapacity(handles.size());
@@ -72,7 +67,6 @@ MojoResult MojoHandle::writeMessage(
 
   const void* bytes = nullptr;
   size_t num_bytes = 0;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   switch (buffer->GetContentType()) {
     case V8BufferSource::ContentType::kArrayBuffer: {
       DOMArrayBuffer* array = buffer->GetAsArrayBuffer();
@@ -87,17 +81,6 @@ MojoResult MojoHandle::writeMessage(
       break;
     }
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  if (buffer.IsArrayBuffer()) {
-    DOMArrayBuffer* array = buffer.GetAsArrayBuffer();
-    bytes = array->Data();
-    num_bytes = array->ByteLength();
-  } else {
-    DOMArrayBufferView* view = buffer.GetAsArrayBufferView().Get();
-    bytes = view->BaseAddress();
-    num_bytes = view->byteLength();
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   auto message = mojo::Message(
       base::make_span(static_cast<const uint8_t*>(bytes), num_bytes),
@@ -163,11 +146,7 @@ MojoReadMessageResult* MojoHandle::readMessage(
 }
 
 MojoWriteDataResult* MojoHandle::writeData(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8BufferSource* buffer,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const ArrayBufferOrArrayBufferView& buffer,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const MojoWriteDataOptions* options_dict) {
   MojoWriteDataResult* result_dict = MojoWriteDataResult::Create();
 
@@ -177,7 +156,6 @@ MojoWriteDataResult* MojoHandle::writeData(
 
   const void* elements = nullptr;
   base::CheckedNumeric<uint32_t> checked_num_bytes;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   switch (buffer->GetContentType()) {
     case V8BufferSource::ContentType::kArrayBuffer: {
       DOMArrayBuffer* array = buffer->GetAsArrayBuffer();
@@ -192,17 +170,6 @@ MojoWriteDataResult* MojoHandle::writeData(
       break;
     }
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  if (buffer.IsArrayBuffer()) {
-    DOMArrayBuffer* array = buffer.GetAsArrayBuffer();
-    elements = array->Data();
-    checked_num_bytes = array->ByteLength();
-  } else {
-    DOMArrayBufferView* view = buffer.GetAsArrayBufferView().Get();
-    elements = view->BaseAddress();
-    checked_num_bytes = view->byteLength();
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   ::MojoWriteDataOptions options;
   options.struct_size = sizeof(options);
@@ -249,11 +216,7 @@ MojoReadDataResult* MojoHandle::discardData(
 }
 
 MojoReadDataResult* MojoHandle::readData(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8BufferSource* buffer,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    ArrayBufferOrArrayBufferView& buffer,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const MojoReadDataOptions* options_dict) const {
   MojoReadDataResult* result_dict = MojoReadDataResult::Create();
   MojoReadDataFlags flags = MOJO_READ_DATA_FLAG_NONE;
@@ -264,7 +227,6 @@ MojoReadDataResult* MojoHandle::readData(
 
   void* elements = nullptr;
   base::CheckedNumeric<uint32_t> checked_num_bytes;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   switch (buffer->GetContentType()) {
     case V8BufferSource::ContentType::kArrayBuffer: {
       DOMArrayBuffer* array = buffer->GetAsArrayBuffer();
@@ -279,17 +241,6 @@ MojoReadDataResult* MojoHandle::readData(
       break;
     }
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  if (buffer.IsArrayBuffer()) {
-    DOMArrayBuffer* array = buffer.GetAsArrayBuffer();
-    elements = array->Data();
-    checked_num_bytes = array->ByteLength();
-  } else {
-    DOMArrayBufferView* view = buffer.GetAsArrayBufferView().Get();
-    elements = view->BaseAddress();
-    checked_num_bytes = view->byteLength();
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   ::MojoReadDataOptions options;
   options.struct_size = sizeof(options);

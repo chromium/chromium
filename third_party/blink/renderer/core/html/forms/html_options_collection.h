@@ -32,8 +32,6 @@
 namespace blink {
 
 class ExceptionState;
-class HTMLElementOrLong;
-class HTMLOptionElementOrHTMLOptGroupElement;
 class V8UnionHTMLElementOrLong;
 class V8UnionHTMLOptGroupElementOrHTMLOptionElement;
 
@@ -48,15 +46,9 @@ class HTMLOptionsCollection final : public HTMLCollection {
     return To<HTMLOptionElement>(HTMLCollection::item(offset));
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void add(const V8UnionHTMLOptGroupElementOrHTMLOptionElement* element,
            const V8UnionHTMLElementOrLong* before,
            ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void add(const HTMLOptionElementOrHTMLOptGroupElement&,
-           const HTMLElementOrLong&,
-           ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void remove(int index);
 
   int selectedIndex() const;

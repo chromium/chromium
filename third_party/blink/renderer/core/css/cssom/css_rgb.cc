@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
 namespace blink {
@@ -27,17 +28,10 @@ CSSRGB::CSSRGB(CSSNumericValue* r,
     : r_(r), g_(g), b_(b), alpha_(alpha) {}
 
 CSSRGB* CSSRGB::Create(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8CSSNumberish* red,
     const V8CSSNumberish* green,
     const V8CSSNumberish* blue,
     const V8CSSNumberish* alpha,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const CSSNumberish& red,
-    const CSSNumberish& green,
-    const CSSNumberish& blue,
-    const CSSNumberish& alpha,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   CSSNumericValue* r;
   CSSNumericValue* g;
@@ -57,8 +51,6 @@ CSSRGB* CSSRGB::Create(
   return MakeGarbageCollected<CSSRGB>(r, g, b, a);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
 V8CSSNumberish* CSSRGB::r() const {
   return MakeGarbageCollected<V8CSSNumberish>(r_);
 }
@@ -75,14 +67,8 @@ V8CSSNumberish* CSSRGB::alpha() const {
   return MakeGarbageCollected<V8CSSNumberish>(alpha_);
 }
 
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
 void CSSRGB::setR(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8CSSNumberish* red,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const CSSNumberish& red,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   if (auto* value = ToNumberOrPercentage(red)) {
     r_ = value;
@@ -93,11 +79,7 @@ void CSSRGB::setR(
 }
 
 void CSSRGB::setG(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8CSSNumberish* green,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const CSSNumberish& green,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   if (auto* value = ToNumberOrPercentage(green)) {
     g_ = value;
@@ -108,11 +90,7 @@ void CSSRGB::setG(
 }
 
 void CSSRGB::setB(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8CSSNumberish* blue,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const CSSNumberish& blue,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   if (auto* value = ToNumberOrPercentage(blue)) {
     b_ = value;
@@ -123,11 +101,7 @@ void CSSRGB::setB(
 }
 
 void CSSRGB::setAlpha(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8CSSNumberish* alpha,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const CSSNumberish& alpha,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   if (auto* value = ToPercentage(alpha))
     alpha_ = value;

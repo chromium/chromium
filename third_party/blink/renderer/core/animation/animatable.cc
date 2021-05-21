@@ -4,9 +4,8 @@
 
 #include "third_party/blink/renderer/core/animation/animatable.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/unrestricted_double_or_keyframe_animation_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/unrestricted_double_or_keyframe_effect_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_animations_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_animation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeanimationoptions_unrestricteddouble.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeeffectoptions_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
@@ -45,7 +44,6 @@ void ReportPermissionsPolicyViolationsIfNecessary(
   }
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* CoerceEffectOptions(
     const V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble* options) {
   switch (options->GetContentType()) {
@@ -63,18 +61,6 @@ V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* CoerceEffectOptions(
   NOTREACHED();
   return nullptr;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-UnrestrictedDoubleOrKeyframeEffectOptions CoerceEffectOptions(
-    UnrestrictedDoubleOrKeyframeAnimationOptions options) {
-  if (options.IsKeyframeAnimationOptions()) {
-    return UnrestrictedDoubleOrKeyframeEffectOptions::FromKeyframeEffectOptions(
-        options.GetAsKeyframeAnimationOptions());
-  } else {
-    return UnrestrictedDoubleOrKeyframeEffectOptions::FromUnrestrictedDouble(
-        options.GetAsUnrestrictedDouble());
-  }
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace
 
@@ -82,11 +68,7 @@ UnrestrictedDoubleOrKeyframeEffectOptions CoerceEffectOptions(
 Animation* Animatable::animate(
     ScriptState* script_state,
     const ScriptValue& keyframes,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble* options,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const UnrestrictedDoubleOrKeyframeAnimationOptions& options,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid())
     return nullptr;
@@ -106,22 +88,12 @@ Animation* Animatable::animate(
 
   ReportPermissionsPolicyViolationsIfNecessary(*element->GetExecutionContext(),
                                                *effect->Model());
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (!options->IsKeyframeAnimationOptions())
     return element->GetDocument().Timeline().Play(effect);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  if (!options.IsKeyframeAnimationOptions())
-    return element->GetDocument().Timeline().Play(effect);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   Animation* animation;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   const KeyframeAnimationOptions* options_dict =
       options->GetAsKeyframeAnimationOptions();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  const KeyframeAnimationOptions* options_dict =
-      options.GetAsKeyframeAnimationOptions();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (!options_dict->hasTimeline()) {
     animation = element->GetDocument().Timeline().Play(effect);
   } else if (AnimationTimeline* timeline = options_dict->timeline()) {
