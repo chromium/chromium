@@ -86,6 +86,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void FormTextFieldFocusChange(bool in_focus) override;
   SkColor GetBackgroundColor() override;
   void SetIsSelecting(bool is_selecting) override;
+  void EnteredEditMode() override;
   void DocumentFocusChanged(bool document_has_focus) override;
 
   // PaintManager::Client
@@ -250,6 +251,10 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // used (i.e. can't copy/print). `content_restrictions` should have its bits
   // set by `chrome_pdf::ContentRestriction` enum values.
   virtual void SetContentRestrictions(int content_restrictions) = 0;
+
+  // Informs the embedder whether the plugin can handle save commands
+  // internally.
+  virtual void SetPluginCanSave(bool can_save) = 0;
 
   // Sends start/stop loading notifications to the plugin's render frame.
   // TODO(crbug.com/702993): Evaluate whether these methods are needed when the

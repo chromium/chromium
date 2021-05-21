@@ -361,6 +361,15 @@ void PdfViewPluginBase::SetIsSelecting(bool is_selecting) {
   SendMessage(std::move(message));
 }
 
+void PdfViewPluginBase::EnteredEditMode() {
+  edit_mode_ = true;
+  SetPluginCanSave(true);
+
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "setIsEditing");
+  SendMessage(std::move(message));
+}
+
 void PdfViewPluginBase::DocumentFocusChanged(bool document_has_focus) {
   base::Value message(base::Value::Type::DICTIONARY);
   message.SetStringKey("type", "documentFocusChanged");

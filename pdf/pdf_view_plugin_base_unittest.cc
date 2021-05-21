@@ -34,6 +34,7 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
  public:
   // Public for testing.
   using PdfViewPluginBase::ConsumeSaveToken;
+  using PdfViewPluginBase::edit_mode;
   using PdfViewPluginBase::HandleMessage;
 
   MOCK_METHOD(bool, Confirm, (const std::string&), (override));
@@ -114,6 +115,8 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(void, SetContentRestrictions, (int), (override));
 
+  MOCK_METHOD(void, SetPluginCanSave, (bool), (override));
+
   MOCK_METHOD(void, DidStartLoading, (), (override));
 
   MOCK_METHOD(void, DidStopLoading, (), (override));
@@ -134,6 +137,16 @@ class PdfViewPluginBaseTest : public testing::Test {
  protected:
   FakePdfViewPluginBase fake_plugin_;
 };
+
+TEST_F(PdfViewPluginBaseTest, EnteredEditMode) {
+  fake_plugin_.EnteredEditMode();
+
+  base::Value expected_message(base::Value::Type::DICTIONARY);
+  expected_message.SetStringKey("type", "setIsEditing");
+
+  EXPECT_TRUE(fake_plugin_.edit_mode());
+  EXPECT_EQ(expected_message, fake_plugin_.sent_message());
+}
 
 TEST_F(PdfViewPluginBaseTest, ConsumeSaveToken) {
   const std::string kTokenString("12345678901234567890");

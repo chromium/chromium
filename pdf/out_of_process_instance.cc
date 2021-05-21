@@ -102,9 +102,6 @@ constexpr char kJSLoadPreviewPageType[] = "loadPreviewPage";
 constexpr char kJSPreviewPageUrl[] = "url";
 constexpr char kJSPreviewPageIndex[] = "index";
 
-// Editing forms in document (Plugin -> Page)
-constexpr char kJSSetIsEditingType[] = "setIsEditing";
-
 constexpr base::TimeDelta kFindResultCooldown =
     base::TimeDelta::FromMilliseconds(100);
 
@@ -1100,13 +1097,13 @@ void OutOfProcessInstance::HandleSaveMessage(const pp::VarDictionary& dict) {
     case SaveRequestType::kAnnotation:
       // In annotation mode, assume the user will make edits and prefer saving
       // using the plugin data.
-      pp::PDF::SetPluginCanSave(this, true);
+      SetPluginCanSave(true);
       SaveToBuffer(dict.Get(pp::Var(kJSToken)).AsString());
       break;
     case SaveRequestType::kOriginal:
-      pp::PDF::SetPluginCanSave(this, false);
+      SetPluginCanSave(false);
       SaveToFile(dict.Get(pp::Var(kJSToken)).AsString());
-      pp::PDF::SetPluginCanSave(this, edit_mode());
+      SetPluginCanSave(edit_mode());
       break;
     case SaveRequestType::kEdited:
       SaveToBuffer(dict.Get(pp::Var(kJSToken)).AsString());
@@ -1222,6 +1219,10 @@ void OutOfProcessInstance::SetAccessibilityViewportInfo(
   pp::PDF::SetAccessibilityViewportInfo(GetPluginInstance(), &pp_viewport_info);
 }
 
+void OutOfProcessInstance::SetPluginCanSave(bool can_save) {
+  pp::PDF::SetPluginCanSave(this, can_save);
+}
+
 base::WeakPtr<PdfViewPluginBase> OutOfProcessInstance::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
@@ -1239,15 +1240,6 @@ void OutOfProcessInstance::AppendBlankPrintPreviewPages() {
 
 bool OutOfProcessInstance::IsPrintPreview() {
   return is_print_preview_;
-}
-
-void OutOfProcessInstance::EnteredEditMode() {
-  set_edit_mode(true);
-  pp::PDF::SetPluginCanSave(this, true);
-
-  pp::VarDictionary message;
-  message.Set(kType, kJSSetIsEditingType);
-  PostMessage(message);
 }
 
 void OutOfProcessInstance::SetSelectedText(const std::string& selected_text) {
