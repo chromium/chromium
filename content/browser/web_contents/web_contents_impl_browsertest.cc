@@ -551,6 +551,31 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLSubframe) {
                 controller->GetPendingEntry())->frame_tree_node_id());
 }
 
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLNonExistentSubframe) {
+  // Navigate to a page with frames and grab a subframe's FrameTreeNode ID.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  // Take a FrameTreeNodeID that doesn't represent any frames.
+  int frame_tree_node_id = 100;
+  ASSERT_FALSE(FrameTreeNode::GloballyFindByID(frame_tree_node_id));
+
+  // Navigate with the invalid FrameTreeNode ID.
+  const GURL url(embedded_test_server()->GetURL("/title2.html"));
+  OpenURLParams params(url, Referrer(), frame_tree_node_id,
+                       WindowOpenDisposition::CURRENT_TAB,
+                       ui::PAGE_TRANSITION_LINK, true);
+  params.initiator_origin = wc->GetMainFrame()->GetLastCommittedOrigin();
+  WebContents* new_web_contents = shell()->web_contents()->OpenURL(params);
+
+  // The navigation should have been ignored.
+  EXPECT_EQ(new_web_contents, nullptr);
+  NavigationController* controller = &shell()->web_contents()->GetController();
+  EXPECT_EQ(controller->GetPendingEntry(), nullptr);
+}
+
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        AppendingFrameInWebUIDoesNotCrash) {
   const GURL kWebUIUrl(GetWebUIURL("gpu"));
