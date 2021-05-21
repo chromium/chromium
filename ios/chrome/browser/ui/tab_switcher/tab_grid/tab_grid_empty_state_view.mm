@@ -36,34 +36,20 @@ const CGFloat kImageWidth = 150.0;
 
 - (instancetype)initWithPage:(TabGridPage)page {
   if (self = [super initWithFrame:CGRectZero]) {
-    BOOL illustratedEmptyState =
-        base::FeatureList::IsEnabled(kIllustratedEmptyStates);
     switch (page) {
       case TabGridPageIncognitoTabs:
-        if (illustratedEmptyState) {
-          _image = [UIImage imageNamed:@"tab_grid_incognito_tabs_empty"];
-        }
-        _title = l10n_util::GetNSString(
-            illustratedEmptyState
-                ? IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_TITLE
-                : IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_STATE_TITLE);
+        _image = [UIImage imageNamed:@"tab_grid_incognito_tabs_empty"];
+        _title =
+            l10n_util::GetNSString(IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_TITLE);
         _body = l10n_util::GetNSString(
-            illustratedEmptyState
-                ? IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_MESSAGE
-                : IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_STATE_BODY);
+            IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_MESSAGE);
         break;
       case TabGridPageRegularTabs:
-        if (illustratedEmptyState) {
-          _image = [UIImage imageNamed:@"tab_grid_regular_tabs_empty"];
-        }
-        _title = l10n_util::GetNSString(
-            illustratedEmptyState
-                ? IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_TITLE
-                : IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_STATE_TITLE);
-        _body = l10n_util::GetNSString(
-            illustratedEmptyState
-                ? IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_MESSAGE
-                : IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_STATE_BODY);
+        _image = [UIImage imageNamed:@"tab_grid_regular_tabs_empty"];
+        _title =
+            l10n_util::GetNSString(IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_TITLE);
+        _body =
+            l10n_util::GetNSString(IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_MESSAGE);
         break;
       case TabGridPageRemoteTabs:
         // No-op. Empty page.
@@ -122,23 +108,17 @@ const CGFloat kImageWidth = 150.0;
   bottomLabel.translatesAutoresizingMaskIntoConstraints = NO;
   bottomLabel.text = self.body;
   bottomLabel.textColor = UIColorFromRGB(kTabGridEmptyStateBodyTextColor);
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
     bottomLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-  } else {
-    bottomLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  }
   bottomLabel.adjustsFontForContentSizeCategory = YES;
   bottomLabel.numberOfLines = 0;
   bottomLabel.textAlignment = NSTextAlignmentCenter;
 
   UIImageView* imageView = nil;
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
     imageView = [[UIImageView alloc] initWithImage:self.image];
     imageView.translatesAutoresizingMaskIntoConstraints = NO;
 
     [container addSubview:imageView];
-  }
 
   [container addSubview:topLabel];
   [container addSubview:bottomLabel];
@@ -153,21 +133,15 @@ const CGFloat kImageWidth = 150.0;
   scrollViewHeightConstraint.active = YES;
   self.scrollViewHeight = scrollViewHeightConstraint;
 
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
-    [NSLayoutConstraint activateConstraints:@[
-      [imageView.topAnchor constraintEqualToAnchor:container.topAnchor],
-      [imageView.widthAnchor constraintEqualToConstant:kImageWidth],
-      [imageView.heightAnchor constraintEqualToConstant:kImageHeight],
-      [imageView.centerXAnchor constraintEqualToAnchor:container.centerXAnchor],
-    ]];
-  }
-
-  auto anchorForTopLabel = base::FeatureList::IsEnabled(kIllustratedEmptyStates)
-                               ? imageView.bottomAnchor
-                               : container.topAnchor;
+  [NSLayoutConstraint activateConstraints:@[
+    [imageView.topAnchor constraintEqualToAnchor:container.topAnchor],
+    [imageView.widthAnchor constraintEqualToConstant:kImageWidth],
+    [imageView.heightAnchor constraintEqualToConstant:kImageHeight],
+    [imageView.centerXAnchor constraintEqualToAnchor:container.centerXAnchor],
+  ]];
 
   [NSLayoutConstraint activateConstraints:@[
-    [topLabel.topAnchor constraintEqualToAnchor:anchorForTopLabel
+    [topLabel.topAnchor constraintEqualToAnchor:imageView.bottomAnchor
                                        constant:kVerticalMargin],
     [topLabel.leadingAnchor constraintEqualToAnchor:container.leadingAnchor],
     [topLabel.trailingAnchor constraintEqualToAnchor:container.trailingAnchor],

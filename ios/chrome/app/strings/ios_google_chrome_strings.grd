@@ -304,12 +304,6 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_MOVE_TO_DOCK_TIP" desc="Text displayed on the New Tab Page for the move Chrome to the dock promo. [iOS only]">
         Tip: <ph name="BEGIN_LINK"><ex>BEGIN_LINK</ex>BEGIN_LINK</ph>Move Chrome to your dock<ph name="END_LINK"><ex>END_LINK</ex>END_LINK</ph>
       </message>
-      <message name="IDS_IOS_OPEN_TABS_NO_SESSION_INSTRUCTIONS" desc="Information about sync displayed when the user has signed in on mobile but not on desktop">
-        Access the tabs you have open on your computer, right here. Just open Chrome on your computer, go to the menu, and select “Sign in to Chrome…”
-      </message>
-      <message name="IDS_IOS_OPEN_TABS_SYNC_IS_OFF_MOBILE" desc="Short paragraph(s) encouraging the user to enable sync on device [Length: 300em, may be line wrapped to multiple lines at run time.]">
-        Tabs that you've opened in Chrome on your other devices will appear here.
-      </message>
       <message name="IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN" desc="The title of the Import Data settings screen when signing in. [30em]">
         Sign in to Chrome
       </message>
