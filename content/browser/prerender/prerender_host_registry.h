@@ -21,7 +21,6 @@
 
 namespace content {
 
-class FrameTreeNode;
 class RenderFrameHostImpl;
 
 // Prerender2:
@@ -91,14 +90,14 @@ class CONTENT_EXPORT PrerenderHostRegistry {
                         PrerenderHost::FinalStatus final_status);
 
   // For activators.
-  // Reserves the host to activate for a navigation for the given FrameTreeNode.
-  // Returns the root frame tree node id of the prerendered page, which can be
-  // used as the id of the host. Returns RenderFrameHost::kNoFrameTreeNodeId if
-  // it's not found or not ready for activation yet. The caller is responsible
-  // for calling ActivateReservedHost() or AbandonReservedHost() with the id to
-  // release the reserved host.
-  int ReserveHostToActivate(const GURL& navigation_url,
-                            FrameTreeNode& frame_tree_node);
+  // Reserves the host to activate for a navigation for the given
+  // NavigationRequest. Returns the root frame tree node id of the prerendered
+  // page, which can be used as the id of the host. Returns
+  // RenderFrameHost::kNoFrameTreeNodeId if it's not found or not ready for
+  // activation yet. The caller is responsible for calling
+  // ActivateReservedHost() or AbandonReservedHost() with the id to release the
+  // reserved host.
+  int ReserveHostToActivate(NavigationRequest& navigation_request);
 
   // For activators.
   // Activates the host reserved by ReserveHostToActivate() and returns the

@@ -374,6 +374,8 @@ void NavigationSimulatorImpl::InitializeFromStartedRequest(
   has_user_gesture_ = request_->HasUserGesture();
   // |contents_mime_type_| cannot be inferred from the request.
 
+  skip_service_worker_ = request_->begin_params().skip_service_worker;
+
   // Add a throttle to count NavigationThrottle calls count. Bump
   // num_did_start_navigation to account for the fact that the navigation handle
   // has already been created.
@@ -1185,8 +1187,7 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
           initiator_frame_host_
               ? absl::make_optional(initiator_frame_host_->GetFrameToken())
               : absl::nullopt,
-          std::string() /* headers */, net::LOAD_NORMAL,
-          false /* skip_service_worker */,
+          std::string() /* headers */, net::LOAD_NORMAL, skip_service_worker_,
           blink::mojom::RequestContextType::HYPERLINK,
           network::mojom::RequestDestination::kDocument,
           blink::mojom::MixedContentContextType::kBlockable,

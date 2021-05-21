@@ -11,6 +11,7 @@
 #include "base/types/pass_key.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/common/content_export.h"
+#include "content/common/navigation_params.mojom.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -76,7 +77,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   PrerenderHost(PrerenderHost&&) = delete;
   PrerenderHost& operator=(PrerenderHost&&) = delete;
 
-  void StartPrerendering();
+  // Returns false if prerendering hasn't been started.
+  bool StartPrerendering();
 
   // WebContentsObserver implementation:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
@@ -89,6 +91,14 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   // a generic "page" object to make clear that the same logic is also used for
   // prerendering.
   std::unique_ptr<BackForwardCacheImpl::Entry> Activate(
+      NavigationRequest& navigation_request);
+
+  // Returns true if the navigation params that were used in the initial
+  // prerender navigation (i.e., in StartPrerendering()) match the navigation
+  // params in `navigation_request`. This function can be used to determine
+  // whether `navigation_request` may be eligible to activate this
+  // PrerenderHost.
+  bool AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
       NavigationRequest& navigation_request);
 
   // Returns the main RenderFrameHost of the prerendered page.
@@ -139,6 +149,13 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   std::unique_ptr<PageHolder> page_holder_;
 
   base::ObserverList<Observer> observers_;
+
+  // Navigation parameters for the navigation which loaded the main document of
+  // the prerendered page, copied immediately after BeginNavigation. They will
+  // be compared with the navigation parameters of the potential activation when
+  // attempting to reserve the prerender host for a navigation.
+  mojom::BeginNavigationParamsPtr begin_params_;
+  mojom::CommonNavigationParamsPtr common_params_;
 };
 
 }  // namespace content

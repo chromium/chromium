@@ -165,6 +165,10 @@ class NavigationSimulatorImpl : public NavigationSimulator,
     impression_ = impression;
   }
 
+  void set_skip_service_worker(bool skip_service_worker) {
+    skip_service_worker_ = skip_service_worker;
+  }
+
  private:
   NavigationSimulatorImpl(const GURL& original_url,
                           bool browser_initiated,
@@ -309,6 +313,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   absl::optional<url::Origin> origin_;
   absl::optional<blink::Impression> impression_;
   int64_t post_id_ = -1;
+  bool skip_service_worker_ = false;
 
   // Any DNS aliases, as read from CNAME records, for the request URL that
   // would be in the network::mojom::URLResponseHead. The alias chain order

@@ -875,6 +875,12 @@ class CONTENT_EXPORT NavigationRequest
   void AddDeferredConsoleMessage(blink::mojom::ConsoleMessageLevel level,
                                  std::string message);
 
+  base::WeakPtr<NavigationRequest> GetWeakPtr();
+
+  int prerender_frame_tree_node_id() const {
+    return prerender_frame_tree_node_id_;
+  }
+
  private:
   friend class NavigationRequestTest;
 

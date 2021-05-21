@@ -1703,8 +1703,7 @@ void NavigationRequest::BeginNavigation() {
   // this navigation will activate it instead of loading a page via network.
   if (blink::features::IsPrerender2Enabled()) {
     prerender_frame_tree_node_id_ =
-        GetPrerenderHostRegistry().ReserveHostToActivate(common_params_->url,
-                                                         *frame_tree_node_);
+        GetPrerenderHostRegistry().ReserveHostToActivate(*this);
     // If `prerender_frame_tree_node_id_` is not
     // RenderFrameHost::kNoFrameTreeNodeId, this navigation will activate the
     // prerendered page on navigation commit.
@@ -2231,6 +2230,10 @@ void NavigationRequest::OnRequestRedirected(
       frame_tree_node_->render_manager()->GetWebExposedIsolationInfo(this);
   WillRedirectRequest(common_params_->referrer->url, web_exposed_isolation_info,
                       expected_process);
+}
+
+base::WeakPtr<NavigationRequest> NavigationRequest::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {

@@ -265,7 +265,7 @@ PrerenderHost::~PrerenderHost() {
 // TODO(https://crbug.com/1132746): Inspect diffs from the current
 // no-state-prefetch implementation. See PrerenderContents::StartPrerendering()
 // for example.
-void PrerenderHost::StartPrerendering() {
+bool PrerenderHost::StartPrerendering() {
   TRACE_EVENT0("navigation", "PrerenderHost::StartPrerendering");
 
   // Observe events about the prerendering contents.
@@ -285,7 +285,23 @@ void PrerenderHost::StartPrerendering() {
 
   // TODO(https://crbug.com/1132746): Set up other fields of `load_url_params`
   // as well, and add tests for them.
-  page_holder_->GetNavigationController().LoadURLWithParams(load_url_params);
+  base::WeakPtr<NavigationHandle> created_navigation_handle =
+      page_holder_->GetNavigationController().LoadURLWithParams(
+          load_url_params);
+
+  if (!created_navigation_handle)
+    return false;
+
+  NavigationRequest* navigation_request =
+      NavigationRequest::From(created_navigation_handle.get());
+  // The initial navigation in the prerender frame tree should not wait for
+  // `beforeunload` in the old page, so BeginNavigation stage should be reached
+  // synchronously.
+  DCHECK_GE(navigation_request->state(),
+            NavigationRequest::WAITING_FOR_RENDERER_RESPONSE);
+  begin_params_ = navigation_request->begin_params().Clone();
+  common_params_ = navigation_request->common_params().Clone();
+  return true;
 }
 
 void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
@@ -320,6 +336,18 @@ std::unique_ptr<BackForwardCacheImpl::Entry> PrerenderHost::Activate(
 
   RecordFinalStatus(FinalStatus::kActivated);
   return std::move(result.entry);
+}
+
+bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
+    NavigationRequest& navigation_request) {
+  // TODO(crbug.com/1181763): compare the rest of the navigation parameters. We
+  // should introduce compile-time parameter checks as well, to ensure how new
+  // fields should be compared for compatibility.
+  if (navigation_request.begin_params().skip_service_worker !=
+      begin_params_->skip_service_worker)
+    return false;
+
+  return true;
 }
 
 RenderFrameHostImpl* PrerenderHost::GetPrerenderedMainFrameHost() {

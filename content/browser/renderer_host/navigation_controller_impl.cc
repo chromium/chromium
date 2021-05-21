@@ -1087,18 +1087,20 @@ void NavigationControllerImpl::UpdateVirtualURLToURL(NavigationEntryImpl* entry,
   }
 }
 
-void NavigationControllerImpl::LoadURL(const GURL& url,
-                                       const Referrer& referrer,
-                                       ui::PageTransition transition,
-                                       const std::string& extra_headers) {
+base::WeakPtr<NavigationHandle> NavigationControllerImpl::LoadURL(
+    const GURL& url,
+    const Referrer& referrer,
+    ui::PageTransition transition,
+    const std::string& extra_headers) {
   LoadURLParams params(url);
   params.referrer = referrer;
   params.transition_type = transition;
   params.extra_headers = extra_headers;
-  LoadURLWithParams(params);
+  return LoadURLWithParams(params);
 }
 
-void NavigationControllerImpl::LoadURLWithParams(const LoadURLParams& params) {
+base::WeakPtr<NavigationHandle> NavigationControllerImpl::LoadURLWithParams(
+    const LoadURLParams& params) {
   if (params.is_renderer_initiated)
     DCHECK(params.initiator_origin.has_value());
 
@@ -1114,7 +1116,7 @@ void NavigationControllerImpl::LoadURLWithParams(const LoadURLParams& params) {
     // unhandled, otherwise Telemetry can't tell if Navigation completed.
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
             cc::switches::kEnableGpuBenchmarking))
-      return;
+      return nullptr;
   }
 
   // Checks based on params.load_type.
@@ -1125,7 +1127,7 @@ void NavigationControllerImpl::LoadURLWithParams(const LoadURLParams& params) {
     case LOAD_TYPE_DATA:
       if (!params.url.SchemeIs(url::kDataScheme)) {
         NOTREACHED() << "Data load must use data scheme.";
-        return;
+        return nullptr;
       }
       break;
   }
@@ -1133,7 +1135,7 @@ void NavigationControllerImpl::LoadURLWithParams(const LoadURLParams& params) {
   // The user initiated a load, we don't need to reload anymore.
   needs_reload_ = false;
 
-  NavigateWithoutEntry(params);
+  return NavigateWithoutEntry(params);
 }
 
 bool NavigationControllerImpl::PendingEntryMatchesRequest(
@@ -3148,7 +3150,7 @@ void NavigationControllerImpl::FindFramesToNavigate(
   }
 }
 
-void NavigationControllerImpl::NavigateWithoutEntry(
+base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
     const LoadURLParams& params) {
   // Find the appropriate FrameTreeNode.
   FrameTreeNode* node = nullptr;
@@ -3206,11 +3208,11 @@ void NavigationControllerImpl::NavigateWithoutEntry(
     if (GetContentClient()->browser()->ShouldBlockRendererDebugURL(
             params.url, browser_context_)) {
       DiscardPendingEntry(false);
-      return;
+      return nullptr;
     }
 
     HandleRendererDebugURL(node, params.url);
-    return;
+    return nullptr;
   }
 
   DCHECK(pending_entry_);
@@ -3282,7 +3284,7 @@ void NavigationControllerImpl::NavigateWithoutEntry(
   // pending NavigationEntry.
   if (!request) {
     DiscardPendingEntry(false);
-    return;
+    return nullptr;
   }
 
 #if DCHECK_IS_ON()
@@ -3299,9 +3301,12 @@ void NavigationControllerImpl::NavigateWithoutEntry(
   // function.
   std::unique_ptr<PendingEntryRef> pending_entry_ref = ReferencePendingEntry();
 
+  base::WeakPtr<NavigationHandle> created_navigation_handle(
+      request->GetWeakPtr());
   node->navigator().Navigate(std::move(request), reload_type);
 
   in_navigate_to_pending_entry_ = false;
+  return created_navigation_handle;
 }
 
 void NavigationControllerImpl::HandleRendererDebugURL(

@@ -86,8 +86,13 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost) {
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
   CommitPrerenderNavigation(*prerender_host);
 
-  EXPECT_EQ(registry->ReserveHostToActivate(
-                kPrerenderingUrl, *render_frame_host->frame_tree_node()),
+  std::unique_ptr<NavigationSimulatorImpl> navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kPrerenderingUrl,
+                                                       render_frame_host);
+  // Implicitly will call ReserveHostToActivate.
+  navigation->Start();
+  NavigationRequest* navigation_request = navigation->GetNavigationHandle();
+  EXPECT_EQ(navigation_request->prerender_frame_tree_node_id(),
             prerender_frame_tree_node_id);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
   registry->AbandonReservedHost(prerender_frame_tree_node_id);
@@ -122,8 +127,12 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
             prerender_host1);
   CommitPrerenderNavigation(*prerender_host1);
 
-  EXPECT_EQ(registry->ReserveHostToActivate(
-                kPrerenderingUrl, *render_frame_host->frame_tree_node()),
+  std::unique_ptr<NavigationSimulatorImpl> navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kPrerenderingUrl,
+                                                       render_frame_host);
+  navigation->Start();
+  NavigationRequest* navigation_request = navigation->GetNavigationHandle();
+  EXPECT_EQ(navigation_request->prerender_frame_tree_node_id(),
             frame_tree_node_id1);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
   registry->AbandonReservedHost(frame_tree_node_id1);
@@ -157,8 +166,13 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForDifferentURLs) {
   CommitPrerenderNavigation(*prerender_host2);
 
   // Select the first host.
-  EXPECT_EQ(registry->ReserveHostToActivate(
-                kPrerenderingUrl1, *render_frame_host->frame_tree_node()),
+  std::unique_ptr<NavigationSimulatorImpl> navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kPrerenderingUrl1,
+                                                       render_frame_host);
+  navigation->Start();
+  NavigationRequest* navigation_request = navigation->GetNavigationHandle();
+
+  EXPECT_EQ(navigation_request->prerender_frame_tree_node_id(),
             frame_tree_node_id1);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
   // The second host should still be findable.
@@ -166,8 +180,13 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForDifferentURLs) {
             prerender_host2);
 
   // Select the second host.
-  EXPECT_EQ(registry->ReserveHostToActivate(
-                kPrerenderingUrl2, *render_frame_host->frame_tree_node()),
+  std::unique_ptr<NavigationSimulatorImpl> navigation2 =
+      NavigationSimulatorImpl::CreateRendererInitiated(kPrerenderingUrl2,
+                                                       render_frame_host);
+  navigation2->Start();
+  NavigationRequest* navigation_request2 = navigation2->GetNavigationHandle();
+
+  EXPECT_EQ(navigation_request2->prerender_frame_tree_node_id(),
             frame_tree_node_id2);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
 
@@ -192,12 +211,23 @@ TEST_F(PrerenderHostRegistryTest,
   ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
+  FrameTreeNode* ftn =
+      FrameTreeNode::From(prerender_host->GetPrerenderedMainFrameHost());
+  std::unique_ptr<NavigationSimulatorImpl> sim =
+      NavigationSimulatorImpl::CreateFromPendingInFrame(ftn);
+  // Ensure that navigation in prerendering frame tree does not commit and
+  // PrerenderHost doesn't become ready for activation.
+  sim->SetAutoAdvance(false);
+
+  std::unique_ptr<NavigationSimulatorImpl> navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kPrerenderingUrl,
+                                                       render_frame_host);
+  navigation->Start();
+  NavigationRequest* navigation_request = navigation->GetNavigationHandle();
 
   // The prerender host is not ready for activation yet, so the registry
   // shouldn't select the host and instead should abandon it.
-  ASSERT_FALSE(prerender_host->is_ready_for_activation());
-  EXPECT_EQ(registry->ReserveHostToActivate(
-                kPrerenderingUrl, *render_frame_host->frame_tree_node()),
+  EXPECT_EQ(navigation_request->prerender_frame_tree_node_id(),
             kNoFrameTreeNodeId);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 }
@@ -218,6 +248,38 @@ TEST_F(PrerenderHostRegistryTest, AbandonHost) {
   EXPECT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
   registry->AbandonHost(prerender_frame_tree_node_id);
+  EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       CompareLoadAndActivationBeginParams_SkipServiceWorker) {
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(GURL("https://example.com/"));
+  RenderFrameHostImpl* render_frame_host = web_contents->GetMainFrame();
+  ASSERT_TRUE(render_frame_host);
+
+  const GURL kPrerenderingUrl("https://example.com/next");
+  auto attributes = blink::mojom::PrerenderAttributes::New();
+  attributes->url = kPrerenderingUrl;
+
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
+  ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+  PrerenderHost* prerender_host =
+      registry->FindHostByUrlForTesting(kPrerenderingUrl);
+  CommitPrerenderNavigation(*prerender_host);
+
+  std::unique_ptr<NavigationSimulatorImpl> navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kPrerenderingUrl,
+                                                       render_frame_host);
+  // Change a parameter to differentiate the activation request from the
+  // prerendering request.
+  navigation->set_skip_service_worker(true);
+  navigation->Start();
+  NavigationRequest* navigation_request = navigation->GetNavigationHandle();
+  EXPECT_EQ(navigation_request->prerender_frame_tree_node_id(),
+            kNoFrameTreeNodeId);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 }
 

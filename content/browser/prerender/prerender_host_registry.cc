@@ -13,6 +13,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/features.h"
@@ -74,8 +75,11 @@ int PrerenderHostRegistry::CreateAndStartHost(
                         frame_tree_node_id));
   prerender_host_by_frame_tree_node_id_[frame_tree_node_id] =
       std::move(prerender_host);
-  prerender_host_by_frame_tree_node_id_[frame_tree_node_id]
-      ->StartPrerendering();
+  if (!prerender_host_by_frame_tree_node_id_[frame_tree_node_id]
+           ->StartPrerendering()) {
+    AbandonHost(frame_tree_node_id);
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
 
   return frame_tree_node_id;
 }
@@ -108,15 +112,15 @@ void PrerenderHostRegistry::AbandonHostAsync(
 }
 
 int PrerenderHostRegistry::ReserveHostToActivate(
-    const GURL& navigation_url,
-    FrameTreeNode& frame_tree_node) {
-  RenderFrameHostImpl* render_frame_host = frame_tree_node.current_frame_host();
+    NavigationRequest& navigation_request) {
+  RenderFrameHostImpl* render_frame_host =
+      navigation_request.frame_tree_node()->current_frame_host();
   TRACE_EVENT2("navigation", "PrerenderHostRegistry::ReserveHostToActivate",
-               "navigation_url", navigation_url.spec(), "render_frame_host",
-               render_frame_host);
+               "navigation_url", navigation_request.GetURL().spec(),
+               "render_frame_host", render_frame_host);
 
   // Disallow activation when the navigation is for prerendering.
-  if (frame_tree_node.frame_tree()->is_prerendering())
+  if (navigation_request.frame_tree_node()->frame_tree()->is_prerendering())
     return RenderFrameHost::kNoFrameTreeNodeId;
 
   // Disallow activation when the render frame host is for a nested browsing
@@ -139,7 +143,7 @@ int PrerenderHostRegistry::ReserveHostToActivate(
   std::unique_ptr<PrerenderHost> host;
   for (auto iter = prerender_host_by_frame_tree_node_id_.begin();
        iter != prerender_host_by_frame_tree_node_id_.end(); ++iter) {
-    if (iter->second->GetInitialUrl() == navigation_url) {
+    if (iter->second->GetInitialUrl() == navigation_request.GetURL()) {
       host = std::move(iter->second);
       prerender_host_by_frame_tree_node_id_.erase(iter);
       break;
@@ -153,6 +157,14 @@ int PrerenderHostRegistry::ReserveHostToActivate(
   // never used from now on.
   if (!host->is_ready_for_activation())
     return RenderFrameHost::kNoFrameTreeNodeId;
+
+  // Compare navigation params from activation with the navigation params
+  // from the initial prerender navigation. If they don't match, the navigation
+  // should not activate the prerendered page.
+  if (!host->AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
+          navigation_request)) {
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
 
   // Reserve the host for activation.
   const int prerender_frame_tree_node_id = host->frame_tree_node_id();

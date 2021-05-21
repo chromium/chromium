@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_request_id.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
@@ -369,15 +370,22 @@ class NavigationController {
   // New navigations -----------------------------------------------------------
 
   // Loads the specified URL, specifying extra http headers to add to the
-  // request.  Extra headers are separated by \n.
-  virtual void LoadURL(const GURL& url,
-                       const Referrer& referrer,
-                       ui::PageTransition type,
-                       const std::string& extra_headers) = 0;
+  // request. Extra headers are separated by \n.
+  //
+  // Returns NavigationHandle for the initiated navigation (might be null if
+  // the navigation couldn't be started for some reason). WeakPtr is used as if
+  // the navigation is cancelled before it reaches DidStartNavigation, the
+  // WebContentsObserver::DidFinishNavigation callback won't be dispatched.
+  virtual base::WeakPtr<NavigationHandle> LoadURL(
+      const GURL& url,
+      const Referrer& referrer,
+      ui::PageTransition type,
+      const std::string& extra_headers) = 0;
 
   // More general version of LoadURL. See comments in LoadURLParams for
   // using |params|.
-  virtual void LoadURLWithParams(const LoadURLParams& params) = 0;
+  virtual base::WeakPtr<NavigationHandle> LoadURLWithParams(
+      const LoadURLParams& params) = 0;
 
   // Loads the current page if this NavigationController was restored from
   // history and the current page has not loaded yet or if the load was

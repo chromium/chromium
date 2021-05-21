@@ -96,11 +96,13 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void DiscardNonCommittedEntries() override;
   NavigationEntryImpl* GetPendingEntry() override;
   int GetPendingEntryIndex() override;
-  void LoadURL(const GURL& url,
-               const Referrer& referrer,
-               ui::PageTransition type,
-               const std::string& extra_headers) override;
-  void LoadURLWithParams(const LoadURLParams& params) override;
+  base::WeakPtr<NavigationHandle> LoadURL(
+      const GURL& url,
+      const Referrer& referrer,
+      ui::PageTransition type,
+      const std::string& extra_headers) override;
+  base::WeakPtr<NavigationHandle> LoadURLWithParams(
+      const LoadURLParams& params) override;
   void LoadIfNecessary() override;
   void LoadPostCommitErrorPage(RenderFrameHost* render_frame_host,
                                const GURL& url,
@@ -463,7 +465,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // Starts a new navigation based on |load_params|, that doesn't correspond to
   // an existing NavigationEntry.
-  void NavigateWithoutEntry(const LoadURLParams& load_params);
+  base::WeakPtr<NavigationHandle> NavigateWithoutEntry(
+      const LoadURLParams& load_params);
 
   // Handles a navigation to a renderer-debug URL.
   void HandleRendererDebugURL(FrameTreeNode* frame_tree_node, const GURL& url);
