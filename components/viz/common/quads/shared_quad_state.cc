@@ -22,7 +22,6 @@ SharedQuadState::~SharedQuadState() {
 }
 
 void RecordReplayAssertSharedQuadContents(const SharedQuadState* state) {
-  /*
   recordreplay::Assert("SharedQuadContents #1 %d %d %.2f %d %d",
                        state->is_clipped, state->are_contents_opaque, state->opacity,
                        state->blend_mode, state->sorting_context_id);
@@ -32,7 +31,6 @@ void RecordReplayAssertSharedQuadContents(const SharedQuadState* state) {
   recordreplay::Assert("SharedQuadContents #4 %s", state->visible_quad_layer_rect.ToString().c_str());
   recordreplay::Assert("SharedQuadContents #5 %s", state->clip_rect.ToString().c_str());
   recordreplay::Assert("SharedQuadContents #6 %s", state->mask_filter_info.ToString().c_str());
-  */
 }
 
 void SharedQuadState::SetAll(const gfx::Transform& quad_to_target_transform,
