@@ -5,11 +5,13 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_SURFACE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_SURFACE_H_
 
-
+#include <linux-explicit-synchronization-unstable-v1-server-protocol.h>
 #include <wayland-server-protocol.h>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_surface.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_subsurface.h"
@@ -21,6 +23,8 @@ struct wl_resource;
 namespace wl {
 
 extern const struct wl_surface_interface kMockSurfaceImpl;
+extern const struct zwp_linux_surface_synchronization_v1_interface
+    kMockZwpLinuxSurfaceSynchronizationImpl;
 
 // Manage client surface
 class MockSurface : public ServerObject {
@@ -62,6 +66,12 @@ class MockSurface : public ServerObject {
     frame_callback_ = callback_resource;
   }
 
+  void set_linux_buffer_release(wl_resource* buffer,
+                                wl_resource* linux_buffer_release) {
+    DCHECK(!linux_buffer_releases_.contains(buffer));
+    linux_buffer_releases_.emplace(buffer, linux_buffer_release);
+  }
+
   wl_resource* attached_buffer() const { return attached_buffer_; }
   wl_resource* prev_attached_buffer() const { return prev_attached_buffer_; }
 
@@ -72,6 +82,8 @@ class MockSurface : public ServerObject {
   void AttachNewBuffer(wl_resource* buffer_resource, int32_t x, int32_t y);
   void DestroyPrevAttachedBuffer();
   void ReleaseBuffer(wl_resource* buffer);
+  void ReleaseBufferFenced(wl_resource* buffer,
+                           gfx::GpuFenceHandle release_fence);
   void SendFrameCallback();
 
  private:
@@ -82,6 +94,7 @@ class MockSurface : public ServerObject {
   gfx::Rect input_region_ = {-1, -1, 0, 0};
 
   wl_resource* frame_callback_ = nullptr;
+  base::flat_map<wl_resource*, wl_resource*> linux_buffer_releases_;
 
   wl_resource* attached_buffer_ = nullptr;
   wl_resource* prev_attached_buffer_ = nullptr;

@@ -81,6 +81,8 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
   }
   if (!zwp_text_input_manager_v1_.Initialize(display_.get()))
     return false;
+  if (!zwp_linux_explicit_synchronization_v1_.Initialize(display_.get()))
+    return false;
   if (!zwp_linux_dmabuf_v1_.Initialize(display_.get()))
     return false;
 

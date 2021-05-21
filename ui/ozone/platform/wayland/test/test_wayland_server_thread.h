@@ -24,6 +24,7 @@
 #include "ui/ozone/platform/wayland/test/test_seat.h"
 #include "ui/ozone/platform/wayland/test/test_subcompositor.h"
 #include "ui/ozone/platform/wayland/test/test_viewporter.h"
+#include "ui/ozone/platform/wayland/test/test_zwp_linux_explicit_synchronization.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_text_input_manager.h"
 
 struct wl_client;
@@ -95,6 +96,10 @@ class TestWaylandServerThread : public base::Thread,
   TestZwpTextInputManagerV1* text_input_manager_v1() {
     return &zwp_text_input_manager_v1_;
   }
+  TestZwpLinuxExplicitSynchronizationV1*
+  zwp_linux_explicit_synchronization_v1() {
+    return &zwp_linux_explicit_synchronization_v1_;
+  }
   MockZwpLinuxDmabufV1* zwp_linux_dmabuf_v1() { return &zwp_linux_dmabuf_v1_; }
 
   wl_display* display() const { return display_.get(); }
@@ -130,6 +135,7 @@ class TestWaylandServerThread : public base::Thread,
   MockXdgShell xdg_shell_;
   MockZxdgShellV6 zxdg_shell_v6_;
   TestZwpTextInputManagerV1 zwp_text_input_manager_v1_;
+  TestZwpLinuxExplicitSynchronizationV1 zwp_linux_explicit_synchronization_v1_;
   MockZwpLinuxDmabufV1 zwp_linux_dmabuf_v1_;
   MockWpPresentation wp_presentation_;
 
