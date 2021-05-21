@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { log } from '../log';
+import { log } from '../utils/log';
+import { CdpServer } from '../utils/cdpServer';
 const logContext = log('context');
 
 export default class Context {
@@ -21,7 +22,7 @@ export default class Context {
   private static _sessionToTargets: Map<string, Context> = new Map();
 
   // Set from outside.
-  static cdpClient: any;
+  static cdpServer: CdpServer;
   static getCurrentContextId: () => string;
 
   static onContextCreated: (t: Context) => Promise<void>;
@@ -83,7 +84,7 @@ export default class Context {
   }
 
   static async process_createContext(params: any): Promise<any> {
-    const { targetId } = await Context.cdpClient.sendCdpCommand({
+    const { targetId } = await Context.cdpServer.sendMessage({
       method: 'Target.createTarget',
       params: { url: params.url },
     });

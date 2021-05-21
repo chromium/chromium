@@ -16,12 +16,12 @@
 import Context from './domains/browsingContext';
 
 export async function runBidiCommandsProcessor(
-  cdpClient,
+  cdpServer,
   bidiClient,
   getCurrentTargetId
 ) {
   Context.getCurrentContextId = getCurrentTargetId;
-  Context.cdpClient = cdpClient;
+  Context.cdpServer = cdpServer;
 
   const targets = {};
 
@@ -63,7 +63,7 @@ export async function runBidiCommandsProcessor(
   });
 
   const process_browsingContext_getTree = async function (params) {
-    const cdpTargets = await cdpClient.sendCdpCommand({
+    const cdpTargets = await cdpServer.sendMessage({
       method: 'Target.getTargets',
     });
     const contexts = cdpTargets.targetInfos
@@ -74,7 +74,7 @@ export async function runBidiCommandsProcessor(
   };
 
   const process_PROTO_browsingContext_createContext = async function (params) {
-    const { targetId } = await cdpClient.sendCdpCommand({
+    const { targetId } = await cdpServer.sendMessage({
       method: 'Target.createTarget',
       params: { url: params.url },
     });
@@ -82,7 +82,7 @@ export async function runBidiCommandsProcessor(
   };
 
   const process_DEBUG_Page_close = async function (params) {
-    await cdpClient.sendCdpCommand({
+    await cdpServer.sendMessage({
       method: 'Target.closeTarget',
       params: { targetId: params.context },
     });
@@ -157,10 +157,10 @@ export async function runBidiCommandsProcessor(
       });
   };
 
-  cdpClient.setCdpMessageHandler(onCdpMessage);
+  cdpServer.setOnMessage(onCdpMessage);
   bidiClient.setBidiMessageHandler(onBidiMessage);
 
-  await cdpClient.sendCdpCommand({
+  await cdpServer.sendMessage({
     method: 'Target.setAutoAttach',
     params: {
       autoAttach: true,

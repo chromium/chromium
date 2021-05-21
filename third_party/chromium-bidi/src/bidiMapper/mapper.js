@@ -13,16 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createCdpClient } from './cdpClient.js';
 import { runBidiCommandsProcessor } from './bidiCommandsProcessor.js';
 import { createBidiClient } from './bidiClient.js';
-import { log } from './log';
+
+import { CdpBinding } from './utils/cdpServer';
+
+import { log } from './utils/log';
 const logSystem = log('system');
 
 // `currentTargetId` is set by `setCurrentTargetId` + `Runtime.evaluate`.
 let currentTargetId;
-// `window.cdp` is exposed by `Target.exposeDevToolsProtocol`.
-const cdpBinding = window.cdp;
+
+/**
+ * `window.cdp` is exposed by `Target.exposeDevToolsProtocol`.
+ */
+const cdpServer = CdpBinding.runCdpServer(window.cdp.send, (handler) => {
+  window.cdp.onmessage = handler;
+});
+
 // `window.sendBidiResponse` is exposed by `Runtime.addBinding`.
 const sendBidiResponse = window.sendBidiResponse;
 // Needed to filter out info related to BiDi target.
@@ -36,7 +44,6 @@ window.onBidiMessage = function (messageStr) {
   bidiClient.onBidiMessageReceived(messageStr);
 };
 
-const cdpClient = createCdpClient(cdpBinding);
 const bidiClient = createBidiClient(sendBidiResponse);
 
 const runBidiMapper = async function () {
@@ -44,9 +51,9 @@ const runBidiMapper = async function () {
 
   window.document.title = 'BiDi Mapper';
 
-  await runBidiCommandsProcessor(cdpClient, bidiClient, () => currentTargetId);
+  await runBidiCommandsProcessor(cdpServer, bidiClient, () => currentTargetId);
 
-  await cdpClient.sendCdpCommand({
+  await cdpServer.sendMessage({
     method: 'Target.setDiscoverTargets',
     params: { discover: true },
   });
