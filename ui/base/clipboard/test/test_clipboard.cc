@@ -22,6 +22,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/codec/png_codec.h"
 
 namespace ui {
 
@@ -114,7 +115,8 @@ void TestClipboard::ReadAvailableTypes(
 
   if (IsFormatAvailable(ClipboardFormatType::GetRtfType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
-  if (IsFormatAvailable(ClipboardFormatType::GetBitmapType(), buffer, data_dst))
+  if (IsFormatAvailable(ClipboardFormatType::GetPngType(), buffer, data_dst) ||
+      IsFormatAvailable(ClipboardFormatType::GetBitmapType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
   if (IsFormatAvailable(ClipboardFormatType::GetFilenamesType(), buffer,
                         data_dst))
@@ -234,8 +236,12 @@ void TestClipboard::ReadRTF(ClipboardBuffer buffer,
 void TestClipboard::ReadPng(ClipboardBuffer buffer,
                             const DataTransferEndpoint* data_dst,
                             ReadPngCallback callback) const {
-  // TODO(crbug.com/1201018): Implement this.
-  NOTIMPLEMENTED();
+  const DataStore& store = GetStore(buffer);
+  if (!IsReadAllowed(store.data_src.get(), data_dst)) {
+    std::move(callback).Run(std::vector<uint8_t>());
+    return;
+  }
+  std::move(callback).Run(store.png);
 }
 
 void TestClipboard::ReadImage(ClipboardBuffer buffer,
@@ -246,7 +252,9 @@ void TestClipboard::ReadImage(ClipboardBuffer buffer,
     std::move(callback).Run(SkBitmap());
     return;
   }
-  std::move(callback).Run(store.image);
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(store.png.data(), store.png.size(), &bitmap);
+  std::move(callback).Run(bitmap);
 }
 
 // TODO(crbug.com/1103215): |data_dst| should be supported.
@@ -395,7 +403,7 @@ void TestClipboard::WriteBitmap(const SkBitmap& bitmap) {
 
   // Create a dummy entry.
   GetDefaultStore().data[ClipboardFormatType::GetBitmapType()];
-  GetDefaultStore().image = bitmap;
+  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &GetDefaultStore().png);
   ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
@@ -412,7 +420,7 @@ TestClipboard::DataStore::DataStore(const DataStore& other) {
   data = other.data;
   url_title = other.url_title;
   html_src_url = other.html_src_url;
-  image = other.image;
+  png = other.png;
   data_src = other.data_src ? std::make_unique<DataTransferEndpoint>(
                                   DataTransferEndpoint(*(other.data_src)))
                             : nullptr;
@@ -424,7 +432,7 @@ TestClipboard::DataStore& TestClipboard::DataStore::operator=(
   data = other.data;
   url_title = other.url_title;
   html_src_url = other.html_src_url;
-  image = other.image;
+  png = other.png;
   data_src = other.data_src ? std::make_unique<DataTransferEndpoint>(
                                   DataTransferEndpoint(*(other.data_src)))
                             : nullptr;
@@ -437,7 +445,7 @@ void TestClipboard::DataStore::Clear() {
   data.clear();
   url_title.clear();
   html_src_url.clear();
-  image = SkBitmap();
+  png.clear();
   data_src.reset();
 }
 

@@ -129,7 +129,7 @@ class TestClipboard : public Clipboard {
     base::flat_map<ClipboardFormatType, std::string> data;
     std::string url_title;
     std::string html_src_url;
-    SkBitmap image;
+    std::vector<uint8_t> png;
     std::vector<ui::FileInfo> filenames;
     std::unique_ptr<DataTransferEndpoint> data_src;
   };

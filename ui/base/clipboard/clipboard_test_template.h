@@ -20,6 +20,7 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -48,6 +49,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/half_float.h"
 #include "url/origin.h"
@@ -544,24 +546,21 @@ namespace {
 using U8x4 = std::array<uint8_t, 4>;
 using F16x4 = std::array<gfx::HalfFloat, 4>;
 
-template <typename T>
-static void TestBitmapWrite(Clipboard* clipboard,
-                            const SkImageInfo& info,
-                            const T* bitmap_data,
-                            const U8x4* expect_data) {
+void WriteBitmap(Clipboard* clipboard,
+                 const SkImageInfo& info,
+                 const void* bitmap_data) {
   {
-    ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
+    ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
     SkBitmap bitmap;
     ASSERT_TRUE(bitmap.setInfo(info));
-    bitmap.setPixels(
-        const_cast<void*>(reinterpret_cast<const void*>(bitmap_data)));
-    scw.WriteImage(bitmap);
+    bitmap.setPixels(const_cast<void*>(bitmap_data));
+    clipboard_writer.WriteImage(bitmap);
   }
+}
 
-  EXPECT_TRUE(clipboard->IsFormatAvailable(ClipboardFormatType::GetBitmapType(),
-                                           ClipboardBuffer::kCopyPaste,
-                                           /* data_dst = */ nullptr));
-  const SkBitmap& image = clipboard_test_util::ReadImage(clipboard);
+void AssertBitmapMatchesExpected(const SkBitmap& image,
+                                 const SkImageInfo& info,
+                                 const U8x4* expect_data) {
   ASSERT_EQ(image.info().colorType(), kN32_SkColorType);
   ASSERT_NE(image.info().alphaType(), kUnpremul_SkAlphaType);
   EXPECT_EQ(gfx::Size(info.width(), info.height()),
@@ -574,6 +573,36 @@ static void TestBitmapWrite(Clipboard* clipboard,
       EXPECT_EQ(expect_row[x], actual_row[x]) << "x = " << x << ", y = " << y;
     }
   }
+}
+
+template <typename T>
+static void TestBitmapWrite(Clipboard* clipboard,
+                            const SkImageInfo& info,
+                            const T* bitmap_data,
+                            const U8x4* expect_data) {
+  WriteBitmap(clipboard, info, reinterpret_cast<const void*>(bitmap_data));
+
+  EXPECT_TRUE(clipboard->IsFormatAvailable(ClipboardFormatType::GetBitmapType(),
+                                           ClipboardBuffer::kCopyPaste,
+                                           /* data_dst = */ nullptr));
+  const SkBitmap& image = clipboard_test_util::ReadImage(clipboard);
+  AssertBitmapMatchesExpected(image, info, expect_data);
+}
+
+template <typename T>
+static void TestBitmapWriteAndPngRead(Clipboard* clipboard,
+                                      const SkImageInfo& info,
+                                      const T* bitmap_data,
+                                      const U8x4* expect_data) {
+  WriteBitmap(clipboard, info, reinterpret_cast<const void*>(bitmap_data));
+
+  EXPECT_TRUE(clipboard->IsFormatAvailable(ClipboardFormatType::GetPngType(),
+                                           ClipboardBuffer::kCopyPaste,
+                                           /* data_dst = */ nullptr));
+  std::vector<uint8_t> result = clipboard_test_util::ReadPng(clipboard);
+  SkBitmap image;
+  gfx::PNGCodec::Decode(result.data(), result.size(), &image);
+  AssertBitmapMatchesExpected(image, info, expect_data);
 }
 
 #if !defined(OS_ANDROID)
@@ -603,6 +632,7 @@ TYPED_TEST(ClipboardTest, Bitmap_N32_Premul) {
   };
   TestBitmapWrite(&this->clipboard(), SkImageInfo::MakeN32Premul(4, 3), b, b);
 }
+
 TYPED_TEST(ClipboardTest, Bitmap_N32_Premul_2x7) {
   constexpr U8x4 b[2 * 7] = {
       {0x26, 0x16, 0x06, 0x46}, {0x88, 0x59, 0x9f, 0xf6},
@@ -615,6 +645,50 @@ TYPED_TEST(ClipboardTest, Bitmap_N32_Premul_2x7) {
   };
   TestBitmapWrite(&this->clipboard(), SkImageInfo::MakeN32Premul(2, 7), b, b);
 }
+
+// TODO(crbug.com/1201018): Enable as support for each OS is added.
+#if false
+
+// Only kN32_SkColorType bitmaps are allowed into the clipboard to prevent
+// surprising buffer overflows due to bits-per-pixel assumptions.
+TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_F16_Premul) {
+  constexpr F16x4 kRGBAF16Premul = {0x30c5, 0x2d86, 0x2606, 0x3464};
+  constexpr U8x4 kRGBAPremul = {0x26, 0x16, 0x06, 0x46};
+  EXPECT_DEATH(
+      TestBitmapWriteAndPngRead(
+          &this->clipboard(),
+          SkImageInfo::Make(1, 1, kRGBA_F16_SkColorType, kPremul_SkAlphaType),
+          &kRGBAF16Premul, &kRGBAPremul),
+      "");
+}
+
+TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_N32_Premul) {
+  constexpr U8x4 b[4 * 3] = {
+      {0x26, 0x16, 0x06, 0x46}, {0x88, 0x59, 0x9f, 0xf6},
+      {0x37, 0x29, 0x3f, 0x79}, {0x86, 0xb9, 0x55, 0xfa},
+      {0x52, 0x21, 0x77, 0x78}, {0x30, 0x2a, 0x69, 0x87},
+      {0x25, 0x2a, 0x32, 0x36}, {0x1b, 0x40, 0x20, 0x43},
+      {0x21, 0x8c, 0x84, 0x91}, {0x3c, 0x7b, 0x17, 0xc3},
+      {0x5c, 0x15, 0x46, 0x69}, {0x52, 0x19, 0x17, 0x64},
+  };
+  TestBitmapWriteAndPngRead(&this->clipboard(),
+                            SkImageInfo::MakeN32Premul(4, 3), b, b);
+}
+
+TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_N32_Premul_2x7) {
+  constexpr U8x4 b[2 * 7] = {
+      {0x26, 0x16, 0x06, 0x46}, {0x88, 0x59, 0x9f, 0xf6},
+      {0x37, 0x29, 0x3f, 0x79}, {0x86, 0xb9, 0x55, 0xfa},
+      {0x52, 0x21, 0x77, 0x78}, {0x30, 0x2a, 0x69, 0x87},
+      {0x25, 0x2a, 0x32, 0x36}, {0x1b, 0x40, 0x20, 0x43},
+      {0x21, 0x8c, 0x84, 0x91}, {0x3c, 0x7b, 0x17, 0xc3},
+      {0x5c, 0x15, 0x46, 0x69}, {0x52, 0x19, 0x17, 0x64},
+      {0x13, 0x03, 0x91, 0xa6}, {0x3e, 0x32, 0x02, 0x83},
+  };
+  TestBitmapWriteAndPngRead(&this->clipboard(),
+                            SkImageInfo::MakeN32Premul(2, 7), b, b);
+}
+#endif  // false
 #endif  // !defined(OS_ANDROID)
 
 }  // namespace

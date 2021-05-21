@@ -5,6 +5,8 @@
 #ifndef UI_BASE_CLIPBOARD_TEST_CLIPBOARD_TEST_UTIL_H_
 #define UI_BASE_CLIPBOARD_TEST_CLIPBOARD_TEST_UTIL_H_
 
+#include <vector>
+
 class SkBitmap;
 
 namespace ui {
@@ -13,7 +15,8 @@ class Clipboard;
 
 namespace clipboard_test_util {
 
-// Helper function to read image from clipboard synchronously.
+// Helper functions to read images from clipboard synchronously.
+std::vector<uint8_t> ReadPng(Clipboard* clipboard);
 SkBitmap ReadImage(Clipboard* clipboard);
 
 }  // namespace clipboard_test_util
