@@ -27,6 +27,8 @@ namespace features {
 // Don't preconnect on weak signal to save power.
 const base::Feature kNoPreconnectToSearchOnWeakSignal{
     "NoPreconnectToSearchOnWeakSignal", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kNoNavigationPreconnectOnWeakSignal{
+    "NoNavigationPreconnectOnWeakSignal", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 
@@ -292,6 +294,13 @@ void LoadingPredictor::MaybeAddPreconnect(const GURL& url,
     DCHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
     prefetch_manager()->Start(url, std::move(prediction.prefetch_requests));
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::kNoNavigationPreconnectOnWeakSignal) &&
+      IsPreconnectExpensive()) {
+    return;
+  }
+
   if (!prediction.requests.empty())
     preconnect_manager()->Start(url, std::move(prediction.requests));
 }
