@@ -26,10 +26,6 @@ struct ShareTarget;
 namespace base {
 class Time;
 }
-// Forward declared to support safe downcast;
-namespace extensions {
-class BookmarkAppRegistrar;
-}
 
 namespace web_app {
 
@@ -159,7 +155,6 @@ class AppRegistrar {
   // Safe downcast.
   virtual WebAppRegistrar* AsWebAppRegistrar() = 0;
   virtual const WebAppRegistrar* AsWebAppRegistrar() const = 0;
-  virtual extensions::BookmarkAppRegistrar* AsBookmarkAppRegistrar();
 
   void SetSubsystems(OsIntegrationManager* os_integration_manager);
 

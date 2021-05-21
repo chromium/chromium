@@ -171,10 +171,6 @@ GURL AppRegistrar::GetAppLaunchUrl(const AppId& app_id) const {
   return start_url.ReplaceComponents(replacements);
 }
 
-extensions::BookmarkAppRegistrar* AppRegistrar::AsBookmarkAppRegistrar() {
-  return nullptr;
-}
-
 GURL AppRegistrar::GetAppScope(const AppId& app_id) const {
   absl::optional<GURL> scope = GetAppScopeInternal(app_id);
   if (scope)

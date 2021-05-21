@@ -84,9 +84,8 @@ bool LooksLikeAndroidPackageName(const std::string& app_id) {
 const web_app::WebApp* GetWebApp(const std::string& app_id, Profile* profile) {
   web_app::WebAppRegistrar* web_app_registrar =
       web_app::WebAppProvider::Get(profile)->registrar().AsWebAppRegistrar();
-  // Some browser tests still deal with a deprecated BookmarkAppRegistrar.
-  if (!web_app_registrar)
-    return nullptr;
+
+  DCHECK(web_app_registrar);
   return web_app_registrar->GetAppById(app_id);
 }
 

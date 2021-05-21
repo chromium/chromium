@@ -10,21 +10,7 @@ assert(enable_extensions)
 # TODO(crbug.com/1065748): Delete web_applications/extensions/ directory.
 source_set("extensions") {
   sources = [
-    "bookmark_app_file_handler_manager.cc",
-    "bookmark_app_file_handler_manager.h",
-    "bookmark_app_finalizer_utils.cc",
-    "bookmark_app_finalizer_utils.h",
-    "bookmark_app_icon_manager.cc",
-    "bookmark_app_icon_manager.h",
-    "bookmark_app_install_finalizer.cc",
-    "bookmark_app_install_finalizer.h",
     "bookmark_app_provider.cc",
-    "bookmark_app_registrar.cc",
-    "bookmark_app_registrar.h",
-    "bookmark_app_registry_controller.cc",
-    "bookmark_app_registry_controller.h",
-    "bookmark_app_shortcut_manager.cc",
-    "bookmark_app_shortcut_manager.h",
     "bookmark_app_util.cc",
     "bookmark_app_util.h",
     "extension_status_utils.cc",
@@ -61,7 +47,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "bookmark_app_install_finalizer_unittest.cc",
     "bookmark_app_util_unittest.cc",
     "externally_installed_web_app_prefs_unittest.cc",
     "externally_managed_app_install_task_unittest.cc",

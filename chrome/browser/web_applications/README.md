@@ -150,9 +150,7 @@ registry have to go via [`WebAppSyncBridge`](web_app_sync_bridge.h).
 Why is it full of `GetAppXYZ()` getters for every field instead of just
 returning a `WebApp` reference? Because web apps used to be backed by
 `Extension`s and in that mode there were no `WebApp`s; instead everything was
-stored on an `Extension`. See `WebAppRegistrar`'s sibling
-[`BookmarkAppRegistrar`](extensions/bookmark_app_registrar.h) for that
-implementation.
+stored on an `Extension`.
 
 
 ### [`WebAppInstallManager`](web_app_install_manager.h)

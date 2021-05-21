@@ -37,9 +37,7 @@ class AppRegistrarObserver : public base::CheckedObserver {
 
   // Called before a web app is uninstalled, before the uninstallation process
   // begins. |app_id| is still registered in the AppRegistrar, and OS hooks have
-  // not yet been uninstalled. For bookmark apps, use
-  // BookmarkAppRegistrar::FindExtension to convert this |app_id| to Extension
-  // pointer.
+  // not yet been uninstalled.
   virtual void OnWebAppWillBeUninstalled(const AppId& app_id) {}
 
   // Called after a web app is uninstalled. |app_id| is no longer registered in
@@ -47,8 +45,6 @@ class AppRegistrarObserver : public base::CheckedObserver {
   // deleted.
   virtual void OnWebAppUninstalled(const AppId& app_id) {}
 
-  // For bookmark apps, use BookmarkAppRegistrar::FindExtension to convert this
-  // |app_id| to Extension pointer.
   virtual void OnWebAppProfileWillBeDeleted(const AppId& app_id) {}
 
   virtual void OnAppRegistrarShutdown() {}
