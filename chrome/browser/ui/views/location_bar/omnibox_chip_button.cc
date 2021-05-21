@@ -106,6 +106,8 @@ int OmniboxChipButton::GetIconSize() const {
 }
 
 void OmniboxChipButton::UpdateColors() {
+  if (!GetWidget())
+    return;
   SetEnabledTextColors(GetForegroundColor());
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(icon_, GetForegroundColor(),

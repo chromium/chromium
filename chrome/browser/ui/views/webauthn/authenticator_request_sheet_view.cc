@@ -90,7 +90,6 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
 
   auto image_view = std::make_unique<NonAccessibleImageView>();
   step_illustration_ = image_view.get();
-  UpdateIconImageFromModel();
   image_view->SetSize(illustration_size);
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   image_with_overlays->AddChildView(image_view.release());
@@ -127,6 +126,10 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
     back_arrow_ = back_arrow.get();
     back_arrow_button_ =
         image_with_overlays->AddChildView(std::move(back_arrow));
+  }
+
+  if (GetWidget()) {
+    UpdateIconImageFromModel();
     UpdateIconColors();
   }
 
