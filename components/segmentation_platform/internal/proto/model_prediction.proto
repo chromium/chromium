@@ -15,8 +15,9 @@ message PredictionResult {
   // The result is the confidence rating from the model evaluation.
   optional float result = 1;
 
-  // When the prediction was made in a number of seconds since epoch in UTC.
-  optional int64 timestamp_s = 2;
+  // The time when the prediction was made, in terms of the number of
+  // microseconds since Windows epoch.
+  optional int64 timestamp_us = 2;
 }
 
 // Top level message for a segment. Contains both the model metadata and

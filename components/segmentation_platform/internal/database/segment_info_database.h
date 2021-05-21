@@ -16,6 +16,14 @@ using optimization_guide::proto::OptimizationTarget;
 
 namespace segmentation_platform {
 
+namespace proto {
+class SegmentInfo;
+class PredictionResult;
+}  // namespace proto
+
+// The key to be used to find discrete mapping for segmentation.
+constexpr char kSegmentationDiscreteMappingKey[] = "segmentation";
+
 // Represents a DB layer that stores model metadata and prediction results to
 // the disk.
 class SegmentInfoDatabase {
@@ -31,6 +39,12 @@ class SegmentInfoDatabase {
   // Convenient method to return combined info for all the segments in the
   // database.
   virtual void GetAllSegmentInfo(AllSegmentInfoCallback callback) = 0;
+
+  // Called to write the model execution results for a given segment. If
+  // |result| is null, the existing results will be deleted.
+  virtual void SaveSegmentResult(OptimizationTarget segment_id,
+                                 proto::PredictionResult* result,
+                                 SuccessCallback callback) = 0;
 };
 
 }  // namespace segmentation_platform
