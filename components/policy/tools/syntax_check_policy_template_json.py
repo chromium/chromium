@@ -77,7 +77,7 @@ LEGACY_EMBEDDED_JSON_ALLOWLIST = [
 # List of policies where not all properties are required to be presented in the
 # example value. This could be useful e.g. in case of mutually exclusive fields.
 # See crbug.com/1068257 for the details.
-OPTIONAL_PROPERTIES_POLICIES_ALLOWLIST = []
+OPTIONAL_PROPERTIES_POLICIES_ALLOWLIST = ['ProxySettings']
 
 # 100 MiB upper limit on the total device policy external data max size limits
 # due to the security reasons.
