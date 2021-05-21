@@ -2789,8 +2789,7 @@ class InitialEmptyDocNavigationControllerBrowserTest
     EXPECT_FALSE(capturer.did_replace_entry());
 
     // Check both NavigationHandle and LoadCommittedDetails for whether this was
-    // considered same-document, as these have diverged in the past (since only
-    // the latter is affected by IsURLSameDocumentNavigation).
+    // considered same-document, as these have diverged in the past.
     // See https://crbug.com/1193134.
     EXPECT_EQ(expect_same_document, capturer.is_same_document());
     EXPECT_EQ(expect_same_document,
@@ -3126,8 +3125,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_TRUE(controller.GetLastCommittedEntry());
 
     // Check both NavigationHandle and LoadCommittedDetails for whether this was
-    // considered same-document, as these have diverged in the past (since only
-    // the latter is affected by IsURLSameDocumentNavigation).
+    // considered same-document, as these have diverged in the past.
     // See https://crbug.com/1193134.
     EXPECT_TRUE(capturer.is_same_document());
     EXPECT_TRUE(load_details_observer.load_details().is_same_document);

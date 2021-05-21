@@ -24,7 +24,7 @@ namespace bad_message {
 // end. Items may be renamed but do not change the values. We rely on the enum
 // values in histograms.
 enum BadMessageReason {
-  NC_IN_PAGE_NAVIGATION = 0,
+  OBSOLETE_NC_IN_PAGE_NAVIGATION = 0,
   RFH_CAN_COMMIT_URL_BLOCKED = 1,
   RFH_CAN_ACCESS_FILES_OF_PAGE_STATE = 2,
   RFH_SANDBOX_FLAGS = 3,

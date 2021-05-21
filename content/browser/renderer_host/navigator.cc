@@ -358,15 +358,14 @@ void Navigator::DidNavigate(
   base::WeakPtr<RenderFrameHostImpl> old_frame_host =
       frame_tree_node->render_manager()->current_frame_host()->GetWeakPtr();
 
-  bool is_same_document_navigation = controller_.IsURLSameDocumentNavigation(
-      params.url, params.origin, was_within_same_document, render_frame_host);
   // If a frame claims the navigation was same-document, it must be the current
   // frame, not a pending one.
-  if (is_same_document_navigation &&
-      render_frame_host != old_frame_host.get()) {
+  // TODO(creis): This check should be moved to RenderFrameHostImpl, allowing an
+  // early return.  See https://crbug.com/1209097.
+  if (was_within_same_document && render_frame_host != old_frame_host.get()) {
     bad_message::ReceivedBadMessage(render_frame_host->GetProcess(),
                                     bad_message::NI_IN_PAGE_NAVIGATION);
-    is_same_document_navigation = false;
+    was_within_same_document = false;
   }
   // At this point we have already chosen a SiteInstance for this navigation, so
   // set |origin_isolation_request| to kNone in the conversion to UrlInfo
@@ -387,7 +386,7 @@ void Navigator::DidNavigate(
   if (ui::PageTransitionIsMainFrame(params.transition)) {
     if (delegate_) {
       // Run tasks that must execute just before the commit.
-      delegate_->DidNavigateMainFramePreCommit(is_same_document_navigation);
+      delegate_->DidNavigateMainFramePreCommit(was_within_same_document);
     }
   }
 
@@ -398,7 +397,7 @@ void Navigator::DidNavigate(
   // frame's origin.  See https://crbug.com/825283.
   frame_tree_node->render_manager()->DidNavigateFrame(
       render_frame_host, params.gesture == NavigationGestureUser,
-      is_same_document_navigation,
+      was_within_same_document,
       navigation_request->coop_status()
           .require_browsing_instance_swap() /* clear_proxies_on_commit */,
       navigation_request->commit_params().frame_policy);
@@ -416,7 +415,7 @@ void Navigator::DidNavigate(
   bool previous_document_was_activated =
       frame_tree->root()->HasStickyUserActivation();
 
-  if (!is_same_document_navigation) {
+  if (!was_within_same_document) {
     // Navigating to a new location means a new, fresh set of http headers
     // and/or <meta> elements - we need to reset Permissions Policy.
     frame_tree_node->ResetForNavigation();
@@ -453,9 +452,9 @@ void Navigator::DidNavigate(
   LoadCommittedDetails details;
   base::TimeTicks start = base::TimeTicks::Now();
   bool did_navigate = controller_.RendererDidNavigate(
-      render_frame_host, params, &details, is_same_document_navigation,
+      render_frame_host, params, &details, was_within_same_document,
       previous_document_was_activated, navigation_request.get());
-  if (!is_same_document_navigation) {
+  if (!was_within_same_document) {
     base::UmaHistogramTimes(
         base::StrCat(
             {"Navigation.RendererDidNavigateTime.",
@@ -482,24 +481,10 @@ void Navigator::DidNavigate(
 
   // Navigations that activate an existing bfcached or prerendered document do
   // not create a new document.
-  //
-  // |was_within_same_document| (controlled by the renderer) also needs to be
-  // considered: in some cases, the browser and renderer can disagree. While
-  // this is usually a bad message kill, there are some situations where this
-  // can legitimately happen. When a new frame is created (e.g. with
-  // <iframe src="...">), the initial about:blank document doesn't have a
-  // corresponding entry in the browser process. As a result, the browser
-  // process incorrectly determines that the navigation is cross-document when
-  // in reality it's same-document.
-  //
-  // TODO(crbug/1099264): Remove |was_within_same_document| from this logic
-  // once all same-document navigations have a NavigationEntry. Once this
-  // happens there should be no cases where the browser and renderer
-  // legitimately disagree as described above.
   bool did_create_new_document =
       !navigation_request->IsServedFromBackForwardCache() &&
       !navigation_request->IsPrerenderedPageActivation() &&
-      !is_same_document_navigation && !was_within_same_document;
+      !was_within_same_document;
 
   // Store some information for recording WebPlatform security metrics. These
   // metrics depends on information present in the NavigationRequest. However

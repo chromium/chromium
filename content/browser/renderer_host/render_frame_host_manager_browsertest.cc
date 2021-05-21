@@ -3779,12 +3779,27 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   web_contents->SetWebPreferences(prefs);
 
   GURL file_url = GetTestUrl("", "title1.html");
+  ASSERT_TRUE(file_url.SchemeIsFile());
   ASSERT_TRUE(NavigateToURL(shell(), file_url));
   EXPECT_EQ(1, web_contents->GetController().GetEntryCount());
-  EXPECT_TRUE(ExecuteScript(
-      root, "window.history.pushState({}, '', 'https://chromium.org');"));
+  EXPECT_TRUE(
+      ExecJs(root, "history.pushState({}, '', 'https://chromium.org');"));
+  ASSERT_TRUE(web_contents->GetMainFrame()->IsRenderFrameLive());
   EXPECT_EQ(2, web_contents->GetController().GetEntryCount());
-  EXPECT_TRUE(web_contents->GetMainFrame()->IsRenderFrameLive());
+
+  // At this point, we should still consider the current origin to be file://,
+  // so that subsequent web or file URLs would still be legal for same-document
+  // navigations.  See https://crbug.com/553418.
+  const url::Origin file_origin = url::Origin::Create(file_url);
+  EXPECT_TRUE(file_origin.IsSameOriginWith(
+      web_contents->GetMainFrame()->GetLastCommittedOrigin()));
+  EXPECT_TRUE(ExecJs(root, "history.pushState({}, '', 'https://foo.com');"));
+  ASSERT_TRUE(web_contents->GetMainFrame()->IsRenderFrameLive());
+  EXPECT_EQ(3, web_contents->GetController().GetEntryCount());
+  EXPECT_TRUE(
+      ExecJs(root, JsReplace("history.pushState({}, '', $1);", file_url)));
+  ASSERT_TRUE(web_contents->GetMainFrame()->IsRenderFrameLive());
+  EXPECT_EQ(4, web_contents->GetController().GetEntryCount());
 }
 
 // Ensure that navigating back from a sad tab to an existing process works

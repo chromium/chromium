@@ -6453,13 +6453,11 @@ void RenderFrameHostImpl::ResetWaitingState() {
 
 CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
     const url::Origin& origin,
-    const GURL& url) {
-  // If the --disable-web-security flag is specified, all bets are off and the
-  // renderer process can send any origin it wishes.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableWebSecurity)) {
-    return CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL;
-  }
+    const GURL& url,
+    bool is_same_document_navigation) {
+  // Note that callers are responsible for avoiding this function in modes that
+  // can bypass these rules, such as --disable-web-security or certain Android
+  // WebView features like universal access from file URLs.
 
   // Renderer-debug URLs can never be committed.
   if (blink::IsRendererDebugURL(url)) {
@@ -6499,6 +6497,14 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
     }
   }
 
+  // Same-document navigations cannot change origins, as long as these checks
+  // aren't being bypassed in unusual modes. This check must be after the MHTML
+  // check, as shown by NavigationMhtmlBrowserTest.IframeAboutBlankNotFound.
+  if (is_same_document_navigation && origin != GetLastCommittedOrigin()) {
+    LogCanCommitOriginAndUrlFailureReason("cross_origin_same_document");
+    return CanCommitStatus::CANNOT_COMMIT_ORIGIN;
+  }
+
   // Give the client a chance to disallow URLs from committing.
   if (!GetContentClient()->browser()->CanCommitURL(GetProcess(), url)) {
     LogCanCommitOriginAndUrlFailureReason(
@@ -6506,6 +6512,7 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
     return CanCommitStatus::CANNOT_COMMIT_URL;
   }
 
+  // Check with ChildProcessSecurityPolicy, which enforces Site Isolation, etc.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const CanCommitStatus can_commit_status = policy->CanCommitOriginAndUrl(
       GetProcess()->GetID(), GetSiteInstance()->GetIsolationContext(), origin,
@@ -9219,6 +9226,12 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
       bypass_checks_for_file_scheme = true;
   }
 
+  // If the --disable-web-security flag is specified, all bets are off and the
+  // renderer process can send any origin it wishes.
+  bool bypass_checks_for_disable_web_security =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableWebSecurity);
+
   // WebView's loadDataWithBaseURL API is allowed to bypass normal commit
   // checks because it is allowed to commit anything into its unlocked process
   // and its data: URL and non-opaque origin would fail the normal commit
@@ -9240,11 +9253,12 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   }
 
   if (!bypass_checks_for_error_page && !bypass_checks_for_file_scheme &&
-      !bypass_checks_for_webview) {
+      !bypass_checks_for_disable_web_security && !bypass_checks_for_webview) {
     // Attempts to commit certain off-limits URL should be caught more strictly
     // than our FilterURL checks.  If a renderer violates this policy, it
     // should be killed.
-    switch (CanCommitOriginAndUrl(params->origin, params->url)) {
+    switch (CanCommitOriginAndUrl(params->origin, params->url,
+                                  is_same_document_navigation)) {
       case CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL:
         // The origin and URL are safe to commit.
         break;

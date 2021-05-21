@@ -7096,7 +7096,7 @@ Called by update_bad_message_reasons.py.-->
 <!-- Generated from content/browser/bad_message.h.
 Called by update_bad_message_reasons.py.-->
 
-  <int value="0" label="NC_IN_PAGE_NAVIGATION"/>
+  <int value="0" label="OBSOLETE_NC_IN_PAGE_NAVIGATION"/>
   <int value="1" label="RFH_CAN_COMMIT_URL_BLOCKED"/>
   <int value="2" label="RFH_CAN_ACCESS_FILES_OF_PAGE_STATE"/>
   <int value="3" label="RFH_SANDBOX_FLAGS"/>

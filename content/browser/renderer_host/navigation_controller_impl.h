@@ -262,27 +262,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // so that we know to load URLs that were pending as "lazy" loads.
   void SetActive(bool is_active);
 
-  // Returns true if the given URL would be a same-document navigation (e.g., if
-  // the reference fragment is different, or after a pushState) from the last
-  // committed URL in the specified frame.
-  //
-  // Special note: if the URLs are the same, it does NOT automatically count as
-  // a same-document navigation. Neither does an input URL that has no ref, even
-  // if the rest is the same. This may seem weird, but when we're considering
-  // whether a navigation happened without loading anything, the same URL could
-  // be a reload, while only a different ref would be in-page (pages can't clear
-  // refs without reload, only change to "#" which we don't count as empty).
-  //
-  // The situation is made murkier by history.replaceState(), which could
-  // provide the same URL as part of a same-document navigation, not a reload.
-  // So we need to let the (untrustworthy) renderer resolve the ambiguity, but
-  // only when the URLs are on the same origin. We rely on |origin|, which
-  // matters in cases like about:blank that otherwise look cross-origin.
-  bool IsURLSameDocumentNavigation(const GURL& url,
-                                   const url::Origin& origin,
-                                   bool renderer_says_same_document,
-                                   RenderFrameHost* rfh);
-
   // Sets the SessionStorageNamespace for the given |partition_id|. This is
   // used during initialization of a new NavigationController to allow
   // pre-population of the SessionStorageNamespace objects. Session restore,

@@ -414,7 +414,6 @@ void WebNavigationTabObserver::HandleError(
   web_navigation_api_helpers::DispatchOnErrorOccurred(navigation_handle);
 }
 
-// See also NavigationController::IsURLSameDocumentNavigation.
 bool WebNavigationTabObserver::IsReferenceFragmentNavigation(
     content::RenderFrameHost* render_frame_host,
     const GURL& url) {

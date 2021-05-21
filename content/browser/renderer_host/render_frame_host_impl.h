@@ -2425,7 +2425,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderProcessHost::FilterURL, since it will be used to kill processes that
   // commit unauthorized origins.
   CanCommitStatus CanCommitOriginAndUrl(const url::Origin& origin,
-                                        const GURL& url);
+                                        const GURL& url,
+                                        bool is_same_document_navigation);
 
   // Asserts that the given RenderFrameHostImpl is part of the same browser
   // context (and crashes if not), then returns whether the given frame is
