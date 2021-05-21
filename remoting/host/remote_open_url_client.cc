@@ -9,6 +9,7 @@
 #include "base/environment.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -23,6 +24,8 @@ namespace {
 
 constexpr char kChromeRemoteDesktopSessionEnvVar[] =
     "CHROME_REMOTE_DESKTOP_SESSION";
+
+constexpr base::TimeDelta kRequestTimeout = base::TimeDelta::FromSeconds(5);
 
 void OpenOnFallbackBrowserInternal(const GURL& url = GURL()) {
   std::string previous_default_browser =
@@ -68,6 +71,13 @@ void RemoteOpenUrlClient::OpenUrl(const GURL& url, base::OnceClosure done) {
 
   url_ = url;
 
+  if (!url_.SchemeIsHTTPOrHTTPS() && !url_.SchemeIs("mailto")) {
+    HOST_LOG << "Unrecognized scheme. Failing back to the previous default "
+             << "browser...";
+    OnOpenUrlResponse(mojom::OpenUrlResult::LOCAL_FALLBACK);
+    return;
+  }
+
   if (!environment_->HasVar(kChromeRemoteDesktopSessionEnvVar)) {
     LOG(WARNING) << "The program is not run on a remote session. "
                  << "Falling back to the previous default browser...";
@@ -94,11 +104,14 @@ void RemoteOpenUrlClient::OpenUrl(const GURL& url, base::OnceClosure done) {
   }
 
   remote_.Bind(std::move(pending_remote));
+  timeout_timer_.Start(FROM_HERE, kRequestTimeout, this,
+                       &RemoteOpenUrlClient::OnRequestTimeout);
   remote_->OpenUrl(url_, base::BindOnce(&RemoteOpenUrlClient::OnOpenUrlResponse,
                                         base::Unretained(this)));
 }
 
 void RemoteOpenUrlClient::OnOpenUrlResponse(mojom::OpenUrlResult result) {
+  timeout_timer_.AbandonAndStop();
   switch (result) {
     case mojom::OpenUrlResult::SUCCESS:
       HOST_LOG << "The URL is successfully opened on the client.";
@@ -113,6 +126,11 @@ void RemoteOpenUrlClient::OnOpenUrlResponse(mojom::OpenUrlResult result) {
       NOTREACHED();
   }
   std::move(done_).Run();
+}
+
+void RemoteOpenUrlClient::OnRequestTimeout() {
+  LOG(ERROR) << "Timed out waiting for OpenUrl response.";
+  OnOpenUrlResponse(mojom::OpenUrlResult::LOCAL_FALLBACK);
 }
 
 }  // namespace remoting

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
 
@@ -35,6 +36,9 @@ class RemoteOpenUrlClient final {
 
  private:
   void OnOpenUrlResponse(mojom::OpenUrlResult result);
+  void OnRequestTimeout();
+
+  base::OneShotTimer timeout_timer_;
 
   std::unique_ptr<base::Environment> environment_;
   GURL url_;
