@@ -199,8 +199,18 @@ export class ShimlessRmaElement extends PolymerElement {
 
   /** @protected */
   onNextBtnClicked_() {
-    // TODO(joonbug): error handling based on state.error
-    this.fetchNextState_().then((state) => this.loadState_(state.nextState));
+    const page = this.shadowRoot.querySelector(this.currentPage_.componentIs);
+    assert(page);
+
+    // Acquire promise to check whether current page is ready for next page.
+    const prepPageAdvance =
+        page.onNextBtnClick || (() => Promise.resolve(true));
+    assert(typeof prepPageAdvance === 'function');
+
+    prepPageAdvance()
+        .then((ready) => ready ? this.fetchNextState_() : Promise.reject())
+        .then((state) => this.loadState_(state.nextState))
+        .catch((err) => void 0);
   }
 
   /** @protected */

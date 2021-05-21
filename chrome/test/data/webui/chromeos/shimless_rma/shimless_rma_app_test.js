@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {fakeChromeVersion, fakeStates} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
@@ -66,6 +67,16 @@ export function shimlessRMAAppTest() {
     assertTrue(!!backBtn);
   }
 
+  /**
+   * Utility function to click next button
+   * @return {Promise}
+   */
+  function clickNext() {
+    const nextBtn = component.shadowRoot.querySelector('#next');
+    nextBtn.click();
+    return flushTasks();
+  }
+
   test('ShimlessRMALoaded', async () => {
     await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
     assertNavButtons();
@@ -79,16 +90,14 @@ export function shimlessRMAAppTest() {
     assertTrue(!!initialPage);
     assertFalse(initialPage.hidden);
 
-    const nextBtn = component.shadowRoot.querySelector('#next');
-    nextBtn.click();
-    await flushTasks();
+    await clickNext();
 
     // TODO(joonbug): enable when page is ready.
     // const selectComponentPage =
     //     component.shadowRoot.querySelector('onboarding-select-components');
     // assertTrue(!!selectComponentPage);
     // assertFalse(selectComponentPage.hidden);
-    assertTrue(!!initialPage);  // initial page should not be destroyed on nav.
+    assertTrue(!!initialPage);
     assertTrue(initialPage.hidden);
 
     const prevBtn = component.shadowRoot.querySelector('#back');
@@ -106,15 +115,51 @@ export function shimlessRMAAppTest() {
 
     const initialPage =
         component.shadowRoot.querySelector('onboarding-landing-page');
-    const nextBtn = component.shadowRoot.querySelector('#next');
-    nextBtn.click();
-    await flushTasks();
+    await clickNext();
 
     const cancelBtn = component.shadowRoot.querySelector('#cancel');
     cancelBtn.click();
     await flushTasks();
 
     // back to initial page
+    assertFalse(initialPage.hidden);
+  });
+
+  test('NextBtnClickedOnReady', async () => {
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+
+    const initialPage =
+        component.shadowRoot.querySelector('onboarding-landing-page');
+    assertTrue(!!initialPage);
+
+    const resolver = new PromiseResolver();
+    initialPage.onNextBtnClick = () => resolver.promise;
+
+    await clickNext();
+    assertFalse(initialPage.hidden);
+
+    resolver.resolve(true);
+    await flushTasks();
+
+    assertTrue(initialPage.hidden);
+  });
+
+  test('NextBtnClickedOnNotReady', async () => {
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+
+    const initialPage =
+        component.shadowRoot.querySelector('onboarding-landing-page');
+    assertTrue(!!initialPage);
+
+    const resolver = new PromiseResolver();
+    initialPage.onNextBtnClick = () => resolver.promise;
+
+    await clickNext();
+    assertFalse(initialPage.hidden);
+
+    resolver.resolve(false);
+    await flushTasks();
+
     assertFalse(initialPage.hidden);
   });
 }

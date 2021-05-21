@@ -88,12 +88,14 @@ js_library("mojo_interface_provider") {
 
 js_library("onboarding_landing_page") {
   deps = [
+    ":base_page",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
 js_library("onboarding_update_page") {
   deps = [
+    ":base_page",
     ":mojo_interface_provider",
     ":shimless_rma_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
