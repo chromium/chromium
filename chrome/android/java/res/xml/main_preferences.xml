@@ -11,128 +11,113 @@
         android:key="sync_promo"
         android:order="0"/>
     <PreferenceCategory
-        android:key="account_section"
-        android:order="1"
-        android:title="@string/prefs_section_account"/>
-    <PreferenceCategory
         android:key="account_and_google_services_section"
-        android:order="2"
-        android:title="@string/prefs_section_account_and_google_services"
-        app:isPreferenceVisible="false"/>
+        android:order="1"
+        android:title="@string/prefs_section_account_and_google_services"/>
     <org.chromium.chrome.browser.sync.settings.SignInPreference
         android:key="sign_in"
-        android:order="3"
+        android:order="2"
         android:title="@string/sign_in_to_chrome"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:key="sync_and_services"
-        android:order="4"
-        android:layout="@layout/account_management_account_row"
-        android:title="@string/prefs_sync_and_services"
-        android:fragment="org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings"/>
-    <!-- manage_sync and google_services replace sync_and_services if MOBILE_IDENTITY_CONSISTENCY
-         is enabled. -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="manage_sync"
-        android:order="5"
+        android:order="3"
         android:layout="@layout/account_management_account_row"
-        android:title="@string/sync_category_title"
-        app:isPreferenceVisible="false"/>
+        android:title="@string/sync_category_title"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="google_services"
-        android:order="6"
+        android:order="4"
         android:layout="@layout/account_management_account_row"
         android:title="@string/prefs_google_services"
         android:icon="@drawable/ic_google_services_48dp"
-        android:fragment="org.chromium.chrome.browser.sync.settings.GoogleServicesSettings"
-        app:isPreferenceVisible="false"/>
+        android:fragment="org.chromium.chrome.browser.sync.settings.GoogleServicesSettings"/>
 
     <PreferenceCategory
         android:key="basics_section"
-        android:order="7"
+        android:order="5"
         android:title="@string/prefs_section_basics"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings"
         android:key="search_engine"
-        android:order="8"
+        android:order="6"
         android:title="@string/search_engine_settings"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.password_manager.settings.PasswordSettings"
         android:key="passwords"
-        android:order="9"
+        android:order="7"
         android:title="@string/password_settings_title"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment"
         android:key="autofill_payment_methods"
-        android:order="10"
+        android:order="8"
         android:title="@string/autofill_payment_methods"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragment"
         android:key="autofill_addresses"
-        android:order="11"
+        android:order="9"
         android:title="@string/autofill_addresses_settings_title"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.privacy.settings.PrivacySettings"
         android:key="privacy"
-        android:order="12"
+        android:order="10"
         android:title="@string/prefs_privacy_security"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment"
         android:key="safety_check"
-        android:order="13"
+        android:order="11"
         android:title="@string/prefs_safety_check"/>
     <Preference
         android:key="notifications"
-        android:order="14"
+        android:order="12"
         android:title="@string/prefs_notifications"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment"
         android:key="ui_theme"
-        android:order="15"
+        android:order="13"
         android:title="@string/theme_settings" />
 
     <PreferenceCategory
         android:key="advanced_section"
-        android:order="16"
+        android:order="14"
         android:title="@string/prefs_section_advanced"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.homepage.settings.HomepageSettings"
         android:key="homepage"
-        android:order="17"
+        android:order="15"
         android:title="@string/options_homepage_title"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings"
         android:key="accessibility"
-        android:order="18"
+        android:order="16"
         android:title="@string/prefs_accessibility"/>
     <Preference
         android:fragment="org.chromium.components.browser_ui.site_settings.SiteSettings"
         android:key="content_settings"
-        android:order="19"
+        android:order="17"
         android:title="@string/prefs_site_settings"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.language.settings.LanguageSettings"
         android:key="languages"
-        android:order="20"
+        android:order="18"
         android:title="@string/language_settings"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.datareduction.settings.DataReductionPreferenceFragment"
         android:key="data_reduction"
-        android:order="21"
+        android:order="19"
         android:title="@string/data_reduction_title_lite_mode"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.download.settings.DownloadSettings"
         android:key="downloads"
-        android:order="22"
+        android:order="20"
         android:title="@string/menu_downloads"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.tracing.settings.DeveloperSettings"
         android:key="developer"
-        android:order="23"
+        android:order="21"
         android:title="Developer options"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.about_settings.AboutChromeSettings"
         android:key="about_chrome"
-        android:order="24"
+        android:order="22"
         android:title="@string/prefs_about_chrome"/>
 
 </PreferenceScreen>
