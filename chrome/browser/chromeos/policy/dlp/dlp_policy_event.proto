@@ -49,5 +49,5 @@ message DlpPolicyEvent {
   optional Mode mode = 4;
   // Whether the restriction was enforced or not. Valuable for WARN.
   optional bool restriction_enforced = 5;
-  optional int64 timestamp = 6;
+  optional int64 timestamp_micro = 6;
 }
