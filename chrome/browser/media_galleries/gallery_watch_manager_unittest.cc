@@ -326,7 +326,8 @@ TEST_F(GalleryWatchManagerTest, MAYBE_RemoveAllWatches) {
 }
 
 // Fails on Mac: crbug.com/1183212
-#if defined(OS_MAC)
+// Fails on Chrome OS: crbug.com/1207878
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_DropWatchOnGalleryRemoved DISABLED_DropWatchOnGalleryRemoved
 #else
 #define MAYBE_DropWatchOnGalleryRemoved DropWatchOnGalleryRemoved
