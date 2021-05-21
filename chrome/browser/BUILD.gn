@@ -2173,6 +2173,7 @@ static_library("browser") {
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core:public",
     "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/browser/download:download_stats",
     "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_policy_handler",

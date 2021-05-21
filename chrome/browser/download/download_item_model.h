@@ -82,6 +82,7 @@ class DownloadItemModel : public DownloadUIModel,
   bool AllDataSaved() const override;
   bool GetFileExternallyRemoved() const override;
   GURL GetURL() const override;
+  bool HasUserGesture() const override;
   offline_items_collection::FailState GetLastFailState() const override;
 
 #if !defined(OS_ANDROID)
