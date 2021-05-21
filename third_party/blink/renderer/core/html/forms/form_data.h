@@ -52,7 +52,7 @@ typedef FileOrUSVString FormDataEntryValue;
 
 class CORE_EXPORT FormData final
     : public ScriptWrappable,
-      public PairIterable<String, FormDataEntryValue> {
+      public PairIterable<String, Member<V8FormDataEntryValue>> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

@@ -49,14 +49,15 @@ namespace blink {
 namespace {
 
 class FormDataIterationSource final
-    : public PairIterable<String, FormDataEntryValue>::IterationSource {
+    : public PairIterable<String,
+                          Member<V8FormDataEntryValue>>::IterationSource {
  public:
   FormDataIterationSource(FormData* form_data)
       : form_data_(form_data), current_(0) {}
 
   bool Next(ScriptState* script_state,
             String& name,
-            FormDataEntryValue& value,
+            Member<V8FormDataEntryValue>& value,
             ExceptionState& exception_state) override {
     if (current_ >= form_data_->size())
       return false;
@@ -64,17 +65,18 @@ class FormDataIterationSource final
     const FormData::Entry& entry = *form_data_->Entries()[current_++];
     name = entry.name();
     if (entry.IsString()) {
-      value.SetUSVString(entry.Value());
+      value = MakeGarbageCollected<V8FormDataEntryValue>(entry.Value());
     } else {
       DCHECK(entry.isFile());
-      value.SetFile(entry.GetFile());
+      value = MakeGarbageCollected<V8FormDataEntryValue>(entry.GetFile());
     }
     return true;
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(form_data_);
-    PairIterable<String, FormDataEntryValue>::IterationSource::Trace(visitor);
+    PairIterable<String, Member<V8FormDataEntryValue>>::IterationSource::Trace(
+        visitor);
   }
 
  private:
@@ -356,7 +358,7 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
   return form_data;
 }
 
-PairIterable<String, FormDataEntryValue>::IterationSource*
+PairIterable<String, Member<V8FormDataEntryValue>>::IterationSource*
 FormData::StartIteration(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<FormDataIterationSource>(this);
 }
