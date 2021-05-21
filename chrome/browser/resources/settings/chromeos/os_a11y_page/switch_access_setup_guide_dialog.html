@@ -30,7 +30,7 @@
       }
 
       .sa-setup-contents {
-        width: 280px;
+        width: 335px;
       }
 
       .flex {
@@ -44,7 +44,7 @@
         background-repeat: no-repeat;
         background-size: contain;
         height: 145px;
-        margin: 25px 20px;
+        margin-top: 50px;
         width: 215px;
       }
 
@@ -66,8 +66,12 @@
         margin: 4px;
       }
 
-      input[type='radio'] + label {
+      .radio-button label {
         padding-inline-start: 20px;
+      }
+
+      .radio-button {
+        padding-bottom: 16px;
       }
 
       .radio-button-description {
@@ -86,48 +90,51 @@
       </div>
       <div slot="body" class="sa-setup-body">
         <div id="intro" class="flex">
-          <div class="sa-setup-contents">
+          <div class="sa-setup-contents cr-title-text">
             $i18n{switchAccessSetupIntroBody}
           </div>
           <div class="illustration"></div>
         </div>
         <div id="assign-select" class="flex" hidden>
-          <div class="sa-setup-contents">
+          <div class="sa-setup-contents cr-title-text">
             Nothing to see here yet!
           </div>
         </div>
         <div id="choose-switch-count" class="flex" hidden>
           <div class="sa-setup-contents">
-            <input type="radio" aria-labelledby="switch-count-of-1"
-                   name="switch-count" value=1>
-            <label id="switch-count-of-1">
-              <span class="cr-title-text">
-                $i18n{switchAccessSetupChoose1Switch}
-              </span>
-              <div></div>
-            </label>
-            <div></div>
-            <input type="radio" aria-labelledby="switch-count-of-2"
-                   name="switch-count" value=2>
-            <label id="switch-count-of-2">
-              <span class="cr-title-text">
-                $i18n{switchAccessSetupChoose2Switches}
-              </span>
-              <div class="radio-button-description">
-                $i18n{switchAccessSetupChoose2SwitchesDescription}
-              </div>
-            </label>
-            <div></div>
-            <input type="radio" aria-labelledby="switch-count-of-3"
-                   name="switch-count" value=3>
-            <label id="switch-count-of-3">
-              <span class="cr-title-text">
-                $i18n{switchAccessSetupChoose3Switches}
-              </span>
-              <div class="radio-button-description">
-                $i18n{switchAccessSetupChoose3SwitchesDescription}
-              </div>
-            </label>
+            <div class="radio-button">
+              <input type="radio" aria-labelledby="switch-count-of-1"
+                     name="switch-count" value=1>
+              <label id="switch-count-of-1">
+                <span class="cr-title-text">
+                  $i18n{switchAccessSetupChoose1Switch}
+                </span>
+              </label>
+            </div>
+            <div class="radio-button">
+              <input type="radio" aria-labelledby="switch-count-of-2"
+                     name="switch-count" value=2>
+              <label id="switch-count-of-2">
+                <span class="cr-title-text">
+                  $i18n{switchAccessSetupChoose2Switches}
+                </span>
+                <div class="radio-button-description">
+                  $i18n{switchAccessSetupChoose2SwitchesDescription}
+                </div>
+              </label>
+            </div>
+            <div class="radio-button">
+              <input type="radio" aria-labelledby="switch-count-of-3"
+                     name="switch-count" value=3>
+              <label id="switch-count-of-3">
+                <span class="cr-title-text">
+                  $i18n{switchAccessSetupChoose3Switches}
+                </span>
+                <div class="radio-button-description">
+                  $i18n{switchAccessSetupChoose3SwitchesDescription}
+                </div>
+              </label>
+            </div>
           </div>
           <div class="illustration"></div>
         </div>
