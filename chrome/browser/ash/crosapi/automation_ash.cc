@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/crosapi/automation_ash.h"
 
-#include "chrome/common/channel_info.h"
-#include "components/version_info/channel.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 
 namespace crosapi {
@@ -47,22 +45,12 @@ void AutomationAsh::DispatchAccessibilityEvents(
     const std::vector<ui::AXTreeUpdate>& updates,
     const gfx::Point& mouse_location,
     const std::vector<ui::AXEvent>& events) {
-  // This prototype method is only implemented on developer builds of Chrome. We
-  // check for this by checking that the build of Chrome is unbranded.
-  if (chrome::GetChannel() != version_info::Channel::UNKNOWN)
-    return;
-
   extensions::AutomationEventRouter::GetInstance()->DispatchAccessibilityEvents(
       ui::AXTreeID::FromToken(tree_id), updates, mouse_location, events);
 }
 
 void AutomationAsh::DispatchTreeDestroyedEvent(
     const base::UnguessableToken& tree_id) {
-  // This prototype method is only implemented on developer builds of Chrome. We
-  // check for this by checking that the build of Chrome is unbranded.
-  if (chrome::GetChannel() != version_info::Channel::UNKNOWN)
-    return;
-
   extensions::AutomationEventRouter::GetInstance()->DispatchTreeDestroyedEvent(
       ui::AXTreeID::FromToken(tree_id), nullptr);
 }
@@ -70,11 +58,6 @@ void AutomationAsh::DispatchTreeDestroyedEvent(
 void AutomationAsh::DispatchActionResult(
     const ui::AXActionData& already_handled_action_data,
     bool result) {
-  // This prototype method is only implemented on developer builds of Chrome. We
-  // check for this by checking that the build of Chrome is unbranded.
-  if (chrome::GetChannel() != version_info::Channel::UNKNOWN)
-    return;
-
   extensions::AutomationEventRouter::GetInstance()->DispatchActionResult(
       already_handled_action_data, result);
 }
@@ -86,11 +69,6 @@ void AutomationAsh::PerformAction(const ui::AXTreeID& tree_id,
                                   const std::string& action_type,
                                   int32_t request_id,
                                   const base::DictionaryValue& optional_args) {
-  // This prototype method is only implemented on developer builds of Chrome. We
-  // check for this by checking that the build of Chrome is unbranded.
-  if (chrome::GetChannel() != version_info::Channel::UNKNOWN)
-    return;
-
   if (!tree_id.token().has_value())
     return;
   for (auto& client : automation_client_remotes_) {
