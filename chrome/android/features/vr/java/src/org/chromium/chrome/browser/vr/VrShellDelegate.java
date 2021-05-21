@@ -367,7 +367,7 @@ public class VrShellDelegate
      * If VR Shell is enabled, and the activity is supported, register with the Daydream
      * platform that this app would like to be launched in VR when the device enters VR.
      */
-    public static void maybeRegisterVrEntryHook(final ChromeActivity activity) {
+    public static void maybeRegisterVrEntryHook(final Activity activity) {
         // Daydream is not supported on pre-N devices.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return;
         if (sInstance != null) return; // Will be handled in onResume.
@@ -478,16 +478,16 @@ public class VrShellDelegate
     }
 
     /**
-     * Called when the {@link ChromeActivity} becomes visible.
+     * Called when the {@link Activity} becomes visible.
      */
-    public static void onActivityShown(ChromeActivity activity) {
+    public static void onActivityShown(Activity activity) {
         if (sInstance != null && sInstance.mActivity == activity) sInstance.onActivityShown();
     }
 
     /**
-     * Called when the {@link ChromeActivity} is hidden.
+     * Called when the {@link Activity} is hidden.
      */
-    public static void onActivityHidden(ChromeActivity activity) {
+    public static void onActivityHidden(Activity activity) {
         if (sInstance != null && sInstance.mActivity == activity) sInstance.onActivityHidden();
     }
 
@@ -525,11 +525,11 @@ public class VrShellDelegate
     /**
      * This is called every time ChromeActivity gets a new intent.
      */
-    public static void onNewIntentWithNative(ChromeActivity activity, Intent intent) {
+    public static void onNewIntentWithNative(Activity activity, Intent intent) {
         if (activity.isFinishing()) return;
         if (!VrModuleProvider.getIntentDelegate().isLaunchingIntoVr(activity, intent)) return;
 
-        VrShellDelegate instance = getInstance(activity);
+        VrShellDelegate instance = getInstance((ChromeActivity) activity);
         if (instance == null) return;
         instance.onNewVrIntent();
     }
@@ -537,7 +537,7 @@ public class VrShellDelegate
     /**
      * This is called when ChromeTabbedActivity gets a new intent before native is initialized.
      */
-    public static void maybeHandleVrIntentPreNative(ChromeActivity activity, Intent intent) {
+    public static void maybeHandleVrIntentPreNative(Activity activity, Intent intent) {
         boolean launchingIntoVr =
                 VrModuleProvider.getIntentDelegate().isLaunchingIntoVr(activity, intent);
 
@@ -555,7 +555,7 @@ public class VrShellDelegate
         }
 
         if (sInstance != null && !sInstance.mInternalIntentUsedToStartVr) {
-            sInstance.swapHostActivity(activity, false /* disableVrMode */);
+            sInstance.swapHostActivity((ChromeActivity) activity, false /* disableVrMode */);
             // If the user has launched Chrome from the launcher, rather than resuming from the
             // dashboard, we don't want to launch into presentation.
             sInstance.exitWebVRAndClearState();
@@ -602,7 +602,7 @@ public class VrShellDelegate
     /**
      * Performs pre-inflation VR-related startup.
      */
-    public static void doPreInflationStartup(ChromeActivity activity, Bundle savedInstanceState) {
+    public static void doPreInflationStartup(Activity activity, Bundle savedInstanceState) {
         // We need to explicitly enable VR mode here so that the system doesn't kick us out of VR,
         // or drop us into the 2D-in-VR rendering mode, while we prepare for VR rendering.
         if (VrModuleProvider.getIntentDelegate().isLaunchingIntoVr(
@@ -689,10 +689,10 @@ public class VrShellDelegate
     // are not a singleInstance activity, so they cannot be resumed through Activity PendingIntents,
     // which is the typical way Daydream resumes your Activity. Instead, we use a broadcast intent
     // and then use the broadcast to bring ourselves back to the foreground.
-    /* package */ static PendingIntent getEnterVrPendingIntent(ChromeActivity activity) {
+    /* package */ static PendingIntent getEnterVrPendingIntent(Activity activity) {
         if (sVrBroadcastReceiver != null) sVrBroadcastReceiver.unregister();
         IntentFilter filter = new IntentFilter(VR_ENTRY_RESULT_ACTION);
-        VrBroadcastReceiver receiver = new VrBroadcastReceiver(activity);
+        VrBroadcastReceiver receiver = new VrBroadcastReceiver((ChromeActivity) activity);
         // If we set sVrBroadcastReceiver then use it in registerReceiver, findBugs considers this
         // a thread-safety issue since it thinks the receiver isn't fully initialized before being
         // exposed to other threads. This isn't actually an issue in this case, but we need to set
@@ -1573,7 +1573,13 @@ public class VrShellDelegate
         TabModelSelector tabModelSelector = mActivity.getTabModelSelector();
         if (tabModelSelector == null) return false;
         try {
-            mVrShell = new VrShell(mActivity, this, tabModelSelector);
+            mVrShell = new VrShell(mActivity, this, tabModelSelector, mActivity.getToolbarManager(),
+                    mActivity.getModalDialogManagerSupplier(),
+                    mActivity.getCompositorViewHolderSupplier(), mActivity.getActivityTabProvider(),
+                    mActivity.getBrowserControlsManager(), /* tabCreatorManager= */ mActivity,
+                    mActivity.getWindowAndroid(), mActivity::isActivityFinishingOrDestroyed,
+                    mActivity.getFullscreenManager(), mActivity::backShouldCloseTab,
+                    mActivity::isInOverviewMode, /* menuOrKeyboardActionController= */ mActivity);
         } catch (VrUnsupportedException e) {
             return false;
         } finally {

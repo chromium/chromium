@@ -23,7 +23,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.components.page_info.VrHandler;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
@@ -61,7 +60,7 @@ public abstract class VrDelegate implements VrHandler {
     public abstract boolean canLaunch2DIntents();
     public abstract boolean onBackPressed();
     public abstract boolean enterVrIfNecessary();
-    public abstract void maybeRegisterVrEntryHook(final ChromeActivity activity);
+    public abstract void maybeRegisterVrEntryHook(final Activity activity);
     public abstract void maybeUnregisterVrEntryHook();
     public abstract void onMultiWindowModeChanged(boolean isInMultiWindowMode);
     public abstract void requestToExitVrForSearchEnginePromoDialog(
@@ -72,15 +71,15 @@ public abstract class VrDelegate implements VrHandler {
     public abstract void requestToExitVrAndRunOnSuccess(Runnable onSuccess);
     public abstract void requestToExitVrAndRunOnSuccess(
             Runnable onSuccess, @UiUnsupportedMode int reason);
-    public abstract void onActivityShown(ChromeActivity activity);
-    public abstract void onActivityHidden(ChromeActivity activity);
+    public abstract void onActivityShown(Activity activity);
+    public abstract void onActivityHidden(Activity activity);
     public abstract boolean onDensityChanged(int oldDpi, int newDpi);
     public abstract void rawTopContentOffsetChanged(float topContentOffset);
-    public abstract void onNewIntentWithNative(ChromeActivity activity, Intent intent);
-    public abstract void maybeHandleVrIntentPreNative(ChromeActivity activity, Intent intent);
+    public abstract void onNewIntentWithNative(Activity activity, Intent intent);
+    public abstract void maybeHandleVrIntentPreNative(Activity activity, Intent intent);
 
     public abstract void setVrModeEnabled(Activity activity, boolean enabled);
-    public abstract void doPreInflationStartup(ChromeActivity activity, Bundle savedInstanceState);
+    public abstract void doPreInflationStartup(Activity activity, Bundle savedInstanceState);
 
     public boolean bootsToVr() {
         if (sBootsToVr == null) {
@@ -96,7 +95,7 @@ public abstract class VrDelegate implements VrHandler {
     public abstract boolean isDaydreamReadyDevice();
     public abstract boolean isDaydreamCurrentViewer();
 
-    public boolean willChangeDensityInVr(ChromeActivity activity) {
+    public boolean willChangeDensityInVr(Activity activity) {
         // Only N+ support launching in VR at all, other OS versions don't care about this.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return false;
 
@@ -111,8 +110,8 @@ public abstract class VrDelegate implements VrHandler {
         DisplayMetrics metrics = new DisplayMetrics();
         display.getRealMetrics(metrics);
 
-        if (activity.getLastActiveDensity() != 0
-                && (int) activity.getLastActiveDensity() != metrics.densityDpi) {
+        int currentDensityDpi = activity.getResources().getConfiguration().densityDpi;
+        if (currentDensityDpi != 0 && currentDensityDpi != metrics.densityDpi) {
             return true;
         }
 
@@ -166,7 +165,7 @@ public abstract class VrDelegate implements VrHandler {
         activity.getWindow().getDecorView().setSystemUiVisibility(flags | VR_SYSTEM_UI_FLAGS);
     }
 
-    public void addBlackOverlayViewForActivity(ChromeActivity activity) {
+    public void addBlackOverlayViewForActivity(Activity activity) {
         View overlay = activity.getWindow().findViewById(R.id.vr_overlay_view);
         if (overlay != null) return;
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
