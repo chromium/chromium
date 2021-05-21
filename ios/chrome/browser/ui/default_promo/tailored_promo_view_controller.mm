@@ -23,6 +23,8 @@
 - (void)loadView {
   self.customSpacingAfterImage = 30;
   self.helpButtonAvailable = YES;
+  self.helpButtonAccessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_HELP_ACCESSIBILITY_LABEL);
   self.primaryActionAvailable = YES;
   self.secondaryActionAvailable = YES;
   self.imageHasFixedSize = YES;
