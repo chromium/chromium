@@ -37,6 +37,8 @@
 
 namespace subresource_redirect {
 
+const int kMaxRobotsRulesParsersCacheSize = 20;
+
 class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
  public:
   explicit SubresourceRedirectLoginRobotsBrowserTest(
@@ -85,6 +87,8 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
       for (const auto& param : additional_feature_params_) {
         params[param.first] = param.second;
       }
+      params["max_robots_rules_parsers_cache_size"] =
+          base::NumberToString(kMaxRobotsRulesParsersCacheSize);
       enabled_features.emplace_back(blink::features::kSubresourceRedirect,
                                     params);
       login_detection_params["logged_in_sites"] = "https://loggedin.com";
@@ -1070,6 +1074,43 @@ IN_PROC_BROWSER_TEST_F(
   robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
   image_compression_server_.VerifyRequestedImagePaths(
       {"/load_image/image.png"});
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SubresourceRedirectLoginRobotsBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(TestRobotsRulesInMemoryCacheEviction)) {
+  std::set<std::string> expected_robots_rules_requests;
+  std::set<std::string> expected_compressed_image_requests;
+  robots_rules_server_.set_failure_mode(
+      RobotsRulesTestServer::FailureMode::kTimeout);
+  ui_test_utils::NavigateToURL(browser(),
+                               GetHttpsTestURL("/load_image/image.html"));
+  expected_robots_rules_requests.emplace(GetHttpsTestURL("/").spec());
+  expected_compressed_image_requests.emplace(
+      GetHttpsTestURL("/load_image/image.html").spec());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SubresourceRedirect.RobotsRules.Browser.InMemoryCacheHit", false, 1);
+
+  // Load images from lot of different origins which will hit the robots
+  // rules in-memory cache limit specified by feature param
+  // max_robots_rules_parsers_cache_size.
+  for (int i = 0; i < kMaxRobotsRulesParsersCacheSize + 5; i++) {
+    GURL image_url = https_test_server_.GetURL(
+        base::StringPrintf("foo%d.com", i), "/load_image/image.png?allowed");
+    ASSERT_TRUE(
+        ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+               content::JsReplace("document.images[0].src = $1;", image_url)));
+    expected_robots_rules_requests.emplace(image_url.GetWithEmptyPath().spec());
+    if (expected_compressed_image_requests.size() <=
+        kMaxRobotsRulesParsersCacheSize) {
+      expected_compressed_image_requests.emplace(image_url.spec());
+    }
+  }
+
+  histogram_tester_.ExpectUniqueSample(
+      "SubresourceRedirect.RobotsRules.Browser.InMemoryCacheHit", false,
+      kMaxRobotsRulesParsersCacheSize + 5 + 1);
 }
 
 // Verifies that the image is only compressed in low memory device with the low

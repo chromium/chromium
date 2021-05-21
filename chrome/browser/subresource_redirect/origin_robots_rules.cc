@@ -77,7 +77,12 @@ OriginRobotsRules::OriginRobotsRules(
       std::move(url_loader), std::move(response_error_callback));
 }
 
-OriginRobotsRules::~OriginRobotsRules() = default;
+OriginRobotsRules::~OriginRobotsRules() {
+  if (fetcher_info_) {
+    for (auto& callback : fetcher_info_->pending_callbacks)
+      std::move(callback).Run(absl::nullopt);
+  }
+}
 
 void OriginRobotsRules::GetRobotsRules(RobotsRulesReceivedCallback callback) {
   if (fetcher_info_) {
