@@ -36,6 +36,7 @@ class ChromeLocationBarModelDelegate : public LocationBarModelDelegate {
       const std::u16string& formatted_url) const override;
   bool GetURL(GURL* url) const override;
   bool ShouldDisplayURL() const override;
+  bool ShouldUseUpdatedConnectionSecurityIndicators() const override;
   security_state::SecurityLevel GetSecurityLevel() const override;
   std::unique_ptr<security_state::VisibleSecurityState>
   GetVisibleSecurityState() const override;

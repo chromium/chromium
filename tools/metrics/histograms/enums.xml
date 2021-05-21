@@ -24668,6 +24668,7 @@ Called by update_document_policy_enum.py.-->
   <int value="858" label="TripleDESEnabled"/>
   <int value="859" label="CloudUserPolicyMerge"/>
   <int value="860" label="ManagedAccountRestriction"/>
+  <int value="861" label="LockIconInAddressBarEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

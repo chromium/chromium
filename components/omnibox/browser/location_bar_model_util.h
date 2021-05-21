@@ -13,10 +13,13 @@ struct VectorIcon;
 
 namespace location_bar_model {
 
-// Get the vector icon according to security level.
-// It indicates security state of the page.
+// Get the vector icon according to security level. It indicates security state
+// of the page. If |use_updated_connection_security_indicators| is true, this
+// function will return the updated "connection secure" icon if |security_level|
+// indicates a secure connection.
 const gfx::VectorIcon& GetSecurityVectorIcon(
-    security_state::SecurityLevel security_level);
+    security_state::SecurityLevel security_level,
+    bool use_updated_connection_security_indicators);
 
 }  // namespace location_bar_model
 

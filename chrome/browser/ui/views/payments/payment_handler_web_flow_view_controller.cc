@@ -122,8 +122,10 @@ class ReadOnlyOriginView : public views::View {
       const ui::ThemeProvider& theme_provider =
           ThemeService::GetThemeProviderForProfile(profile);
       security_icon->SetImage(gfx::CreateVectorIcon(
-          location_bar_model::GetSecurityVectorIcon(security_level), 16,
-          GetOmniboxSecurityChipColor(&theme_provider, security_level)));
+          location_bar_model::GetSecurityVectorIcon(
+              security_level,
+              /* use_updated_connection_security_indicators=*/false),
+          16, GetOmniboxSecurityChipColor(&theme_provider, security_level)));
       security_icon->SetID(static_cast<int>(DialogViewID::SECURITY_ICON_VIEW));
       origin_layout->AddView(std::move(security_icon));
     }

@@ -25983,7 +25983,38 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
 
       If this policy is set to <ph name="POLICY_VALUE_NONE">'none'</ph> or not set, managed accounts have no restrictions. This may result in a managed account being a secondary account, which disables its ability to receive policies set on the account by the admin.
     ''',
-    }
+    },
+    {
+      'name': 'LockIconInAddressBarEnabled',
+      'owners': ['meacer@chromium.org', 'trusty-transport@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Use lock icon for secure connections',
+        },
+        {
+          'value': False,
+          'caption': 'Use default icons for secure connections',
+        },
+      ],
+      'future_on': ['chrome.*', 'chrome_os', 'android'],
+      # TODO(crbug.com/1210228): Support dynamic_refresh: True
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': True,
+      },
+      'default': False,
+      'example_value': True,
+      'id': 861,
+      'caption': '''Enable lock icon in the omnibox for secure connections''',
+      'tags': [],
+      'desc': '''This policy controls the treatment for lock icon in the omnibox.
+       From Chrome M93, there is a new omnibox icon for secure connections.
+       If the policy is Enabled, Chrome will use the existing lock icon for secure connections.
+       If the policy is Disabled or not set, Chrome will use the default icon for secure connections.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -26915,6 +26946,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 860,
+  'highest_id_currently_used': 861,
   'highest_atomic_group_id_currently_used': 40
 }

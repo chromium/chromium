@@ -11,31 +11,44 @@
 
 TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithNoneLevel) {
   const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
-      security_state::SecurityLevel::NONE);
+      security_state::SecurityLevel::NONE,
+      /*use_updated_connection_security_indicators=*/false);
   EXPECT_EQ(icon.name, omnibox::kHttpIcon.name);
 }
 
 TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithSecureLevel) {
   const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
-      security_state::SecurityLevel::SECURE);
+      security_state::SecurityLevel::SECURE,
+      /*use_updated_connection_security_indicators=*/false);
   EXPECT_EQ(icon.name, vector_icons::kHttpsValidIcon.name);
+}
+
+TEST(LocationBarModelUtilTest,
+     GetSecurityVectorIconWithSecureLevelUpdatedIcon) {
+  const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
+      security_state::SecurityLevel::SECURE,
+      /*use_updated_connection_security_indicators=*/true);
+  EXPECT_EQ(icon.name, vector_icons::kHttpsValidArrowIcon.name);
 }
 
 TEST(LocationBarModelUtilTest,
      GetSecurityVectorIconWithSecureWithPolicyInstalledCertLevel) {
   const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
-      security_state::SecurityLevel::SECURE_WITH_POLICY_INSTALLED_CERT);
+      security_state::SecurityLevel::SECURE_WITH_POLICY_INSTALLED_CERT,
+      /*use_updated_connection_security_indicators=*/false);
   EXPECT_EQ(icon.name, vector_icons::kBusinessIcon.name);
 }
 
 TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithDangerousLevel) {
   const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
-      security_state::SecurityLevel::DANGEROUS);
+      security_state::SecurityLevel::DANGEROUS,
+      /*use_updated_connection_security_indicators=*/false);
   EXPECT_EQ(icon.name, vector_icons::kNotSecureWarningIcon.name);
 }
 
 TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithWarningLevel) {
   const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
-      security_state::SecurityLevel::WARNING);
+      security_state::SecurityLevel::WARNING,
+      /*use_updated_connection_security_indicators=*/false);
   EXPECT_EQ(icon.name, vector_icons::kNotSecureWarningIcon.name);
 }

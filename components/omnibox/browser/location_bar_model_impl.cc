@@ -207,7 +207,9 @@ const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
     return omnibox::kOfflinePinIcon;
 #endif
 
-  return location_bar_model::GetSecurityVectorIcon(GetSecurityLevel());
+  return location_bar_model::GetSecurityVectorIcon(
+      GetSecurityLevel(),
+      delegate_->ShouldUseUpdatedConnectionSecurityIndicators());
 }
 
 std::u16string LocationBarModelImpl::GetSecureDisplayText() const {

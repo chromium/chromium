@@ -16,6 +16,11 @@ bool LocationBarModelDelegate::ShouldDisplayURL() const {
   return true;
 }
 
+bool LocationBarModelDelegate::ShouldUseUpdatedConnectionSecurityIndicators()
+    const {
+  return false;
+}
+
 security_state::SecurityLevel LocationBarModelDelegate::GetSecurityLevel()
     const {
   return security_state::NONE;

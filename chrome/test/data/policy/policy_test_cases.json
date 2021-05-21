@@ -8254,6 +8254,15 @@
       }
     ]
   },
+  "LockIconInAddressBarEnabled": {
+    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "LockIconInAddressBarEnabled": true },
+        "prefs": { "omnibox.lock_icon_in_address_bar_enabled": {} }
+      }
+    ]
+  },
   "InsecureFormsWarningsEnabled": {
     "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [

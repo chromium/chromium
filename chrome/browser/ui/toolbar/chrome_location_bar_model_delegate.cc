@@ -21,6 +21,7 @@
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -123,6 +124,19 @@ bool ChromeLocationBarModelDelegate::ShouldDisplayURL() const {
 
   Profile* profile = GetProfile();
   return !profile || !search::IsInstantNTPURL(url, profile);
+}
+
+bool ChromeLocationBarModelDelegate::
+    ShouldUseUpdatedConnectionSecurityIndicators() const {
+  Profile* profile = GetProfile();
+  if (!profile) {
+    return false;
+  }
+  if (profile->GetPrefs()->GetBoolean(omnibox::kLockIconInAddressBarEnabled)) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(
+      omnibox::kUpdatedConnectionSecurityIndicators);
 }
 
 security_state::SecurityLevel ChromeLocationBarModelDelegate::GetSecurityLevel()
@@ -262,4 +276,5 @@ TemplateURLService* ChromeLocationBarModelDelegate::GetTemplateURLService() {
 void ChromeLocationBarModelDelegate::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(omnibox::kPreventUrlElisionsInOmnibox, false);
+  registry->RegisterBooleanPref(omnibox::kLockIconInAddressBarEnabled, false);
 }

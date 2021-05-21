@@ -19,14 +19,14 @@
 namespace location_bar_model {
 
 const gfx::VectorIcon& GetSecurityVectorIcon(
-    security_state::SecurityLevel security_level) {
+    security_state::SecurityLevel security_level,
+    bool use_updated_connection_security_indicators) {
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
   switch (security_level) {
     case security_state::NONE:
       return omnibox::kHttpIcon;
     case security_state::SECURE: {
-      return base::FeatureList::IsEnabled(
-                 omnibox::kUpdatedConnectionSecurityIndicators)
+      return use_updated_connection_security_indicators
                  ? vector_icons::kHttpsValidArrowIcon
                  : vector_icons::kHttpsValidIcon;
     }
