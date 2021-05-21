@@ -10,10 +10,12 @@
 #include "components/crx_file/id_util.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/bad_message.h"
+#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -56,6 +58,85 @@ class ShutdownNotifierFactory
 
   DISALLOW_COPY_AND_ASSIGN(ShutdownNotifierFactory);
 };
+
+// Returns true if the process corresponding to `render_process_id` can host an
+// extension with `extension_id`.  (It doesn't necessarily mean that the process
+// *does* host this specific extension at this point in time.)
+bool CanRendererHostExtensionOrigin(int render_process_id,
+                                    const std::string& extension_id) {
+  GURL extension_url = Extension::GetBaseURLFromExtensionId(extension_id);
+  url::Origin extension_origin = url::Origin::Create(extension_url);
+  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
+  return policy->CanAccessDataForOrigin(render_process_id, extension_origin);
+}
+
+// Returns true if `source_endpoint` can be legitimately claimed/used by
+// `process`.  Otherwise reports a bad IPC message for `filter` and returns
+// false (expecting the caller to not take any action based on the rejected,
+// untrustworthy `source_endpoint`).
+bool IsValidMessagingSource(ExtensionMessageFilter* filter,
+                            RenderProcessHost& process,
+                            const MessagingEndpoint& source_endpoint) {
+  switch (source_endpoint.type) {
+    case MessagingEndpoint::Type::kNativeApp:
+      // Requests for channels initiated by native applications don't originate
+      // from renderer processes.
+      bad_message::ReceivedBadMessage(
+          filter, bad_message::EMF_INVALID_CHANNEL_SOURCE_TYPE);
+      return false;
+
+    case MessagingEndpoint::Type::kExtension:
+      if (!source_endpoint.extension_id.has_value()) {
+        bad_message::ReceivedBadMessage(
+            filter, bad_message::EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE);
+        return false;
+      }
+      if (!CanRendererHostExtensionOrigin(
+              process.GetID(), source_endpoint.extension_id.value())) {
+        bad_message::ReceivedBadMessage(
+            filter, bad_message::EMF_INVALID_EXTENSION_ID_FOR_EXTENSION_SOURCE);
+        return false;
+      }
+      return true;
+
+    case MessagingEndpoint::Type::kTab:
+      if (source_endpoint.extension_id.has_value() &&
+          !ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+              process, source_endpoint.extension_id.value())) {
+        bad_message::ReceivedBadMessage(
+            filter, bad_message::EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT);
+        return false;
+      }
+      return true;
+  }
+}
+
+// Returns true if `source_context` can be legitimately claimed/used by
+// `render_process_id`.  Otherwise reports a bad IPC message for `filter` and
+// returns false (expecting the caller to not take any action based on the
+// rejected, untrustworthy `source_context`).
+bool IsValidSourceContext(ExtensionMessageFilter* filter,
+                          int render_process_id,
+                          const PortContext& source_context) {
+  if (source_context.is_for_service_worker()) {
+    const PortContext::WorkerContext& worker_context =
+        source_context.worker.value();
+
+    // Only crude checks via CanRendererHostExtensionOrigin are done here,
+    // because more granular, worker-specific checks (e.g. checking if a worker
+    // exists using ProcessManager::HasServiceWorker) might incorrectly return
+    // false=invalid-IPC for IPCs from workers that were recently torn down /
+    // made inactive.
+    if (!CanRendererHostExtensionOrigin(render_process_id,
+                                        worker_context.extension_id)) {
+      bad_message::ReceivedBadMessage(
+          filter, bad_message::EMF_INVALID_EXTENSION_ID_FOR_WORKER_CONTEXT);
+      return false;
+    }
+  }
+
+  return true;
+}
 
 }  // namespace
 
@@ -277,21 +358,27 @@ void ExtensionMessageFilter::OnOpenChannelToExtension(
     const std::string& channel_name,
     const PortId& port_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (info.source_endpoint.type == MessagingEndpoint::Type::kNativeApp) {
-    // Requests for channels initiated by native applications don't originate
-    // from renderer processes.
-    bad_message::ReceivedBadMessage(
-        this, bad_message::EMF_INVALID_CHANNEL_SOURCE_TYPE);
+  if (!browser_context_)
+    return;
+
+  // The IPC might race with RenderProcessHost destruction.  This may only
+  // happen in scenarios that are already inherently racey, so dropping the IPC
+  // is okay and won't lead to any additional risk of data loss.
+  auto* process = content::RenderProcessHost::FromID(render_process_id_);
+  if (!process)
+    return;
+
+  if (!IsValidMessagingSource(this, *process, info.source_endpoint) ||
+      !IsValidSourceContext(this, render_process_id_, source_context)) {
     return;
   }
-  if (browser_context_) {
-    ChannelEndpoint source_endpoint(browser_context_, render_process_id_,
-                                    source_context);
-    MessageService::Get(browser_context_)
-        ->OpenChannelToExtension(source_endpoint, port_id, info.source_endpoint,
-                                 nullptr /* opener_port */, info.target_id,
-                                 info.source_url, channel_name);
-  }
+
+  ChannelEndpoint source_endpoint(browser_context_, render_process_id_,
+                                  source_context);
+  MessageService::Get(browser_context_)
+      ->OpenChannelToExtension(source_endpoint, port_id, info.source_endpoint,
+                               nullptr /* opener_port */, info.target_id,
+                               info.source_url, channel_name);
 }
 
 void ExtensionMessageFilter::OnOpenChannelToNativeApp(
