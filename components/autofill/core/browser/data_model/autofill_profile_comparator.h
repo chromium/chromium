@@ -30,6 +30,8 @@ struct ProfileValueDifference {
   bool operator==(const ProfileValueDifference& right) const;
 };
 
+ServerFieldTypeSet GetUserVisibleTypes();
+
 // A utility class to assist in the comparison of AutofillProfile data.
 class AutofillProfileComparator {
  public:
