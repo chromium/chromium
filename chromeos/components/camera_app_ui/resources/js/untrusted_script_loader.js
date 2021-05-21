@@ -2,14 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * dynamic_import.js is used to avoid syntax failure of closure compiler since
- * it currently does not support the dynamic imports feature.
- * @suppress {moduleLoad}
- */
-
-import {dynamicImport} from './dynamic_import.js';
 import * as Comlink from './lib/comlink.js';
 import {WaitableEvent} from './waitable_event.js';
 
@@ -27,7 +19,7 @@ const exposedObjects = {loadScript};
  */
 async function loadScript(scriptUrl) {
   await domReady.wait();
-  const module = await dynamicImport(scriptUrl);
+  const module = await import(scriptUrl);
   Object.assign(exposedObjects, module);
 }
 

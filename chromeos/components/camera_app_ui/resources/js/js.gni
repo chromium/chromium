@@ -86,10 +86,7 @@ compile_js_files = [
   "window_controller.js",
 ]
 
-no_compile_js_files = [
-  "lib/analytics.js",
-  "dynamic_import.js",
-]
+no_compile_js_files = [ "lib/analytics.js" ]
 
 wasm_files = [ "lib/ffmpeg.wasm" ]
 

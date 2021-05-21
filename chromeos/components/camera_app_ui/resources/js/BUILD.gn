@@ -9,7 +9,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 js_type_check("closure_compile") {
   closure_flags =
       default_closure_args + [
-        "language_in=ECMASCRIPT_2019",
+        "language_in=ECMASCRIPT_2020",
         "jscomp_error=strictCheckTypes",
         "conformance_configs=" +
             rebase_path("externs/conformance_config.textproto", root_build_dir),
