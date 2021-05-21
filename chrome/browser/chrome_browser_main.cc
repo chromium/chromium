@@ -592,6 +592,15 @@ void ChromeBrowserMainParts::RecordBrowserStartupTime() {
 
 void ChromeBrowserMainParts::SetupOriginTrialsCommandLine(
     PrefService* local_state) {
+  // TODO(crbug.com/1211739): Temporary workaround to prevent an overly large
+  // config from crashing by exceeding command-line length limits. Set the limit
+  // to 1KB, which is far less than the known limits:
+  //  - Linux: kZygoteMaxMessageLength = 12288;
+  // This will still allow for critical updates to the public key or disabled
+  // features, but the disabled token list will be ignored.
+  const size_t kMaxAppendLength = 1024;
+  size_t appended_length = 0;
+
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(embedder_support::kOriginTrialPublicKey)) {
     std::string new_public_key =
@@ -601,6 +610,9 @@ void ChromeBrowserMainParts::SetupOriginTrialsCommandLine(
           embedder_support::kOriginTrialPublicKey,
           local_state->GetString(
               embedder_support::prefs::kOriginTrialPublicKey));
+
+      // Public key is 32 bytes
+      appended_length += 32;
     }
   }
   if (!command_line->HasSwitch(
@@ -622,6 +634,7 @@ void ChromeBrowserMainParts::SetupOriginTrialsCommandLine(
         command_line->AppendSwitchASCII(
             embedder_support::kOriginTrialDisabledFeatures,
             override_disabled_features);
+        appended_length += override_disabled_features.length();
       }
     }
   }
@@ -639,9 +652,14 @@ void ChromeBrowserMainParts::SetupOriginTrialsCommandLine(
       if (!disabled_tokens.empty()) {
         const std::string disabled_token_switch =
             base::JoinString(disabled_tokens, "|");
-        command_line->AppendSwitchASCII(
-            embedder_support::kOriginTrialDisabledTokens,
-            disabled_token_switch);
+        // Do not append the disabled token list if will exceed a reasonable
+        // length. See above.
+        if (appended_length + disabled_token_switch.length() <=
+            kMaxAppendLength) {
+          command_line->AppendSwitchASCII(
+              embedder_support::kOriginTrialDisabledTokens,
+              disabled_token_switch);
+        }
       }
     }
   }
