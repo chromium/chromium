@@ -11,8 +11,8 @@
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
-#include "ash/system/holding_space/holding_space_item_view_delegate.h"
 #include "ash/system/holding_space/holding_space_util.h"
+#include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"
@@ -63,7 +63,7 @@ class PaintCallbackLabel : public views::Label {
 // HoldingSpaceItemChipView ----------------------------------------------------
 
 HoldingSpaceItemChipView::HoldingSpaceItemChipView(
-    HoldingSpaceItemViewDelegate* delegate,
+    HoldingSpaceViewDelegate* delegate,
     const HoldingSpaceItem* item)
     : HoldingSpaceItemView(delegate, item) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -157,9 +157,8 @@ void HoldingSpaceItemChipView::OnPinVisibilityChanged(bool pin_visible) {
 void HoldingSpaceItemChipView::OnSelectionUiChanged() {
   HoldingSpaceItemView::OnSelectionUiChanged();
 
-  const bool multiselect =
-      delegate()->selection_ui() ==
-      HoldingSpaceItemViewDelegate::SelectionUi::kMultiSelect;
+  const bool multiselect = delegate()->selection_ui() ==
+                           HoldingSpaceViewDelegate::SelectionUi::kMultiSelect;
 
   image_->SetVisible(!selected() || !multiselect);
   UpdateLabel();
@@ -203,9 +202,8 @@ void HoldingSpaceItemChipView::UpdateImage() {
 }
 
 void HoldingSpaceItemChipView::UpdateLabel() {
-  const bool multiselect =
-      delegate()->selection_ui() ==
-      HoldingSpaceItemViewDelegate::SelectionUi::kMultiSelect;
+  const bool multiselect = delegate()->selection_ui() ==
+                           HoldingSpaceViewDelegate::SelectionUi::kMultiSelect;
 
   label_->SetEnabledColor(
       selected() && multiselect

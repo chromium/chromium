@@ -14,7 +14,7 @@ namespace ash {
 // Section for screen captures in the `RecentFilesBubble`.
 class ScreenCapturesSection : public HoldingSpaceItemViewsSection {
  public:
-  explicit ScreenCapturesSection(HoldingSpaceItemViewDelegate* delegate);
+  explicit ScreenCapturesSection(HoldingSpaceViewDelegate* delegate);
   ScreenCapturesSection(const ScreenCapturesSection& other) = delete;
   ScreenCapturesSection& operator=(const ScreenCapturesSection& other) = delete;
   ~ScreenCapturesSection() override;

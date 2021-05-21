@@ -9,7 +9,7 @@
 
 namespace ash {
 
-PinnedFilesBubble::PinnedFilesBubble(HoldingSpaceItemViewDelegate* delegate)
+PinnedFilesBubble::PinnedFilesBubble(HoldingSpaceViewDelegate* delegate)
     : HoldingSpaceTrayChildBubble(delegate) {
   SetID(kHoldingSpacePinnedFilesBubbleId);
 }

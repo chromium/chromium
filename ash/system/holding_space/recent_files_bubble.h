@@ -15,7 +15,7 @@ namespace ash {
 // Child bubble of `HoldingSpaceTrayBubble` for recent files.
 class RecentFilesBubble : public HoldingSpaceTrayChildBubble {
  public:
-  explicit RecentFilesBubble(HoldingSpaceItemViewDelegate* delegate);
+  explicit RecentFilesBubble(HoldingSpaceViewDelegate* delegate);
   RecentFilesBubble(const RecentFilesBubble& other) = delete;
   RecentFilesBubble& operator=(const RecentFilesBubble& other) = delete;
   ~RecentFilesBubble() override;

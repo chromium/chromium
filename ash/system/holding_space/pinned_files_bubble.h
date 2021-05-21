@@ -15,7 +15,7 @@ namespace ash {
 // Child bubble of `HoldingSpaceTrayBubble` for pinned files.
 class PinnedFilesBubble : public HoldingSpaceTrayChildBubble {
  public:
-  explicit PinnedFilesBubble(HoldingSpaceItemViewDelegate* delegate);
+  explicit PinnedFilesBubble(HoldingSpaceViewDelegate* delegate);
   PinnedFilesBubble(const PinnedFilesBubble& other) = delete;
   PinnedFilesBubble& operator=(const PinnedFilesBubble& other) = delete;
   ~PinnedFilesBubble() override;

@@ -21,8 +21,7 @@ namespace ash {
 // Appearance.
 constexpr int kChildSpacing = 8;
 
-ScreenCapturesSection::ScreenCapturesSection(
-    HoldingSpaceItemViewDelegate* delegate)
+ScreenCapturesSection::ScreenCapturesSection(HoldingSpaceViewDelegate* delegate)
     : HoldingSpaceItemViewsSection(delegate,
                                    /*supported_types=*/
                                    {HoldingSpaceItem::Type::kScreenshot,

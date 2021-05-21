@@ -23,7 +23,7 @@ class ToggleImageButton;
 namespace ash {
 
 class HoldingSpaceItem;
-class HoldingSpaceItemViewDelegate;
+class HoldingSpaceViewDelegate;
 
 // Base class for `HoldingSpaceItemChipView` and
 // `HoldingSpaceItemScreenCaptureView`. Note that `HoldingSpaceItemView` may
@@ -34,7 +34,7 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
  public:
   METADATA_HEADER(HoldingSpaceItemView);
 
-  HoldingSpaceItemView(HoldingSpaceItemViewDelegate*, const HoldingSpaceItem*);
+  HoldingSpaceItemView(HoldingSpaceViewDelegate*, const HoldingSpaceItem*);
   HoldingSpaceItemView(const HoldingSpaceItemView&) = delete;
   HoldingSpaceItemView& operator=(const HoldingSpaceItemView&) = delete;
   ~HoldingSpaceItemView() override;
@@ -84,7 +84,7 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   virtual void OnPinVisibilityChanged(bool pin_visible) {}
   virtual void OnSelectionUiChanged();
 
-  HoldingSpaceItemViewDelegate* delegate() { return delegate_; }
+  HoldingSpaceViewDelegate* delegate() { return delegate_; }
   views::ImageView* checkmark() { return checkmark_; }
   views::ToggleImageButton* pin() { return pin_; }
 
@@ -97,7 +97,7 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   // NOTE: This view may outlive `delegate_` and/or `item_` during destruction
   // since the widget is closed asynchronously and the model is updated prior
   // to animation completion.
-  HoldingSpaceItemViewDelegate* delegate_;
+  HoldingSpaceViewDelegate* delegate_;
   const HoldingSpaceItem* const item_;
 
   // Cache the id of the associated holding space item so that it can be

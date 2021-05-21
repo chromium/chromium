@@ -17,7 +17,7 @@ class ImageView;
 namespace ash {
 
 class HoldingSpaceItem;
-class HoldingSpaceItemViewDelegate;
+class HoldingSpaceViewDelegate;
 class RoundedImageView;
 
 class ASH_EXPORT HoldingSpaceItemScreenCaptureView
@@ -25,7 +25,7 @@ class ASH_EXPORT HoldingSpaceItemScreenCaptureView
  public:
   METADATA_HEADER(HoldingSpaceItemScreenCaptureView);
 
-  HoldingSpaceItemScreenCaptureView(HoldingSpaceItemViewDelegate* delegate,
+  HoldingSpaceItemScreenCaptureView(HoldingSpaceViewDelegate* delegate,
                                     const HoldingSpaceItem* item);
   HoldingSpaceItemScreenCaptureView(const HoldingSpaceItemScreenCaptureView&) =
       delete;

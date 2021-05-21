@@ -8,9 +8,9 @@
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/holding_space/holding_space_item_view_delegate.h"
 #include "ash/system/holding_space/holding_space_item_views_section.h"
 #include "ash/system/holding_space/holding_space_util.h"
+#include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer.h"
@@ -112,7 +112,7 @@ class TopAlignedBoxLayout : public views::BoxLayout {
 // HoldingSpaceTrayChildBubble -------------------------------------------------
 
 HoldingSpaceTrayChildBubble::HoldingSpaceTrayChildBubble(
-    HoldingSpaceItemViewDelegate* delegate)
+    HoldingSpaceViewDelegate* delegate)
     : delegate_(delegate) {
   controller_observer_.Observe(HoldingSpaceController::Get());
   if (HoldingSpaceController::Get()->model())

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/holding_space/holding_space_item_view_delegate.h"
+#include "ash/system/holding_space/holding_space_view_delegate.h"
 
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
@@ -35,10 +35,10 @@ namespace ash {
 
 namespace {
 
-// It is expected that all `HoldingSpaceItemView`s share the same delegate in
-// order to support multiple selections. We cache the singleton `instance` in
-// order to enforce this requirement.
-HoldingSpaceItemViewDelegate* instance = nullptr;
+// It is expected that all holding space views share the same delegate in order
+// to support multiple selections which requires a shared state. We cache the
+// singleton `instance` in order to enforce this requirement.
+HoldingSpaceViewDelegate* instance = nullptr;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -88,10 +88,10 @@ void OpenItems(const std::vector<const HoldingSpaceItemView*>& views) {
 
 }  // namespace
 
-// HoldingSpaceItemViewDelegate::ScopedSelectionRestore ------------------------
+// HoldingSpaceViewDelegate::ScopedSelectionRestore ----------------------------
 
-HoldingSpaceItemViewDelegate::ScopedSelectionRestore::ScopedSelectionRestore(
-    HoldingSpaceItemViewDelegate* delegate)
+HoldingSpaceViewDelegate::ScopedSelectionRestore::ScopedSelectionRestore(
+    HoldingSpaceViewDelegate* delegate)
     : delegate_(delegate) {
   // Save selection.
   for (const HoldingSpaceItemView* view : delegate_->GetSelection())
@@ -106,8 +106,7 @@ HoldingSpaceItemViewDelegate::ScopedSelectionRestore::ScopedSelectionRestore(
     selected_range_end_item_id_ = delegate_->selected_range_end_->item_id();
 }
 
-HoldingSpaceItemViewDelegate::ScopedSelectionRestore::
-    ~ScopedSelectionRestore() {
+HoldingSpaceViewDelegate::ScopedSelectionRestore::~ScopedSelectionRestore() {
   // Restore selection.
   delegate_->SetSelection(selected_item_ids_);
 
@@ -137,9 +136,9 @@ HoldingSpaceItemViewDelegate::ScopedSelectionRestore::
   }
 }
 
-// HoldingSpaceItemViewDelegate ------------------------------------------------
+// HoldingSpaceViewDelegate ----------------------------------------------------
 
-HoldingSpaceItemViewDelegate::HoldingSpaceItemViewDelegate(
+HoldingSpaceViewDelegate::HoldingSpaceViewDelegate(
     HoldingSpaceTrayBubble* bubble)
     : bubble_(bubble) {
   DCHECK_EQ(nullptr, instance);
@@ -154,12 +153,12 @@ HoldingSpaceItemViewDelegate::HoldingSpaceItemViewDelegate(
   tablet_mode_observer_.Observe(TabletMode::Get());
 }
 
-HoldingSpaceItemViewDelegate::~HoldingSpaceItemViewDelegate() {
+HoldingSpaceViewDelegate::~HoldingSpaceViewDelegate() {
   DCHECK_EQ(instance, this);
   instance = nullptr;
 }
 
-void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewCreated(
+void HoldingSpaceViewDelegate::OnHoldingSpaceItemViewCreated(
     HoldingSpaceItemView* view) {
   if (view->selected()) {
     ++selection_size_;
@@ -167,7 +166,7 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewCreated(
   }
 }
 
-void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewDestroying(
+void HoldingSpaceViewDelegate::OnHoldingSpaceItemViewDestroying(
     HoldingSpaceItemView* view) {
   // If either endpoint of the selected range is destroyed, clear the cache so
   // that the next range-based selection attempt will start from scratch.
@@ -182,7 +181,7 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewDestroying(
   }
 }
 
-bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewAccessibleAction(
+bool HoldingSpaceViewDelegate::OnHoldingSpaceItemViewAccessibleAction(
     HoldingSpaceItemView* view,
     const ui::AXActionData& action_data) {
   // When performing the default accessible action (e.g. Search + Space), open
@@ -206,7 +205,7 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewAccessibleAction(
   return false;
 }
 
-bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewGestureEvent(
+bool HoldingSpaceViewDelegate::OnHoldingSpaceItemViewGestureEvent(
     HoldingSpaceItemView* view,
     const ui::GestureEvent& event) {
   // The user may alternate between using mouse and touch inputs. Treat gesture
@@ -254,7 +253,7 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewGestureEvent(
   return true;
 }
 
-bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewKeyPressed(
+bool HoldingSpaceViewDelegate::OnHoldingSpaceItemViewKeyPressed(
     HoldingSpaceItemView* view,
     const ui::KeyEvent& event) {
   // The ENTER key should open all selected holding space items. If `view` isn't
@@ -268,7 +267,7 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewKeyPressed(
   return false;
 }
 
-bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMousePressed(
+bool HoldingSpaceViewDelegate::OnHoldingSpaceItemViewMousePressed(
     HoldingSpaceItemView* view,
     const ui::MouseEvent& event) {
   // Since we are starting a new mouse pressed/released sequence, we need to
@@ -329,7 +328,7 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMousePressed(
   return true;
 }
 
-void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMouseReleased(
+void HoldingSpaceViewDelegate::OnHoldingSpaceItemViewMouseReleased(
     HoldingSpaceItemView* view,
     const ui::MouseEvent& event) {
   // We should always clear `ignore_mouse_released_` since that property should
@@ -369,13 +368,13 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMouseReleased(
   SetSelection(view);
 }
 
-void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewSelectedChanged(
+void HoldingSpaceViewDelegate::OnHoldingSpaceItemViewSelectedChanged(
     HoldingSpaceItemView* view) {
   selection_size_ += view->selected() ? 1 : -1;
   UpdateSelectionUi();
 }
 
-bool HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayBubbleKeyPressed(
+bool HoldingSpaceViewDelegate::OnHoldingSpaceTrayBubbleKeyPressed(
     const ui::KeyEvent& event) {
   // The ENTER key should open all selected holding space items.
   if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
@@ -387,28 +386,28 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayBubbleKeyPressed(
   return false;
 }
 
-void HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayChildBubbleGestureEvent(
+void HoldingSpaceViewDelegate::OnHoldingSpaceTrayChildBubbleGestureEvent(
     const ui::GestureEvent& event) {
   if (event.type() == ui::ET_GESTURE_TAP)
     ClearSelection();
 }
 
-void HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayChildBubbleMousePressed(
+void HoldingSpaceViewDelegate::OnHoldingSpaceTrayChildBubbleMousePressed(
     const ui::MouseEvent& event) {
   ClearSelection();
 }
 
 base::RepeatingClosureList::Subscription
-HoldingSpaceItemViewDelegate::AddSelectionUiChangedCallback(
+HoldingSpaceViewDelegate::AddSelectionUiChangedCallback(
     base::RepeatingClosureList::CallbackType callback) {
   return selection_ui_changed_callbacks_.Add(std::move(callback));
 }
 
-void HoldingSpaceItemViewDelegate::UpdateTrayVisibility() {
+void HoldingSpaceViewDelegate::UpdateTrayVisibility() {
   bubble_->tray()->UpdateVisibility();
 }
 
-void HoldingSpaceItemViewDelegate::ShowContextMenuForViewImpl(
+void HoldingSpaceViewDelegate::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
@@ -441,7 +440,7 @@ void HoldingSpaceItemViewDelegate::ShowContextMenuForViewImpl(
       source_type);
 }
 
-bool HoldingSpaceItemViewDelegate::CanStartDragForView(
+bool HoldingSpaceViewDelegate::CanStartDragForView(
     views::View* sender,
     const gfx::Point& press_pt,
     const gfx::Point& current_pt) {
@@ -449,16 +448,15 @@ bool HoldingSpaceItemViewDelegate::CanStartDragForView(
   return views::View::ExceededDragThreshold(delta);
 }
 
-int HoldingSpaceItemViewDelegate::GetDragOperationsForView(
+int HoldingSpaceViewDelegate::GetDragOperationsForView(
     views::View* sender,
     const gfx::Point& press_pt) {
   return ui::DragDropTypes::DRAG_COPY;
 }
 
-void HoldingSpaceItemViewDelegate::WriteDragDataForView(
-    views::View* sender,
-    const gfx::Point& press_pt,
-    ui::OSExchangeData* data) {
+void HoldingSpaceViewDelegate::WriteDragDataForView(views::View* sender,
+                                                    const gfx::Point& press_pt,
+                                                    ui::OSExchangeData* data) {
   std::vector<const HoldingSpaceItemView*> selection = GetSelection();
   DCHECK_GE(selection.size(), 1u);
 
@@ -480,8 +478,7 @@ void HoldingSpaceItemViewDelegate::WriteDragDataForView(
   data->SetFilenames(filenames);
 }
 
-void HoldingSpaceItemViewDelegate::ExecuteCommand(int command_id,
-                                                  int event_flags) {
+void HoldingSpaceViewDelegate::ExecuteCommand(int command_id, int event_flags) {
   std::vector<const HoldingSpaceItemView*> selection = GetSelection();
   DCHECK_GE(selection.size(), 1u);
 
@@ -525,15 +522,15 @@ void HoldingSpaceItemViewDelegate::ExecuteCommand(int command_id,
   }
 }
 
-void HoldingSpaceItemViewDelegate::OnTabletModeStarted() {
+void HoldingSpaceViewDelegate::OnTabletModeStarted() {
   UpdateSelectionUi();
 }
 
-void HoldingSpaceItemViewDelegate::OnTabletModeEnded() {
+void HoldingSpaceViewDelegate::OnTabletModeEnded() {
   UpdateSelectionUi();
 }
 
-ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
+ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
   context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 
   std::vector<const HoldingSpaceItemView*> selection = GetSelection();
@@ -609,7 +606,7 @@ ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
 }
 
 std::vector<const HoldingSpaceItemView*>
-HoldingSpaceItemViewDelegate::GetSelection() {
+HoldingSpaceViewDelegate::GetSelection() {
   std::vector<const HoldingSpaceItemView*> selection;
   for (const HoldingSpaceItemView* view : bubble_->GetHoldingSpaceItemViews()) {
     if (view->selected())
@@ -619,16 +616,15 @@ HoldingSpaceItemViewDelegate::GetSelection() {
   return selection;
 }
 
-void HoldingSpaceItemViewDelegate::ClearSelection() {
+void HoldingSpaceViewDelegate::ClearSelection() {
   SetSelection(std::vector<std::string>());
 }
 
-void HoldingSpaceItemViewDelegate::SetSelection(
-    HoldingSpaceItemView* selection) {
+void HoldingSpaceViewDelegate::SetSelection(HoldingSpaceItemView* selection) {
   SetSelection({selection->item_id()});
 }
 
-void HoldingSpaceItemViewDelegate::SetSelection(
+void HoldingSpaceViewDelegate::SetSelection(
     const std::vector<std::string>& item_ids) {
   std::vector<HoldingSpaceItemView*> selection;
 
@@ -647,8 +643,8 @@ void HoldingSpaceItemViewDelegate::SetSelection(
   }
 }
 
-void HoldingSpaceItemViewDelegate::SetSelectedRange(HoldingSpaceItemView* start,
-                                                    HoldingSpaceItemView* end) {
+void HoldingSpaceViewDelegate::SetSelectedRange(HoldingSpaceItemView* start,
+                                                HoldingSpaceItemView* end) {
   const std::vector<HoldingSpaceItemView*> views =
       bubble_->GetHoldingSpaceItemViews();
 
@@ -666,7 +662,7 @@ void HoldingSpaceItemViewDelegate::SetSelectedRange(HoldingSpaceItemView* start,
   }
 }
 
-void HoldingSpaceItemViewDelegate::UpdateSelectionUi() {
+void HoldingSpaceViewDelegate::UpdateSelectionUi() {
   const SelectionUi selection_ui =
       TabletMode::Get()->InTabletMode() || selection_size_ > 1u
           ? SelectionUi::kMultiSelect

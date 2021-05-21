@@ -22,15 +22,15 @@ class LayerAnimationObserver;
 namespace ash {
 
 class HoldingSpaceItemView;
-class HoldingSpaceItemViewDelegate;
 class HoldingSpaceItemViewsSection;
+class HoldingSpaceViewDelegate;
 
 // Child bubble of the `HoldingSpaceTrayBubble`.
 class HoldingSpaceTrayChildBubble : public views::View,
                                     public HoldingSpaceControllerObserver,
                                     public HoldingSpaceModelObserver {
  public:
-  explicit HoldingSpaceTrayChildBubble(HoldingSpaceItemViewDelegate* delegate);
+  explicit HoldingSpaceTrayChildBubble(HoldingSpaceViewDelegate* delegate);
   HoldingSpaceTrayChildBubble(const HoldingSpaceTrayChildBubble& other) =
       delete;
   HoldingSpaceTrayChildBubble& operator=(
@@ -65,7 +65,7 @@ class HoldingSpaceTrayChildBubble : public views::View,
   virtual std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>>
   CreateSections() = 0;
 
-  HoldingSpaceItemViewDelegate* delegate() { return delegate_; }
+  HoldingSpaceViewDelegate* delegate() { return delegate_; }
 
  private:
   // views::View:
@@ -91,7 +91,7 @@ class HoldingSpaceTrayChildBubble : public views::View,
   void OnAnimateInCompleted(bool aborted);
   void OnAnimateOutCompleted(bool aborted);
 
-  HoldingSpaceItemViewDelegate* const delegate_;
+  HoldingSpaceViewDelegate* const delegate_;
 
   // Views owned by view hierarchy.
   std::vector<HoldingSpaceItemViewsSection*> sections_;

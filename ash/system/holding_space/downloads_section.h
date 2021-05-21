@@ -14,7 +14,7 @@ namespace ash {
 // Section for downloads in the `RecentFilesBubble`.
 class DownloadsSection : public HoldingSpaceItemViewsSection {
  public:
-  explicit DownloadsSection(HoldingSpaceItemViewDelegate* delegate);
+  explicit DownloadsSection(HoldingSpaceViewDelegate* delegate);
   DownloadsSection(const DownloadsSection& other) = delete;
   DownloadsSection& operator=(const DownloadsSection& other) = delete;
   ~DownloadsSection() override;

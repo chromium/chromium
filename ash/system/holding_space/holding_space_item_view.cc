@@ -11,8 +11,8 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/holding_space/holding_space_item_view_delegate.h"
 #include "ash/system/holding_space/holding_space_util.h"
+#include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/bind.h"
 #include "ui/base/class_property.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -84,9 +84,8 @@ class CallbackPainter : public views::Painter {
 
 // HoldingSpaceItemView --------------------------------------------------------
 
-HoldingSpaceItemView::HoldingSpaceItemView(
-    HoldingSpaceItemViewDelegate* delegate,
-    const HoldingSpaceItem* item)
+HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
+                                           const HoldingSpaceItem* item)
     : delegate_(delegate), item_(item), item_id_(item->id()) {
   model_observer_.Observe(HoldingSpaceController::Get()->model());
 
@@ -321,7 +320,7 @@ views::ToggleImageButton* HoldingSpaceItemView::AddPin(views::View* parent) {
 void HoldingSpaceItemView::OnSelectionUiChanged() {
   const bool multiselect =
       delegate_ && delegate_->selection_ui() ==
-                       HoldingSpaceItemViewDelegate::SelectionUi::kMultiSelect;
+                       HoldingSpaceViewDelegate::SelectionUi::kMultiSelect;
 
   checkmark_->SetVisible(selected() && multiselect);
 }

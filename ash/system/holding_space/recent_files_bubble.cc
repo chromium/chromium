@@ -10,7 +10,7 @@
 
 namespace ash {
 
-RecentFilesBubble::RecentFilesBubble(HoldingSpaceItemViewDelegate* delegate)
+RecentFilesBubble::RecentFilesBubble(HoldingSpaceViewDelegate* delegate)
     : HoldingSpaceTrayChildBubble(delegate) {
   SetID(kHoldingSpaceRecentFilesBubbleId);
 }

@@ -126,7 +126,7 @@ class Header : public views::Button {
 
 // DownloadsSection ------------------------------------------------------------
 
-DownloadsSection::DownloadsSection(HoldingSpaceItemViewDelegate* delegate)
+DownloadsSection::DownloadsSection(HoldingSpaceViewDelegate* delegate)
     : HoldingSpaceItemViewsSection(delegate,
                                    /*supported_types=*/
                                    {HoldingSpaceItem::Type::kArcDownload,

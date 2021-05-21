@@ -29,7 +29,7 @@ constexpr gfx::Size kPinButtonSize(24, 24);
 constexpr gfx::Size kPlayIconSize(32, 32);
 
 HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
-    HoldingSpaceItemViewDelegate* delegate,
+    HoldingSpaceViewDelegate* delegate,
     const HoldingSpaceItem* item)
     : HoldingSpaceItemView(delegate, item) {
   SetPreferredSize(kHoldingSpaceScreenCaptureSize);

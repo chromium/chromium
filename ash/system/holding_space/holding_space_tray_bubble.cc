@@ -68,7 +68,7 @@ void RecordTimeFromFirstAvailabilityToFirstEntry(PrefService* prefs) {
 class HoldingSpaceTrayBubbleEventHandler : public ui::EventHandler {
  public:
   HoldingSpaceTrayBubbleEventHandler(HoldingSpaceTrayBubble* bubble,
-                                     HoldingSpaceItemViewDelegate* delegate)
+                                     HoldingSpaceViewDelegate* delegate)
       : bubble_(bubble), delegate_(delegate) {
     aura::Env::GetInstance()->AddPreTargetHandler(
         this, ui::EventTarget::Priority::kSystem);
@@ -101,7 +101,7 @@ class HoldingSpaceTrayBubbleEventHandler : public ui::EventHandler {
   }
 
   HoldingSpaceTrayBubble* const bubble_;
-  HoldingSpaceItemViewDelegate* const delegate_;
+  HoldingSpaceViewDelegate* const delegate_;
 };
 
 // ChildBubbleContainerLayout --------------------------------------------------

@@ -16,7 +16,7 @@ namespace ash {
 // Section for pinned files in the `PinnedFilesBubble`.
 class PinnedFilesSection : public HoldingSpaceItemViewsSection {
  public:
-  explicit PinnedFilesSection(HoldingSpaceItemViewDelegate* delegate);
+  explicit PinnedFilesSection(HoldingSpaceViewDelegate* delegate);
   PinnedFilesSection(const PinnedFilesSection& other) = delete;
   PinnedFilesSection& operator=(const PinnedFilesSection& other) = delete;
   ~PinnedFilesSection() override;

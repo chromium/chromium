@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_VIEW_DELEGATE_H_
-#define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_VIEW_DELEGATE_H_
+#ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_VIEW_DELEGATE_H_
+#define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_VIEW_DELEGATE_H_
 
 #include <memory>
 #include <string>
@@ -35,12 +35,11 @@ namespace ash {
 class HoldingSpaceItemView;
 class HoldingSpaceTrayBubble;
 
-// TODO(crbug.com/1208036): Rename to `HoldingSpaceViewDelegate`.
-// A delegate for `HoldingSpaceItemView`s which implements context menu,
-// drag-and-drop, and selection functionality. In order to support multiple
-// selections at a time, all `HoldingSpaceItemView`s must share the same
-// `HoldingSpaceItemViewDelegate` instance.
-class ASH_EXPORT HoldingSpaceItemViewDelegate
+// A delegate for holding space views which implements context menu,
+// drag-and-drop, and selection functionality. Only a single delegate instance
+// exists at a time and is shared by all existing holding space views in order
+// to support multiselection which requires a shared state.
+class ASH_EXPORT HoldingSpaceViewDelegate
     : public views::ContextMenuController,
       public views::DragController,
       public ui::SimpleMenuModel::Delegate,
@@ -50,23 +49,22 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
   // creation and restores that selection on destruction.
   class ScopedSelectionRestore {
    public:
-    explicit ScopedSelectionRestore(HoldingSpaceItemViewDelegate* delegate);
+    explicit ScopedSelectionRestore(HoldingSpaceViewDelegate* delegate);
     ScopedSelectionRestore(const ScopedSelectionRestore&) = delete;
     ScopedSelectionRestore& operator=(const ScopedSelectionRestore&) = delete;
     ~ScopedSelectionRestore();
 
    private:
-    HoldingSpaceItemViewDelegate* const delegate_;
+    HoldingSpaceViewDelegate* const delegate_;
     std::vector<std::string> selected_item_ids_;
     absl::optional<std::string> selected_range_start_item_id_;
     absl::optional<std::string> selected_range_end_item_id_;
   };
 
-  explicit HoldingSpaceItemViewDelegate(HoldingSpaceTrayBubble* bubble);
-  HoldingSpaceItemViewDelegate(const HoldingSpaceItemViewDelegate&) = delete;
-  HoldingSpaceItemViewDelegate& operator=(const HoldingSpaceItemViewDelegate&) =
-      delete;
-  ~HoldingSpaceItemViewDelegate() override;
+  explicit HoldingSpaceViewDelegate(HoldingSpaceTrayBubble* bubble);
+  HoldingSpaceViewDelegate(const HoldingSpaceViewDelegate&) = delete;
+  HoldingSpaceViewDelegate& operator=(const HoldingSpaceViewDelegate&) = delete;
+  ~HoldingSpaceViewDelegate() override;
 
   // Invoked when `view` has been created.
   void OnHoldingSpaceItemViewCreated(HoldingSpaceItemView* view);
@@ -208,4 +206,4 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_VIEW_DELEGATE_H_
+#endif  // ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_VIEW_DELEGATE_H_

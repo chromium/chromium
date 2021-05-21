@@ -26,12 +26,12 @@ class ScrollView;
 namespace ash {
 
 class HoldingSpaceItemView;
-class HoldingSpaceItemViewDelegate;
+class HoldingSpaceViewDelegate;
 
 // A section of holding space item views in a `HoldingSpaceTrayChildBubble`.
 class HoldingSpaceItemViewsSection : public views::View {
  public:
-  HoldingSpaceItemViewsSection(HoldingSpaceItemViewDelegate* delegate,
+  HoldingSpaceItemViewsSection(HoldingSpaceViewDelegate* delegate,
                                std::set<HoldingSpaceItem::Type> supported_types,
                                const absl::optional<size_t>& max_count);
   HoldingSpaceItemViewsSection(const HoldingSpaceItemViewsSection& other) =
@@ -102,7 +102,7 @@ class HoldingSpaceItemViewsSection : public views::View {
   // Invoked to destroy `placeholder_`.
   void DestroyPlaceholder();
 
-  HoldingSpaceItemViewDelegate* delegate() { return delegate_; }
+  HoldingSpaceViewDelegate* delegate() { return delegate_; }
 
  private:
   enum AnimationState : uint32_t {
@@ -132,7 +132,7 @@ class HoldingSpaceItemViewsSection : public views::View {
   void OnAnimateInCompleted(const ui::CallbackLayerAnimationObserver&);
   void OnAnimateOutCompleted(const ui::CallbackLayerAnimationObserver&);
 
-  HoldingSpaceItemViewDelegate* const delegate_;
+  HoldingSpaceViewDelegate* const delegate_;
   const std::set<HoldingSpaceItem::Type> supported_types_;
   const absl::optional<size_t> max_count_;
 
