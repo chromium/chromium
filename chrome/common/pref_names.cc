@@ -1851,10 +1851,6 @@ const char kDevToolsAdbKey[] = "devtools.adb_key";
 // Defines administrator-set availability of developer tools.
 const char kDevToolsAvailability[] = "devtools.availability";
 
-// Defines administrator-set availability of developer tools remote debugging.
-const char kDevToolsRemoteDebuggingAllowed[] =
-    "devtools.remote_debugging.allowed";
-
 // Dictionary from background service to recording expiration time.
 const char kDevToolsBackgroundServicesExpirationDict[] =
     "devtools.backgroundserviceexpiration";

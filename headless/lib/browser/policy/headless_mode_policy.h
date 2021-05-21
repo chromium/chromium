@@ -11,6 +11,10 @@
 class PrefService;
 class PrefRegistrySimple;
 
+namespace prefs {
+extern const char kHeadlessMode[];
+}
+
 namespace policy {
 
 // Headless mode policy helpers.
