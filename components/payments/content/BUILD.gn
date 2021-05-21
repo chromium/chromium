@@ -111,6 +111,8 @@ static_library("content") {
       "payment_credential.h",
       "payment_credential_enrollment_controller.cc",
       "payment_credential_enrollment_controller.h",
+      "payment_credential_manager.cc",
+      "payment_credential_manager.h",
       "payment_request.cc",
       "payment_request.h",
       "payment_request_dialog.h",

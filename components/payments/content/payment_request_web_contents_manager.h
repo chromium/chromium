@@ -8,15 +8,10 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
-#include "base/memory/scoped_refptr.h"
-#include "components/payments/content/payment_credential.h"
 #include "components/payments/content/payment_request.h"
-#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/blink/public/mojom/payments/payment_credential.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 
 namespace content {
@@ -28,7 +23,6 @@ class WebContents;
 namespace payments {
 
 class ContentPaymentRequestDelegate;
-class PaymentManifestWebDataService;
 
 // This class owns the PaymentRequest associated with a given WebContents.
 //
@@ -42,6 +36,10 @@ class PaymentRequestWebContentsManager
       public content::WebContentsUserData<PaymentRequestWebContentsManager> {
  public:
   ~PaymentRequestWebContentsManager() override;
+  PaymentRequestWebContentsManager(const PaymentRequestWebContentsManager&) =
+      delete;
+  PaymentRequestWebContentsManager& operator=(
+      const PaymentRequestWebContentsManager&) = delete;
 
   // Retrieves the instance of PaymentRequestWebContentsManager that was
   // attached to the specified WebContents.  If no instance was attached,
@@ -60,14 +58,7 @@ class PaymentRequestWebContentsManager
   // Destroys the given `request`.
   void DestroyRequest(base::WeakPtr<PaymentRequest> request);
 
-  // Creates the mojo IPC endpoint that will receive requests from the renderer
-  // to store payment credential in user's profile.
-  void CreatePaymentCredential(
-      content::GlobalFrameRoutingId initiator_frame_routing_id,
-      scoped_refptr<PaymentManifestWebDataService> web_data_sevice,
-      mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver);
-
-  // WebContentsObserver::
+  // WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
@@ -83,11 +74,7 @@ class PaymentRequestWebContentsManager
   // the requests themselves call DestroyRequest().
   std::map<PaymentRequest*, std::unique_ptr<PaymentRequest>> payment_requests_;
 
-  std::unique_ptr<PaymentCredential> payment_credential_;
-
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestWebContentsManager);
 };
 
 }  // namespace payments

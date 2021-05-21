@@ -9,8 +9,8 @@
 #include "chrome/browser/web_data_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/payments/content/payment_credential.h"
+#include "components/payments/content/payment_credential_manager.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
-#include "components/payments/content/payment_request_web_contents_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -35,7 +35,7 @@ void CreatePaymentCredential(
                 render_frame_host->GetProcess()->GetID(),
                 render_frame_host->GetRoutingID())
           : content::GlobalFrameRoutingId();
-  PaymentRequestWebContentsManager::GetOrCreateForWebContents(web_contents)
+  PaymentCredentialManager::GetOrCreateForWebContents(web_contents)
       ->CreatePaymentCredential(
           initiator_frame_routing_id,
           WebDataServiceFactory::GetPaymentManifestWebDataForProfile(

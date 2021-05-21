@@ -11,7 +11,6 @@
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_display_manager.h"
-#include "components/payments/core/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
@@ -55,7 +54,6 @@ void PaymentRequestWebContentsManager::DidStartNavigation(
     it.second->DidStartMainFrameNavigationToDifferentDocument(
         !navigation_handle->IsRendererInitiated());
   }
-  payment_credential_ = nullptr;
 }
 
 void PaymentRequestWebContentsManager::RenderFrameDeleted(
@@ -82,15 +80,6 @@ void PaymentRequestWebContentsManager::DestroyRequest(
 
   request->HideIfNecessary();
   payment_requests_.erase(request.get());
-}
-
-void PaymentRequestWebContentsManager::CreatePaymentCredential(
-    content::GlobalFrameRoutingId initiator_frame_routing_id,
-    scoped_refptr<PaymentManifestWebDataService> web_data_sevice,
-    mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver) {
-  payment_credential_ = std::make_unique<PaymentCredential>(
-      web_contents(), initiator_frame_routing_id, web_data_sevice,
-      std::move(receiver));
 }
 
 PaymentRequestWebContentsManager::PaymentRequestWebContentsManager(
