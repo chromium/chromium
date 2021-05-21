@@ -411,23 +411,24 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     }
   }
 
-  // If we find a multicol with OOF positioned fragmentainer descendants,
-  // then that multicol is an inner multicol with pending OOFs. Those OOFs
-  // will be laid out inside the inner multicol when we reach the outermost
-  // fragmentation context, so we should not propagate those OOFs up the tree
-  // any further.
-  if (!box_fragment->HasOutOfFlowPositionedFragmentainerDescendants() ||
-      box_fragment->IsFragmentationContextRoot()) {
+  if (!box_fragment->HasOutOfFlowPositionedFragmentainerDescendants())
     return;
-  }
 
   const auto& out_of_flow_fragmentainer_descendants =
       box_fragment->OutOfFlowPositionedFragmentainerDescendants();
   for (const auto& descendant : out_of_flow_fragmentainer_descendants) {
     const NGPhysicalFragment* containing_block_fragment =
         descendant.containing_block.fragment.get();
-    if (!containing_block_fragment)
+    if (!containing_block_fragment) {
       containing_block_fragment = box_fragment;
+    } else if (box_fragment->IsFragmentationContextRoot()) {
+      // If we find a multicol with OOF positioned fragmentainer descendants,
+      // then that multicol is an inner multicol with pending OOFs. Those OOFs
+      // will be laid out inside the inner multicol when we reach the outermost
+      // fragmentation context, so we should not propagate those OOFs up the
+      // tree any further.
+      continue;
+    }
 
     LogicalOffset containing_block_offset = converter.ToLogical(
         descendant.containing_block.offset, containing_block_fragment->Size());

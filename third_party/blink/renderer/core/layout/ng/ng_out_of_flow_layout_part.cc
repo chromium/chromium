@@ -661,6 +661,10 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
       }
       const NGPhysicalFragment* containing_block_fragment =
           descendant.containing_block.fragment.get();
+      // If the containing block is not set, that means that the inner multicol
+      // was its containing block, and the OOF will be laid out elsewhere.
+      if (!containing_block_fragment)
+        continue;
       LogicalOffset containing_block_offset =
           converter.ToLogical(descendant.containing_block.offset,
                               containing_block_fragment->Size());
