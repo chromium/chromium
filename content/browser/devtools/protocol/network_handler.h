@@ -44,7 +44,6 @@ class DevToolsAgentHostImpl;
 class DevToolsIOContext;
 class DevToolsURLLoaderInterceptor;
 class RenderFrameHostImpl;
-class RenderProcessHost;
 class NavigationRequest;
 class SignedExchangeEnvelope;
 class StoragePartition;
@@ -169,7 +168,8 @@ class NetworkHandler : public DevToolsDomainHandler,
   // associated with the NetworkHandler itself (which is the token of the local
   // root frame).
   bool MaybeCreateProxyForInterception(
-      RenderProcessHost* rph,
+      int process_id,
+      StoragePartition* storage_partition,
       const base::UnguessableToken& frame_token,
       bool is_navigation,
       bool is_download,

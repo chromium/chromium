@@ -26,6 +26,7 @@
 #include "components/services/storage/public/cpp/storage_key.h"
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
@@ -51,6 +52,7 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -1667,6 +1669,24 @@ void ServiceWorkerContextWrapper::SetLoaderFactoryForUpdateCheckForTest(
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerContextWrapper::GetLoaderFactoryForUpdateCheck(const GURL& scope) {
+  // TODO(https://crbug.com/1211361): Do we want to instrument this with
+  // devtools? It is currently not recorded at all.
+  return GetLoaderFactoryForBrowserInitiatedRequest(
+      scope,
+      /*version_id=*/absl::nullopt);
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+ServiceWorkerContextWrapper::GetLoaderFactoryForMainScriptFetch(
+    const GURL& scope,
+    int64_t version_id) {
+  return GetLoaderFactoryForBrowserInitiatedRequest(scope, version_id);
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
+    const GURL& scope,
+    absl::optional<int64_t> version_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // TODO(falken): Replace this with URLLoaderInterceptor.
@@ -1696,15 +1716,24 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForUpdateCheck(const GURL& scope) {
       &bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr,
       /*factory_override=*/nullptr);
-  if (header_client) {
+
+  // If we have a version_id, we are fetching a worker main script. We have a
+  // DevtoolsAgentHost ready for the worker and we can add the devtools override
+  // before instantiating the URLFactoryLoader.
+  if (version_id.has_value()) {
+    devtools_instrumentation::
+        WillCreateURLLoaderFactoryForServiceWorkerMainScript(
+            this, version_id.value(), &pending_receiver);
+  }
+
+  bool use_client_header_factory = header_client.is_valid();
+  if (use_client_header_factory) {
     NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
         std::move(header_client), std::move(pending_receiver),
         storage_partition());
-  }
-
-  // Set up a Mojo connection to the network loader factory if it's not been
-  // created yet.
-  if (pending_receiver) {
+  } else {
+    // Set up a Mojo connection to the network loader factory if it's not been
+    // created yet.
     DCHECK(storage_partition());
     scoped_refptr<network::SharedURLLoaderFactory> network_factory =
         storage_partition_->GetURLLoaderFactoryForBrowserProcess();

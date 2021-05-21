@@ -85,14 +85,15 @@ Response ToInterceptionPatterns(
 }
 
 bool FetchHandler::MaybeCreateProxyForInterception(
-    RenderProcessHost* rph,
+    int process_id,
+    StoragePartition* storage_partition,
     const base::UnguessableToken& frame_token,
     bool is_navigation,
     bool is_download,
     network::mojom::URLLoaderFactoryOverride* intercepting_factory) {
   return interceptor_ && interceptor_->CreateProxyForInterception(
-                             rph, frame_token, is_navigation, is_download,
-                             intercepting_factory);
+                             process_id, storage_partition, frame_token,
+                             is_navigation, is_download, intercepting_factory);
 }
 
 void FetchHandler::Enable(Maybe<Array<Fetch::RequestPattern>> patterns,

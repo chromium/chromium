@@ -140,7 +140,6 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
   // the job type is REGISTRATION_JOB and the worker doesn't need an
   // byte-for-byte check.
   void StartScriptFetchForNewWorker(
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       scoped_refptr<ServiceWorkerVersion> version);
   void OnScriptFetchCompleted(
       scoped_refptr<ServiceWorkerVersion> version,

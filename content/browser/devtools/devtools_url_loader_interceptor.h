@@ -35,7 +35,7 @@ class URLLoaderFactoryOverride;
 namespace content {
 
 class InterceptionJob;
-class RenderProcessHost;
+class StoragePartition;
 struct CreateLoaderParameters;
 
 struct InterceptedRequestInfo {
@@ -193,7 +193,8 @@ class DevToolsURLLoaderInterceptor {
       std::unique_ptr<ContinueInterceptedRequestCallback> callback);
 
   bool CreateProxyForInterception(
-      RenderProcessHost* rph,
+      int process_id,
+      StoragePartition* storage_partition,
       const base::UnguessableToken& frame_token,
       bool is_navigation,
       bool is_download,

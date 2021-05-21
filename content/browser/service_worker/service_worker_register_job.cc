@@ -16,6 +16,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/cpp/storage_key.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_consts.h"
@@ -443,10 +445,25 @@ void ServiceWorkerRegisterJob::
 }
 
 void ServiceWorkerRegisterJob::StartScriptFetchForNewWorker(
-    scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     scoped_refptr<ServiceWorkerVersion> version) {
   DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
   DCHECK(!new_script_fetcher_);
+
+  // We are about to start fetching from the browser process and we want
+  // devtools to be able to instrument the URLLoaderFactory. This call will
+  // create a DevtoolsAgentHost.
+  // TODO(https://crbug.com/1211358): To give the opportunity to devtools target
+  // handlers to attach before starting the fetch, we should pass in a boolean
+  // pointer indicating if we should pause the fetch and act on it in the
+  // ServiceWorkerNewScriptFetcher.
+  ServiceWorkerDevToolsManager::GetInstance()->WorkerMainScriptFetchingStarting(
+      context_->wrapper(), version->version_id(), version->script_url(),
+      version->scope());
+
+  scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
+      context_->wrapper()->GetLoaderFactoryForMainScriptFetch(
+          version->scope(), version->version_id());
+
   new_script_fetcher_ = std::make_unique<ServiceWorkerNewScriptFetcher>(
       *context_, version, std::move(loader_factory),
       outside_fetch_client_settings_object_.Clone());
@@ -461,6 +478,9 @@ void ServiceWorkerRegisterJob::OnScriptFetchCompleted(
   DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
   if (!main_script_load_params) {
     // Null `main_script_load_params` means the main script failed to be loaded.
+    ServiceWorkerDevToolsManager::GetInstance()->WorkerMainScriptFetchingFailed(
+        context_->wrapper(), version->version_id());
+
     // Use DeduceStartWorkerFailureReason() because it returns an error code
     // based on the main script's net error.
     std::string message =
@@ -538,7 +558,7 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
     if (base::FeatureList::IsEnabled(features::kPlzServiceWorker)) {
       next_task = base::BindOnce(
           &ServiceWorkerRegisterJob::StartScriptFetchForNewWorker,
-          weak_factory_.GetWeakPtr(), std::move(loader_factory));
+          weak_factory_.GetWeakPtr());
     } else {
       next_task =
           base::BindOnce(&ServiceWorkerRegisterJob::StartWorkerForUpdate,

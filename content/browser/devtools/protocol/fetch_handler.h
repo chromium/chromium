@@ -23,7 +23,7 @@ namespace content {
 class DevToolsAgentHostImpl;
 class DevToolsIOContext;
 class DevToolsURLLoaderInterceptor;
-class RenderProcessHost;
+class StoragePartition;
 struct InterceptedRequestInfo;
 
 namespace protocol {
@@ -40,7 +40,8 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
   static std::vector<FetchHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
 
   bool MaybeCreateProxyForInterception(
-      RenderProcessHost* rph,
+      int process_id,
+      StoragePartition* storage_partition,
       const base::UnguessableToken& frame_token,
       bool is_navigation,
       bool is_download,

@@ -646,11 +646,14 @@ void DevToolsURLLoaderInterceptor::ContinueInterceptedRequest(
 }
 
 bool DevToolsURLLoaderInterceptor::CreateProxyForInterception(
-    RenderProcessHost* rph,
+    int process_id,
+    StoragePartition* storage_partition,
     const base::UnguessableToken& frame_token,
     bool is_navigation,
     bool is_download,
     network::mojom::URLLoaderFactoryOverride* intercepting_factory) {
+  DCHECK(storage_partition);
+
   if (patterns_.empty())
     return false;
 
@@ -667,11 +670,19 @@ bool DevToolsURLLoaderInterceptor::CreateProxyForInterception(
   auto overridden_factory_receiver =
       target_remote.InitWithNewPipeAndPassReceiver();
   mojo::PendingRemote<network::mojom::CookieManager> cookie_manager;
-  int process_id = is_navigation ? 0 : rph->GetID();
-  rph->GetStoragePartition()->GetNetworkContext()->GetCookieManager(
+
+  // TODO(ahemery): Using 0 as the process id for navigations can lead to
+  // collisions between multiple navigations/service workers main script fetch.
+  // It should be replaced by the more robust
+  // GlobalRequestID::MakeBrowserInitiated().
+  int process_id_override = process_id;
+  if (is_navigation)
+    process_id_override = 0;
+
+  storage_partition->GetNetworkContext()->GetCookieManager(
       cookie_manager.InitWithNewPipeAndPassReceiver());
   new DevToolsURLLoaderFactoryProxy(
-      frame_token, process_id, is_download,
+      frame_token, process_id_override, is_download,
       std::move(intercepting_factory->overridden_factory_receiver),
       std::move(target_remote), std::move(cookie_manager),
       weak_factory_.GetWeakPtr());

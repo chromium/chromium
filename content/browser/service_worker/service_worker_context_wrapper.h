@@ -28,6 +28,7 @@
 #include "content/public/browser/service_worker_running_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -352,6 +353,11 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   scoped_refptr<network::SharedURLLoaderFactory> GetLoaderFactoryForUpdateCheck(
       const GURL& scope);
 
+  // Returns nullptr on failure.
+  // Note: This is currently only used for plzServiceWorker.
+  scoped_refptr<network::SharedURLLoaderFactory>
+  GetLoaderFactoryForMainScriptFetch(const GURL& scope, int64_t version_id);
+
   // Binds a ServiceWorkerStorageControl.
   void BindStorageControl(
       mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
@@ -487,6 +493,11 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void ClearUserDataForAllRegistrationsByKeyPrefixOnUIThread(
       const std::string& key_prefix,
       StatusCallback callback);
+
+  scoped_refptr<network::SharedURLLoaderFactory>
+  GetLoaderFactoryForBrowserInitiatedRequest(
+      const GURL& scope,
+      absl::optional<int64_t> version_id);
 
   // Observers of |context_core_| which live within content's implementation
   // boundary. Shared with |context_core_|.

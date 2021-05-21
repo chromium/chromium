@@ -388,7 +388,7 @@ void WorkerScriptFetchInitiator::CreateScriptLoader(
     // TODO(crbug.com/1143102): make this unconditional when dedicated workers
     // are supported.
     if (devtools_agent_host) {
-      devtools_instrumentation::WillCreateURLLoaderFactoryForWorker(
+      devtools_instrumentation::WillCreateURLLoaderFactoryForWorkerMainScript(
           devtools_agent_host, devtools_worker_token,
           &factory_params->factory_override);
     }

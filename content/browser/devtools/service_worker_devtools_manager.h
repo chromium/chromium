@@ -53,11 +53,28 @@ class CONTENT_EXPORT ServiceWorkerDevToolsManager {
   ServiceWorkerDevToolsAgentHost* GetDevToolsAgentHostForWorker(
       int worker_process_id,
       int worker_route_id);
+  ServiceWorkerDevToolsAgentHost* GetDevToolsAgentHostForNewInstallingWorker(
+      const ServiceWorkerContextWrapper* context_wrapper,
+      int64_t version_id);
+
   void AddAllAgentHosts(
       std::vector<scoped_refptr<ServiceWorkerDevToolsAgentHost>>* result);
   void AddAllAgentHostsForBrowserContext(
       BrowserContext* browser_context,
       std::vector<scoped_refptr<ServiceWorkerDevToolsAgentHost>>* result);
+
+  // This function signals the beginning of a main script fetch for a non
+  // installed worker. This is currently only used for plzServiceWorker.
+  void WorkerMainScriptFetchingStarting(
+      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
+      int64_t version_id,
+      const GURL& url,
+      const GURL& scope);
+  // This function is called when a new worker installation failed to fetch
+  // the main script. It cleans up internal state.
+  void WorkerMainScriptFetchingFailed(
+      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
+      int64_t version_id);
 
   void WorkerStarting(
       int worker_process_id,
@@ -131,12 +148,22 @@ class CONTENT_EXPORT ServiceWorkerDevToolsManager {
   scoped_refptr<ServiceWorkerDevToolsAgentHost> TakeStoppedHost(
       const ServiceWorkerContextWrapper* context_wrapper,
       int64_t version_id);
+  scoped_refptr<ServiceWorkerDevToolsAgentHost> TakeNewInstallingHost(
+      const ServiceWorkerContextWrapper* context_wrapper,
+      int64_t version_id);
 
   base::ObserverList<Observer>::Unchecked observer_list_;
   bool debug_service_worker_on_start_;
 
-  // We retatin agent hosts as long as the service worker is alive.
+  // We retain agent hosts as long as the service worker is alive.
   std::map<WorkerId, scoped_refptr<ServiceWorkerDevToolsAgentHost>> live_hosts_;
+
+  // We store new installing workers. They can be queried directly when fetching
+  // the main script from the browser process and are moved to live workers
+  // once the process starts up.
+  // Note: This is currently only used for plzServiceWorker.
+  base::flat_set<scoped_refptr<ServiceWorkerDevToolsAgentHost>>
+      new_installing_hosts_;
 
   // Clients may retain agent host for the terminated shared worker,
   // and we reconnect them when shared worker is restarted.
