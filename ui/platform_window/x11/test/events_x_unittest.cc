@@ -10,7 +10,6 @@
 #include <set>
 #include <utility>
 
-#include "base/stl_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"

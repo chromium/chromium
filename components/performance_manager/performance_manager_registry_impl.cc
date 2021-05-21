@@ -7,7 +7,6 @@
 #include <iterator>
 #include <utility>
 
-#include "base/stl_util.h"
 #include "components/performance_manager/embedder/binders.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"

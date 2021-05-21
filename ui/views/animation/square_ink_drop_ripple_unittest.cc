@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"

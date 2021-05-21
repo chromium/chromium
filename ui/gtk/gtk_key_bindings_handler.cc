@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "ui/base/glib/glib_cast.h"
 #include "ui/base/ime/text_edit_commands.h"

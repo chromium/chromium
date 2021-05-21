@@ -6,7 +6,6 @@
 
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "components/dom_distiller/content/common/mojom/distillability_service.mojom.h"
 #include "components/dom_distiller/core/distillable_page_detector.h"

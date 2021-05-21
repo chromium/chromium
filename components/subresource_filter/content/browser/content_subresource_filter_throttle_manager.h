@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/stl_util.h"
 #include "base/supports_user_data.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/subresource_filter/content/browser/subframe_navigation_filtering_throttle.h"

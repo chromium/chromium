@@ -4,7 +4,6 @@
 
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 
-#include "base/stl_util.h"
 
 namespace mojo {
 

@@ -8,7 +8,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "components/sync_user_events/user_event_sync_bridge.h"
 

@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"

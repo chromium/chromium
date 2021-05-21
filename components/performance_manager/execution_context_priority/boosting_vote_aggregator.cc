@@ -8,7 +8,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/stl_util.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
 
 // This voter allows expressing "priority boosts" which are used to resolve

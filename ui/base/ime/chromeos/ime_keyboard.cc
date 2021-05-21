@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
 #include "ui/base/ime/chromeos/ime_keyboard.h"
 
 namespace chromeos {

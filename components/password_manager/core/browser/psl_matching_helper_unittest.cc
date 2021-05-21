@@ -8,7 +8,6 @@
 #include <cctype>
 
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "testing/gtest/include/gtest/gtest.h"

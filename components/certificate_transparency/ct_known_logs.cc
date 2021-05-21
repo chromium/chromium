@@ -11,7 +11,6 @@
 #include <iterator>
 
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "crypto/sha2.h"
 

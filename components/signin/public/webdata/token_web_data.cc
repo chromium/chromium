@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "components/signin/public/webdata/token_service_table.h"
 #include "components/webdata/common/web_database_service.h"
 

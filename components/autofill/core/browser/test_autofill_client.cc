@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/test_autofill_client.h"
 
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"

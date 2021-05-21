@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"

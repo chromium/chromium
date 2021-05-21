@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/metrics/field_trial_params.h"
-#include "base/stl_util.h"
 
 #include "base/notreached.h"
 #include "components/leveldb_proto/internal/leveldb_proto_feature_list.h"

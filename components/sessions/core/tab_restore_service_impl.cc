@@ -20,7 +20,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"

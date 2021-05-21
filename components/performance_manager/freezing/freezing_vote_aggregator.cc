@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"

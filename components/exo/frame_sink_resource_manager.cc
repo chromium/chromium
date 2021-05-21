@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
 
 namespace exo {
 

@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/web_feed_subscription_coordinator.h"
 #include "components/feed/core/v2/web_feed_subscriptions/wire_to_store.h"

@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "components/metrics/call_stack_profile_encoding.h"
 

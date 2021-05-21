@@ -8,7 +8,6 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/stl_util.h"
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/dbus/dbus_thread_manager.h"

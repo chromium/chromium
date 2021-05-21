@@ -4,7 +4,6 @@
 
 #include "components/page_load_metrics/renderer/page_resource_data_use.h"
 
-#include "base/stl_util.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"

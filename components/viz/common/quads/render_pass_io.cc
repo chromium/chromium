@@ -11,7 +11,6 @@
 #include "base/base64.h"
 #include "base/bit_cast.h"
 #include "base/containers/span.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "cc/paint/paint_op_reader.h"

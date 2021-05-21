@@ -6,7 +6,6 @@
 
 #include "base/bits.h"
 #include "base/check.h"
-#include "base/stl_util.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"

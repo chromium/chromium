@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FLAGS_UI_FEATURE_ENTRY_MACROS_H_
 #define COMPONENTS_FLAGS_UI_FEATURE_ENTRY_MACROS_H_
 
-#include "base/stl_util.h"
 
 // Macros to simplify specifying the type of FeatureEntry. Please refer to
 // the comments on FeatureEntry::Type in feature_entry.h, which explain the

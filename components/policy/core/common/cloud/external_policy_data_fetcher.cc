@@ -12,7 +12,6 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

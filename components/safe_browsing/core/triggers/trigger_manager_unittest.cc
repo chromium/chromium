@@ -5,7 +5,6 @@
 #include "components/safe_browsing/core/triggers/trigger_manager.h"
 
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"

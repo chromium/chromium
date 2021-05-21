@@ -4,7 +4,6 @@
 
 #include "ui/accessibility/ax_table_info.h"
 
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"

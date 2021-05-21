@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "components/component_updater/component_updater_paths.h"
 

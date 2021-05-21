@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"

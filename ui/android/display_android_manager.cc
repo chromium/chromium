@@ -9,7 +9,6 @@
 #include <map>
 
 #include "base/android/jni_android.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/viz_utils.h"

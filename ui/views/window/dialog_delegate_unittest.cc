@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"

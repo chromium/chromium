@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/logging/log_router.h"
 
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"

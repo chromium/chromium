@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/webcrypto/status.h"
-#include "base/stl_util.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/algorithms/test_helpers.h"
 #include "components/webcrypto/crypto_data.h"

@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/guid.h"
 #include "base/location.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/pref_service.h"

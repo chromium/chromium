@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/stl_util.h"
 #include "base/values.h"
 
 ValueMapPrefStore::ValueMapPrefStore() {}
