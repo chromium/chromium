@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -62,12 +63,22 @@ bool WebAppBrowserController::IsHostedApp() const {
   return true;
 }
 
-bool WebAppBrowserController::IsWindowControlsOverlayEnabled() const {
+bool WebAppBrowserController::AppUsesWindowControlsOverlay() const {
   if (!base::FeatureList::IsEnabled(features::kWebAppWindowControlsOverlay))
     return false;
 
   DisplayMode display = registrar().GetAppEffectiveDisplayMode(GetAppId());
   return display == DisplayMode::kWindowControlsOverlay;
+}
+
+bool WebAppBrowserController::IsWindowControlsOverlayEnabled() const {
+  // TODO(crbug.com/937121): Remove special casing for Mac once toggle is
+  // supported for BrowserNonClientFrameViewMac.
+#if defined(OS_MAC)
+  return AppUsesWindowControlsOverlay();
+#else
+  return AppUsesWindowControlsOverlay() && window_controls_overlay_enabled_;
+#endif
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

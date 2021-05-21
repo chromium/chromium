@@ -1288,7 +1288,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_WindowControlsOverlay,
 
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   EXPECT_EQ(true,
-            app_browser->app_controller()->IsWindowControlsOverlayEnabled());
+            app_browser->app_controller()->AppUsesWindowControlsOverlay());
 }
 
 class WebAppBrowserTest_RemoveStatusBar : public WebAppBrowserTest {

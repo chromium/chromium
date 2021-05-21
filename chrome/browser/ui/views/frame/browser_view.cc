@@ -1612,6 +1612,11 @@ bool BrowserView::IsWindowControlsOverlayEnabled() const {
          browser()->app_controller()->IsWindowControlsOverlayEnabled();
 }
 
+void BrowserView::ToggleWindowControlsOverlayEnabled() {
+  browser()->app_controller()->ToggleWindowControlsOverlayEnabled();
+  frame_->GetFrameView()->WindowControlsOverlayEnabledChanged();
+}
+
 void BrowserView::FocusBookmarksToolbar() {
   DCHECK(!immersive_mode_controller_->IsEnabled());
   if (bookmark_bar_view_ && bookmark_bar_view_->GetVisible() &&

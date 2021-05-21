@@ -4913,6 +4913,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_WEB_APP_MENU_BUTTON_TOOLTIP">
         Customize and control <ph name="APP_NAME">$1<ex>GMail</ex></ph>
       </message>
+      <message name="IDS_WEB_APP_ENABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP">
+        Enable window controls overlay
+      </message>
+      <message name="IDS_WEB_APP_DISABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP">
+        Disable window controls overlay
+      </message>
 
       <!-- Components -->
       <message name="IDS_COMPONENTS_TITLE" desc="Title for the chrome://components page.">

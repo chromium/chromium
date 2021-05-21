@@ -342,6 +342,10 @@ class BrowserView : public BrowserWindow,
   // of a full titlebar. This is only supported for desktop web apps.
   bool IsWindowControlsOverlayEnabled() const;
 
+  // Enable or disable the window controls overlay and notify the browser frame
+  // view of the update.
+  void ToggleWindowControlsOverlayEnabled();
+
   // BrowserWindow:
   void Show() override;
   void ShowInactive() override;

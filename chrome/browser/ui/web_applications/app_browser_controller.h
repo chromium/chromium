@@ -143,7 +143,15 @@ class AppBrowserController : public TabStripModelObserver,
 
   virtual std::unique_ptr<TabMenuModelFactory> GetTabMenuModelFactory() const;
 
+  // Returns true when an app's effective display mode is
+  // window-controls-overlay.
+  virtual bool AppUsesWindowControlsOverlay() const;
+
+  // Returns true when the app's effective display mode is
+  // window-controls-overlay and the user has toggled WCO on for the app.
   virtual bool IsWindowControlsOverlayEnabled() const;
+
+  virtual void ToggleWindowControlsOverlayEnabled();
 
   // Whether the browser should show the reload button in the toolbar.
   virtual bool HasReloadButton() const;
@@ -201,6 +209,9 @@ class AppBrowserController : public TabStripModelObserver,
   }
 
   void SetOnUpdateDraggableRegionForTesting(base::OnceClosure done);
+
+  // TODO(crbug.com/937121) Remove this after persisting state.
+  bool window_controls_overlay_enabled_ = false;
 
  protected:
   explicit AppBrowserController(Browser* browser,

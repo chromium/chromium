@@ -68,6 +68,7 @@ class WebAppBrowserController : public AppBrowserController,
       webapps::WebappUninstallSource webapp_uninstall_source) override;
   bool IsInstalled() const override;
   bool IsHostedApp() const override;
+  bool AppUsesWindowControlsOverlay() const override;
   bool IsWindowControlsOverlayEnabled() const override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

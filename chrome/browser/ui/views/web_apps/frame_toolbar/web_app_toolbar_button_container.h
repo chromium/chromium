@@ -25,6 +25,7 @@ class ToolbarButtonProvider;
 class ExtensionsToolbarContainer;
 class WebAppMenuButton;
 class WebAppOriginText;
+class WindowControlsOverlayToggleButton;
 
 class WebAppToolbarButtonContainer : public views::View,
                                      public IconLabelBubbleView::Delegate,
@@ -145,6 +146,8 @@ class WebAppToolbarButtonContainer : public views::View,
 
   // All remaining members are owned by the views hierarchy.
   WebAppOriginText* web_app_origin_text_ = nullptr;
+  WindowControlsOverlayToggleButton* window_controls_overlay_toggle_button_ =
+      nullptr;
   WebAppContentSettingsContainer* content_settings_container_ = nullptr;
   ExtensionsToolbarContainer* extensions_container_ = nullptr;
   WebAppMenuButton* web_app_menu_button_ = nullptr;

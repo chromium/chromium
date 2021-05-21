@@ -129,6 +129,10 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   // Provided for platform-specific updates of minimum window size.
   virtual void UpdateMinimumSize();
 
+  // Updates the state of the title bar when window controls overlay is enabled
+  // or disabled.
+  virtual void WindowControlsOverlayEnabledChanged() {}
+
   // views::NonClientFrameView:
   using views::NonClientFrameView::ShouldPaintAsActive;
   void Layout() override;

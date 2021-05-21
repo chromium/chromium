@@ -4367,6 +4367,8 @@ static_library("ui") {
       "views/web_apps/frame_toolbar/web_app_origin_text.h",
       "views/web_apps/frame_toolbar/web_app_toolbar_button_container.cc",
       "views/web_apps/frame_toolbar/web_app_toolbar_button_container.h",
+      "views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.cc",
+      "views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h",
       "views/web_apps/pwa_confirmation_bubble_view.cc",
       "views/web_apps/pwa_confirmation_bubble_view.h",
       "views/web_apps/web_app_confirmation_view.cc",

@@ -35,6 +35,8 @@ class GlassBrowserCaptionButtonContainer : public views::View,
   // See also ClientView::NonClientHitTest.
   int NonClientHitTest(const gfx::Point& point) const;
 
+  void OnWindowControlsOverlayEnabledChanged();
+
  private:
   friend class GlassBrowserFrameView;
 

@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_origin_text.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -77,6 +78,11 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   if (app_controller->HasTitlebarAppOriginText()) {
     web_app_origin_text_ = AddChildView(
         std::make_unique<WebAppOriginText>(browser_view_->browser()));
+  }
+
+  if (app_controller->AppUsesWindowControlsOverlay()) {
+    window_controls_overlay_toggle_button_ = AddChildView(
+        std::make_unique<WindowControlsOverlayToggleButton>(browser_view_));
   }
 
   if (app_controller->HasTitlebarContentSettings()) {
@@ -159,6 +165,13 @@ void WebAppToolbarButtonContainer::SetColors(SkColor foreground_color,
   background_color_ = background_color;
   if (web_app_origin_text_)
     web_app_origin_text_->SetTextColor(foreground_color_);
+  if (window_controls_overlay_toggle_button_) {
+    window_controls_overlay_toggle_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(kOverflowChevronIcon,
+                                       foreground_color_));
+  }
+
   if (content_settings_container_)
     content_settings_container_->SetIconColor(foreground_color_);
   if (extensions_container_)
