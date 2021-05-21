@@ -23,7 +23,7 @@ export default class Context {
 
   // Set from outside.
   static cdpServer: CdpServer;
-  static getCurrentContextId: () => string;
+  static selfTargetId: string;
 
   static onContextCreated: (t: Context) => Promise<void>;
   static onContextDestroyed: (t: Context) => Promise<void>;
@@ -92,7 +92,7 @@ export default class Context {
   }
 
   static _isValidTarget = (target: TargetInfo) => {
-    if (target.targetId === Context.getCurrentContextId()) return false;
+    if (target.targetId === Context.selfTargetId) return false;
     if (!target.type || target.type !== 'page') return false;
     return true;
   };

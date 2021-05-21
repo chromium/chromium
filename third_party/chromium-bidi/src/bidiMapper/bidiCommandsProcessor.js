@@ -18,15 +18,13 @@ import Context from './domains/browsingContext';
 export async function runBidiCommandsProcessor(
   cdpServer,
   bidiServer,
-  getCurrentTargetId
+  selfTargetId
 ) {
-  Context.getCurrentContextId = getCurrentTargetId;
+  Context.selfTargetId = selfTargetId;
   Context.cdpServer = cdpServer;
 
-  const targets = {};
-
   const _isValidTarget = (target) => {
-    if (target.targetId === getCurrentTargetId()) return false;
+    if (target.targetId === selfTargetId) return false;
     if (!target.type || target.type !== 'page') return false;
     return true;
   };
@@ -71,14 +69,6 @@ export async function runBidiCommandsProcessor(
       .filter(_isValidTarget)
       .map(targetToContext);
     return { contexts };
-  };
-
-  const process_PROTO_browsingContext_createContext = async function (params) {
-    const { targetId } = await cdpServer.sendMessage({
-      method: 'Target.createTarget',
-      params: { url: params.url },
-    });
-    return targetToContext(targets[targetId]);
   };
 
   const process_DEBUG_Page_close = async function (params) {

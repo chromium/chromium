@@ -173,8 +173,7 @@ export class MapperServer implements IServer {
       method: 'Runtime.evaluate',
       sessionId: this._mapperSessionId,
       params: {
-        expression:
-          'window.setCurrentTargetId(' + JSON.stringify(targetId) + ')',
+        expression: 'window.setSelfTargetId(' + JSON.stringify(targetId) + ')',
       },
     });
 
