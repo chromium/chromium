@@ -504,6 +504,18 @@
       },
     },
   },
+  'ios_runtime_cache_14_5': {
+    '$mixin_append': {
+      'swarming': {
+        'named_caches': [
+          {
+            'name': 'runtime_ios_14_5',
+            'path': 'Runtime-ios-14.5',
+          },
+        ],
+      },
+    },
+  },
   'isolate_profile_data': {
     'isolate_profile_data': True,
   },
@@ -1224,6 +1236,23 @@
         ],
       },
 
+    },
+  },
+  # Xcode 12.5 RC
+  'xcode_12e262': {
+    '$mixin_append': {
+      'args': [
+        '--xcode-build-version',
+        '12e262'
+      ],
+      'swarming': {
+        'named_caches': [
+          {
+            'name': 'xcode_ios_12e262',
+            'path': 'Xcode.app',
+          },
+        ],
+      },
     },
   },
   'xcode_parallelization': {
