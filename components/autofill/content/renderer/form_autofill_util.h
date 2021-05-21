@@ -82,6 +82,40 @@ struct ShadowFieldData {
   std::vector<std::u16string> shadow_host_name_attributes;
 };
 
+// Indicates if an iframe |element| is considered actually visible to the user.
+//
+// This function is not intended to implement a perfect visibility check. It
+// rather aims to strike balance between cheap tests and filtering invisible
+// frames, which can then be skipped during parsing.
+//
+// The current visibility check requires focusability and a sufficiently large
+// bounding box. Thus, particularly elements with "visibility: invisible",
+// "display: none", and "width: 0; height: 0" are considered invisible.
+//
+// Future potential improvements include:
+// * Detect potential visibility of elements with "overflow: visible".
+//   (See Element::scrollWidth().)
+// * Detect invisibility of elements with
+//   - "position: absolute; {left,top,right,bottol}: -100px"
+//   - "opacity: 0.0"
+//   - "clip: rect(0,0,0,0)"
+//
+// Exposed for testing purposes.
+bool IsVisibleIframe(const blink::WebElement& iframe_element);
+
+// Returns true if a DOM traversal (pre-order, depth-first) visits |x| before
+// |y|. |common_ancestor| can be any shared ancestor of |x| and |y| (including
+// the WebDocument), with deeper ancestors leading to better performance since
+// the function compares the paths from |x| and |y| to |common_ancestor|.
+//
+// This function is a simplified/specialised version of Blink's private
+// Node::compareDocumentPosition().
+//
+// Exposed for testing purposes.
+bool IsDomPredecessor(const blink::WebNode& x,
+                      const blink::WebNode& y,
+                      const blink::WebNode& common_ancestor);
+
 // Gets up to kMaxListSize data list values (with corresponding label) for the
 // given element, each value and label have as far as kMaxDataLength.
 void GetDataListSuggestions(const blink::WebInputElement& element,
@@ -176,6 +210,7 @@ std::vector<blink::WebFormControlElement> ExtractAutofillableElementsInForm(
 // will be copied from |field_data_manager|, if the argument is not null and
 // has entry for |element| (see properties in FieldPropertiesFlags).
 void WebFormControlElementToFormField(
+    FormRendererId form_renderer_id,
     const blink::WebFormControlElement& element,
     const FieldDataManager* field_data_manager,
     ExtractMask extract_mask,
@@ -211,17 +246,17 @@ GetUnownedAutofillableFormFieldElements(
     const blink::WebElementCollection& elements,
     std::vector<blink::WebElement>* fieldsets);
 
-// Fills |form| with the form data derived from |fieldsets|, |control_elements|
-// and |origin|. If |field| is not nullptr, fills it with the FormFieldData
-// representation of |element|.
-// |extract_mask| usage and the return value are the same as
-// WebFormElementToFormData() above.
+// Returns the <iframe> elements that are not in the scope of any <form>.
+std::vector<blink::WebElement> GetUnownedIframeElements(
+    const blink::WebDocument& document);
+
 // Returns false iff the extraction fails because the number of fields exceeds
 // |kMaxParseableFields|, or |field| and |element| are not nullptr but
 // |element| is not among |control_elements|.
 bool UnownedFormElementsAndFieldSetsToFormData(
     const std::vector<blink::WebElement>& fieldsets,
     const std::vector<blink::WebFormControlElement>& control_elements,
+    const std::vector<blink::WebElement>& iframe_elements,
     const blink::WebFormControlElement* element,
     const blink::WebDocument& document,
     const FieldDataManager* field_data_manager,
@@ -309,7 +344,7 @@ ButtonTitleList GetButtonTitles(const blink::WebFormElement& web_form,
                                 const blink::WebDocument& document,
                                 ButtonTitlesCache* button_titles_cache);
 
-// Exposed for testing purpose
+// Exposed for testing purposes.
 std::u16string FindChildTextWithIgnoreListForTesting(
     const blink::WebNode& node,
     const std::set<blink::WebNode>& divs_to_skip);
@@ -333,22 +368,22 @@ blink::WebFormControlElement FindFormControlElementByUniqueRendererId(
 // limiting the frequency and duration of retrieving a lot of DOM elements.
 // Alternative solutions have been discussed on https://crrev.com/c/1108201.
 
-// Returns form control elements by unique renderer id. The result has the same
-// number elements as |form_control_renderer_ids| and i-th element of the result
-// corresponds to the i-th element of |form_control_renderer_ids|.
-// The call of this function might be time expensive, because it retrieves all
-// DOM elements.
+// Returns form control elements identified by the given unique renderer IDs.
+// The result has the same number of elements as |form_control_renderer_ids| and
+// the i-th element of the result corresponds to the i-th element of
+// |form_control_renderer_ids|. The call of this function might be time
+// expensive, because it retrieves all DOM elements.
 std::vector<blink::WebFormControlElement>
 FindFormControlElementsByUniqueRendererId(
     blink::WebDocument doc,
     const std::vector<FieldRendererId>& form_control_renderer_ids);
 
-// Returns form control elements by unique renderer id from the form with unique
-// id |form_renderer_id|. The result has the same number elements as
-// |form_control_renderer_ids| and i-th element of the result corresponds to the
-// i-th element of |form_control_renderer_ids|.
-// This function is faster than the previous one, because it only retrieves form
-// control elements from a single form.
+// Returns form control elements by unique renderer id from the form with
+// |form_renderer_id|. The result has the same number elements as
+// |form_control_renderer_ids| and the i-th element of the result corresponds to
+// the i-th element of |form_control_renderer_ids|. This function is faster than
+// the previous one, because it only retrieves form control elements from a
+// single form.
 std::vector<blink::WebFormControlElement>
 FindFormControlElementsByUniqueRendererId(
     blink::WebDocument doc,

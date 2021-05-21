@@ -44,11 +44,13 @@
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
+#include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_label_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_option_element.h"
+#include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/public/web/web_select_element.h"
 
 using blink::WebAutofillState;
@@ -1409,60 +1411,99 @@ void MatchLabelsAndFields(
   }
 }
 
-// Common function shared by WebFormElementToFormData() and
-// UnownedFormElementsAndFieldSetsToFormData(). Either pass in:
-// 1) |form_element| and an empty |fieldsets|.
-// or
-// 2) a NULL |form_element|.
+// Populates the |form|'s
+//  * FormData::fields
+//  * FormData::child_frames
+//  * FormData::child_frame_predecessors
+// using the DOM elements in |control_elements| and |iframe_elements|.
 //
-// If |field| is not NULL, then |form_control_element| should not be NULL.
+// Optionally, |optional_field| is set to the FormFieldData that corresponds to
+// |form_control_element|.
+//
+// The labels of the FormData::fields are extracted from the |form_element| or,
+// if |form_element| is nullptr, from the <fieldset> elements |fieldsets|.
+//
+// |field_data_manager| and |extract_mask| are only passed to
+// WebFormControlElementToFormField().
 bool FormOrFieldsetsToFormData(
     const blink::WebFormElement* form_element,
     const blink::WebFormControlElement* form_control_element,
     const std::vector<blink::WebElement>& fieldsets,
     const WebVector<WebFormControlElement>& control_elements,
+    const std::vector<blink::WebElement>& iframe_elements,
     const FieldDataManager* field_data_manager,
     ExtractMask extract_mask,
     FormData* form,
-    FormFieldData* field) {
-  DCHECK(!form_element || fieldsets.empty());
-  DCHECK(!field || form_control_element);
+    FormFieldData* optional_field) {
+  DCHECK(form);
   DCHECK(form->fields.empty());
+  DCHECK(form->child_frames.empty());
+  DCHECK(form->child_frame_predecessors.empty());
+  DCHECK(!optional_field || form_control_element);
+  DCHECK(!form_element || fieldsets.empty());
 
+  // Extracts fields from |control_elements| into `form->fields` and sets
+  // `form->child_frame_predecessors`.
+  //
+  // If `control_elements[i]` is autofillable, `fields_extracted[i]` is set to
+  // true and the corresponding FormFieldData is appended to `form->fields`.
+  //
+  // After each iteration, `iframe_elements[next_iframe]` is the first iframe
+  // that comes after `control_elements[i]`.
+  //
+  // After the loop, `form->fields` and `form->child_frame_predecessors` is
+  // completely populated (see FormFieldData's documentation for details on the
+  // semantics of FormFieldData::child_frame_predecessors).
   form->fields.reserve(control_elements.size());
-
-  // A vector of bools that indicate whether each field in the form meets the
-  // requirements and thus will be in the resulting |form|.
+  if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
+    form->child_frame_predecessors.resize(iframe_elements.size(), -1);
+  }
   std::vector<bool> fields_extracted(control_elements.size(), false);
 
   std::vector<ShadowFieldData> shadow_field_data;
 
-  // Extracts the fields from |control_elements| with |extract_mask| to
-  // |form_fields|. |fields_extracted| should have as many elements as
-  // |control_elements|, initialized to false. Returns true if the number of
-  // fields extracted is within [1, kMaxParseableFields].
-  for (size_t i = 0; i < control_elements.size(); ++i) {
+  for (size_t i = 0, next_iframe = 0; i < control_elements.size(); ++i) {
     const WebFormControlElement& control_element = control_elements[i];
 
     if (!IsAutofillableElement(control_element))
       continue;
 
-    form->fields.emplace_back(FormFieldData());
+    form->fields.push_back(FormFieldData());
     ShadowFieldData shadow_field;
-    WebFormControlElementToFormField(control_element, field_data_manager,
-                                     extract_mask, &form->fields.back(),
-                                     &shadow_field);
+    WebFormControlElementToFormField(form->unique_renderer_id, control_element,
+                                     field_data_manager, extract_mask,
+                                     &form->fields.back(), &shadow_field);
     shadow_field_data.emplace_back(shadow_field);
     fields_extracted[i] = true;
 
-    // To reduce computational costs, we impose a maximum number of allowable
-    // fields.
+    if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
+      const blink::WebNode& common_ancestor =
+          form_element ? static_cast<const blink::WebNode&>(*form_element)
+                       : static_cast<const blink::WebNode&>(
+                             control_elements[i].GetDocument());
+      // Find the last frame that precedes |control_element|.
+      while (next_iframe < iframe_elements.size() &&
+             !IsDomPredecessor(control_element, iframe_elements[next_iframe],
+                               common_ancestor)) {
+        ++next_iframe;
+      }
+      // The |next_frame|th frame precedes `control_element` and thus the last
+      // added FormFieldData. The |k|th frames for |k| > |next_frame| may also
+      // precede that FormFieldData. If they do not,
+      // `form->child_frame_predecessors[i]` will be updated in a later
+      // iteration.
+      for (size_t k = next_iframe; k < iframe_elements.size(); ++k)
+        form->child_frame_predecessors[k] = form->fields.size() - 1;
+    }
+
     if (form->fields.size() > kMaxParseableFields) {
       form->fields.clear();
       return false;
     }
+    DCHECK_LE(form->fields.size(), control_elements.size());
   }
 
+  // Extracts field labels from the <label for="..."> tags.
   {
     std::vector<std::pair<FormFieldData*, ShadowFieldData>> items;
     DCHECK_EQ(form->fields.size(), shadow_field_data.size());
@@ -1482,45 +1523,67 @@ bool FormOrFieldsetsToFormData(
     }
   }
 
-  // Loop through the form control elements, extracting the label text from
-  // the DOM.  We use the |fields_extracted| vector to make sure we assign the
-  // extracted label to the correct field, as it's possible |form_fields| will
-  // not contain all of the elements in |control_elements|.
+  // Infers field labels from other tags or <labels> without for="...".
   bool found_field = false;
-  DCHECK(form->fields.size() <= control_elements.size());
-  for (size_t i = 0, field_idx = 0; i < control_elements.size(); ++i) {
-    // This field didn't meet the requirements, so don't try to find a label
-    // for it.
-    if (!fields_extracted[i])
+  DCHECK_EQ(control_elements.size(), fields_extracted.size());
+  DCHECK_EQ(form->fields.size(),
+            base::as_unsigned(base::ranges::count(fields_extracted, true)));
+  for (size_t element_index = 0, field_index = 0;
+       element_index < control_elements.size(); ++element_index) {
+    if (!fields_extracted[element_index])
       continue;
 
-    const WebFormControlElement& control_element = control_elements[i];
-    if (form->fields[field_idx].label.empty()) {
-      InferLabelForElement(control_element, &form->fields[field_idx].label,
-                           &form->fields[field_idx].label_source);
-    }
-    TruncateString(&form->fields[field_idx].label, kMaxDataLength);
+    const WebFormControlElement& control_element =
+        control_elements[element_index];
+    FormFieldData& field = form->fields[field_index++];
+    if (field.label.empty())
+      InferLabelForElement(control_element, &field.label, &field.label_source);
+    TruncateString(&field.label, kMaxDataLength);
 
-    if (field && *form_control_element == control_element) {
-      *field = form->fields[field_idx];
+    if (optional_field && *form_control_element == control_element) {
+      *optional_field = field;
       found_field = true;
     }
-
-    ++field_idx;
   }
 
   // The form_control_element was not found in control_elements. This can
   // happen if elements are dynamically removed from the form while it is
   // being processed. See http://crbug.com/849870
-  if (field && !found_field) {
+  if (optional_field && !found_field) {
     form->fields.clear();
+    form->child_frame_predecessors.clear();
+    form->child_frames.clear();
     return false;
   }
 
-  const bool success =
-      !form->fields.empty() && form->fields.size() < kMaxParseableFields;
-  if (!success)
+  // Extracts the frame tokens of |iframe_elements|.
+  if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
+    form->child_frames.reserve(iframe_elements.size());
+    for (const WebElement& iframe_element : iframe_elements) {
+      WebFrame* frame = WebFrame::FromFrameOwnerElement(iframe_element);
+      if (frame && frame->IsWebLocalFrame()) {
+        form->child_frames.push_back(LocalFrameToken(
+            frame->ToWebLocalFrame()->GetLocalFrameToken().value()));
+      } else if (frame && frame->IsWebRemoteFrame()) {
+        form->child_frames.push_back(RemoteFrameToken(
+            frame->ToWebRemoteFrame()->GetRemoteFrameToken().value()));
+      } else {
+        NOTREACHED();
+        form->child_frame_predecessors.erase(
+            form->child_frame_predecessors.begin() + form->child_frames.size());
+      }
+    }
+    DCHECK_EQ(form->child_frames.size(), form->child_frame_predecessors.size());
+  }
+
+  const bool success = (!form->fields.empty() || !form->child_frames.empty()) &&
+                       form->fields.size() < kMaxParseableFields &&
+                       form->child_frames.size() < kMaxParseableFrames;
+  if (!success) {
     form->fields.clear();
+    form->child_frame_predecessors.clear();
+    form->child_frames.clear();
+  }
   return success;
 }
 
@@ -1619,6 +1682,56 @@ void FindFormElementUpShadowRoots(const WebElement& element,
 }
 
 }  // namespace
+
+bool IsVisibleIframe(const WebElement& element) {
+  DCHECK(element.HasHTMLTagName("iframe"));
+  // It is common for not-humanly-visible elements to have very small yet
+  // positive bounds. The threshold of 10 pixels is chosen rather arbitrarily.
+  constexpr int kMinPixelSize = 10;
+  gfx::Rect bounds = element.BoundsInViewport();
+  return element.IsFocusable() && bounds.width() > kMinPixelSize &&
+         bounds.height() > kMinPixelSize;
+}
+
+bool IsDomPredecessor(const blink::WebNode& x,
+                      const blink::WebNode& y,
+                      const blink::WebNode& common_ancestor) {
+  DCHECK(x.GetDocument() == y.GetDocument());
+  DCHECK(x.GetDocument() == common_ancestor.GetDocument());
+  // Paths are backwards: the last element is the top-most node.
+  auto BuildPath = [&common_ancestor](blink::WebNode node) {
+    DCHECK(common_ancestor != node);
+    std::vector<WebNode> path;
+    path.reserve(16);
+    while (!node.IsNull() && node != common_ancestor) {
+      path.push_back(node);
+      node = path.back().ParentNode();
+    }
+    DCHECK(!path.empty());
+    return path;
+  };
+  std::vector<blink::WebNode> x_path = BuildPath(x);
+  std::vector<blink::WebNode> y_path = BuildPath(y);
+  auto x_it = x_path.rbegin();
+  auto y_it = y_path.rbegin();
+  // Find the first different nodes in the paths. If such nodes exist, they are
+  // siblings and their sibling order determines |x| and |y|'s relationship.
+  while (x_it != x_path.rend() && y_it != y_path.rend()) {
+    if (*x_it != *y_it) {
+      DCHECK(x_it->ParentNode() == y_it->ParentNode());
+      for (blink::WebNode n = *y_it; !n.IsNull(); n = n.NextSibling()) {
+        if (n == *x_it)
+          return false;
+      }
+      return true;
+    }
+    ++x_it;
+    ++y_it;
+  }
+  // If the paths don't differ in a node, the shorter path indicates a
+  // predecessor since DOM traversal is in-order.
+  return x_it == x_path.rend() && y_it != y_path.rend();
+}
 
 void GetDataListSuggestions(const WebInputElement& element,
                             std::vector<std::u16string>* values,
@@ -1817,6 +1930,7 @@ std::vector<WebFormControlElement> ExtractAutofillableElementsInForm(
 }
 
 void WebFormControlElementToFormField(
+    FormRendererId form_renderer_id,
     const WebFormControlElement& element,
     const FieldDataManager* field_data_manager,
     ExtractMask extract_mask,
@@ -1837,6 +1951,7 @@ void WebFormControlElementToFormField(
   field->name_attribute = element.GetAttribute(*kName).Utf16();
   field->unique_renderer_id =
       FieldRendererId(element.UniqueRendererFormControlId());
+  field->host_form_id = form_renderer_id;
   field->form_control_ax_id = element.GetAxId();
   field->form_control_type = element.FormControlTypeForAutofill().Utf8();
   field->autocomplete_attribute = GetAutocompleteAttribute(element);
@@ -2020,11 +2135,22 @@ bool WebFormElementToFormData(
   if (!form->action.is_valid())
     form->action = GURL(blink::WebStringToGURL(form_element.Action()));
 
+  std::vector<WebElement> owned_iframes;
+  if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
+    WebElementCollection iframes =
+        form_element.GetElementsByHTMLTagName("iframe");
+    for (WebElement iframe = iframes.FirstItem(); !iframe.IsNull();
+         iframe = iframes.NextItem()) {
+      if (IsVisibleIframe(iframe))
+        owned_iframes.push_back(iframe);
+    }
+  }
+
   std::vector<blink::WebElement> dummy_fieldset;
   return FormOrFieldsetsToFormData(
       &form_element, &form_control_element, dummy_fieldset,
-      form_element.GetFormControlElements(), field_data_manager, extract_mask,
-      form, field);
+      form_element.GetFormControlElements(), owned_iframes, field_data_manager,
+      extract_mask, form, field);
 }
 
 std::vector<WebFormControlElement> GetUnownedFormFieldElements(
@@ -2055,9 +2181,32 @@ std::vector<WebFormControlElement> GetUnownedAutofillableFormFieldElements(
       GetUnownedFormFieldElements(elements, fieldsets));
 }
 
+std::vector<WebElement> GetUnownedIframeElements(const WebDocument& document) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes))
+    return {};
+
+  auto IsOwnedByForm = [](WebElement element) {
+    for (WebNode n = element; !n.IsNull(); n = n.ParentNode()) {
+      if (n.IsElementNode() && n.To<WebElement>().HasHTMLTagName("form"))
+        return true;
+    }
+    return false;
+  };
+
+  std::vector<WebElement> unowned_iframes;
+  WebElementCollection iframes = document.GetElementsByHTMLTagName("iframe");
+  for (WebElement iframe = iframes.FirstItem(); !iframe.IsNull();
+       iframe = iframes.NextItem()) {
+    if (IsVisibleIframe(iframe) && !IsOwnedByForm(iframe))
+      unowned_iframes.push_back(iframe);
+  }
+  return unowned_iframes;
+}
+
 bool UnownedFormElementsAndFieldSetsToFormData(
     const std::vector<blink::WebElement>& fieldsets,
     const std::vector<blink::WebFormControlElement>& control_elements,
+    const std::vector<blink::WebElement>& iframe_elements,
     const blink::WebFormControlElement* element,
     const blink::WebDocument& document,
     const FieldDataManager* field_data_manager,
@@ -2080,9 +2229,9 @@ bool UnownedFormElementsAndFieldSetsToFormData(
 
   form->is_form_tag = false;
 
-  return FormOrFieldsetsToFormData(nullptr, element, fieldsets,
-                                   control_elements, field_data_manager,
-                                   extract_mask, form, field);
+  return FormOrFieldsetsToFormData(
+      nullptr, element, fieldsets, control_elements, iframe_elements,
+      field_data_manager, extract_mask, form, field);
 }
 
 bool FindFormAndFieldForFormControlElement(
@@ -2109,9 +2258,11 @@ bool FindFormAndFieldForFormControlElement(
     std::vector<WebElement> fieldsets;
     std::vector<WebFormControlElement> control_elements =
         GetUnownedAutofillableFormFieldElements(document.All(), &fieldsets);
+    std::vector<WebElement> iframe_elements =
+        GetUnownedIframeElements(document);
     return UnownedFormElementsAndFieldSetsToFormData(
-        fieldsets, control_elements, &element, document, field_data_manager,
-        extract_mask, form, field);
+        fieldsets, control_elements, iframe_elements, &element, document,
+        field_data_manager, extract_mask, form, field);
   }
 
   return WebFormElementToFormData(form_element, element, field_data_manager,
@@ -2383,7 +2534,8 @@ std::vector<WebFormControlElement> FindFormControlElementsByUniqueRendererId(
 
 namespace {
 
-// Returns the coalesced child of the elements who's ids are founc in |id_list|.
+// Returns the coalesced child of the elements who's ids are found in
+// |id_list|.
 //
 // For example, given this document...
 //

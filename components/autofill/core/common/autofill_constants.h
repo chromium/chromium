@@ -23,12 +23,16 @@ constexpr size_t kMinRequiredFieldsForQuery = 1;
 constexpr size_t kMinRequiredFieldsForUpload = 1;
 
 // The maximum number of form fields we are willing to parse, due to
-// computational costs.  Several examples of forms with lots of fields that are
+// computational costs. Several examples of forms with lots of fields that are
 // not relevant to Autofill: (1) the Netflix queue; (2) the Amazon wishlist;
 // (3) router configuration pages; and (4) other configuration pages, e.g. for
 // Google code project settings.
 // Copied to components/autofill/ios/form_util/resources/fill.js.
-const size_t kMaxParseableFields = 200;
+constexpr size_t kMaxParseableFields = 200;
+
+// The maximum number of frames we are willing to parse, due to computational
+// costs.
+constexpr size_t kMaxParseableFrames = 20;
 
 // The maximum number of allowed calls to CreditCard::GetMatchingTypes() and
 // AutofillProfile::GetMatchingTypeAndValidities().
@@ -36,15 +40,15 @@ const size_t kMaxParseableFields = 200;
 // and voting is omitted.
 // The rationale is that for a form with |kMaxParseableFields| = 200 fields,
 // this still allows for 25 profiles plus credit cars.
-const size_t kMaxTypeMatchingCalls = 5000;
+constexpr size_t kMaxTypeMatchingCalls = 5000;
 
 // The minimum number of fields in a form that contains only password fields to
 // upload the form to and request predictions from the Autofill servers.
-const size_t kRequiredFieldsForFormsWithOnlyPasswordFields = 2;
+constexpr size_t kRequiredFieldsForFormsWithOnlyPasswordFields = 2;
 
 // Special query id used between the browser and the renderer when the action
 // is initiated from the browser.
-const int kNoQueryId = -1;
+constexpr int kNoQueryId = -1;
 
 // Options bitmask values for AutofillHostMsg_ShowPasswordSuggestions IPC
 enum ShowPasswordSuggestionsOptions {

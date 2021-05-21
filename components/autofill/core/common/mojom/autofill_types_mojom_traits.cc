@@ -7,11 +7,25 @@
 #include "base/i18n/rtl.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "url/mojom/origin_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
+
+// static
+bool StructTraits<autofill::mojom::FrameTokenDataView, autofill::FrameToken>::
+    Read(autofill::mojom::FrameTokenDataView data, autofill::FrameToken* out) {
+  base::UnguessableToken token;
+  if (!data.ReadToken(&token))
+    return false;
+  if (data.is_local())
+    *out = autofill::LocalFrameToken(token);
+  else
+    *out = autofill::RemoteFrameToken(token);
+  return true;
+}
 
 // static
 bool StructTraits<autofill::mojom::FormRendererIdDataView,
@@ -70,6 +84,9 @@ bool StructTraits<
   out->properties_mask = data.properties_mask();
 
   if (!data.ReadUniqueRendererId(&out->unique_renderer_id))
+    return false;
+
+  if (!data.ReadHostFormId(&out->host_form_id))
     return false;
 
   out->form_control_ax_id = data.form_control_ax_id();
@@ -145,6 +162,12 @@ bool StructTraits<autofill::mojom::FormDataDataView, autofill::FormData>::Read(
   out->is_form_tag = data.is_form_tag();
 
   if (!data.ReadUniqueRendererId(&out->unique_renderer_id))
+    return false;
+
+  if (!data.ReadChildFrames(&out->child_frames))
+    return false;
+
+  if (!data.ReadChildFramePredecessors(&out->child_frame_predecessors))
     return false;
 
   if (!data.ReadSubmissionEvent(&out->submission_event))

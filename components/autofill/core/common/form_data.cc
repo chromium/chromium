@@ -98,8 +98,7 @@ bool FormData::SimilarFormAs(const FormData& form) const {
   if (name != form.name || id_attribute != form.id_attribute ||
       name_attribute != form.name_attribute || url != form.url ||
       action != form.action || is_action_empty != form.is_action_empty ||
-      is_form_tag != form.is_form_tag ||
-      fields.size() != form.fields.size()) {
+      is_form_tag != form.is_form_tag || fields.size() != form.fields.size()) {
     return false;
   }
   for (size_t i = 0; i < fields.size(); ++i) {
@@ -112,8 +111,9 @@ bool FormData::SimilarFormAs(const FormData& form) const {
 bool FormData::DynamicallySameFormAs(const FormData& form) const {
   if (name != form.name || id_attribute != form.id_attribute ||
       name_attribute != form.name_attribute ||
-      fields.size() != form.fields.size())
+      fields.size() != form.fields.size()) {
     return false;
+  }
   for (size_t i = 0; i < fields.size(); ++i) {
     if (!fields[i].DynamicallySameFieldAs(form.fields[i]))
       return false;
@@ -128,7 +128,8 @@ bool FormData::IdentityComparator::operator()(const FormData& a,
   // as well.
   auto tie = [](const FormData& f) {
     return std::tie(f.host_frame, f.unique_renderer_id, f.name, f.id_attribute,
-                    f.name_attribute, f.url, f.action, f.is_form_tag);
+                    f.name_attribute, f.url, f.action, f.is_form_tag,
+                    f.child_frames, f.child_frame_predecessors);
   };
   if (tie(a) < tie(b))
     return true;
@@ -237,8 +238,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormData& form) {
   buffer << Tag{"div"} << Attrib{"class", "form"};
   buffer << Tag{"table"};
   buffer << Tr{} << "Form name:" << form.name;
-  buffer << Tr{} << "Host frame:" << form.host_frame.ToString();
-  buffer << Tr{} << "Unique renderer Id:" << form.unique_renderer_id.value();
+  buffer << Tr{} << "Unique id:" << form.global_id();
   buffer << Tr{} << "URL:" << form.url;
   buffer << Tr{} << "Action:" << form.action;
   buffer << Tr{} << "Is action empty:" << form.is_action_empty;

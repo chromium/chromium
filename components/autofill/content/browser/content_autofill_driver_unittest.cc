@@ -275,16 +275,18 @@ class ContentAutofillDriverTestApi {
   explicit ContentAutofillDriverTestApi(ContentAutofillDriver* driver)
       : driver_(driver) {}
 
-  void SetFrameAndFormMetaData(FormFieldData& field) const {
-    driver_->SetFrameAndFormMetaData(field);
+  void SetFrameAndFormMetaData(const FormData& raw_form,
+                               FormFieldData& field) const {
+    driver_->SetFrameAndFormMetaData(raw_form, field);
   }
 
   void SetFrameAndFormMetaData(FormData& form) const {
     driver_->SetFrameAndFormMetaData(form);
   }
 
-  FormFieldData GetFieldWithFrameAndFormMetaData(FormFieldData field) const {
-    return driver_->GetFieldWithFrameAndFormMetaData(field);
+  FormFieldData GetFieldWithFrameAndFormMetaData(const FormData& raw_form,
+                                                 FormFieldData field) const {
+    return driver_->GetFieldWithFrameAndFormMetaData(raw_form, field);
   }
 
   FormData GetFormWithFrameAndFormMetaData(FormData form) const {
@@ -422,10 +424,12 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
 
 TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
   NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
+  FormData form;
   FormFieldData field;
   FormFieldData field2 = ContentAutofillDriverTestApi(driver_.get())
-                             .GetFieldWithFrameAndFormMetaData(field);
-  ContentAutofillDriverTestApi(driver_.get()).SetFrameAndFormMetaData(field);
+                             .GetFieldWithFrameAndFormMetaData(form, field);
+  ContentAutofillDriverTestApi(driver_.get())
+      .SetFrameAndFormMetaData(form, field);
 
   EXPECT_EQ(
       field.host_frame,
@@ -452,7 +456,8 @@ TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
   EXPECT_TRUE(fake_agent_.GetAutofillFillFormMessage(&output_page_id,
                                                      &output_form_data));
   EXPECT_EQ(input_page_id, output_page_id);
-  EXPECT_TRUE(input_form_data.SameFormAs(output_form_data));
+  EXPECT_TRUE(test::WithoutUnserializedData(input_form_data)
+                  .SameFormAs(output_form_data));
 }
 
 TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {

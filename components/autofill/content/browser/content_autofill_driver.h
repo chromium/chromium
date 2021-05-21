@@ -190,13 +190,17 @@ class ContentAutofillDriver : public AutofillDriver,
       const content::RenderWidgetHost::KeyPressEventCallback& handler) override;
 
   // Sets parameters of |form| and |field| that can be extracted from
-  // |render_frame_host_|.
+  // |render_frame_host_|. Setting |field|'s meta data also requires the
+  // enclosing FormData |raw_form|, which does not need to have its own meta
+  // data set.
   //
   // These functions must be called for every FormData and FormFieldData
   // received from the renderer.
-  void SetFrameAndFormMetaData(FormFieldData& field) const;
+  void SetFrameAndFormMetaData(const FormData& raw_form,
+                               FormFieldData& field) const;
   void SetFrameAndFormMetaData(FormData& form) const;
-  FormFieldData GetFieldWithFrameAndFormMetaData(FormFieldData field) const
+  FormFieldData GetFieldWithFrameAndFormMetaData(const FormData& raw_form,
+                                                 FormFieldData field) const
       WARN_UNUSED_RESULT;
   FormData GetFormWithFrameAndFormMetaData(FormData form) const
       WARN_UNUSED_RESULT;

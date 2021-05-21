@@ -186,6 +186,7 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
     FormFieldData field;
     field.host_frame = field_id_.frame_token;
     field.unique_renderer_id = field_id_.renderer_id;
+    field.host_form_id = form.unique_renderer_id;
     field.is_focusable = true;
     field.should_autocomplete = true;
 

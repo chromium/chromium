@@ -89,7 +89,7 @@ void LogDeprecationMessages(const WebFormControlElement& element) {
 // Determines whether the form is interesting enough to be sent to the browser
 // for further operations.
 bool IsFormInteresting(const FormData& form, size_t num_editable_elements) {
-  if (form.fields.empty())
+  if (form.fields.empty() && form.child_frames.empty())
     return false;
 
   // If the form has at least one field with an autocomplete attribute, it is a
@@ -110,7 +110,8 @@ bool IsFormInteresting(const FormData& form, size_t num_editable_elements) {
          num_editable_elements >= kMinRequiredFieldsForUpload ||
          (all_fields_are_passwords &&
           num_editable_elements >=
-              kRequiredFieldsForFormsWithOnlyPasswordFields);
+              kRequiredFieldsForFormsWithOnlyPasswordFields) ||
+         form.child_frames.size() > 0;
 }
 
 }  // namespace
@@ -139,14 +140,10 @@ std::vector<FormData> FormCache::ExtractNewForms(
                                           form_util::EXTRACT_OPTIONS);
 
   size_t num_fields_seen = 0;
+  size_t num_frames_seen = 0;
   for (const WebFormElement& form_element : document.Forms()) {
     std::vector<WebFormControlElement> control_elements =
         form_util::ExtractAutofillableElementsInForm(form_element);
-
-    size_t num_editable_elements =
-        ScanFormControlElements(control_elements, log_deprecation_messages);
-    if (num_editable_elements == 0)
-      continue;
 
     FormData form;
     if (!WebFormElementToFormData(form_element, WebFormControlElement(),
@@ -159,10 +156,15 @@ std::vector<FormData> FormCache::ExtractNewForms(
       observed_unique_renderer_ids.insert(field.unique_renderer_id);
 
     num_fields_seen += form.fields.size();
-    if (num_fields_seen > kMaxParseableFields) {
+    num_frames_seen += form.child_frames.size();
+    if (num_fields_seen > kMaxParseableFields ||
+        num_frames_seen > kMaxParseableFrames) {
       PruneInitialValueCaches(observed_unique_renderer_ids);
       return forms;
     }
+
+    size_t num_editable_elements =
+        ScanFormControlElements(control_elements, log_deprecation_messages);
 
     if (!base::Contains(parsed_forms_, form) &&
         IsFormInteresting(form, num_editable_elements)) {
@@ -184,18 +186,13 @@ std::vector<FormData> FormCache::ExtractNewForms(
   std::vector<WebFormControlElement> control_elements =
       form_util::GetUnownedAutofillableFormFieldElements(document.All(),
                                                          &fieldsets);
-
-  size_t num_editable_elements =
-      ScanFormControlElements(control_elements, log_deprecation_messages);
-  if (num_editable_elements == 0) {
-    PruneInitialValueCaches(observed_unique_renderer_ids);
-    return forms;
-  }
+  std::vector<WebElement> iframe_elements =
+      form_util::GetUnownedIframeElements(document);
 
   FormData synthetic_form;
   if (!UnownedFormElementsAndFieldSetsToFormData(
-          fieldsets, control_elements, nullptr, document, field_data_manager,
-          extract_mask, &synthetic_form, nullptr)) {
+          fieldsets, control_elements, iframe_elements, nullptr, document,
+          field_data_manager, extract_mask, &synthetic_form, nullptr)) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
     return forms;
   }
@@ -204,10 +201,15 @@ std::vector<FormData> FormCache::ExtractNewForms(
     observed_unique_renderer_ids.insert(field.unique_renderer_id);
 
   num_fields_seen += synthetic_form.fields.size();
-  if (num_fields_seen > kMaxParseableFields) {
+  num_frames_seen += synthetic_form.child_frames.size();
+  if (num_fields_seen > kMaxParseableFields ||
+      num_frames_seen > kMaxParseableFrames) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
     return forms;
   }
+
+  size_t num_editable_elements =
+      ScanFormControlElements(control_elements, log_deprecation_messages);
 
   if (!base::Contains(parsed_forms_, synthetic_form) &&
       IsFormInteresting(synthetic_form, num_editable_elements)) {

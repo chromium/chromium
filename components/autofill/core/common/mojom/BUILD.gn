@@ -79,6 +79,7 @@ mojom("mojo_types") {
         "//base",
         "//base:i18n",
         "//components/autofill/core/common",
+        "//third_party/abseil-cpp:absl",
         "//ui/gfx/geometry/mojom:mojom_traits",
       ]
     },

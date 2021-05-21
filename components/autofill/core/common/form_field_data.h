@@ -15,8 +15,10 @@
 #include "base/i18n/rtl.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "url/origin.h"
 
 namespace base {
 class Pickle;
@@ -73,10 +75,8 @@ struct FormFieldData {
   FormFieldData& operator=(FormFieldData&&);
   ~FormFieldData();
 
-  // An identifier of the field that can be considered unique for the lifetime
-  // of the browser process. This identifier should not be sent to a renderer
-  // process because the host_frame must not be leaked to other renderer
-  // processes.
+  // An identifier that is unique across all fields in all frames.
+  // Must not be leaked to renderer process. See FieldGlobalId for details.
   FieldGlobalId global_id() const { return {host_frame, unique_renderer_id}; }
 
   // Returns true if both fields are identical, ignoring value- and
@@ -152,12 +152,21 @@ struct FormFieldData {
 
   // A unique identifier of the containing frame. This value is not serialized
   // because LocalFrameTokens must not be leaked to other renderer processes.
+  // It is not persistent between page loads and therefore not used in
+  // comparison in SameFieldAs().
   LocalFrameToken host_frame;
 
-  // A unique renderer id returned by
-  // WebFormControlElement::UniqueRendererFormId(). It is not persistent between
-  // page loads, so it is not saved and not used in comparison in SameFieldAs().
+  // An identifier of the field that is unique among the field from the same
+  // frame. In the browser process, it should only be used in conjunction with
+  // |host_frame| to identify a field; see global_id(). It is not persistent
+  // between page loads and therefore not used in comparison in SameFieldAs().
   FieldRendererId unique_renderer_id;
+
+  // Unique renderer ID of the enclosing form in the same frame.
+  FormRendererId host_form_id;
+
+  // The origin of the frame that hosts the field.
+  url::Origin origin;
 
   // The ax node id of the form control in the accessibility tree.
   int32_t form_control_ax_id = 0;

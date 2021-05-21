@@ -657,10 +657,12 @@ class FormStructure {
 
   bool value_from_dynamic_change_form_ = false;
 
-  // An unique identifier of the fame.
+  // An identifier of the frame that is unique over the lifetime of the browser.
+  // This value must not be leaked to other renderer processes.
   LocalFrameToken host_frame_;
 
-  // An identifier that is unique among the form from the same frame.
+  // An identifier of the form that is unique among the forms from the same
+  // frame.
   FormRendererId unique_renderer_id_;
 
   DISALLOW_COPY_AND_ASSIGN(FormStructure);

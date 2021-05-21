@@ -43,10 +43,8 @@ struct FormData {
   FormData& operator=(FormData&&);
   ~FormData();
 
-  // An identifier of the form that can be considered unique for the lifetime of
-  // the browser process.
-  // This identifier should not be sent to a renderer process because the
-  // host_frame must not be leaked to other renderer processes.
+  // An identifier that is unique across all forms in all frames.
+  // Must not be leaked to renderer process. See FieldGlobalId for details.
   FormGlobalId global_id() const { return {host_frame, unique_renderer_id}; }
 
   // Returns true if two forms are the same, not counting the values of the
@@ -99,10 +97,18 @@ struct FormData {
   // A unique identifier of the containing frame. This value is not serialized
   // because LocalFrameTokens must not be leaked to other renderer processes.
   LocalFrameToken host_frame;
-  // A unique renderer id returned by WebFormElement::UniqueRendererFormId(). It
-  // is not persistent between page loads, so it is not saved and not used in
-  // comparison in SameFormAs().
+  // An identifier of the form that is unique among the forms from the same
+  // frame. In the browser process, it should only be used in conjunction with
+  // |host_frame| to identify a field; see global_id(). It is not persistent
+  // between page loads and therefore not used in comparison in SameFieldAs().
   FormRendererId unique_renderer_id;
+  // A vector of all frames in the form.
+  std::vector<FrameToken> child_frames;
+  // A vector such that encodes the upper-bound field index of the `i`th frame.
+  // More precisely, `fields[child_frame_predecessors[i]]` is the last field
+  // in this form that precedes `child_frames[i]`. If there is no such field,
+  // `child_frame_predecessors[i]` is -1.
+  std::vector<int> child_frame_predecessors;
   // The type of the event that was taken as an indication that this form is
   // being or has already been submitted. This field is filled only in Password
   // Manager for submitted password forms.

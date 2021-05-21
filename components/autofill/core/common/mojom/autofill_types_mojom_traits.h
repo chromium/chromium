@@ -24,9 +24,22 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/mojom/base/unguessable_token.mojom-shared.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "url/origin.h"
 
 namespace mojo {
+
+template <>
+struct StructTraits<autofill::mojom::FrameTokenDataView, autofill::FrameToken> {
+  static base::UnguessableToken token(const autofill::FrameToken& r) {
+    return absl::visit([](const auto& t) { return t.value(); }, r);
+  }
+
+  static bool is_local(const autofill::FrameToken& r) {
+    return absl::holds_alternative<autofill::LocalFrameToken>(r);
+  }
+
+  static bool Read(autofill::mojom::FrameTokenDataView data,
+                   autofill::FrameToken* out);
+};
 
 template <>
 struct StructTraits<autofill::mojom::FormRendererIdDataView,
@@ -100,6 +113,11 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
   static autofill::FieldRendererId unique_renderer_id(
       const autofill::FormFieldData& r) {
     return r.unique_renderer_id;
+  }
+
+  static autofill::FormRendererId host_form_id(
+      const autofill::FormFieldData& r) {
+    return r.host_form_id;
   }
 
   static uint32_t properties_mask(const autofill::FormFieldData& r) {
@@ -246,6 +264,16 @@ struct StructTraits<autofill::mojom::FormDataDataView, autofill::FormData> {
   static autofill::FormRendererId unique_renderer_id(
       const autofill::FormData& r) {
     return r.unique_renderer_id;
+  }
+
+  static const std::vector<autofill::FrameToken>& child_frames(
+      const autofill::FormData& r) {
+    return r.child_frames;
+  }
+
+  static const std::vector<int32_t>& child_frame_predecessors(
+      const autofill::FormData& r) {
+    return r.child_frame_predecessors;
   }
 
   static autofill::mojom::SubmissionIndicatorEvent submission_event(

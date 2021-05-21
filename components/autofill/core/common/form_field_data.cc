@@ -400,6 +400,8 @@ bool DeserializeFormFieldData(base::PickleIterator* iter,
 
 std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
   return os << "label='" << field.label << "' "
+            << "unique_Id=" << field.global_id() << " "
+            << "origin='" << field.origin.Serialize() << "' "
             << "name='" << field.name << "' "
             << "id_attribute='" << field.id_attribute << "' "
             << "name_attribute='" << field.name_attribute << "' "
@@ -426,8 +428,8 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
 LogBuffer& operator<<(LogBuffer& buffer, const FormFieldData& field) {
   buffer << Tag{"table"};
   buffer << Tr{} << "Name:" << field.name;
-  buffer << Tr{} << "Host frame:" << field.host_frame.ToString();
-  buffer << Tr{} << "Unique renderer Id:" << field.unique_renderer_id.value();
+  buffer << Tr{} << "Unique id:" << field.global_id();
+  buffer << Tr{} << "Origin:" << field.origin.Serialize();
   buffer << Tr{} << "Name attribute:" << field.name_attribute;
   buffer << Tr{} << "Id attribute:" << field.id_attribute;
   constexpr size_t kMaxLabelSize = 100;

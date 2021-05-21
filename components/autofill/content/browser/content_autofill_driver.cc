@@ -333,7 +333,8 @@ void ContentAutofillDriver::TextFieldDidChange(const FormData& raw_form,
                                                base::TimeTicks timestamp) {
   autofill_manager_->OnTextFieldDidChange(
       GetFormWithFrameAndFormMetaData(raw_form),
-      GetFieldWithFrameAndFormMetaData(raw_field), bounding_box, timestamp);
+      GetFieldWithFrameAndFormMetaData(raw_form, raw_field), bounding_box,
+      timestamp);
 }
 
 void ContentAutofillDriver::TextFieldDidScroll(const FormData& raw_form,
@@ -341,7 +342,7 @@ void ContentAutofillDriver::TextFieldDidScroll(const FormData& raw_form,
                                                const gfx::RectF& bounding_box) {
   autofill_manager_->OnTextFieldDidScroll(
       GetFormWithFrameAndFormMetaData(raw_form),
-      GetFieldWithFrameAndFormMetaData(raw_field), bounding_box);
+      GetFieldWithFrameAndFormMetaData(raw_form, raw_field), bounding_box);
 }
 
 void ContentAutofillDriver::SelectControlDidChange(
@@ -350,7 +351,7 @@ void ContentAutofillDriver::SelectControlDidChange(
     const gfx::RectF& bounding_box) {
   autofill_manager_->OnSelectControlDidChange(
       GetFormWithFrameAndFormMetaData(raw_form),
-      GetFieldWithFrameAndFormMetaData(raw_field), bounding_box);
+      GetFieldWithFrameAndFormMetaData(raw_form, raw_field), bounding_box);
 }
 
 void ContentAutofillDriver::QueryFormFieldAutofill(
@@ -361,7 +362,7 @@ void ContentAutofillDriver::QueryFormFieldAutofill(
     bool autoselect_first_suggestion) {
   autofill_manager_->OnQueryFormFieldAutofill(
       id, GetFormWithFrameAndFormMetaData(raw_form),
-      GetFieldWithFrameAndFormMetaData(raw_field), bounding_box,
+      GetFieldWithFrameAndFormMetaData(raw_form, raw_field), bounding_box,
       autoselect_first_suggestion);
 }
 
@@ -378,7 +379,7 @@ void ContentAutofillDriver::FocusOnFormField(const FormData& raw_form,
                                              const gfx::RectF& bounding_box) {
   autofill_manager_->OnFocusOnFormField(
       GetFormWithFrameAndFormMetaData(raw_form),
-      GetFieldWithFrameAndFormMetaData(raw_field), bounding_box);
+      GetFieldWithFrameAndFormMetaData(raw_form, raw_field), bounding_box);
 }
 
 void ContentAutofillDriver::DidFillAutofillFormData(const FormData& raw_form,
@@ -475,30 +476,32 @@ void ContentAutofillDriver::RemoveHandler(
 }
 
 void ContentAutofillDriver::SetFrameAndFormMetaData(
+    const FormData& raw_form,
     FormFieldData& field) const {
   field.host_frame =
       LocalFrameToken(render_frame_host_->GetFrameToken().value());
+  field.host_form_id = raw_form.unique_renderer_id;
+  field.origin = render_frame_host_->GetLastCommittedOrigin();
 }
 
 void ContentAutofillDriver::SetFrameAndFormMetaData(FormData& form) const {
   form.host_frame =
       LocalFrameToken(render_frame_host_->GetFrameToken().value());
-
   form.url = StripAuthAndParams(render_frame_host_->GetLastCommittedURL());
   form.full_url = render_frame_host_->GetLastCommittedURL();
-
   if (auto* main_rfh = render_frame_host_->GetMainFrame())
     form.main_frame_origin = main_rfh->GetLastCommittedOrigin();
   else
     form.main_frame_origin = url::Origin();
 
   for (FormFieldData& field : form.fields)
-    SetFrameAndFormMetaData(field);
+    SetFrameAndFormMetaData(form, field);
 }
 
 FormFieldData ContentAutofillDriver::GetFieldWithFrameAndFormMetaData(
+    const FormData& raw_form,
     FormFieldData field) const {
-  SetFrameAndFormMetaData(field);
+  SetFrameAndFormMetaData(raw_form, field);
   return field;
 }
 

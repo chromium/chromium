@@ -2,16 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 
 #include "base/metrics/field_trial.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "content/public/renderer/render_view.h"
 #include "content/public/test/render_view_test.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -21,9 +26,12 @@
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/public/web/web_select_element.h"
+#include "third_party/blink/public/web/web_view.h"
 
 using autofill::mojom::ButtonTitleType;
 using blink::WebDocument;
@@ -148,6 +156,21 @@ void VerifyButtonTitleCache(const WebFormElement& form_target,
   EXPECT_THAT(actual_cache,
               testing::ElementsAre(testing::Pair(GetFormRendererId(form_target),
                                                  expected_button_titles)));
+}
+
+FrameToken GetFrameToken(const blink::WebElement& iframe_element) {
+  blink::WebFrame* frame =
+      blink::WebFrame::FromFrameOwnerElement(iframe_element);
+  if (frame && frame->IsWebLocalFrame()) {
+    return LocalFrameToken(
+        frame->ToWebLocalFrame()->GetLocalFrameToken().value());
+  } else if (frame && frame->IsWebRemoteFrame()) {
+    return RemoteFrameToken(
+        frame->ToWebRemoteFrame()->GetRemoteFrameToken().value());
+  } else {
+    NOTREACHED();
+    return FrameToken();
+  }
 }
 
 class FormAutofillUtilsTest : public content::RenderViewTest {
@@ -430,10 +453,12 @@ TEST_F(FormAutofillUtilsTest, IsEnabled) {
     control_elements.push_back(element.To<WebFormControlElement>());
   }
 
+  std::vector<WebElement> iframe_elements;
+
   autofill::FormData target;
   EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
-      dummy_fieldsets, control_elements, nullptr, web_frame->GetDocument(),
-      nullptr, EXTRACT_NONE, &target, nullptr));
+      dummy_fieldsets, control_elements, iframe_elements, nullptr,
+      web_frame->GetDocument(), nullptr, EXTRACT_NONE, &target, nullptr));
   const struct {
     const char16_t* const name;
     bool enabled;
@@ -470,10 +495,12 @@ TEST_F(FormAutofillUtilsTest, IsReadonly) {
     control_elements.push_back(element.To<WebFormControlElement>());
   }
 
+  std::vector<WebElement> iframe_elements;
+
   autofill::FormData target;
   EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
-      dummy_fieldsets, control_elements, nullptr, web_frame->GetDocument(),
-      nullptr, EXTRACT_NONE, &target, nullptr));
+      dummy_fieldsets, control_elements, iframe_elements, nullptr,
+      web_frame->GetDocument(), nullptr, EXTRACT_NONE, &target, nullptr));
   const struct {
     const char16_t* const name;
     bool readonly;
@@ -512,10 +539,12 @@ TEST_F(FormAutofillUtilsTest, IsFocusable) {
   EXPECT_TRUE(autofill::form_util::IsWebElementVisible(control_elements[0]));
   EXPECT_FALSE(autofill::form_util::IsWebElementVisible(control_elements[1]));
 
+  std::vector<WebElement> iframe_elements;
+
   autofill::FormData target;
   EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
-      dummy_fieldsets, control_elements, nullptr, web_frame->GetDocument(),
-      nullptr, EXTRACT_NONE, &target, nullptr));
+      dummy_fieldsets, control_elements, iframe_elements, nullptr,
+      web_frame->GetDocument(), nullptr, EXTRACT_NONE, &target, nullptr));
   ASSERT_EQ(2u, target.fields.size());
   EXPECT_EQ(u"name1", target.fields[0].name);
   EXPECT_TRUE(target.fields[0].is_focusable);
@@ -895,6 +924,382 @@ TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
   EXPECT_TRUE(form_data.fields.back().datalist_values.empty());
   EXPECT_TRUE(form_data.fields.back().datalist_labels.empty());
 }
+
+// Tests the visibility detection of iframes.
+TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
+  // Test cases of <iframe> elements with different styles.
+  //
+  // The `data-[in]visible` attribute represents whether IsVisibleIframe()
+  // is expected to classify the iframe as [in]visible.
+  //
+  // Since IsVisibleIframe() falls short of what the human user will consider
+  // visible or invisible, there are false positives and false negatives. For
+  // example, IsVisibleIframe() does not check opacity, so <iframe
+  // style="opacity: 0.0"> is a false positive (it's visible to
+  // IsVisibleIframe() but invisible to the human).
+  //
+  // The `data-false="{POSITIVE,NEGATIVE}"` attribute indicates whether the test
+  // case to be a false positive/negative compared to human visibility
+  // perception. In such a case, not meeting the expectation actually indicates
+  // an improvement of IsVisibleIframe(), as it means a false positive/negative
+  // has been fixed.
+  //
+  // The sole purpose of the `data-false` attribute is to document this and to
+  // print a message when such a test fails.
+  LoadHTML(R"(
+      <body>
+        <iframe srcdoc="<input>" data-visible   style=""></iframe>
+        <iframe srcdoc="<input>" data-visible   style="display: block;"></iframe>
+        <iframe srcdoc="<input>" data-visible   style="visibility: visible;"></iframe>
+
+        <iframe srcdoc="<input>" data-invisible style="display: none;"></iframe>
+        <iframe srcdoc="<input>" data-invisible style="visibility: hidden;"></iframe>
+        <div style="display: none;">     <iframe srcdoc="<input>" data-invisible></iframe></div>
+        <div style="visibility: hidden;"><iframe srcdoc="<input>" data-invisible></iframe></div>
+
+        <iframe srcdoc="<input>" data-visible   style="width: 15px; height: 15px;"></iframe>
+        <iframe srcdoc="<input>" data-invisible style="width: 15px; height:  5px;"></iframe>
+        <iframe srcdoc="<input>" data-invisible style="width:  5px; height: 15px;"></iframe>
+        <iframe srcdoc="<input>" data-invisible style="width:  5px; height:  5px;"></iframe>
+
+        <iframe srcdoc="<input>" data-invisible style="width: 1px; height: 1px;"></iframe>
+        <iframe srcdoc="<input>" data-invisible style="width: 1px; height: 1px; overflow: visible;" data-false="NEGATIVE"></iframe>
+
+        <iframe srcdoc="<input>" data-visible   style="opacity: 0.0;" data-false="POSITIVE"></iframe>
+        <iframe srcdoc="<input>" data-visible   style="opacity: 0.0;" data-false="POSITIVE"></iframe>
+        <iframe srcdoc="<input>" data-visible   style="position: absolute; clip: rect(0,0,0,0);" data-false="POSITIVE"></iframe>
+
+        <iframe srcdoc="<input>" data-visible   style="width: 100px; height: 100px; position: absolute; left:    -75px;"></iframe>
+        <iframe srcdoc="<input>" data-visible   style="width: 100px; height: 100px; position: absolute; top:     -75px;"></iframe>
+        <iframe srcdoc="<input>" data-visible   style="width: 100px; height: 100px; position: absolute; left:   -200px;" data-false="POSITIVE"></iframe>
+        <iframe srcdoc="<input>" data-visible   style="width: 100px; height: 100px; position: absolute; top:    -200px;" data-false="POSITIVE"></iframe>
+        <iframe srcdoc="<input>" data-visible   style="width: 100px; height: 100px; position: absolute; right:  -200px;" data-false="POSITIVE"></iframe>
+        <iframe srcdoc="<input>" data-visible   style="width: 100px; height: 100px; position: absolute; bottom: -200px;" data-false="POSITIVE"></iframe>
+
+        <iframe srcdoc="<input>" data-visible   style=""></iframe> <!-- Finish with a visible frame to make sure all <iframe>s have been closed -->
+
+        <div style="width: 10000; height: 10000"></div>
+      </body>)");
+
+  // Ensure that Android runs at default page scale.
+  view_->GetWebView()->SetPageScaleFactor(1.0);
+
+  std::vector<WebElement> iframes = [this] {
+    WebDocument doc = GetMainFrame()->GetDocument();
+    std::vector<WebElement> result;
+    WebElementCollection iframes = doc.GetElementsByHTMLTagName("iframe");
+    for (WebElement iframe = iframes.FirstItem(); !iframe.IsNull();
+         iframe = iframes.NextItem()) {
+      result.push_back(iframe);
+    }
+    return result;
+  }();
+  ASSERT_GE(iframes.size(), 16u);
+
+  auto RunTestCases = [](const std::vector<WebElement>& iframes) {
+    for (WebElement iframe : iframes) {
+      gfx::Rect bounds = iframe.BoundsInViewport();
+      bool expectation = iframe.HasAttribute("data-visible");
+      SCOPED_TRACE(
+          testing::Message()
+          << "Iframe with style \n  " << iframe.GetAttribute("style").Ascii()
+          << "\nwith dimensions w=" << bounds.width()
+          << ",h=" << bounds.height() << " and position x=" << bounds.x()
+          << ",y=" << bounds.y()
+          << (iframe.HasAttribute("data-false") ? "\nwhich used to be a FALSE "
+                                                : "")
+          << iframe.GetAttribute("data-false").Ascii());
+      ASSERT_TRUE(iframe.HasAttribute("data-visible") !=
+                  iframe.HasAttribute("data-invisible"));
+      EXPECT_EQ(IsVisibleIframe(iframe), expectation);
+    }
+  };
+
+  RunTestCases(iframes);
+
+  {
+    ExecuteJavaScriptForTests(
+        "window.scrollTo(document.body.scrollWidth,document.body.scrollHeight)"
+        ";");
+    content::RunAllTasksUntilIdle();
+    SCOPED_TRACE(testing::Message() << "Scrolled to bottom right");
+    RunTestCases(iframes);
+  }
+}
+
+// Tests that `IsDomPredecessor(lhs, rhs, common_ancestor)` holds iff a DOM
+// traversal visits the DOM element with ID |lhs| before the one with ID |rhs|,
+// where |common_ancestor| is the ID of an ancestor DOM node.
+//
+// For this test, DOM element IDs should be named so that if X as visited
+// before Y, then X.id is lexicographically less than Y.id.
+TEST_F(FormAutofillUtilsTest, IsDomPredecessorTest) {
+  LoadHTML(R"(
+      <body id=0>
+        <div id=00>
+          <input id=000>
+          <input id=001>
+          <div id=002>
+            <input id=0020>
+          </div>
+          <div id=003>
+            <input id=0030>
+          </div>
+          <input id=004>
+        </div>
+        <div id=01>
+          <iframe id=010></iframe>
+          <input id=011>
+        </div>
+      </body>)");
+
+  // The parameter type of IsDomPredecessorTest. The attributes are the IDs of
+  // the left and right hand side DOM nodes that are to be compared, and some
+  // common ancestor of them.
+  struct IsDomPredecessorTestParam {
+    std::string lhs_id;
+    std::string rhs_id;
+    std::string common_ancestor_id;
+  };
+  std::vector<IsDomPredecessorTestParam> test_cases{
+      IsDomPredecessorTestParam{"000", "000", "0"},
+      IsDomPredecessorTestParam{"001", "001", "0"},
+      IsDomPredecessorTestParam{"000", "001", "0"},
+      IsDomPredecessorTestParam{"000", "001", "00"},
+      IsDomPredecessorTestParam{"000", "0020", "0"},
+      IsDomPredecessorTestParam{"000", "0020", "00"},
+      IsDomPredecessorTestParam{"000", "004", "0"},
+      IsDomPredecessorTestParam{"000", "004", "00"},
+      IsDomPredecessorTestParam{"0020", "0030", "0"},
+      IsDomPredecessorTestParam{"0020", "0030", "00"},
+      IsDomPredecessorTestParam{"0030", "004", "00"},
+      IsDomPredecessorTestParam{"000", "010", "0"},
+      IsDomPredecessorTestParam{"0030", "010", "0"},
+      IsDomPredecessorTestParam{"01", "011", "0"}};
+
+  for (const auto& test : test_cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "lhs=" << test.lhs_id << " rhs=" << test.rhs_id
+                 << " common_ancestor=" << test.common_ancestor_id);
+    ASSERT_NE(test.lhs_id, test.common_ancestor_id);
+    ASSERT_NE(test.rhs_id, test.common_ancestor_id);
+    ASSERT_TRUE(base::StartsWith(test.lhs_id, test.common_ancestor_id));
+    ASSERT_TRUE(base::StartsWith(test.rhs_id, test.common_ancestor_id));
+    WebDocument doc = GetMainFrame()->GetDocument();
+    WebNode lhs = doc.GetElementById(WebString::FromASCII(test.lhs_id));
+    WebNode rhs = doc.GetElementById(WebString::FromASCII(test.rhs_id));
+    WebNode common_ancestor =
+        doc.GetElementById(WebString::FromASCII(test.common_ancestor_id));
+    ASSERT_FALSE(lhs.IsNull());
+    ASSERT_FALSE(rhs.IsNull());
+    ASSERT_FALSE(common_ancestor.IsNull());
+    EXPECT_EQ(test.lhs_id < test.rhs_id,
+              IsDomPredecessor(lhs, rhs, common_ancestor));
+    EXPECT_EQ(test.rhs_id < test.lhs_id,
+              IsDomPredecessor(rhs, lhs, common_ancestor));
+  }
+}
+
+// The DOM ID of an <input> or <iframe>.
+struct FieldOrFrame {
+  bool is_frame = false;
+  const char* id;
+};
+
+// A FieldFramesTest test case contains HTML code. The form with DOM ID
+// |form_id| (nullptr for the synthetic form) shall be extracted and its fields
+// and frames shall match |fields_and_frames|.
+struct FieldFramesTestParam {
+  std::string html;
+  const char* form_id;
+  std::vector<FieldOrFrame> fields_and_frames;
+};
+
+class FieldFramesTest
+    : public content::RenderViewTest,
+      public testing::WithParamInterface<FieldFramesTestParam> {
+ public:
+  FieldFramesTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kAutofillAcrossIframes);
+  }
+  ~FieldFramesTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that FormData::fields, FormData::child_frames, and
+// FormData::child_frame_predecessors are extracted fully and in the correct
+// relative order.
+TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
+  FieldFramesTestParam test_case = GetParam();
+  SCOPED_TRACE(testing::Message() << "HTML: " << test_case.html);
+  LoadHTML(test_case.html.c_str());
+  WebDocument doc = GetMainFrame()->GetDocument();
+
+  // Extract the |form_data|.
+  FormData form_data;
+  FormRendererId host_form;
+  if (!test_case.form_id) {  // Synthetic form.
+    std::vector<blink::WebElement> fieldsets;
+    std::vector<WebFormControlElement> control_elements =
+        GetUnownedAutofillableFormFieldElements(doc.All(), &fieldsets);
+    std::vector<WebElement> iframe_elements =
+        form_util::GetUnownedIframeElements(doc);
+    ASSERT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
+        fieldsets, control_elements, iframe_elements, nullptr, doc, nullptr,
+        EXTRACT_NONE, &form_data, nullptr));
+    host_form = FormRendererId();
+  } else {  // Real <form>.
+    ASSERT_GT(std::strlen(test_case.form_id), 0u);
+    auto form_element =
+        doc.GetElementById(blink::WebString::FromASCII(test_case.form_id))
+            .To<WebFormElement>();
+    ASSERT_TRUE(WebFormElementToFormData(form_element, WebFormControlElement(),
+                                         nullptr, EXTRACT_NONE, &form_data,
+                                         nullptr));
+    host_form = FormRendererId(form_element.UniqueRendererFormId());
+  }
+
+  // Check that all fields and iframes were extracted.
+  EXPECT_EQ(form_data.fields.size() + form_data.child_frames.size(),
+            test_case.fields_and_frames.size());
+  EXPECT_EQ(form_data.child_frames.size(),
+            form_data.child_frame_predecessors.size());
+
+  // Check that all fields were extracted. Do so by checking for each |field| in
+  // `test_case.fields_and_frames` that the DOM element with ID `field.id`
+  // corresponds to the next (`i`th) field in `form_data.fields`.
+  size_t i = 0;
+  for (const FieldOrFrame& field : test_case.fields_and_frames) {
+    if (field.is_frame)
+      continue;
+    SCOPED_TRACE(testing::Message() << "Checking the " << i
+                                    << "th field (id = " << field.id << ")");
+    WebElement element =
+        doc.GetElementById(blink::WebString::FromASCII(field.id));
+    ASSERT_FALSE(element.IsNull());
+    ASSERT_TRUE(element.IsFormControlElement());
+    WebFormControlElement control = element.To<WebFormControlElement>();
+    ASSERT_FALSE(control.IsNull());
+    FieldRendererId renderer_id(control.UniqueRendererFormControlId());
+    EXPECT_EQ(form_data.fields[i].host_form_id, host_form);
+    EXPECT_EQ(form_data.fields[i].unique_renderer_id, renderer_id);
+    ++i;
+  }
+
+  // Check that all frames were extracted into `form_data.child_frames`
+  // analogously to the above loop for `form_data.fields`.
+  //
+  // In addition, check that `form_data.child_frame_predecessors` encodes the
+  // correct ordering, i.e., that `form_data.child_frame_predecessors[i]` is the
+  // index of the last field in `form_data.fields` that precedes the `i`th frame
+  // in `form_data.child_frames`.
+  i = 0;
+  int preceding_field_index = -1;
+  for (const auto& frame : test_case.fields_and_frames) {
+    if (!frame.is_frame) {
+      ++preceding_field_index;
+      continue;
+    }
+    SCOPED_TRACE(testing::Message() << "Checking the " << i
+                                    << "th frame (id = " << frame.id << ")");
+    WebElement element =
+        doc.GetElementById(blink::WebString::FromASCII(frame.id));
+    ASSERT_FALSE(element.IsNull());
+    ASSERT_TRUE(element.HasHTMLTagName("iframe"));
+    auto is_empty = [](auto token) { return token.is_empty(); };
+    FrameToken frame_token = GetFrameToken(element);
+    EXPECT_FALSE(absl::visit(is_empty, form_data.child_frames[i]));
+    EXPECT_EQ(form_data.child_frames[i], frame_token);
+    EXPECT_EQ(form_data.child_frame_predecessors[i], preceding_field_index);
+    ++i;
+  }
+}
+
+// Creates 32 test cases containing forms which differ in five bits: whether or
+// not the form of interest is a synthetic form, and whether the first, second,
+// third, and fourth element are a form control field or an iframe. This form is
+// additionally surrounded by two other forms before and after itself. An
+// example:
+//   <body>
+//     <!-- Two forms not of interest follow -->
+//     <form><input><iframe></iframe></form>
+//     <input><iframe></iframe>
+//     <!-- The form of interest follows -->
+//     <form id='MY_FORM_ID'>
+//       <input>
+//       <input>
+//       <iframe></iframe>
+//       <iframe></iframe>
+//     </form>
+//     <!-- Two forms not of interest follow -->
+//     <form><input><iframe></iframe></form>
+//     <input><iframe></iframe>
+//   </body>
+INSTANTIATE_TEST_SUITE_P(
+    FormAutofillUtilsTest,
+    FieldFramesTest,
+    testing::ValuesIn([] {
+      // Creates a FieldFramesTestParam. The fifth bit encodes whether the form
+      // is a synthetic form or not, and the first four bits encode whether its
+      // four elements are fields or frames.
+      //
+      // The choice of four is to cover multiple elements of the same kind
+      // following each other and being surrounded by other fields, e.g.,
+      // <input><iframe><iframe><input>.
+      auto MakeTestCase = [](std::bitset<5> bitset) {
+        std::vector<FieldOrFrame> fields_and_frames{
+            {.is_frame = bitset.test(0), .id = "0"},
+            {.is_frame = bitset.test(1), .id = "1"},
+            {.is_frame = bitset.test(2), .id = "2"},
+            {.is_frame = bitset.test(3), .id = "3"},
+        };
+        bool is_synthetic_form = bitset.test(4);
+        const char* form_id = is_synthetic_form ? nullptr : "MY_FORM_ID";
+
+        // Create a HTML page according to |is_synthetic_form| and
+        // |fields_and_frames|: it contains four <input> or <iframe> elements,
+        // potentially contained in a <form>. Additionally, before and after
+        // this form, it contains some other <input> and <iframe> elements that
+        // do not belong to the form of interest.
+        std::string html;
+        for (const FieldOrFrame& field_or_frame : fields_and_frames) {
+          html += base::StringPrintf(field_or_frame.is_frame
+                                         ? "<iframe id='%s'></iframe>"
+                                         : "<input id='%s'>",
+                                     field_or_frame.id);
+        }
+        if (!is_synthetic_form) {
+          html = base::StringPrintf("<form id='%s'>%s</form>", form_id,
+                                    html.c_str());
+          const char* other_forms =
+              "<input><iframe></iframe> <form><input><iframe></iframe></form>";
+          html = base::StrCat({other_forms, html, other_forms});
+        } else {
+          const char* other_form = "<form><input><iframe></iframe></form>";
+          html = base::StrCat({other_form, html, other_form});
+        }
+        html = base::StringPrintf("<body>%s</body>", html.c_str());
+        return FieldFramesTestParam{.html = html,
+                                    .form_id = form_id,
+                                    .fields_and_frames = fields_and_frames};
+      };
+
+      // Create all combinations of test cases.
+      std::vector<FieldFramesTestParam> cases;
+      for (uint64_t bitset = 0; bitset < (1 << 5); ++bitset)
+        cases.push_back(MakeTestCase(std::bitset<5>(bitset)));
+
+      // Check that we have 32 distinct test cases.
+      DCHECK_EQ(cases.size(), 32u);
+      DCHECK(base::ranges::all_of(cases, [&](const auto& case1) {
+        return base::ranges::all_of(cases, [&](const auto& case2) {
+          return &case1 == &case2 || case1.html != case2.html;
+        });
+      }));
+      return cases;
+    }()));
 
 }  // namespace
 }  // namespace form_util
