@@ -418,8 +418,28 @@ NOINLINE void RawResourceClientStateChecker::DidDownloadToBlob() {
 
 NOINLINE void RawResourceClientStateChecker::NotifyFinished(
     Resource* resource) {
+  // TODO(https://crbug.com/1158346): Remove these once the investigation is
+  // done.
+  const int32_t destination =
+      static_cast<int32_t>(
+          resource->GetResourceRequest().GetRequestDestination()) +
+      0x400;
+  const int32_t context =
+      static_cast<int32_t>(resource->GetResourceRequest().GetRequestContext()) +
+      0x800;
+  base::debug::Alias(&destination);
+  base::debug::Alias(&context);
+
   SECURITY_CHECK(state_ != kNotAddedAsClient);
   SECURITY_CHECK(state_ != kNotifyFinished);
+
+  // TODO(https://crbug.com/1158346): Remove these CHECKs once the investigation
+  // is done.
+  if (!resource->ErrorOccurred()) {
+    SECURITY_CHECK(state_ != kStarted);
+    SECURITY_CHECK(state_ != kRedirectBlocked);
+  }
+
   SECURITY_CHECK(resource->ErrorOccurred() ||
                  (state_ == kResponseReceived || state_ == kDataReceived ||
                   state_ == kDataDownloaded ||
