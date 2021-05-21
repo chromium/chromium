@@ -16,6 +16,9 @@ declare_args() {
   # Set to true to enable remote compilation using RBE.
   use_rbe = false
 
+  # Set to true to enable remote compilation of links using RBE.
+  use_rbe_links = false
+
   # Set to the path of the RBE reclient configuration file.
   rbe_cc_cfg_file = ""
 }

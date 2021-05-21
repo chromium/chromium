@@ -66,6 +66,9 @@ template("nacl_toolchain") {
           rbe_cc_cfg_file = "${rbe_cfg_dir}/rewrapper_linux_nacl.cfg"
         }
       }
+
+      # Nacl Links are not yet supported.
+      use_rbe_links = false
     }
   }
 }
