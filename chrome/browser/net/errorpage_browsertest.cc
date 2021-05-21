@@ -79,16 +79,7 @@
 #include "net/url_request/url_request_test_job.h"
 #include "services/network/public/cpp/features.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/chrome_browser_main_chromeos.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chromeos/tpm/stub_install_attributes.h"
-#include "components/policy/core/common/policy_types.h"
-#else
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
-#endif
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 
@@ -819,16 +810,6 @@ class ErrorPageOfflineTest : public ErrorPageTest {
 
  protected:
   void SetUpInProcessBrowserTestFixture() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (enroll_) {
-      // Set up fake install attributes.
-      test_install_attributes_ =
-          std::make_unique<chromeos::ScopedStubInstallAttributes>(
-              chromeos::StubInstallAttributes::CreateCloudManaged("example.com",
-                                                                  "fake-id"));
-    }
-#endif
-
     // Sets up a mock policy provider for user and device policies.
     EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
         .WillRepeatedly(testing::Return(true));
@@ -836,37 +817,23 @@ class ErrorPageOfflineTest : public ErrorPageTest {
         .WillRepeatedly(testing::Return(true));
 
     policy::PolicyMap policy_map;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (enroll_)
-      SetEnterpriseUsersDefaults(&policy_map);
-#endif
     if (set_allow_dinosaur_easter_egg_) {
       policy_map.Set(policy::key::kAllowDinosaurEasterEgg,
                      policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                      policy::POLICY_SOURCE_CLOUD,
                      base::Value(value_of_allow_dinosaur_easter_egg_), nullptr);
     }
-    policy_provider_.UpdateChromePolicy(policy_map);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
-        &policy_provider_);
-#else
-    policy::PushProfilePolicyConnectorProviderForTesting(&policy_provider_);
+#if defined(OS_CHROMEOS)
+    SetEnterpriseUsersProfileDefaults(&policy_map);
 #endif
 
+    policy_provider_.UpdateChromePolicy(policy_map);
+    policy::PushProfilePolicyConnectorProviderForTesting(&policy_provider_);
     ErrorPageTest::SetUpInProcessBrowserTestFixture();
   }
 
   std::string NavigateToPageAndReadText() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Check enterprise enrollment
-    policy::BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()
-        ->browser_policy_connector_chromeos();
-    EXPECT_EQ(enroll_, connector->IsEnterpriseManaged());
-#endif
-
     ui_test_utils::NavigateToURL(
         browser(),
         URLRequestFailedJob::GetMockHttpUrl(net::ERR_INTERNET_DISCONNECTED));
@@ -887,15 +854,6 @@ class ErrorPageOfflineTest : public ErrorPageTest {
   // The value of AllowDinosaurEasterEgg policy we want to set
   bool value_of_allow_dinosaur_easter_egg_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Whether to enroll this CrOS device
-  bool enroll_ = true;
-
-  std::unique_ptr<chromeos::ScopedStubInstallAttributes>
-      test_install_attributes_;
-#endif
-
-  // Mock policy provider for both user and device policies.
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
@@ -918,17 +876,6 @@ class ErrorPageOfflineTestWithAllowDinosaurFalse : public ErrorPageOfflineTest {
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class ErrorPageOfflineTestUnEnrolledChromeOS : public ErrorPageOfflineTest {
- protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    set_allow_dinosaur_easter_egg_ = false;
-    enroll_ = false;
-    ErrorPageOfflineTest::SetUpInProcessBrowserTestFixture();
-  }
-};
-#endif
-
 IN_PROC_BROWSER_TEST_F(ErrorPageOfflineTestWithAllowDinosaurTrue,
                        CheckEasterEggIsAllowed) {
   std::string result = NavigateToPageAndReadText();
@@ -943,7 +890,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageOfflineTestWithAllowDinosaurFalse,
   EXPECT_EQ(disabled_text, result);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ErrorPageOfflineTest, CheckEasterEggIsDisabled) {
   std::string result = NavigateToPageAndReadText();
   std::string disabled_text =
@@ -953,16 +900,6 @@ IN_PROC_BROWSER_TEST_F(ErrorPageOfflineTest, CheckEasterEggIsDisabled) {
 #else
 IN_PROC_BROWSER_TEST_F(ErrorPageOfflineTest, CheckEasterEggIsAllowed) {
   std::string result = NavigateToPageAndReadText();
-  EXPECT_EQ("", result);
-}
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(ErrorPageOfflineTestUnEnrolledChromeOS,
-                       CheckEasterEggIsAllowed) {
-  std::string result = NavigateToPageAndReadText();
-  std::string disabled_text =
-      l10n_util::GetStringUTF8(IDS_ERRORPAGE_FUN_DISABLED);
   EXPECT_EQ("", result);
 }
 #endif

@@ -30,7 +30,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SeparateProxyPoliciesMerging) {
   expected_value.SetIntKey(key::kProxyServerMode, 3);
   expected.Set(key::kProxySettings, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                POLICY_SOURCE_CLOUD, std::move(expected_value), nullptr);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   SetEnterpriseUsersDefaults(&expected);
 #endif
 
@@ -39,6 +39,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SeparateProxyPoliciesMerging) {
       g_browser_process->browser_policy_connector()
           ->GetPolicyService()
           ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
+
   EXPECT_TRUE(expected.Equals(actual_from_browser));
   const PolicyMap& actual_from_profile =
       browser()

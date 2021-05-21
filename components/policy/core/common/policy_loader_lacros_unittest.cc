@@ -18,6 +18,7 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema_map.h"
+#include "components/policy/policy_constants.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,9 +43,14 @@ std::vector<uint8_t> GetValidPolicyFetchResponse(
   return data;
 }
 
+const PolicyMap* GetChromePolicyMap(PolicyBundle* bundle) {
+  PolicyNamespace ns = PolicyNamespace(POLICY_DOMAIN_CHROME, std::string());
+  return &(bundle->Get(ns));
+}
+
 std::vector<uint8_t> GetValidPolicyFetchResponseWithPerProfilePolicy() {
   em::CloudPolicySettings policy_proto;
-  // homepage_location is a per_profile:True policy. See policy_tempates.json
+  // HomepageLocation is a per_profile:True policy. See policy_templates.json
   // for details.
   policy_proto.mutable_homepagelocation()->set_value("http://chromium.org");
   return GetValidPolicyFetchResponse(policy_proto);
@@ -52,14 +58,21 @@ std::vector<uint8_t> GetValidPolicyFetchResponseWithPerProfilePolicy() {
 
 std::vector<uint8_t> GetValidPolicyFetchResponseWithSystemWidePolicy() {
   em::CloudPolicySettings policy_proto;
-  // A policy that is per_profile:False. See policy_tempates.json for details.
+  // TaskManagerEndProcessEnabled is a per_profile:True policy. See
+  // policy_templates.json for details.
   policy_proto.mutable_taskmanagerendprocessenabled()->set_value(false);
   return GetValidPolicyFetchResponse(policy_proto);
 }
 
-const PolicyMap* GetChromePolicyMap(PolicyBundle* bundle) {
-  PolicyNamespace ns = PolicyNamespace(POLICY_DOMAIN_CHROME, std::string());
-  return &(bundle->Get(ns));
+std::vector<uint8_t> GetValidPolicyFetchResponseWithAllPolicy() {
+  em::CloudPolicySettings policy_proto;
+  // TaskManagerEndProcessEnabled is a per_profile:True policy. See
+  // policy_templates.json for details.
+  policy_proto.mutable_taskmanagerendprocessenabled()->set_value(false);
+  // HomepageLocation is a per_profile:True policy. See policy_templates.json
+  // for details.
+  policy_proto.mutable_homepagelocation()->set_value("http://chromium.org");
+  return GetValidPolicyFetchResponse(policy_proto);
 }
 
 }  // namespace
@@ -70,41 +83,73 @@ class PolicyLoaderLacrosTest : public PolicyTestBase {
   PolicyLoaderLacrosTest() = default;
   ~PolicyLoaderLacrosTest() override {}
 
+  void SetPolicy(std::vector<uint8_t> data) {
+    auto init_params = crosapi::mojom::BrowserInitParams::New();
+    init_params->device_account_policy = data;
+    chromeos::LacrosService::Get()->SetInitParamsForTests(
+        std::move(init_params));
+  }
+
+  void SetSystemWidePolicy() {
+    std::vector<uint8_t> data =
+        GetValidPolicyFetchResponseWithSystemWidePolicy();
+    system_wide_policies_set_ = true;
+    SetPolicy(data);
+  }
+
+  void SetProfilePolicy() {
+    std::vector<uint8_t> data =
+        GetValidPolicyFetchResponseWithPerProfilePolicy();
+    SetPolicy(data);
+  }
+
+  void SetAllPolicy() {
+    std::vector<uint8_t> data = GetValidPolicyFetchResponseWithAllPolicy();
+    system_wide_policies_set_ = true;
+    SetPolicy(data);
+  }
+
+  void CheckOnlySystemWidePoliciesAreSet(PolicyBundle* bundle) {
+    const PolicyMap* policy_map = GetChromePolicyMap(bundle);
+    // Profile policies.
+    EXPECT_EQ(nullptr, policy_map->GetValue(key::kHomepageLocation));
+    EXPECT_EQ(nullptr, policy_map->GetValue(key::kAllowDinosaurEasterEgg));
+
+    // System-wide policies.
+    if (system_wide_policies_set_) {
+      EXPECT_FALSE(
+          policy_map->GetValue(key::kTaskManagerEndProcessEnabled)->GetBool());
+    }
+    // Enterprise default.
+    EXPECT_FALSE(
+        policy_map->GetValue(key::kPinUnlockAutosubmitEnabled)->GetBool());
+  }
+
   SchemaRegistry schema_registry_;
+  bool system_wide_policies_set_ = false;
+  chromeos::ScopedLacrosServiceTestHelper test_helper_;
 };
 
 TEST_F(PolicyLoaderLacrosTest, BasicTest) {
-  std::vector<uint8_t> data = GetValidPolicyFetchResponseWithSystemWidePolicy();
-
-  chromeos::ScopedLacrosServiceTestHelper test_helper;
-  auto init_params = crosapi::mojom::BrowserInitParams::New();
-  init_params->device_account_policy = data;
-  chromeos::LacrosService::Get()->SetInitParamsForTests(std::move(init_params));
+  SetSystemWidePolicy();
 
   PolicyLoaderLacros loader(task_environment_.GetMainThreadTaskRunner());
   base::RunLoop().RunUntilIdle();
-  EXPECT_GT(GetChromePolicyMap(loader.Load().get())->size(),
-            static_cast<unsigned int>(0));
+  CheckOnlySystemWidePoliciesAreSet(loader.Load().get());
 }
 
 TEST_F(PolicyLoaderLacrosTest, BasicTestPerProfile) {
-  std::vector<uint8_t> data = GetValidPolicyFetchResponseWithPerProfilePolicy();
-
-  chromeos::ScopedLacrosServiceTestHelper test_helper;
-  auto init_params = crosapi::mojom::BrowserInitParams::New();
-  init_params->device_account_policy = data;
-  chromeos::LacrosService::Get()->SetInitParamsForTests(std::move(init_params));
+  SetProfilePolicy();
 
   PolicyLoaderLacros loader(task_environment_.GetMainThreadTaskRunner());
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(GetChromePolicyMap(loader.Load().get())->size(),
-            static_cast<unsigned int>(0));
+  CheckOnlySystemWidePoliciesAreSet(loader.Load().get());
 }
 
 TEST_F(PolicyLoaderLacrosTest, UpdateTest) {
   auto init_params = crosapi::mojom::BrowserInitParams::New();
 
-  chromeos::ScopedLacrosServiceTestHelper test_helper;
+  // chromeos::ScopedLacrosServiceTestHelper test_helper;
   chromeos::LacrosService::Get()->SetInitParamsForTests(std::move(init_params));
 
   PolicyLoaderLacros* loader =
@@ -116,11 +161,21 @@ TEST_F(PolicyLoaderLacrosTest, UpdateTest) {
   EXPECT_EQ(GetChromePolicyMap(loader->Load().get())->size(), (unsigned int)0);
 
   std::vector<uint8_t> data = GetValidPolicyFetchResponseWithSystemWidePolicy();
+  system_wide_policies_set_ = true;
   loader->NotifyPolicyUpdate(data);
   base::RunLoop().RunUntilIdle();
   EXPECT_GT(GetChromePolicyMap(loader->Load().get())->size(),
             static_cast<unsigned int>(0));
   provider.Shutdown();
+}
+
+TEST_F(PolicyLoaderLacrosTest, EnterpriseDefaultsTest) {
+  SetAllPolicy();
+
+  PolicyLoaderLacros loader(task_environment_.GetMainThreadTaskRunner());
+  base::RunLoop().RunUntilIdle();
+
+  CheckOnlySystemWidePoliciesAreSet(loader.Load().get());
 }
 
 }  // namespace policy

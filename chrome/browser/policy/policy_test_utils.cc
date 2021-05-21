@@ -188,7 +188,7 @@ scoped_refptr<const extensions::Extension> PolicyTest::LoadUnpackedExtension(
 
 void PolicyTest::UpdateProviderPolicy(const PolicyMap& policy) {
   PolicyMap policy_with_defaults = policy.Clone();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   SetEnterpriseUsersDefaults(&policy_with_defaults);
 #endif
   provider_.UpdateChromePolicy(policy_with_defaults);
