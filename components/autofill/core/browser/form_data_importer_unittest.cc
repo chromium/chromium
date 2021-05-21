@@ -3109,6 +3109,33 @@ TEST_P(FormDataImporterTest,
 }
 
 // Ensures that |imported_credit_card_record_type_| is set correctly.
+TEST_P(FormDataImporterTest,
+       ImportFormData_ImportCreditCardRecordType_NoCard_VirtualCard) {
+  // Simulate a form submission using a credit card that is known as a virtual
+  // card.
+  FormData form;
+  form.url = GURL("https://wwww.foo.com");
+  AddFullCreditCardForm(&form, "Biggie Smalls", "4111 1111 1111 1111", "01",
+                        "2999");
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+  form_data_importer_->CacheFetchedVirtualCard(u"1111");
+  std::unique_ptr<CreditCard> imported_credit_card;
+  absl::optional<std::string> imported_upi_id;
+
+  EXPECT_FALSE(form_data_importer_->ImportFormData(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*credit_card_autofill_enabled=*/true,
+      /*should_return_local_card=*/true, &imported_credit_card,
+      &imported_upi_id));
+  ASSERT_FALSE(imported_credit_card);
+  // |imported_credit_card_record_type_| should be NO_CARD because the card
+  // imported from the form was a virtual card.
+  ASSERT_TRUE(form_data_importer_->imported_credit_card_record_type_ ==
+              FormDataImporter::ImportedCreditCardRecordType::NO_CARD);
+}
+
+// Ensures that |imported_credit_card_record_type_| is set correctly.
 TEST_P(
     FormDataImporterTest,
     ImportFormData_ImportCreditCardRecordType_NewCard_ExpiredCard_WithExpDateFixFlow) {

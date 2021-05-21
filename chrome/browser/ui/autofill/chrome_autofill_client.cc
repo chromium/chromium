@@ -686,6 +686,7 @@ void ChromeAutofillClient::ShowOfferNotificationIfApplicable(
 
 void ChromeAutofillClient::OnVirtualCardFetched(const CreditCard* credit_card,
                                                 const std::u16string& cvc) {
+  GetFormDataImporter()->CacheFetchedVirtualCard(credit_card->LastFourDigits());
 #if defined(OS_ANDROID)
   (new AutofillSnackbarControllerImpl(web_contents()))->Show();
 #else

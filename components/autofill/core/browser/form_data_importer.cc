@@ -418,6 +418,11 @@ bool FormDataImporter::IsValidLearnableProfile(
            is_zip_invalid);
 }
 
+void FormDataImporter::CacheFetchedVirtualCard(
+    const std::u16string& last_four) {
+  fetched_virtual_cards_.insert(last_four);
+}
+
 bool FormDataImporter::ImportFormData(
     const FormStructure& submitted_form,
     bool profile_autofill_enabled,
@@ -774,6 +779,10 @@ bool FormDataImporter::ImportCreditCard(
   if (!candidate_credit_card.HasValidCardNumber()) {
     return false;
   }
+
+  // If the imported card is a known virtual card, abort saving.
+  if (fetched_virtual_cards_.contains(candidate_credit_card.LastFourDigits()))
+    return false;
 
   // Can import one valid card per form. Start by treating it as NEW_CARD, but
   // overwrite this type if we discover it is already a local or server card.

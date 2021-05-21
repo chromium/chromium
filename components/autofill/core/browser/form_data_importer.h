@@ -69,6 +69,10 @@ class FormDataImporter {
                                       const std::string& app_locale,
                                       LogBuffer* import_log_buffer);
 
+  // Cache the last four of the fetched virtual card so we don't offer saving
+  // them.
+  void CacheFetchedVirtualCard(const std::u16string& last_four);
+
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
   LocalCardMigrationManager* local_card_migration_manager() {
     return local_card_migration_manager_.get();
@@ -179,6 +183,9 @@ class FormDataImporter {
 
   std::string app_locale_;
 
+  // Used to store the last four digits of the fetched virtual cards.
+  base::flat_set<std::u16string> fetched_virtual_cards_;
+
   friend class AutofillMergeTest;
   friend class FormDataImporterTest;
   friend class FormDataImporterTestBase;
@@ -216,6 +223,9 @@ class FormDataImporter {
   FRIEND_TEST_ALL_PREFIXES(
       FormDataImporterTest,
       ImportFormData_ImportCreditCardRecordType_NoCard_InvalidCardNumber);
+  FRIEND_TEST_ALL_PREFIXES(
+      FormDataImporterTest,
+      ImportFormData_ImportCreditCardRecordType_NoCard_VirtualCard);
   FRIEND_TEST_ALL_PREFIXES(
       FormDataImporterTest,
       ImportFormData_ImportCreditCardRecordType_NoCard_NoCardOnForm);
