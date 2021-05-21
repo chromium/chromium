@@ -175,6 +175,7 @@ component("web_engine_core") {
 
   public_deps = [
     "//content/public/browser",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
 
     # Public because tests include Context, Frame, etc headers, which include
@@ -390,6 +391,8 @@ source_set("browsertest_core") {
   sources = [
     "test/frame_for_test.cc",
     "test/frame_for_test.h",
+    "test/scenic_test_helper.cc",
+    "test/scenic_test_helper.h",
     "test/test_data.cc",
     "test/test_data.h",
     "test/web_engine_browser_test.cc",
@@ -428,6 +431,7 @@ test("web_engine_browsertests") {
     "browser/frame_impl_browser_test_base.h",
     "browser/frame_impl_browsertest.cc",
     "browser/headless_browsertest.cc",
+    "browser/input_browsertest.cc",
     "browser/media_browsertest.cc",
     "browser/navigation_policy_browsertest.cc",
     "browser/permissions_browsertest.cc",
@@ -461,6 +465,7 @@ test("web_engine_browsertests") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.input.virtualkeyboard",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//ui/gfx",
     "//ui/ozone",

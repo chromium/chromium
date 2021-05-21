@@ -4,8 +4,6 @@
 
 #include <fuchsia/input/virtualkeyboard/cpp/fidl.h>
 #include <lib/fit/function.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
-#include <lib/ui/scenic/cpp/view_token_pair.h>
 
 #include "base/callback.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -13,15 +11,13 @@
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/strings/stringprintf.h"
-#include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "fuchsia/base/test/frame_test_util.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/frame_impl.h"
-#include "fuchsia/engine/browser/frame_window_tree_host.h"
+#include "fuchsia/engine/test/frame_for_test.h"
+#include "fuchsia/engine/test/scenic_test_helper.h"
 #include "fuchsia/engine/test/test_data.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,7 +27,6 @@ namespace virtualkeyboard = fuchsia::input::virtualkeyboard;
 
 namespace {
 
-const gfx::Rect kBounds = {1000, 1000};
 const gfx::Point kNoTarget = {999, 999};
 
 constexpr char kInputFieldText[] = "input-text";
@@ -154,56 +149,33 @@ class VirtualKeyboardTest : public cr_fuchsia::WebEngineBrowserTest {
     cr_fuchsia::WebEngineBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
 
+    fuchsia::web::CreateFrameParams params;
+    frame_for_test_ =
+        cr_fuchsia::FrameForTest::Create(context(), std::move(params));
+
     component_context_.emplace(
         base::TestComponentContextForProcess::InitialState::kCloneAll);
     controller_creator_.emplace(&*component_context_);
     controller_ = controller_creator_->CreateController();
 
-    frame_ = CreateFrame(&navigation_listener_);
-    frame_impl_ = context_impl()->GetFrameImplForTest(&frame_);
-
-    // Navigate to the test page.
     fuchsia::web::NavigationControllerPtr controller;
-    frame_->GetNavigationController(controller.NewRequest());
+    frame_for_test_.ptr()->GetNavigationController(controller.NewRequest());
     const GURL test_url(embedded_test_server()->GetURL("/input_fields.html"));
     EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
         controller.get(), fuchsia::web::LoadUrlParams(), test_url.spec()));
-    navigation_listener_.RunUntilUrlEquals(test_url);
+    frame_for_test_.navigation_listener().RunUntilUrlEquals(test_url);
 
-    // Simulate the creation of a Scenic View, except bypassing the actual
-    // construction of a Scenic PlatformWindow in favor of using an injected
-    // StubWindow.
-    scenic::ViewRefPair view_ref_pair = scenic::ViewRefPair::New();
-    view_ref_ = std::move(view_ref_pair.view_ref);
-    fuchsia::ui::views::ViewRef view_ref_dup;
-    zx_status_t status = view_ref_.reference.duplicate(ZX_RIGHT_SAME_RIGHTS,
-                                                       &view_ref_dup.reference);
-    ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
-
-    auto view_tokens = scenic::ViewTokenPair::New();
-    frame_->CreateViewWithViewRef(std::move(view_tokens.view_token),
-                                  std::move(view_ref_pair.control_ref),
-                                  std::move(view_ref_dup));
-    base::RunLoop().RunUntilIdle();
-    frame_impl_->window_tree_host_for_test()->Show();
-
-    // Prepare the view for headless interaction by setting its focus state and
-    // size.
-    web_contents_ = frame_impl_->web_contents();
-    content::RenderWidgetHostView* view =
-        web_contents_->GetMainFrame()->GetView();
-    view->SetBounds(kBounds);
-    view->Focus();
+    fuchsia::web::FramePtr* frame_ptr = &(frame_for_test_.ptr());
+    web_contents_ =
+        context_impl()->GetFrameImplForTest(frame_ptr)->web_contents();
+    scenic_test_helper_.CreateScenicView(
+        context_impl()->GetFrameImplForTest(frame_ptr), frame_for_test_.ptr());
+    scenic_test_helper_.SetUpViewForInteraction(web_contents_);
 
     controller_->AwaitWatchAndRespondWith(false);
-
-    ASSERT_EQ(base::GetKoid(controller_->view_ref().reference).value(),
-              base::GetKoid(view_ref_.reference).value());
-  }
-
-  void TearDownOnMainThread() override {
-    frame_.Unbind();
-    base::RunLoop().RunUntilIdle();
+    ASSERT_EQ(
+        base::GetKoid(controller_->view_ref().reference).value(),
+        base::GetKoid(scenic_test_helper_.CloneViewRef().reference).value());
   }
 
   gfx::Point GetCoordinatesOfInputField(base::StringPiece id) {
@@ -211,7 +183,7 @@ class VirtualKeyboardTest : public cr_fuchsia::WebEngineBrowserTest {
     constexpr int kInputFieldClickInset = 8;
 
     absl::optional<base::Value> result = cr_fuchsia::ExecuteJavaScript(
-        frame_.get(),
+        frame_for_test_.ptr().get(),
         base::StringPrintf("getPointInsideText('%s')", id.data()));
     CHECK(result);
 
@@ -223,16 +195,15 @@ class VirtualKeyboardTest : public cr_fuchsia::WebEngineBrowserTest {
   }
 
  protected:
-  // Used to publish fake virtual keyboard services for the InputMethod to use.
+  cr_fuchsia::FrameForTest frame_for_test_;
+  cr_fuchsia::ScenicTestHelper scenic_test_helper_;
+
+  // Fake virtual keyboard services for the InputMethod to use.
   absl::optional<base::TestComponentContextForProcess> component_context_;
   absl::optional<MockVirtualKeyboardControllerCreator> controller_creator_;
   std::unique_ptr<MockVirtualKeyboardController> controller_;
 
-  fuchsia::web::FramePtr frame_;
-  FrameImpl* frame_impl_ = nullptr;
   content::WebContents* web_contents_ = nullptr;
-  cr_fuchsia::TestNavigationListener navigation_listener_;
-  fuchsia::ui::views::ViewRef view_ref_;
 };
 
 // Verifies that RequestShow() is not called redundantly if the virtual
@@ -266,6 +237,8 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, ShowAndHideWithVisibility) {
       }))
       .RetiresOnSaturation();
 
+  // Give focus to an input field, which will result in RequestShow() being
+  // called.
   content::SimulateTapAt(web_contents_,
                          GetCoordinatesOfInputField(kInputFieldText));
   on_show_run_loop.Run();
