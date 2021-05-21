@@ -26,6 +26,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/formats/webm/webm_stream_parser.h"
+#include "media/muxers/live_webm_muxer_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -64,12 +65,13 @@ class WebmMuxerTest : public TestWithParam<TestParams> {
             GetParam().audio_codec,
             GetParam().num_video_tracks,
             GetParam().num_audio_tracks,
-            base::BindRepeating(&WebmMuxerTest::WriteCallback,
-                                base::Unretained(this)))) {
-    EXPECT_EQ(webm_muxer_->Position(), 0);
+            std::make_unique<LiveWebmMuxerDelegate>(
+                base::BindRepeating(&WebmMuxerTest::WriteCallback,
+                                    base::Unretained(this))))) {
+    EXPECT_EQ(webm_muxer_->delegate_->Position(), 0);
     const mkvmuxer::int64 kRandomNewPosition = 333;
-    EXPECT_EQ(webm_muxer_->Position(kRandomNewPosition), -1);
-    EXPECT_FALSE(webm_muxer_->Seekable());
+    EXPECT_EQ(webm_muxer_->delegate_->Position(kRandomNewPosition), -1);
+    EXPECT_FALSE(webm_muxer_->delegate_->Seekable());
   }
 
   MOCK_METHOD(void, WriteCallback, (base::StringPiece));
@@ -80,7 +82,7 @@ class WebmMuxerTest : public TestWithParam<TestParams> {
   }
 
   mkvmuxer::int64 GetWebmMuxerPosition() const {
-    return webm_muxer_->Position();
+    return webm_muxer_->delegate_->Position();
   }
 
   mkvmuxer::Segment::Mode GetWebmSegmentMode() const {
@@ -88,7 +90,7 @@ class WebmMuxerTest : public TestWithParam<TestParams> {
   }
 
   mkvmuxer::int32 WebmMuxerWrite(const void* buf, mkvmuxer::uint32 len) {
-    return webm_muxer_->Write(buf, len);
+    return webm_muxer_->delegate_->Write(buf, len);
   }
 
   WebmMuxer::VideoParameters GetVideoParameters(
@@ -449,9 +451,9 @@ class WebmMuxerTestUnparametrized : public testing::Test {
             kCodecOpus,
             /*has_audio=*/true,
             /*has_video=*/true,
-            base::BindRepeating(
+            std::make_unique<LiveWebmMuxerDelegate>(base::BindRepeating(
                 &WebmMuxerTestUnparametrized::SaveChunkAndInvokeWriteCallback,
-                base::Unretained(this)))) {}
+                base::Unretained(this))))) {}
 
   bool Parse() {
     if (got_video_) {

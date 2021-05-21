@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ash/capture_mode/video_file_handler.h"
 #include "ash/public/cpp/capture_mode_delegate.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/services/recording/public/mojom/recording_service.mojom.h"
@@ -19,7 +18,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -117,8 +115,8 @@ class ASH_EXPORT CaptureModeController
   void RefreshContentProtection();
 
   // recording::mojom::RecordingServiceClient:
-  void OnMuxerOutput(const std::string& chunk) override;
-  void OnRecordingEnded(bool success, const gfx::ImageSkia& thumbnail) override;
+  void OnRecordingEnded(recording::mojom::RecordingStatus status,
+                        const gfx::ImageSkia& thumbnail) override;
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
@@ -204,6 +202,12 @@ class ASH_EXPORT CaptureModeController
   CaptureAllowance IsCaptureAllowedByEnterprisePolicies(
       const CaptureParams& capture_params) const;
 
+  // Terminates the recording service process, closes any recording-related UI
+  // elements (only if |success| is false as this indicates that recording was
+  // not ended normally by calling EndVideoRecording()), and shows the video
+  // file notification with the given |thumbnail|.
+  void FinalizeRecording(bool success, const gfx::ImageSkia& thumbnail);
+
   // Called to terminate |is_recording_in_progress_|, the stop-recording shelf
   // pod button, and the |video_recording_watcher_| when recording ends.
   void TerminateRecordingUiElements();
@@ -234,11 +238,6 @@ class ASH_EXPORT CaptureModeController
   void OnImageFileSaved(scoped_refptr<base::RefCountedMemory> png_bytes,
                         const base::FilePath& path,
                         bool success);
-
-  // Called on the UI thread, when |video_file_handler_| finishes a video file
-  // IO operation. If an IO failure occurs, i.e. |success| is false, video
-  // recording should not continue.
-  void OnVideoFileStatus(bool success);
 
   // Called back when the |video_file_handler_| flushes the remaining cached
   // video chunks in its buffer. Called on the UI thread. |video_thumbnail| is
@@ -283,12 +282,6 @@ class ASH_EXPORT CaptureModeController
   // allowed to be captured.
   void InterruptVideoRecording();
 
-  // Called back by |video_file_handler_| when it detects a low disk space
-  // condition. In this case we end the video recording to avoid consuming too
-  // much space, and we make sure the video preview notification shows a message
-  // explaining why the recording ended.
-  void OnLowDiskSpace();
-
   std::unique_ptr<CaptureModeDelegate> delegate_;
 
   CaptureModeType type_ = CaptureModeType::kImage;
@@ -301,18 +294,9 @@ class ASH_EXPORT CaptureModeController
   mojo::Receiver<recording::mojom::RecordingServiceClient>
       recording_service_client_receiver_;
 
-  // Callback bound to OnVideoFileStatus() that is triggered repeatedly by
-  // |video_file_handler_| to tell us about the status of video file IO
-  // operations, so we can end video recording if a failure occurs.
-  base::RepeatingCallback<void(bool success)> on_video_file_status_;
-
   // This is the file path of the video file currently being recorded. It is
   // empty when no video recording is in progress.
   base::FilePath current_video_file_path_;
-
-  // Handles the file IO operations of the video file. This enforces doing all
-  // video file related operations on the |blocking_task_runner_|.
-  base::SequenceBound<VideoFileHandler> video_file_handler_;
 
   // We remember the user selected capture region when the source is |kRegion|
   // between sessions. Initially, this value is empty at which point we display
@@ -333,10 +317,10 @@ class ASH_EXPORT CaptureModeController
   // will start immediately.
   bool skip_count_down_ui_ = false;
 
-  // True if while writing the video chunks by |video_file_handler_| we detected
-  // a low disk space. This value is used only to determine the message shown to
-  // the user in the video preview notification to explain why the recording was
-  // ended, and is then reset back to false.
+  // True only if the recording service detects a |kLowDiskSpace| condition
+  // while writing the video file to the file system. This value is used only to
+  // determine the message shown to the user in the video preview notification
+  // to explain why the recording was ended, and is then reset back to false.
   bool low_disk_space_threshold_reached_ = false;
 
   // Watches events that lead to ending video recording.

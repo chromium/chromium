@@ -6,44 +6,78 @@ module recording.mojom;
 
 import "media/mojo/mojom/audio_stream_factory.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 
+// Defines the status of recording to be provided to the client at the end of
+// recording.
+enum RecordingStatus {
+  // Ended successfully with no errors.
+  kSuccess,
+  // Ended due to the recording service process was being terminated while
+  // recording is still in progress (which is considered a failure).
+  kServiceClosing,
+  // Ended due to a failure when the mojo pipe to the video capturer on Viz was
+  // disconnected.
+  kVizVideoCapturerDisconnected,
+  // Ended due to a failure to initialize the audio encoder.
+  kAudioEncoderInitializationFailure,
+  // Ended due to a failure to initialize the video encoder.
+  kVideoEncoderInitializationFailure,
+  // Ended due to an error occurring while encoding audio.
+  kAudioEncodingError,
+  // Ended due to an error occurring while encoding video.
+  kVideoEncodingError,
+  // Ended due to an IO error causing a failure to write to the webm file.
+  kIoError,
+  // Ended due to reaching a critically low disk space.
+  kLowDiskSpace,
+};
+
 // Defines the interface for the recording service client (e.g. ash), which
 // lives in a remote process other than that of the recording service itself.
-// The recording services consumes this interface to communicate with the client
-// during video recording and to send over the video chunks.
+// The recording service consumes this interface to communicate with the client.
 interface RecordingServiceClient {
-  // Called repeatedly by the service while video recording is in progress,
-  // to provide the client with final encoded and webm-muxed video and audio
-  // frames. Frames will continue to be provided until OnRecordingEnded() is
-  // called.
-  OnMuxerOutput(mojo_base.mojom.BigString chunk);
-
   // Called by the service to inform the client that an in-progress video
-  // recording ended, and no further frames will be provided. If |success| is
-  // false, then recording is being terminated by the service itself due to an
-  // internal failure. The service can provide an RGB image |thumbnail|
-  // representing the recorded video. It can be empty in case of a failure.
-  OnRecordingEnded(bool success, gfx.mojom.ImageSkia? thumbnail);
+  // recording ended. If |status| is anything other than |kSuccess|, then
+  // recording is being terminated by the service itself due to an internal
+  // failure. The service can provide an RGB image |thumbnail| representing
+  // the recorded video. It can be empty in case of a failure.
+  OnRecordingEnded(RecordingStatus status, gfx.mojom.ImageSkia? thumbnail);
 };
 
 // Defines the interface of the recording service which is implemented by
 // |recording::RecordingService| and runs in its own utility process. It is
-// launched by the Ash on which the |RecordingServiceClient| resides, and is
-// used to perform audio/video recording of the whole screen, a partial region
-// of it, or an individual window. The service captures, encodes, and muxes the
-// audio and video frames, and sends the WebM muxed video chunks to the client.
+// launched by Ash on which the |RecordingServiceClient| resides, and is used to
+// perform audio/video recording of the whole screen, a partial region of it, or
+// an individual window. The service captures, encodes, and muxes the audio and
+// video frames, and writes the WebM muxed video chunks to directly to a file
+// whose path was given to the Record*() functions.
 // Note that a maximum of one screen recording can be done at any time.
 interface RecordingService {
   // All the below Record*() interfaces, take a pending remote to a client (e.g.
-  // Ash) to which it will send the muxed video chunks, a pending remote bound
-  // to the video capturer on Viz on the GPU process, and another *optional*
-  // pending remote to the audio stream factory on the Audio Service, which if
-  // not provided, the service will not record audio.
+  // Ash) which will be notified when recording finishes and all the webm
+  // chuncks are written to the file, a pending remote bound to the video
+  // capturer on Viz on the GPU process, another *optional* pending remote
+  // to the audio stream factory on the Audio Service, which if not provided,
+  // the service will not record audio, and a path to the webm file where the
+  // video content should be saved.
+  // Note that we pass a FilePath rather than a File, since:
+  // - Passing a File means the caller has to create and open the file itself,
+  //   which has to be done asynchronously on the ash UI side, resulting in a
+  //   longer delay before recording can start. However, this wasn't a major
+  //   concern.
+  // - The recording service process is not sandboxed, so it can create and open
+  //   the file itself.
+  // - Since the recording service will be writing to the file directly, it's
+  //   easier to poll the remaining disk space after write operations, rather
+  //   than relying on the caller to repeatedly do this polling.
+  // TODO(https://crbug.com/1211480): Explore a different architecture if
+  // possible.
 
   // Starts a fullscreen recording of a root window which has the given
   // |frame_sink_id|. The resulting video will have a resolution equal to the
@@ -58,6 +92,7 @@ interface RecordingService {
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
       pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
+      mojo_base.mojom.FilePath webm_file_path,
       viz.mojom.FrameSinkId frame_sink_id,
       gfx.mojom.Size frame_sink_size);
 
@@ -74,7 +109,7 @@ interface RecordingService {
   // resized by the user (e.g. resized, maximized, fullscreened, ... etc.).
   // Unlike fullscreen recording, updating the window size will update the
   // output video size, since it is desired for the video dimensions to always
-  // match the those of the window without letterboxing.
+  // match those of the window without letterboxing.
   // |frame_sink_size| is the current size of the frame sink whose
   // |frame_sink_id| was given. This can be updated by calling
   // OnFrameSinkSizeChanged() which will update the resolution constraints on
@@ -84,6 +119,7 @@ interface RecordingService {
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
       pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
+      mojo_base.mojom.FilePath webm_file_path,
       viz.mojom.FrameSinkId frame_sink_id,
       gfx.mojom.Size frame_sink_size,
       viz.mojom.SubtreeCaptureId subtree_capture_id,
@@ -103,12 +139,13 @@ interface RecordingService {
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
       pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
+      mojo_base.mojom.FilePath webm_file_path,
       viz.mojom.FrameSinkId frame_sink_id,
       gfx.mojom.Size frame_sink_size,
       gfx.mojom.Rect crop_region);
 
-  // Stops an on-going video recording. The remaining frames will continue being
-  // provided to the client until OnRecordingEnded() is called.
+  // Stops an on-going video recording. The remaining frames will continue to be
+  // written to the webm file until OnRecordingEnded() is called on the client.
   StopRecording();
 
   // Called by the client to let the service know that a window being recorded

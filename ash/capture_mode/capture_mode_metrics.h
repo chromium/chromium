@@ -26,7 +26,13 @@ enum class EndRecordingReason {
   kDlpInterruption,
   kLowDiskSpace,
   kHdcpInterruption,
-  kMaxValue = kHdcpInterruption,
+  kServiceClosing,
+  kVizVideoCaptureDisconnected,
+  kAudioEncoderInitializationFailure,
+  kVideoEncoderInitializationFailure,
+  kAudioEncodingError,
+  kVideoEncodingError,
+  kMaxValue = kVideoEncodingError,
 };
 
 // Enumeration of capture bar buttons that can be pressed while in capture mode.

@@ -33,8 +33,9 @@
 namespace recording {
 
 // Implements the mojo interface of the recording service which handles
-// recording audio and video of the screen or portion of it, and delivers the
-// webm muxed video chunks to its client.
+// recording audio and video of the screen or portion of it, and writes the webm
+// muxed video chunks directly to a file at a path provided to the Record*()
+// functions.
 class RecordingService : public mojom::RecordingService,
                          public viz::mojom::FrameSinkVideoConsumer,
                          public media::AudioCapturerSource::CaptureCallback {
@@ -51,6 +52,7 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
           audio_stream_factory,
+      const base::FilePath& webm_file_path,
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& frame_sink_size) override;
   void RecordWindow(
@@ -58,6 +60,7 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
           audio_stream_factory,
+      const base::FilePath& webm_file_path,
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& frame_sink_size,
       const viz::SubtreeCaptureId& subtree_capture_id,
@@ -67,6 +70,7 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
           audio_stream_factory,
+      const base::FilePath& webm_file_path,
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& frame_sink_size,
       const gfx::Rect& crop_region) override;
@@ -102,16 +106,15 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
           audio_stream_factory,
+      const base::FilePath& webm_file_path,
       std::unique_ptr<VideoCaptureParams> capture_params);
 
   // Called on the main thread during an on-going recording to reconfigure an
   // existing video encoder.
   void ReconfigureVideoEncoder();
 
-  // Called on the main thread on |success| from OnStopped() when all video
-  // frames have been sent, or from OnEncodingFailure() with |success| set to
-  // false.
-  void TerminateRecording(bool success);
+  // Called on the main thread to end the recording with the given |status|.
+  void TerminateRecording(mojom::RecordingStatus status);
 
   // Binds the given |video_capturer| to |video_capturer_remote_| and starts
   // video according to the current |current_video_capture_params_|.
@@ -133,41 +136,25 @@ class RecordingService : public mojom::RecordingService,
 
   // This is called by |encoder_muxer_| on the main thread (since we bound it as
   // a callback to be invoked on the main thread. See BindOnceToMainThread()),
-  // when a failure of |type| occurs during audio or video encoding depending on
-  // |for_video|. This ends the ongoing recording and signals to the client that
-  // a failure occurred.
-  void OnEncodingFailure(FailureType type, bool for_video);
-
-  // Called back on the main thread to terminate the recording immediately as a
-  // result of a failure.
-  void OnRecordingFailure();
+  // when a failure of type |status| occurs during audio or video encoding. This
+  // ends the ongoing recording and signals to the client that a failure
+  // occurred.
+  void OnEncodingFailure(mojom::RecordingStatus status);
 
   // At the end of recording we ask the |encoder_muxer_| to flush and process
   // any buffered frames. When this completes this function is called on the
   // main thread (since it's bound as a callback to be invoked on the main
-  // thread. See BindOnceToMainThread()). |success| indicates whether we're
-  // flushing due to normal recording termination, or due to a failure.
-  void OnEncoderMuxerFlushed(bool success);
+  // thread. See BindOnceToMainThread()). |status| indicates the recording
+  // termination status that lead to this flushing of the encoders and muxer.
+  void OnEncoderMuxerFlushed(mojom::RecordingStatus status);
 
-  // Called on the main thread to send the given |muxer_output| chunk to the
-  // client of this service.
-  void SignalMuxerOutputToClient(std::string muxer_output);
-
-  // Called on the main thread to tell the client that recording ended. No more
-  // chunks will be sent to the client after this.
-  void SignalRecordingEndedToClient(bool success);
-
-  // Bound as a callback to be repeatedly invoked on the |main_task_runner_|.
-  // It is called by |encoder_muxer_| to deliver a muxer output chunk |data|.
-  void OnMuxerOutput(std::string data);
-
-  // Called on the main thread to flush the chunks buffered in
-  // |muxed_chunks_buffer_| by sending them to the client and reset the
-  // |number_of_buffered_chunks_| back to 0.
-  void FlushBufferedChunks();
+  // Called on the main thread to tell the client that recording ended,
+  // providing it with the |status| of the recording as well as a chached
+  // thumbnail of the video (if available).
+  void SignalRecordingEndedToClient(mojom::RecordingStatus status);
 
   // By default, the |encoder_muxer_| will invoke any callback we provide it
-  // with to notify us of certain events (such as muxer output, or flush done)
+  // with to notify us of certain events (such as failure errors, or flush done)
   // on the |encoding_task_runner_|'s sequence. But since these callbacks are
   // invoked asynchronously from other threads, they may get invoked after this
   // RecordingService instance had been destroyed. Therefore, we need to bind
@@ -176,21 +163,14 @@ class RecordingService : public mojom::RecordingService,
   // invalidated except on the sequence on which they were invoked on. Hence, we
   // must make sure these callbacks are invoked on the main thread.
   //
-  // The below are two convenience methods to bind once and repeating callbacks
-  // to weak ptrs that would only be invoked on the main thread.
+  // The below is a convenience method to bind once callbacks to weak ptrs that
+  // would only be invoked on the main thread.
   template <typename Functor, typename... Args>
   auto BindOnceToMainThread(Functor&& functor, Args&&... args) {
     return base::BindPostTask(main_task_runner_,
                               base::BindOnce(std::forward<Functor>(functor),
                                              weak_ptr_factory_.GetWeakPtr(),
                                              std::forward<Args>(args)...));
-  }
-  template <typename Functor, typename... Args>
-  auto BindRepeatingToMainThread(Functor&& functor, Args&&... args) {
-    return base::BindPostTask(
-        main_task_runner_, base::BindRepeating(std::forward<Functor>(functor),
-                                               weak_ptr_factory_.GetWeakPtr(),
-                                               std::forward<Args>(args)...));
   }
 
   THREAD_CHECKER(main_thread_checker_);
@@ -248,13 +228,6 @@ class RecordingService : public mojom::RecordingService,
   // constructed, used, and destroyed on the main thread sequence.
   base::SequenceBound<RecordingEncoderMuxer> encoder_muxer_
       GUARDED_BY_CONTEXT(main_thread_checker_);
-
-  // To avoid doing a ton of IPC calls to the client for each muxed chunk
-  // received from |encoder_muxer_| in OnMuxerOutput(), we buffer those chunks
-  // here up to |kMaxBufferedChunks| before we send them to the client over IPC
-  // in SignalMuxerOutputToClient().
-  std::string muxed_chunks_buffer_ GUARDED_BY_CONTEXT(main_thread_checker_);
-  int number_of_buffered_chunks_ GUARDED_BY_CONTEXT(main_thread_checker_) = 0;
 
   base::WeakPtrFactory<RecordingService> weak_ptr_factory_{this};
 };

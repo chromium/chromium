@@ -270,6 +270,46 @@ void CopyImageToClipboard(const gfx::Image& image) {
       .WriteImage(image.AsBitmap());
 }
 
+// Emits UMA samples for the |status| of the recording as reported by the
+// recording service.
+void EmitServiceRecordingStatus(recording::mojom::RecordingStatus status) {
+  using recording::mojom::RecordingStatus;
+  switch (status) {
+    case RecordingStatus::kSuccess:
+      // We emit no samples for success status, as in this case the recording
+      // was ended normally by the client, and the end reason for that is
+      // emitted else where.
+      break;
+    case RecordingStatus::kServiceClosing:
+      RecordEndRecordingReason(EndRecordingReason::kServiceClosing);
+      break;
+    case RecordingStatus::kVizVideoCapturerDisconnected:
+      RecordEndRecordingReason(
+          EndRecordingReason::kVizVideoCaptureDisconnected);
+      break;
+    case RecordingStatus::kAudioEncoderInitializationFailure:
+      RecordEndRecordingReason(
+          EndRecordingReason::kAudioEncoderInitializationFailure);
+      break;
+    case RecordingStatus::kVideoEncoderInitializationFailure:
+      RecordEndRecordingReason(
+          EndRecordingReason::kVideoEncoderInitializationFailure);
+      break;
+    case RecordingStatus::kAudioEncodingError:
+      RecordEndRecordingReason(EndRecordingReason::kAudioEncodingError);
+      break;
+    case RecordingStatus::kVideoEncodingError:
+      RecordEndRecordingReason(EndRecordingReason::kVideoEncodingError);
+      break;
+    case RecordingStatus::kIoError:
+      RecordEndRecordingReason(EndRecordingReason::kFileIoError);
+      break;
+    case RecordingStatus::kLowDiskSpace:
+      RecordEndRecordingReason(EndRecordingReason::kLowDiskSpace);
+      break;
+  }
+}
+
 }  // namespace
 
 CaptureModeController::CaptureModeController(
@@ -290,10 +330,6 @@ CaptureModeController::CaptureModeController(
           &CaptureModeController::RecordAndResetConsecutiveScreenshots) {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
-
-  on_video_file_status_ =
-      base::BindRepeating(&CaptureModeController::OnVideoFileStatus,
-                          weak_ptr_factory_.GetWeakPtr());
 
   // Schedule recording of the number of screenshots taken per day.
   num_screenshots_taken_in_last_day_scheduler_.Start(
@@ -514,41 +550,22 @@ void CaptureModeController::RefreshContentProtection() {
   DCHECK(video_recording_watcher_);
   if (ShouldBlockRecordingForContentProtection(
           video_recording_watcher_->window_being_recorded())) {
-    // HDCP violation is also considered a failure, and we're not going to wait
-    // for any buffered frames in the recording service.
+    // HDCP violation is also considered a failure, and we're going to terminate
+    // the service immediately so as not to record any further frames.
     RecordEndRecordingReason(EndRecordingReason::kHdcpInterruption);
-    OnRecordingEnded(/*success=*/false, gfx::ImageSkia());
+    FinalizeRecording(/*success=*/false, gfx::ImageSkia());
     ShowVideoRecordingStoppedNotification(/*for_hdcp=*/true);
   }
 }
 
-void CaptureModeController::OnMuxerOutput(const std::string& chunk) {
-  DCHECK(video_file_handler_);
-  video_file_handler_.AsyncCall(&VideoFileHandler::AppendChunk)
-      .WithArgs(const_cast<std::string&>(chunk))
-      .Then(on_video_file_status_);
-}
-
-void CaptureModeController::OnRecordingEnded(bool success,
-                                             const gfx::ImageSkia& thumbnail) {
-  delegate_->StopObservingRestrictedContent();
-
-  // If |success| is false, then recording has been force-terminated due to a
-  // failure on the service side, or a disconnection to it. We need to terminate
-  // the recording-related UI elements.
-  if (!success) {
-    // TODO(afakhry): Show user a failure message.
-    TerminateRecordingUiElements();
-  }
-
-  // Resetting the service remote would terminate its process.
-  recording_service_remote_.reset();
-  recording_service_client_receiver_.reset();
-
-  DCHECK(video_file_handler_);
-  video_file_handler_.AsyncCall(&VideoFileHandler::FlushBufferedChunks)
-      .Then(base::BindOnce(&CaptureModeController::OnVideoFileSaved,
-                           weak_ptr_factory_.GetWeakPtr(), thumbnail));
+void CaptureModeController::OnRecordingEnded(
+    recording::mojom::RecordingStatus status,
+    const gfx::ImageSkia& thumbnail) {
+  low_disk_space_threshold_reached_ =
+      status == recording::mojom::RecordingStatus::kLowDiskSpace;
+  EmitServiceRecordingStatus(status);
+  FinalizeRecording(status == recording::mojom::RecordingStatus::kSuccess,
+                    thumbnail);
 }
 
 void CaptureModeController::OnActiveUserSessionChanged(
@@ -655,15 +672,10 @@ void CaptureModeController::EndSessionOrRecording(EndRecordingReason reason) {
 
   if (reason == EndRecordingReason::kImminentSuspend) {
     // If suspend happens while recording is in progress, we consider this a
-    // failure, and cut the recording immediately. The recording service may
-    // have some buffered chunks that will never be received, and as a result,
-    // the a few seconds at the end of the recording may get lost.
-    // TODO(afakhry): Think whether this is what we want. We might be able to
-    // end the recording normally by asking the service to StopRecording(), and
-    // block the suspend until all chunks have been received, and then we can
-    // resume it.
+    // failure, and cut the recording immediately. The recording service will
+    // flush any remaining buffered chunks in the muxer before it terminates.
     RecordEndRecordingReason(EndRecordingReason::kImminentSuspend);
-    OnRecordingEnded(/*success=*/false, gfx::ImageSkia());
+    FinalizeRecording(/*success=*/false, gfx::ImageSkia());
     return;
   }
 
@@ -764,7 +776,8 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
     case CaptureModeSource::kFullscreen:
       recording_service_remote_->RecordFullscreen(
           std::move(client), video_capturer_remote.Unbind(),
-          std::move(audio_stream_factory), frame_sink_id, bounds.size());
+          std::move(audio_stream_factory), current_video_file_path_,
+          frame_sink_id, bounds.size());
       break;
 
     case CaptureModeSource::kWindow:
@@ -778,7 +791,8 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
 
       recording_service_remote_->RecordWindow(
           std::move(client), video_capturer_remote.Unbind(),
-          std::move(audio_stream_factory), frame_sink_id,
+          std::move(audio_stream_factory), current_video_file_path_,
+          frame_sink_id,
           capture_params.window->GetRootWindow()
               ->GetBoundsInRootWindow()
               .size(),
@@ -788,7 +802,8 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
     case CaptureModeSource::kRegion:
       recording_service_remote_->RecordRegion(
           std::move(client), video_capturer_remote.Unbind(),
-          std::move(audio_stream_factory), frame_sink_id,
+          std::move(audio_stream_factory), current_video_file_path_,
+          frame_sink_id,
           capture_params.window->GetRootWindow()
               ->GetBoundsInRootWindow()
               .size(),
@@ -803,9 +818,9 @@ void CaptureModeController::OnRecordingServiceDisconnected() {
   // For now, just end the recording.
   // Note that the service could disconnect between the time we ask it to
   // StopRecording(), and it calling us back with OnRecordingEnded(), so we call
-  // OnRecordingEnded() in all cases.
+  // FinalizeRecording() in all cases.
   RecordEndRecordingReason(EndRecordingReason::kRecordingServiceDisconnected);
-  OnRecordingEnded(/*success=*/false, gfx::ImageSkia());
+  FinalizeRecording(/*success=*/false, gfx::ImageSkia());
 }
 
 CaptureAllowance CaptureModeController::IsCaptureAllowedByEnterprisePolicies(
@@ -820,6 +835,25 @@ CaptureAllowance CaptureModeController::IsCaptureAllowedByEnterprisePolicies(
   }
 
   return CaptureAllowance::kAllowed;
+}
+
+void CaptureModeController::FinalizeRecording(bool success,
+                                              const gfx::ImageSkia& thumbnail) {
+  delegate_->StopObservingRestrictedContent();
+
+  // If |success| is false, then recording has been force-terminated due to a
+  // failure on the service side, or a disconnection to it. We need to terminate
+  // the recording-related UI elements.
+  if (!success) {
+    // TODO(afakhry): Show user a failure message.
+    TerminateRecordingUiElements();
+  }
+
+  // Resetting the service remote would terminate its process.
+  recording_service_remote_.reset();
+  recording_service_client_receiver_.reset();
+
+  OnVideoFileSaved(thumbnail, success);
 }
 
 void CaptureModeController::TerminateRecordingUiElements() {
@@ -938,19 +972,10 @@ void CaptureModeController::OnImageFileSaved(
     client->AddScreenshot(path);
 }
 
-void CaptureModeController::OnVideoFileStatus(bool success) {
-  if (success)
-    return;
-
-  // TODO(afakhry): Show the user a message about IO failure.
-  EndVideoRecording(EndRecordingReason::kFileIoError);
-}
-
 void CaptureModeController::OnVideoFileSaved(
     const gfx::ImageSkia& video_thumbnail,
     bool success) {
   DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(video_file_handler_);
 
   if (!success) {
     ShowFailureNotification();
@@ -973,7 +998,6 @@ void CaptureModeController::OnVideoFileSaved(
   low_disk_space_threshold_reached_ = false;
   recording_start_time_ = base::TimeTicks();
   current_video_file_path_.clear();
-  video_file_handler_.Reset();
 }
 
 void CaptureModeController::ShowPreviewNotification(
@@ -1147,30 +1171,9 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
   if (source_ != CaptureModeSource::kFullscreen)
     video_recording_watcher_->Reset(std::move(session_layer));
 
-  constexpr size_t kVideoBufferCapacityBytes = 512 * 1024;
-
-  // We use a threshold of 512 MB to end the video recording due to low disk
-  // space, which is the same threshold as that used by the low disk space
-  // notification (See low_disk_notification.cc).
-  constexpr size_t kLowDiskSpaceThresholdInBytes = 512 * 1024 * 1024;
-
-  // The |video_file_handler_| performs all its tasks on the
-  // |blocking_task_runner_|. However, we want the low disk space callback to be
-  // run on the UI thread.
-  base::OnceClosure on_low_disk_space_callback =
-      base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
-                         base::BindOnce(&CaptureModeController::OnLowDiskSpace,
-                                        weak_ptr_factory_.GetWeakPtr()));
-
   DCHECK(current_video_file_path_.empty());
   recording_start_time_ = base::TimeTicks::Now();
   current_video_file_path_ = BuildVideoPath();
-  video_file_handler_ = VideoFileHandler::Create(
-      blocking_task_runner_, current_video_file_path_,
-      kVideoBufferCapacityBytes, kLowDiskSpaceThresholdInBytes,
-      std::move(on_low_disk_space_callback));
-  video_file_handler_.AsyncCall(&VideoFileHandler::Initialize)
-      .Then(on_video_file_status_);
 
   LaunchRecordingServiceAndStartRecording(*capture_params,
                                           std::move(cursor_overlay_receiver));
@@ -1187,18 +1190,6 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
 void CaptureModeController::InterruptVideoRecording() {
   ShowVideoRecordingStoppedNotification(/*for_hdcp=*/false);
   EndVideoRecording(EndRecordingReason::kDlpInterruption);
-}
-
-void CaptureModeController::OnLowDiskSpace() {
-  DCHECK(base::CurrentUIThread::IsSet());
-
-  low_disk_space_threshold_reached_ = true;
-  // We end the video recording normally (i.e. we don't consider this to be a
-  // failure). The low disk space threashold was chosen to be big enough to
-  // allow the remaining chunks to be saved normally. However,
-  // |low_disk_space_threshold_reached_| will be used to display a different
-  // message in the notification.
-  EndVideoRecording(EndRecordingReason::kLowDiskSpace);
 }
 
 }  // namespace ash

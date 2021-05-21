@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -174,6 +175,31 @@ absl::optional<mkvmuxer::Colour> ColorFromColorSpace(
 
 }  // anonymous namespace
 
+// -----------------------------------------------------------------------------
+// WebmMuxer::Delegate:
+
+WebmMuxer::Delegate::Delegate() {
+  // Creation can be done on a different sequence than main activities.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+WebmMuxer::Delegate::~Delegate() = default;
+
+mkvmuxer::int32 WebmMuxer::Delegate::Write(const void* buf,
+                                           mkvmuxer::uint32 len) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(2) << __func__ << " len " << len;
+  DCHECK(buf);
+
+  last_data_output_timestamp_ = base::TimeTicks::Now();
+  const auto result = DoWrite(buf, len);
+  position_ += len;
+  return result;
+}
+
+// -----------------------------------------------------------------------------
+// WebmMuxer::VideoParameters:
+
 WebmMuxer::VideoParameters::VideoParameters(
     scoped_refptr<media::VideoFrame> frame)
     : visible_rect_size(frame->visible_rect().size()),
@@ -195,27 +221,27 @@ WebmMuxer::VideoParameters::VideoParameters(const VideoParameters&) = default;
 
 WebmMuxer::VideoParameters::~VideoParameters() = default;
 
+// -----------------------------------------------------------------------------
+// WebmMuxer:
+
 WebmMuxer::WebmMuxer(AudioCodec audio_codec,
                      bool has_video,
                      bool has_audio,
-                     const WriteDataCB& write_data_callback)
+                     std::unique_ptr<Delegate> delegate)
     : audio_codec_(audio_codec),
       video_codec_(kUnknownVideoCodec),
       video_track_index_(0),
       audio_track_index_(0),
       has_video_(has_video),
       has_audio_(has_audio),
-      write_data_callback_(write_data_callback),
-      position_(0),
+      delegate_(std::move(delegate)),
       force_one_libwebm_error_(false) {
   DCHECK(has_video_ || has_audio_);
-  DCHECK(!write_data_callback_.is_null());
+  DCHECK(delegate_);
   DCHECK(audio_codec == kCodecOpus || audio_codec == kCodecPCM)
       << " Unsupported audio codec: " << GetCodecName(audio_codec);
 
-  segment_.Init(this);
-  segment_.set_mode(mkvmuxer::Segment::kLive);
-  segment_.OutputCues(false);
+  delegate_->InitSegment(&segment_);
 
   mkvmuxer::SegmentInfo* const info = segment_.GetSegmentInfo();
   info->set_writing_app("Chrome");
@@ -339,8 +365,9 @@ void WebmMuxer::Resume() {
 }
 
 bool WebmMuxer::Flush() {
-  // No need to segment_.Finalize() since is not Seekable(), i.e. a live
-  // stream, but is a good practice.
+  // Depending on the |delegate_|, it can be either non-seekable (i.e. a live
+  // stream), or seekable (file mode). So calling |segment_.Finalize()| here is
+  // needed.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   FlushQueues();
   return segment_.Finalize();
@@ -433,37 +460,6 @@ void WebmMuxer::AddAudioTrack(const media::AudioParameters& params) {
   } else if (audio_codec_ == kCodecPCM) {
     audio_track->set_codec_id(kPcmCodecId);
   }
-}
-
-mkvmuxer::int32 WebmMuxer::Write(const void* buf, mkvmuxer::uint32 len) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(2) << __func__ << " len " << len;
-  DCHECK(buf);
-  last_data_output_timestamp_ = base::TimeTicks::Now();
-  write_data_callback_.Run(
-      base::StringPiece(reinterpret_cast<const char*>(buf), len));
-  position_ += len;
-  return 0;
-}
-
-mkvmuxer::int64 WebmMuxer::Position() const {
-  return position_.ValueOrDie();
-}
-
-mkvmuxer::int32 WebmMuxer::Position(mkvmuxer::int64 position) {
-  // The stream is not Seekable() so indicate we cannot set the position.
-  return -1;
-}
-
-bool WebmMuxer::Seekable() const {
-  return false;
-}
-
-void WebmMuxer::ElementStartNotify(mkvmuxer::uint64 element_id,
-                                   mkvmuxer::int64 position) {
-  // This method gets pinged before items are sent to |write_data_callback_|.
-  DCHECK_GE(position, position_.ValueOrDefault(0))
-      << "Can't go back in a live WebM stream.";
 }
 
 void WebmMuxer::FlushQueues() {
@@ -567,12 +563,15 @@ base::TimeTicks WebmMuxer::UpdateLastTimestampMonotonically(
 
 void WebmMuxer::MaybeForceNewCluster() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (has_video_ && !max_data_output_interval_.is_zero() &&
-      !last_data_output_timestamp_.is_null()) {
-    base::TimeTicks now = base::TimeTicks::Now();
-    if (now - last_data_output_timestamp_ >= max_data_output_interval_) {
-      segment_.ForceNewClusterOnNextFrame();
-    }
+
+  if (!has_video_ || max_data_output_interval_.is_zero() ||
+      delegate_->last_data_output_timestamp().is_null()) {
+    return;
+  }
+
+  if (base::TimeTicks::Now() - delegate_->last_data_output_timestamp() >=
+      max_data_output_interval_) {
+    segment_.ForceNewClusterOnNextFrame();
   }
 }
 

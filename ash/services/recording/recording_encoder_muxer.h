@@ -30,27 +30,14 @@ class VideoFrame;
 
 namespace recording {
 
-// The type of the failures that can happen while encoding.
-enum class FailureType {
-  kEncoderInitialization,
-  kEncoding,
-};
+namespace mojom {
+enum class RecordingStatus;
+}  // namespace mojom
 
 // Defines a callback type to notify the user of RecordingEncoderMuxer of a
 // failure while encoding audio or video frames.
-// TODO(afakhry): It's possible we don't need |type| or |for_video|.
 using OnFailureCallback =
-    base::OnceCallback<void(FailureType type, bool for_video)>;
-
-// Defines a callback type to push the output of the muxer to the user of
-// RecordingEncoderMuxer. Note that this differs from the type of the
-// |WebmMuxer|'s write callback (|media::WebmMuxer::WriteDataCB|) in that the
-// below callback uses |std::string| to provide the output rather than
-// |base::StringPiece|. This enables the user to bind the callback to a
-// different sequence than the one used by the muxer, since a |StringPiece| does
-// not own its buffer and by the time the callback is invoked on another
-// sequence, the muxer might have already clobbered the underlying buffer.
-using OnMuxerOutputCallback = base::RepeatingCallback<void(std::string)>;
+    base::OnceCallback<void(mojom::RecordingStatus status)>;
 
 // Encapsulates encoding and muxing audio and video frame. An instance of this
 // object can only be interacted with via a |base::SequenceBound| wrapper, which
@@ -72,21 +59,20 @@ class RecordingEncoderMuxer {
   // initialize the video and audio encoders respectively.
   // If |audio_input_params| is nullptr, then the service is not recording
   // audio, and the muxer will be initialized accordingly.
-  // |muxer_output_callback| will be called to provide the muxer output chunks
-  // ready to be sent to the recording service client.
+  // the webm muxer chunks will be written directly to a file at the given
+  // |webm_file_path|.
   // |on_failure_callback| will be called to inform the owner of this object of
   // a failure, after which all subsequent calls to EncodeVideo() and
   // EncodeAudio() will be ignored.
   //
-  // By default, both |muxer_output_callback| and |on_failure_callback| will be
-  // called on the same sequence of |blocking_task_runner| (unless the caller
-  // binds the given callbacks to a different sequence by means of
-  // base::BindPostTask()).
+  // By default, |on_failure_callback| will be called on the same sequence of
+  // |blocking_task_runner| (unless the caller binds the given callbacks to a
+  // different sequence by means of base::BindPostTask()).
   static base::SequenceBound<RecordingEncoderMuxer> Create(
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       const media::VideoEncoder::Options& video_encoder_options,
       const media::AudioParameters* audio_input_params,
-      OnMuxerOutputCallback muxer_output_callback,
+      const base::FilePath& webm_file_path,
       OnFailureCallback on_failure_callback);
 
   bool did_failure_occur() const {
@@ -113,13 +99,15 @@ class RecordingEncoderMuxer {
   // before they're processed. It is important to flush all those buffers before
   // releasing this object so as not to drop the final portion of the recording.
   // |on_done| will be called when all remaining buffered frames have been
-  // processed and sent to |muxer_output_callback|.
+  // processed and written to the webm file.
   // By default, |on_done| will be called on the same sequence of
   // |blocking_task_runner| unless the caller binds it to another sequence by
   // means of base::BindPostTask().
   void FlushAndFinalize(base::OnceClosure on_done);
 
  private:
+  class RecordingMuxerDelegate;
+
   struct AudioFrame {
     AudioFrame(std::unique_ptr<media::AudioBus>, base::TimeTicks);
     AudioFrame(AudioFrame&&);
@@ -134,7 +122,7 @@ class RecordingEncoderMuxer {
   RecordingEncoderMuxer(
       const media::VideoEncoder::Options& video_encoder_options,
       const media::AudioParameters* audio_input_params,
-      OnMuxerOutputCallback muxer_output_callback,
+      const base::FilePath& webm_file_path,
       OnFailureCallback on_failure_callback);
   ~RecordingEncoderMuxer();
 
@@ -174,9 +162,6 @@ class RecordingEncoderMuxer {
       media::EncodedAudioBuffer encoded_audio,
       absl::optional<media::AudioEncoder::CodecDescription> codec_description);
 
-  // Called by the |webm_muxer_| to deliver a muxer output chunk |data|.
-  void OnMuxerWrite(base::StringPiece data);
-
   // Called when the audio encoder flushes all its buffered frames, at which
   // point we can flush the video encoder. |on_done| will be passed to
   // OnVideoEncoderFlushed()
@@ -192,9 +177,9 @@ class RecordingEncoderMuxer {
   void OnEncoderStatus(bool for_video, media::Status status);
 
   // Notifies the owner of this object (via |on_failure_callback_|) that a
-  // failure of |type| has occurred during audio or video encoding depending on
-  // the value of |for_video|.
-  void NotifyFailure(FailureType type, bool for_video);
+  // failure noted by |status| has occurred during audio or video encoding, or
+  // muxing.
+  void NotifyFailure(mojom::RecordingStatus status);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -202,15 +187,6 @@ class RecordingEncoderMuxer {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<media::AudioOpusEncoder> audio_encoder_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // A callback to deliver the muxer output to the client of this class. By
-  // default, it is invoked on the same sequence of this class, unless the
-  // client binds it to a different sequence (by means of |base::BindPostTask|)
-  // before giving it to us.
-  // Note that it has to be declared before |webm_muxer_| because the latter
-  // depends on it, so |webm_muxer_| should be destroyed first.
-  OnMuxerOutputCallback on_muxer_output_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   media::WebmMuxer webm_muxer_ GUARDED_BY_CONTEXT(sequence_checker_);

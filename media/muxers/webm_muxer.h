@@ -45,11 +45,44 @@ class AudioParameters;
 // WebmMuxer is designed for use on a single thread.
 // [1] http://www.webmproject.org/docs/container/
 // [2] http://www.matroska.org/technical/specs/index.html
-class MEDIA_EXPORT WebmMuxer : public mkvmuxer::IMkvWriter {
+class MEDIA_EXPORT WebmMuxer {
  public:
-  // Callback to be called when WebmMuxer is ready to write a chunk of data,
-  // either any file header or a SingleBlock.
-  using WriteDataCB = base::RepeatingCallback<void(base::StringPiece)>;
+  // Defines an interface for delegates of WebmMuxer which should define how to
+  // implement the |mkvmuxer::IMkvWriter| APIs (e.g. whether to support
+  // non-seekable live mode writing, or seekable file mode writing).
+  class MEDIA_EXPORT Delegate : public mkvmuxer::IMkvWriter {
+   public:
+    Delegate();
+    ~Delegate() override;
+
+    base::TimeTicks last_data_output_timestamp() const {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+      return last_data_output_timestamp_;
+    }
+
+    // Initializes the given |segment| according to the mode desired by the
+    // concrete implementation of this delegate.
+    virtual void InitSegment(mkvmuxer::Segment* segment) = 0;
+
+    // mkvmuxer::IMkvWriter:
+    mkvmuxer::int32 Write(const void* buf, mkvmuxer::uint32 len) final;
+
+   protected:
+    // Does the actual writing of |len| bytes from the given |buf| depending on
+    // the mode desired by the concrete implementation of this delegate.
+    // Returns 0 on success, -1 otherwise.
+    virtual mkvmuxer::int32 DoWrite(const void* buf, mkvmuxer::uint32 len) = 0;
+
+    SEQUENCE_CHECKER(sequence_checker_);
+
+    // The current writing position as set by libwebm.
+    base::CheckedNumeric<mkvmuxer::int64> position_
+        GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+
+    // Last time data was written via Write().
+    base::TimeTicks last_data_output_timestamp_
+        GUARDED_BY_CONTEXT(sequence_checker_);
+  };
 
   // Container for the parameters that muxer uses that is extracted from
   // media::VideoFrame.
@@ -71,8 +104,8 @@ class MEDIA_EXPORT WebmMuxer : public mkvmuxer::IMkvWriter {
   WebmMuxer(AudioCodec audio_codec,
             bool has_video_,
             bool has_audio_,
-            const WriteDataCB& write_data_callback);
-  ~WebmMuxer() override;
+            std::unique_ptr<Delegate> delegate);
+  ~WebmMuxer();
 
   // Sets the maximum duration interval to cause data output on
   // |write_data_callback|, provided frames are delivered. The WebM muxer can
@@ -124,14 +157,6 @@ class MEDIA_EXPORT WebmMuxer : public mkvmuxer::IMkvWriter {
                      double frame_rate,
                      const absl::optional<gfx::ColorSpace>& color_space);
   void AddAudioTrack(const media::AudioParameters& params);
-
-  // IMkvWriter interface.
-  mkvmuxer::int32 Write(const void* buf, mkvmuxer::uint32 len) override;
-  mkvmuxer::int64 Position() const override;
-  mkvmuxer::int32 Position(mkvmuxer::int64 position) override;
-  bool Seekable() const override;
-  void ElementStartNotify(mkvmuxer::uint64 element_id,
-                          mkvmuxer::int64 position) override;
 
   // Adds all currently buffered frames to the mkvmuxer in timestamp order,
   // until the queues are depleted.
@@ -194,17 +219,10 @@ class MEDIA_EXPORT WebmMuxer : public mkvmuxer::IMkvWriter {
   // Maximum interval between data output callbacks (given frames arriving)
   base::TimeDelta max_data_output_interval_;
 
-  // Last time data was output from |segment_|.
-  base::TimeTicks last_data_output_timestamp_;
-
   // Last timestamp written into the segment.
   base::TimeDelta last_timestamp_written_;
 
-  // Callback to dump written data as being called by libwebm.
-  const WriteDataCB write_data_callback_;
-
-  // Rolling counter of the position in bytes of the written goo.
-  base::CheckedNumeric<mkvmuxer::int64> position_;
+  std::unique_ptr<Delegate> delegate_;
 
   // The MkvMuxer active element.
   mkvmuxer::Segment segment_;

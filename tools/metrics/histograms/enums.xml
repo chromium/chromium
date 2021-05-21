@@ -23358,6 +23358,12 @@ Called by update_document_policy_enum.py.-->
   <int value="8" label="Dlp interruption"/>
   <int value="9" label="Low disk space"/>
   <int value="10" label="HDCP interruption"/>
+  <int value="11" label="Recording service closing"/>
+  <int value="12" label="Viz video capturer disconnected"/>
+  <int value="13" label="Failed audio encoder initialization"/>
+  <int value="14" label="Failed video encoder initialization"/>
+  <int value="15" label="Audio encoding error"/>
+  <int value="16" label="Video encoding error"/>
 </enum>
 
 <enum name="EnhancedBookmarkViewMode">

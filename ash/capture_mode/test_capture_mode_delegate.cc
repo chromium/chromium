@@ -41,6 +41,7 @@ class FakeRecordingService : public recording::mojom::RecordingService {
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
           audio_stream_factory,
+      const base::FilePath& webm_file_path,
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& frame_sink_size) override {
     remote_client_.Bind(std::move(client));
@@ -54,6 +55,7 @@ class FakeRecordingService : public recording::mojom::RecordingService {
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
           audio_stream_factory,
+      const base::FilePath& webm_file_path,
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& frame_sink_size,
       const viz::SubtreeCaptureId& subtree_capture_id,
@@ -69,6 +71,7 @@ class FakeRecordingService : public recording::mojom::RecordingService {
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
           audio_stream_factory,
+      const base::FilePath& webm_file_path,
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& frame_sink_size,
       const gfx::Rect& crop_region) override {
@@ -79,7 +82,8 @@ class FakeRecordingService : public recording::mojom::RecordingService {
     video_size_ = crop_region.size();
   }
   void StopRecording() override {
-    remote_client_->OnRecordingEnded(/*success=*/true, thumbnail_);
+    remote_client_->OnRecordingEnded(
+        recording::mojom::RecordingStatus::kSuccess, thumbnail_);
     remote_client_.FlushForTesting();
   }
   void OnRecordedWindowChangingRoot(

@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/video_frame.h"
+#include "media/muxers/live_webm_muxer_delegate.h"
 #include "media/muxers/webm_muxer.h"
 
 // Min and max number of encodec video/audio packets to send in the WebmMuxer.
@@ -60,7 +61,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         kSupportedAudioCodecs[rng() % base::size(kSupportedAudioCodecs)]);
     media::WebmMuxer muxer(audio_codec, input_type.has_video,
                            input_type.has_audio,
-                           base::BindRepeating(&OnWriteCallback));
+                           std::make_unique<media::LiveWebmMuxerDelegate>(
+                               base::BindRepeating(&OnWriteCallback)));
     base::RunLoop run_loop;
     run_loop.RunUntilIdle();
 

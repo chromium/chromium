@@ -16,6 +16,7 @@
 #include "media/base/mime_util.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
+#include "media/muxers/live_webm_muxer_delegate.h"
 #include "media/muxers/webm_muxer.h"
 #include "third_party/blink/renderer/modules/mediarecorder/buildflags.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder.h"
@@ -290,8 +291,8 @@ bool MediaRecorderHandler::Start(int timeslice) {
   webm_muxer_ = std::make_unique<media::WebmMuxer>(
       CodecIdToMediaAudioCodec(audio_codec_id_), use_video_tracks,
       use_audio_tracks,
-      WTF::BindRepeating(&MediaRecorderHandler::WriteData,
-                         WrapWeakPersistent(this)));
+      std::make_unique<media::LiveWebmMuxerDelegate>(WTF::BindRepeating(
+          &MediaRecorderHandler::WriteData, WrapWeakPersistent(this))));
   if (timeslice > 0) {
     webm_muxer_->SetMaximumDurationToForceDataOutput(timeslice_);
   }

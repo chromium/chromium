@@ -11,6 +11,10 @@ source_set("muxers") {
   visibility = [ "//media" ]
 
   sources = [
+    "file_webm_muxer_delegate.cc",
+    "file_webm_muxer_delegate.h",
+    "live_webm_muxer_delegate.cc",
+    "live_webm_muxer_delegate.h",
     "webm_muxer.cc",
     "webm_muxer.h",
   ]
