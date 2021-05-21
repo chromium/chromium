@@ -131,12 +131,12 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
     return;
 
   if (IsAnyMainBubbleShown()) {
+    tray_->EnsureBubbleExpanded();
+
     // Unlike VOLUME and BRIGHTNESS, which are shown in the main bubble view,
     // MIC slider is shown in the audio details view.
     if (slider_type == SLIDER_TYPE_MIC)
       tray_->ShowAudioDetailedViewBubble();
-    else
-      tray_->EnsureBubbleExpanded();
     return;
   }
 
