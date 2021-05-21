@@ -8902,6 +8902,25 @@
             ]
         }
     ],
+    "WebUIFeedback": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210510",
+                    "enable_features": [
+                        "WebUIFeedback"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebUIJavaScriptErrorReporting": [
         {
             "platforms": [
