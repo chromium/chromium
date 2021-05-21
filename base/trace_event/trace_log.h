@@ -610,9 +610,11 @@ class BASE_EXPORT TraceLog :
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   std::unique_ptr<::base::tracing::PerfettoPlatform> perfetto_platform_;
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
+#if !defined(OS_NACL)
   std::unique_ptr<perfetto::trace_processor::TraceProcessorStorage>
       trace_processor_;
   std::unique_ptr<JsonStringOutputWriter> json_output_writer_;
+#endif  // !defined(OS_NACL)
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   FilterFactoryForTesting filter_factory_for_testing_ = nullptr;
