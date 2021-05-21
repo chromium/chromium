@@ -12,6 +12,7 @@ import android.os.PersistableBundle;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.BuildConfig;
 
 /**
  * Class that interacts with the Android JobScheduler to upload Minidumps at appropriate times.
@@ -58,9 +59,11 @@ public abstract class MinidumpUploadJobService extends JobService {
     @Override
     public boolean onStartJob(JobParameters params) {
         // Ensure we only run one job at a time.
-        synchronized (mRunningLock) {
-            assert !mRunningJob;
-            mRunningJob = true;
+        if (BuildConfig.ENABLE_ASSERTS) {
+            synchronized (mRunningLock) {
+                assert !mRunningJob;
+                mRunningJob = true;
+            }
         }
         mMinidumpUploadJob = createMinidumpUploadJob(params.getExtras());
         mMinidumpUploadJob.uploadAllMinidumps(createJobFinishedCallback(params));
@@ -71,8 +74,10 @@ public abstract class MinidumpUploadJobService extends JobService {
     public boolean onStopJob(JobParameters params) {
         Log.i(TAG, "Canceling pending uploads due to change in networking status.");
         boolean reschedule = mMinidumpUploadJob.cancelUploads();
-        synchronized (mRunningLock) {
-            mRunningJob = false;
+        if (BuildConfig.ENABLE_ASSERTS) {
+            synchronized (mRunningLock) {
+                mRunningJob = false;
+            }
         }
         return reschedule;
     }
@@ -91,8 +96,10 @@ public abstract class MinidumpUploadJobService extends JobService {
                 if (reschedule) {
                     Log.i(TAG, "Some minidumps remain un-uploaded; rescheduling.");
                 }
-                synchronized (mRunningLock) {
-                    mRunningJob = false;
+                if (BuildConfig.ENABLE_ASSERTS) {
+                    synchronized (mRunningLock) {
+                        mRunningJob = false;
+                    }
                 }
                 MinidumpUploadJobService.this.jobFinished(params, reschedule);
             }
