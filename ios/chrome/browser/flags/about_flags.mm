@@ -697,9 +697,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"default-browser-promo-non-modal",
      flag_descriptions::kDefaultPromoNonModalName,
      flag_descriptions::kDefaultPromoNonModalDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kDefaultPromoNonModal,
-                                    kDefaultPromoNonModalVariations,
-                                    "DefaultPromoNonModal")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kDefaultPromoNonModal,
+         kDefaultPromoNonModalVariations,
+         "IOSDefaultBrowserNonModalPromoExperiment")},
     {"default-browser-promo-tailored",
      flag_descriptions::kDefaultPromoTailoredName,
      flag_descriptions::kDefaultPromoTailoredDescription, flags_ui::kOsIos,
