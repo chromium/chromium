@@ -14869,7 +14869,7 @@ Called by update_net_error_codes.py.-->
   <summary>
     List of currently defined Cr50 flash log event types. The latest and
     greatest set can be found in
-    https://chromium.googlesource.com/chromiumos/platform/ec/+/refs/heads/master/include/flash_log.h
+    https://chromium.googlesource.com/chromiumos/platform/ec/+/refs/heads/main/include/flash_log.h
     (enum flash_event_type and enum nvmem_failure_type). Note that NVMEM errors
     are logged as subevents of flash log event 5, we register them offset by
     200.
@@ -14911,7 +14911,7 @@ Called by update_net_error_codes.py.-->
 <enum name="CrasClientType">
   <summary>
     List of the client type of CRAS. The list can be found in
-    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/master/cras/src/common/cras_types.h
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/common/cras_types.h
     (enum CRAS_CLIENT_TYPE).
   </summary>
   <int value="0" label="CRAS_CLIENT_TYPE_UNKNOWN">Unknown client.</int>
@@ -14935,7 +14935,7 @@ Called by update_net_error_codes.py.-->
 <enum name="CrasDeviceType">
   <summary>
     List of the device type of CRAS. The list can be found in
-    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/master/cras/src/server/cras_server_metrics.c
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.c
     (enum CRAS_METRICS_DEVICE_TYPE).
   </summary>
   <int value="0" label="CRAS_METRICS_DEVICE_INTERNAL_SPEAKER"/>
@@ -15118,7 +15118,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <summary>
     List of known battery indicator supports in Bluetooth Hands-free profile.
     This list should be aligned with CRAS:
-    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/master/cras/src/server/cras_hfp_slc.h
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_hfp_slc.h
   </summary>
   <int value="0" label="CRAS_HFP_BATTERY_INDICATOR_NONE"/>
   <int value="1" label="CRAS_HFP_BATTERY_INDICATOR_HFP"/>
@@ -15134,7 +15134,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <summary>
     List of codec ids used for SCO audio, in Bluetooth Hands-free profile. This
     list should be aligned with CRAS:
-    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/master/cras/src/server/cras_hfp_slc.h
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_hfp_slc.h
   </summary>
   <int value="0" label="HFP_CODEC_UNUSED"/>
   <int value="1" label="HFP_CODEC_ID_CVSD"/>
@@ -15145,7 +15145,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <summary>
     List of results(success or error code) of setting up a SCO connection for
     Bluetooth Hands-free profile. This list should be aligned with CRAS:
-    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/master/cras/src/server/cras_server_metrics.h
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
   </summary>
   <int value="0" label="SKT_SUCCESS"/>
   <int value="1" label="SKT_CONNECTION_ERROR"/>
@@ -38627,7 +38627,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 <enum name="HardwareVerifierQualificationStatus">
   <summary>
     List of the possible qualification status of a component. This is defined in
-    https://chromium.googlesource.com/chromiumos/platform2/+/refs/heads/master/hardware_verifier/proto/hardware_verifier.proto
+    https://chromium.googlesource.com/chromiumos/platform2/+/refs/heads/main/hardware_verifier/proto/hardware_verifier.proto
     (enum QualificationStatus).
   </summary>
   <int value="0" label="UNQUALIFIED">Unqualified</int>
@@ -40737,7 +40737,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
     (i.e. extension with ID "jkghodnilhceideoidjikpgommlajknk" and defined in
     google_xkb_manifest.json [1]), although InputMethod.ID2 histogram is
     recorded for open-source Chromium OS and third-party IME extensions as well.
-    [1] https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/resources/chromeos/input_method/google_xkb_manifest.json?q=google_xkb_manifest.json
+    [1] https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/chromeos/input_method/google_xkb_manifest.json?q=google_xkb_manifest.json
   -->
 
   <int value="-2082426075" label="xkb:cz:qwerty:cze"/>

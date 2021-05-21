@@ -15,14 +15,14 @@ contents:
 ## Test results file
 
 The `_test_results.jsonl` file tries to follow the
-[LUCI test results format](https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto).
+[LUCI test results format](https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto).
 Its every line is a json message of the `testResult` type. There are following
 additional conventions:
 
 - The following keys are mandatory:
   - status
   - testPath
-- For [json3 output](https://chromium.googlesource.com/chromium/src/+/master/docs/testing/json_test_results_format.md), the following are also mandatory:
+- For [json3 output](https://chromium.googlesource.com/chromium/src/+/main/docs/testing/json_test_results_format.md), the following are also mandatory:
   - expected
   - runDuration
 - testPath is either in the form `{benchmark_name}/{story_name}` or in the form

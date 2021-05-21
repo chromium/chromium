@@ -61,7 +61,7 @@ After figuring out where your story fits, create a new one. There is a
 considerable amount of variation between different benchmarks, so use a nearby
 story as a model. You may also need to introduce custom JavaScript to drive
 interactions on the page or to deal with nondeterminsim. For an example, search
-[this file](https://source.chromium.org/chromium/chromium/src/+/master:tools/perf/page_sets/system_health/browsing_stories.py?q=browsing_stories.py&ss=chromium)
+[this file](https://source.chromium.org/chromium/chromium/src/+/main:tools/perf/page_sets/system_health/browsing_stories.py?q=browsing_stories.py&ss=chromium)
 for browse:tools:sheets:2019.
 
 Next, we need to use WPR (WebPageReplay) to record all of the content requested by the test. By default,

@@ -49,7 +49,7 @@
     <corpus_dir> - directory containing samples files for this format.
 
   To learn more about generating code coverage reports for fuzz targets, see
-  https://chromium.googlesource.com/chromium/src/+/master/testing/libfuzzer/efficient_fuzzer.md#Code-Coverage
+  https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/efficient_fuzzer.md#Code-Coverage
 
   * Sample workflow for running Blink web tests:
 
@@ -62,7 +62,7 @@
   For more options, please refer to tools/code_coverage/coverage.py -h.
 
   For an overview of how code coverage works in Chromium, please refer to
-  https://chromium.googlesource.com/chromium/src/+/master/docs/testing/code_coverage.md
+  https://chromium.googlesource.com/chromium/src/+/main/docs/testing/code_coverage.md
 """
 
 from __future__ import print_function

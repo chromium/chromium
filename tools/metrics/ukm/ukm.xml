@@ -9,7 +9,7 @@ This file is used to generate a comprehensive list of Chrome UKM metrics
 along with a detailed description for each metric.
 
 See the following doc for details on how to add entries to this file:
-https://chromium.googlesource.com/chromium/src.git/+/master/services/metrics/ukm_api.md
+https://chromium.googlesource.com/chromium/src.git/+/main/services/metrics/ukm_api.md
 
 Events may be marked with the attribute singular="True" to indicate that
 the event will only occur once per source, and multiple entries will just

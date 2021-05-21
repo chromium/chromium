@@ -5,7 +5,7 @@
 
 UMA uses several XML files to allow clients to describe the metrics that they
 collect, e.g.
-https://chromium.googlesource.com/chromium/src/+/master/tools/metrics/rappor/rappor.xml
+https://chromium.googlesource.com/chromium/src/+/main/tools/metrics/rappor/rappor.xml
 
 These types can be used to build models that describe the canonical formatted
 structure of these files, and the models can be used to extract the contents of

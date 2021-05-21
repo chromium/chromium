@@ -17,7 +17,7 @@ INVALID_LOCAL_METRIC_FIELD_ERROR = (
   'Invalid index field specification in ukm metric %(event)s:%(metric)s, the '
   'following metrics are used as index fields but are not configured to '
   'support it: [%(invalid_metrics)s]\n\n'
-  'See https://chromium.googlesource.com/chromium/src.git/+/master/services/'
+  'See https://chromium.googlesource.com/chromium/src.git/+/main/services/'
   'metrics/ukm_api.md#aggregation-by-metrics-in-the-same-event for '
   'instructions on how to configure them.')
 

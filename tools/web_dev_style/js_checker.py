@@ -92,7 +92,7 @@ class JSChecker(object):
 
   def RunChecks(self):
     """Check for violations of the Chromium JavaScript style guide. See
-       https://chromium.googlesource.com/chromium/src/+/master/styleguide/web/web.md#JavaScript
+       https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md#JavaScript
     """
     results = []
 
@@ -127,6 +127,6 @@ class JSChecker(object):
     if results:
       results.append(self.output_api.PresubmitNotifyResult(
           "See the JavaScript style guide at "
-          "https://chromium.googlesource.com/chromium/src/+/master/styleguide/web/web.md#JavaScript"))
+          "https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md#JavaScript"))
 
     return results

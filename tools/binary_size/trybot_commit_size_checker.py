@@ -363,7 +363,7 @@ PASSING Checks:
 {}
 
 To understand what those checks are and how to pass them, see:
-https://chromium.googlesource.com/chromium/src/+/master/docs/speed/binary_size/android_binary_size_trybot.md
+https://chromium.googlesource.com/chromium/src/+/main/docs/speed/binary_size/android_binary_size_trybot.md
 
 """.format(failing_checks_text, passing_checks_text)
 
