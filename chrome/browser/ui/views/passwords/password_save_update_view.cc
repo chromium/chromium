@@ -358,9 +358,14 @@ gfx::ImageSkia PasswordSaveUpdateView::GetWindowIcon() {
 void PasswordSaveUpdateView::AddedToWidget() {
   static_cast<views::Label*>(GetBubbleFrameView()->title())
       ->SetAllowCharacterBreak(true);
-
-  SetBubbleHeader(IDR_SAVE_PASSWORD_MULTI_DEVICE,
-                  IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUseNewHeaderForLegacySavePasswordBubble)) {
+    SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
+  } else {
+    SetBubbleHeader(IDR_SAVE_PASSWORD_MULTI_DEVICE,
+                    IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK);
+  }
 }
 
 void PasswordSaveUpdateView::OnThemeChanged() {

@@ -12,10 +12,12 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -120,6 +122,21 @@ bool SaveCardOfferBubbleViews::IsDialogButtonEnabled(
   return true;
 }
 
+void SaveCardOfferBubbleViews::AddedToWidget() {
+  SaveCardBubbleViews::AddedToWidget();
+  // Set the header image.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUseNewHeaderForSaveCardBubble)) {
+    ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+    auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
+        *bundle.GetImageSkiaNamed(IDR_SAVE_CARD),
+        *bundle.GetImageSkiaNamed(IDR_SAVE_CARD_DARK),
+        base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
+                            base::Unretained(GetBubbleFrameView())));
+    GetBubbleFrameView()->SetHeaderView(std::move(image_view));
+  }
+}
+
 void SaveCardOfferBubbleViews::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
@@ -127,7 +144,7 @@ void SaveCardOfferBubbleViews::ContentsChanged(
   DialogModelChanged();
 }
 
-SaveCardOfferBubbleViews::~SaveCardOfferBubbleViews() {}
+SaveCardOfferBubbleViews::~SaveCardOfferBubbleViews() = default;
 
 std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
   std::unique_ptr<views::View> view =
