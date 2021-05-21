@@ -113,7 +113,7 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
         }
 
         AccountManagerFacade manager = AccountManagerFacadeProvider.getInstance();
-        List<Account> accounts = manager.tryGetGoogleAccounts();
+        List<Account> accounts = manager.getGoogleAccounts().or(Collections.emptyList());
         if (accounts.size() > 0) {
             return accounts.get(0).name;
         }
