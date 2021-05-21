@@ -72,6 +72,7 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryView.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryViewBinder.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/data/CachedProviderAdapter.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/data/ConditionalProviderAdapter.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/helper/FaviconHelper.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessoryPagerAdapter.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetCoordinator.java",

@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
-import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessorySheetCoordinator;
@@ -81,8 +80,6 @@ public class ManualFillingTestHelper {
     private final ChromeTabbedActivityTestRule mActivityTestRule;
     private final AtomicReference<WebContents> mWebContentsRef = new AtomicReference<>();
     private TestInputMethodManagerWrapper mInputMethodManagerWrapper;
-    private PropertyProvider<AccessorySheetData> mSheetSuggestionsProvider =
-            new PropertyProvider<>();
 
     private EmbeddedTestServer mEmbeddedTestServer;
 
@@ -132,8 +129,6 @@ public class ManualFillingTestHelper {
             final ImeAdapter imeAdapter = ImeAdapter.fromWebContents(mWebContentsRef.get());
             mInputMethodManagerWrapper = TestInputMethodManagerWrapper.create(imeAdapter);
             imeAdapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
-            getManualFillingCoordinator().registerSheetDataProvider(
-                    mWebContentsRef.get(), AccessoryTabType.PASSWORDS, mSheetSuggestionsProvider);
         });
     }
 

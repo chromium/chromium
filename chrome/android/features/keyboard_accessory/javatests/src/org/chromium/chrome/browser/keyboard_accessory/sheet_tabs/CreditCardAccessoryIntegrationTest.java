@@ -138,10 +138,10 @@ public class CreditCardAccessoryIntegrationTest {
         DOMUtils.focusNode(mActivityTestRule.getWebContents(), "CREDIT_CARD_NAME_FULL");
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
-        // Scroll to last element and click the second icon:
+        // Scroll to last element and click the first icon:
         whenDisplayed(withId(R.id.bar_items_view))
                 .perform(scrollTo(isKeyboardAccessoryTabLayout()),
-                        actionOnItem(isKeyboardAccessoryTabLayout(), selectTabAtPosition(1)));
+                        actionOnItem(isKeyboardAccessoryTabLayout(), selectTabAtPosition(0)));
 
         // Wait for the sheet to come up and be stable.
         whenDisplayed(withId(R.id.credit_card_sheet));

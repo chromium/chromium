@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProper
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SHOW_WHEN_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SUPPRESSED_BY_BOTTOM_SHEET;
 
+import android.util.SparseArray;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +80,7 @@ class ManualFillingMediator extends EmptyTabObserver
     private static final int MINIMAL_AVAILABLE_VERTICAL_SPACE = 128; // in DP.
     private static final int MINIMAL_AVAILABLE_HORIZONTAL_SPACE = 180; // in DP.
 
+    private SparseArray<AccessorySheetTabCoordinator> mSheets = new SparseArray<>();
     private PropertyModel mModel = ManualFillingProperties.createFillingModel();
     private WindowAndroid mWindowAndroid;
     private Supplier<InsetObserverView> mInsetObserverViewSupplier;
@@ -218,8 +220,9 @@ class ManualFillingMediator extends EmptyTabObserver
 
     public void registerSheetUpdateDelegate(
             WebContents webContents, ManualFillingComponent.UpdateAccessorySheetDelegate delegate) {
-        // TODO(crbug.com/1169167): Associate the delegate with the ManualFillingState to allow
-        // requesting sheets if tabs change.
+        if (!isInitialized()) return;
+        ManualFillingState state = mStateCache.getStateFor(webContents);
+        state.setSheetUpdater(delegate);
     }
 
     void registerSheetDataProvider(WebContents webContents, @AccessoryTabType int tabType,
@@ -230,7 +233,11 @@ class ManualFillingMediator extends EmptyTabObserver
         state.wrapSheetDataProvider(tabType, dataProvider);
         AccessorySheetTabCoordinator accessorySheet = getOrCreateSheet(webContents, tabType);
         if (accessorySheet == null) return; // Not available or initialized yet.
-        accessorySheet.registerDataProvider(state.getSheetDataProvider(tabType));
+
+        if (state.addAvailableTab(accessorySheet.getTab())) {
+            accessorySheet.registerDataProvider(state.getSheetDataProvider(tabType));
+        }
+        if (ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)) refreshTabs();
     }
 
     void registerAutofillProvider(
@@ -610,20 +617,32 @@ class ManualFillingMediator extends EmptyTabObserver
         KeyboardAccessoryData.Tab[] tabs = state.getTabs();
         mAccessorySheet.setTabs(tabs); // Set the sheet tabs first to invalidate the tabs properly.
         mKeyboardAccessory.setTabs(tabs);
+        state.requestRecentSheets();
     }
 
     @VisibleForTesting
     AccessorySheetTabCoordinator getOrCreateSheet(
             WebContents webContents, @AccessoryTabType int tabType) {
         if (!canCreateSheet(tabType)) return null;
+        AccessorySheetTabCoordinator sheet;
         ManualFillingState state = mStateCache.getStateFor(webContents);
-        AccessorySheetTabCoordinator sheet = createNewSheet(tabType);
+        sheet = ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)
+                ? mSheets.get(tabType, null)
+                : state.getAccessorySheet(tabType);
+        if (sheet != null) return sheet;
+        sheet = createNewSheet(tabType);
 
-        state.setAccessorySheet(tabType, sheet);
-        if (state.getSheetDataProvider(tabType) != null) {
-            sheet.registerDataProvider(state.getSheetDataProvider(tabType));
+        if (!ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)) {
+            state.setAccessorySheet(tabType, sheet);
         }
-        refreshTabs();
+        mSheets.put(tabType, sheet);
+        if (state.getSheetDataProvider(tabType) != null) {
+            if (state.addAvailableTab(sheet.getTab())) {
+                sheet.registerDataProvider(state.getSheetDataProvider(tabType));
+            }
+        }
+        // TODO(crbug.com/1210831): This call could be entirely unnecessary.
+        if (!ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)) refreshTabs();
         return sheet;
     }
 
