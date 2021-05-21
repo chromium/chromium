@@ -112,6 +112,7 @@ class TabLifecycleUnitSource : public BrowserListObserver,
                     TabChangeType change_type) override;
 
   // BrowserListObserver:
+  void OnBrowserRemoved(Browser* browser) override;
   void OnBrowserSetLastActive(Browser* browser) override;
   void OnBrowserNoLongerActive(Browser* browser) override;
 
