@@ -7083,7 +7083,7 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
       ->ReplaceDefaultDiscoveryFactoryForTesting(
           std::make_unique<DiscoveryFactory>(std::move(discovery)));
 
-  const std::vector<uint8_t> contact_id = {1, 2, 3};
+  const std::vector<uint8_t> contact_id(/*count=*/200, /*value=*/1);
   std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
       device::cablev2::authenticator::TransactFromQRCode(
           device::cablev2::authenticator::NewMockPlatform(
