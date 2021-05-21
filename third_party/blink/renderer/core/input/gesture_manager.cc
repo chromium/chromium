@@ -326,6 +326,15 @@ WebInputEventResult GestureManager::HandleGestureTap(
       event_handling_util::MergeEventResult(mouse_down_event_result,
                                             mouse_up_event_result),
       click_event_result);
+
+  if (RuntimeEnabledFeatures::TextFragmentTapOpensContextMenuEnabled() &&
+      TextFragmentHandler::IsOverTextFragment(current_hit_test)) {
+    if (event_result == WebInputEventResult::kNotHandled) {
+      return SendContextMenuEventForGesture(targeted_event);
+    }
+  }
+
+  // Default case when tap that is not handled.
   if (event_result == WebInputEventResult::kNotHandled && tapped_node &&
       frame_->GetPage()) {
     bool dom_tree_changed = pre_dispatch_dom_tree_version !=
@@ -338,12 +347,6 @@ WebInputEventResult GestureManager::HandleGestureTap(
             tapped_position);
     ShowUnhandledTapUIIfNeeded(dom_tree_changed, style_changed, tapped_node,
                                tapped_element, tapped_position_in_viewport);
-  }
-  if (RuntimeEnabledFeatures::TextFragmentTapOpensContextMenuEnabled() &&
-      TextFragmentHandler::IsOverTextFragment(current_hit_test)) {
-    if (event_result == WebInputEventResult::kNotHandled) {
-      return SendContextMenuEventForGesture(targeted_event);
-    }
   }
 
   return event_result;

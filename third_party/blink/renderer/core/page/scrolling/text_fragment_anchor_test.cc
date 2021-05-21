@@ -9,6 +9,8 @@
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/public/public_buildflags.h"
+#include "third_party/blink/renderer/bindings/core/v8/string_or_array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
@@ -29,6 +31,7 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_finder.h"
@@ -37,6 +40,11 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+
+#if BUILDFLAG(ENABLE_UNHANDLED_TAP)
+#include "third_party/blink/public/mojom/unhandled_tap_notifier/unhandled_tap_notifier.mojom-blink.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#endif  // BUILDFLAG(ENABLE_UNHANDLED_TAP)
 
 namespace blink {
 
@@ -2511,6 +2519,104 @@ TEST_F(TextFragmentAnchorTest, ShouldOpenContextMenuOnTap) {
                    ->GetContextMenuController()
                    .ContextMenuNodeForFrame(GetDocument().GetFrame()));
 }
+
+#if BUILDFLAG(ENABLE_UNHANDLED_TAP)
+// Mock implementation of the UnhandledTapNotifier Mojo receiver, for testing
+// the ShowUnhandledTapUIIfNeeded notification.
+class MockUnhandledTapNotifierImpl : public mojom::blink::UnhandledTapNotifier {
+ public:
+  MockUnhandledTapNotifierImpl() = default;
+
+  void Bind(mojo::ScopedMessagePipeHandle handle) {
+    receiver_.Bind(mojo::PendingReceiver<mojom::blink::UnhandledTapNotifier>(
+        std::move(handle)));
+  }
+
+  void ShowUnhandledTapUIIfNeeded(
+      mojom::blink::UnhandledTapInfoPtr unhandled_tap_info) override {
+    was_unhandled_tap_ = true;
+  }
+  bool WasUnhandledTap() const { return was_unhandled_tap_; }
+  bool ReceiverIsBound() const { return receiver_.is_bound(); }
+  void Reset() {
+    was_unhandled_tap_ = false;
+    receiver_.reset();
+  }
+
+ private:
+  bool was_unhandled_tap_ = false;
+
+  mojo::Receiver<mojom::blink::UnhandledTapNotifier> receiver_{this};
+};
+#endif  // BUILDFLAG(ENABLE_UNHANDLED_TAP)
+
+#if BUILDFLAG(ENABLE_UNHANDLED_TAP)
+// Test that on Android, when a user taps on a text, ShouldNotRequestUnhandled
+// does not get triggered. When a user taps on a highlight, no text should be
+// selected. RuntimeEnabledFeature is enabled.
+TEST_F(TextFragmentAnchorTest,
+       ShouldNotRequestUnhandledTapNotifierWhenTapOnTextFragment) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(
+      shared_highlighting::kSharedHighlightingV2);
+  LoadAhem();
+  SimRequest request(
+      "https://example.com/"
+      "test.html#:~:text=this%20is%20a%20test%20page",
+      "text/html");
+  LoadURL(
+      "https://example.com/"
+      "test.html#:~:text=this%20is%20a%20test%20page");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>p { font: 10px/1 Ahem; }</style>
+    <p id="first">This is a test page</p>
+    <p id="two">Second test page two</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+  MockUnhandledTapNotifierImpl mock_notifier;
+  GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::blink::UnhandledTapNotifier::Name_,
+      WTF::BindRepeating(&MockUnhandledTapNotifierImpl::Bind,
+                         WTF::Unretained(&mock_notifier)));
+
+  Compositor().BeginFrame();
+
+  Range* range = Range::Create(GetDocument());
+  range->setStart(GetDocument().getElementById("first"), 0,
+                  IGNORE_EXCEPTION_FOR_TESTING);
+  range->setEnd(GetDocument().getElementById("first"), 1,
+                IGNORE_EXCEPTION_FOR_TESTING);
+  ASSERT_EQ("This is a test page", range->GetText());
+
+  mock_notifier.Reset();
+  IntPoint tap_point = range->BoundingBox().Center();
+  SimulateTap(tap_point.X(), tap_point.Y());
+
+  base::RunLoop().RunUntilIdle();
+  if (RuntimeEnabledFeatures::TextFragmentTapOpensContextMenuEnabled()) {
+    EXPECT_FALSE(mock_notifier.WasUnhandledTap());
+    EXPECT_FALSE(mock_notifier.ReceiverIsBound());
+  } else {
+    EXPECT_TRUE(mock_notifier.WasUnhandledTap());
+    EXPECT_TRUE(mock_notifier.ReceiverIsBound());
+  }
+
+  range->setStart(GetDocument().getElementById("two"), 0,
+                  IGNORE_EXCEPTION_FOR_TESTING);
+  range->setEndAfter(GetDocument().getElementById("two"),
+                     IGNORE_EXCEPTION_FOR_TESTING);
+  ASSERT_EQ("Second test page two", range->GetText());
+
+  mock_notifier.Reset();
+  tap_point = range->BoundingBox().Center();
+  SimulateTap(tap_point.X(), tap_point.Y());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(mock_notifier.WasUnhandledTap());
+  EXPECT_TRUE(mock_notifier.ReceiverIsBound());
+}
+#endif  // BUILDFLAG(ENABLE_UNHANDLED_TAP)
 
 }  // namespace
 
