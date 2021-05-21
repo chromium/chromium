@@ -113,7 +113,8 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   void MarkWebAXObjectDirty(
       const blink::WebAXObject& obj,
       bool subtree,
-      ax::mojom::Action event_from_action = ax::mojom::Action::kNone);
+      ax::mojom::Action event_from_action = ax::mojom::Action::kNone,
+      std::vector<ui::AXEventIntent> event_intents = {});
 
   void HandleAXEvent(const ui::AXEvent& event);
 
