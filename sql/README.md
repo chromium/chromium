@@ -266,6 +266,9 @@ primary key reuse would be unacceptable.
 
 ### Discouraged features
 
+SQLite exposes a vast array of functionality via SQL statements. The following
+features are not a good match for SQL statements used by Chrome feature code.
+
 #### PRAGMA statements
 
 [`PRAGMA` statements](https://www.sqlite.org/pragma.html) should never be used
@@ -382,12 +385,40 @@ implemented in C++.
 
 A single compound SELECT statement is more difficult to review and properly
 unit-test than the equivalent collection of simple SELECT statements.
-Furthermore, the compound SELECT statement operators can be implemented more efficiently in C++ than in SQLite's bytecode interpreter (VDBE).
+Furthermore, the compound SELECT statement operators can be implemented more
+efficiently in C++ than in SQLite's bytecode interpreter (VDBE).
 
 After
 [WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we plan
 to disable SQLite's compound SELECT support using
 [SQLITE_OMIT_COMPOUND_SELECT](https://www.sqlite.org/compile.html#omit_compound_select).
+
+#### Built-in functions
+
+SQLite's [built-in functions](https://sqlite.org/lang_corefunc.html) should be
+only be used in SQL statements where they unlock significant performance
+improvements. Chrome features should store data in a format that leaves the most
+room for query optimizations, and perform any necessary transformations after
+reading / before writing the data.
+
+* [Aggregation functions](https://sqlite.org/lang_aggfunc.html) are best
+  replaced with C++ code that iterates over rows and computes the desired
+  results.
+* [Date and time functions](https://sqlite.org/lang_datefunc.html) are best
+  replaced by `base::Time` functionality.
+* String-processing functions, such as
+  [`printf()`](https://sqlite.org/printf.html) and `trim()` are best replaced
+  by C++ code that uses the helpers in `//base/strings/`.
+* Wrappers for [SQLite's C API](https://sqlite.org/c3ref/funclist.html), such as
+  `changes()`, `last_insert_rowid()`, and `total_changes()`, are best replaced
+  by functionality in `sql::Database` and `sql::Statement`.
+* SQLite-specific functions, such as  `sqlite_source_id()` and
+  `sqlite_version()` should not be necessary in Chrome code, and may suggest a
+  problem in the feature's design.
+
+[Math functions](https://sqlite.org/lang_mathfunc.html) and
+[Window functions](https://sqlite.org/windowfunctions.html#biwinfunc) are
+disabled in Chrome's SQLite build.
 
 #### ATTACH DATABASE statements
 
