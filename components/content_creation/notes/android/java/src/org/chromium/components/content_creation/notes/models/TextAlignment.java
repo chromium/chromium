@@ -4,6 +4,8 @@
 
 package org.chromium.components.content_creation.notes.models;
 
+import android.view.Gravity;
+
 /**
  * Enum with values corresponding to the C++ TextAlignment enum class.
  */
@@ -12,6 +14,7 @@ public enum TextAlignment {
     START,
     CENTER,
     END;
+
     public static TextAlignment fromInteger(int x) {
         switch (x) {
             case 1:
@@ -22,5 +25,20 @@ public enum TextAlignment {
                 return END;
         }
         return INVALID;
+    }
+
+    public static int toGravity(TextAlignment alignment) {
+        switch (alignment) {
+            // Invalid will default to start.
+            case INVALID:
+            case START:
+                return Gravity.START;
+            case CENTER:
+                return Gravity.CENTER;
+            case END:
+                return Gravity.END;
+        }
+
+        return Gravity.START;
     }
 }

@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.content_creation.notes;
 
 import android.app.Dialog;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.content_creation.internal.R;
 import org.chromium.components.content_creation.notes.models.NoteTemplate;
+import org.chromium.components.content_creation.notes.models.TextAlignment;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -73,6 +74,7 @@ public class NoteCreationDialog extends DialogFragment {
 
     private void bindCarouselItem(PropertyModel model, ViewGroup parent, PropertyKey propertyKey) {
         NoteTemplate template = model.get(NoteProperties.TEMPLATE);
+        Typeface typeface = model.get(NoteProperties.TYPEFACE);
 
         View background = parent.findViewById(R.id.background);
         template.mainBackground.apply(background);
@@ -83,6 +85,7 @@ public class NoteCreationDialog extends DialogFragment {
         noteText.setText(mSelectedText);
         noteText.setTextColor(template.textStyle.fontColor);
         noteText.setAllCaps(template.textStyle.allCaps);
-        noteText.setGravity(Gravity.CENTER);
+        noteText.setGravity(TextAlignment.toGravity(template.textStyle.alignment));
+        noteText.setTypeface(typeface);
     }
 }

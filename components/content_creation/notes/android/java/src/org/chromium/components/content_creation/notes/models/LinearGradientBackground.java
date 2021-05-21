@@ -4,6 +4,7 @@
 
 package org.chromium.components.content_creation.notes.models;
 
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -27,6 +28,8 @@ public final class LinearGradientBackground implements Background {
             return;
         }
 
-        // TODO(crbug.com/1194168): Implement.
+        GradientDrawable drawable = (GradientDrawable) view.getBackground();
+        drawable.setColors(this.colors);
+        drawable.setOrientation(LinearGradientDirection.toOrientation(this.direction));
     }
 }
