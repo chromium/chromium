@@ -811,7 +811,11 @@ bool QuotaDatabase::LazyOpen(bool create_if_needed) {
     return false;
   }
 
-  db_ = std::make_unique<sql::Database>();
+  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
+      .exclusive_locking = true,
+      .page_size = 4096,
+      .cache_size = 500,
+  });
   meta_table_ = std::make_unique<sql::MetaTable>();
 
   db_->set_histogram_tag("Quota");
