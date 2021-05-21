@@ -43,6 +43,7 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/download/android/available_offline_content_provider.h"
 #elif defined(OS_WIN)
+#include "chrome/browser/media/cdm_pref_service_impl.h"
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/module_event_sink_impl.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
@@ -258,6 +259,13 @@ void ChromeContentBrowserClient::BindMediaServiceReceiver(
     return;
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+#if defined(OS_WIN)
+  if (auto r = receiver.As<media::mojom::CdmPrefService>()) {
+    CdmPrefServiceImpl::Create(render_frame_host, std::move(r));
+    return;
+  }
+#endif  // defined(OS_WIN)
 
 #if BUILDFLAG(ENABLE_MOJO_CDM) && defined(OS_ANDROID)
   if (auto r = receiver.As<media::mojom::MediaDrmStorage>()) {

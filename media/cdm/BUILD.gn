@@ -94,6 +94,7 @@ source_set("cdm") {
       "cdm_adapter_factory.h",
       "cdm_module.cc",
       "cdm_module.h",
+      "cdm_pref_service.h",
       "cdm_wrapper.h",
       "output_protection.h",
       "platform_verification.h",

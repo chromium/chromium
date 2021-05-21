@@ -1,0 +1,21 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "url/mojom/origin.mojom";
+
+// An interface to query the PrefService for information needed by the CDM.
+// The service itself is associated with a RenderFrameHost in the browser
+// process and will be called by a client living in the utility process hosting
+// the CDM.
+interface CdmPrefService {
+
+  // Gets the origin ID of the frame associated with the CDM. The origin ID is
+  // used in place of the origin when hiding the concrete origin is needed. The
+  // origin ID is also user resettable by clearing the browsing data.
+  // - `cdm_origin_id`: The origin id of the frame associated with the CDM.
+  GetCdmOriginId() => (mojo_base.mojom.UnguessableToken cdm_origin_id);
+};
