@@ -1569,7 +1569,7 @@
     },
     {
       'name': 'DisableSpdy',
-      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bnc@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:8-53', 'chrome_os:11-53', 'android:30-53'],
@@ -3412,7 +3412,7 @@
     },
     {
       'name': 'AutoFillEnabled',
-      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
+      'owners': ['file://components/autofill/OWNERS', 'sebsg@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -8489,7 +8489,7 @@
     },
     {
       'name': 'URLWhitelist',
-      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -8523,7 +8523,7 @@
     },
     {
       'name': 'URLBlocklist',
-      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -8555,7 +8555,7 @@
     },
     {
       'name': 'URLAllowlist',
-      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -8767,7 +8767,7 @@
     },
     {
       'name': 'OpenNetworkConfiguration',
-      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
+      'owners': ['pmarko@chromium.org', 'file://components/policy/resources/OWNERS'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'url_schema': 'https://chromium.googlesource.com/chromium/src/+/HEAD/components/onc/docs/onc_spec.md',
@@ -8785,7 +8785,7 @@
     },
     {
       'name': 'DeviceOpenNetworkConfiguration',
-      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
+      'owners': ['pmarko@chromium.org', 'file://components/policy/resources/OWNERS'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'url_schema': 'https://chromium.googlesource.com/chromium/src/+/HEAD/components/onc/docs/onc_spec.md',
@@ -10263,7 +10263,7 @@
     },
     {
       'name': 'DeviceReleaseLtsTag',
-      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
+      'owners': ['vsavu@google.com', 'file://components/policy/resources/OWNERS'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome_os:86-'],
@@ -15012,7 +15012,7 @@
     },
     {
       'name': 'KeyPermissions',
-      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
+      'owners': ['pmarko@chromium.org', 'miersh@google.com', 'omorsi@google.com'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -15292,7 +15292,7 @@
     },
     {
       'name': 'UsbDetachableWhitelist',
-      'owners': ['vpalatin@chromium.org', 'poromov@chromium.org'],
+      'owners': ['vpalatin@chromium.org', 'hendrich@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -15333,7 +15333,7 @@
     },
     {
       'name': 'UsbDetachableAllowlist',
-      'owners': ['file://components/policy/OWNERS', 'hendrich@chromium.org'],
+      'owners': ['vpalatin@chromium.org', 'hendrich@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -15833,7 +15833,7 @@
     },
     {
       'name': 'EnableMediaRouter',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['file://components/media_router/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:52-', 'chrome_os:52-', 'android:52-'],
@@ -15851,7 +15851,7 @@
     },
     {
       'name': 'ShowCastIconInToolbar',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['file://components/media_router/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:58-', 'chrome_os:58-'],
@@ -15871,7 +15871,7 @@
     },
     {
       'name': 'MediaRouterCastAllowAllIPs',
-      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
+      'owners': ['file://components/media_router/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:67-', 'chrome_os:67-'],
@@ -19277,7 +19277,7 @@
     },
     {
       'name': 'AllowedLanguages',
-      'owners': ['hendrich@chromium.org', 'file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
+      'owners': ['hendrich@chromium.org', 'pmarko@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -19342,7 +19342,7 @@
     },
     {
       'name': 'ExtensionInstallEventLoggingEnabled',
-      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
+      'owners': ['swapnilgupta@google.com', 'file://components/policy/resources/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:85-'],
