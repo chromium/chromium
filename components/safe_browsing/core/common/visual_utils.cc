@@ -9,10 +9,10 @@
 
 #include "base/check_op.h"
 #include "base/numerics/checked_math.h"
-#include "base/optional.h"
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/opencv/src/emd_wrapper.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorPriv.h"

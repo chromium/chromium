@@ -13,7 +13,6 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
