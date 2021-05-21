@@ -146,7 +146,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // WebGraphicsContext3DProvider::DestructionObserver implementation.
   void OnContextDestroyed() override;
 
-  cc::PaintCanvas* Canvas();
+  cc::PaintCanvas* Canvas(bool needs_will_draw = false);
   void ReleaseLockedImages();
   sk_sp<cc::PaintRecord> FlushCanvas();
   const CanvasResourceParams& ColorParams() const { return params_; }
