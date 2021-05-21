@@ -3842,6 +3842,8 @@ static_library("browser") {
       "policy/device_account_initializer.h",
       "policy/local_sync_policy_handler.cc",
       "policy/local_sync_policy_handler.h",
+      "policy/managed_account_policy_handler.cc",
+      "policy/managed_account_policy_handler.h",
       "privacy_sandbox/generated_floc_pref.cc",
       "privacy_sandbox/generated_floc_pref.h",
       "process_singleton_modal_dialog_lock.cc",

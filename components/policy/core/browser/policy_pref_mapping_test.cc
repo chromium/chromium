@@ -156,11 +156,17 @@ class PrefTestCase {
 // part of the data loaded from chrome/test/data/policy/policy_test_cases.json.
 class PolicyPrefMappingTest {
  public:
-  explicit PolicyPrefMappingTest(const base::Value& mapping) {
+  explicit PolicyPrefMappingTest(const base::Value& mapping)
+      : policies_(base::Value::Type::DICTIONARY),
+        policies_settings_(base::Value::Type::DICTIONARY) {
     const base::Value* policies = mapping.FindDictKey("policies");
+    const base::Value* policies_settings =
+        mapping.FindDictKey("policies_settings");
     const base::Value* prefs = mapping.FindDictKey("prefs");
     if (policies)
       policies_ = policies->Clone();
+    if (policies_settings)
+      policies_settings_ = policies_settings->Clone();
     if (prefs) {
       for (const auto& pref_setting : prefs->DictItems())
         prefs_.push_back(std::make_unique<PrefTestCase>(pref_setting.first,
@@ -178,6 +184,7 @@ class PolicyPrefMappingTest {
   PolicyPrefMappingTest& operator=(const PolicyPrefMappingTest& other) = delete;
 
   const base::Value& policies() const { return policies_; }
+  const base::Value& policies_settings() const { return policies_settings_; }
 
   const std::vector<std::unique_ptr<PrefTestCase>>& prefs() const {
     return prefs_;
@@ -188,8 +195,9 @@ class PolicyPrefMappingTest {
   }
 
  private:
-  const std::string pref_;
   base::Value policies_;
+  base::Value policies_settings_;
+  const std::string pref_;
   std::vector<std::unique_ptr<PrefTestCase>> prefs_;
   std::vector<std::string> required_preprocessor_macros_;
 };
@@ -360,8 +368,53 @@ class PolicyTestCases {
 // TODO(https://crbug.com/1192629): Revisit it after all chromeos policies
 // touching lacros will get their handlers in place.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
+struct PolicySettings {
+  PolicySource source = PolicySource::POLICY_SOURCE_CLOUD;
+  PolicyScope scope = PolicyScope::POLICY_SCOPE_USER;
+};
+
+PolicySettings GetPolicySettings(const std::string& policy,
+                                 const base::Value& policies_settings) {
+  PolicySettings settings;
+  const base::Value* settings_value = policies_settings.FindPath(policy);
+  if (!settings_value)
+    return settings;
+  const std::string* source = settings_value->FindStringKey("source");
+  if (source) {
+    if (*source == "enterprise_default")
+      settings.source = POLICY_SOURCE_ENTERPRISE_DEFAULT;
+    else if (*source == "command_line")
+      settings.source = POLICY_SOURCE_COMMAND_LINE;
+    else if (*source == "cloud")
+      settings.source = POLICY_SOURCE_CLOUD;
+    else if (*source == "active_directory")
+      settings.source = POLICY_SOURCE_ACTIVE_DIRECTORY;
+    else if (*source == "local_account_override")
+      settings.source = POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE;
+    else if (*source == "platform")
+      settings.source = POLICY_SOURCE_PLATFORM;
+    else if (*source == "priority_cloud")
+      settings.source = POLICY_SOURCE_PRIORITY_CLOUD;
+    else if (*source == "merged")
+      settings.source = POLICY_SOURCE_MERGED;
+    else if (*source == "cloud_from_ash")
+      settings.source = POLICY_SOURCE_CLOUD_FROM_ASH;
+  }
+
+  const std::string* scope = settings_value->FindStringKey("scope");
+  if (scope) {
+    if (*scope == "user")
+      settings.scope = POLICY_SCOPE_USER;
+    else if (*scope == "machine")
+      settings.scope = POLICY_SCOPE_MACHINE;
+  }
+
+  return settings;
+}
+
 void SetProviderPolicy(MockConfigurationPolicyProvider* provider,
                        const base::Value& policies,
+                       const base::Value& policies_settings,
                        PolicyLevel level) {
   PolicyMap policy_map;
 #if defined(OS_CHROMEOS)
@@ -369,9 +422,11 @@ void SetProviderPolicy(MockConfigurationPolicyProvider* provider,
 #endif  // defined(OS_CHROMEOS)
   for (const auto& it : policies.DictItems()) {
     const PolicyDetails* policy_details = GetChromePolicyDetails(it.first);
+    const PolicySettings policy_settings =
+        GetPolicySettings(it.first, policies_settings);
     ASSERT_TRUE(policy_details);
     policy_map.Set(
-        it.first, level, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+        it.first, level, policy_settings.scope, policy_settings.source,
         it.second.Clone(),
         policy_details->max_external_data_size
             ? std::make_unique<ExternalDataFetcher>(nullptr, it.first)
@@ -517,7 +572,8 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
 
           if (check_recommended) {
             ASSERT_NO_FATAL_FAILURE(SetProviderPolicy(
-                provider, pref_mapping->policies(), POLICY_LEVEL_RECOMMENDED));
+                provider, pref_mapping->policies(),
+                pref_mapping->policies_settings(), POLICY_LEVEL_RECOMMENDED));
             if (pref_case->expect_default()) {
               CheckPrefHasDefaultValue(pref, expected_value);
             } else {
@@ -527,7 +583,8 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
 
           if (check_mandatory) {
             ASSERT_NO_FATAL_FAILURE(SetProviderPolicy(
-                provider, pref_mapping->policies(), POLICY_LEVEL_MANDATORY));
+                provider, pref_mapping->policies(),
+                pref_mapping->policies_settings(), POLICY_LEVEL_MANDATORY));
             if (pref_case->expect_default()) {
               CheckPrefHasDefaultValue(pref, expected_value);
             } else {

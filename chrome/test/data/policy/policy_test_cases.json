@@ -19,6 +19,12 @@
     "policy_pref_mapping_tests": [
       {
         "policies": "A policy dictionary that should affect |prefs| when set as mandatory or recommended policy.",
+        "policies_settings": {
+          "${policy}": {
+            "scope": "The scope of the policy, possible values are ['user', 'machine'] and the default value is 'user'",
+            "source": "The source of the policy, possible values are ['enterprise_default', 'command_line', 'cloud', 'active_directory', 'local_account_override', 'platform', 'priority_cloud', 'merged', 'cloud_from_ash'], the default value is 'cloud'"
+          }
+        },
         "required_preprocessor_macros": [
           "List of preprocessor macros that must be defined for the test to make sense. Macros are mapped into strings by PreprocessorMacroChecker in policy_prefs_browsertest.cc. If a test depends on a new macro, please add it there and to this list. Currently supported macros:",
           "USE_CUPS"
@@ -8846,5 +8852,80 @@
   },
   "CloudUserPolicyMerge": {
     "note": "This policy has no pref as it is only directly read by the policy system."
+  },
+
+  "ManagedAccountsSigninRestriction": {
+    "os": ["win", "linux", "mac"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile.managed_accounts.restriction.value": {
+            "value": "",
+            "expect_default": true
+          },
+          "profile.managed_accounts.restriction.all_managed_accounts": {
+            "value": false,
+            "expect_default": true
+          }
+        }
+      },
+      {
+        "policies": { "ManagedAccountsSigninRestriction": "primary_account" },
+        "policies_settings": {
+          "ManagedAccountsSigninRestriction": { "scope": "user", "source": "cloud" }
+        },
+        "prefs": {
+          "profile.managed_accounts.restriction.value": {
+            "value": "primary_account"
+          },
+          "profile.managed_accounts.restriction.all_managed_accounts": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": { "ManagedAccountsSigninRestriction": "primary_account_strict" },
+        "policies_settings": {
+          "ManagedAccountsSigninRestriction": { "scope": "user", "source": "platform" }
+        },
+        "prefs": {
+          "profile.managed_accounts.restriction.value": {
+            "value": "primary_account_strict"
+          },
+          "profile.managed_accounts.restriction.all_managed_accounts": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": { "ManagedAccountsSigninRestriction": "none" },
+        "policies_settings": {
+          "ManagedAccountsSigninRestriction": { "scope": "machine", "source": "cloud" }
+        },
+        "prefs": {
+          "profile.managed_accounts.restriction.value": {
+            "value": "none"
+          },
+          "profile.managed_accounts.restriction.all_managed_accounts": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": { "ManagedAccountsSigninRestriction": "affiliated_device" },
+        "policies_settings": {
+          "ManagedAccountsSigninRestriction": { "scope": "user", "source": "cloud" }
+        },
+        "prefs": {
+          "profile.managed_accounts.restriction.value": {
+            "value": "affiliated_device"
+          },
+          "profile.managed_accounts.restriction.all_managed_accounts": {
+            "value": false
+          }
+        }
+      }
+    ]
   }
 }

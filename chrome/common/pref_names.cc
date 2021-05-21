@@ -1552,6 +1552,18 @@ const char kWebRTCAllowLegacyTLSProtocols[] =
 #if !defined(OS_ANDROID)
 // Whether or not this profile has been shown the Welcome page.
 const char kHasSeenWelcomePage[] = "browser.has_seen_welcome_page";
+
+// The restriction imposed on managed accounts.
+const char kManagedAccountsSigninRestriction[] =
+    "profile.managed_accounts.restriction.value";
+
+// Whether or not the restriction is applied on all managed accounts of the
+// machine. If this is set to True, the restriction set in
+// `profile.managed_accounts.restriction.value` will be applied on all managed
+// accounts on the machine, otherwhise only the account where the policy is set
+// will have the restriction applied.
+const char kManagedAccountsSigninRestrictionScopeMachine[] =
+    "profile.managed_accounts.restriction.all_managed_accounts";
 #endif
 
 #if defined(OS_WIN)

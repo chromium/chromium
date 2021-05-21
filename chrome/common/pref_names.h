@@ -512,6 +512,8 @@ extern const char kWebRTCAllowLegacyTLSProtocols[];
 
 #if !defined(OS_ANDROID)
 extern const char kHasSeenWelcomePage[];
+extern const char kManagedAccountsSigninRestriction[];
+extern const char kManagedAccountsSigninRestrictionScopeMachine[];
 #endif
 
 #if defined(OS_WIN)
