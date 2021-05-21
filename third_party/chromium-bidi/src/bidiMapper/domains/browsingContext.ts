@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { log } from '../utils/log';
-import { CdpServer } from '../utils/cdpServer';
+import { IServer } from '../utils/iServer';
 const logContext = log('context');
 
 export default class Context {
@@ -22,7 +22,7 @@ export default class Context {
   private static _sessionToTargets: Map<string, Context> = new Map();
 
   // Set from outside.
-  static cdpServer: CdpServer;
+  static cdpServer: IServer;
   static selfTargetId: string;
 
   static onContextCreated: (t: Context) => Promise<void>;

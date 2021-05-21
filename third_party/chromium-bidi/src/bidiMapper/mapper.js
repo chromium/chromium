@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { runBidiCommandsProcessor } from './bidiCommandsProcessor.js';
+import { CommandProcessor } from './commandProcessor';
 
 import { CdpServer } from './utils/cdpServer';
 import { BidiServer } from './utils/bidiServer';
@@ -35,7 +35,7 @@ const logSystem = log('system');
   // Needed to get events about new targets.
   await prepareCdp(cdpServer);
 
-  await runBidiCommandsProcessor(cdpServer, bidiServer, selfTargetId);
+  CommandProcessor.run(cdpServer, bidiServer, selfTargetId);
 
   logSystem('launched');
 })();
@@ -84,5 +84,15 @@ async function prepareCdp(cdpServer) {
   await cdpServer.sendMessage({
     method: 'Target.setDiscoverTargets',
     params: { discover: true },
+  });
+
+  // Needed to automatically attach to new targets.
+  await cdpServer.sendMessage({
+    method: 'Target.setAutoAttach',
+    params: {
+      autoAttach: true,
+      waitForDebuggerOnStart: false,
+      flatten: true,
+    },
   });
 }
