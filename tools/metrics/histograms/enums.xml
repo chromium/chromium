@@ -21796,6 +21796,11 @@ Called by update_document_policy_enum.py.-->
   <int value="16696" label="CECPQ2"/>
 </enum>
 
+<enum name="EcheNotificationInteraction">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="User opened app streaming"/>
+</enum>
+
 <enum name="EdidColorSpaceChecksOutcome">
   <int value="0" label="All checks passed"/>
   <int value="1" label="Bad primaries coordinates"/>

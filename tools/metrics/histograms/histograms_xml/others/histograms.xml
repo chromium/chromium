@@ -5238,6 +5238,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Eche.NotificationClicked" enum="EcheNotificationInteraction"
+    expires_after="2022-05-30">
+  <owner>samchiu@chromium.org</owner>
+  <owner>andychou@chromium.org</owner>
+  <summary>
+    Events logged after the user interacts with a PhoneHub notification by
+    clicking it to launch app streaming window.
+  </summary>
+</histogram>
+
 <histogram name="EphemeralTab.BottomSheet.CloseReason"
     enum="BottomSheet.StateChangeReason" expires_after="M92">
   <obsolete>
