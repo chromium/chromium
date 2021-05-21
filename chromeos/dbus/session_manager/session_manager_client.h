@@ -97,7 +97,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
     virtual void EmitLoginPromptVisibleCalled() {}
 
     // Called when the ARC instance is stopped after it had already started.
-    virtual void ArcInstanceStopped() {}
+    virtual void ArcInstanceStopped(
+        login_manager::ArcContainerStopReason reason) {}
 
     // Called when screen lock state is updated.
     virtual void ScreenLockedStateUpdated() {}
