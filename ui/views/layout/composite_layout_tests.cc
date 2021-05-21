@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_container.h"

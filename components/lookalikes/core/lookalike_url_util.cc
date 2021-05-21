@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/i18n/char_iterator.h"
 #include "base/macros.h"

@@ -6,6 +6,7 @@
 
 #include <gtk-primary-selection-client-protocol.h>
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 

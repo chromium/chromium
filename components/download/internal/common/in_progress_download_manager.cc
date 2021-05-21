@@ -5,6 +5,7 @@
 #include "components/download/public/common/in_progress_download_manager.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"

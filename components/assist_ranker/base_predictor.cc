@@ -4,6 +4,7 @@
 
 #include "components/assist_ranker/base_predictor.h"
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "components/assist_ranker/proto/ranker_example.pb.h"
 #include "components/assist_ranker/proto/ranker_model.pb.h"

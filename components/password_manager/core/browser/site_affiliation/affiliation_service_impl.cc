@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"

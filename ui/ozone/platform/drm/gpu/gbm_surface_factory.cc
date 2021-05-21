@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"

@@ -11,6 +11,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/time/tick_clock.h"

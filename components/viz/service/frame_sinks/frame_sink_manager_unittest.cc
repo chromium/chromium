@@ -8,6 +8,7 @@
 
 #include <tuple>
 
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "components/viz/common/constants.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"

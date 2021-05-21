@@ -7,6 +7,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"

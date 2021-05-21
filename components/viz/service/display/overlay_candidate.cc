@@ -8,6 +8,7 @@
 #include <cmath>
 #include <limits>
 
+#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"

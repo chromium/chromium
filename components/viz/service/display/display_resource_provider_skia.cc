@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "gpu/ipc/scheduler_sequence.h"
 

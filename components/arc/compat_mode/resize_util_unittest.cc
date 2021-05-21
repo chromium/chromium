@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/window_properties.h"
+#include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "components/exo/test/exo_test_base_views.h"

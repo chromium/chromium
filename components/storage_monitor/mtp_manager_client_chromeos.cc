@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/storage_monitor/storage_info_utils.h"

@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <memory>
 #include <utility>
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"

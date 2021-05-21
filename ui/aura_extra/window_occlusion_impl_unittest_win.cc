@@ -4,6 +4,7 @@
 
 #include "ui/aura_extra/window_occlusion_impl_win.h"
 
+#include "base/containers/contains.h"
 #include "base/win/scoped_gdi_object.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/aura_test_base.h"

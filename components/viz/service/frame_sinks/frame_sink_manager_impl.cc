@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"

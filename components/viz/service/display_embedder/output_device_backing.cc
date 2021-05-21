@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/memory/unsafe_shared_memory_region.h"

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/component_export.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/crc32.h"
 #include "base/metrics/field_trial.h"

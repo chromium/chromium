@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/performance_manager/frame_node_source.h"
 #include "components/performance_manager/graph/frame_node_impl.h"

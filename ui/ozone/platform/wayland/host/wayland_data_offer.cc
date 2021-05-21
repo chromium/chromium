@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 

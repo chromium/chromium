@@ -10,6 +10,7 @@
 #include <ostream>
 
 #include "base/component_export.h"
+#include "base/containers/contains.h"
 #include "ui/base/class_property.h"
 
 // Overview:

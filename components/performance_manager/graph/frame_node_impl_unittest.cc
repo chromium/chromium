@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/graph/frame_node_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
 #include "components/performance_manager/graph/page_node_impl.h"

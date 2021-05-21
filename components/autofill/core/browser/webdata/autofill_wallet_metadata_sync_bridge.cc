@@ -12,6 +12,7 @@
 #include "base/base64.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/files/platform_file.h"
 #include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"

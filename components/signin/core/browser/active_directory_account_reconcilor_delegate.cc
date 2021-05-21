@@ -4,6 +4,7 @@
 
 #include "components/signin/core/browser/active_directory_account_reconcilor_delegate.h"
 
+#include "base/containers/contains.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "google_apis/gaia/core_account_id.h"
 

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/guid.h"
 #include "base/hash/sha1.h"

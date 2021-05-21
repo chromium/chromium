@@ -11,6 +11,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"

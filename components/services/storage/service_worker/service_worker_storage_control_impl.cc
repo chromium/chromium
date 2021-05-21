@@ -4,6 +4,7 @@
 
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 
+#include "base/containers/contains.h"
 #include "components/services/storage/public/cpp/storage_key.h"
 #include "components/services/storage/service_worker/service_worker_resource_ops.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

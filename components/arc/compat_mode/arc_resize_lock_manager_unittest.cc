@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"

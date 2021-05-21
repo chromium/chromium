@@ -12,6 +12,7 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "components/favicon_base/favicon_util.h"
 #include "skia/ext/image_operations.h"

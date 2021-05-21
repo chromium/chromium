@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

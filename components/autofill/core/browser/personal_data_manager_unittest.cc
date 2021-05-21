@@ -17,6 +17,7 @@
 #include "base/base64.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/guid.h"
 #include "base/i18n/time_formatting.h"
 #include "base/rand_util.h"

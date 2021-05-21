@@ -4,6 +4,7 @@
 
 #include "components/full_restore/arc_read_handler.h"
 
+#include "base/containers/contains.h"
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/window_info.h"

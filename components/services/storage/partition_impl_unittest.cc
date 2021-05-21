@@ -4,6 +4,7 @@
 
 #include "components/services/storage/storage_service_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"

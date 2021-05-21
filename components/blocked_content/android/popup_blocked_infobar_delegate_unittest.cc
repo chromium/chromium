@@ -5,6 +5,7 @@
 #include "components/blocked_content/android/popup_blocked_infobar_delegate.h"
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"

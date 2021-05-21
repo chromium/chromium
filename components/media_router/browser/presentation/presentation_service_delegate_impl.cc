@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/small_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"

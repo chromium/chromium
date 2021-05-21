@@ -7,6 +7,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/ash_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/values.h"
 #include "components/live_caption/pref_names.h"

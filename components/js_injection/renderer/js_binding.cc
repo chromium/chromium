@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "components/js_injection/renderer/js_communication.h"
 #include "content/public/renderer/render_frame.h"

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"

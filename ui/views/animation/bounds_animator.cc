@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/animation/tween.h"

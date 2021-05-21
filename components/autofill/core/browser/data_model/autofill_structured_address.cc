@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 
 #include <utility>
+#include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
