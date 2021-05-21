@@ -51,8 +51,7 @@ class PaymentCredentialEnrollmentDialogView
   // PaymentCredentialEnrollmentView:
   void ShowDialog(content::WebContents* web_contents,
                   base::WeakPtr<PaymentCredentialEnrollmentModel> model,
-                  AcceptCallback accept_callback,
-                  CancelCallback cancel_callback) override;
+                  ResponseCallback response_callback) override;
   void OnModelUpdated() override;
   void HideDialog() override;
 
@@ -80,8 +79,7 @@ class PaymentCredentialEnrollmentDialogView
   // May be null.
   ObserverForTest* observer_for_test_ = nullptr;
 
-  AcceptCallback accept_callback_;
-  CancelCallback cancel_callback_;
+  ResponseCallback response_callback_;
 
   // Cache the instrument icon pointer so we don't needlessly update it in
   // OnModelUpdated().

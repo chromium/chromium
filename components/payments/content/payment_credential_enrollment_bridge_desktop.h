@@ -30,8 +30,7 @@ class PaymentCredentialEnrollmentBridgeDesktop
   void ShowDialog(content::WebContents* web_contents,
                   std::unique_ptr<SkBitmap> instrument_icon,
                   const std::u16string& instrument_name,
-                  base::OnceClosure accept_callback,
-                  base::OnceClosure cancel_callback) override;
+                  ResponseCallback response_callback) override;
   void CloseDialog() override;
   void ShowProcessingSpinner() override;
 

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/check.h"
 #include "build/build_config.h"
 #include "components/payments/content/payment_credential_enrollment_model.h"
@@ -57,9 +58,7 @@ void PaymentCredentialEnrollmentController::ShowDialog(
   bridge_ = PaymentCredentialEnrollmentBridge::Create();
   bridge_->ShowDialog(
       web_contents(), std::move(instrument_icon), instrument_name,
-      base::BindOnce(&PaymentCredentialEnrollmentController::OnConfirm,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&PaymentCredentialEnrollmentController::OnCancel,
+      base::BindOnce(&PaymentCredentialEnrollmentController::OnResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 
   if (observer_for_test_)
@@ -80,35 +79,32 @@ void PaymentCredentialEnrollmentController::CloseDialog() {
   }
 }
 
-void PaymentCredentialEnrollmentController::OnCancel() {
-  RecordFirstCloseReason(
-      SecurePaymentConfirmationEnrollDialogResult::kCanceled);
-
+void PaymentCredentialEnrollmentController::OnResponse(bool accepted) {
   // Prevent use-after-move on `response_callback_` due to CloseDialog()
-  // re-entering into OnCancel().
+  // re-entering into OnResponse(false).
   ResponseCallback callback = std::move(response_callback_);
-
   if (!callback)
     return;  // The dialog is closing after user interaction has completed.
 
-  CloseDialog();  // CloseDialog() will re-enter into OnCancel().
+  if (accepted) {
+    DCHECK(web_contents());
 
-  std::move(callback).Run(false);
-}
+    RecordFirstCloseReason(
+        SecurePaymentConfirmationEnrollDialogResult::kAccepted);
 
-void PaymentCredentialEnrollmentController::OnConfirm() {
-  DCHECK(web_contents());
+    ShowProcessingSpinner();
+  } else {
+    RecordFirstCloseReason(
+        SecurePaymentConfirmationEnrollDialogResult::kCanceled);
 
-  RecordFirstCloseReason(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted);
+    CloseDialog();  // CloseDialog() will re-enter into OnResponse(false).
+  }
 
-  ShowProcessingSpinner();
-
-  // This will trigger WebAuthn with OS-level UI (if any) on top of the |view_|
-  // with its animated processing spinner. For example, on Linux, there's no
-  // OS-level UI, while on MacOS, there's an OS-level prompt for the Touch ID
-  // that shows on top of Chrome.
-  std::move(response_callback_).Run(true);
+  // Passing true will trigger WebAuthn with OS-level UI (if any) on top of the
+  // enrollment view with its animated processing spinner. For example, on
+  // Linux, there's no OS-level UI, while on MacOS, there's an OS-level prompt
+  // for the Touch ID that shows on top of Chrome.
+  std::move(callback).Run(accepted);
 }
 
 std::unique_ptr<PaymentCredentialEnrollmentController::ScopedToken>

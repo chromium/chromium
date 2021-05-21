@@ -17,8 +17,7 @@ void PaymentCredentialEnrollmentBridgeAndroid::ShowDialog(
     content::WebContents* web_contents,
     std::unique_ptr<SkBitmap> instrument_icon,
     const std::u16string& instrument_name,
-    base::OnceClosure accept_callback,
-    base::OnceClosure cancel_callback) {
+    ResponseCallback response_callback) {
   // TODO(crbug.com/1204564): implement it.
 }
 

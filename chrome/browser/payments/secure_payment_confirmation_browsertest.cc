@@ -313,10 +313,7 @@ class SecurePaymentConfirmationCreationTest
     auto* controller = PaymentCredentialEnrollmentController::FromWebContents(
         GetActiveWebContents());
     EXPECT_EQ(nullptr, controller->GetTokenIfAvailable());
-    if (confirm_enroll_)
-      controller->OnConfirm();
-    else
-      controller->OnCancel();
+    controller->OnResponse(confirm_enroll_);
   }
 
   // PaymentCredential creation uses the normal Web Authentication code path

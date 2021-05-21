@@ -33,6 +33,8 @@ class PaymentCredentialEnrollmentBridge {
   PaymentCredentialEnrollmentBridge& operator=(
       const PaymentCredentialEnrollmentBridge& other) = delete;
 
+  using ResponseCallback = base::OnceCallback<void(bool user_accept_from_ui)>;
+
   // Create an instance of the bridge with a platform-specific implementation.
   static std::unique_ptr<PaymentCredentialEnrollmentBridge> Create();
 
@@ -40,13 +42,11 @@ class PaymentCredentialEnrollmentBridge {
   // `web_contents`: The WebContents of the merchant.
   // `instrument_icon`: The icon of the payment instrument.
   // `instrument_name`: The name of the payment instrument.
-  // `accept_callback`: Invoked when the user accepts the enrollment.
-  // `cancel_callback`: Invoked when the user cancels the enrollment.
+  // `response_callback`: Invoked when the user responds to the UI.
   virtual void ShowDialog(content::WebContents* web_contents,
                           std::unique_ptr<SkBitmap> instrument_icon,
                           const std::u16string& instrument_name,
-                          base::OnceClosure accept_callback,
-                          base::OnceClosure cancel_callback) = 0;
+                          ResponseCallback response_callback) = 0;
   // Close the UI.
   virtual void CloseDialog() = 0;
 

@@ -20,8 +20,7 @@ class PaymentCredentialEnrollmentModel;
 // the SecurePaymentConfirmationController.
 class PaymentCredentialEnrollmentView {
  public:
-  using AcceptCallback = base::OnceCallback<void()>;
-  using CancelCallback = base::OnceCallback<void()>;
+  using ResponseCallback = base::OnceCallback<void(bool user_accept_from_ui)>;
 
   static base::WeakPtr<PaymentCredentialEnrollmentView> Create();
 
@@ -29,8 +28,7 @@ class PaymentCredentialEnrollmentView {
 
   virtual void ShowDialog(content::WebContents* web_contents,
                           base::WeakPtr<PaymentCredentialEnrollmentModel> model,
-                          AcceptCallback accept_callback,
-                          CancelCallback cancel_callback) = 0;
+                          ResponseCallback response_callback) = 0;
   virtual void OnModelUpdated() = 0;
   virtual void HideDialog() = 0;
 

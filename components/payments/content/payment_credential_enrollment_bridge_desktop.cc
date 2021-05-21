@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback.h"
 #include "base/check.h"
 #include "build/build_config.h"
 #include "components/payments/content/payment_credential_enrollment_model.h"
@@ -34,8 +35,7 @@ void PaymentCredentialEnrollmentBridgeDesktop::ShowDialog(
     content::WebContents* web_contents,
     std::unique_ptr<SkBitmap> instrument_icon,
     const std::u16string& instrument_name,
-    base::OnceClosure accept_callback,
-    base::OnceClosure cancel_callback) {
+    ResponseCallback response_callback) {
 #if defined(OS_ANDROID)
   NOTREACHED();
 #endif  // OS_ANDROID
@@ -69,7 +69,7 @@ void PaymentCredentialEnrollmentBridgeDesktop::ShowDialog(
 
   view_ = PaymentCredentialEnrollmentView::Create();
   view_->ShowDialog(web_contents, model_.GetWeakPtr(),
-                    std::move(accept_callback), std::move(cancel_callback));
+                    std::move(response_callback));
 }
 
 void PaymentCredentialEnrollmentBridgeDesktop::ShowProcessingSpinner() {

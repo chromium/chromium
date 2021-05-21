@@ -76,10 +76,7 @@ class PaymentCredentialEnrollmentDialogViewTest
     dialog_view_->ShowDialog(
         web_contents, model_.GetWeakPtr(),
         base::BindOnce(
-            &PaymentCredentialEnrollmentDialogViewTest::AcceptCallback,
-            base::Unretained(this)),
-        base::BindOnce(
-            &PaymentCredentialEnrollmentDialogViewTest::CancelCallback,
+            &PaymentCredentialEnrollmentDialogViewTest::ResponseCallback,
             base::Unretained(this)));
     event_waiter_->Wait();
 
@@ -160,8 +157,8 @@ class PaymentCredentialEnrollmentDialogViewTest
     // Expect accept button pressed and accept callback called
     EXPECT_TRUE(accept_pressed_);
     EXPECT_FALSE(cancel_pressed_);
-    EXPECT_TRUE(accept_called_);
-    EXPECT_FALSE(cancel_called_);
+    EXPECT_TRUE(response_called_);
+    EXPECT_TRUE(dialog_accepted_);
   }
 
   void ClickCancelAndWait() {
@@ -173,8 +170,8 @@ class PaymentCredentialEnrollmentDialogViewTest
     // Expect cancel button pressed and cancel callback called
     EXPECT_TRUE(cancel_pressed_);
     EXPECT_FALSE(accept_pressed_);
-    EXPECT_TRUE(cancel_called_);
-    EXPECT_FALSE(accept_called_);
+    EXPECT_TRUE(response_called_);
+    EXPECT_FALSE(dialog_accepted_);
   }
 
   void CloseDialogAndWait() {
@@ -186,8 +183,8 @@ class PaymentCredentialEnrollmentDialogViewTest
     // Expect no button pressed and cancel callback called
     EXPECT_FALSE(cancel_pressed_);
     EXPECT_FALSE(accept_pressed_);
-    EXPECT_TRUE(cancel_called_);
-    EXPECT_FALSE(accept_called_);
+    EXPECT_TRUE(response_called_);
+    EXPECT_FALSE(dialog_accepted_);
   }
 
   void ResetEventWaiter(DialogEvent event) {
@@ -195,9 +192,10 @@ class PaymentCredentialEnrollmentDialogViewTest
         std::list<DialogEvent>{event});
   }
 
-  void AcceptCallback() { accept_called_ = true; }
-
-  void CancelCallback() { cancel_called_ = true; }
+  void ResponseCallback(bool accepted) {
+    response_called_ = true;
+    dialog_accepted_ = accepted;
+  }
 
   // PaymentCredentialEnrollmentDialogView::ObserverForTest:
   void OnDialogOpened() override {
@@ -222,8 +220,8 @@ class PaymentCredentialEnrollmentDialogViewTest
 
   SkBitmap* instrument_icon_ = nullptr;
 
-  bool accept_called_ = false;
-  bool cancel_called_ = false;
+  bool response_called_ = false;
+  bool dialog_accepted_ = false;
 
   bool accept_pressed_ = false;
   bool cancel_pressed_ = false;

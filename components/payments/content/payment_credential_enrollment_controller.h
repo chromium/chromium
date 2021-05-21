@@ -26,7 +26,7 @@ class PaymentCredentialEnrollmentController
       public content::WebContentsUserData<
           PaymentCredentialEnrollmentController> {
  public:
-  using ResponseCallback = base::OnceCallback<void(bool user_confirm_from_ui)>;
+  using ResponseCallback = base::OnceCallback<void(bool user_accept_from_ui)>;
 
   // Only one of these tokens can be given out at a time.
   class ScopedToken {
@@ -68,9 +68,8 @@ class PaymentCredentialEnrollmentController
   void CloseDialog();
   void ShowProcessingSpinner();
 
-  // Dialog callbacks.
-  void OnCancel();
-  void OnConfirm();
+  // Dialog callback.
+  void OnResponse(bool accepted);
 
   void set_observer_for_test(ObserverForTest* observer_for_test) {
     observer_for_test_ = observer_for_test;

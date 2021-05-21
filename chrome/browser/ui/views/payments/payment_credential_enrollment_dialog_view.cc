@@ -45,8 +45,7 @@ PaymentCredentialEnrollmentDialogView::
 void PaymentCredentialEnrollmentDialogView::ShowDialog(
     content::WebContents* web_contents,
     base::WeakPtr<PaymentCredentialEnrollmentModel> model,
-    AcceptCallback accept_callback,
-    CancelCallback cancel_callback) {
+    ResponseCallback response_callback) {
   DCHECK(model);
   model_ = model;
 
@@ -57,8 +56,7 @@ void PaymentCredentialEnrollmentDialogView::ShowDialog(
 
   OnModelUpdated();
 
-  accept_callback_ = std::move(accept_callback);
-  cancel_callback_ = std::move(cancel_callback);
+  response_callback_ = std::move(response_callback);
 
   SetAcceptCallback(
       base::BindOnce(&PaymentCredentialEnrollmentDialogView::OnDialogAccepted,
@@ -80,7 +78,7 @@ void PaymentCredentialEnrollmentDialogView::ShowDialog(
 }
 
 void PaymentCredentialEnrollmentDialogView::OnDialogAccepted() {
-  std::move(accept_callback_).Run();
+  std::move(response_callback_).Run(true);
 
   if (observer_for_test_) {
     observer_for_test_->OnAcceptButtonPressed();
@@ -89,7 +87,7 @@ void PaymentCredentialEnrollmentDialogView::OnDialogAccepted() {
 }
 
 void PaymentCredentialEnrollmentDialogView::OnDialogCancelled() {
-  std::move(cancel_callback_).Run();
+  std::move(response_callback_).Run(false);
 
   if (observer_for_test_) {
     observer_for_test_->OnCancelButtonPressed();
@@ -98,7 +96,7 @@ void PaymentCredentialEnrollmentDialogView::OnDialogCancelled() {
 }
 
 void PaymentCredentialEnrollmentDialogView::OnDialogClosed() {
-  std::move(cancel_callback_).Run();
+  std::move(response_callback_).Run(false);
 
   if (observer_for_test_) {
     observer_for_test_->OnDialogClosed();
