@@ -110,7 +110,10 @@ struct AttributeTriggers {
 
 namespace {
 
-// https://w3c.github.io/editing/execCommand.html#editing-host
+// https://html.spec.whatwg.org/multipage/interaction.html#editing-host
+// An editing host is either an HTML element with its contenteditable attribute
+// in the true state, or a child HTML element of a Document whose design mode
+// enabled is true.
 bool IsEditingHost(const Node& node) {
   auto* html_element = DynamicTo<HTMLElement>(node);
   if (!html_element)
@@ -118,11 +121,15 @@ bool IsEditingHost(const Node& node) {
   String normalized_value = html_element->contentEditable();
   if (normalized_value == "true" || normalized_value == "plaintext-only")
     return true;
-  return node.GetDocument().InDesignMode() &&
-         node.GetDocument().documentElement() == &node;
+  return html_element->GetDocument().InDesignMode() &&
+         html_element->isConnected();
 }
 
 // https://w3c.github.io/editing/execCommand.html#editable
+// Something is editable if it is a node; it is not an editing host; it does not
+// have a contenteditable attribute set to the false state; its parent is an
+// editing host or editable; and either it is an HTML element, or it is an svg
+// or math element, or it is not an Element and its parent is an HTML element.
 bool IsEditable(const Node& node) {
   if (IsEditingHost(node))
     return false;
@@ -1647,20 +1654,11 @@ bool HTMLElement::MatchesReadOnlyPseudoClass() const {
   return !MatchesReadWritePseudoClass();
 }
 
+// https://html.spec.whatwg.org/multipage/semantics-other.html#selector-read-write
+// The :read-write pseudo-class must match ... elements that are editing hosts
+// or editable and are neither input elements nor textarea elements
 bool HTMLElement::MatchesReadWritePseudoClass() const {
-  if (FastHasAttribute(html_names::kContenteditableAttr)) {
-    const AtomicString& value =
-        FastGetAttribute(html_names::kContenteditableAttr);
-
-    if (value.IsEmpty() || EqualIgnoringASCIICase(value, "true") ||
-        EqualIgnoringASCIICase(value, "plaintext-only"))
-      return true;
-    if (EqualIgnoringASCIICase(value, "false"))
-      return false;
-    // All other values should be treated as "inherit".
-  }
-
-  return parentElement() && HasEditableStyle(*parentElement());
+  return IsEditingHost(*this) || IsEditable(*this);
 }
 
 void HTMLElement::HandleKeypressEvent(KeyboardEvent& event) {

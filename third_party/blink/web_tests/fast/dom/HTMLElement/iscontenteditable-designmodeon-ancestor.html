@@ -28,11 +28,11 @@ document.getElementById("parent_of_p2").contentEditable = true;
 evalAndLog('document.designMode = "on"');
 
 shouldBe('document.getElementById("div").contentEditable', '"inherit"');
-shouldBe('document.getElementById("div").isContentEditable', 'false');
+shouldBe('document.getElementById("div").isContentEditable', 'true');
 shouldBe('window.getComputedStyle(div, "").getPropertyValue("-webkit-user-modify")', '"read-only"');
 
 shouldBe('document.getElementById("div2").contentEditable', '"inherit"');
-shouldBe('document.getElementById("div2").isContentEditable', 'false');
+shouldBe('document.getElementById("div2").isContentEditable', 'true');
 shouldBe('window.getComputedStyle(div2, "").getPropertyValue("-webkit-user-modify")', '"read-only"');
 
 shouldBe('document.getElementById("p").contentEditable', '"inherit"');
