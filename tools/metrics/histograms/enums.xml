@@ -32701,6 +32701,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3919" label="ARIAVirtualcontentAttribute"/>
   <int value="3920" label="AccessibilityTouchPassthroughSet"/>
   <int value="3921" label="TextFragmentBlockedByForceLoadAtTop"/>
+  <int value="3922" label="UrnDocumentAccessedCookies"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

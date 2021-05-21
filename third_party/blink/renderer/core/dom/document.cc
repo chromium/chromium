@@ -5441,6 +5441,9 @@ String Document::cookie(ExceptionState& exception_state) const {
           "Cookies are disabled inside 'data:' URLs.");
     } else {
       exception_state.ThrowSecurityError("Access is denied for this document.");
+      if (Url().ProtocolIs("urn")) {
+        CountUse(WebFeature::kUrnDocumentAccessedCookies);
+      }
     }
     return String();
   } else if (dom_window_->GetSecurityOrigin()->IsLocal()) {
@@ -5466,6 +5469,9 @@ void Document::setCookie(const String& value, ExceptionState& exception_state) {
           "Cookies are disabled inside 'data:' URLs.");
     } else {
       exception_state.ThrowSecurityError("Access is denied for this document.");
+      if (Url().ProtocolIs("urn")) {
+        CountUse(WebFeature::kUrnDocumentAccessedCookies);
+      }
     }
     return;
   } else if (dom_window_->GetSecurityOrigin()->IsLocal()) {

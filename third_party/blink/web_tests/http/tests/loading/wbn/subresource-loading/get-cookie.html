@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<head>
+  <title>Accessing document.cookie in urn document</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <link rel="webbundle" href="../resources/wbn/urn-uuid-html.wbn"
+  resources="urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae" /></head>
+<body>
+<script>
+
+async function createIframeAndWaitLoad(t, frame_url) {
+  const iframe = document.createElement('iframe');
+  iframe.src = frame_url;
+  const load_promise = new Promise((resolve) => {
+    iframe.addEventListener('load', resolve);
+  });
+  document.body.appendChild(iframe);
+  t.add_cleanup(() => {
+    document.body.removeChild(iframe);
+  });
+  await load_promise;
+  return iframe;
+}
+
+async function evalInIframe(iframe, code) {
+  const message_promise = new Promise((resolve) => {
+      window.addEventListener(
+          'message',
+          (e) => { resolve(e.data); },
+          { once : true });
+    });
+  iframe.contentWindow.postMessage(code, '*');
+  return message_promise;
+}
+
+const isUrnDocumentAccessedCookiesUseCounted = () => {
+  const UrnDocumentAccessedCookies = 3922;  // From web_feature.mojom
+  return window.internals.isUseCounted(document, UrnDocumentAccessedCookies)
+};
+
+const runIsUrnDocumentAccessedCookiesUseCountedString =
+  '(' + isUrnDocumentAccessedCookiesUseCounted.toString() + ')()';
+
+const urn_document_url = 'urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae';
+
+promise_test(async (t) => {
+  const iframe = await createIframeAndWaitLoad(t, urn_document_url);
+  assert_equals(
+      await evalInIframe(
+          iframe,
+          runIsUrnDocumentAccessedCookiesUseCountedString),
+      false);
+  assert_equals(
+      await evalInIframe(iframe, `
+      (()=>{
+        try {
+          return document.cookie;
+        } catch (e) {
+          return e.name;
+        }
+      })();
+      `),
+      'SecurityError');
+  assert_equals(
+      await evalInIframe(
+          iframe,
+          runIsUrnDocumentAccessedCookiesUseCountedString),
+      true);
+}, 'Getting document.cookie in urn document');
+
+promise_test(async (t) => {
+  const iframe = await createIframeAndWaitLoad(t, urn_document_url);
+  assert_equals(
+      await evalInIframe(
+          iframe,
+          runIsUrnDocumentAccessedCookiesUseCountedString),
+      false);
+  assert_equals(
+      await evalInIframe(iframe, `
+      (()=>{
+        try {
+          document.cookie = 'foo bar';
+          return 'done';
+        } catch (e) {
+          return e.name;
+        }
+      })();
+      `),
+      'SecurityError');
+  assert_equals(
+      await evalInIframe(
+          iframe,
+          runIsUrnDocumentAccessedCookiesUseCountedString),
+      true);
+}, 'Setting document.cookie in urn document');
+
+</script>
+</body>
