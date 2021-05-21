@@ -29,8 +29,6 @@ generate_grd("build_grd") {
     "about.js",
     "chrome_sync.js",
     "data.js",
-    "events.css",
-    "events.js",
     "index.html",
     "invalidations.css",
     "invalidations.js",
@@ -71,7 +69,6 @@ js_type_check("closure_compile") {
     ":chrome_sync",
 
     #":data",
-    ":events",
     ":search",
     ":sync_index",
     ":sync_log",
@@ -99,13 +96,6 @@ js_library("chrome_sync") {
 }
 
 js_library("data") {
-}
-
-js_library("events") {
-  deps = [
-    "//third_party/jstemplate:jstemplate",
-    "//ui/webui/resources/js:cr.m",
-  ]
 }
 
 js_library("search") {
@@ -145,7 +135,10 @@ js_library("sync_search") {
 }
 
 js_library("traffic_log") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [
+    "//third_party/jstemplate:jstemplate",
+    "//ui/webui/resources/js:cr.m",
+  ]
 }
 
 js_library("user_events") {

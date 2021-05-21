@@ -8,7 +8,6 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 import './about.js';
 import './data.js';
-import './events.js';
 import './sync_node_browser.js';
 import './user_events.js';
 import './traffic_log.js';

@@ -10,7 +10,6 @@ chrome/test/functional/special_tabs.py. -->
 <link rel="stylesheet" href="chrome://resources/css/tabs.css">
 <link rel="stylesheet" href="chrome://resources/css/tree.css">
 <link rel="stylesheet" href="about.css">
-<link rel="stylesheet" href="events.css">
 <link rel="stylesheet" href="sync_search.css">
 <link rel="stylesheet" href="sync_node_browser.css">
 <link rel="stylesheet" href="traffic_log.css">
@@ -35,7 +34,6 @@ chrome/test/functional/special_tabs.py. -->
   <tabs>
     <tab id="sync-about-tab">About</tab>
     <tab id="sync-data-tab">Data</tab>
-    <tab id="sync-events-tab">Events</tab>
     <tab id="sync-browser-tab">Sync Node Browser</tab>
     <tab id="sync-search-tab">Search</tab>
     <tab id="sync-user-events-tab">User Events</tab>
@@ -145,27 +143,6 @@ chrome/test/functional/special_tabs.py. -->
       <input type="checkbox" id="include-specifics">include node content <font color="red">WARNING: This is likely to include personal information.</font><br>
 
       <a style="display: none" id="dump-to-file-anchor"></a>
-    </tabpanel>
-    <tabpanel>
-      <table id="sync-events-table">
-        <thead>
-          <th>Details</th>
-          <th>Submodule</th>
-          <th>Event</th>
-          <th>Time</th>
-        </thead>
-        <tbody id="sync-events">
-          <tr jsselect="eventList">
-            <td>
-              <button class="toggle-button">Toggle Display</button>
-              <pre jscontent="textDetails" class="details" hidden></pre>
-            </td>
-            <td jscontent="submodule" class="attrib-column"></td>
-            <td jscontent="event" class="attrib-column"></td>
-            <td jscontent="date" class="attrib-column"></td>
-          </tr>
-        </tbody>
-      </table>
     </tabpanel>
     <tabpanel>
       <!-- TODO(akalin): Move to a three-pane view; node tree on the left

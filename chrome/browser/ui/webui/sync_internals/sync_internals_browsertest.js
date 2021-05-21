@@ -382,29 +382,6 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserRefreshOnTabSelect', function() {
       'TestCanary');
 });
 
-// Tests that the events log page correctly receives and displays an event.
-TEST_F('SyncInternalsWebUITest', 'EventLogTest', function() {
-  // Dispatch an event.
-  cr.webUIListenerCallback('onProtocolEvent', {someField: 'someData'});
-
-  // Verify that it is displayed in the events log.
-  const syncEventsTable = document.querySelector('#sync-events');
-  assertGE(syncEventsTable.children.length, 1);
-  const lastRow = syncEventsTable.children[syncEventsTable.children.length - 1];
-
-  // Makes some assumptions about column ordering.  We'll need re-think this if
-  // it turns out to be a maintenance burden.
-  assertEquals(4, lastRow.children.length);
-  const detailsText = lastRow.children[0].textContent;
-  const submoduleName = lastRow.children[1].textContent;
-  const eventName = lastRow.children[2].textContent;
-
-  expectGE(
-      submoduleName.indexOf('protocol'), 0, 'submoduleName=' + submoduleName);
-  expectGE(eventName.indexOf('onProtocolEvent'), 0, 'eventName=' + eventName);
-  expectGE(detailsText.indexOf('someData'), 0, 'detailsText=' + detailsText);
-});
-
 TEST_F('SyncInternalsWebUITest', 'DumpSyncEventsToText', function() {
   // Dispatch an event.
   cr.webUIListenerCallback('onProtocolEvent', {someField: 'someData'});
