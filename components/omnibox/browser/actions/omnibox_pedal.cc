@@ -259,6 +259,10 @@ size_t OmniboxPedal::EstimateMemoryUsage() const {
   return total;
 }
 
+int32_t OmniboxPedal::GetID() const {
+  return static_cast<int32_t>(id());
+}
+
 bool OmniboxPedal::IsConceptMatch(TokenSequence& match_sequence) const {
   for (const auto& group : synonym_groups_) {
     if (!group.EraseMatchesIn(match_sequence, false))

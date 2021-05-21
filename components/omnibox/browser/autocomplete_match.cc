@@ -212,7 +212,7 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
                              : nullptr),
       keyword(match.keyword),
       from_keyword(match.from_keyword),
-      pedal(match.pedal),
+      action(match.action),
       from_previous(match.from_previous),
       search_terms_args(
           match.search_terms_args
@@ -268,7 +268,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   associated_keyword = std::move(match.associated_keyword);
   keyword = std::move(match.keyword);
   from_keyword = std::move(match.from_keyword);
-  pedal = std::move(match.pedal);
+  action = std::move(match.action);
   from_previous = std::move(match.from_previous);
   search_terms_args = std::move(match.search_terms_args);
   post_content = std::move(match.post_content);
@@ -331,7 +331,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
           : nullptr);
   keyword = match.keyword;
   from_keyword = match.from_keyword;
-  pedal = match.pedal;
+  action = match.action;
   from_previous = match.from_previous;
   search_terms_args.reset(
       match.search_terms_args
@@ -694,7 +694,7 @@ bool AutocompleteMatch::IsSearchHistoryType(Type type) {
 }
 
 // static
-bool AutocompleteMatch::IsPedalCompatibleType(Type type) {
+bool AutocompleteMatch::IsActionCompatibleType(Type type) {
   // Note: There is a PEDAL type, but it is deprecated because Pedals always
   // attach to matches of other types instead of creating dedicated matches.
   return type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
@@ -1193,11 +1193,11 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
     relevance = duplicate_match.relevance;
   }
 
-  // Take the |pedal|, if any, so that it will be presented instead of buried.
-  if (!pedal && duplicate_match.pedal &&
-      AutocompleteMatch::IsPedalCompatibleType(type)) {
-    pedal = duplicate_match.pedal;
-    duplicate_match.pedal = nullptr;
+  // Take the |action|, if any, so that it will be presented instead of buried.
+  if (!action && duplicate_match.action &&
+      AutocompleteMatch::IsActionCompatibleType(type)) {
+    action = duplicate_match.action;
+    duplicate_match.action = nullptr;
   }
 
   // Copy |rich_autocompletion_triggered| for counterfactual logging. Only copy

@@ -95,6 +95,9 @@ class OmniboxAction {
   // Estimates RAM usage in bytes for this Action.
   virtual size_t EstimateMemoryUsage() const;
 
+  // Returns an ID used to identify some actions. Not defined for all Actions.
+  virtual int32_t GetID() const;
+
  protected:
   // Use this for the common case of navigating to a URL.
   void OpenURL(ExecutionContext& context, const GURL& url) const;

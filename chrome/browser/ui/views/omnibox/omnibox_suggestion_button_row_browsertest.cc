@@ -91,7 +91,7 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
             IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX,
             IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA),
         GURL());
-    pedal_match.pedal = pedal_.get();
+    pedal_match.action = pedal_.get();
 
     AutocompleteMatch multiple_actions_match(
         nullptr, 500, false, AutocompleteMatchType::HISTORY_URL);
@@ -132,7 +132,7 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
       return false;
 
     popup_view->model()->SetSelection(OmniboxPopupModel::Selection(
-        2, OmniboxPopupModel::FOCUSED_BUTTON_PEDAL));
+        2, OmniboxPopupModel::FOCUSED_BUTTON_ACTION));
     if (!VerifyActiveButtonText(popup_view->result_view_at(2), "Clear"))
       return false;
 

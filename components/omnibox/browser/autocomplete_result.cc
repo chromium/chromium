@@ -461,7 +461,8 @@ void AutocompleteResult::AttachPedalsToMatches(
   for (auto& match : matches_) {
     // Skip matches that have already detected their Pedal, and avoid attaching
     // to matches with types that don't mix well with Pedals (e.g. entities).
-    if (match.pedal || !AutocompleteMatch::IsPedalCompatibleType(match.type)) {
+    if (match.action ||
+        !AutocompleteMatch::IsActionCompatibleType(match.type)) {
       continue;
     }
 
@@ -470,7 +471,7 @@ void AutocompleteResult::AttachPedalsToMatches(
     if (pedal) {
       const auto result = pedals_found.insert(pedal);
       if (result.second)
-        match.pedal = pedal;
+        match.action = pedal;
     }
   }
 }

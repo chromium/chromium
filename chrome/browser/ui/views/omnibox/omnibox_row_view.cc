@@ -264,8 +264,8 @@ DEFINE_ENUM_CONVERTERS(OmniboxPopupModel::LineState,
                        {OmniboxPopupModel::KEYWORD_MODE, u"KEYWORD_MODE"},
                        {OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH,
                         u"FOCUSED_BUTTON_TAB_SWITCH"},
-                       {OmniboxPopupModel::FOCUSED_BUTTON_PEDAL,
-                        u"FOCUSED_BUTTON_PEDAL"},
+                       {OmniboxPopupModel::FOCUSED_BUTTON_ACTION,
+                        u"FOCUSED_BUTTON_ACTION"},
                        {OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION,
                         u"FOCUSED_BUTTON_REMOVE_SUGGESTION"})
 

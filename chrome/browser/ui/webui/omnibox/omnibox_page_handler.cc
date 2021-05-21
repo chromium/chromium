@@ -170,8 +170,7 @@ struct TypeConverter<mojom::AutocompleteMatchPtr, AutocompleteMatch> {
     result->keyword = base::UTF16ToUTF8(input.keyword);
     result->duplicates = static_cast<int32_t>(input.duplicate_matches.size());
     result->from_previous = input.from_previous;
-    result->pedal_id =
-        input.pedal ? static_cast<int32_t>(input.pedal->id()) : 0;
+    result->pedal_id = input.action ? input.action->GetID() : 0;
     result->additional_info =
         mojo::ConvertTo<std::vector<mojom::AutocompleteAdditionalInfoPtr>>(
             input.additional_info);

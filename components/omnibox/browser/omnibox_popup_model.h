@@ -69,9 +69,9 @@ class OmniboxPopupModel {
     // Pressing enter will switch to the tab match.
     FOCUSED_BUTTON_TAB_SWITCH = 3,
 
-    // FOCUSED_BUTTON_PEDAL state means a Pedal button is in focus. This is
-    // currently only used when dedicated button row and pedals are enabled.
-    FOCUSED_BUTTON_PEDAL = 4,
+    // FOCUSED_BUTTON_ACTION state means an Action button (such as a Pedal)
+    // is in focus.
+    FOCUSED_BUTTON_ACTION = 4,
 
     // FOCUSED_BUTTON_REMOVE_SUGGESTION state means the Remove Suggestion (X)
     // button is focused. Pressing enter will attempt to remove this suggestion.
@@ -213,7 +213,7 @@ class OmniboxPopupModel {
   // If the popup model supports the action and performs it, this returns true.
   // This can't handle all actions currently, and returns false in those cases.
   // The timestamp parameter is currently only used by FOCUSED_BUTTON_TAB_SWITCH
-  // and FOCUSED_BUTTON_PEDAL, so is set by default for other use cases.
+  // and FOCUSED_BUTTON_ACTION, so is set by default for other use cases.
   bool TriggerSelectionAction(Selection selection,
                               base::TimeTicks timestamp = base::TimeTicks());
 

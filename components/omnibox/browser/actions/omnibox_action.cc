@@ -81,6 +81,10 @@ size_t OmniboxAction::EstimateMemoryUsage() const {
   return total;
 }
 
+int32_t OmniboxAction::GetID() const {
+  return 0;
+}
+
 void OmniboxAction::OpenURL(OmniboxAction::ExecutionContext& context,
                             const GURL& url) const {
   // Set `match_type` as if the user just typed |url| verbatim.

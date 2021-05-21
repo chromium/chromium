@@ -179,11 +179,11 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
   pedal_button_ = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
       base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                           base::Unretained(this),
-                          OmniboxPopupModel::FOCUSED_BUTTON_PEDAL),
+                          OmniboxPopupModel::FOCUSED_BUTTON_ACTION),
       std::u16string(), OmniboxPedal::GetDefaultVectorIcon(),
       popup_contents_view_,
       OmniboxPopupModel::Selection(model_index_,
-                                   OmniboxPopupModel::FOCUSED_BUTTON_PEDAL)));
+                                   OmniboxPopupModel::FOCUSED_BUTTON_ACTION)));
 }
 
 OmniboxSuggestionButtonRowView::~OmniboxSuggestionButtonRowView() = default;
@@ -208,13 +208,13 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
                           OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH);
 
   SetPillButtonVisibility(pedal_button_,
-                          OmniboxPopupModel::FOCUSED_BUTTON_PEDAL);
+                          OmniboxPopupModel::FOCUSED_BUTTON_ACTION);
   if (pedal_button_->GetVisible()) {
-    const auto pedal_strings = match().pedal->GetLabelStrings();
+    const auto pedal_strings = match().action->GetLabelStrings();
     pedal_button_->SetText(pedal_strings.hint);
     pedal_button_->SetTooltipText(pedal_strings.suggestion_contents);
     pedal_button_->SetAccessibleName(pedal_strings.accessibility_hint);
-    pedal_button_->SetIcon(match().pedal->GetVectorIcon());
+    pedal_button_->SetIcon(match().action->GetVectorIcon());
   }
 
   bool is_any_button_visible = keyword_button_->GetVisible() ||

@@ -302,7 +302,7 @@ OmniboxPopupModel::GetAllAvailableSelectionsSorted(Direction direction,
 
     all_states.push_back(FOCUSED_BUTTON_TAB_SWITCH);
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
-    all_states.push_back(FOCUSED_BUTTON_PEDAL);
+    all_states.push_back(FOCUSED_BUTTON_ACTION);
 #endif
     all_states.push_back(FOCUSED_BUTTON_REMOVE_SUGGESTION);
   }
@@ -450,8 +450,8 @@ bool OmniboxPopupModel::IsControlPresentOnMatch(Selection selection) const {
         return match.has_tab_match;
       else
         return match.has_tab_match && !match.associated_keyword;
-    case FOCUSED_BUTTON_PEDAL:
-      return match.pedal != nullptr;
+    case FOCUSED_BUTTON_ACTION:
+      return match.action != nullptr;
     case FOCUSED_BUTTON_REMOVE_SUGGESTION:
       // Remove suggestion buttons are suppressed for matches with an associated
       // keyword, unless the feature that moves it to the button row is enabled.
@@ -495,10 +495,10 @@ bool OmniboxPopupModel::TriggerSelectionAction(Selection selection,
                               timestamp);
       break;
 
-    case FOCUSED_BUTTON_PEDAL:
+    case FOCUSED_BUTTON_ACTION:
       DCHECK(timestamp != base::TimeTicks());
-      DCHECK(match.pedal);
-      edit_model()->ExecutePedal(match, timestamp);
+      DCHECK(match.action);
+      edit_model()->ExecuteAction(match, timestamp);
       break;
 
     case FOCUSED_BUTTON_REMOVE_SUGGESTION:
@@ -546,9 +546,9 @@ std::u16string OmniboxPopupModel::GetAccessibilityLabelForCurrentSelection(
         additional_message_id = IDS_ACC_KEYWORD_SUFFIX;
         available_actions_count++;
       }
-      if (IsControlPresentOnMatch(Selection(line, FOCUSED_BUTTON_PEDAL))) {
+      if (IsControlPresentOnMatch(Selection(line, FOCUSED_BUTTON_ACTION))) {
         additional_message =
-            match.pedal->GetLabelStrings().accessibility_suffix;
+            match.action->GetLabelStrings().accessibility_suffix;
         available_actions_count++;
       }
       if (IsControlPresentOnMatch(
@@ -568,10 +568,10 @@ std::u16string OmniboxPopupModel::GetAccessibilityLabelForCurrentSelection(
     case FOCUSED_BUTTON_TAB_SWITCH:
       additional_message_id = IDS_ACC_TAB_SWITCH_BUTTON_FOCUSED_PREFIX;
       break;
-    case FOCUSED_BUTTON_PEDAL:
+    case FOCUSED_BUTTON_ACTION:
       // When pedal button is focused, the autocomplete suggestion isn't
       // read because it's not relevant to the button's action.
-      return match.pedal->GetLabelStrings().accessibility_hint;
+      return match.action->GetLabelStrings().accessibility_hint;
     case FOCUSED_BUTTON_REMOVE_SUGGESTION:
       additional_message_id = IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX;
       break;

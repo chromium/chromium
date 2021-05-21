@@ -125,7 +125,7 @@ class AutocompleteResult {
   // Called after matches are deduped and sorted and before they are culled.
   void GroupAndDemoteMatchesWithHeaders();
 
-  // Sets |pedal| in matches that have Pedal-triggering text.
+  // Sets |action| in matches that have Pedal-triggering text.
   void AttachPedalsToMatches(const AutocompleteInput& input,
                              const AutocompleteProviderClient& client);
 

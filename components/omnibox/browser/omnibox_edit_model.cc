@@ -24,6 +24,7 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/navigation_metrics/navigation_metrics.h"
+#include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
@@ -714,22 +715,25 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
   EmitKeywordHistogram(entry_method);
 }
 
-void OmniboxEditModel::ExecutePedal(const AutocompleteMatch& match,
-                                    base::TimeTicks match_selection_timestamp) {
-  // Note the |pedal| pointer is extracted from the match before reverting the
+void OmniboxEditModel::ExecuteAction(
+    const AutocompleteMatch& match,
+    base::TimeTicks match_selection_timestamp) {
+  // Note the |action| pointer is extracted from the match before reverting the
   // view below because the match reference will expire with its container.
-  const OmniboxPedal* pedal = match.pedal;
-  CHECK(pedal);
+  const OmniboxAction* action = match.action;
+  CHECK(action);
 
-  // Record the presence of any Pedals in the result set.
+  // Record the presence of any actions in the result set.
   for (const AutocompleteMatch& match_in_result : result()) {
-    if (match_in_result.pedal) {
-      match_in_result.pedal->RecordActionShown();
+    if (match_in_result.action) {
+      match_in_result.action->RecordActionShown();
     }
   }
 
-  pedal->RecordActionExecuted();
+  action->RecordActionExecuted();
 
+  // TODO(tommycli): Resolve questions about memory safety with calling
+  // RevertAll() first. It may destroy the list of matches.
   {
     // This block resets omnibox to unedited state and closes popup, which
     // may not seem necessary in cases of navigation but makes sense for
@@ -739,7 +743,7 @@ void OmniboxEditModel::ExecutePedal(const AutocompleteMatch& match,
   }
   OmniboxPedal::ExecutionContext context(*client_, *controller_,
                                          match_selection_timestamp);
-  pedal->Execute(context);
+  action->Execute(context);
 }
 
 void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
@@ -759,8 +763,8 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
 
   // Record the presence of any Pedals in the result set.
   for (const AutocompleteMatch& match_in_result : result()) {
-    if (match_in_result.pedal) {
-      match_in_result.pedal->RecordActionShown();
+    if (match_in_result.action) {
+      match_in_result.action->RecordActionShown();
     }
   }
 

@@ -184,6 +184,7 @@ class OmniboxPedal : public OmniboxAction {
   const gfx::VectorIcon& GetVectorIcon() const override;
 #endif
   size_t EstimateMemoryUsage() const override;
+  int32_t GetID() const override;
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalTest, SynonymGroupErasesFirstMatchOnly);
