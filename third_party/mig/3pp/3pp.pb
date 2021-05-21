@@ -2,8 +2,8 @@ create {
   platform_re: "linux-.*|mac-.*"
   source {
     url {
-      download_url: "https://github.com/markmentovai/bootstrap_cmds/archive/1146f2bf0e78b3a4855fb556cc08d83568d28a4a.tar.gz"
-      version: "121"
+      download_url: "https://github.com/markmentovai/bootstrap_cmds/archive/ca2b82d5dee993aa8ed52a04cfa33a9d167618f9.tar.gz"
+      version: "121.100.1"
     }
     unpack_archive: true
   }
