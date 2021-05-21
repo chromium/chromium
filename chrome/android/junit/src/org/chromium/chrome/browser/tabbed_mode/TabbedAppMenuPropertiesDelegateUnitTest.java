@@ -208,7 +208,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         mIsMultiWindowApiSupported = ((i >> 5) & 1) == 1;
     }
 
-    private Menu initMocksForMultiWindowMenu(boolean isNewWindowFeatureEnabled) {
+    private Menu createMenuForMultiWindow(boolean isNewWindowFeatureEnabled) {
         doReturn(mIsMultiTab ? 2 : 1).when(mTabModelSelector).getTotalTabCount();
         doReturn(mIsMultiWindow).when(mMultiWindowModeStateDispatcher).isInMultiWindowMode();
         doReturn(mIsMultiWindowApiSupported)
@@ -234,10 +234,15 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         for (int i = 0; i < (1 << 6); ++i) {
             setMultiWindowMenuFlags(i);
             mIsTabletScreen = false;
-            Menu menu = initMocksForMultiWindowMenu(true);
+            Menu menu = createMenuForMultiWindow(true);
 
-            // 'New Window' is never enabled on non-tablet-sized screen.
-            assertMenuDoesNotContain(menu, R.id.new_window_menu_id);
+            // 'New Window' is never enabled on non-tablet-sized screen except multi-window,
+            // single-instance case.
+            if (mIsMultiWindow && !mIsMultiInstance) {
+                assertMenuContains(menu, R.id.new_window_menu_id);
+            } else {
+                assertMenuDoesNotContain(menu, R.id.new_window_menu_id);
+            }
         }
     }
 
@@ -247,7 +252,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         for (int i = 0; i < (1 << 6); ++i) {
             setMultiWindowMenuFlags(i);
-            Menu menu = initMocksForMultiWindowMenu(true);
+            Menu menu = createMenuForMultiWindow(true);
             assertFalse(isMenuVisible(menu, R.id.new_window_menu_id)
                     && isMenuVisible(menu, R.id.move_to_other_window_menu_id));
         }
@@ -261,7 +266,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             setMultiWindowMenuFlags(i);
             mIsPartnerHomepageEnabled = true;
             mIsMultiTab = false;
-            Menu menu = initMocksForMultiWindowMenu(true);
+            Menu menu = createMenuForMultiWindow(true);
             assertFalse(isMenuVisible(menu, R.id.move_to_other_window_menu_id));
         }
     }
@@ -273,14 +278,14 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         mIsMultiTab = true;
         mIsMultiWindow = true;
         mIsTabletScreen = true;
-        Menu menu = initMocksForMultiWindowMenu(false);
+        Menu menu = createMenuForMultiWindow(false);
         assertFalse(isMenuVisible(menu, R.id.new_window_menu_id));
         assertTrue(isMenuVisible(menu, R.id.move_to_other_window_menu_id));
 
         // Hide even 'move to other window' for single tab/enabled partner homepage.
         mIsPartnerHomepageEnabled = true;
         mIsMultiTab = false;
-        menu = initMocksForMultiWindowMenu(false);
+        menu = createMenuForMultiWindow(false);
         assertFalse(isMenuVisible(menu, R.id.new_window_menu_id));
         assertFalse(isMenuVisible(menu, R.id.move_to_other_window_menu_id));
     }
@@ -290,7 +295,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForPageMenu();
         mIsMultiTab = true;
         mIsMultiWindow = true;
-        Menu menu = initMocksForMultiWindowMenu(true);
+        mIsMultiInstance = true;
+        Menu menu = createMenuForMultiWindow(true);
         assertFalse(isMenuVisible(menu, R.id.new_window_menu_id));
         assertTrue(isMenuVisible(menu, R.id.move_to_other_window_menu_id));
     }

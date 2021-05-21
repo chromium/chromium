@@ -500,9 +500,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      * @return Whether the "New window" menu item should be displayed.
      */
     protected boolean shouldShowNewWindow() {
-        if (!isNewWindowMenuFeatureEnabled() || !isTabletSizeScreen()) return false;
+        if (!isNewWindowMenuFeatureEnabled()) return false;
         if (mMultiWindowModeStateDispatcher.isMultiInstanceRunning()) return false;
-        return mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
+        return (mMultiWindowModeStateDispatcher.canEnterMultiWindowMode() && isTabletSizeScreen())
                 || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiDisplayMode();
     }
