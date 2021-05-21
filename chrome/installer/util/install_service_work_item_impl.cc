@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -118,29 +119,38 @@ std::wstring GetComTypeLibRegistryPath(const GUID& iid) {
 
 }  // namespace
 
-InstallServiceWorkItemImpl::ServiceConfig::ServiceConfig()
-    : is_valid(false),
-      type(SERVICE_KERNEL_DRIVER),
-      start_type(SERVICE_DISABLED),
-      error_control(SERVICE_ERROR_CRITICAL) {}
+InstallServiceWorkItemImpl::ServiceConfig::ServiceConfig() = default;
 
 InstallServiceWorkItemImpl::ServiceConfig::ServiceConfig(
     uint32_t service_type,
     uint32_t service_start_type,
     uint32_t service_error_control,
     const std::wstring& service_cmd_line,
-    const wchar_t* dependencies_multi_sz)
+    const wchar_t* dependencies_multi_sz,
+    const std::wstring& service_display_name)
     : is_valid(true),
       type(service_type),
       start_type(service_start_type),
       error_control(service_error_control),
       cmd_line(service_cmd_line),
-      dependencies(MultiSzToVector(dependencies_multi_sz)) {}
+      dependencies(MultiSzToVector(dependencies_multi_sz)),
+      display_name(service_display_name) {}
 
+InstallServiceWorkItemImpl::ServiceConfig::ServiceConfig(
+    const ServiceConfig& rhs) = default;
 InstallServiceWorkItemImpl::ServiceConfig::ServiceConfig(ServiceConfig&& rhs) =
     default;
 
 InstallServiceWorkItemImpl::ServiceConfig::~ServiceConfig() = default;
+
+bool operator==(const InstallServiceWorkItemImpl::ServiceConfig& lhs,
+                const InstallServiceWorkItemImpl::ServiceConfig& rhs) {
+  return lhs.type == rhs.type && lhs.start_type == rhs.start_type &&
+         lhs.error_control == rhs.error_control &&
+         !_wcsicmp(lhs.cmd_line.c_str(), rhs.cmd_line.c_str()) &&
+         lhs.dependencies == rhs.dependencies &&
+         !_wcsicmp(lhs.display_name.c_str(), rhs.display_name.c_str());
+}
 
 InstallServiceWorkItemImpl::InstallServiceWorkItemImpl(
     const std::wstring& service_name,
@@ -401,14 +411,60 @@ bool InstallServiceWorkItemImpl::DeleteServiceImpl() {
          result == ERROR_PATH_NOT_FOUND;
 }
 
-bool InstallServiceWorkItemImpl::IsServiceCorrectlyConfigured(
+InstallServiceWorkItemImpl::ServiceConfig
+InstallServiceWorkItemImpl::MakeUpgradeServiceConfig(
+    const ServiceConfig& original_config) {
+  ServiceConfig new_config = original_config;
+
+  if (original_config.type == kServiceType)
+    new_config.type = SERVICE_NO_CHANGE;
+  if (original_config.start_type == kServiceStartType)
+    new_config.start_type = SERVICE_NO_CHANGE;
+  if (original_config.error_control == kServiceErrorControl)
+    new_config.error_control = SERVICE_NO_CHANGE;
+  if (!_wcsicmp(original_config.cmd_line.c_str(),
+                service_cmd_line_.GetCommandLineString().c_str())) {
+    new_config.cmd_line.clear();
+  }
+  if (original_config.dependencies == MultiSzToVector(kServiceDependencies))
+    new_config.dependencies.clear();
+  if (!_wcsicmp(original_config.display_name.c_str(),
+                GetCurrentServiceDisplayName().c_str())) {
+    new_config.display_name.clear();
+  }
+
+  return new_config;
+}
+
+bool InstallServiceWorkItemImpl::IsUpgradeNeeded(
+    const ServiceConfig& new_config) {
+  ServiceConfig default_config;
+  default_config.is_valid = true;
+  return !(new_config == default_config);
+}
+
+bool InstallServiceWorkItemImpl::ChangeServiceConfig(
     const ServiceConfig& config) {
-  return config.type == kServiceType &&
-         config.start_type == kServiceStartType &&
-         config.error_control == kServiceErrorControl &&
-         !_wcsicmp(config.cmd_line.c_str(),
-                   service_cmd_line_.GetCommandLineString().c_str()) &&
-         config.dependencies == MultiSzToVector(kServiceDependencies);
+  DCHECK(service_.IsValid());
+
+  // Change the configuration of the existing service.
+  // If the service is deleted, ::ChangeServiceConfig will fail with the error
+  // ERROR_SERVICE_MARKED_FOR_DELETE.
+  if (!::ChangeServiceConfig(
+          service_.Get(), config.type, config.start_type, config.error_control,
+          !config.cmd_line.empty() ? config.cmd_line.c_str() : nullptr,
+          /*lpLoadOrderGroup=*/nullptr,
+          /*lpdwTagId=*/nullptr,
+          !config.dependencies.empty() ? config.dependencies.data() : nullptr,
+          /*lpServiceStartName=*/nullptr, /*lpPassword=*/nullptr,
+          !config.display_name.empty() ? config.display_name.c_str()
+                                       : nullptr)) {
+    PLOG(WARNING) << "Failed to change service config "
+                  << GetCurrentServiceName().c_str();
+    return false;
+  }
+
+  return true;
 }
 
 bool InstallServiceWorkItemImpl::DeleteCurrentService() {
@@ -447,7 +503,8 @@ bool InstallServiceWorkItemImpl::GetServiceConfig(ServiceConfig* config) const {
       service_config->dwServiceType, service_config->dwStartType,
       service_config->dwErrorControl,
       service_config->lpBinaryPathName ? service_config->lpBinaryPathName : L"",
-      service_config->lpDependencies ? service_config->lpDependencies : L"");
+      service_config->lpDependencies ? service_config->lpDependencies : L"",
+      service_config->lpDisplayName ? service_config->lpDisplayName : L"");
   return true;
 }
 
@@ -525,9 +582,10 @@ std::vector<wchar_t> InstallServiceWorkItemImpl::MultiSzToVector(
 
 bool InstallServiceWorkItemImpl::InstallNewService() {
   DCHECK(!service_.IsValid());
-  bool success = InstallService(ServiceConfig(
-      kServiceType, kServiceStartType, kServiceErrorControl,
-      service_cmd_line_.GetCommandLineString(), kServiceDependencies));
+  bool success = InstallService(
+      ServiceConfig(kServiceType, kServiceStartType, kServiceErrorControl,
+                    service_cmd_line_.GetCommandLineString(),
+                    kServiceDependencies, GetCurrentServiceDisplayName()));
   if (success)
     rollback_new_service_ = true;
   return success;
@@ -537,25 +595,32 @@ bool InstallServiceWorkItemImpl::UpgradeService() {
   DCHECK(service_.IsValid());
   DCHECK(!original_service_config_.is_valid);
 
-  ServiceConfig config;
-  if (!GetServiceConfig(&config))
+  ServiceConfig original_config;
+  if (!GetServiceConfig(&original_config))
     return false;
 
-  if (IsServiceCorrectlyConfigured(config)) {
-    RecordServiceInstallResult(
-        ServiceInstallResult::kSucceededServiceCorrectlyConfigured);
-    return true;
+  ServiceConfig new_config = MakeUpgradeServiceConfig(original_config);
+  const bool upgrade_needed = IsUpgradeNeeded(new_config);
+  if (upgrade_needed) {
+    original_service_config_ = std::move(original_config);
+  } else {
+    // In order to determine whether the Service is correctly installed as
+    // opposed to being in a "deleted" state, we attempt to change just the
+    // display name in the service configuration even if it is correctly
+    // configured.
+    new_config.display_name = original_config.display_name;
   }
 
-  original_service_config_ = std::move(config);
-
-  bool success = ChangeServiceConfig(ServiceConfig(
-      kServiceType, kServiceStartType, kServiceErrorControl,
-      service_cmd_line_.GetCommandLineString(), kServiceDependencies));
+  // If the service is deleted, `ChangeServiceConfig()` will return false.
+  bool success = ChangeServiceConfig(new_config);
   if (success) {
-    rollback_existing_service_ = true;
+    if (upgrade_needed)
+      rollback_existing_service_ = true;
+
     RecordServiceInstallResult(
-        ServiceInstallResult::kSucceededChangeServiceConfig);
+        upgrade_needed
+            ? ServiceInstallResult::kSucceededChangeServiceConfig
+            : ServiceInstallResult::kSucceededServiceCorrectlyConfigured);
   } else {
     RecordWin32ApiErrorCode(kChangeServiceConfig);
   }
@@ -573,10 +638,9 @@ bool InstallServiceWorkItemImpl::RestoreOriginalServiceConfig() {
 
 bool InstallServiceWorkItemImpl::InstallService(const ServiceConfig& config) {
   ScopedScHandle service(::CreateService(
-      scm_.Get(), GetCurrentServiceName().c_str(),
-      GetCurrentServiceDisplayName().c_str(), kServiceAccess, config.type,
-      config.start_type, config.error_control, config.cmd_line.c_str(), nullptr,
-      nullptr,
+      scm_.Get(), GetCurrentServiceName().c_str(), config.display_name.c_str(),
+      kServiceAccess, config.type, config.start_type, config.error_control,
+      config.cmd_line.c_str(), nullptr, nullptr,
       !config.dependencies.empty() ? config.dependencies.data() : nullptr,
       nullptr, nullptr));
   if (!service.IsValid()) {
@@ -586,24 +650,6 @@ bool InstallServiceWorkItemImpl::InstallService(const ServiceConfig& config) {
   }
 
   service_ = std::move(service);
-  return true;
-}
-
-bool InstallServiceWorkItemImpl::ChangeServiceConfig(
-    const ServiceConfig& config) {
-  DCHECK(service_.IsValid());
-
-  // Change the configuration of the existing service.
-  if (!::ChangeServiceConfig(
-          service_.Get(), config.type, config.start_type, config.error_control,
-          config.cmd_line.c_str(), nullptr, nullptr,
-          !config.dependencies.empty() ? config.dependencies.data() : nullptr,
-          nullptr, nullptr, nullptr)) {
-    PLOG(WARNING) << "Failed to change service config "
-                  << GetCurrentServiceName().c_str();
-    return false;
-  }
-
   return true;
 }
 

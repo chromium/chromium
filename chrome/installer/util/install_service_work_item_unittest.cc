@@ -66,16 +66,32 @@ constexpr wchar_t kTypeLibWin64RegPath[] =
 class InstallServiceWorkItemTest : public ::testing::Test {
  protected:
   static InstallServiceWorkItemImpl* GetImpl(InstallServiceWorkItem* item) {
-    DCHECK(item);
     return item->impl_.get();
   }
   static bool IsServiceCorrectlyConfigured(InstallServiceWorkItem* item) {
-    DCHECK(item);
-    InstallServiceWorkItemImpl::ServiceConfig config;
-    if (!GetImpl(item)->GetServiceConfig(&config))
+    InstallServiceWorkItemImpl::ServiceConfig original_config;
+    if (!GetImpl(item)->GetServiceConfig(&original_config))
       return false;
 
-    return GetImpl(item)->IsServiceCorrectlyConfigured(config);
+    InstallServiceWorkItemImpl::ServiceConfig new_config =
+        GetImpl(item)->MakeUpgradeServiceConfig(original_config);
+    return !GetImpl(item)->IsUpgradeNeeded(new_config);
+  }
+
+  static bool IsServiceGone(InstallServiceWorkItem* item) {
+    if (!GetImpl(item)->OpenService()) {
+      return true;
+    }
+
+    InstallServiceWorkItemImpl::ServiceConfig config;
+    config.is_valid = true;
+
+    // In order to determine whether the Service is in a "deleted" state, we
+    // attempt to change just the display name in the service configuration.
+    config.display_name = GetImpl(item)->GetCurrentServiceDisplayName();
+
+    // If the service is deleted, `ChangeServiceConfig()` will return false.
+    return !GetImpl(item)->ChangeServiceConfig(config);
   }
 
   void TearDown() override {
@@ -165,7 +181,7 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
   EXPECT_EQ(kServiceProgramPath, value);
 
   item->Rollback();
-  EXPECT_FALSE(GetImpl(item.get())->OpenService());
+  EXPECT_TRUE(IsServiceGone(item.get()));
   EXPECT_EQ(ERROR_FILE_NOT_FOUND,
             key.Open(HKEY_LOCAL_MACHINE, kClsidRegPath, KEY_READ));
   EXPECT_EQ(ERROR_FILE_NOT_FOUND,

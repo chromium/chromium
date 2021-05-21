@@ -33,21 +33,26 @@ class InstallServiceWorkItemImpl {
                   uint32_t service_start_type,
                   uint32_t service_error_control,
                   const std::wstring& service_cmd_line,
-                  const wchar_t* dependencies_multi_sz);
-    ServiceConfig(ServiceConfig&& rhs);
+                  const wchar_t* dependencies_multi_sz,
+                  const std::wstring& service_display_name);
 
+    ServiceConfig(const ServiceConfig& rhs);
+    ServiceConfig& operator=(const ServiceConfig& rhs) = default;
+
+    ServiceConfig(ServiceConfig&& rhs);
     ServiceConfig& operator=(ServiceConfig&& rhs) = default;
 
     ~ServiceConfig();
 
-    bool is_valid;
-    uint32_t type;
-    uint32_t start_type;
-    uint32_t error_control;
+    friend bool operator==(const ServiceConfig& lhs, const ServiceConfig& rhs);
+
+    bool is_valid = false;
+    uint32_t type = SERVICE_NO_CHANGE;
+    uint32_t start_type = SERVICE_NO_CHANGE;
+    uint32_t error_control = SERVICE_NO_CHANGE;
     std::wstring cmd_line;
     std::vector<wchar_t> dependencies;
-
-    DISALLOW_COPY_AND_ASSIGN(ServiceConfig);
+    std::wstring display_name;
   };
 
   InstallServiceWorkItemImpl(const std::wstring& service_name,
@@ -64,7 +69,19 @@ class InstallServiceWorkItemImpl {
   bool DeleteServiceImpl();
 
   // Member functions that help with service installation or upgrades.
-  bool IsServiceCorrectlyConfigured(const ServiceConfig& config);
+
+  // `MakeUpgradeServiceConfig()` returns a differential `ServiceConfig` that
+  // facilitates passing it with minimal changes subsequently to
+  // `ChangeServiceConfig()`. This way, `ChangeServiceConfig()` only asks the
+  // Windows SCM to make changes where they differ from the existing service
+  // configuration.
+  ServiceConfig MakeUpgradeServiceConfig(const ServiceConfig& original_config);
+
+  // Takes the `new_config` returned by `MakeUpgradeServiceConfig()` and
+  // returns true if `new_config` does not match the default configuration.
+  bool IsUpgradeNeeded(const ServiceConfig& new_config);
+
+  bool ChangeServiceConfig(const ServiceConfig& config);
   bool DeleteCurrentService();
 
   // Helper functions for service install/upgrade/delete/rollback.
@@ -141,7 +158,6 @@ class InstallServiceWorkItemImpl {
 
   // Helper functions for service install/upgrade/delete/rollback.
   bool InstallService(const ServiceConfig& config);
-  bool ChangeServiceConfig(const ServiceConfig& config);
   bool DeleteService(ScopedScHandle service) const;
 
   // Generates a versioned service name prefixed with service_name_ and suffixed
