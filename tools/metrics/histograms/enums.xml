@@ -8804,11 +8804,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Has token"/>
 </enum>
 
-<enum name="BooleanHasUserGesture">
-  <int value="0" label="Does not have user gesture"/>
-  <int value="1" label="Has user gesture"/>
-</enum>
-
 <enum name="BooleanHasWithheldHosts">
   <int value="0" label="Does not have withheld hosts"/>
   <int value="1" label="Has withheld hosts"/>

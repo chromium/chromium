@@ -121,10 +121,7 @@ void RecordDownloadSource(ChromeDownloadSource source);
 
 // Record that a download warning was shown.
 void RecordDangerousDownloadWarningShown(
-    download::DownloadDangerType danger_type,
-    const base::FilePath& file_path,
-    bool is_https,
-    bool has_user_gesture);
+    download::DownloadDangerType danger_type);
 
 // Record that the user opened the confirmation dialog for a dangerous download.
 void RecordOpenedDangerousConfirmDialog(

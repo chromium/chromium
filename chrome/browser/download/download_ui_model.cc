@@ -512,10 +512,6 @@ GURL DownloadUIModel::GetURL() const {
   return GURL();
 }
 
-bool DownloadUIModel::HasUserGesture() const {
-  return false;
-}
-
 GURL DownloadUIModel::GetOriginalURL() const {
   return GURL();
 }
