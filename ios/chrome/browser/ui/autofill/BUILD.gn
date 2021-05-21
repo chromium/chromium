@@ -179,6 +179,7 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/autofill/ios/browser:autofill_test_bundle_data",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
