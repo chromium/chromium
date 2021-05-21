@@ -88,7 +88,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     @Nullable
     private Runnable mDeferredLoadAction;
 
-    private LocationBarDataProvider mDataProvider;
+    private @NonNull LocationBarDataProvider mDataProvider;
 
     @NonNull
     private final Callback<Tab> mBringTabToFrontCallback;
@@ -228,10 +228,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         return mSuggestionModels;
     }
 
-    private Profile getCurrentProfile() {
-        return mDataProvider != null ? mDataProvider.getProfile() : null;
-    }
-
     /**
      * Check if the suggestion is created from clipboard.
      *
@@ -316,19 +312,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
 
         mEnableAdaptiveSuggestionsCount =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT);
-
-        if (mDeferredLoadAction != null) {
-            // Re-schedule the load action for execution.
-            mHandler.post(mDeferredLoadAction);
-            mDeferredLoadAction = null;
-            cancelAutocompleteRequests();
-        } else if (mCurrentAutocompleteRequest != null) {
-            // Re-schedule the autocomplete action for immediate execution.
-            // These requests are not executed until Native libraries are loaded.
-            mHandler.postAtFrontOfQueue(mCurrentAutocompleteRequest);
-        }
-
         mDropdownViewInfoListBuilder.onNativeInitialized();
+
+        runPendingAutocompleteRequests();
     }
 
     /** @see org.chromium.chrome.browser.omnibox.UrlFocusChangeListener#onUrlFocusChange(boolean) */
@@ -392,6 +378,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
 
         mAutocomplete.addOnSuggestionsReceivedListener(this);
         mDropdownViewInfoListBuilder.setProfile(profile);
+
+        runPendingAutocompleteRequests();
     }
 
     /**
@@ -1078,6 +1066,24 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         if (mCurrentAutocompleteRequest != null) {
             mHandler.removeCallbacks(mCurrentAutocompleteRequest);
             mCurrentAutocompleteRequest = null;
+        }
+    }
+
+    /**
+     * Execute any pending Autocomplete requests, if the Autocomplete subsystem is ready.
+     */
+    private void runPendingAutocompleteRequests() {
+        if (!mNativeInitialized || mAutocomplete == null) return;
+
+        if (mDeferredLoadAction != null) {
+            // Re-schedule the load action for execution.
+            mHandler.post(mDeferredLoadAction);
+            mDeferredLoadAction = null;
+            cancelAutocompleteRequests();
+        } else if (mCurrentAutocompleteRequest != null) {
+            // Re-schedule the autocomplete action for immediate execution.
+            // These requests are not executed until Native libraries are loaded.
+            mHandler.postAtFrontOfQueue(mCurrentAutocompleteRequest);
         }
     }
 }
