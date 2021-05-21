@@ -225,6 +225,7 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
       platform_part_(std::make_unique<BrowserProcessPlatformPart>()) {
   g_browser_process = this;
 
+  DCHECK(local_state_);
   DCHECK(startup_data);
   // Most work should be done in Init().
 }
@@ -455,8 +456,7 @@ void BrowserProcessImpl::StartTearDown() {
   // |g_browser_process->local_state()|. See crbug.com/1187418
   status_tray_.reset();
 
-  if (local_state_)
-    local_state_->CommitPendingWrite();
+  local_state_->CommitPendingWrite();
 
   // This expects to be destroyed before the task scheduler is torn down.
   SystemNetworkContextManager::DeleteInstance();
@@ -565,11 +565,7 @@ void RequestProxyResolvingSocketFactory(
 }  // namespace
 
 void BrowserProcessImpl::FlushLocalStateAndReply(base::OnceClosure reply) {
-  if (local_state_) {
-    local_state_->CommitPendingWrite(std::move(reply));
-    return;
-  }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(reply));
+  local_state_->CommitPendingWrite(std::move(reply));
 }
 
 void BrowserProcessImpl::EndSession() {
@@ -589,7 +585,7 @@ void BrowserProcessImpl::EndSession() {
 
   // Tell the metrics service it was cleanly shutdown.
   metrics::MetricsService* metrics = g_browser_process->metrics_service();
-  if (metrics && local_state_) {
+  if (metrics) {
     metrics->RecordStartOfSessionEnd();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // MetricsService lazily writes to prefs, force it to write now.

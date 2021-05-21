@@ -250,7 +250,7 @@ class BrowserProcessImpl : public BrowserProcess,
   bool created_profile_manager_ = false;
   std::unique_ptr<ProfileManager> profile_manager_;
 
-  std::unique_ptr<PrefService> local_state_;
+  const std::unique_ptr<PrefService> local_state_;
 
   // |metrics_services_manager_| owns this.
   ChromeMetricsServicesManagerClient* metrics_services_manager_client_ =
