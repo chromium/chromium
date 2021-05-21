@@ -70,6 +70,7 @@ public class AccountTrackerService {
     private @AccountsSeedingStatus int mAccountsSeedingStatus;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private AccountsChangeObserver mAccountsChangeObserver;
+    private boolean mExistsPendingSeedAccountsTask;
 
     @VisibleForTesting
     @CalledByNative
@@ -79,6 +80,7 @@ public class AccountTrackerService {
         mRunnablesWaitingForAccountsSeeding = VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP
                 ? new ConcurrentLinkedDeque<>()
                 : new ArrayDeque<>();
+        mExistsPendingSeedAccountsTask = false;
     }
 
     /**
@@ -125,7 +127,7 @@ public class AccountTrackerService {
      */
     public void onAccountsChanged() {
         if (mAccountsSeedingStatus == AccountsSeedingStatus.IN_PROGRESS) {
-            mRunnablesWaitingForAccountsSeeding.add(this::seedAccounts);
+            mExistsPendingSeedAccountsTask = true;
         } else {
             seedAccounts();
         }
@@ -181,6 +183,12 @@ public class AccountTrackerService {
         AccountTrackerServiceJni.get().seedAccountsInfo(mNativeAccountTrackerService,
                 gaiaIds.toArray(new String[0]), emails.toArray(new String[0]));
         mAccountsSeedingStatus = AccountsSeedingStatus.DONE;
+
+        if (mExistsPendingSeedAccountsTask) {
+            seedAccounts();
+            mExistsPendingSeedAccountsTask = false;
+            return;
+        }
 
         while (!mRunnablesWaitingForAccountsSeeding.isEmpty()) {
             Runnable runnable = mRunnablesWaitingForAccountsSeeding.remove();
