@@ -84,6 +84,8 @@ const FunctionNameList& AllowedFunctions() {
           // SQLite ICU functions
           // like(), lower() and upper() are already in the list
           "regexp",
+          // Used internally by ALTER TABLE ADD COLUMN.
+          "printf",
       }));
   return list;
 }
