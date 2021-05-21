@@ -55,15 +55,13 @@ void DOMURL::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-void DOMURL::SetInput(const String& value) {
+void DOMURL::setHref(const String& value, ExceptionState& exception_state) {
   KURL url(BlankURL(), value);
-  if (url.IsValid()) {
-    url_ = url;
-    input_ = String();
-  } else {
-    url_ = KURL();
-    input_ = value;
+  if (!url.IsValid()) {
+    exception_state.ThrowTypeError("Invalid URL");
+    return;
   }
+  url_ = url;
   Update();
 }
 

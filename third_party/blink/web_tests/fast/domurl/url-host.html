@@ -100,11 +100,15 @@ test(function() {
 
 test(function() {
     var url = new URL('http://abc.de/path/file?query#fragment');
-    url.href = 'invalid';
-    assert_equals(url.host, '');
+    var expected = 'abc.de';
+    assert_equals(url.host, expected);
+
+    assert_throws_js(TypeError, () => { url.href = 'invalid'; });
+    assert_equals(url.host, expected);
+
     url.host = 'changed';
-    assert_equals(url.host, '');
-    assert_equals(url.href, 'invalid');
+    assert_equals(url.host, 'changed');
+    assert_equals(url.href, 'http://changed/path/file?query#fragment');
 }, 'host property invalid URL');
 
 test(function() {

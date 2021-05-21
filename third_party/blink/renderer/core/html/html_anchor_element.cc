@@ -332,7 +332,7 @@ String HTMLAnchorElement::Input() const {
   return FastGetAttribute(html_names::kHrefAttr);
 }
 
-void HTMLAnchorElement::SetInput(const String& value) {
+void HTMLAnchorElement::setHref(const String& value) {
   SetHref(AtomicString(value));
 }
 

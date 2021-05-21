@@ -42,12 +42,15 @@ test(function() {
 
 test(function() {
     var url = new URL('http://abc.de:8080/path/file?query#fragment');
-    url.href = 'invalid';
-    assert_equals(url.port, '');
+    var expected = '8080';
+    assert_equals(url.port, expected);
+
+    assert_throws_js(TypeError, () => { url.href = 'invalid'; });
+    assert_equals(url.port, expected);
 
     url.port = '8081';
-    assert_equals(url.port, '');
-    assert_equals(url.href, 'invalid');
+    assert_equals(url.port, '8081');
+    assert_equals(url.href, 'http://abc.de:8081/path/file?query#fragment');
 }, 'port property invalid URL');
 
 </script>

@@ -33,10 +33,6 @@ namespace blink {
 
 DOMURLUtils::~DOMURLUtils() = default;
 
-void DOMURLUtils::setHref(const String& value) {
-  SetInput(value);
-}
-
 void DOMURLUtils::setProtocol(const String& value) {
   KURL kurl = Url();
   if (kurl.IsNull())

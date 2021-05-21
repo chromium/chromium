@@ -71,6 +71,7 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
 
   KURL Href() const;
   void SetHref(const AtomicString&);
+  void setHref(const String&);
 
   const AtomicString& GetName() const;
 
@@ -82,7 +83,6 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   void SetURL(const KURL&) final;
 
   String Input() const final;
-  void SetInput(const String&) final;
 
   bool IsLiveLink() const final;
 

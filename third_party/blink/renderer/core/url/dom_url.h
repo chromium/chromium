@@ -64,9 +64,13 @@ class CORE_EXPORT DOMURL final : public ScriptWrappable, public DOMURLUtils {
   KURL Url() const override { return url_; }
   void SetURL(const KURL& url) override { url_ = url; }
 
-  String Input() const override { return input_; }
-  void SetInput(const String&) override;
+  String Input() const override {
+    // Url() can never be null, so Input() is never called.
+    NOTREACHED();
+    return String();
+  }
 
+  void setHref(const String&, ExceptionState& exception_state);
   void setSearch(const String&) override;
 
   URLSearchParams* searchParams();
@@ -82,7 +86,6 @@ class CORE_EXPORT DOMURL final : public ScriptWrappable, public DOMURLUtils {
   void UpdateSearchParams(const String&);
 
   KURL url_;
-  String input_;
   WeakMember<URLSearchParams> search_params_;
 };
 

@@ -38,10 +38,7 @@ class KURL;
 class CORE_EXPORT DOMURLUtils : public DOMURLUtilsReadOnly {
  public:
   virtual void SetURL(const KURL&) = 0;
-  virtual void SetInput(const String&) = 0;
   ~DOMURLUtils() override;
-
-  void setHref(const String&);
 
   void setProtocol(const String&);
   void setUsername(const String&);
