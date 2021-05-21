@@ -234,7 +234,7 @@ void NGSVGTextLayoutAlgorithm::SetFlags(
         logical_offset.block_offset +
             font_metrics.FixedAscent(item.Style().GetFontBaseline()));
     if (!horizontal_)
-      offset.Set(-offset.Y(), offset.X());
+      offset = offset.TransposedPoint();
     css_positions_.push_back(offset);
 
     info.inline_size = horizontal_ ? item.Size().width : item.Size().height;
