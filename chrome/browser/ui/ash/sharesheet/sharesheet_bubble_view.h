@@ -106,8 +106,10 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   views::View* default_view_ = nullptr;
   views::View* expanded_view_ = nullptr;
   views::View* share_action_view_ = nullptr;
-  // Separator that appears above the expand button.
-  views::Separator* expand_button_separator_ = nullptr;
+  // Separator that appears between the |header_view_| and the |body_view|.
+  views::Separator* header_body_separator_ = nullptr;
+  // Separator that appears between the |body_view| and the |footer_view_|.
+  views::Separator* body_footer_separator_ = nullptr;
   // Separator between the default_view and the expanded_view.
   views::Separator* expanded_view_separator_ = nullptr;
   views::View* parent_view_ = nullptr;
