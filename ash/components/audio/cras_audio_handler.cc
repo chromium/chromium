@@ -907,6 +907,13 @@ void CrasAudioHandler::ResendBluetoothBattery() {
   CrasAudioClient::Get()->ResendBluetoothBattery();
 }
 
+void CrasAudioHandler::SetPrefHandlerForTesting(
+    scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler) {
+  audio_pref_handler_->RemoveAudioPrefObserver(this);
+  audio_pref_handler_ = audio_pref_handler;
+  audio_pref_handler_->AddAudioPrefObserver(this);
+}
+
 void CrasAudioHandler::OnAudioPolicyPrefChanged() {
   ApplyAudioPolicy();
 }

@@ -367,6 +367,9 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // connected afterward. For example: User logout.
   void ResendBluetoothBattery();
 
+  void SetPrefHandlerForTesting(
+      scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler);
+
  protected:
   CrasAudioHandler(
       mojo::PendingRemote<media_session::mojom::MediaControllerManager>
