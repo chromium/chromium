@@ -22,8 +22,6 @@
 namespace ash {
 namespace accelerators {
 
-using ::chromeos::WindowStateType;
-
 bool ZoomDisplay(bool up) {
   if (up)
     base::RecordAction(base::UserMetricsAction("Accel_Scale_Ui_Up"));
@@ -82,14 +80,6 @@ void ToggleFullscreen() {
     return;
   const WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
   WindowState::Get(active_window)->OnWMEvent(&event);
-}
-
-bool CanUnpinWindow() {
-  // WindowStateType::kTrustedPinned does not allow the user to press a key to
-  // exit pinned mode.
-  WindowState* window_state = WindowState::ForActiveWindow();
-  return window_state &&
-         window_state->GetStateType() == WindowStateType::kPinned;
 }
 
 void UnpinWindow() {

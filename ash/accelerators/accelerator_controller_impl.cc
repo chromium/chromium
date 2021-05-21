@@ -151,6 +151,7 @@ const char kAccelWindowSnap[] = "Ash.Accelerators.WindowSnap";
 namespace {
 
 using base::UserMetricsAction;
+using chromeos::WindowStateType;
 using chromeos::input_method::InputMethodManager;
 using message_center::Notification;
 using message_center::SystemNotificationWarningLevel;
@@ -1691,6 +1692,14 @@ bool CanHandleTouchHud() {
   return RootWindowController::ForTargetRootWindow()->touch_hud_debug();
 }
 
+bool CanUnpinWindow() {
+  // WindowStateType::kTrustedPinned does not allow the user to press a key to
+  // exit pinned mode.
+  WindowState* window_state = WindowState::ForActiveWindow();
+  return window_state &&
+         window_state->GetStateType() == WindowStateType::kPinned;
+}
+
 void HandleTouchHudClear() {
   RootWindowController::ForTargetRootWindow()->touch_hud_debug()->Clear();
 }
@@ -2141,7 +2150,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case TOUCH_HUD_MODE_CHANGE:
       return CanHandleTouchHud();
     case UNPIN:
-      return accelerators::CanUnpinWindow();
+      return CanUnpinWindow();
     case WINDOW_CYCLE_SNAP_LEFT:
     case WINDOW_CYCLE_SNAP_RIGHT:
       return CanHandleWindowSnap();

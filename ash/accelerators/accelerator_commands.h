@@ -31,10 +31,6 @@ ASH_EXPORT void ToggleMaximized();
 // by WindowStateDelegate::ToggleFullscreen().
 ASH_EXPORT void ToggleFullscreen();
 
-// True if the user can press a key to exit pinned mode (aka forced
-// fullscreen).
-ASH_EXPORT bool CanUnpinWindow();
-
 // If a window is pinned (aka forced fullscreen), exit from pinned mode.
 ASH_EXPORT void UnpinWindow();
 
