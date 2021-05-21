@@ -15,8 +15,6 @@ namespace blink {
 class ScriptState;
 class ExceptionState;
 class KURL;
-class
-    ReadableStreamOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString;
 
 class NavigatorBeacon final : public GarbageCollected<NavigatorBeacon>,
                               public Supplement<Navigator> {
@@ -28,37 +26,20 @@ class NavigatorBeacon final : public GarbageCollected<NavigatorBeacon>,
   explicit NavigatorBeacon(Navigator&);
   virtual ~NavigatorBeacon();
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static bool sendBeacon(
       ScriptState* script_state,
       Navigator& navigator,
       const String& url_string,
       const V8UnionReadableStreamOrXMLHttpRequestBodyInit* data,
       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static bool sendBeacon(
-      ScriptState*,
-      Navigator&,
-      const String&,
-      const ReadableStreamOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString&,
-      ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void Trace(Visitor*) const override;
 
  private:
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool SendBeaconImpl(ScriptState* script_state,
                       const String& url_string,
                       const V8UnionReadableStreamOrXMLHttpRequestBodyInit* data,
                       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  bool SendBeaconImpl(
-      ScriptState*,
-      const String&,
-      const ReadableStreamOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString&,
-      ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool CanSendBeacon(ExecutionContext*, const KURL&, ExceptionState&);
 };
 

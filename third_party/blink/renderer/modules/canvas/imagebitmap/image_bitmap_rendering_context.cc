@@ -23,8 +23,6 @@ ImageBitmapRenderingContext::ImageBitmapRenderingContext(
 
 ImageBitmapRenderingContext::~ImageBitmapRenderingContext() = default;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
 V8RenderingContext* ImageBitmapRenderingContext::AsV8RenderingContext() {
   return MakeGarbageCollected<V8RenderingContext>(this);
 }
@@ -33,19 +31,6 @@ V8OffscreenRenderingContext*
 ImageBitmapRenderingContext::AsV8OffscreenRenderingContext() {
   return MakeGarbageCollected<V8OffscreenRenderingContext>(this);
 }
-
-#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
-void ImageBitmapRenderingContext::SetCanvasGetContextResult(
-    RenderingContext& result) {
-  result.SetImageBitmapRenderingContext(this);
-}
-void ImageBitmapRenderingContext::SetOffscreenCanvasGetContextResult(
-    OffscreenRenderingContext& result) {
-  result.SetImageBitmapRenderingContext(this);
-}
-
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void ImageBitmapRenderingContext::transferFromImageBitmap(
     ImageBitmap* image_bitmap,

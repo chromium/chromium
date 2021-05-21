@@ -743,7 +743,6 @@ class Cache::CodeCacheHandleCallbackForPut final
   mojom::blink::FetchAPIResponsePtr fetch_api_response_;
 };
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 ScriptPromise Cache::match(ScriptState* script_state,
                            const V8RequestInfo* request,
                            const CacheQueryOptions* options,
@@ -763,28 +762,12 @@ ScriptPromise Cache::match(ScriptState* script_state,
   }
   return MatchImpl(script_state, request_object, options);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-ScriptPromise Cache::match(ScriptState* script_state,
-                           const RequestInfo& request,
-                           const CacheQueryOptions* options,
-                           ExceptionState& exception_state) {
-  DCHECK(!request.IsNull());
-  if (request.IsRequest())
-    return MatchImpl(script_state, request.GetAsRequest(), options);
-  Request* new_request =
-      Request::Create(script_state, request.GetAsUSVString(), exception_state);
-  if (exception_state.HadException())
-    return ScriptPromise();
-  return MatchImpl(script_state, new_request, options);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 ScriptPromise Cache::matchAll(ScriptState* script_state,
                               ExceptionState& exception_state) {
   return MatchAllImpl(script_state, nullptr, CacheQueryOptions::Create());
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 ScriptPromise Cache::matchAll(ScriptState* script_state,
                               const V8RequestInfo* request,
                               const CacheQueryOptions* options,
@@ -804,23 +787,7 @@ ScriptPromise Cache::matchAll(ScriptState* script_state,
   }
   return MatchAllImpl(script_state, request_object, options);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-ScriptPromise Cache::matchAll(ScriptState* script_state,
-                              const RequestInfo& request,
-                              const CacheQueryOptions* options,
-                              ExceptionState& exception_state) {
-  DCHECK(!request.IsNull());
-  if (request.IsRequest())
-    return MatchAllImpl(script_state, request.GetAsRequest(), options);
-  Request* new_request =
-      Request::Create(script_state, request.GetAsUSVString(), exception_state);
-  if (exception_state.HadException())
-    return ScriptPromise();
-  return MatchAllImpl(script_state, new_request, options);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 ScriptPromise Cache::add(ScriptState* script_state,
                          const V8RequestInfo* request,
                          ExceptionState& exception_state) {
@@ -839,26 +806,7 @@ ScriptPromise Cache::add(ScriptState* script_state,
   }
   return AddAllImpl(script_state, "Cache.add()", requests, exception_state);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-ScriptPromise Cache::add(ScriptState* script_state,
-                         const RequestInfo& request,
-                         ExceptionState& exception_state) {
-  DCHECK(!request.IsNull());
-  HeapVector<Member<Request>> requests;
-  if (request.IsRequest()) {
-    requests.push_back(request.GetAsRequest());
-  } else {
-    requests.push_back(Request::Create(script_state, request.GetAsUSVString(),
-                                       exception_state));
-    if (exception_state.HadException())
-      return ScriptPromise();
-  }
 
-  return AddAllImpl(script_state, "Cache.add()", requests, exception_state);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 ScriptPromise Cache::addAll(ScriptState* script_state,
                             const HeapVector<Member<V8RequestInfo>>& requests,
                             ExceptionState& exception_state) {
@@ -879,27 +827,7 @@ ScriptPromise Cache::addAll(ScriptState* script_state,
   return AddAllImpl(script_state, "Cache.addAll()", request_objects,
                     exception_state);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-ScriptPromise Cache::addAll(ScriptState* script_state,
-                            const HeapVector<RequestInfo>& raw_requests,
-                            ExceptionState& exception_state) {
-  HeapVector<Member<Request>> requests;
-  for (RequestInfo request : raw_requests) {
-    if (request.IsRequest()) {
-      requests.push_back(request.GetAsRequest());
-    } else {
-      requests.push_back(Request::Create(script_state, request.GetAsUSVString(),
-                                         exception_state));
-      if (exception_state.HadException())
-        return ScriptPromise();
-    }
-  }
 
-  return AddAllImpl(script_state, "Cache.addAll()", requests, exception_state);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 ScriptPromise Cache::Delete(ScriptState* script_state,
                             const V8RequestInfo* request,
                             const CacheQueryOptions* options,
@@ -919,39 +847,15 @@ ScriptPromise Cache::Delete(ScriptState* script_state,
   }
   return DeleteImpl(script_state, request_object, options);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-ScriptPromise Cache::Delete(ScriptState* script_state,
-                            const RequestInfo& request,
-                            const CacheQueryOptions* options,
-                            ExceptionState& exception_state) {
-  DCHECK(!request.IsNull());
-  if (request.IsRequest())
-    return DeleteImpl(script_state, request.GetAsRequest(), options);
-  Request* new_request =
-      Request::Create(script_state, request.GetAsUSVString(), exception_state);
-  if (exception_state.HadException())
-    return ScriptPromise();
-  return DeleteImpl(script_state, new_request, options);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 ScriptPromise Cache::put(ScriptState* script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                          const V8RequestInfo* request_info,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                         const RequestInfo& request_info,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                          Response* response,
                          ExceptionState& exception_state) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   DCHECK(request_info);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  DCHECK(!request_info.IsNull());
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW0("CacheStorage", "Cache::put",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Request* request = nullptr;
   switch (request_info->GetContentType()) {
     case V8RequestInfo::ContentType::kRequest:
@@ -964,15 +868,6 @@ ScriptPromise Cache::put(ScriptState* script_state,
         return ScriptPromise();
       break;
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  Request* request =
-      request_info.IsRequest()
-          ? request_info.GetAsRequest()
-          : Request::Create(script_state, request_info.GetAsUSVString(),
-                            exception_state);
-  if (exception_state.HadException())
-    return ScriptPromise();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   ValidateRequestForPut(request, exception_state);
   if (exception_state.HadException())
@@ -997,7 +892,6 @@ ScriptPromise Cache::keys(ScriptState* script_state, ExceptionState&) {
   return KeysImpl(script_state, nullptr, CacheQueryOptions::Create());
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 ScriptPromise Cache::keys(ScriptState* script_state,
                           const V8RequestInfo* request,
                           const CacheQueryOptions* options,
@@ -1017,21 +911,6 @@ ScriptPromise Cache::keys(ScriptState* script_state,
   }
   return KeysImpl(script_state, request_object, options);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-ScriptPromise Cache::keys(ScriptState* script_state,
-                          const RequestInfo& request,
-                          const CacheQueryOptions* options,
-                          ExceptionState& exception_state) {
-  DCHECK(!request.IsNull());
-  if (request.IsRequest())
-    return KeysImpl(script_state, request.GetAsRequest(), options);
-  Request* new_request =
-      Request::Create(script_state, request.GetAsUSVString(), exception_state);
-  if (exception_state.HadException())
-    return ScriptPromise();
-  return KeysImpl(script_state, new_request, options);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 Cache::Cache(GlobalFetch::ScopedFetcher* fetcher,
              CacheStorageBlobClientList* blob_client_list,
@@ -1244,12 +1123,7 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
     if (barrier_callback->Signal())
       request_list[i]->signal()->Follow(barrier_callback->Signal());
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     V8RequestInfo* info = MakeGarbageCollected<V8RequestInfo>(request_list[i]);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    RequestInfo info;
-    info.SetRequest(request_list[i]);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
     auto* response_loader = MakeGarbageCollected<ResponseBodyLoader>(
         script_state, barrier_callback, i, /*require_ok_response=*/true,

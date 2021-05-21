@@ -32,13 +32,8 @@ DOMPointReadOnly* makeNormalizedQuaternion(double x,
                                            double z,
                                            double w);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 WebGLRenderingContextBase* webglRenderingContextBaseFromUnion(
     const V8XRWebGLRenderingContext* context);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-WebGLRenderingContextBase* webglRenderingContextBaseFromUnion(
-    const XRWebGLRenderingContext&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 constexpr char kUnableToNormalizeZeroLength[] =
     "Unable to normalize vector of length 0.";

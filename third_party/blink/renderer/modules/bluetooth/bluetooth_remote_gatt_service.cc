@@ -90,11 +90,7 @@ void BluetoothRemoteGATTService::GetCharacteristicsCallback(
 
 ScriptPromise BluetoothRemoteGATTService::getCharacteristic(
     ScriptState* script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8BluetoothCharacteristicUUID* characteristic,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const StringOrUnsignedLong& characteristic,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   String characteristic_uuid =
       BluetoothUUID::getCharacteristic(characteristic, exception_state);
@@ -108,11 +104,7 @@ ScriptPromise BluetoothRemoteGATTService::getCharacteristic(
 
 ScriptPromise BluetoothRemoteGATTService::getCharacteristics(
     ScriptState* script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8BluetoothCharacteristicUUID* characteristic,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const StringOrUnsignedLong& characteristic,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   String characteristic_uuid =
       BluetoothUUID::getCharacteristic(characteristic, exception_state);

@@ -331,11 +331,7 @@ void IDBDatabase::deleteObjectStore(const String& name,
 
 IDBTransaction* IDBDatabase::transaction(
     ScriptState* script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8UnionStringOrStringSequence* store_names,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const StringOrStringSequence& store_names,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const String& mode,
     ExceptionState& exception_state) {
   return transaction(script_state, store_names, mode, nullptr, exception_state);
@@ -343,18 +339,13 @@ IDBTransaction* IDBDatabase::transaction(
 
 IDBTransaction* IDBDatabase::transaction(
     ScriptState* script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8UnionStringOrStringSequence* store_names,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const StringOrStringSequence& store_names,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const String& mode_string,
     const IDBTransactionOptions* options,
     ExceptionState& exception_state) {
   IDB_TRACE("IDBDatabase::transaction");
 
   HashSet<String> scope;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   DCHECK(store_names);
   switch (store_names->GetContentType()) {
     case V8UnionStringOrStringSequence::ContentType::kString:
@@ -365,16 +356,6 @@ IDBTransaction* IDBDatabase::transaction(
         scope.insert(name);
       break;
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  if (store_names.IsString()) {
-    scope.insert(store_names.GetAsString());
-  } else if (store_names.IsStringSequence()) {
-    for (const String& name : store_names.GetAsStringSequence())
-      scope.insert(name);
-  } else {
-    NOTREACHED();
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   if (version_change_transaction_) {
     exception_state.ThrowDOMException(

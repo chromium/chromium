@@ -43,7 +43,6 @@
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom-blink-forward.h"
-#include "third_party/blink/renderer/bindings/core/v8/request_or_usv_string.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/service_worker/cross_origin_resource_policy_checker.h"
@@ -80,8 +79,6 @@ class WorkerClassicScriptLoader;
 struct GlobalScopeCreationParams;
 struct WebServiceWorkerError;
 struct WebServiceWorkerObjectInfo;
-
-typedef RequestOrUSVString RequestInfo;
 
 class MODULES_EXPORT ServiceWorkerGlobalScope final
     : public WorkerGlobalScope,

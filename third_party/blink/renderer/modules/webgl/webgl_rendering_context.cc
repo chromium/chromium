@@ -158,8 +158,6 @@ WebGLRenderingContext::WebGLRenderingContext(
                                 requested_attributes,
                                 Platform::kWebGL1ContextType) {}
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
 V8RenderingContext* WebGLRenderingContext::AsV8RenderingContext() {
   return MakeGarbageCollected<V8RenderingContext>(this);
 }
@@ -168,20 +166,6 @@ V8OffscreenRenderingContext*
 WebGLRenderingContext::AsV8OffscreenRenderingContext() {
   return MakeGarbageCollected<V8OffscreenRenderingContext>(this);
 }
-
-#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
-void WebGLRenderingContext::SetCanvasGetContextResult(
-    RenderingContext& result) {
-  result.SetWebGLRenderingContext(this);
-}
-
-void WebGLRenderingContext::SetOffscreenCanvasGetContextResult(
-    OffscreenRenderingContext& result) {
-  result.SetWebGLRenderingContext(this);
-}
-
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 ImageBitmap* WebGLRenderingContext::TransferToImageBitmap(
     ScriptState* script_state) {

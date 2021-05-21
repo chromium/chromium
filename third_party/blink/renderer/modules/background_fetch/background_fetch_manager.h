@@ -24,7 +24,6 @@ class BackgroundFetchIconLoader;
 class BackgroundFetchOptions;
 class BackgroundFetchRegistration;
 class ExceptionState;
-class RequestOrUSVStringOrRequestOrUSVStringSequence;
 class ScriptPromiseResolver;
 class ScriptState;
 class ServiceWorkerRegistration;
@@ -44,11 +43,7 @@ class MODULES_EXPORT BackgroundFetchManager final
   ScriptPromise fetch(
       ScriptState* script_state,
       const String& id,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       const V8UnionRequestInfoOrRequestOrUSVStringSequence* requests,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      const RequestOrUSVStringOrRequestOrUSVStringSequence& requests,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       const BackgroundFetchOptions* options,
       ExceptionState& exception_state);
   ScriptPromise get(ScriptState* script_state,
@@ -69,11 +64,7 @@ class MODULES_EXPORT BackgroundFetchManager final
   // |has_requests_with_body| will be set if any of the |requests| has a body.
   static Vector<mojom::blink::FetchAPIRequestPtr> CreateFetchAPIRequestVector(
       ScriptState* script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       const V8UnionRequestInfoOrRequestOrUSVStringSequence* requests,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      const RequestOrUSVStringOrRequestOrUSVStringSequence& requests,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       ExceptionState& exception_state,
       bool* has_requests_with_body);
 

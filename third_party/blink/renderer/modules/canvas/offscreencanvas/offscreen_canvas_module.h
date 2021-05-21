@@ -21,21 +21,12 @@ class MODULES_EXPORT OffscreenCanvasModule {
   STATIC_ONLY(OffscreenCanvasModule);
 
  public:
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static V8OffscreenRenderingContext* getContext(
       ExecutionContext* execution_context,
       OffscreenCanvas& offscreen_canvas,
       const String& context_id,
       const CanvasContextCreationAttributesModule* attributes,
       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static void getContext(ExecutionContext*,
-                         OffscreenCanvas&,
-                         const String&,
-                         const CanvasContextCreationAttributesModule*,
-                         OffscreenRenderingContext&,
-                         ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 };
 
 }  // namespace blink

@@ -50,14 +50,9 @@ WebCryptoAlgorithm NormalizeCryptoAlgorithm(
   ExceptionState exception_state(isolate, ExceptionState::kQueryContext,
                                  "WebCryptoAlgorithm", "NormalizeAlgorithm");
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8AlgorithmIdentifier* algorithm_identifier =
       MakeGarbageCollected<V8AlgorithmIdentifier>(
           ScriptValue(isolate, algorithm_object));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  AlgorithmIdentifier algorithm_identifier;
-  algorithm_identifier.SetObject(ScriptValue(isolate, algorithm_object));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   WebCryptoAlgorithm algorithm;
   if (!NormalizeAlgorithm(isolate, algorithm_identifier, operation, algorithm,

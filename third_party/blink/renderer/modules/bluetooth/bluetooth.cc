@@ -58,7 +58,6 @@ const char kHandleGestureForPermissionRequest[] =
 
 namespace {
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 // TODO(crbug.com/1181288): Remove the old IDL union version.
 V8BluetoothServiceUUID* ToV8BluetoothServiceUUID(
     const StringOrUnsignedLong& uuid) {
@@ -71,7 +70,6 @@ V8BluetoothServiceUUID* ToV8BluetoothServiceUUID(
   NOTREACHED();
   return nullptr;
 }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace
 
@@ -109,13 +107,8 @@ static void CanonicalizeFilter(
     }
     canonicalized_filter->services.emplace();
     for (const StringOrUnsignedLong& service : filter->services()) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       const String& validated_service = BluetoothUUID::getService(
           ToV8BluetoothServiceUUID(service), exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      const String& validated_service =
-          BluetoothUUID::getService(service, exception_state);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       if (exception_state.HadException())
         return;
       canonicalized_filter->services->push_back(validated_service);
@@ -256,13 +249,8 @@ static void ConvertRequestDeviceOptions(
   if (options->hasOptionalServices()) {
     for (const StringOrUnsignedLong& optional_service :
          options->optionalServices()) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       const String& validated_optional_service = BluetoothUUID::getService(
           ToV8BluetoothServiceUUID(optional_service), exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      const String& validated_optional_service =
-          BluetoothUUID::getService(optional_service, exception_state);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       if (exception_state.HadException())
         return;
       result->optional_services.push_back(validated_optional_service);

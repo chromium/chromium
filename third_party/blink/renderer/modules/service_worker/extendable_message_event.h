@@ -73,11 +73,7 @@ class MODULES_EXPORT ExtendableMessageEvent final : public ExtendableEvent {
   bool isDataDirty() const { return false; }
   const String& origin() const { return origin_; }
   const String& lastEventId() const { return last_event_id_; }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8UnionClientOrMessagePortOrServiceWorker* source() const;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void source(ClientOrServiceWorkerOrMessagePort& result) const;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   MessagePortArray ports() const;
 
   const AtomicString& InterfaceName() const override;

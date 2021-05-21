@@ -9,9 +9,6 @@
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/unsigned_long_enforce_range_sequence_or_gpu_extent_3d_dict.h"
-#include "third_party/blink/renderer/bindings/modules/v8/unsigned_long_enforce_range_sequence_or_gpu_origin_2d_dict.h"
-#include "third_party/blink/renderer/bindings/modules/v8/unsigned_long_enforce_range_sequence_or_gpu_origin_3d_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_image_bitmap.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture.h"
@@ -267,12 +264,7 @@ void GPUQueue::WriteBufferImpl(GPUBuffer* buffer,
 void GPUQueue::writeTexture(GPUImageCopyTexture* destination,
                             const MaybeShared<DOMArrayBufferView>& data,
                             GPUImageDataLayout* data_layout,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                             const V8GPUExtent3D* write_size,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                            UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict&
-                                write_size,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                             ExceptionState& exception_state) {
   WriteTextureImpl(destination, data->BaseAddressMaybeShared(),
                    data->byteLength(), data_layout, write_size,
@@ -282,12 +274,7 @@ void GPUQueue::writeTexture(GPUImageCopyTexture* destination,
 void GPUQueue::writeTexture(GPUImageCopyTexture* destination,
                             const DOMArrayBufferBase* data,
                             GPUImageDataLayout* data_layout,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                             const V8GPUExtent3D* write_size,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                            UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict&
-                                write_size,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                             ExceptionState& exception_state) {
   WriteTextureImpl(destination, data->DataMaybeShared(), data->ByteLength(),
                    data_layout, write_size, exception_state);
@@ -297,18 +284,9 @@ void GPUQueue::WriteTextureImpl(GPUImageCopyTexture* destination,
                                 const void* data,
                                 size_t data_size,
                                 GPUImageDataLayout* data_layout,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                 const V8GPUExtent3D* write_size,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict&
-                                    write_size,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                 ExceptionState& exception_state) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   WGPUExtent3D dawn_write_size = AsDawnType(write_size, device_);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  WGPUExtent3D dawn_write_size = AsDawnType(&write_size, device_);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
 
   WGPUTextureDataLayout dawn_data_layout = {};
@@ -329,12 +307,7 @@ void GPUQueue::WriteTextureImpl(GPUImageCopyTexture* destination,
 // TODO(shaobo.yan@intel.com): Implement this function
 void GPUQueue::copyImageBitmapToTexture(GPUImageCopyImageBitmap* source,
                                         GPUImageCopyTexture* destination,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                         const V8GPUExtent3D* copy_size,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                        UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict&
-                                            copy_size,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                         ExceptionState& exception_state) {
   if (!source->imageBitmap()) {
     exception_state.ThrowTypeError("No valid imageBitmap");
@@ -355,11 +328,7 @@ void GPUQueue::copyImageBitmapToTexture(GPUImageCopyImageBitmap* source,
   // appropriate format. Now only support texture format exactly the same. The
   // compatible formats need to be defined in WebGPU spec.
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   WGPUExtent3D dawn_copy_size = AsDawnType(copy_size, device_);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size, device_);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // Extract imageBitmap attributes
   WGPUOrigin3D origin_in_image_bitmap =

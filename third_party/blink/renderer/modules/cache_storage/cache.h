@@ -47,9 +47,6 @@ class Request;
 class ScriptPromiseResolver;
 class ScriptState;
 
-class RequestOrUSVString;
-typedef RequestOrUSVString RequestInfo;
-
 class MODULES_EXPORT Cache : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -60,30 +57,15 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
         scoped_refptr<base::SingleThreadTaskRunner>);
 
   // From Cache.idl:
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise match(ScriptState* script_state,
                       const V8RequestInfo* request,
                       const CacheQueryOptions* options,
                       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ScriptPromise match(ScriptState*,
-                      const RequestInfo&,
-                      const CacheQueryOptions*,
-                      ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise matchAll(ScriptState*, ExceptionState&);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise matchAll(ScriptState* script_state,
                          const V8RequestInfo* request,
                          const CacheQueryOptions* options,
                          ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ScriptPromise matchAll(ScriptState*,
-                         const RequestInfo&,
-                         const CacheQueryOptions*,
-                         ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise add(ScriptState* script_state,
                     const V8RequestInfo* request,
                     ExceptionState& exception_state);
@@ -98,32 +80,11 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
                     const V8RequestInfo* request,
                     Response* response,
                     ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ScriptPromise add(ScriptState*, const RequestInfo&, ExceptionState&);
-  ScriptPromise addAll(ScriptState*,
-                       const HeapVector<RequestInfo>&,
-                       ExceptionState&);
-  ScriptPromise Delete(ScriptState*,
-                       const RequestInfo&,
-                       const CacheQueryOptions*,
-                       ExceptionState&);
-  ScriptPromise put(ScriptState*,
-                    const RequestInfo&,
-                    Response*,
-                    ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise keys(ScriptState*, ExceptionState&);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise keys(ScriptState* script_state,
                      const V8RequestInfo* request,
                      const CacheQueryOptions* options,
                      ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ScriptPromise keys(ScriptState*,
-                     const RequestInfo&,
-                     const CacheQueryOptions*,
-                     ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void Trace(Visitor*) const override;
 

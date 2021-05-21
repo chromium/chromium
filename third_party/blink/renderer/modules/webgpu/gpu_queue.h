@@ -23,7 +23,6 @@ class GPUImageDataLayout;
 class ScriptPromiseResolver;
 class ScriptState;
 class StaticBitmapImage;
-class UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict;
 
 class GPUQueue : public DawnObject<WGPUQueue> {
   DEFINE_WRAPPERTYPEINFO();
@@ -56,7 +55,6 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                    uint64_t data_byte_offset,
                    uint64_t byte_size,
                    ExceptionState& exception_state);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void writeTexture(GPUImageCopyTexture* destination,
                     const MaybeShared<DOMArrayBufferView>& data,
                     GPUImageDataLayout* data_layout,
@@ -71,25 +69,6 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                                 GPUImageCopyTexture* destination,
                                 const V8GPUExtent3D* copy_size,
                                 ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void writeTexture(
-      GPUImageCopyTexture* destination,
-      const MaybeShared<DOMArrayBufferView>& data,
-      GPUImageDataLayout* data_layout,
-      UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& write_size,
-      ExceptionState& exception_state);
-  void writeTexture(
-      GPUImageCopyTexture* destination,
-      const DOMArrayBufferBase* data,
-      GPUImageDataLayout* data_layout,
-      UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& write_size,
-      ExceptionState& exception_state);
-  void copyImageBitmapToTexture(
-      GPUImageCopyImageBitmap* source,
-      GPUImageCopyTexture* destination,
-      UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copySize,
-      ExceptionState& exception_state);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
  private:
   void OnWorkDoneCallback(ScriptPromiseResolver* resolver,
@@ -112,22 +91,12 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                        uint64_t data_byte_offset,
                        absl::optional<uint64_t> byte_size,
                        ExceptionState& exception_state);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void WriteTextureImpl(GPUImageCopyTexture* destination,
                         const void* data,
                         size_t dataSize,
                         GPUImageDataLayout* data_layout,
                         const V8GPUExtent3D* write_size,
                         ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void WriteTextureImpl(
-      GPUImageCopyTexture* destination,
-      const void* data,
-      size_t dataSize,
-      GPUImageDataLayout* data_layout,
-      UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& write_size,
-      ExceptionState& exception_state);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   DISALLOW_COPY_AND_ASSIGN(GPUQueue);
 };

@@ -67,7 +67,6 @@ DOMPointReadOnly* makeNormalizedQuaternion(double x,
                                   w / length);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 WebGLRenderingContextBase* webglRenderingContextBaseFromUnion(
     const V8XRWebGLRenderingContext* context) {
   DCHECK(context);
@@ -80,16 +79,6 @@ WebGLRenderingContextBase* webglRenderingContextBaseFromUnion(
   NOTREACHED();
   return nullptr;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-WebGLRenderingContextBase* webglRenderingContextBaseFromUnion(
-    const XRWebGLRenderingContext& context) {
-  if (context.IsWebGL2RenderingContext()) {
-    return context.GetAsWebGL2RenderingContext();
-  } else {
-    return context.GetAsWebGLRenderingContext();
-  }
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 absl::optional<device::Pose> CreatePose(
     const blink::TransformationMatrix& matrix) {

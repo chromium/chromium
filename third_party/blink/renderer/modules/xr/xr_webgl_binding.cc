@@ -24,11 +24,7 @@
 namespace blink {
 
 XRWebGLBinding* XRWebGLBinding::Create(XRSession* session,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                        const V8XRWebGLRenderingContext* context,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                       const XRWebGLRenderingContext& context,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                        ExceptionState& exception_state) {
   if (session->ended()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -62,13 +58,8 @@ XRWebGLBinding* XRWebGLBinding::Create(XRSession* session,
     return nullptr;
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   return MakeGarbageCollected<XRWebGLBinding>(
       session, webgl_context, context->IsWebGL2RenderingContext());
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  return MakeGarbageCollected<XRWebGLBinding>(
-      session, webgl_context, context.IsWebGL2RenderingContext());
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 XRWebGLBinding::XRWebGLBinding(XRSession* session,

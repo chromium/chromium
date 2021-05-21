@@ -26,7 +26,6 @@ class ExceptionState;
 class ScriptPromiseResolver;
 class ScriptState;
 class ServiceWorkerRegistration;
-class RequestOrUSVString;
 
 // Represents an individual Background Fetch registration. Gives developers
 // access to its properties, options, and enables them to abort the fetch.
@@ -60,30 +59,16 @@ class BackgroundFetchRegistration final
   // Web Exposed attribute defined in the IDL file. Corresponds to the
   // |developer_id| used elsewhere in the codebase.
   String id() const;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise match(ScriptState* script_state,
                       const V8RequestInfo* request,
                       const CacheQueryOptions* options,
                       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ScriptPromise match(ScriptState* script_state,
-                      const RequestOrUSVString& request,
-                      const CacheQueryOptions* options,
-                      ExceptionState& exception_state);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise matchAll(ScriptState* scrip_state,
                          ExceptionState& exception_state);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise matchAll(ScriptState* script_state,
                          const V8RequestInfo* request,
                          const CacheQueryOptions* options,
                          ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ScriptPromise matchAll(ScriptState* script_state,
-                         const RequestOrUSVString& request,
-                         const CacheQueryOptions* options,
-                         ExceptionState& exception_state);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   uint64_t uploadTotal() const;
   uint64_t uploaded() const;
@@ -115,21 +100,12 @@ class BackgroundFetchRegistration final
  private:
   void DidAbort(ScriptPromiseResolver* resolver,
                 mojom::blink::BackgroundFetchError error);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise MatchImpl(
       ScriptState* script_state,
       const V8RequestInfo* request,
       mojom::blink::CacheQueryOptionsPtr cache_query_options,
       ExceptionState& exception_state,
       bool match_all);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ScriptPromise MatchImpl(
-      ScriptState* script_state,
-      absl::optional<RequestOrUSVString> request,
-      mojom::blink::CacheQueryOptionsPtr cache_query_options,
-      ExceptionState& exception_state,
-      bool match_all);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void DidGetMatchingRequests(
       ScriptPromiseResolver* resolver,
       bool return_all,

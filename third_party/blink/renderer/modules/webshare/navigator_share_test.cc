@@ -160,14 +160,8 @@ File* CreateSampleFile(ExecutionContext* context,
                        const String& file_name,
                        const String& content_type,
                        const String& file_contents) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   HeapVector<Member<V8BlobPart>> blob_parts;
   blob_parts.push_back(MakeGarbageCollected<V8BlobPart>(file_contents));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  HeapVector<ArrayBufferOrArrayBufferViewOrBlobOrUSVString> blob_parts;
-  blob_parts.push_back(ArrayBufferOrArrayBufferViewOrBlobOrUSVString());
-  blob_parts.back().SetUSVString(file_contents);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   FilePropertyBag file_property_bag;
   file_property_bag.setType(content_type);

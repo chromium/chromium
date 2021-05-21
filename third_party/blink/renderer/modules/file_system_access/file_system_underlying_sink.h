@@ -16,6 +16,7 @@ namespace blink {
 
 class ExceptionState;
 class ScriptPromiseResolver;
+class V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString;
 class WriteParams;
 
 class FileSystemUnderlyingSink final : public UnderlyingSinkBase {
@@ -44,7 +45,7 @@ class FileSystemUnderlyingSink final : public UnderlyingSinkBase {
   ScriptPromise WriteData(
       ScriptState*,
       uint64_t position,
-      const ArrayBufferOrArrayBufferViewOrBlobOrUSVString& data,
+      const V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString* data,
       ExceptionState&);
   ScriptPromise Truncate(ScriptState*, uint64_t size, ExceptionState&);
   ScriptPromise Seek(ScriptState*, uint64_t offset, ExceptionState&);

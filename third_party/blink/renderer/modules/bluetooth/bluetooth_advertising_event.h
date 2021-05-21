@@ -15,7 +15,6 @@ class BluetoothDevice;
 class BluetoothAdvertisingEventInit;
 class BluetoothManufacturerDataMap;
 class BluetoothServiceDataMap;
-class StringOrUnsignedLong;
 
 class BluetoothAdvertisingEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -37,11 +36,7 @@ class BluetoothAdvertisingEvent final : public Event {
 
   BluetoothDevice* device() const;
   const String& name() const;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   const HeapVector<Member<V8UnionUUIDOrUnsignedLong>>& uuids() const;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  const HeapVector<StringOrUnsignedLong>& uuids() const;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   absl::optional<uint16_t> appearance() const { return appearance_; }
   absl::optional<int8_t> txPower() const { return txPower_; }
   absl::optional<int8_t> rssi() const { return rssi_; }
@@ -51,11 +46,7 @@ class BluetoothAdvertisingEvent final : public Event {
  private:
   Member<BluetoothDevice> device_;
   String name_;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   HeapVector<Member<V8UnionUUIDOrUnsignedLong>> uuids_;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  HeapVector<StringOrUnsignedLong> uuids_;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   absl::optional<uint16_t> appearance_;
   absl::optional<int8_t> txPower_;
   absl::optional<int8_t> rssi_;

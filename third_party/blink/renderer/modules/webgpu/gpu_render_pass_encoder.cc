@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_pass_encoder.h"
 
-#include "third_party/blink/renderer/bindings/modules/v8/double_sequence_or_gpu_color_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_index_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_doublesequence_gpucolordict.h"
 #include "third_party/blink/renderer/core/typed_arrays/typed_flexible_array_buffer_view.h"
@@ -53,7 +52,6 @@ void GPURenderPassEncoder::setBindGroup(
                                            dynamic_offsets_data_length, data);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void GPURenderPassEncoder::setBlendConstant(const V8GPUColor* color,
                                             ExceptionState& exception_state) {
   if (color->IsDoubleSequence() && color->GetAsDoubleSequence().size() != 4) {
@@ -64,25 +62,9 @@ void GPURenderPassEncoder::setBlendConstant(const V8GPUColor* color,
   WGPUColor dawn_color = AsDawnType(color);
   GetProcs().renderPassEncoderSetBlendConstant(GetHandle(), &dawn_color);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-void GPURenderPassEncoder::setBlendConstant(DoubleSequenceOrGPUColorDict& color,
-                                            ExceptionState& exception_state) {
-  if (color.IsDoubleSequence() && color.GetAsDoubleSequence().size() != 4) {
-    exception_state.ThrowRangeError("color size must be 4");
-    return;
-  }
-
-  WGPUColor dawn_color = AsDawnType(&color);
-  GetProcs().renderPassEncoderSetBlendConstant(GetHandle(), &dawn_color);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void GPURenderPassEncoder::setBlendColor(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8GPUColor* color,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    DoubleSequenceOrGPUColorDict& color,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   device_->AddConsoleWarning(
       "setBlendColor is deprecated. Use setBlendConstant instead.");

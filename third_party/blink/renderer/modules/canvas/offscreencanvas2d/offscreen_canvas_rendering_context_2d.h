@@ -59,13 +59,8 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   bool IsRenderingContext2D() const override { return true; }
   bool IsComposited() const override { return false; }
   bool IsAccelerated() const override;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void SetCanvasGetContextResult(RenderingContext&) final {}
-  void SetOffscreenCanvasGetContextResult(OffscreenRenderingContext&) final;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void SetIsInHiddenPage(bool) final { NOTREACHED(); }
   void SetIsBeingDisplayed(bool) final { NOTREACHED(); }
   void Stop() final { NOTREACHED(); }

@@ -331,7 +331,6 @@ ScriptPromise CacheStorage::keys(ScriptState* script_state) {
   return promise;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 ScriptPromise CacheStorage::match(ScriptState* script_state,
                                   const V8RequestInfo* request,
                                   const MultiCacheQueryOptions* options,
@@ -351,22 +350,6 @@ ScriptPromise CacheStorage::match(ScriptState* script_state,
   }
   return MatchImpl(script_state, request_object, options);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-ScriptPromise CacheStorage::match(ScriptState* script_state,
-                                  const RequestInfo& request,
-                                  const MultiCacheQueryOptions* options,
-                                  ExceptionState& exception_state) {
-  DCHECK(!request.IsNull());
-
-  if (request.IsRequest())
-    return MatchImpl(script_state, request.GetAsRequest(), options);
-  Request* new_request =
-      Request::Create(script_state, request.GetAsUSVString(), exception_state);
-  if (exception_state.HadException())
-    return ScriptPromise();
-  return MatchImpl(script_state, new_request, options);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 ScriptPromise CacheStorage::MatchImpl(ScriptState* script_state,
                                       const Request* request,

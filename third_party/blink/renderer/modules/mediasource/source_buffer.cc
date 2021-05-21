@@ -41,8 +41,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_source_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/encoded_audio_chunk_or_encoded_video_chunk.h"
-#include "third_party/blink/renderer/bindings/modules/v8/encoded_av_chunk_sequence_or_encoded_av_chunk.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.h"
@@ -633,11 +631,7 @@ void SourceBuffer::appendBuffer(NotShared<DOMArrayBufferView> data,
 // append use-cases.
 ScriptPromise SourceBuffer::appendEncodedChunks(
     ScriptState* script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8EncodedChunks* chunks,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const EncodedChunks& chunks,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   DVLOG(2) << __func__ << " this=" << this;
 
@@ -661,7 +655,6 @@ ScriptPromise SourceBuffer::appendEncodedChunks(
   auto buffer_queue = std::make_unique<media::StreamParser::BufferQueue>();
   size_t size = 0;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   switch (chunks->GetContentType()) {
     case V8EncodedChunks::ContentType::kEncodedAudioChunk:
       buffer_queue->emplace_back(
@@ -716,55 +709,6 @@ ScriptPromise SourceBuffer::appendEncodedChunks(
       }
       break;
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  if (chunks.IsEncodedAudioChunk()) {
-    buffer_queue->emplace_back(
-        MakeAudioStreamParserBuffer(*(chunks.GetAsEncodedAudioChunk())));
-    size += buffer_queue->back()->data_size() +
-            buffer_queue->back()->side_data_size();
-  } else if (chunks.IsEncodedVideoChunk()) {
-    const auto& video_chunk = *(chunks.GetAsEncodedVideoChunk());
-    if (!video_chunk.duration().has_value()) {
-      MediaSource::LogAndThrowTypeError(
-          exception_state,
-          "EncodedVideoChunk is missing duration, required for use with "
-          "SourceBuffer.");
-      return ScriptPromise();
-      ;
-    }
-    buffer_queue->emplace_back(MakeVideoStreamParserBuffer(video_chunk));
-    size += buffer_queue->back()->data_size() +
-            buffer_queue->back()->side_data_size();
-  } else if (chunks.IsEncodedAudioChunkOrEncodedVideoChunkSequence()) {
-    for (const auto& av_chunk :
-         chunks.GetAsEncodedAudioChunkOrEncodedVideoChunkSequence()) {
-      // TODO(crbug.com/1144908): Can null entries occur in the sequence, and
-      // should they be ignored or should they cause exception? Ignoring for
-      // now, if they occur.
-      if (av_chunk.IsNull())
-        continue;
-      if (av_chunk.IsEncodedAudioChunk()) {
-        buffer_queue->emplace_back(
-            MakeAudioStreamParserBuffer(*(av_chunk.GetAsEncodedAudioChunk())));
-        size += buffer_queue->back()->data_size() +
-                buffer_queue->back()->side_data_size();
-      } else if (av_chunk.IsEncodedVideoChunk()) {
-        const auto& video_chunk = *(av_chunk.GetAsEncodedVideoChunk());
-        if (!video_chunk.duration().has_value()) {
-          MediaSource::LogAndThrowTypeError(
-              exception_state,
-              "EncodedVideoChunk is missing duration, required for use with "
-              "SourceBuffer.");
-          return ScriptPromise();
-          ;
-        }
-        buffer_queue->emplace_back(MakeVideoStreamParserBuffer(video_chunk));
-        size += buffer_queue->back()->data_size() +
-                buffer_queue->back()->side_data_size();
-      }
-    }
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   DCHECK(!append_encoded_chunks_resolver_);
   append_encoded_chunks_resolver_ =

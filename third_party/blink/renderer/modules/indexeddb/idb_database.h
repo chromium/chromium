@@ -32,7 +32,6 @@
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-blink.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_string_sequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_object_store_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_transaction_options.h"
 #include "third_party/blink/renderer/core/dom/dom_string_list.h"
@@ -97,7 +96,6 @@ class MODULES_EXPORT IDBDatabase final
     return createObjectStore(name, IDBKeyPath(options->keyPath()),
                              options->autoIncrement(), exception_state);
   }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   IDBTransaction* transaction(ScriptState* script_state,
                               const V8UnionStringOrStringSequence* store_names,
                               const String& mode,
@@ -107,17 +105,6 @@ class MODULES_EXPORT IDBDatabase final
                               const String& mode,
                               const IDBTransactionOptions* options,
                               ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  IDBTransaction* transaction(ScriptState*,
-                              const StringOrStringSequence& store_names,
-                              const String& mode,
-                              ExceptionState&);
-  IDBTransaction* transaction(ScriptState*,
-                              const StringOrStringSequence& store_names,
-                              const String& mode,
-                              const IDBTransactionOptions* options,
-                              ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void deleteObjectStore(const String& name, ExceptionState&);
   void close();
 

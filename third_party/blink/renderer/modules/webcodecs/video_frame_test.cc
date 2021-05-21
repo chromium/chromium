@@ -236,24 +236,14 @@ TEST_F(VideoFrameTest, ImageBitmapCreationAndZeroCopyRoundTrip) {
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
       UnacceleratedStaticBitmapImage::Create(original_image), absl::nullopt,
       default_options);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   auto* source = MakeGarbageCollected<V8CanvasImageSource>(image_bitmap);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  CanvasImageSourceUnion source;
-  source.SetImageBitmap(image_bitmap);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   auto* video_frame = VideoFrame::Create(scope.GetScriptState(), source, init,
                                          scope.GetExceptionState());
 
   EXPECT_EQ(video_frame->handle()->sk_image(), original_image);
 
   {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     auto* ibs_source = MakeGarbageCollected<V8ImageBitmapSource>(video_frame);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    ImageBitmapSourceUnion ibs_source;
-    ibs_source.SetVideoFrame(video_frame);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     auto promise = ImageBitmapFactories::CreateImageBitmap(
         scope.GetScriptState(), ibs_source, default_options,
         scope.GetExceptionState());
@@ -293,12 +283,7 @@ TEST_F(VideoFrameTest, VideoFrameFromGPUImageBitmap) {
   auto* init = VideoFrameInit::Create();
   init->setTimestamp(0);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   auto* source = MakeGarbageCollected<V8CanvasImageSource>(image_bitmap);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  CanvasImageSourceUnion source;
-  source.SetImageBitmap(image_bitmap);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   auto* video_frame = VideoFrame::Create(scope.GetScriptState(), source, init,
                                          scope.GetExceptionState());
   ASSERT_TRUE(video_frame);

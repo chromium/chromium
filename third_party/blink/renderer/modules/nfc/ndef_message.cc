@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/nfc/ndef_message.h"
 
 #include "services/device/public/mojom/nfc.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/string_or_array_buffer_or_array_buffer_view_or_ndef_message_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_message_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_record_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_ndefmessageinit_string.h"
@@ -42,7 +41,6 @@ NDEFMessage* NDEFMessage::Create(const ExecutionContext* execution_context,
   return message;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 // static
 NDEFMessage* NDEFMessage::Create(const ExecutionContext* execution_context,
                                  const V8NDEFMessageSource* source,
@@ -100,64 +98,6 @@ NDEFMessage* NDEFMessage::Create(const ExecutionContext* execution_context,
   NOTREACHED();
   return nullptr;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-// static
-NDEFMessage* NDEFMessage::Create(const ExecutionContext* execution_context,
-                                 const NDEFMessageSource& source,
-                                 ExceptionState& exception_state) {
-  // https://w3c.github.io/web-nfc/#creating-ndef-message
-  if (source.IsString()) {
-    NDEFMessage* message = MakeGarbageCollected<NDEFMessage>();
-    message->records_.push_back(MakeGarbageCollected<NDEFRecord>(
-        execution_context, source.GetAsString()));
-    return message;
-  }
-
-  if (source.IsArrayBuffer()) {
-    WTF::Vector<uint8_t> payload_data;
-    size_t byte_length = source.GetAsArrayBuffer()->ByteLength();
-    if (byte_length > std::numeric_limits<wtf_size_t>::max()) {
-      exception_state.ThrowRangeError(
-          "Buffer size exceeds maximum heap object size.");
-      return nullptr;
-    }
-    payload_data.Append(
-        static_cast<uint8_t*>(source.GetAsArrayBuffer()->Data()),
-        static_cast<wtf_size_t>(byte_length));
-    NDEFMessage* message = MakeGarbageCollected<NDEFMessage>();
-    message->records_.push_back(MakeGarbageCollected<NDEFRecord>(
-        String() /* id */, "application/octet-stream",
-        std::move(payload_data)));
-    return message;
-  }
-
-  if (source.IsArrayBufferView()) {
-    size_t byte_length = source.GetAsArrayBufferView()->byteLength();
-    if (byte_length > std::numeric_limits<wtf_size_t>::max()) {
-      exception_state.ThrowRangeError(
-          "Buffer size exceeds maximum heap object size.");
-      return nullptr;
-    }
-    WTF::Vector<uint8_t> payload_data;
-    payload_data.Append(
-        static_cast<uint8_t*>(source.GetAsArrayBufferView()->BaseAddress()),
-        static_cast<wtf_size_t>(byte_length));
-    NDEFMessage* message = MakeGarbageCollected<NDEFMessage>();
-    message->records_.push_back(MakeGarbageCollected<NDEFRecord>(
-        String() /* id */, "application/octet-stream",
-        std::move(payload_data)));
-    return message;
-  }
-
-  if (source.IsNDEFMessageInit()) {
-    return Create(execution_context, source.GetAsNDEFMessageInit(),
-                  exception_state);
-  }
-
-  NOTREACHED();
-  return nullptr;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 // static
 NDEFMessage* NDEFMessage::CreateAsPayloadOfSmartPoster(

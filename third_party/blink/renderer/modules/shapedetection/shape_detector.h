@@ -21,12 +21,8 @@ class MODULES_EXPORT ShapeDetector : public ScriptWrappable {
  public:
   ~ShapeDetector() override = default;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise detect(ScriptState* script_state,
                        const V8ImageBitmapSource* image_source);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ScriptPromise detect(ScriptState*, const ImageBitmapSourceUnion&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
  private:
   ScriptPromise DetectShapesOnImageData(ScriptPromiseResolver*, ImageData*);

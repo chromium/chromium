@@ -53,8 +53,6 @@ namespace blink {
 class AudioTrackList;
 class DOMArrayBuffer;
 class DOMArrayBufferView;
-class
-    EncodedAudioChunkOrEncodedVideoChunkSequenceOrEncodedAudioChunkOrEncodedVideoChunk;
 class EventQueue;
 class ExceptionState;
 class MediaSource;
@@ -78,10 +76,6 @@ class SourceBuffer final : public EventTargetWithInlineData,
   static AtomicString SegmentsKeyword();
   static AtomicString SequenceKeyword();
 
-  // Mirror the IDL's typedef for EncodedChunks.
-  using EncodedChunks =
-      EncodedAudioChunkOrEncodedVideoChunkSequenceOrEncodedAudioChunkOrEncodedVideoChunk;
-
   SourceBuffer(std::unique_ptr<WebSourceBuffer>, MediaSource*, EventQueue*);
   ~SourceBuffer() override;
 
@@ -94,15 +88,9 @@ class SourceBuffer final : public EventTargetWithInlineData,
   void setTimestampOffset(double, ExceptionState&);
   void appendBuffer(DOMArrayBuffer* data, ExceptionState&);
   void appendBuffer(NotShared<DOMArrayBufferView> data, ExceptionState&);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise appendEncodedChunks(ScriptState* script_state,
                                     const V8EncodedChunks* chunks,
                                     ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ScriptPromise appendEncodedChunks(ScriptState*,
-                                    const EncodedChunks&,
-                                    ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void abort(ExceptionState&);
   void remove(double start, double end, ExceptionState&);
   void changeType(const String& type, ExceptionState&);

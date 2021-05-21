@@ -16,7 +16,6 @@
 
 namespace blink {
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 CanvasImageSource* ToCanvasImageSource(const V8CanvasImageSource* value,
                                        ExceptionState& exception_state) {
   DCHECK(value);
@@ -78,70 +77,5 @@ CanvasImageSource* ToCanvasImageSource(const V8CanvasImageSource* value,
   NOTREACHED();
   return nullptr;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-CanvasImageSource* ToCanvasImageSource(const CanvasImageSourceUnion& value,
-                                       ExceptionState& exception_state) {
-  if (value.IsCSSImageValue())
-    return value.GetAsCSSImageValue();
-  if (value.IsHTMLImageElement())
-    return value.GetAsHTMLImageElement();
-  if (value.IsHTMLVideoElement()) {
-    HTMLVideoElement* video = value.GetAsHTMLVideoElement();
-    video->VideoWillBeDrawnToCanvas();
-    return video;
-  }
-  if (value.IsSVGImageElement())
-    return value.GetAsSVGImageElement();
-  if (value.IsHTMLCanvasElement()) {
-    if (static_cast<HTMLCanvasElement*>(value.GetAsHTMLCanvasElement())
-            ->Size()
-            .IsEmpty()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          "The image argument is a canvas element with a width "
-          "or height of 0.");
-      return nullptr;
-    }
-    return value.GetAsHTMLCanvasElement();
-  }
-  if (value.IsImageBitmap()) {
-    if (static_cast<ImageBitmap*>(value.GetAsImageBitmap())->IsNeutered()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "The image source is detached");
-      return nullptr;
-    }
-    return value.GetAsImageBitmap();
-  }
-  if (value.IsOffscreenCanvas()) {
-    if (static_cast<OffscreenCanvas*>(value.GetAsOffscreenCanvas())
-            ->IsNeutered()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "The image source is detached");
-      return nullptr;
-    }
-    if (static_cast<OffscreenCanvas*>(value.GetAsOffscreenCanvas())
-            ->Size()
-            .IsEmpty()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          "The image argument is an OffscreenCanvas element "
-          "with a width or height of 0.");
-      return nullptr;
-    }
-    return value.GetAsOffscreenCanvas();
-  }
-  if (value.IsVideoFrame()) {
-    auto* video_frame = static_cast<VideoFrame*>(value.GetAsVideoFrame());
-    if (!video_frame->frame()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "The VideoFrame has been closed");
-      return nullptr;
-    }
-    return video_frame;
-  }
-  NOTREACHED();
-  return nullptr;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace blink

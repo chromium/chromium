@@ -40,7 +40,6 @@ bool WebGLMultiDrawCommon::ValidateArray(WebGLExtensionScopedContext* scoped,
   return true;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 // static
 base::span<const int32_t> WebGLMultiDrawCommon::MakeSpan(
     const V8UnionInt32ArrayOrLongSequence* array) {
@@ -56,20 +55,7 @@ base::span<const int32_t> WebGLMultiDrawCommon::MakeSpan(
   NOTREACHED();
   return {};
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-// static
-base::span<const int32_t> WebGLMultiDrawCommon::MakeSpan(
-    const Int32ArrayOrLongSequence& array) {
-  if (array.IsInt32Array()) {
-    return base::span<const int32_t>(array.GetAsInt32Array()->Data(),
-                                     array.GetAsInt32Array()->length());
-  }
-  return base::span<const int32_t>(array.GetAsLongSequence().data(),
-                                   array.GetAsLongSequence().size());
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 // static
 base::span<const uint32_t> WebGLMultiDrawCommon::MakeSpan(
     const V8UnionUint32ArrayOrUnsignedLongSequence* array) {
@@ -87,17 +73,5 @@ base::span<const uint32_t> WebGLMultiDrawCommon::MakeSpan(
   NOTREACHED();
   return {};
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-// static
-base::span<const uint32_t> WebGLMultiDrawCommon::MakeSpan(
-    const Uint32ArrayOrUnsignedLongSequence& array) {
-  if (array.IsUint32Array()) {
-    return base::span<const uint32_t>(array.GetAsUint32Array()->Data(),
-                                      array.GetAsUint32Array()->length());
-  }
-  return base::span<const uint32_t>(array.GetAsUnsignedLongSequence().data(),
-                                    array.GetAsUnsignedLongSequence().size());
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace blink

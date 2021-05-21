@@ -11,7 +11,6 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
-#include "third_party/blink/renderer/bindings/modules/v8/string_or_canvas_gradient_or_canvas_pattern_or_css_color_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_hit_region_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_csscolorvalue_canvasgradient_canvaspattern_string.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
@@ -145,7 +144,6 @@ TEST_F(CanvasRenderingContext2DAPITest, SetShadowColor_Clamping) {
 
 String TrySettingStrokeStyle(CanvasRenderingContext2D* ctx,
                              const String& value) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ctx->setStrokeStyle(
       MakeGarbageCollected<
           V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("#666"));
@@ -155,20 +153,9 @@ String TrySettingStrokeStyle(CanvasRenderingContext2D* ctx,
   auto* style = ctx->strokeStyle();
   EXPECT_TRUE(style->IsString());
   return style->GetAsString();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  StringOrCanvasGradientOrCanvasPatternOrCSSColorValue arg1, arg2, arg3;
-  arg1.SetString("#666");
-  ctx->setStrokeStyle(arg1);
-  arg2.SetString(value);
-  ctx->setStrokeStyle(arg2);
-  ctx->strokeStyle(arg3);
-  EXPECT_TRUE(arg3.IsString());
-  return arg3.GetAsString();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 String TrySettingFillStyle(CanvasRenderingContext2D* ctx, const String& value) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ctx->setFillStyle(
       MakeGarbageCollected<
           V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("#666"));
@@ -178,16 +165,6 @@ String TrySettingFillStyle(CanvasRenderingContext2D* ctx, const String& value) {
   auto* style = ctx->fillStyle();
   EXPECT_TRUE(style->IsString());
   return style->GetAsString();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  StringOrCanvasGradientOrCanvasPatternOrCSSColorValue arg1, arg2, arg3;
-  arg1.SetString("#666");
-  ctx->setFillStyle(arg1);
-  arg2.SetString(value);
-  ctx->setFillStyle(arg2);
-  ctx->fillStyle(arg3);
-  EXPECT_TRUE(arg3.IsString());
-  return arg3.GetAsString();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 String TrySettingShadowColor(CanvasRenderingContext2D* ctx,
@@ -223,29 +200,15 @@ TEST_F(CanvasRenderingContext2DAPITest, DefaultAttributeValues) {
   CreateContext(kNonOpaque);
 
   {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     auto* style = Context2D()->strokeStyle();
     EXPECT_TRUE(style->IsString());
     EXPECT_EQ(String("#000000"), style->GetAsString());
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    StringOrCanvasGradientOrCanvasPatternOrCSSColorValue value;
-    Context2D()->strokeStyle(value);
-    EXPECT_TRUE(value.IsString());
-    EXPECT_EQ(String("#000000"), value.GetAsString());
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   }
 
   {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     auto* style = Context2D()->fillStyle();
     EXPECT_TRUE(style->IsString());
     EXPECT_EQ(String("#000000"), style->GetAsString());
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    StringOrCanvasGradientOrCanvasPatternOrCSSColorValue value;
-    Context2D()->fillStyle(value);
-    EXPECT_TRUE(value.IsString());
-    EXPECT_EQ(String("#000000"), value.GetAsString());
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   }
 
   EXPECT_EQ(String("rgba(0, 0, 0, 0)"), Context2D()->shadowColor());
@@ -281,21 +244,12 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
   EXPECT_EQ(100, image_data->width());
   EXPECT_EQ(50, image_data->height());
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   for (size_t i = 0; i < image_data->data()->GetAsUint8ClampedArray()->length();
        ++i) {
     image_data->data()->GetAsUint8ClampedArray()->Data()[i] = 255;
   }
 
   EXPECT_EQ(255, image_data->data()->GetAsUint8ClampedArray()->Data()[32]);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  for (size_t i = 0; i < image_data->data().GetAsUint8ClampedArray()->length();
-       ++i) {
-    image_data->data().GetAsUint8ClampedArray()->Data()[i] = 255;
-  }
-
-  EXPECT_EQ(255, image_data->data().GetAsUint8ClampedArray()->Data()[32]);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // createImageData(imageData) should create a new ImageData of the same size
   // as 'imageData' but filled with transparent black
@@ -305,13 +259,8 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_EQ(100, same_size_image_data->width());
   EXPECT_EQ(50, same_size_image_data->height());
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   EXPECT_EQ(0,
             same_size_image_data->data()->GetAsUint8ClampedArray()->Data()[32]);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  EXPECT_EQ(0,
-            same_size_image_data->data().GetAsUint8ClampedArray()->Data()[32]);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // createImageData(width, height) takes the absolute magnitude of the size
   // arguments
@@ -329,17 +278,10 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
       Context2D()->createImageData(-10, -20, settings, exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   EXPECT_EQ(800u, imgdata1->data()->GetAsUint8ClampedArray()->length());
   EXPECT_EQ(800u, imgdata2->data()->GetAsUint8ClampedArray()->length());
   EXPECT_EQ(800u, imgdata3->data()->GetAsUint8ClampedArray()->length());
   EXPECT_EQ(800u, imgdata4->data()->GetAsUint8ClampedArray()->length());
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  EXPECT_EQ(800u, imgdata1->data().GetAsUint8ClampedArray()->length());
-  EXPECT_EQ(800u, imgdata2->data().GetAsUint8ClampedArray()->length());
-  EXPECT_EQ(800u, imgdata3->data().GetAsUint8ClampedArray()->length());
-  EXPECT_EQ(800u, imgdata4->data().GetAsUint8ClampedArray()->length());
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, CreateImageDataTooBig) {
@@ -574,13 +516,8 @@ TEST_F(CanvasRenderingContext2DAPITest,
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   auto* style = MakeGarbageCollected<
       V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("blue");
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  StringOrCanvasGradientOrCanvasPatternOrCSSColorValue style;
-  style.SetString("blue");
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Context2D()->setStrokeStyle(style);
   EXPECT_EQ(INT64_C(2059186787917525779),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
@@ -593,13 +530,8 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_FillStyle) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   auto* style = MakeGarbageCollected<
       V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("blue");
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  StringOrCanvasGradientOrCanvasPatternOrCSSColorValue style;
-  style.SetString("blue");
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Context2D()->setFillStyle(style);
   EXPECT_EQ(INT64_C(-6322980727372024031),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
@@ -618,13 +550,8 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_Combo) {
   Context2D()->setFont("Helvetica");
   Context2D()->setTextBaseline("bottom");
   Context2D()->setTextAlign("right");
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   auto* style = MakeGarbageCollected<
       V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("red");
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  StringOrCanvasGradientOrCanvasPatternOrCSSColorValue style;
-  style.SetString("red");
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Context2D()->setFillStyle(style);
   Context2D()->fillText("Bye", 4.0, 3.0);
   EXPECT_EQ(INT64_C(2368400155273386771),

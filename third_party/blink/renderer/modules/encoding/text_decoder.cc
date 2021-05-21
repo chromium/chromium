@@ -78,7 +78,6 @@ String TextDecoder::encoding() const {
   return name;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 String TextDecoder::decode(const V8BufferSource* input,
                            const TextDecodeOptions* options,
                            ExceptionState& exception_state) {
@@ -108,32 +107,6 @@ String TextDecoder::decode(const V8BufferSource* input,
   return decode(static_cast<const char*>(start), static_cast<uint32_t>(length),
                 options, exception_state);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-String TextDecoder::decode(const BufferSource& input,
-                           const TextDecodeOptions* options,
-                           ExceptionState& exception_state) {
-  DCHECK(options);
-  // In case of `input` == IDL "missing" special value, default to (nullptr, 0).
-  void* start = nullptr;
-  size_t length = 0;
-  if (input.IsArrayBufferView()) {
-    start = input.GetAsArrayBufferView()->BaseAddress();
-    length = input.GetAsArrayBufferView()->byteLength();
-  } else if (input.IsArrayBuffer()) {
-    start = input.GetAsArrayBuffer()->Data();
-    length = input.GetAsArrayBuffer()->ByteLength();
-  }
-
-  if (length > std::numeric_limits<uint32_t>::max()) {
-    exception_state.ThrowRangeError(
-        "Buffer size exceeds maximum heap object size.");
-    return String();
-  }
-
-  return decode(static_cast<const char*>(start), static_cast<uint32_t>(length),
-                options, exception_state);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 String TextDecoder::decode(const char* start,
                            uint32_t length,

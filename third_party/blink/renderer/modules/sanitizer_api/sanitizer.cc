@@ -9,8 +9,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_parse_from_string_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_document_documentfragment_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_document_documentfragment_string_trustedhtml.h"
-#include "third_party/blink/renderer/bindings/modules/v8/string_or_document_fragment_or_document.h"
-#include "third_party/blink/renderer/bindings/modules/v8/string_or_trusted_html_or_document_fragment_or_document.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sanitizer_config.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -107,17 +105,12 @@ Sanitizer* Sanitizer::Create(ExecutionContext* execution_context,
 }
 
 String Sanitizer::sanitizeToString(ScriptState* script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                    const V8SanitizerInput* input,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                   StringOrDocumentFragmentOrDocument& input,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                    ExceptionState& exception_state) {
   return CreateMarkup(SanitizeImpl(script_state, input, exception_state),
                       kChildrenOnly);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 DocumentFragment* Sanitizer::sanitize(
     ScriptState* script_state,
     const V8SanitizerInputWithTrustedHTML* input,
@@ -155,36 +148,7 @@ DocumentFragment* Sanitizer::sanitize(
   }
   return SanitizeImpl(script_state, new_input, exception_state);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-DocumentFragment* Sanitizer::sanitize(
-    ScriptState* script_state,
-    StringOrTrustedHTMLOrDocumentFragmentOrDocument& input,
-    ExceptionState& exception_state) {
-  StringOrDocumentFragmentOrDocument new_input;
-  if (input.IsString() || input.IsNull()) {
-    LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-    if (!window) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Cannot find current DOM window.");
-      return nullptr;
-    }
-    new_input.SetString(TrustedTypesCheckForHTML(
-        input.GetAsString(), window->GetExecutionContext(), exception_state));
-    if (exception_state.HadException()) {
-      return nullptr;
-    }
-  } else if (input.IsTrustedHTML()) {
-    new_input.SetString(input.GetAsTrustedHTML()->toString());
-  } else if (input.IsDocument()) {
-    new_input.SetDocument(input.GetAsDocument());
-  } else if (input.IsDocumentFragment()) {
-    new_input.SetDocumentFragment(input.GetAsDocumentFragment());
-  }
-  return SanitizeImpl(script_state, new_input, exception_state);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 DocumentFragment* Sanitizer::PrepareFragment(LocalDOMWindow* window,
                                              ScriptState* script_state,
                                              const V8SanitizerInput* input,
@@ -230,53 +194,6 @@ DocumentFragment* Sanitizer::PrepareFragment(LocalDOMWindow* window,
   NOTREACHED();
   return nullptr;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-DocumentFragment* Sanitizer::PrepareFragment(
-    LocalDOMWindow* window,
-    ScriptState* script_state,
-    StringOrDocumentFragmentOrDocument& input,
-    ExceptionState& exception_state) {
-  DocumentFragment* fragment = nullptr;
-
-  if (!window) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot find current DOM window.");
-    return nullptr;
-  }
-  if (input.IsDocumentFragment()) {
-    UseCounter::Count(window->GetExecutionContext(),
-                      WebFeature::kSanitizerAPIFromFragment);
-    fragment = input.GetAsDocumentFragment();
-  } else if (input.IsString() || input.IsNull()) {
-    UseCounter::Count(window->GetExecutionContext(),
-                      WebFeature::kSanitizerAPIFromString);
-
-    Document* document =
-        window->document()
-            ? window->document()->implementation().createHTMLDocument()
-            : DOMParser::Create(script_state)
-                  ->parseFromString("<!DOCTYPE html><html><body></body></html>",
-                                    "text/html",
-                                    ParseFromStringOptions::Create());
-    // TODO(https://crbug.com/1178774): Behavior difference need further
-    // investgate.
-    fragment = document->createRange()->createContextualFragment(
-        input.GetAsString(), exception_state);
-  } else if (input.IsDocument()) {
-    UseCounter::Count(window->GetExecutionContext(),
-                      WebFeature::kSanitizerAPIFromDocument);
-
-    fragment = input.GetAsDocument()->createDocumentFragment();
-    fragment->CloneChildNodesFrom(*(input.GetAsDocument()->body()),
-                                  CloneChildrenFlag::kClone);
-  } else {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot find current DOM window.");
-    return nullptr;
-  }
-  return fragment;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 DocumentFragment* Sanitizer::DoSanitizing(DocumentFragment* fragment,
                                           LocalDOMWindow* window,
@@ -348,12 +265,7 @@ DocumentFragment* Sanitizer::DoSanitizing(DocumentFragment* fragment,
 }
 
 DocumentFragment* Sanitizer::SanitizeImpl(ScriptState* script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                           const V8SanitizerInput* input,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                          StringOrDocumentFragmentOrDocument&
-                                              input,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                           ExceptionState& exception_state) {
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   DocumentFragment* fragment =

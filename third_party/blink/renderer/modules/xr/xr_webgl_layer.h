@@ -40,11 +40,7 @@ class XRWebGLLayer final : public XRLayer {
   ~XRWebGLLayer() override;
 
   static XRWebGLLayer* Create(XRSession*,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                               const V8XRWebGLRenderingContext*,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                              const XRWebGLRenderingContext&,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                               const XRWebGLLayerInit*,
                               ExceptionState&);
 

@@ -56,17 +56,10 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
                  MediaStream* stream) override {
     resolver_->Resolve(stream);
   }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void OnError(ScriptWrappable* callback_this_value,
                const V8MediaStreamError* error) override {
     resolver_->Reject(error);
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void OnError(ScriptWrappable* callback_this_value,
-               DOMExceptionOrOverconstrainedError error) override {
-    resolver_->Reject(error);
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(resolver_);

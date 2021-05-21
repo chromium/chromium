@@ -15,7 +15,6 @@
 namespace blink {
 
 class GPUBindGroup;
-class DoubleSequenceOrGPUColorDict;
 class GPURenderBundle;
 class V8GPUIndexFormat;
 
@@ -57,16 +56,9 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
     GetProcs().renderPassEncoderSetPipeline(GetHandle(), pipeline->GetHandle());
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void setBlendConstant(const V8GPUColor* color,
                         ExceptionState& exception_state);
   void setBlendColor(const V8GPUColor* color, ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void setBlendConstant(DoubleSequenceOrGPUColorDict& color,
-                        ExceptionState& exception_state);
-  void setBlendColor(DoubleSequenceOrGPUColorDict& color,
-                     ExceptionState& exception_state);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void setStencilReference(uint32_t reference) {
     GetProcs().renderPassEncoderSetStencilReference(GetHandle(), reference);
   }

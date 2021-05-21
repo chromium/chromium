@@ -71,19 +71,11 @@ class MODULES_EXPORT ImageBitmapFactories final
   ImageBitmapFactories();
 
   static ScriptPromise CreateImageBitmap(ScriptState*,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                          const V8ImageBitmapSource*,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                         const ImageBitmapSourceUnion&,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                          const ImageBitmapOptions*,
                                          ExceptionState&);
   static ScriptPromise CreateImageBitmap(ScriptState*,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                          const V8ImageBitmapSource*,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                         const ImageBitmapSourceUnion&,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                          int sx,
                                          int sy,
                                          int sw,
@@ -100,11 +92,7 @@ class MODULES_EXPORT ImageBitmapFactories final
   static ScriptPromise createImageBitmap(
       ScriptState* script_state,
       LocalDOMWindow&,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       const V8ImageBitmapSource* bitmap_source,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      const ImageBitmapSourceUnion& bitmap_source,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       const ImageBitmapOptions* options,
       ExceptionState& exception_state) {
     return CreateImageBitmap(script_state, bitmap_source, options,
@@ -113,11 +101,7 @@ class MODULES_EXPORT ImageBitmapFactories final
   static ScriptPromise createImageBitmap(
       ScriptState* script_state,
       LocalDOMWindow&,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       const V8ImageBitmapSource* bitmap_source,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      const ImageBitmapSourceUnion& bitmap_source,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       int sx,
       int sy,
       int sw,
@@ -132,11 +116,7 @@ class MODULES_EXPORT ImageBitmapFactories final
   static ScriptPromise createImageBitmap(
       ScriptState* script_state,
       WorkerGlobalScope&,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       const V8ImageBitmapSource* bitmap_source,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      const ImageBitmapSourceUnion& bitmap_source,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       const ImageBitmapOptions* options,
       ExceptionState& exception_state) {
     return CreateImageBitmap(script_state, bitmap_source, options,
@@ -145,11 +125,7 @@ class MODULES_EXPORT ImageBitmapFactories final
   static ScriptPromise createImageBitmap(
       ScriptState* script_state,
       WorkerGlobalScope&,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       const V8ImageBitmapSource* bitmap_source,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      const ImageBitmapSourceUnion& bitmap_source,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       int sx,
       int sy,
       int sw,

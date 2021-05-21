@@ -23,9 +23,6 @@ class NDEFScanOptions;
 class NDEFWriteOptions;
 class NFCProxy;
 class ScriptPromiseResolver;
-class StringOrArrayBufferOrArrayBufferViewOrNDEFMessageInit;
-
-using NDEFMessageSource = StringOrArrayBufferOrArrayBufferViewOrNDEFMessageInit;
 
 class MODULES_EXPORT NDEFReader : public EventTargetWithInlineData,
                                   public ActiveScriptWrappable<NDEFReader>,
@@ -54,17 +51,10 @@ class MODULES_EXPORT NDEFReader : public EventTargetWithInlineData,
                      ExceptionState& exception_state);
 
   // Write NDEFMessageSource asynchronously to NFC tag.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise write(ScriptState* script_state,
                       const V8NDEFMessageSource* write_message,
                       const NDEFWriteOptions* options,
                       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ScriptPromise write(ScriptState* script_state,
-                      const NDEFMessageSource& write_message,
-                      const NDEFWriteOptions* options,
-                      ExceptionState& exception_state);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void Trace(Visitor*) const override;
 

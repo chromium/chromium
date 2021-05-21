@@ -33,7 +33,6 @@
 
 #include <memory>
 
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_text_decode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_text_decoder_options.h"
@@ -46,8 +45,6 @@
 namespace blink {
 
 class ExceptionState;
-
-typedef ArrayBufferOrArrayBufferView BufferSource;
 
 class TextDecoder final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -64,13 +61,9 @@ class TextDecoder final : public ScriptWrappable {
   String encoding() const;
   bool fatal() const { return fatal_; }
   bool ignoreBOM() const { return ignore_bom_; }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   String decode(const V8BufferSource* input,
                 const TextDecodeOptions* options,
                 ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  String decode(const BufferSource&, const TextDecodeOptions*, ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   String decode(ExceptionState&);
 
  private:

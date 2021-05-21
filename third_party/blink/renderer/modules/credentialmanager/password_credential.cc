@@ -65,19 +65,11 @@ PasswordCredential* PasswordCredential::Create(
     // https://html.spec.whatwg.org/C/#constructing-the-form-data-set
     DCHECK(!submittable_element->GetName().IsEmpty());
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     V8FormDataEntryValue* value =
         form_data->get(submittable_element->GetName());
     if (!value->IsUSVString())
       continue;
     const String& usv_string_value = value->GetAsUSVString();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    FileOrUSVString value;
-    form_data->get(submittable_element->GetName(), value);
-    if (!value.IsUSVString())
-      continue;
-    const String& usv_string_value = value.GetAsUSVString();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
     Vector<String> autofill_tokens;
     submittable_element->ToHTMLElement()

@@ -8,11 +8,13 @@
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view_or_blob_or_usv_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring_writeparams.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_write_params.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
@@ -45,34 +47,20 @@ ScriptPromise FileSystemUnderlyingSink::write(
     ScriptValue chunk,
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
-  v8::Local<v8::Value> value = chunk.V8Value();
-
-  ArrayBufferOrArrayBufferViewOrBlobOrUSVStringOrWriteParams input;
-  V8ArrayBufferOrArrayBufferViewOrBlobOrUSVStringOrWriteParams::ToImpl(
-      script_state->GetIsolate(), value, input,
-      UnionTypeConversionMode::kNotNullable, exception_state);
+  auto* input = NativeValueTraits<
+      V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVStringOrWriteParams>::
+      NativeValue(script_state->GetIsolate(), chunk.V8Value(), exception_state);
   if (exception_state.HadException())
     return ScriptPromise();
 
-  if (input.IsNull()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot provide null object");
-    return ScriptPromise();
-  }
-
-  if (input.IsWriteParams()) {
-    return HandleParams(script_state, std::move(*input.GetAsWriteParams()),
+  if (input->IsWriteParams()) {
+    return HandleParams(script_state, *input->GetAsWriteParams(),
                         exception_state);
   }
 
-  ArrayBufferOrArrayBufferViewOrBlobOrUSVString write_data;
-  V8ArrayBufferOrArrayBufferViewOrBlobOrUSVString::ToImpl(
-      script_state->GetIsolate(), value, write_data,
-      UnionTypeConversionMode::kNotNullable, exception_state);
-  if (exception_state.HadException())
-    return ScriptPromise();
-  return WriteData(script_state, offset_, std::move(write_data),
-                   exception_state);
+  auto* write_data =
+      input->GetAsV8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString();
+  return WriteData(script_state, offset_, write_data, exception_state);
 }
 
 ScriptPromise FileSystemUnderlyingSink::close(ScriptState* script_state,
@@ -135,7 +123,26 @@ ScriptPromise FileSystemUnderlyingSink::HandleParams(
           "Invalid params passed. write requires a data argument");
       return ScriptPromise();
     }
-    return WriteData(script_state, position, params.data(), exception_state);
+    V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString* data;
+    if (params.data().IsArrayBuffer()) {
+      data = MakeGarbageCollected<
+          V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString>(
+          params.data().GetAsArrayBuffer());
+    } else if (params.data().IsArrayBufferView()) {
+      data = MakeGarbageCollected<
+          V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString>(
+          params.data().GetAsArrayBufferView());
+    } else if (params.data().IsBlob()) {
+      data = MakeGarbageCollected<
+          V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString>(
+          params.data().GetAsBlob());
+    } else {
+      DCHECK(params.data().IsUSVString());
+      data = MakeGarbageCollected<
+          V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString>(
+          params.data().GetAsUSVString());
+    }
+    return WriteData(script_state, position, data, exception_state);
   }
 
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -332,9 +339,9 @@ bool CreateDataPipe(uint64_t data_size,
 ScriptPromise FileSystemUnderlyingSink::WriteData(
     ScriptState* script_state,
     uint64_t position,
-    const ArrayBufferOrArrayBufferViewOrBlobOrUSVString& data,
+    const V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString* data,
     ExceptionState& exception_state) {
-  DCHECK(!data.IsNull());
+  DCHECK(data);
 
   if (!writer_remote_.is_bound() || pending_operation_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -343,31 +350,44 @@ ScriptPromise FileSystemUnderlyingSink::WriteData(
   }
 
   std::unique_ptr<mojo::DataPipeProducer::DataSource> data_source;
-  if (data.IsArrayBuffer()) {
-    DOMArrayBuffer* array_buffer = data.GetAsArrayBuffer();
-    data_source = std::make_unique<mojo::StringDataSource>(
-        base::span<const char>(static_cast<const char*>(array_buffer->Data()),
-                               array_buffer->ByteLength()),
-        mojo::StringDataSource::AsyncWritingMode::
-            STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION);
-  } else if (data.IsArrayBufferView()) {
-    DOMArrayBufferView* array_buffer_view = data.GetAsArrayBufferView().Get();
-    data_source = std::make_unique<mojo::StringDataSource>(
-        base::span<const char>(
-            static_cast<const char*>(array_buffer_view->BaseAddress()),
-            array_buffer_view->byteLength()),
-        mojo::StringDataSource::AsyncWritingMode::
-            STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION);
-  } else if (data.IsUSVString()) {
-    data_source = std::make_unique<mojo::StringDataSource>(
-        StringUTF8Adaptor(data.GetAsUSVString()).AsStringPiece(),
-        mojo::StringDataSource::AsyncWritingMode::
-            STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION);
+  switch (data->GetContentType()) {
+    case V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString::ContentType::
+        kArrayBuffer: {
+      DOMArrayBuffer* array_buffer = data->GetAsArrayBuffer();
+      data_source = std::make_unique<mojo::StringDataSource>(
+          base::span<const char>(static_cast<const char*>(array_buffer->Data()),
+                                 array_buffer->ByteLength()),
+          mojo::StringDataSource::AsyncWritingMode::
+              STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION);
+      break;
+    }
+    case V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString::ContentType::
+        kArrayBufferView: {
+      DOMArrayBufferView* array_buffer_view =
+          data->GetAsArrayBufferView().Get();
+      data_source = std::make_unique<mojo::StringDataSource>(
+          base::span<const char>(
+              static_cast<const char*>(array_buffer_view->BaseAddress()),
+              array_buffer_view->byteLength()),
+          mojo::StringDataSource::AsyncWritingMode::
+              STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION);
+      break;
+    }
+    case V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString::ContentType::
+        kBlob:
+      break;
+    case V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString::ContentType::
+        kUSVString:
+      data_source = std::make_unique<mojo::StringDataSource>(
+          StringUTF8Adaptor(data->GetAsUSVString()).AsStringPiece(),
+          mojo::StringDataSource::AsyncWritingMode::
+              STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION);
+      break;
   }
 
-  DCHECK(data_source || data.IsBlob());
+  DCHECK(data_source || data->IsBlob());
   uint64_t data_size =
-      data_source ? data_source->GetLength() : data.GetAsBlob()->size();
+      data_source ? data_source->GetLength() : data->GetAsBlob()->size();
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
@@ -377,14 +397,14 @@ ScriptPromise FileSystemUnderlyingSink::WriteData(
   }
 
   WriterHelper* helper;
-  if (data.IsBlob()) {
+  if (data->IsBlob()) {
     mojo::PendingRemote<mojom::blink::BlobReaderClient> reader_client;
     helper =
         new BlobWriterHelper(reader_client.InitWithNewPipeAndPassReceiver(),
                              WTF::Bind(&FileSystemUnderlyingSink::WriteComplete,
                                        WrapPersistent(this)));
-    data.GetAsBlob()->GetBlobDataHandle()->ReadAll(std::move(producer_handle),
-                                                   std::move(reader_client));
+    data->GetAsBlob()->GetBlobDataHandle()->ReadAll(std::move(producer_handle),
+                                                    std::move(reader_client));
   } else {
     auto producer =
         std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));

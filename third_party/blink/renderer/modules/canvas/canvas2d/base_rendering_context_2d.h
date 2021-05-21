@@ -8,8 +8,6 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "third_party/blink/renderer/bindings/modules/v8/canvas_image_source.h"
-#include "third_party/blink/renderer/bindings/modules/v8/string_or_canvas_filter.h"
-#include "third_party/blink/renderer/bindings/modules/v8/string_or_canvas_gradient_or_canvas_pattern_or_css_color_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
@@ -36,27 +34,15 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
  public:
   ~BaseRenderingContext2D() override;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString* strokeStyle()
       const;
   void setStrokeStyle(
       const V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString* style);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void strokeStyle(StringOrCanvasGradientOrCanvasPatternOrCSSColorValue&) const;
-  void setStrokeStyle(
-      const StringOrCanvasGradientOrCanvasPatternOrCSSColorValue&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString* fillStyle()
       const;
   void setFillStyle(
       const V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString* style);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void fillStyle(StringOrCanvasGradientOrCanvasPatternOrCSSColorValue&) const;
-  void setFillStyle(
-      const StringOrCanvasGradientOrCanvasPatternOrCSSColorValue&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   double lineWidth() const;
   void setLineWidth(double);
@@ -94,14 +80,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   String globalCompositeOperation() const;
   void setGlobalCompositeOperation(const String&);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   const V8UnionCanvasFilterOrString* filter() const;
   void setFilter(const ExecutionContext* execution_context,
                  const V8UnionCanvasFilterOrString* input);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void filter(StringOrCanvasFilter&) const;
-  void setFilter(const ExecutionContext*, StringOrCanvasFilter input);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void save();
   void restore();
@@ -189,7 +170,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   void fillRect(double x, double y, double width, double height);
   void strokeRect(double x, double y, double width, double height);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void drawImage(ScriptState* script_state,
                  const V8CanvasImageSource* image_source,
                  double x,
@@ -213,31 +193,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
                  double dw,
                  double dh,
                  ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void drawImage(ScriptState*,
-                 const CanvasImageSourceUnion&,
-                 double x,
-                 double y,
-                 ExceptionState&);
-  void drawImage(ScriptState*,
-                 const CanvasImageSourceUnion&,
-                 double x,
-                 double y,
-                 double width,
-                 double height,
-                 ExceptionState&);
-  void drawImage(ScriptState*,
-                 const CanvasImageSourceUnion&,
-                 double sx,
-                 double sy,
-                 double sw,
-                 double sh,
-                 double dx,
-                 double dy,
-                 double dw,
-                 double dh,
-                 ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void drawImage(ScriptState*,
                  CanvasImageSource*,
                  double sx,
@@ -264,17 +219,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   CanvasGradient* createConicGradient(double startAngle,
                                       double centerX,
                                       double centerY);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   CanvasPattern* createPattern(ScriptState* script_state,
                                const V8CanvasImageSource* image_source,
                                const String& repetition_type,
                                ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  CanvasPattern* createPattern(ScriptState*,
-                               const CanvasImageSourceUnion&,
-                               const String& repetition_type,
-                               ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   CanvasPattern* createPattern(ScriptState*,
                                CanvasImageSource*,
                                const String& repetition_type,
@@ -599,13 +547,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
                            float height,
                            base::TimeTicks start_time);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void IdentifiabilityMaybeUpdateForStyleUnion(
       const V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString* style);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void IdentifiabilityMaybeUpdateForStyleUnion(
-      const StringOrCanvasGradientOrCanvasPatternOrCSSColorValue& style);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   RespectImageOrientationEnum RespectImageOrientationInternal(
       CanvasImageSource*);

@@ -8,7 +8,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/array_buffer_or_array_buffer_view_or_blob_or_usv_string_or_write_params.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
@@ -31,17 +30,10 @@ class FileSystemWritableFileStream final : public WritableStream {
   void Trace(Visitor* visitor) const override;
 
   // IDL defined functions specific to FileSystemWritableFileStream.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise write(
       ScriptState*,
       const V8UnionBlobOrBufferSourceOrUSVStringOrWriteParams* data,
       ExceptionState&);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ScriptPromise write(
-      ScriptState*,
-      const ArrayBufferOrArrayBufferViewOrBlobOrUSVStringOrWriteParams& data,
-      ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise truncate(ScriptState*, uint64_t size, ExceptionState&);
   ScriptPromise seek(ScriptState*, uint64_t offset, ExceptionState&);
 

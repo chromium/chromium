@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_MULTI_DRAW_INSTANCED_BASE_VERTEX_BASE_INSTANCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_MULTI_DRAW_INSTANCED_BASE_VERTEX_BASE_INSTANCE_H_
 
-#include "third_party/blink/renderer/bindings/modules/v8/int32_array_or_long_sequence.h"
-#include "third_party/blink/renderer/bindings/modules/v8/uint32_array_or_unsigned_long_sequence.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw_common.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -26,7 +24,6 @@ class WebGLMultiDrawInstancedBaseVertexBaseInstance final
       WebGLRenderingContextBase*);
   WebGLExtensionName GetName() const override;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void multiDrawArraysInstancedBaseInstanceWEBGL(
       GLenum mode,
       const V8UnionInt32ArrayOrLongSequence* firsts_list,
@@ -43,26 +40,7 @@ class WebGLMultiDrawInstancedBaseVertexBaseInstance final
         counts_offset, MakeSpan(instance_counts_list), instance_counts_offset,
         MakeSpan(baseinstances_list), baseinstances_offset, drawcount);
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void multiDrawArraysInstancedBaseInstanceWEBGL(
-      GLenum mode,
-      Int32ArrayOrLongSequence firsts_list,
-      GLuint firsts_offset,
-      Int32ArrayOrLongSequence counts_list,
-      GLuint counts_offset,
-      Int32ArrayOrLongSequence instance_counts_list,
-      GLuint instance_counts_offset,
-      Uint32ArrayOrUnsignedLongSequence baseinstances_list,
-      GLuint baseinstances_offset,
-      GLsizei drawcount) {
-    multiDrawArraysInstancedBaseInstanceImpl(
-        mode, MakeSpan(firsts_list), firsts_offset, MakeSpan(counts_list),
-        counts_offset, MakeSpan(instance_counts_list), instance_counts_offset,
-        MakeSpan(baseinstances_list), baseinstances_offset, drawcount);
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(
       GLenum mode,
       const V8UnionInt32ArrayOrLongSequence* counts_list,
@@ -84,29 +62,6 @@ class WebGLMultiDrawInstancedBaseVertexBaseInstance final
         basevertices_offset, MakeSpan(baseinstances_list), baseinstances_offset,
         drawcount);
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(
-      GLenum mode,
-      Int32ArrayOrLongSequence counts_list,
-      GLuint counts_offset,
-      GLenum type,
-      Int32ArrayOrLongSequence offsets_list,
-      GLuint offsets_offset,
-      Int32ArrayOrLongSequence instance_counts_list,
-      GLuint instance_counts_offset,
-      Int32ArrayOrLongSequence basevertices_list,
-      GLuint basevertices_offset,
-      Uint32ArrayOrUnsignedLongSequence baseinstances_list,
-      GLuint baseinstances_offset,
-      GLsizei drawcount) {
-    multiDrawElementsInstancedBaseVertexBaseInstanceImpl(
-        mode, MakeSpan(counts_list), counts_offset, type,
-        MakeSpan(offsets_list), offsets_offset, MakeSpan(instance_counts_list),
-        instance_counts_offset, MakeSpan(basevertices_list),
-        basevertices_offset, MakeSpan(baseinstances_list), baseinstances_offset,
-        drawcount);
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
  private:
   void multiDrawArraysInstancedBaseInstanceImpl(

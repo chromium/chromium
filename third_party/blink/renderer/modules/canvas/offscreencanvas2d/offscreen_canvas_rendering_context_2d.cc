@@ -252,8 +252,6 @@ scoped_refptr<StaticBitmapImage> OffscreenCanvasRenderingContext2D::GetImage() {
   return image;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
 V8RenderingContext* OffscreenCanvasRenderingContext2D::AsV8RenderingContext() {
   return nullptr;
 }
@@ -262,15 +260,6 @@ V8OffscreenRenderingContext*
 OffscreenCanvasRenderingContext2D::AsV8OffscreenRenderingContext() {
   return MakeGarbageCollected<V8OffscreenRenderingContext>(this);
 }
-
-#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
-void OffscreenCanvasRenderingContext2D::SetOffscreenCanvasGetContextResult(
-    OffscreenRenderingContext& result) {
-  result.SetOffscreenCanvasRenderingContext2D(this);
-}
-
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 bool OffscreenCanvasRenderingContext2D::ParseColorOrCurrentColor(
     Color& color,

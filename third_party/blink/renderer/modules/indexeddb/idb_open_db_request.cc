@@ -30,7 +30,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/bindings/modules/v8/idb_object_store_or_idb_index_or_idb_cursor.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
@@ -50,11 +49,7 @@ IDBOpenDBRequest::IDBOpenDBRequest(
     IDBRequest::AsyncTraceState metrics,
     mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime)
     : IDBRequest(script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                  nullptr,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                 IDBRequest::Source(),
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                  nullptr,
                  std::move(metrics)),
       callbacks_receiver_(std::move(callbacks_receiver)),

@@ -17,9 +17,6 @@ class ExceptionState;
 class ExecutionContext;
 class NDEFMessageInit;
 class NDEFRecord;
-class StringOrArrayBufferOrArrayBufferViewOrNDEFMessageInit;
-
-using NDEFMessageSource = StringOrArrayBufferOrArrayBufferViewOrNDEFMessageInit;
 
 class MODULES_EXPORT NDEFMessage final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -31,15 +28,9 @@ class MODULES_EXPORT NDEFMessage final : public ScriptWrappable {
                              const NDEFMessageInit*,
                              ExceptionState&,
                              bool is_embedded = false);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static NDEFMessage* Create(const ExecutionContext* execution_context,
                              const V8NDEFMessageSource* source,
                              ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static NDEFMessage* Create(const ExecutionContext*,
-                             const NDEFMessageSource&,
-                             ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static NDEFMessage* CreateAsPayloadOfSmartPoster(const ExecutionContext*,
                                                    const NDEFMessageInit*,
                                                    ExceptionState&);

@@ -9,10 +9,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/request_or_usv_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_request_requestorusvstringsequence_usvstring.h"
-#include "third_party/blink/renderer/bindings/modules/v8/request_or_usv_string_or_request_or_usv_string_sequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_background_fetch_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_resource.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -50,11 +48,6 @@ namespace {
 // Message for the TypeError thrown when an empty request sequence is seen.
 const char kEmptyRequestSequenceErrorMessage[] =
     "At least one request must be given.";
-
-#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-// Message for the TypeError thrown when a null request is seen.
-const char kNullRequestErrorMessage[] = "Requests must not be null.";
-#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 ScriptPromise RejectWithTypeError(ScriptState* script_state,
                                   const KURL& request_url,
@@ -164,11 +157,7 @@ BackgroundFetchManager::BackgroundFetchManager(
 ScriptPromise BackgroundFetchManager::fetch(
     ScriptState* script_state,
     const String& id,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8UnionRequestInfoOrRequestOrUSVStringSequence* requests,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const RequestOrUSVStringOrRequestOrUSVStringSequence& requests,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const BackgroundFetchOptions* options,
     ExceptionState& exception_state) {
   if (!registration_->active()) {
@@ -387,7 +376,6 @@ ScriptPromise BackgroundFetchManager::get(ScriptState* script_state,
   return promise;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 // static
 Vector<mojom::blink::FetchAPIRequestPtr>
 BackgroundFetchManager::CreateFetchAPIRequestVector(
@@ -463,83 +451,6 @@ BackgroundFetchManager::CreateFetchAPIRequestVector(
 
   return fetch_api_requests;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-// static
-Vector<mojom::blink::FetchAPIRequestPtr>
-BackgroundFetchManager::CreateFetchAPIRequestVector(
-    ScriptState* script_state,
-    const RequestOrUSVStringOrRequestOrUSVStringSequence& requests,
-    ExceptionState& exception_state,
-    bool* has_requests_with_body) {
-  DCHECK(has_requests_with_body);
-
-  Vector<mojom::blink::FetchAPIRequestPtr> fetch_api_requests;
-  *has_requests_with_body = false;
-
-  if (requests.IsRequestOrUSVStringSequence()) {
-    HeapVector<RequestOrUSVString> request_vector =
-        requests.GetAsRequestOrUSVStringSequence();
-
-    // Throw a TypeError when the developer has passed an empty sequence.
-    if (!request_vector.size()) {
-      exception_state.ThrowTypeError(kEmptyRequestSequenceErrorMessage);
-      return Vector<mojom::blink::FetchAPIRequestPtr>();
-    }
-
-    fetch_api_requests.resize(request_vector.size());
-
-    for (wtf_size_t i = 0; i < request_vector.size(); ++i) {
-      const RequestOrUSVString& request_or_url = request_vector[i];
-
-      Request* request = nullptr;
-      if (request_or_url.IsRequest()) {
-        request = request_or_url.GetAsRequest();
-      } else if (request_or_url.IsUSVString()) {
-        request = Request::Create(script_state, request_or_url.GetAsUSVString(),
-                                  exception_state);
-        if (exception_state.HadException())
-          return Vector<mojom::blink::FetchAPIRequestPtr>();
-      } else {
-        exception_state.ThrowTypeError(kNullRequestErrorMessage);
-        return Vector<mojom::blink::FetchAPIRequestPtr>();
-      }
-
-      DCHECK(request);
-      *has_requests_with_body |= request->HasBody();
-      fetch_api_requests[i] = request->CreateFetchAPIRequest();
-      fetch_api_requests[i]->blob = ExtractBlobHandle(request, exception_state);
-      if (exception_state.HadException())
-        return Vector<mojom::blink::FetchAPIRequestPtr>();
-    }
-  } else if (requests.IsRequest()) {
-    auto* request = requests.GetAsRequest();
-    DCHECK(request);
-
-    *has_requests_with_body = request->HasBody();
-    fetch_api_requests.resize(1);
-    fetch_api_requests[0] = request->CreateFetchAPIRequest();
-    fetch_api_requests[0]->blob =
-        ExtractBlobHandle(requests.GetAsRequest(), exception_state);
-    if (exception_state.HadException())
-      return Vector<mojom::blink::FetchAPIRequestPtr>();
-  } else if (requests.IsUSVString()) {
-    Request* request = Request::Create(script_state, requests.GetAsUSVString(),
-                                       exception_state);
-    if (exception_state.HadException())
-      return Vector<mojom::blink::FetchAPIRequestPtr>();
-
-    DCHECK(request);
-    *has_requests_with_body = request->HasBody();
-    fetch_api_requests.resize(1);
-    fetch_api_requests[0] = request->CreateFetchAPIRequest();
-  } else {
-    exception_state.ThrowTypeError(kNullRequestErrorMessage);
-    return Vector<mojom::blink::FetchAPIRequestPtr>();
-  }
-
-  return fetch_api_requests;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void BackgroundFetchManager::DidGetRegistration(
     ScriptPromiseResolver* resolver,

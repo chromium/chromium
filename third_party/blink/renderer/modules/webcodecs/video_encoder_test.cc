@@ -91,12 +91,7 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
   VideoFrameInit* video_frame_init = VideoFrameInit::Create();
   video_frame_init->setTimestamp(timestamp);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   auto* source = MakeGarbageCollected<V8CanvasImageSource>(image_bitmap);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  CanvasImageSourceUnion source;
-  source.SetImageBitmap(image_bitmap);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   return VideoFrame::Create(script_state, source, video_frame_init,
                             IGNORE_EXCEPTION_FOR_TESTING);

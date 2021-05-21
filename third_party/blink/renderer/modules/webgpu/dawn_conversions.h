@@ -21,7 +21,6 @@
 
 namespace blink {
 
-class DoubleSequenceOrGPUColorDict;
 class GPUColorDict;
 class GPUProgrammableStage;
 class GPUImageCopyTexture;
@@ -34,12 +33,8 @@ class UnsignedLongEnforceRangeSequenceOrGPUOrigin3DDict;
 // individually.
 WGPUColor AsDawnColor(const Vector<double>&);
 WGPUColor AsDawnType(const GPUColorDict*);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 WGPUColor AsDawnType(const V8GPUColor* webgpu_color);
 WGPUExtent3D AsDawnType(const V8GPUExtent3D* webgpu_extent, GPUDevice* device);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-WGPUColor AsDawnType(const DoubleSequenceOrGPUColorDict*);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 // TODO(crbug.com/1181288): Remove the old IDL union version.
 WGPUExtent3D AsDawnType(
     const UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict*,

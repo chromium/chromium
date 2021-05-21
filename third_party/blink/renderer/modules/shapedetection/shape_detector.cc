@@ -27,41 +27,41 @@
 namespace blink {
 
 ScriptPromise ShapeDetector::detect(ScriptState* script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                    const V8ImageBitmapSource* image_source_ptr
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                    const ImageBitmapSourceUnion& image_source
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  DCHECK(image_source_ptr);
-  const V8ImageBitmapSource& image_source = *image_source_ptr;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                    const V8ImageBitmapSource* image_source) {
+  DCHECK(image_source);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  // ImageDatas cannot be tainted by definition.
-  if (image_source.IsImageData())
-    return DetectShapesOnImageData(resolver, image_source.GetAsImageData());
-
-  CanvasImageSource* canvas_image_source;
-  if (image_source.IsHTMLImageElement()) {
-    canvas_image_source = image_source.GetAsHTMLImageElement();
-  } else if (image_source.IsImageBitmap()) {
-    canvas_image_source = image_source.GetAsImageBitmap();
-  } else if (image_source.IsHTMLVideoElement()) {
-    canvas_image_source = image_source.GetAsHTMLVideoElement();
-  } else if (image_source.IsHTMLCanvasElement()) {
-    canvas_image_source = image_source.GetAsHTMLCanvasElement();
-  } else if (image_source.IsOffscreenCanvas()) {
-    canvas_image_source = image_source.GetAsOffscreenCanvas();
-  } else {
-    NOTREACHED() << "Unsupported CanvasImageSource";
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError, "Unsupported source."));
-    return promise;
+  CanvasImageSource* canvas_image_source = nullptr;
+  switch (image_source->GetContentType()) {
+    case V8ImageBitmapSource::ContentType::kHTMLCanvasElement:
+      canvas_image_source = image_source->GetAsHTMLCanvasElement();
+      break;
+    case V8ImageBitmapSource::ContentType::kHTMLImageElement:
+      canvas_image_source = image_source->GetAsHTMLImageElement();
+      break;
+    case V8ImageBitmapSource::ContentType::kHTMLVideoElement:
+      canvas_image_source = image_source->GetAsHTMLVideoElement();
+      break;
+    case V8ImageBitmapSource::ContentType::kImageBitmap:
+      canvas_image_source = image_source->GetAsImageBitmap();
+      break;
+    case V8ImageBitmapSource::ContentType::kImageData:
+      // ImageData cannot be tainted by definition.
+      return DetectShapesOnImageData(resolver, image_source->GetAsImageData());
+    case V8ImageBitmapSource::ContentType::kOffscreenCanvas:
+      canvas_image_source = image_source->GetAsOffscreenCanvas();
+      break;
+    case V8ImageBitmapSource::ContentType::kBlob:
+    case V8ImageBitmapSource::ContentType::kSVGImageElement:
+    case V8ImageBitmapSource::ContentType::kVideoFrame:
+      NOTREACHED() << "Unsupported CanvasImageSource";
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError, "Unsupported source."));
+      return promise;
   }
+  DCHECK(canvas_image_source);
 
   if (canvas_image_source->WouldTaintOrigin()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -69,9 +69,9 @@ ScriptPromise ShapeDetector::detect(ScriptState* script_state,
     return promise;
   }
 
-  if (image_source.IsHTMLImageElement()) {
+  if (image_source->IsHTMLImageElement()) {
     return DetectShapesOnImageElement(resolver,
-                                      image_source.GetAsHTMLImageElement());
+                                      image_source->GetAsHTMLImageElement());
   }
 
   // TODO(mcasas): Check if |video| is actually playing a MediaStream by using

@@ -32,7 +32,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/modules/v8/idb_object_store_or_idb_index.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db.h"
@@ -51,27 +50,15 @@ class IDBCursor : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   using Source = V8UnionIDBIndexOrIDBObjectStore;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  using Source = IDBObjectStoreOrIDBIndex;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   static mojom::IDBCursorDirection StringToDirection(const String& mode_string);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   IDBCursor(std::unique_ptr<WebIDBCursor> backend,
             mojom::blink::IDBCursorDirection direction,
             IDBRequest* request,
             const Source* source,
             IDBTransaction* transaction);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  IDBCursor(std::unique_ptr<WebIDBCursor>,
-            mojom::IDBCursorDirection,
-            IDBRequest*,
-            const Source&,
-            IDBTransaction*);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ~IDBCursor() override;
 
   void Trace(Visitor*) const override;
@@ -88,11 +75,7 @@ class IDBCursor : public ScriptWrappable {
   ScriptValue primaryKey(ScriptState*);
   ScriptValue value(ScriptState*);
   IDBRequest* request() { return request_.Get(); }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   const Source* source() const;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void source(Source&) const;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   IDBRequest* update(ScriptState*, const ScriptValue&, ExceptionState&);
   void advance(unsigned, ExceptionState&);
@@ -127,11 +110,7 @@ class IDBCursor : public ScriptWrappable {
   std::unique_ptr<WebIDBCursor> backend_;
   Member<IDBRequest> request_;
   const mojom::IDBCursorDirection direction_;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Member<const Source> source_;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  Source source_;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Member<IDBTransaction> transaction_;
   bool got_value_ = false;
   bool key_dirty_ = true;

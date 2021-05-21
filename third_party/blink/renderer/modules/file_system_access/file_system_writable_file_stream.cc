@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_writable_file_stream.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view_or_blob_or_usv_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_queuing_strategy_init.h"
@@ -58,18 +57,13 @@ FileSystemWritableFileStream* FileSystemWritableFileStream::Create(
 
 ScriptPromise FileSystemWritableFileStream::write(
     ScriptState* script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8UnionBlobOrBufferSourceOrUSVStringOrWriteParams* data,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const ArrayBufferOrArrayBufferViewOrBlobOrUSVStringOrWriteParams& data,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   WritableStreamDefaultWriter* writer =
       WritableStream::AcquireDefaultWriter(script_state, this, exception_state);
   if (exception_state.HadException())
     return ScriptPromise();
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   v8::Local<v8::Value> v8_data;
   {
     v8::TryCatch v8_try_block(script_state->GetIsolate());
@@ -83,10 +77,6 @@ ScriptPromise FileSystemWritableFileStream::write(
   ScriptPromise promise = writer->write(
       script_state, ScriptValue(script_state->GetIsolate(), v8_data),
       exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ScriptPromise promise = writer->write(
-      script_state, ScriptValue::From(script_state, data), exception_state);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   WritableStreamDefaultWriter::Release(script_state, writer);
   return promise;

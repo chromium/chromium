@@ -21,7 +21,6 @@ class GPUComputePassEncoder;
 class GPURenderPassDescriptor;
 class GPURenderPassEncoder;
 class GPUImageCopyTexture;
-class UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict;
 
 class GPUCommandEncoder : public DawnObject<WGPUCommandEncoder> {
   DEFINE_WRAPPERTYPEINFO();
@@ -50,7 +49,6 @@ class GPUCommandEncoder : public DawnObject<WGPUCommandEncoder> {
                                                 src_offset, dst->GetHandle(),
                                                 dst_offset, size);
   }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void copyBufferToTexture(GPUImageCopyBuffer* source,
                            GPUImageCopyTexture* destination,
                            const V8GPUExtent3D* copy_size);
@@ -60,20 +58,6 @@ class GPUCommandEncoder : public DawnObject<WGPUCommandEncoder> {
   void copyTextureToTexture(GPUImageCopyTexture* source,
                             GPUImageCopyTexture* destination,
                             const V8GPUExtent3D* copy_size);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  void copyBufferToTexture(
-      GPUImageCopyBuffer* source,
-      GPUImageCopyTexture* destination,
-      UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size);
-  void copyTextureToBuffer(
-      GPUImageCopyTexture* source,
-      GPUImageCopyBuffer* destination,
-      UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size);
-  void copyTextureToTexture(
-      GPUImageCopyTexture* source,
-      GPUImageCopyTexture* destination,
-      UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void pushDebugGroup(String groupLabel) {
     std::string label = groupLabel.Utf8();
     GetProcs().commandEncoderPushDebugGroup(GetHandle(), label.c_str());

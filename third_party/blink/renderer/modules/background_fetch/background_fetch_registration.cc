@@ -148,69 +148,37 @@ ScriptPromise BackgroundFetchRegistration::abort(ScriptState* script_state) {
 
 ScriptPromise BackgroundFetchRegistration::match(
     ScriptState* script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8RequestInfo* request,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const RequestOrUSVString& request,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const CacheQueryOptions* options,
     ExceptionState& exception_state) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   return MatchImpl(script_state, request,
                    mojom::blink::CacheQueryOptions::From(options),
                    exception_state,
                    /* match_all = */ false);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  return MatchImpl(
-      script_state, absl::make_optional<RequestOrUSVString>(request),
-      mojom::blink::CacheQueryOptions::From(options), exception_state,
-      /* match_all = */ false);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 ScriptPromise BackgroundFetchRegistration::matchAll(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   return MatchImpl(script_state, /* request = */ nullptr,
                    /* cache_query_options = */ nullptr, exception_state,
                    /* match_all = */ true);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  return MatchImpl(script_state, /* request = */ absl::nullopt,
-                   /* cache_query_options = */ nullptr, exception_state,
-                   /* match_all = */ true);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 ScriptPromise BackgroundFetchRegistration::matchAll(
     ScriptState* script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8RequestInfo* request,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const RequestOrUSVString& request,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const CacheQueryOptions* options,
     ExceptionState& exception_state) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   return MatchImpl(script_state, request,
                    mojom::blink::CacheQueryOptions::From(options),
                    exception_state,
                    /* match_all = */ true);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  return MatchImpl(
-      script_state, absl::make_optional<RequestOrUSVString>(request),
-      mojom::blink::CacheQueryOptions::From(options), exception_state,
-      /* match_all = */ true);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 ScriptPromise BackgroundFetchRegistration::MatchImpl(
     ScriptState* script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8RequestInfo* request,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    absl::optional<RequestOrUSVString> request,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     mojom::blink::CacheQueryOptionsPtr cache_query_options,
     ExceptionState& exception_state,
     bool match_all) {
@@ -233,7 +201,6 @@ ScriptPromise BackgroundFetchRegistration::MatchImpl(
 
   // Convert |request| to mojom::blink::FetchAPIRequestPtr.
   mojom::blink::FetchAPIRequestPtr request_to_match;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (request) {
     switch (request->GetContentType()) {
       case V8RequestInfo::ContentType::kRequest:
@@ -249,19 +216,6 @@ ScriptPromise BackgroundFetchRegistration::MatchImpl(
       }
     }
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  if (request.has_value()) {
-    if (request->IsRequest()) {
-      request_to_match = request->GetAsRequest()->CreateFetchAPIRequest();
-    } else {
-      Request* new_request = Request::Create(
-          script_state, request->GetAsUSVString(), exception_state);
-      if (exception_state.HadException())
-        return ScriptPromise();
-      request_to_match = new_request->CreateFetchAPIRequest();
-    }
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   DCHECK(registration_);
   DCHECK(registration_service_);

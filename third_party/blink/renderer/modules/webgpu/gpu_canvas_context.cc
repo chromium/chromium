@@ -56,8 +56,6 @@ CanvasRenderingContext::ContextType GPUCanvasContext::GetContextType() const {
   return CanvasRenderingContext::kContextGPUPresent;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
 V8RenderingContext* GPUCanvasContext::AsV8RenderingContext() {
   return MakeGarbageCollected<V8RenderingContext>(this);
 }
@@ -65,19 +63,6 @@ V8RenderingContext* GPUCanvasContext::AsV8RenderingContext() {
 V8OffscreenRenderingContext* GPUCanvasContext::AsV8OffscreenRenderingContext() {
   return MakeGarbageCollected<V8OffscreenRenderingContext>(this);
 }
-
-#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
-void GPUCanvasContext::SetCanvasGetContextResult(RenderingContext& result) {
-  result.SetGPUCanvasContext(this);
-}
-
-void GPUCanvasContext::SetOffscreenCanvasGetContextResult(
-    OffscreenRenderingContext& result) {
-  result.SetGPUCanvasContext(this);
-}
-
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void GPUCanvasContext::Stop() {
   if (swapchain_) {

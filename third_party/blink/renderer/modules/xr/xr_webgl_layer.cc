@@ -41,11 +41,7 @@ const char kCleanFrameWarning[] =
 }  // namespace
 
 XRWebGLLayer* XRWebGLLayer::Create(XRSession* session,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                    const V8XRWebGLRenderingContext* context,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                   const XRWebGLRenderingContext& context,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                    const XRWebGLLayerInit* initializer,
                                    ExceptionState& exception_state) {
   if (session->ended()) {

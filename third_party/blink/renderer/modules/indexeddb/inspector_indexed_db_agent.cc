@@ -332,13 +332,8 @@ IDBTransaction* TransactionForDatabase(
     const String& object_store_name,
     const String& mode = indexed_db_names::kReadonly) {
   DummyExceptionStateForTesting exception_state;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8UnionStringOrStringSequence* scope =
       MakeGarbageCollected<V8UnionStringOrStringSequence>(object_store_name);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  StringOrStringSequence scope;
-  scope.SetString(object_store_name);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   IDBTransactionOptions options;
   options.setDurability("relaxed");
   IDBTransaction* idb_transaction = idb_database->transaction(

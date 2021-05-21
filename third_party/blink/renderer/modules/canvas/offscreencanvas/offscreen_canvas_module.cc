@@ -12,7 +12,6 @@
 
 namespace blink {
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 V8OffscreenRenderingContext* OffscreenCanvasModule::getContext(
     ExecutionContext* execution_context,
     OffscreenCanvas& offscreen_canvas,
@@ -38,32 +37,5 @@ V8OffscreenRenderingContext* OffscreenCanvasModule::getContext(
     return nullptr;
   return context->AsV8OffscreenRenderingContext();
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-void OffscreenCanvasModule::getContext(
-    ExecutionContext* execution_context,
-    OffscreenCanvas& offscreen_canvas,
-    const String& id,
-    const CanvasContextCreationAttributesModule* attributes,
-    OffscreenRenderingContext& result,
-    ExceptionState& exception_state) {
-  if (offscreen_canvas.IsNeutered()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "OffscreenCanvas object is detached");
-    return;
-  }
-  CanvasContextCreationAttributesCore canvas_context_creation_attributes;
-  if (!ToCanvasContextCreationAttributes(
-          attributes, canvas_context_creation_attributes, exception_state)) {
-    return;
-  }
-
-  // OffscreenCanvas cannot be transferred after getContext, so this execution
-  // context will always be the right one from here on.
-  CanvasRenderingContext* context = offscreen_canvas.GetCanvasRenderingContext(
-      execution_context, id, canvas_context_creation_attributes);
-  if (context)
-    context->SetOffscreenCanvasGetContextResult(result);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace blink

@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ANIMATIONWORKLET_WORKLET_ANIMATION_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/bindings/modules/v8/document_timeline_or_scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_effect_owner.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
@@ -21,7 +20,6 @@
 
 namespace blink {
 
-class AnimationEffectOrAnimationEffectSequence;
 class ScriptValue;
 class SerializedScriptValue;
 class V8UnionAnimationEffectOrAnimationEffectSequence;
@@ -46,7 +44,6 @@ class MODULES_EXPORT WorkletAnimation : public WorkletAnimationBase,
   USING_PRE_FINALIZER(WorkletAnimation, Dispose);
 
  public:
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static WorkletAnimation* Create(
       ScriptState* script_state,
       const String& animator_name,
@@ -65,26 +62,6 @@ class MODULES_EXPORT WorkletAnimation : public WorkletAnimationBase,
       const V8UnionDocumentTimelineOrScrollTimeline* timeline,
       const ScriptValue& options,
       ExceptionState& exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  static WorkletAnimation* Create(
-      ScriptState*,
-      String animator_name,
-      const AnimationEffectOrAnimationEffectSequence&,
-      ExceptionState&);
-  static WorkletAnimation* Create(
-      ScriptState*,
-      String animator_name,
-      const AnimationEffectOrAnimationEffectSequence&,
-      DocumentTimelineOrScrollTimeline,
-      ExceptionState&);
-  static WorkletAnimation* Create(
-      ScriptState*,
-      String animator_name,
-      const AnimationEffectOrAnimationEffectSequence&,
-      DocumentTimelineOrScrollTimeline,
-      const ScriptValue& options,
-      ExceptionState&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   WorkletAnimation(WorkletAnimationId id,
                    const String& animator_name,

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
@@ -318,16 +319,9 @@ NameToAssignedNumberMap* GetAssignedNumberForDescriptorNameMap() {
 }
 
 String GetUUIDForGATTAttribute(GATTAttribute attribute,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                               const V8UnionStringOrUnsignedLong* name_arg,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                               StringOrUnsignedLong name,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                               const V8UnionStringOrUnsignedLong* name,
                                ExceptionState& exception_state) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  DCHECK(name_arg);
-  const V8UnionStringOrUnsignedLong& name = *name_arg;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  DCHECK(name);
   // Implementation of BluetoothUUID.getService, BluetoothUUID.getCharacteristic
   // and BluetoothUUID.getDescriptor algorithms:
   // https://webbluetoothcg.github.io/web-bluetooth/#dom-bluetoothuuid-getservice
@@ -336,10 +330,10 @@ String GetUUIDForGATTAttribute(GATTAttribute attribute,
 
   // If name is an unsigned long, return BluetoothUUID.cannonicalUUI(name) and
   // abort this steps.
-  if (name.IsUnsignedLong())
-    return BluetoothUUID::canonicalUUID(name.GetAsUnsignedLong());
+  if (name->IsUnsignedLong())
+    return BluetoothUUID::canonicalUUID(name->GetAsUnsignedLong());
 
-  String name_str = name.GetAsString();
+  const String& name_str = name->GetAsString();
 
   // If name is a valid UUID, return name and abort these steps.
   if (WTF::IsValidUUID(name_str))
@@ -403,11 +397,7 @@ String GetUUIDForGATTAttribute(GATTAttribute attribute,
 
 // static
 String BluetoothUUID::getService(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8BluetoothServiceUUID* name,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    StringOrUnsignedLong name,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   return GetUUIDForGATTAttribute(GATTAttribute::kService, name,
                                  exception_state);
@@ -415,11 +405,7 @@ String BluetoothUUID::getService(
 
 // static
 String BluetoothUUID::getCharacteristic(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8BluetoothCharacteristicUUID* name,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    StringOrUnsignedLong name,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   return GetUUIDForGATTAttribute(GATTAttribute::kCharacteristic, name,
                                  exception_state);
@@ -427,11 +413,7 @@ String BluetoothUUID::getCharacteristic(
 
 // static
 String BluetoothUUID::getDescriptor(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8BluetoothDescriptorUUID* name,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    StringOrUnsignedLong name,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   return GetUUIDForGATTAttribute(GATTAttribute::kDescriptor, name,
                                  exception_state);

@@ -156,20 +156,9 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(
   ValidateStateStack();
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
 V8RenderingContext* CanvasRenderingContext2D::AsV8RenderingContext() {
   return MakeGarbageCollected<V8RenderingContext>(this);
 }
-
-#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
-void CanvasRenderingContext2D::SetCanvasGetContextResult(
-    RenderingContext& result) {
-  result.SetCanvasRenderingContext2D(this);
-}
-
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 CanvasRenderingContext2D::~CanvasRenderingContext2D() = default;
 

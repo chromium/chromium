@@ -401,12 +401,8 @@ IDBRequest* IDBObjectStore::DoPutAll(ScriptState* script_state,
     keys.push_back(std::move(key_ptr));
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   const IDBRequest::Source* source =
       MakeGarbageCollected<IDBRequest::Source>(this);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  IDBRequest::Source source = IDBRequest::Source::FromIDBObjectStore(this);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   IDBRequest::AsyncTraceState metrics("IDBObjectStore::putAll");
   if (IsDeleted()) {
@@ -603,21 +599,13 @@ IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
   if (exception_state.HadException())
     return nullptr;
   return DoPut(script_state, put_mode,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                MakeGarbageCollected<IDBRequest::Source>(this),
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-               IDBRequest::Source::FromIDBObjectStore(this),
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                value, key.get(), exception_state);
 }
 
 IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
                                   mojom::IDBPutMode put_mode,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                   const IDBRequest::Source* source,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                  const IDBRequest::Source& source,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                   const ScriptValue& value,
                                   const IDBKey* key,
                                   ExceptionState& exception_state) {

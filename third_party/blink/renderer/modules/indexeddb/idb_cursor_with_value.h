@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_CURSOR_WITH_VALUE_H_
 
 #include <memory>
+
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_cursor.h"
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db.h"
@@ -45,11 +46,7 @@ class IDBCursorWithValue final : public IDBCursor {
   IDBCursorWithValue(std::unique_ptr<WebIDBCursor>,
                      mojom::IDBCursorDirection,
                      IDBRequest*,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                      const Source*,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                     const Source&,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                      IDBTransaction*);
   ~IDBCursorWithValue() override;
 

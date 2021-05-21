@@ -115,7 +115,6 @@ IDBKeyPath::IDBKeyPath(const Vector<class String>& array)
 #endif
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 IDBKeyPath::IDBKeyPath(const V8UnionStringOrStringSequence* key_path) {
   if (!key_path) {
     type_ = mojom::IDBKeyPathType::Null;
@@ -138,7 +137,6 @@ IDBKeyPath::IDBKeyPath(const V8UnionStringOrStringSequence* key_path) {
       break;
   }
 }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 IDBKeyPath::IDBKeyPath(const StringOrStringSequence& key_path) {
   if (key_path.IsNull()) {

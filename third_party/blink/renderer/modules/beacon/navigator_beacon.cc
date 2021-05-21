@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/beacon/navigator_beacon.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_blob_formdata_readablestream_urlsearchparams_usvstring.h"
-#include "third_party/blink/renderer/bindings/modules/v8/readable_stream_or_xml_http_request_body_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -61,7 +60,6 @@ bool NavigatorBeacon::CanSendBeacon(ExecutionContext* context,
   return GetSupplementable()->DomWindow();
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 bool NavigatorBeacon::sendBeacon(
     ScriptState* script_state,
     Navigator& navigator,
@@ -71,20 +69,7 @@ bool NavigatorBeacon::sendBeacon(
   return NavigatorBeacon::From(navigator).SendBeaconImpl(
       script_state, url_string, data, exception_state);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-bool NavigatorBeacon::sendBeacon(
-    ScriptState* script_state,
-    Navigator& navigator,
-    const String& urlstring,
-    const ReadableStreamOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString&
-        data,
-    ExceptionState& exception_state) {
-  return NavigatorBeacon::From(navigator).SendBeaconImpl(
-      script_state, urlstring, data, exception_state);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 bool NavigatorBeacon::SendBeaconImpl(
     ScriptState* script_state,
     const String& url_string,
@@ -173,78 +158,5 @@ bool NavigatorBeacon::SendBeaconImpl(
 
   return allowed;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-bool NavigatorBeacon::SendBeaconImpl(
-    ScriptState* script_state,
-    const String& urlstring,
-    const ReadableStreamOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString&
-        data,
-    ExceptionState& exception_state) {
-  ExecutionContext* context = ExecutionContext::From(script_state);
-  KURL url = context->CompleteURL(urlstring);
-  if (!CanSendBeacon(context, url, exception_state)) {
-    // TODO(crbug.com/1161996): Remove this VLOG once the investigation is done.
-    VLOG(1) << "Cannot send a beacon to " << url.ElidedString()
-            << ", initiator = " << context->Url();
-    return false;
-  }
-
-  // TODO(crbug.com/1161996): Remove this VLOG once the investigation is done.
-  VLOG(1) << "Send a beacon to " << url.ElidedString()
-          << ", initiator = " << context->Url();
-  bool allowed;
-
-  LocalFrame* frame = GetSupplementable()->DomWindow()->GetFrame();
-  if (data.IsArrayBuffer()) {
-    auto* data_buffer = data.GetAsArrayBuffer();
-    if (!base::CheckedNumeric<wtf_size_t>(data_buffer->ByteLength())
-             .IsValid()) {
-      // At the moment the PingLoader::SendBeacon implementation cannot deal
-      // with huge ArrayBuffers.
-      exception_state.ThrowRangeError(
-          "The data provided to sendBeacon() exceeds the maximally possible "
-          "length, which is 4294967295.");
-      return false;
-    }
-    allowed = PingLoader::SendBeacon(*script_state, frame, url, data_buffer);
-  } else if (data.IsArrayBufferView()) {
-    auto* data_view = data.GetAsArrayBufferView().Get();
-    if (!base::CheckedNumeric<wtf_size_t>(data_view->byteLength()).IsValid()) {
-      // At the moment the PingLoader::SendBeacon implementation cannot deal
-      // with huge ArrayBuffers.
-      exception_state.ThrowRangeError(
-          "The data provided to sendBeacon() exceeds the maximally possible "
-          "length, which is 4294967295.");
-      return false;
-    }
-    allowed = PingLoader::SendBeacon(*script_state, frame, url, data_view);
-  } else if (data.IsBlob()) {
-    Blob* blob = data.GetAsBlob();
-    allowed = PingLoader::SendBeacon(*script_state, frame, url, blob);
-  } else if (data.IsUSVString()) {
-    allowed = PingLoader::SendBeacon(*script_state, frame, url,
-                                     data.GetAsUSVString());
-  } else if (data.IsFormData()) {
-    allowed =
-        PingLoader::SendBeacon(*script_state, frame, url, data.GetAsFormData());
-  } else if (data.IsURLSearchParams()) {
-    allowed = PingLoader::SendBeacon(*script_state, frame, url,
-                                     data.GetAsURLSearchParams());
-  } else if (data.IsReadableStream()) {
-    exception_state.ThrowTypeError(
-        "sendBeacon cannot have a ReadableStream body.");
-    return false;
-  } else {
-    allowed = PingLoader::SendBeacon(*script_state, frame, url, String());
-  }
-
-  if (!allowed) {
-    UseCounter::Count(context, WebFeature::kSendBeaconQuotaExceeded);
-    return false;
-  }
-
-  return true;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace blink

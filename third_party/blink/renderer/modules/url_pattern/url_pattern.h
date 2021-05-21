@@ -20,7 +20,6 @@ class ExceptionState;
 class URLPatternComponentResult;
 class URLPatternInit;
 class URLPatternResult;
-class USVStringOrURLPatternInit;
 
 class URLPattern : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -40,33 +39,17 @@ class URLPattern : public ScriptWrappable {
              Component* hash,
              base::PassKey<URLPattern> key);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool test(const V8URLPatternInput* input,
             const String& base_url,
             ExceptionState& exception_state) const;
   bool test(const V8URLPatternInput* input,
             ExceptionState& exception_state) const;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  bool test(const USVStringOrURLPatternInit& input,
-            const String& base_url,
-            ExceptionState& exception_state) const;
-  bool test(const USVStringOrURLPatternInit& input,
-            ExceptionState& exception_state) const;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   URLPatternResult* exec(const V8URLPatternInput* input,
                          const String& base_url,
                          ExceptionState& exception_state) const;
   URLPatternResult* exec(const V8URLPatternInput* input,
                          ExceptionState& exception_state) const;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  URLPatternResult* exec(const USVStringOrURLPatternInit& input,
-                         const String& base_url,
-                         ExceptionState& exception_state) const;
-  URLPatternResult* exec(const USVStringOrURLPatternInit& input,
-                         ExceptionState& exception_state) const;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   String protocol() const;
   String username() const;
@@ -98,17 +81,10 @@ class URLPattern : public ScriptWrappable {
   // A utility function to determine if a given |input| matches the pattern
   // or not.  Returns |true| if there is a match and |false| otherwise.  If
   // |result| is not nullptr then the URLPatternResult contents will be filled.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool Match(const V8URLPatternInput* input,
              const String& base_url,
              URLPatternResult* result,
              ExceptionState& exception_state) const;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  bool Match(const USVStringOrURLPatternInit& input,
-             const String& base_url,
-             URLPatternResult* result,
-             ExceptionState& exception_state) const;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // A utility function that constructs a URLPatternComponentResult for
   // a given |component|, |input|, and |group_list|.  The |component| may

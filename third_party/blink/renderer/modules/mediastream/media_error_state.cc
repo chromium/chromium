@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_domexception_overconstrainederror.h"
 #include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
@@ -117,18 +118,10 @@ String MediaErrorState::GetErrorMessage() {
   return String();
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 V8UnionDOMExceptionOrOverconstrainedError* MediaErrorState::CreateError() {
   DCHECK_EQ(error_type_, kConstraintError);
   return MakeGarbageCollected<V8UnionDOMExceptionOrOverconstrainedError>(
       MakeGarbageCollected<OverconstrainedError>(constraint_, message_));
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-DOMExceptionOrOverconstrainedError MediaErrorState::CreateError() {
-  DCHECK(error_type_ == kConstraintError);
-  return DOMExceptionOrOverconstrainedError::FromOverconstrainedError(
-      MakeGarbageCollected<OverconstrainedError>(constraint_, message_));
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace blink

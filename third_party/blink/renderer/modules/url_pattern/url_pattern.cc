@@ -6,7 +6,6 @@
 
 #include "base/strings/string_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
-#include "third_party/blink/renderer/bindings/modules/v8/usv_string_or_url_pattern_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_component_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_result.h"
@@ -836,32 +835,20 @@ URLPattern::URLPattern(Component* protocol,
       hash_(hash) {}
 
 bool URLPattern::test(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8URLPatternInput* input,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const USVStringOrURLPatternInit& input,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const String& base_url,
     ExceptionState& exception_state) const {
   return Match(input, base_url, /*result=*/nullptr, exception_state);
 }
 
 bool URLPattern::test(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8URLPatternInput* input,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const USVStringOrURLPatternInit& input,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) const {
   return test(input, /*base_url=*/String(), exception_state);
 }
 
 URLPatternResult* URLPattern::exec(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8URLPatternInput* input,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const USVStringOrURLPatternInit& input,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const String& base_url,
     ExceptionState& exception_state) const {
   URLPatternResult* result = URLPatternResult::Create();
@@ -871,11 +858,7 @@ URLPatternResult* URLPattern::exec(
 }
 
 URLPatternResult* URLPattern::exec(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8URLPatternInput* input,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const USVStringOrURLPatternInit& input,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) const {
   return exec(input, /*base_url=*/String(), exception_state);
 }
@@ -1024,11 +1007,7 @@ URLPattern::Component* URLPattern::CompilePattern(
 }
 
 bool URLPattern::Match(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8URLPatternInput* input,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const USVStringOrURLPatternInit& input,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const String& base_url,
     URLPatternResult* result,
     ExceptionState& exception_state) const {
@@ -1046,12 +1025,8 @@ bool URLPattern::Match(
   HeapVector<USVStringOrURLPatternInit> inputs;
 
   bool is_init =
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       input->GetContentType() ==
       V8URLPatternInput::ContentType::kURLPatternInit;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-      input.IsURLPatternInit();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   if (is_init) {
     if (base_url) {
@@ -1063,11 +1038,7 @@ bool URLPattern::Match(
     }
 
     URLPatternInit* init =
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
         input->GetAsURLPatternInit();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-        input.GetAsURLPatternInit();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
     inputs.push_back(USVStringOrURLPatternInit::FromURLPatternInit(init));
 
@@ -1087,11 +1058,7 @@ bool URLPattern::Match(
     }
 
     const String& input_string =
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
         input->GetAsUSVString();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-        input.GetAsUSVString();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
     inputs.push_back(USVStringOrURLPatternInit::FromUSVString(input_string));
     if (base_url)

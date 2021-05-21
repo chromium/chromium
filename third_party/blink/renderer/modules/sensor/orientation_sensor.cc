@@ -99,7 +99,6 @@ void OrientationSensor::PopulateMatrixInternal(
   DoPopulateMatrix(target_matrix, quat.x, quat.y, quat.z, quat.w);
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void OrientationSensor::populateMatrix(
     const V8RotationMatrixType* target_buffer,
     ExceptionState& exception_state) {
@@ -117,20 +116,6 @@ void OrientationSensor::populateMatrix(
       break;
   }
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-void OrientationSensor::populateMatrix(
-    Float32ArrayOrFloat64ArrayOrDOMMatrix& matrix,
-    ExceptionState& exception_state) {
-  if (matrix.IsFloat32Array())
-    PopulateMatrixInternal(matrix.GetAsFloat32Array().Get(), exception_state);
-  else if (matrix.IsFloat64Array())
-    PopulateMatrixInternal(matrix.GetAsFloat64Array().Get(), exception_state);
-  else if (matrix.IsDOMMatrix())
-    PopulateMatrixInternal(matrix.GetAsDOMMatrix(), exception_state);
-  else
-    NOTREACHED() << "Unexpected rotation matrix type.";
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 bool OrientationSensor::isReadingDirty() const {
   return reading_dirty_ || !hasReading();

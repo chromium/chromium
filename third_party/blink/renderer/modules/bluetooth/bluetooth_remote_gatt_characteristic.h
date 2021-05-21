@@ -75,19 +75,11 @@ class BluetoothRemoteGATTCharacteristic final
   BluetoothCharacteristicProperties* properties() { return properties_; }
   DOMDataView* value() const { return value_; }
   ScriptPromise getDescriptor(ScriptState* script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                               const V8BluetoothDescriptorUUID* descriptor_uuid,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                              const StringOrUnsignedLong& descriptor_uuid,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                               ExceptionState& exception_state);
   ScriptPromise getDescriptors(ScriptState*, ExceptionState&);
   ScriptPromise getDescriptors(ScriptState* script_state,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                const V8BluetoothDescriptorUUID* descriptor_uuid,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                               const StringOrUnsignedLong& descriptor_uuid,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                ExceptionState& exception_state);
   ScriptPromise readValue(ScriptState*, ExceptionState&);
   ScriptPromise writeValue(ScriptState*, const DOMArrayPiece&, ExceptionState&);

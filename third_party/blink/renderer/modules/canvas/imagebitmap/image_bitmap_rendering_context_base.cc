@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_rendering_context_base.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
-#include "third_party/blink/renderer/bindings/modules/v8/html_canvas_element_or_offscreen_canvas.h"
 #include "third_party/blink/renderer/bindings/modules/v8/rendering_context.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/image_layer_bridge.h"
@@ -27,7 +26,6 @@ ImageBitmapRenderingContextBase::ImageBitmapRenderingContextBase(
 
 ImageBitmapRenderingContextBase::~ImageBitmapRenderingContextBase() = default;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 V8UnionHTMLCanvasElementOrOffscreenCanvas*
 ImageBitmapRenderingContextBase::getHTMLOrOffscreenCanvas() const {
   if (Host()->IsOffscreenCanvas()) {
@@ -37,16 +35,6 @@ ImageBitmapRenderingContextBase::getHTMLOrOffscreenCanvas() const {
   return MakeGarbageCollected<V8UnionHTMLCanvasElementOrOffscreenCanvas>(
       static_cast<HTMLCanvasElement*>(Host()));
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-void ImageBitmapRenderingContextBase::getHTMLOrOffscreenCanvas(
-    HTMLCanvasElementOrOffscreenCanvas& result) const {
-  if (Host()->IsOffscreenCanvas()) {
-    result.SetOffscreenCanvas(static_cast<OffscreenCanvas*>(Host()));
-  } else {
-    result.SetHTMLCanvasElement(static_cast<HTMLCanvasElement*>(Host()));
-  }
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void ImageBitmapRenderingContextBase::Stop() {
   image_layer_bridge_->Dispose();

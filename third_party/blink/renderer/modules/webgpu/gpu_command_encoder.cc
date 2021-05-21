@@ -4,9 +4,6 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_command_encoder.h"
 
-#include "third_party/blink/renderer/bindings/modules/v8/double_sequence_or_gpu_color_dict.h"
-#include "third_party/blink/renderer/bindings/modules/v8/unsigned_long_enforce_range_sequence_or_gpu_extent_3d_dict.h"
-#include "third_party/blink/renderer/bindings/modules/v8/unsigned_long_enforce_range_sequence_or_gpu_origin_3d_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_encoder_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pass_descriptor.h"
@@ -276,18 +273,8 @@ GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
 
 void GPUCommandEncoder::copyBufferToTexture(GPUImageCopyBuffer* source,
                                             GPUImageCopyTexture* destination,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                            const V8GPUExtent3D* copy_size
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                            UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict&
-                                                copy_size
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                            const V8GPUExtent3D* copy_size) {
   WGPUExtent3D dawn_copy_size = AsDawnType(copy_size, device_);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size, device_);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
 
   const char* error = nullptr;
@@ -304,18 +291,8 @@ void GPUCommandEncoder::copyBufferToTexture(GPUImageCopyBuffer* source,
 
 void GPUCommandEncoder::copyTextureToBuffer(GPUImageCopyTexture* source,
                                             GPUImageCopyBuffer* destination,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                            const V8GPUExtent3D* copy_size
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                            UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict&
-                                                copy_size
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                            const V8GPUExtent3D* copy_size) {
   WGPUExtent3D dawn_copy_size = AsDawnType(copy_size, device_);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size, device_);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   WGPUTextureCopyView dawn_source = AsDawnType(source, device_);
 
   const char* error = nullptr;
@@ -332,20 +309,10 @@ void GPUCommandEncoder::copyTextureToBuffer(GPUImageCopyTexture* source,
 
 void GPUCommandEncoder::copyTextureToTexture(GPUImageCopyTexture* source,
                                              GPUImageCopyTexture* destination,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                             const V8GPUExtent3D* copy_size
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                             UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict&
-                                                 copy_size
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-) {
+                                             const V8GPUExtent3D* copy_size) {
   WGPUTextureCopyView dawn_source = AsDawnType(source, device_);
   WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   WGPUExtent3D dawn_copy_size = AsDawnType(copy_size, device_);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size, device_);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   GetProcs().commandEncoderCopyTextureToTexture(
       GetHandle(), &dawn_source, &dawn_destination, &dawn_copy_size);

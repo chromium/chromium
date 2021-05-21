@@ -10,12 +10,10 @@
 #include "base/time/time_delta_from_string.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/bindings/core/v8/double_or_scroll_timeline_auto_keyword.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_animationeffect_animationeffectsequence.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_documenttimeline_scrolltimeline.h"
-#include "third_party/blink/renderer/bindings/modules/v8/animation_effect_or_animation_effect_sequence.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
@@ -68,7 +66,6 @@ WorkletAnimation* CreateWorkletAnimation(
     Element* element,
     const String& animator_name,
     ScrollTimeline* scroll_timeline = nullptr) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   auto* effects =
       MakeGarbageCollected<V8UnionAnimationEffectOrAnimationEffectSequence>(
           CreateKeyframeEffect(element));
@@ -77,14 +74,6 @@ WorkletAnimation* CreateWorkletAnimation(
     timeline = MakeGarbageCollected<V8UnionDocumentTimelineOrScrollTimeline>(
         scroll_timeline);
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  AnimationEffectOrAnimationEffectSequence effects;
-  AnimationEffect* effect = CreateKeyframeEffect(element);
-  effects.SetAnimationEffect(effect);
-  DocumentTimelineOrScrollTimeline timeline;
-  if (scroll_timeline)
-    timeline.SetScrollTimeline(scroll_timeline);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptValue options;
 
   ScriptState::Scope scope(script_state);

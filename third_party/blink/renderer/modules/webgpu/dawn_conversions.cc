@@ -45,7 +45,6 @@ WGPUColor AsDawnType(const GPUColorDict* webgpu_color) {
   return dawn_color;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 WGPUColor AsDawnType(const V8GPUColor* webgpu_color) {
   DCHECK(webgpu_color);
 
@@ -59,22 +58,7 @@ WGPUColor AsDawnType(const V8GPUColor* webgpu_color) {
   NOTREACHED();
   return WGPUColor{};
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-WGPUColor AsDawnType(const DoubleSequenceOrGPUColorDict* webgpu_color) {
-  DCHECK(webgpu_color);
 
-  if (webgpu_color->IsDoubleSequence()) {
-    return AsDawnColor(webgpu_color->GetAsDoubleSequence());
-  } else if (webgpu_color->IsGPUColorDict()) {
-    return AsDawnType(webgpu_color->GetAsGPUColorDict());
-  }
-  NOTREACHED();
-  WGPUColor dawn_color = {};
-  return dawn_color;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 WGPUExtent3D AsDawnType(const V8GPUExtent3D* webgpu_extent, GPUDevice* device) {
   DCHECK(webgpu_extent);
 
@@ -123,7 +107,6 @@ WGPUExtent3D AsDawnType(const V8GPUExtent3D* webgpu_extent, GPUDevice* device) {
 
   return dawn_extent;
 }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 WGPUExtent3D AsDawnType(
     const UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict* webgpu_extent,
