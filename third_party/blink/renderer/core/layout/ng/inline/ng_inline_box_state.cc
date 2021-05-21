@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
 namespace blink {
@@ -37,11 +38,11 @@ FontHeight ComputeEmphasisMarkOutsets(const ComputedStyle& style,
 void NGInlineBoxState::InitializeFont(bool is_svg_text,
                                       const LayoutObject& layout_object) {
   if (!is_svg_text) {
+    scaling_factor = 1.0f;
     font = &style->GetFont();
     return;
   }
   scaled_font.emplace();
-  float scaling_factor;
   LayoutSVGInlineText::ComputeNewScaledFontForStyle(
       layout_object, scaling_factor, *scaled_font);
   if (scaling_factor == 1.0f) {
@@ -807,7 +808,7 @@ NGInlineLayoutStateStack::ApplyBaselineShift(NGInlineBoxState* box,
 
   const ComputedStyle& style = *box->style;
   EVerticalAlign vertical_align = style.VerticalAlign();
-  if (vertical_align == EVerticalAlign::kBaseline)
+  if (!is_svg_text_ && vertical_align == EVerticalAlign::kBaseline)
     return kPositionNotPending;
 
   // 'vertical-align' aligns boxes relative to themselves, to their parent
@@ -824,6 +825,45 @@ NGInlineLayoutStateStack::ApplyBaselineShift(NGInlineBoxState* box,
   unsigned fragment_end = line_box->size();
   if (box->fragment_start == fragment_end)
     return kPositionNotPending;
+
+  // SVG <text> supports not |vertical-align| but |baseline-shift|.
+  // https://drafts.csswg.org/css-inline/#propdef-vertical-align says
+  // |vertical-align| is a shorthand property of |baseline-shift| and
+  // |alignment-baseline|. However major browsers have never supported
+  // |vertical-align| in SVG <text>. Also, the shift amount computation
+  // for |baseline-shift| is not same as one for |vertical-align|.
+  // For now we follow the legacy behavior. If we'd like to follow the
+  // standard, first we should add a UseCounter for non-zero
+  // |baseline-shift|.
+  if (is_svg_text_) {
+    switch (style.BaselineShiftType()) {
+      case EBaselineShiftType::kLength: {
+        const Length& length = style.BaselineShift();
+        // ValueForLength() should be called with unscaled values.
+        baseline_shift = LayoutUnit(
+            -SVGLengthContext::ValueForLength(
+                length, style,
+                parent_box.font->GetFontDescription().ComputedPixelSize() /
+                    box->scaling_factor) *
+            box->scaling_factor);
+        break;
+      }
+      case EBaselineShiftType::kSub:
+        baseline_shift = LayoutUnit(
+            parent_box.font->PrimaryFont()->GetFontMetrics().FloatHeight() / 2);
+        break;
+      case EBaselineShiftType::kSuper:
+        baseline_shift = LayoutUnit(
+            -parent_box.font->PrimaryFont()->GetFontMetrics().FloatHeight() /
+            2);
+        break;
+    }
+    if (!box->metrics.IsEmpty())
+      box->metrics.Move(baseline_shift);
+    line_box->MoveInBlockDirection(baseline_shift, box->fragment_start,
+                                   fragment_end);
+    return kPositionNotPending;
+  }
 
   switch (vertical_align) {
     case EVerticalAlign::kSub:
