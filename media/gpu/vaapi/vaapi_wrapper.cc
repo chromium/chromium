@@ -1384,7 +1384,7 @@ scoped_refptr<VaapiWrapper> VaapiWrapper::Create(
 
   scoped_refptr<VaapiWrapper> vaapi_wrapper(new VaapiWrapper(mode));
   if (vaapi_wrapper->VaInitialize(report_error_to_uma_cb)) {
-    if (vaapi_wrapper->Initialize(mode, va_profile, encryption_scheme))
+    if (vaapi_wrapper->Initialize(va_profile, encryption_scheme))
       return vaapi_wrapper;
   }
   LOG(ERROR) << "Failed to create VaapiWrapper for va_profile: "
@@ -2756,11 +2756,10 @@ VaapiWrapper::~VaapiWrapper() {
   Deinitialize();
 }
 
-bool VaapiWrapper::Initialize(CodecMode mode,
-                              VAProfile va_profile,
+bool VaapiWrapper::Initialize(VAProfile va_profile,
                               EncryptionScheme encryption_scheme) {
 #if DCHECK_IS_ON()
-  if (mode == kEncodeConstantQuantizationParameter) {
+  if (mode_ == kEncodeConstantQuantizationParameter) {
     DCHECK_NE(va_profile, VAProfileJPEGBaseline)
         << "JPEG Encoding doesn't support CQP bitrate control";
   }
@@ -2768,15 +2767,16 @@ bool VaapiWrapper::Initialize(CodecMode mode,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (encryption_scheme != EncryptionScheme::kUnencrypted &&
-      mode != kDecodeProtected)
+      mode_ != kDecodeProtected) {
     return false;
+  }
 #endif
 
-  const VAEntrypoint entrypoint = GetDefaultVaEntryPoint(mode, va_profile);
+  const VAEntrypoint entrypoint = GetDefaultVaEntryPoint(mode_, va_profile);
 
   base::AutoLock auto_lock(*va_lock_);
   std::vector<VAConfigAttrib> required_attribs;
-  if (!GetRequiredAttribs(va_lock_, va_display_, mode, va_profile, entrypoint,
+  if (!GetRequiredAttribs(va_lock_, va_display_, mode_, va_profile, entrypoint,
                           &required_attribs)) {
     return false;
   }

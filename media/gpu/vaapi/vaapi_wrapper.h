@@ -489,8 +489,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   FRIEND_TEST_ALL_PREFIXES(VaapiUtilsTest, BadScopedVAImage);
   FRIEND_TEST_ALL_PREFIXES(VaapiUtilsTest, BadScopedVABufferMapping);
 
-  bool Initialize(CodecMode mode,
-                  VAProfile va_profile,
+  bool Initialize(VAProfile va_profile,
                   EncryptionScheme encryption_scheme) WARN_UNUSED_RESULT;
   void Deinitialize();
   bool VaInitialize(const ReportErrorToUMACB& report_error_to_uma_cb)
