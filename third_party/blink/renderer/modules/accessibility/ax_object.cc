@@ -4263,8 +4263,7 @@ void AXObject::ClearChildren() const {
   if (!GetNode())
     return;
 
-  if (GetDocument()->IsFlatTreeTraversalForbidden() ||
-      GetDocument()->IsSlotAssignmentRecalcForbidden()) {
+  if (GetDocument()->IsFlatTreeTraversalForbidden()) {
     // Cannot use layout tree builder traversal now, will have to rely on
     // RepairParent() at a later point.
     return;
