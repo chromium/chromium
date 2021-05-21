@@ -353,6 +353,11 @@ const char kPasswordReuseDetectionDescription[] =
     "Displays warning when user types or pastes a saved password into a "
     "phishing website.";
 
+const char kReadingListMessagesName[] = "Enables Reading List Messages";
+const char kReadingListMessagesDescription[] =
+    "When enabled, a Messages prompt may be presented to allow the user to "
+    "save the current page to Reading List";
+
 const char kRefactoredNTPName[] = "Enables refactored new tab page";
 const char kRefactoredNTPDescription[] =
     "When enabled, the new tab page is replaced with the refactored version, "

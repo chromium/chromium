@@ -300,6 +300,10 @@ extern const char kOmniboxNewImplementationDescription[];
 extern const char kPasswordReuseDetectionName[];
 extern const char kPasswordReuseDetectionDescription[];
 
+// Title and description for the flag to enable the Reading List Messages.
+extern const char kReadingListMessagesName[];
+extern const char kReadingListMessagesDescription[];
+
 // Title and description for the flag that enables the refactored new tab page.
 extern const char kRefactoredNTPName[];
 extern const char kRefactoredNTPDescription[];

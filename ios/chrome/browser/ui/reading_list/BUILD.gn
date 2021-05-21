@@ -77,6 +77,15 @@ source_set("reading_list") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("features") {
+  sources = [
+    "reading_list_features.h",
+    "reading_list_features.mm",
+  ]
+  deps = [ "//base" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 source_set("reading_list_constants") {
   sources = [
     "reading_list_constants.h",
