@@ -4007,15 +4007,21 @@ void Element::focus(const FocusParams& params) {
           this, GetDocument().GetFrame(), params))
     return;
 
-  if (GetDocument().FocusedElement() == this &&
-      GetDocument().GetFrame()->HasStickyUserActivation()) {
+  if (GetDocument().FocusedElement() == this) {
     ChromeClient& chrome_client = GetDocument().GetPage()->GetChromeClient();
-    // Bring up the keyboard in the context of anything triggered by a user
-    // gesture. Since tracking that across arbitrary boundaries (eg.
-    // animations) is difficult, for now we match IE's heuristic and bring
-    // up the keyboard if there's been any gesture since load.
-    chrome_client.ShowVirtualKeyboardOnElementFocus(*GetDocument().GetFrame());
+    if (GetDocument().GetFrame()->HasStickyUserActivation()) {
+      // Bring up the keyboard in the context of anything triggered by a user
+      // gesture. Since tracking that across arbitrary boundaries (eg.
+      // animations) is difficult, for now we match IE's heuristic and bring
+      // up the keyboard if there's been any gesture since load.
+      chrome_client.ShowVirtualKeyboardOnElementFocus(
+          *GetDocument().GetFrame());
+    }
 
+    // TODO(bebeaudr): We might want to move the following code into the
+    // HasStickyUserActivation condition above once https://crbug.com/1208874 is
+    // fixed.
+    //
     // Trigger a tooltip to show for the newly focused element only when the
     // focus was set resulting from a keyboard action.
     //
