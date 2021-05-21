@@ -4308,7 +4308,7 @@
       'tags': [],
       'desc': '''This policy is deprecated, please use <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> instead.
 
-       Setting the policy means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> bypasses any proxy for the list of hosts given here. This policy only takes effect if the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy isn't specified and you selected a <ph name="PROXY_MODE_ENUM_FIXED_SERVERS">fixed_servers</ph> with <ph name="PROXY_MODE_POLICY_NAME">ProxyMode</ph>.
+       Setting the policy means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> bypasses any proxy for the list of hosts given here. This policy only takes effect if the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy isn't specified and you specified either <ph name="PROXY_MODE_ENUM_FIXED_SERVERS">fixed_servers</ph> or <ph name="PROXY_MODE_ENUM_PAC_SCRIPT">pac_script</ph> for <ph name="PROXY_MODE_POLICY_NAME">ProxyMode</ph>.
 
        Leave this policy unset if you selected any other mode for setting proxy policies.
 
@@ -4342,7 +4342,7 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
-      'example_value': { "ProxyMode": "direct", "ProxyPacUrl": "https://internal.site/example.pac", "ProxyServer": "123.123.123.123:8080", "ProxyBypassList": "https://www.example1.com,https://www.example2.com,https://internalsite/", "ProxyServerMode": 2 },
+      'example_value': { "ProxyMode": "fixed_servers", "ProxyServer": "123.123.123.123:8080", "ProxyBypassList": "https://www.example1.com,https://www.example2.com,https://internalsite/" },
       'id': 116,
       'caption': '''Proxy settings''',
       'tags': ['system-security'],
@@ -4354,15 +4354,15 @@
          * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD">ProxyMode</ph>, which lets you specify the proxy server Chrome uses and prevents users from changing proxy settings
          * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD">ProxyPacUrl</ph>, a URL to a proxy .pac file
          * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD">ProxyServer</ph>, a URL of the proxy server
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD">ProxyBypassList</ph>, a list of proxy hosts that <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> bypasses
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD">ProxyBypassList</ph>, a list of hosts for which the proxy will be bypassed
 
-       The <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD">ProxyServerMode</ph> field is deprecated in favor of the <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD">ProxyMode</ph> field, which lets you specify the proxy server Chrome uses and prevents users from changing proxy settings.
+       The <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD">ProxyServerMode</ph> field is deprecated in favor of the <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD">ProxyMode</ph> field.
 
         For <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD">ProxyMode</ph>, if you choose the value:
           * <ph name="PROXY_MODE_ENUM_DIRECT">direct</ph>, a proxy is never used and all other fields are ignored.
           * <ph name="PROXY_MODE_ENUM_SYSTEM">system</ph>, the systems's proxy is used and all other fields are ignored.
           * <ph name="PROXY_MODE_ENUM_AUTO_DETECT">auto_detect</ph>, all other fields are ignored.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER">fixed_server</ph>, the <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD">ProxyServer</ph> and <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD">ProxyBypassList</ph> fields are used.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS">fixed_servers</ph>, the <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD">ProxyServer</ph> and <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD">ProxyBypassList</ph> fields are used.
           * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT">pac_script</ph>, the <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL">ProxyPacUrl</ph> and <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD">ProxyBypassList</ph> fields are used.
 
       Note: For more detailed examples, visit The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).''',
