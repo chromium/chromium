@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
+#include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -116,6 +117,9 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // The animation duration for app list movement.
   static constexpr int kAppListAnimationDurationMs = 200;
   static constexpr int kAppListAnimationDurationFromFullscreenMs = 250;
+
+  // The scroll offset in order to transition from PEEKING to FULLSCREEN
+  static constexpr int kAppListMinScrollToSwitchStates = 20;
 
   // Does not take ownership of |delegate|.
   explicit AppListView(AppListViewDelegate* delegate);
@@ -489,6 +493,15 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   // Returns true if scroll events should be ignored.
   bool ShouldIgnoreScrollEvents();
+
+  // Returns true if we should dismiss app list. We use the |location|,
+  // |offset|, and |type| of the scroll event. |is_in_vertical_bounds| indicates
+  // whether the event took place within the vertical bounds of the apps grid,
+  // since this affects dismissal behavior.
+  bool ShouldScrollDismissAppList(const gfx::Point& location,
+                                  const gfx::Vector2d& offset,
+                                  ui::EventType type,
+                                  bool is_in_vertical_bounds);
 
   // Returns preferred y of fullscreen widget bounds in parent window for the
   // specified state.

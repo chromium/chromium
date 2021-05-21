@@ -200,6 +200,10 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
 
   // Returns whether tablet mode is currently enabled.
   virtual bool IsInTabletMode() = 0;
+
+  // Adjust scrolls that happen in the view. This needs to be delegated because
+  // it depends on the active user's preferences.
+  virtual int AdjustAppListViewScrollOffset(int offset, ui::EventType type) = 0;
 };
 
 }  // namespace ash

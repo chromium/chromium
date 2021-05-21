@@ -320,6 +320,13 @@ void AppListPresenterImpl::EndDragFromShelf(AppListViewState app_list_state) {
     view_->EndDragFromShelf(app_list_state);
 }
 
+void AppListPresenterImpl::ProcessScrollOffset(
+    const gfx::Point& location,
+    const gfx::Vector2d& scroll_offset_vector) {
+  if (view_)
+    view_->HandleScroll(location, scroll_offset_vector, ui::ET_SCROLL);
+}
+
 void AppListPresenterImpl::ProcessMouseWheelOffset(
     const gfx::Point& location,
     const gfx::Vector2d& scroll_offset_vector) {

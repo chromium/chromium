@@ -569,35 +569,40 @@ void Shelf::ProcessMouseEvent(const ui::MouseEvent& event) {
 }
 
 void Shelf::ProcessScrollEvent(ui::ScrollEvent* event) {
-  if (event->finger_count() == 2 && event->type() == ui::ET_SCROLL) {
-    ui::MouseWheelEvent wheel(*event);
-    ProcessMouseWheelEvent(&wheel, /*from_touchpad=*/true);
-    event->SetHandled();
-  }
-}
+  if (event->finger_count() != 2 || event->type() != ui::ET_SCROLL)
+    return;
 
-void Shelf::ProcessMouseWheelEvent(ui::MouseWheelEvent* event,
-                                   bool from_touchpad) {
-  event->SetHandled();
-
-  // Early out if not in active session. Code below assumes that there is
-  // an active user (shelf layout manager looks up active user's scroll
-  // preferences) and crashes without this.
   if (!shelf_layout_manager_->is_active_session_state())
     return;
 
-  if (!IsHorizontalAlignment())
+  auto* app_list_controller = Shell::Get()->app_list_controller();
+  DCHECK(app_list_controller);
+  // If the App List is not visible, send Scroll events to the
+  // |shelf_layout_manager_| because these events are used to show the App
+  // List.
+  if (app_list_controller->IsVisible(shelf_layout_manager_->display_.id())) {
+    app_list_controller->ProcessScrollEvent(*event);
+  } else {
+    shelf_layout_manager_->ProcessScrollEventFromShelf(event);
+  }
+  event->SetHandled();
+}
+
+void Shelf::ProcessMouseWheelEvent(ui::MouseWheelEvent* event) {
+  if (!shelf_layout_manager_->is_active_session_state() ||
+      !IsHorizontalAlignment())
     return;
+
   auto* app_list_controller = Shell::Get()->app_list_controller();
   DCHECK(app_list_controller);
   // If the App List is not visible, send MouseWheel events to the
   // |shelf_layout_manager_| because these events are used to show the App List.
   if (app_list_controller->IsVisible(shelf_layout_manager_->display_.id())) {
-    app_list_controller->ProcessMouseWheelEvent(*event, from_touchpad);
+    app_list_controller->ProcessMouseWheelEvent(*event);
   } else {
-    shelf_layout_manager_->ProcessMouseWheelEventFromShelf(event,
-                                                           from_touchpad);
+    shelf_layout_manager_->ProcessMouseWheelEventFromShelf(event);
   }
+  event->SetHandled();
 }
 
 void Shelf::AddObserver(ShelfObserver* observer) {

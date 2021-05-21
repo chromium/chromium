@@ -148,6 +148,11 @@ int AppListTestViewDelegate::GetTargetYForAppListHide(
   return 0;
 }
 
+int AppListTestViewDelegate::AdjustAppListViewScrollOffset(int offset,
+                                                           ui::EventType type) {
+  return offset;
+}
+
 void AppListTestViewDelegate::GetSearchResultContextMenuModel(
     const std::string& result_id,
     GetContextMenuModelCallback callback) {

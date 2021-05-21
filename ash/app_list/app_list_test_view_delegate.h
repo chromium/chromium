@@ -113,6 +113,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   bool AppListTargetVisibility() const override;
   bool IsInTabletMode() override;
   AppListNotifier* GetNotifier() override;
+  int AdjustAppListViewScrollOffset(int offset, ui::EventType type) override;
 
   // Do a bulk replacement of the items in the model.
   void ReplaceTestModel(int item_count);

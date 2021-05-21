@@ -150,16 +150,6 @@ bool IsAppListWindow(const aura::Window* window) {
   return parent && parent->GetId() == kShellWindowId_AppListContainer;
 }
 
-int GetOffset(int offset, bool from_touchpad) {
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-
-  if (from_touchpad)
-    return prefs->GetBoolean(prefs::kNaturalScroll) ? -offset : offset;
-
-  return prefs->GetBoolean(prefs::kMouseReverseScroll) ? -offset : offset;
-}
-
 // Returns the |WorkspaceWindowState| of the currently active desk on the root
 // window of |shelf_window|.
 WorkspaceWindowState GetShelfWorkspaceWindowState(aura::Window* shelf_window) {
@@ -177,6 +167,11 @@ int GetShelfInset(ShelfVisibilityState visibility_state, int size) {
   return visibility_state == SHELF_VISIBLE ? size : 0;
 }
 
+int GetOffset(int offset, const char* pref_name) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  return prefs->GetBoolean(pref_name) ? -offset : offset;
+}
 // Returns the window that can be dragged from shelf into home screen or
 // overview at |location_in_screen|. Returns nullptr if there is no such
 // window.
@@ -807,18 +802,36 @@ void ShelfLayoutManager::ProcessGestureEventFromShelfWidget(
     event_in_screen->StopPropagation();
 }
 
-void ShelfLayoutManager::ProcessMouseWheelEventFromShelf(
-    ui::MouseWheelEvent* event,
-    bool from_touchpad) {
-  const int y_offset = GetOffset(event->y_offset(), from_touchpad);
-  if (y_offset <= ShelfConfig::Get()->mousewheel_scroll_offset_threshold())
+void ShelfLayoutManager::ProcessScrollOffset(int offset,
+                                             base::TimeTicks time_stamp) {
+  if (offset <= ShelfConfig::Get()->mousewheel_scroll_offset_threshold())
     return;
 
   Shell::Get()->app_list_controller()->ToggleAppList(
       display::Screen::GetScreen()
           ->GetDisplayNearestWindow(shelf_widget_->GetNativeWindow())
           .id(),
-      kScrollFromShelf, event->time_stamp());
+      kScrollFromShelf, time_stamp);
+}
+
+void ShelfLayoutManager::ProcessScrollEventFromShelf(ui::ScrollEvent* event) {
+  if (shelf_->IsHorizontalAlignment()) {
+    ProcessScrollOffset(GetOffset(event->y_offset(), prefs::kNaturalScroll),
+                        event->time_stamp());
+  } else {
+    int offset = shelf_->alignment() == ShelfAlignment::kLeft
+                     ? -event->x_offset()
+                     : event->x_offset();
+    offset = GetOffset(offset, prefs::kNaturalScroll),
+    ProcessScrollOffset(offset, event->time_stamp());
+  }
+}
+
+void ShelfLayoutManager::ProcessMouseWheelEventFromShelf(
+    ui::MouseWheelEvent* event) {
+  const int y_offset =
+      GetOffset(event->offset().y(), prefs::kMouseReverseScroll);
+  ProcessScrollOffset(y_offset, event->time_stamp());
 }
 
 ShelfBackgroundType ShelfLayoutManager::GetShelfBackgroundType() const {
