@@ -197,7 +197,8 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
 
 AudioData* MakeAudioData(ScriptState* script_state,
                          const wc_fuzzer::AudioDataInit& proto) {
-  if (proto.channels().size() > media::limits::kMaxChannels)
+  if (!proto.channels().size() ||
+      proto.channels().size() > media::limits::kMaxChannels)
     return nullptr;
 
   if (proto.length() > media::limits::kMaxSamplesPerPacket)
