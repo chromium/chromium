@@ -134,7 +134,11 @@ public class AutofillAssistantUiController {
         mNativeUiController = nativeUiController;
         mActivity = activity;
         mCoordinator = new AssistantCoordinator(activity, controller, tabObscuringHandler,
-                overlayCoordinator, this::safeNativeOnKeyboardVisibilityChanged);
+                overlayCoordinator, this::safeNativeOnKeyboardVisibilityChanged,
+                activity.getWindowAndroid().getKeyboardDelegate(),
+                activity.getCompositorViewHolder(), activity.getActivityTabProvider(),
+                activity.getBrowserControlsManager(),
+                activity.getWindowAndroid().getApplicationBottomInsetProvider());
         mActivityTabObserver =
                 new ActivityTabProvider.ActivityTabTabObserver(
                         activity.getActivityTabProvider(), /* shouldTrigger = */ true) {
