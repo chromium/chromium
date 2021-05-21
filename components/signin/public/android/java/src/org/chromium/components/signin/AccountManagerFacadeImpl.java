@@ -150,8 +150,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @Override
     public void tryGetGoogleAccounts(Callback<List<Account>> callback) {
         ThreadUtils.assertOnUiThread();
-        if (isCachePopulated()) {
-            ThreadUtils.postOnUiThread(callback.bind(tryGetGoogleAccounts()));
+        if (mFilteredAccounts.get() != null) {
+            ThreadUtils.postOnUiThread(callback.bind(mFilteredAccounts.get()));
         } else {
             mCallbacksWaitingForAccountsFetch.add(callback);
         }
@@ -323,7 +323,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
     private void incrementUpdateCounter() {
         assert mUpdateTasksCounter >= 0;
-        if (mUpdateTasksCounter++ > 0) return;
+        ++mUpdateTasksCounter;
     }
 
     private void decrementUpdateCounter() {
@@ -332,7 +332,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
         while (!mCallbacksWaitingForAccountsFetch.isEmpty()) {
             final Callback<List<Account>> callback = mCallbacksWaitingForAccountsFetch.remove();
-            callback.onResult(tryGetGoogleAccounts());
+            callback.onResult(mFilteredAccounts.get());
         }
     }
 
@@ -356,10 +356,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
         @Override
         protected void onPostExecute(Void v) {
-            while (!mCallbacksWaitingForAccountsFetch.isEmpty()) {
-                final Callback<List<Account>> callback = mCallbacksWaitingForAccountsFetch.remove();
-                callback.onResult(mFilteredAccounts.get());
-            }
             fireOnAccountsChangedNotification();
             decrementUpdateCounter();
         }
