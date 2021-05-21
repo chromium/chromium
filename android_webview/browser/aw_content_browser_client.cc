@@ -47,7 +47,6 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"

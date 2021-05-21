@@ -12,7 +12,6 @@
 #include <stdint.h>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/win/win_util.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"

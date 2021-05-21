@@ -19,7 +19,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/numerics/ranges.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/windows_version.h"
 #include "remoting/base/util.h"

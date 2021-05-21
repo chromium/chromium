@@ -4,7 +4,6 @@
 
 #include "remoting/host/linux/x11_keyboard_impl.h"
 
-#include "base/stl_util.h"
 #include "remoting/host/linux/unicode_to_keysym.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xkb.h"

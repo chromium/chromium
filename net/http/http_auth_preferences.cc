@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

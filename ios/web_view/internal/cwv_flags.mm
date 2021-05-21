@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/flags_ui/feature_entry.h"

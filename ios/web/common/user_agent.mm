@@ -11,7 +11,6 @@
 #include <sys/sysctl.h>
 #include <string>
 
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"

@@ -5,7 +5,6 @@
 #include "media/audio/cras/cras_util.h"
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "media/audio/audio_device_description.h"

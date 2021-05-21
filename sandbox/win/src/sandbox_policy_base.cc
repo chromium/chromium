@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/acl.h"

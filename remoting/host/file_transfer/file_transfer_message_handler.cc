@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "net/base/filename_util.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/protocol/file_transfer_helpers.h"

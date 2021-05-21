@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/time/tick_clock.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/network_isolation_key.h"

@@ -12,7 +12,6 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/sample_map.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/stl_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

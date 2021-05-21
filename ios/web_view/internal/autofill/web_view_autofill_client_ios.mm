@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/payments/payments_client.h"

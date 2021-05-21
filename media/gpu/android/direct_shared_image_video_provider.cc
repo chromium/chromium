@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/task_runner_util.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"

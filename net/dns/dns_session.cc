@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_socket_allocator.h"
 #include "net/log/net_log.h"

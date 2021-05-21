@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/stl_util.h"
 #include "base/test/gtest_util.h"
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"

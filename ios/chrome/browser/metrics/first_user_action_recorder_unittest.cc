@@ -7,7 +7,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "ios/chrome/browser/metrics/first_user_action_recorder.h"

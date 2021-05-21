@@ -25,7 +25,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"

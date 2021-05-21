@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_restrictions.h"
 
 namespace cr_fuchsia {

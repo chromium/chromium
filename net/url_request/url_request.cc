@@ -12,7 +12,6 @@
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_task_runner_handle.h"

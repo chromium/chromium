@@ -8,7 +8,6 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "media/gpu/h264_dpb.h"
 
 namespace media {

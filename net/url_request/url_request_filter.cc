@@ -5,7 +5,6 @@
 #include "net/url_request/url_request_filter.h"
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/task/current_thread.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_job.h"

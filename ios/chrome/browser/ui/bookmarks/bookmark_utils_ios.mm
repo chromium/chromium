@@ -15,7 +15,6 @@
 #include "base/hash/hash.h"
 #include "base/i18n/string_compare.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"

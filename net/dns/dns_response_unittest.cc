@@ -11,7 +11,6 @@
 
 #include "base/big_endian.h"
 #include "base/check.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"

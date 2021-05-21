@@ -12,7 +12,6 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"

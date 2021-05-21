@@ -21,7 +21,6 @@
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"

@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"

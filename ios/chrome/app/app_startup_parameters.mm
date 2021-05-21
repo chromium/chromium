@@ -4,7 +4,6 @@
 
 #import "ios/chrome/app/app_startup_parameters.h"
 
-#include "base/stl_util.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "net/base/mac/url_conversions.h"
 #include "net/base/url_util.h"

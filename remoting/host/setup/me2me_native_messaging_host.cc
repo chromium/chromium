@@ -16,7 +16,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/stringize_macros.h"
 #include "base/time/time.h"
 #include "base/values.h"

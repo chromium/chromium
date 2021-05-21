@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_math.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"

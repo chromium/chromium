@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_variant.h"

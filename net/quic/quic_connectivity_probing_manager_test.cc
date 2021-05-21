@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "net/log/test_net_log.h"
 #include "net/quic/address_utils.h"

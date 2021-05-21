@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/status.h"

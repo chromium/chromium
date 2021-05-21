@@ -18,7 +18,6 @@
 #include "base/path_service.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"

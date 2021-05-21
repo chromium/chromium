@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/metrics/demographics/demographic_metrics_test_utils.h"

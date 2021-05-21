@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"

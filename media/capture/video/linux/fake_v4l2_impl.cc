@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/bits.h"
-#include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "media/base/video_frame.h"

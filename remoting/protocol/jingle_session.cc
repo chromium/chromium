@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"

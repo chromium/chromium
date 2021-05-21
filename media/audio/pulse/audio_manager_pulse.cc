@@ -11,7 +11,6 @@
 #include "base/environment.h"
 #include "base/logging.h"
 #include "base/nix/xdg_util.h"
-#include "base/stl_util.h"
 #include "build/chromeos_buildflags.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/pulse/pulse_input.h"
