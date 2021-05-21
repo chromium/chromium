@@ -24,7 +24,7 @@ message PredictionResult {
 // prediction results.
 message SegmentInfo {
   // Segment target.
-  optional optimization_guide.proto.OptimizationTarget segment_target = 1;
+  optional optimization_guide.proto.OptimizationTarget segment_id = 1;
 
   // Cached copy of the segment metadata which is important in case the metadata
   // is temporarily not available in the future. It also contains the relevant
