@@ -14,6 +14,7 @@ Polymer({
   behaviors: [
     settings.RouteObserverBehavior,
     ESimManagerListenerBehavior,
+    DeepLinkingBehavior,
   ],
 
   properties: {
@@ -52,7 +53,53 @@ Polymer({
     guid_: {
       type: String,
       value: '',
-    }
+    },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kCellularRenameESimNetwork,
+        chromeos.settings.mojom.Setting.kCellularRemoveESimNetwork,
+      ]),
+    },
+  },
+
+  /**
+   * Overridden from DeepLinkingBehavior.
+   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @return {boolean}
+   */
+  beforeDeepLinkAttempt(settingId) {
+    Polymer.RenderStatus.afterNextRender(this, () => {
+      const menu = /** @type {!CrActionMenuElement} */ (this.$.menu.get());
+      menu.showAt(/** @type {!Element} */ (this.$$('#moreNetworkDetail')));
+
+      // Wait for menu to open.
+      Polymer.RenderStatus.afterNextRender(this, () => {
+        let element;
+        if (settingId ===
+            chromeos.settings.mojom.Setting.kCellularRenameESimNetwork) {
+          element = this.$$('#renameBtn');
+        } else {
+          element = this.$$('#removeBtn');
+        }
+
+        if (!element) {
+          console.warn('Deep link element could not be found');
+          return;
+        }
+
+        this.showDeepLinkElement(element);
+        return;
+      });
+    });
+
+    // Stop deep link attempt since we completed it manually.
+    return false;
   },
 
   /**
@@ -83,6 +130,7 @@ Polymer({
 
     // Needed to set initial eSimNetworkState_.
     this.setESimNetworkState_();
+    this.attemptDeepLink();
   },
 
   /**
