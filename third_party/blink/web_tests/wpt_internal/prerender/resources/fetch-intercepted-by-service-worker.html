@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+async function startFetch() {
+  assert_true(document.prerendering);
+
+  const response = await fetch('cache.txt?should-intercept');
+  const body = await response.text();
+
+  const bc = new BroadcastChannel('prerender-channel');
+  bc.postMessage(body);
+  bc.close();
+}
+
+startFetch();
+</script>
