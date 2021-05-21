@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
-import android.app.ProgressDialog;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -16,7 +15,6 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.GetSubKeysRequestDelegate;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorBase;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel;
@@ -40,8 +38,7 @@ import java.util.UUID;
 /**
  * An address editor. Can be used for either shipping or billing address editing.
  */
-public class AddressEditor
-        extends EditorBase<AutofillAddress> implements GetSubKeysRequestDelegate {
+public class AddressEditor extends EditorBase<AutofillAddress> {
     @IntDef({Purpose.AUTOFILL_ASSISTANT, Purpose.AUTOFILL_SETTINGS})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Purpose {
@@ -72,12 +69,8 @@ public class AddressEditor
     private List<AddressUiComponent> mAddressUiComponents;
     @Nullable
     private String mCustomDoneButtonText;
-    private boolean mAdminAreasLoaded;
-    private String mRecentlySelectedCountry;
-    private Runnable mCountryChangeCallback;
     private AutofillProfile mProfile;
     private EditorModel mEditor;
-    private ProgressDialog mProgressDialog;
 
     /**
      * Builds an address editor.
@@ -165,10 +158,6 @@ public class AddressEditor
         mEditor = new EditorModel(editTitle, mCustomDoneButtonText);
         mProfile = address.getProfile();
 
-        // When edit is called, a new form is started, so the country on the
-        // dropdown list is not changed. => mRecentlySelectedCountry should be null.
-        mRecentlySelectedCountry = null;
-
         // The country dropdown is always present on the editor.
         if (mCountryField == null) {
             mCountryField = EditorFieldModel.createDropdown(
@@ -188,12 +177,12 @@ public class AddressEditor
             @Override
             public void onResult(Pair<String, Runnable> eventData) {
                 mEditor.removeAllFields();
-                showProgressDialog();
-                mRecentlySelectedCountry = eventData.first;
-                mPhoneFormatter.setCountryCode(mRecentlySelectedCountry);
-                mPhoneValidator.setCountryCode(mRecentlySelectedCountry);
-                mCountryChangeCallback = eventData.second;
-                loadAdminAreasForCountry(mRecentlySelectedCountry);
+                mPhoneFormatter.setCountryCode(eventData.first);
+                mPhoneValidator.setCountryCode(eventData.first);
+                addAddressFieldsToEditor(eventData.first, Locale.getDefault().getLanguage());
+                // Notify EditorDialog that the fields in the model have changed. EditorDialog
+                // should re-read the model and update the UI accordingly.
+                mHandler.post(eventData.second);
             }
         });
 
@@ -221,6 +210,9 @@ public class AddressEditor
         // There's a finite number of fields for address editing. Changing the country will re-order
         // and relabel the fields. The meaning of each field remains the same.
         if (mAddressFields.isEmpty()) {
+            // Not use INPUT_TYPE_HINT_REGION to avoid capitalizing all characters.
+            mAddressFields.put(AddressField.ADMIN_AREA, EditorFieldModel.createTextInput());
+
             // City, dependent locality, and organization don't have any special formatting hints.
             mAddressFields.put(AddressField.LOCALITY, EditorFieldModel.createTextInput());
             mAddressFields.put(AddressField.DEPENDENT_LOCALITY, EditorFieldModel.createTextInput());
@@ -280,19 +272,11 @@ public class AddressEditor
 
         // If the user clicks [Cancel], send |toEdit| address back to the caller, which was the
         // original state (could be null, a complete address, a partial address).
-        mEditor.setCancelCallback(() -> {
-            // This makes sure that onSubKeysReceived returns early if it's
-            // ever called when Cancel has already occurred.
-            mAdminAreasLoaded = true;
-            PersonalDataManager.getInstance().cancelPendingGetSubKeys();
-            cancelCallback.onResult(toEdit);
-        });
+        mEditor.setCancelCallback(() -> cancelCallback.onResult(toEdit));
 
         // If the user clicks [Done], save changes on disk, mark the address "complete" if possible,
         // and send it back to the caller.
         mEditor.setDoneCallback(() -> {
-            mAdminAreasLoaded = true;
-            PersonalDataManager.getInstance().cancelPendingGetSubKeys();
             commitChanges(mProfile);
             if (mCheckRequiredFields) {
                 address.completeAddress(mProfile);
@@ -304,20 +288,10 @@ public class AddressEditor
             doneCallback.onResult(address);
         });
 
-        loadAdminAreasForCountry(mCountryField.getValue().toString());
-    }
-
-    private void showProgressDialog() {
-        mProgressDialog = new ProgressDialog(mContext);
-        mProgressDialog.setMessage(mContext.getText(R.string.payments_loading_message));
-        mProgressDialog.show();
-    }
-
-    private void dismissProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-        }
-        mProgressDialog = null;
+        // This should be called when all required fields are put in mAddressField.
+        setAddressFieldValuesFromCache();
+        addAddressFieldsToEditor(mCountryField.getValue().toString(), mProfile.getLanguageCode());
+        mEditorDialog.show(mEditor);
     }
 
     /** Saves the edited profile on disk. */
@@ -417,74 +391,13 @@ public class AddressEditor
         }
     }
 
-    @Override
-    public void onSubKeysReceived(
-            @Nullable String[] adminAreaCodes, @Nullable String[] adminAreaNames) {
-        if (mAdminAreasLoaded) return;
-        mAdminAreasLoaded = true;
-        // If the dialog is already dismissed, it doesn't make sense to show it.
-        // This can happen if the dialog is dismissed while we are getting the
-        // subkeys.
-        if (mEditorDialog.isDismissed()) return;
-
-        // When there is a timeout in the subkey request process, the admin area codes/names will be
-        // null.
-        mAddressFields.put(AddressField.ADMIN_AREA,
-                (adminAreaCodes != null && adminAreaNames != null && adminAreaCodes.length != 0
-                        && adminAreaCodes.length == adminAreaNames.length)
-                        ? EditorFieldModel.createDropdown(null /* label */,
-                                AutofillProfileBridge.getAdminAreaDropdownList(
-                                        adminAreaCodes, adminAreaNames),
-                                mContext.getString(R.string.select))
-                        : EditorFieldModel.createTextInput(
-                                EditorFieldModel.INPUT_TYPE_HINT_REGION));
-
-        // Admin areas need to be fetched in two cases:
-        // 1. Initial loading of the form.
-        // 2. When the selected country is changed in the form.
-        // mRecentlySelectedCountry is not null if and only if it's the second case
-        if (mRecentlySelectedCountry != null) {
-            dismissProgressDialog();
-            // Both country code and language code dictate which fields should be added to the
-            // editor.
-            // For example, "US" will not add dependent locality to the editor. A "JP" address will
-            // start with a person's full name or a with a prefecture name, depending on whether the
-            // language code is "ja-Latn" or "ja".
-            addAddressFieldsToEditor(mRecentlySelectedCountry, Locale.getDefault().getLanguage());
-            // Notify EditorDialog that the fields in the model have changed. EditorDialog should
-            // re-read the model and update the UI accordingly.
-            mHandler.post(mCountryChangeCallback);
-        } else {
-            // This should be called when all required fields are put in mAddressField.
-            setAddressFieldValuesFromCache();
-            addAddressFieldsToEditor(
-                    mCountryField.getValue().toString(), mProfile.getLanguageCode());
-            mEditorDialog.show(mEditor);
-        }
-    }
-
-    /** Requests the list of admin areas. */
-    private void loadAdminAreasForCountry(String countryCode) {
-        // Used to check if the callback is called (for the cancellation).
-        mAdminAreasLoaded = false;
-        mEditorDialog.setAsNotDismissed();
-
-        // For tests, the time-out is set to 0. In this case, we should not
-        // fetch the admin-areas, and show a text-field instead.
-        // This is to have the tests independent of the network status.
-        if (PersonalDataManager.getRequestTimeoutMS() == 0) {
-            onSubKeysReceived(null, null);
-            return;
-        }
-
-        // In each rule, admin area keys are saved under sub-keys of country.
-        PersonalDataManager.getInstance().loadRulesForSubKeys(countryCode);
-        PersonalDataManager.getInstance().getRegionSubKeys(countryCode, this);
-    }
-
     /**
      * Adds fields to the editor model based on the country and language code of
      * the profile that's being edited.
+     *
+     * For example, "US" will not add dependent locality to the editor. A "JP" address will start
+     * with a person's full name or with a prefecture name, depending on whether the language code
+     * is "ja-Latn" or "ja".
      */
     private void addAddressFieldsToEditor(String countryCode, String languageCode) {
         mAddressUiComponents =
