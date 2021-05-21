@@ -186,19 +186,29 @@ ChannelMojo::~ChannelMojo() {
 }
 
 bool ChannelMojo::Connect() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-
   WillConnect();
 
-  mojo::AssociatedRemote<mojom::Channel> sender;
+  mojo::PendingAssociatedRemote<mojom::Channel> sender;
   mojo::PendingAssociatedReceiver<mojom::Channel> receiver;
   bootstrap_->Connect(&sender, &receiver);
 
   DCHECK(!message_reader_);
-  sender->SetPeerPid(GetSelfPID());
   message_reader_ = std::make_unique<internal::MessagePipeReader>(
-      pipe_, std::move(sender), std::move(receiver), this);
+      pipe_, std::move(sender), std::move(receiver), task_runner_, this);
+
+  if (task_runner_->RunsTasksInCurrentSequence()) {
+    FinishConnectOnIOThread();
+  } else {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ChannelMojo::FinishConnectOnIOThread, weak_ptr_));
+  }
   return true;
+}
+
+void ChannelMojo::FinishConnectOnIOThread() {
+  DCHECK(message_reader_);
+  message_reader_->FinishInitializationOnIOThread(GetSelfPID());
 }
 
 void ChannelMojo::Pause() {
@@ -375,6 +385,12 @@ void ChannelMojo::GetGenericRemoteAssociatedInterface(
     const std::string& name,
     mojo::ScopedInterfaceEndpointHandle handle) {
   if (message_reader_) {
+    if (!task_runner_->RunsTasksInCurrentSequence()) {
+      message_reader_->thread_safe_sender().GetAssociatedInterface(
+          name, mojo::PendingAssociatedReceiver<mojom::GenericInterface>(
+                    std::move(handle)));
+      return;
+    }
     message_reader_->GetRemoteInterface(name, std::move(handle));
   } else {
     // Attach the associated interface to a disconnected pipe, so that the

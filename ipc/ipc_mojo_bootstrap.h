@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(IPC) MojoBootstrap {
 
   // Start the handshake over the underlying message pipe.
   virtual void Connect(
-      mojo::AssociatedRemote<mojom::Channel>* sender,
+      mojo::PendingAssociatedRemote<mojom::Channel>* sender,
       mojo::PendingAssociatedReceiver<mojom::Channel>* receiver) = 0;
 
   // Stop transmitting messages and start queueing them instead.

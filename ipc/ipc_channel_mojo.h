@@ -116,6 +116,8 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
       const std::string& name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
+  void FinishConnectOnIOThread();
+
   base::WeakPtr<ChannelMojo> weak_ptr_;
 
   // A TaskRunner which runs tasks on the ChannelMojo's owning thread.

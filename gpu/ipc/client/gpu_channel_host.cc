@@ -52,16 +52,9 @@ GpuChannelHost::GpuChannelHost(
           static_cast<int32_t>(
               GpuChannelReservedRoutes::kImageDecodeAccelerator)) {
   mojo::PendingAssociatedRemote<mojom::GpuChannel> channel;
-  auto receiver = channel.InitWithNewEndpointAndPassReceiver();
-  if (io_thread_->BelongsToCurrentThread()) {
-    listener_->Initialize(std::move(handle), std::move(receiver), io_thread_);
-  } else {
-    io_thread_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Listener::Initialize, base::Unretained(listener_.get()),
-                       std::move(handle), std::move(receiver), io_thread_));
-  }
-
+  listener_->Initialize(std::move(handle),
+                        channel.InitWithNewEndpointAndPassReceiver(),
+                        io_thread_);
   gpu_channel_ = mojo::SharedAssociatedRemote<mojom::GpuChannel>(
       std::move(channel), io_thread_);
 
@@ -297,8 +290,7 @@ void GpuChannelHost::Listener::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
   channel_ = IPC::ChannelMojo::Create(
       std::move(handle), IPC::Channel::MODE_CLIENT, this, io_task_runner,
-      base::ThreadTaskRunnerHandle::Get(),
-      mojo::internal::MessageQuotaChecker::MaybeCreate());
+      io_task_runner, mojo::internal::MessageQuotaChecker::MaybeCreate());
   DCHECK(channel_);
   bool result = channel_->Connect();
   DCHECK(result);
