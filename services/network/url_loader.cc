@@ -380,29 +380,6 @@ mojom::HttpRawRequestResponseInfoPtr BuildRawRequestResponseInfo(
   return info;
 }
 
-bool ShouldSniffContent(net::URLRequest* url_request,
-                        const mojom::URLResponseHead& response) {
-  const std::string& mime_type = response.mime_type;
-
-  std::string content_type_options;
-  url_request->GetResponseHeaderByName("x-content-type-options",
-                                       &content_type_options);
-
-  bool sniffing_blocked =
-      base::LowerCaseEqualsASCII(content_type_options, "nosniff");
-  bool we_would_like_to_sniff =
-      net::ShouldSniffMimeType(url_request->url(), mime_type);
-
-  if (!sniffing_blocked && we_would_like_to_sniff) {
-    // We're going to look at the data before deciding what the content type
-    // is.  That means we need to delay sending the response started IPC.
-    VLOG(1) << "To buffer: " << url_request->url().spec();
-    return true;
-  }
-
-  return false;
-}
-
 // Concerning headers that consumers probably shouldn't be allowed to set.
 // Gathering numbers on these before adding them to kUnsafeHeaders.
 const struct {
@@ -1452,7 +1429,10 @@ void URLLoader::ContinueOnResponseStarted() {
     }
   }
   if ((options_ & mojom::kURLLoadOptionSniffMimeType)) {
-    if (ShouldSniffContent(url_request_.get(), *response_)) {
+    if (ShouldSniffContent(url_request_->url(), *response_)) {
+      // We're going to look at the data before deciding what the content type
+      // is.  That means we need to delay sending the response started IPC.
+      VLOG(1) << "Will sniff content for mime type: " << url_request_->url();
       is_more_mime_sniffing_needed_ = true;
     } else if (response_->mime_type.empty()) {
       // Ugg.  The server told us not to sniff the content but didn't give us
