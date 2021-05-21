@@ -7,6 +7,7 @@ package org.chromium.ui.base;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 
@@ -27,7 +28,8 @@ import java.util.Set;
  *  - Features only interested in what the current inset is should pass around an
  *    {@link ObservableSupplier<Integer>} object.
  */
-public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<Integer> {
+public class ApplicationViewportInsetSupplier
+        extends ObservableSupplierImpl<Integer> implements Destroyable {
     /** The list of inset providers that this class manages. */
     private final Set<ObservableSupplier<Integer>> mInsetSuppliers = new HashSet<>();
 
@@ -48,6 +50,7 @@ public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<Int
     }
 
     /** Clean up observers and suppliers. */
+    @Override
     public void destroy() {
         for (ObservableSupplier<Integer> os : mInsetSuppliers) {
             os.removeObserver(mInsetSupplierObserver);

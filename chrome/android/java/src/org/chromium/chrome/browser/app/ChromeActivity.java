@@ -354,6 +354,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected RootUiCoordinator mRootUiCoordinator;
 
     @Nullable
+    private BottomContainer mBottomContainer;
+
+    @Nullable
     private StartupTabPreloader mStartupTabPreloader;
 
     private LaunchCauseMetrics mLaunchCauseMetrics;
@@ -528,10 +531,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 getLaunchCauseMetrics().onReceivedIntent();
             }
 
-            BottomContainer bottomContainer = (BottomContainer) findViewById(R.id.bottom_container);
+            mBottomContainer = (BottomContainer) findViewById(R.id.bottom_container);
 
             // TODO(crbug.com/1199776): Move this to the RootUiCoordinator.
-            mSnackbarManager = new SnackbarManager(this, bottomContainer, getWindowAndroid());
+            mSnackbarManager = new SnackbarManager(this, mBottomContainer, getWindowAndroid());
             SnackbarManagerProvider.attach(getWindowAndroid(), mSnackbarManager);
 
             // Make the activity listen to policy change events
@@ -556,10 +559,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         getControlContainerHeightResource());
             }
 
-            bottomContainer.initialize(getBrowserControlsManager(),
+            mBottomContainer.initialize(getBrowserControlsManager(),
                     getWindowAndroid().getApplicationBottomInsetProvider(),
                     mManualFillingComponentSupplier.get().getBottomInsetSupplier());
-            getLifecycleDispatcher().register(bottomContainer);
 
             // Should be called after TabModels are initialized.
             ShareDelegate shareDelegate =
@@ -1465,6 +1467,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (mTabModelSelectorSupplier != null) {
             mTabModelSelectorSupplier.destroy();
+        }
+
+        if (mBottomContainer != null) {
+            mBottomContainer.destroy();
+            mBottomContainer = null;
         }
 
         if (mDisplayAndroidObserver != null) {

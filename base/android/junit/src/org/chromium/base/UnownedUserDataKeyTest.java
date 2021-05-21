@@ -867,7 +867,7 @@ public class UnownedUserDataKeyTest {
         mFoo.assertDetachedHostsMatch(mHost1);
         assertTrue(mHost1.isDestroyed());
 
-        assertThrows(IllegalStateException.class, () -> Foo.KEY.attachToHost(mHost1, mFoo));
+        assertThrows(AssertionError.class, () -> Foo.KEY.attachToHost(mHost1, mFoo));
 
         // The following operation gracefully returns null.
         assertNull(Foo.KEY.retrieveDataFromHost(mHost1));
@@ -905,12 +905,11 @@ public class UnownedUserDataKeyTest {
         Foo.KEY.detachFromAllHosts(mFoo);
     }
 
-    private <E extends RuntimeException> void assertThrows(
-            Class<E> exceptionType, Runnable runnable) {
-        RuntimeException actualException = null;
+    private <E extends Throwable> void assertThrows(Class<E> exceptionType, Runnable runnable) {
+        Throwable actualException = null;
         try {
             runnable.run();
-        } catch (RuntimeException e) {
+        } catch (Throwable e) {
             actualException = e;
         }
         assertNotNull("Exception not thrown", actualException);

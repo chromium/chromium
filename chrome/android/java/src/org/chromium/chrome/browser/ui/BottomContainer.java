@@ -8,10 +8,12 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
+import androidx.annotation.CallSuper;
+
 import org.chromium.base.Callback;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
 /**
@@ -19,7 +21,7 @@ import org.chromium.ui.base.ApplicationViewportInsetSupplier;
  * bottom controls' offset changes.
  */
 public class BottomContainer
-        extends FrameLayout implements DestroyObserver, BrowserControlsStateProvider.Observer {
+        extends FrameLayout implements Destroyable, BrowserControlsStateProvider.Observer {
     /** An observer of the viewport insets to change this container's position. */
     private final Callback<Integer> mInsetObserver;
 
@@ -34,17 +36,13 @@ public class BottomContainer
     /** The desired Y offset if unaffected by other UI. */
     private float mBaseYOffset;
 
-    /**
-     * Constructor for XML inflation.
-     */
+    /** Constructor for XML inflation. */
     public BottomContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
         mInsetObserver = (inset) -> setTranslationY(mBaseYOffset);
     }
 
-    /**
-     * Initializes this container.
-     */
+    /** Initializes this container. */
     public void initialize(BrowserControlsStateProvider browserControlsStateProvider,
             ApplicationViewportInsetSupplier viewportInsetSupplier,
             ObservableSupplier<Integer> autofillUiBottomInsetSupplier) {
@@ -84,8 +82,9 @@ public class BottomContainer
         setTranslationY(mBaseYOffset);
     }
 
+    @CallSuper
     @Override
-    public void onDestroy() {
+    public void destroy() {
         mBrowserControlsStateProvider.removeObserver(this);
         mViewportInsetSupplier.removeObserver(mInsetObserver);
         mAutofillUiBottomInsetSupplier.removeObserver(mInsetObserver);

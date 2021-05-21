@@ -17,6 +17,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.lifetime.DestroyChecker;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -40,6 +41,7 @@ class JankActivityTracker implements ActivityStateListener {
     private final JankMetricMeasurement mMeasurement;
     private final AtomicBoolean mIsMetricReporterLooping = new AtomicBoolean(false);
     private final ThreadChecker mThreadChecker = new ThreadChecker();
+    private final DestroyChecker mDestroyChecker = new DestroyChecker();
 
     private final Runnable mMetricReporter = new Runnable() {
         @Override
@@ -70,7 +72,8 @@ class JankActivityTracker implements ActivityStateListener {
     }
 
     void initialize() {
-        mThreadChecker.assertOnValidThreadAndState();
+        mThreadChecker.assertOnValidThread();
+        mDestroyChecker.checkNotDestroyed();
         Activity activity = mActivityReference.get();
         if (activity != null) {
             ApplicationStatus.registerStateListenerForActivity(this, activity);
@@ -83,7 +86,8 @@ class JankActivityTracker implements ActivityStateListener {
     }
 
     void destroy() {
-        mThreadChecker.assertOnValidThreadAndState();
+        mThreadChecker.assertOnValidThread();
+        mDestroyChecker.destroy();
         ApplicationStatus.unregisterActivityStateListener(this);
         stopMetricRecording();
         stopReportingTimer();
@@ -91,10 +95,11 @@ class JankActivityTracker implements ActivityStateListener {
         if (activity != null) {
             activity.getWindow().removeOnFrameMetricsAvailableListener(mFrameMetricsListener);
         }
-        mThreadChecker.destroy();
     }
 
     protected Handler getOrCreateHandler() {
+        // TODO(salg): Sort out whether thread assertion should be happening here as well.
+        mDestroyChecker.checkNotDestroyed();
         if (mHandler == null) {
             mHandlerThread = new HandlerThread("Jank-Tracker");
             mHandlerThread.start();
@@ -104,7 +109,6 @@ class JankActivityTracker implements ActivityStateListener {
     }
 
     private void startReportingTimer() {
-        mThreadChecker.assertOnValidThreadAndState();
         // If mIsMetricReporterLooping was already true then there's no need to post another task.
         if (mIsMetricReporterLooping.getAndSet(true)) {
             return;
@@ -113,7 +117,6 @@ class JankActivityTracker implements ActivityStateListener {
     }
 
     private void stopReportingTimer() {
-        mThreadChecker.assertOnValidThreadAndState();
         if (!mIsMetricReporterLooping.get()) {
             return;
         }
@@ -126,17 +129,17 @@ class JankActivityTracker implements ActivityStateListener {
     }
 
     private void startMetricRecording() {
-        mThreadChecker.assertOnValidThreadAndState();
         mFrameMetricsListener.setIsListenerRecording(true);
     }
 
     private void stopMetricRecording() {
-        mThreadChecker.assertOnValidThreadAndState();
         mFrameMetricsListener.setIsListenerRecording(false);
     }
 
     @Override
     public void onActivityStateChange(Activity activity, @ActivityState int newState) {
+        mThreadChecker.assertOnValidThread();
+        mDestroyChecker.checkNotDestroyed();
         switch (newState) {
             case ActivityState.STARTED: // Intentional fallthrough.
             case ActivityState.RESUMED:

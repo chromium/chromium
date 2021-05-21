@@ -4,6 +4,8 @@
 
 package org.chromium.base.supplier;
 
+import org.chromium.base.lifetime.Destroyable;
+
 /**
  * An {@link ObservableSupplier} that may be destroyed by anyone with a reference to the object.
  * This is useful if the class that constructs the object implementing this interface is not
@@ -12,9 +14,4 @@ package org.chromium.base.supplier;
  *
  * @param <E> The type of the wrapped object.
  */
-public interface DestroyableObservableSupplier<E> extends ObservableSupplier<E> {
-    /**
-     * Destroy the supplier and the object it holds.
-     */
-    void destroy();
-}
+public interface DestroyableObservableSupplier<E> extends ObservableSupplier<E>, Destroyable {}

@@ -3969,6 +3969,8 @@ if (is_android) {
       "android/java/src/org/chromium/base/library_loader/ModernLinker.java",
       "android/java/src/org/chromium/base/library_loader/NativeLibraryPreloader.java",
       "android/java/src/org/chromium/base/library_loader/ProcessInitException.java",
+      "android/java/src/org/chromium/base/lifetime/DestroyChecker.java",
+      "android/java/src/org/chromium/base/lifetime/Destroyable.java",
       "android/java/src/org/chromium/base/memory/JavaHeapDumpGenerator.java",
       "android/java/src/org/chromium/base/memory/MemoryPressureCallback.java",
       "android/java/src/org/chromium/base/memory/MemoryPressureMonitor.java",

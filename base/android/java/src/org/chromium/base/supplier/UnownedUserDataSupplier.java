@@ -4,11 +4,14 @@
 
 package org.chromium.base.supplier;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
+import org.chromium.base.lifetime.DestroyChecker;
+import org.chromium.base.lifetime.Destroyable;
 
 /**
  * UnownedUserDataSupplier handles the combined lifecycle management for {@link UnownedUserData}
@@ -42,10 +45,10 @@ import org.chromium.base.UnownedUserDataKey;
  * @see UnownedUserDataKey for information about the type of key that is required.
  * @see UnownedUserData for the marker interface used for this type of data.
  */
-public abstract class UnownedUserDataSupplier<E> extends ObservableSupplierImpl<E>
-        implements DestroyableObservableSupplier<E>, UnownedUserData {
+public abstract class UnownedUserDataSupplier<E>
+        extends ObservableSupplierImpl<E> implements Destroyable, UnownedUserData {
     private final UnownedUserDataKey<UnownedUserDataSupplier<E>> mUudKey;
-    private boolean mIsDestroyed;
+    private final DestroyChecker mDestroyChecker = new DestroyChecker();
 
     /**
      * Constructs an UnownedUserDataSupplier.
@@ -54,7 +57,6 @@ public abstract class UnownedUserDataSupplier<E> extends ObservableSupplierImpl<
     protected UnownedUserDataSupplier(
             @NonNull UnownedUserDataKey<? extends UnownedUserDataSupplier<E>> uudKey) {
         mUudKey = (UnownedUserDataKey<UnownedUserDataSupplier<E>>) uudKey;
-        mIsDestroyed = false;
     }
 
     /**
@@ -62,13 +64,14 @@ public abstract class UnownedUserDataSupplier<E> extends ObservableSupplierImpl<
      * @param host The host to attach the supplier to.
      */
     public void attach(@NonNull UnownedUserDataHost host) {
+        mDestroyChecker.checkNotDestroyed();
         mUudKey.attachToHost(host, this);
     }
 
     @Override
+    @CallSuper
     public void destroy() {
-        assert !mIsDestroyed;
+        mDestroyChecker.destroy();
         mUudKey.detachFromAllHosts(this);
-        mIsDestroyed = true;
     }
 }

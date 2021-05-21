@@ -8,6 +8,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -23,7 +24,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 /**
  * A class that provides the current {@link Tab} for various states of the browser's activity.
  */
-public class ActivityTabProvider extends ObservableSupplierImpl<Tab> {
+public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements Destroyable {
     /**
      * A utility class for observing the activity tab via {@link TabObserver}. When the activity
      * tab changes, the observer is switched to that tab.
@@ -214,6 +215,7 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> {
     }
 
     /** Clean up and detach any observers this object created. */
+    @Override
     public void destroy() {
         if (mLayoutStateProvider != null) mLayoutStateProvider.removeObserver(mLayoutStateObserver);
         mLayoutStateProvider = null;

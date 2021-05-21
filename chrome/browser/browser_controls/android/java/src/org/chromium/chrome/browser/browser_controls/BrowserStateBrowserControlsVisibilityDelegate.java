@@ -10,6 +10,7 @@ import android.os.SystemClock;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsState;
@@ -22,7 +23,7 @@ import org.chromium.ui.util.TokenHolder;
  * running activity.
  */
 public class BrowserStateBrowserControlsVisibilityDelegate
-        extends BrowserControlsVisibilityDelegate {
+        extends BrowserControlsVisibilityDelegate implements Destroyable {
     /** Minimum duration (in milliseconds) that the controls are shown when requested. */
     @VisibleForTesting
     static final long MINIMUM_SHOW_DURATION_MS = 3000;
@@ -138,6 +139,7 @@ public class BrowserStateBrowserControlsVisibilityDelegate
     /**
      * Performs clean-up.
      */
+    @Override
     public void destroy() {
         mHandler.removeCallbacksAndMessages(null);
     }
