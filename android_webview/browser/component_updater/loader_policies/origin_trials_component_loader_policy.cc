@@ -5,6 +5,7 @@
 #include "android_webview/browser/component_updater/loader_policies/origin_trials_component_loader_policy.h"
 
 #include <stdint.h>
+#include <stdio.h>
 
 #include <memory>
 #include <string>
@@ -29,6 +30,11 @@ void OriginTrialsComponentLoaderPolicy::ComponentLoaded(
     const base::Version& version,
     const base::flat_map<std::string, int>& fd_map,
     std::unique_ptr<base::DictionaryValue> manifest) {
+  // Close unused fds.
+  for (auto& key_value : fd_map) {
+    close(key_value.second);
+  }
+
   // Read the configuration from the manifest and set values in browser
   // local_state. These will be used on the next browser restart.
   // If an individual configuration value is missing, treat as a reset to the
