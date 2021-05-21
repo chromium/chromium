@@ -107,8 +107,8 @@ using l10n_util::GetNSStringF;
           [weakSelf reauthentificationCompletedWithSuccess:success];
         }
       };
-  trustedVaultService->Reauthentication(self.identity, self.baseViewController,
-                                        callback);
+  trustedVaultService->ReauthenticationForFetchKeys(
+      self.identity, self.baseViewController, callback);
 }
 
 #pragma mark - Private

@@ -48,18 +48,37 @@ class ChromeTrustedVaultService {
       ChromeIdentity* chrome_identity,
       base::OnceCallback<void(bool)> callback);
 
-  // Presents the trusted vault key reauthentication UI for |identity|.
-  // Once the reauth is done and the UI is dismissed, |callback| is called.
-  // |callback| is not called if the reauthentication is canceled.
+  // Presents the trusted vault key reauthentication UI for |identity| for the
+  // purpose of extending the set of keys returned via FetchKeys(). Once the
+  // reauth is done and the UI is dismissed, |callback| is called. |callback| is
+  // not called if the reauthentication is canceled.
+  // TODO(crbug.com/1100278): Remove this function and adopt
+  // ReauthenticationForFetchKeys() exclusively.
   virtual void Reauthentication(ChromeIdentity* chrome_identity,
                                 UIViewController* presentingViewController,
-                                void (^callback)(BOOL success,
-                                                 NSError* error)) = 0;
+                                void (^callback)(BOOL success, NSError* error));
+  // TODO(crbug.com/1100278): Make pure.
+  virtual void ReauthenticationForFetchKeys(
+      ChromeIdentity* chrome_identity,
+      UIViewController* presentingViewController,
+      void (^callback)(BOOL success, NSError* error));
 
-  // Cancels the presented trusted vault key reauthentication UI.
-  // The reauthentication callback will not be called.
-  // If no reauthentication dialog is not present, |callback| is called
-  // synchronously.
+  // Presents the trusted vault key reauthentication UI for |identity| for the
+  // purpose of improving recoverability as returned via
+  // GetIsRecoverabilityDegraded(). Once the reauth is done and the UI is
+  // dismissed, |callback| is called. |callback| is not called if the
+  // reauthentication is canceled.
+  // TODO(crbug.com/1100278): Make pure.
+  virtual void ReauthenticationForDegradedRecoverability(
+      ChromeIdentity* chrome_identity,
+      UIViewController* presentingViewController,
+      void (^callback)(BOOL success, NSError* error));
+
+  // Cancels the presented trusted vault reauthentication UI, triggered via
+  // either ReauthenticationForFetchKeys() or via
+  // ReauthenticationForDegradedRecoverability(). The reauthentication callback
+  // will not be called. If no reauthentication dialog is not present,
+  // |callback| is called synchronously.
   virtual void CancelReauthentication(BOOL animated,
                                       void (^callback)(void)) = 0;
 
