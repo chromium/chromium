@@ -533,14 +533,13 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   config->should_use_preference =
       command_line.HasSwitch(switches::kEnableEncryptionSelection);
   chrome::GetDefaultUserDataDirectory(&config->user_data_path);
-  content::GetNetworkService()->SetCryptConfig(std::move(config));
+  network_service->SetCryptConfig(std::move(config));
 #endif
 #if defined(OS_WIN) || defined(OS_MAC)
   // The OSCrypt keys are process bound, so if network service is out of
   // process, send it the required key.
   if (content::IsOutOfProcessNetworkService()) {
-    content::GetNetworkService()->SetEncryptionKey(
-        OSCrypt::GetRawEncryptionKey());
+    network_service->SetEncryptionKey(OSCrypt::GetRawEncryptionKey());
   }
 #endif
 
