@@ -22,10 +22,25 @@ import { ServerBinding } from './utils/iServer';
 import { log } from './utils/log';
 const logSystem = log('system');
 
-window.document.documentElement.innerHTML = `<h1>Bidi mapper runs here!</h1><h2>Don't close.</h2>`;
-window.document.title = 'BiDi Mapper';
-
 (async () => {
+  window.document.documentElement.innerHTML = `<h1>Bidi mapper runs here!</h1><h2>Don't close.</h2>`;
+  window.document.title = 'BiDi Mapper';
+
+  const cdpServer = createCdpServer();
+  const bidiServer = createBidiServer();
+
+  // Needed to filter out info related to BiDi target.
+  const selfTargetId = await waitSelfTargetId();
+
+  // Needed to get events about new targets.
+  await prepareCdp(cdpServer);
+
+  await runBidiCommandsProcessor(cdpServer, bidiServer, selfTargetId);
+
+  logSystem('launched');
+})();
+
+function createCdpServer() {
   //`window.cdp` is exposed by `Target.exposeDevToolsProtocol`:
   // https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-exposeDevToolsProtocol
   const cdpBinding = new ServerBinding(
@@ -36,8 +51,10 @@ window.document.title = 'BiDi Mapper';
       window.cdp.onmessage = handler;
     }
   );
-  const cdpServer = new CdpServer(cdpBinding);
+  return new CdpServer(cdpBinding);
+}
 
+function createBidiServer() {
   const bidiBinding = new ServerBinding(
     (message) => {
       // `window.sendBidiResponse` is exposed by `Runtime.addBinding` from the server side.
@@ -48,24 +65,24 @@ window.document.title = 'BiDi Mapper';
       window.onBidiMessage = handler;
     }
   );
-  const bidiServer = new BidiServer(bidiBinding);
+  return new BidiServer(bidiBinding);
+}
 
-  // Needed to filter out info related to BiDi target.
-  const selfTargetId = await new Promise((resolve) => {
+// Needed to filter out info related to BiDi target.
+async function waitSelfTargetId() {
+  return await new Promise((resolve) => {
     // `window.setSelfTargetId` is called via `Runtime.evaluate` from the server side.
     window.setSelfTargetId = function (targetId) {
       logSystem('current target ID: ' + targetId);
       resolve(targetId);
     };
   });
+}
 
+async function prepareCdp(cdpServer) {
   // Needed to get events about new targets.
   await cdpServer.sendMessage({
     method: 'Target.setDiscoverTargets',
     params: { discover: true },
   });
-
-  await runBidiCommandsProcessor(cdpServer, bidiServer, selfTargetId);
-
-  logSystem('launched');
-})();
+}
