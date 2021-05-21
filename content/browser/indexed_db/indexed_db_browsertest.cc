@@ -714,29 +714,6 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, EmptyBlob) {
 #endif
 }
 
-// Very flaky on many bots. See crbug.com/459835
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithGCExposed, DISABLED_BlobDidAck) {
-  SimpleTest(GetTestUrl("indexeddb", "blob_did_ack.html"));
-  content::ChromeBlobStorageContext* blob_context =
-      ChromeBlobStorageContext::GetFor(
-          shell()->web_contents()->GetBrowserContext());
-  EXPECT_EQ(0UL, blob_context->context()->blob_count());
-}
-
-// Flaky. See crbug.com/459835.
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithGCExposed,
-                       DISABLED_BlobDidAckPrefetch) {
-  const GURL kTestUrl = GetTestUrl("indexeddb", "blob_did_ack_prefetch.html");
-  SimpleTest(kTestUrl);
-  const url::Origin kTestOrigin = url::Origin::Create(kTestUrl);
-  EXPECT_EQ(0, RequestBlobFileCount(kTestOrigin));
-
-  content::ChromeBlobStorageContext* blob_context =
-      ChromeBlobStorageContext::GetFor(
-          shell()->web_contents()->GetBrowserContext());
-  EXPECT_EQ(0UL, blob_context->context()->blob_count());
-}
-
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, BlobsCountAgainstQuota) {
   SimpleTest(GetTestUrl("indexeddb", "blobs_use_quota.html"));
 }
