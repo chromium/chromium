@@ -2075,18 +2075,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       FROM_HERE);
 }
 
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-// Flaky: https://crbug.com/1076594 on Mac
-// Flaky: https://crbug.com/1102571 on Linux Ozone
-#define MAYBE_SubframeWithDisallowedFeatureNotCached \
-  DISABLED_SubframeWithDisallowedFeatureNotCached
-#else
-#define MAYBE_SubframeWithDisallowedFeatureNotCached \
-  SubframeWithDisallowedFeatureNotCached
-#endif
-
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       MAYBE_SubframeWithDisallowedFeatureNotCached) {
+                       SubframeWithDisallowedFeatureNotCached) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate to a page with an iframe that contains a dedicated worker.
@@ -2094,6 +2084,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       shell(),
       embedded_test_server()->GetURL(
           "a.com", "/back_forward_cache/dedicated_worker_in_subframe.html")));
+  EXPECT_EQ(42, EvalJs(current_frame_host()->child_at(0)->current_frame_host(),
+                       "window.receivedMessagePromise"));
+
   RenderFrameDeletedObserver delete_rfh_a(current_frame_host());
 
   // Navigate away.

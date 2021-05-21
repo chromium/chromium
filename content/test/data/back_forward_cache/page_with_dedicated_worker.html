@@ -1,7 +1,12 @@
 <html>
 <head></head>
 <body>This page has a dedicated worker.</body>
-  <script>
-    var worker = new Worker('/back_forward_cache/worker.js');
-  </script>
+<script>
+const worker = new Worker('/back_forward_cache/worker.js');
+window.receivedMessagePromise = new Promise(resolve => {
+  worker.addEventListener('message', (msg) => {
+    resolve(msg.data);
+  });
+});
+</script>
 </html>
