@@ -97,6 +97,16 @@ public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
             ThreadUtils.assertOnUiThread();
             mDelegate.onDoneCreatingPaymentApps(PaymentAppServiceBridge.this);
         }
+
+        /**
+         * Forces canMakePayment() and hasEnrolledInstrument() to return true even when no payment
+         * app is created.
+         */
+        @CalledByNative("PaymentAppServiceCallback")
+        private void setCanMakePaymentEvenWithoutApps() {
+            ThreadUtils.assertOnUiThread();
+            mDelegate.setCanMakePaymentEvenWithoutApps();
+        }
     }
 
     @NativeMethods

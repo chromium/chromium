@@ -118,6 +118,11 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
         }
 
         @Override
+        public void setCanMakePaymentEvenWithoutApps() {
+            mDelegate.setCanMakePaymentEvenWithoutApps();
+        }
+
+        @Override
         public void onDoneCreatingPaymentApps(PaymentAppFactoryInterface factory) {
             mPendingFactories.remove(factory);
             if (!mPendingFactories.isEmpty()) return;

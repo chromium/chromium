@@ -137,6 +137,9 @@ public class PaymentRequestService
     private boolean mHasEnrolledInstrument;
     /** True if any of the requested payment methods are supported. */
     private boolean mCanMakePayment;
+    /** True if canMakePayment() and hasEnrolledInstrument() are forced to return true. */
+    private boolean mCanMakePaymentEvenWithoutApps;
+
     /**
      * Whether there's at least one app that is not an autofill card. Should be read only after all
      * payment apps have been queried.
@@ -744,6 +747,12 @@ public class PaymentRequestService
 
     // Implements PaymentAppFactoryDelegate:
     @Override
+    public void setCanMakePaymentEvenWithoutApps() {
+        mCanMakePaymentEvenWithoutApps = true;
+    }
+
+    // Implements PaymentAppFactoryDelegate:
+    @Override
     public void onDoneCreatingPaymentApps(PaymentAppFactoryInterface factory /* Unused */) {
         if (mBrowserPaymentRequest == null) return;
         assert mSpec != null;
@@ -751,6 +760,7 @@ public class PaymentRequestService
 
         mIsFinishedQueryingPaymentApps = true;
 
+        mHasEnrolledInstrument |= mCanMakePaymentEvenWithoutApps;
         // Always return false when can make payment is disabled.
         mHasEnrolledInstrument &= mDelegate.prefsCanMakePayment();
 
@@ -1001,7 +1011,7 @@ public class PaymentRequestService
     // Implements PaymentAppFactoryDelegate:
     @Override
     public void onCanMakePaymentCalculated(boolean canMakePayment) {
-        mCanMakePayment = canMakePayment;
+        mCanMakePayment = canMakePayment || mCanMakePaymentEvenWithoutApps;
         if (!mIsCanMakePaymentResponsePending) return;
         // canMakePayment doesn't need to wait for all apps to be queried because it only needs to
         // test the existence of a payment handler.

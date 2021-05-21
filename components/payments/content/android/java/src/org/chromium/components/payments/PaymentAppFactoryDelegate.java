@@ -42,4 +42,10 @@ public interface PaymentAppFactoryDelegate {
      * @param factory The factory that has finished creating all payment apps.
      */
     default void onDoneCreatingPaymentApps(PaymentAppFactoryInterface factory) {}
+
+    /**
+     * Forces canMakePayment() and hasEnrolledInstrument() to return true even when no payment
+     * app is created.
+     */
+    default void setCanMakePaymentEvenWithoutApps() {}
 }

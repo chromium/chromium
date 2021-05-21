@@ -29,6 +29,7 @@ class MockCallback {
   MOCK_METHOD1(NotifyCanMakePaymentCalculated, void(bool can_make_payment));
   MOCK_METHOD1(NotifyPaymentAppCreationError, void(const std::string& error));
   MOCK_METHOD0(NotifyDoneCreatingPaymentApps, void(void));
+  MOCK_METHOD0(SetCanMakePaymentEvenWithoutApps, void(void));
 };
 
 class MockApp : public PaymentApp {
@@ -112,7 +113,9 @@ TEST_P(PaymentAppServiceBridgeUnitTest, Smoke) {
           base::BindRepeating(&MockCallback::NotifyPaymentAppCreationError,
                               base::Unretained(&mock_callback)),
           base::BindOnce(&MockCallback::NotifyDoneCreatingPaymentApps,
-                         base::Unretained(&mock_callback)))
+                         base::Unretained(&mock_callback)),
+          base::BindRepeating(&MockCallback::SetCanMakePaymentEvenWithoutApps,
+                              base::Unretained(&mock_callback)))
           ->GetWeakPtr();
 
   EXPECT_TRUE(bridge->SkipCreatingNativePaymentApps());
@@ -131,6 +134,9 @@ TEST_P(PaymentAppServiceBridgeUnitTest, Smoke) {
   auto app = std::make_unique<MockApp>();
   EXPECT_CALL(mock_callback, NotifyPaymentAppCreated(::testing::_));
   bridge->OnPaymentAppCreated(std::move(app));
+
+  EXPECT_CALL(mock_callback, SetCanMakePaymentEvenWithoutApps());
+  bridge->SetCanMakePaymentEvenWithoutApps();
 
   EXPECT_CALL(mock_callback, NotifyPaymentAppCreationError("some error"));
   bridge->OnPaymentAppCreationError("some error");

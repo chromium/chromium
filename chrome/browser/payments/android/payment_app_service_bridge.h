@@ -51,7 +51,8 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       CanMakePaymentCalculatedCallback can_make_payment_calculated_callback,
       PaymentAppCreatedCallback payment_app_created_callback,
       PaymentAppCreationErrorCallback payment_app_creation_error_callback,
-      base::OnceClosure done_creating_payment_apps_callback);
+      base::OnceClosure done_creating_payment_apps_callback,
+      base::RepeatingClosure set_can_make_payment_even_without_apps_callback);
 
   ~PaymentAppServiceBridge() override;
 
@@ -101,7 +102,8 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       CanMakePaymentCalculatedCallback can_make_payment_calculated_callback,
       PaymentAppCreatedCallback payment_app_created_callback,
       PaymentAppCreationErrorCallback payment_app_creation_error_callback,
-      base::OnceClosure done_creating_payment_apps_callback);
+      base::OnceClosure done_creating_payment_apps_callback,
+      base::RepeatingClosure set_can_make_payment_even_without_apps_callback);
 
   size_t number_of_pending_factories_;
   content::GlobalFrameRoutingId frame_routing_id_;
@@ -119,6 +121,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   PaymentAppCreatedCallback payment_app_created_callback_;
   PaymentAppCreationErrorCallback payment_app_creation_error_callback_;
   base::OnceClosure done_creating_payment_apps_callback_;
+  base::RepeatingClosure set_can_make_payment_even_without_apps_callback_;
 
   base::WeakPtrFactory<PaymentAppServiceBridge> weak_ptr_factory_{this};
 };
