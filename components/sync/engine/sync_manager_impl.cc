@@ -136,9 +136,6 @@ void SyncManagerImpl::Init(InitArgs* args) {
   DCHECK(args->encryption_observer_proxy);
   encryption_observer_proxy_ = std::move(args->encryption_observer_proxy);
 
-  AddObserver(&js_sync_manager_observer_);
-  SetJsEventHandler(args->event_handler);
-
   AddObserver(&debug_info_event_listener_);
 
   DCHECK(args->encryption_handler);
@@ -151,7 +148,6 @@ void SyncManagerImpl::Init(InitArgs* args) {
   sync_encryption_handler_->AddObserver(this);
   sync_encryption_handler_->AddObserver(encryption_observer_proxy_.get());
   sync_encryption_handler_->AddObserver(&debug_info_event_listener_);
-  sync_encryption_handler_->AddObserver(&js_sync_encryption_handler_observer_);
 
   allstatus_.SetHasKeystoreKey(
       !sync_encryption_handler_->GetKeystoreKeysHandler()->NeedKeystoreKey());
@@ -208,7 +204,6 @@ void SyncManagerImpl::Init(InitArgs* args) {
   }
 
   debug_info_event_listener_.InitializationComplete();
-  js_sync_manager_observer_.InitializationComplete();
 }
 
 void SyncManagerImpl::OnPassphraseRequired(
@@ -315,9 +310,6 @@ void SyncManagerImpl::ShutdownOnSyncThread() {
     sync_encryption_handler_->RemoveObserver(&debug_info_event_listener_);
     sync_encryption_handler_->RemoveObserver(this);
   }
-
-  SetJsEventHandler(WeakHandle<JsEventHandler>());
-  RemoveObserver(&js_sync_manager_observer_);
 
   RemoveObserver(&debug_info_event_listener_);
 
@@ -427,12 +419,6 @@ void SyncManagerImpl::OnProtocolEvent(const ProtocolEvent& event) {
   }
 }
 
-void SyncManagerImpl::SetJsEventHandler(
-    const WeakHandle<JsEventHandler>& event_handler) {
-  js_sync_manager_observer_.SetJsEventHandler(event_handler);
-  js_sync_encryption_handler_observer_.SetJsEventHandler(event_handler);
-}
-
 void SyncManagerImpl::SetInvalidatorEnabled(bool invalidator_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -470,10 +456,6 @@ SyncManagerImpl::GetModelTypeConnectorProxy() {
   return std::make_unique<ModelTypeConnectorProxy>(
       base::SequencedTaskRunnerHandle::Get(),
       model_type_registry_->AsWeakPtr());
-}
-
-WeakHandle<JsBackend> SyncManagerImpl::GetJsBackend() {
-  return MakeWeakHandle(weak_ptr_factory_.GetWeakPtr());
 }
 
 WeakHandle<DataTypeDebugInfoListener> SyncManagerImpl::GetDebugInfoListener() {

@@ -31,7 +31,6 @@ namespace syncer {
 
 class EngineComponentsFactory;
 class HttpPostProviderFactory;
-class JsEventHandler;
 class SyncEngineHost;
 struct SyncStatus;
 
@@ -55,7 +54,6 @@ class SyncEngine : public ModelTypeConfigurer {
     SyncEngineHost* host = nullptr;
     std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy;
     scoped_refptr<ExtensionsActivity> extensions_activity;
-    WeakHandle<JsEventHandler> event_handler;
     GURL service_url;
     SyncEngine::HttpPostProviderFactoryGetter http_factory_getter;
     CoreAccountInfo authenticated_account_info;

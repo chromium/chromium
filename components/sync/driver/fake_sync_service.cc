@@ -143,10 +143,6 @@ void FakeSyncService::AddProtocolEventObserver(
 void FakeSyncService::RemoveProtocolEventObserver(
     ProtocolEventObserver* observer) {}
 
-base::WeakPtr<JsController> FakeSyncService::GetJsController() {
-  return base::WeakPtr<JsController>();
-}
-
 void FakeSyncService::GetAllNodesForDebugging(
     base::OnceCallback<void(std::unique_ptr<base::ListValue>)> callback) {}
 

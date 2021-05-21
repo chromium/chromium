@@ -136,10 +136,6 @@ FakeSyncManager::GetModelTypeConnectorProxy() {
   return std::make_unique<FakeModelTypeConnector>();
 }
 
-WeakHandle<JsBackend> FakeSyncManager::GetJsBackend() {
-  return WeakHandle<JsBackend>();
-}
-
 WeakHandle<DataTypeDebugInfoListener> FakeSyncManager::GetDebugInfoListener() {
   return WeakHandle<DataTypeDebugInfoListener>();
 }

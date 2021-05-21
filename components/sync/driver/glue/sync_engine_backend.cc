@@ -223,7 +223,6 @@ void SyncEngineBackend::DoInitialize(
   sync_manager_->AddObserver(this);
 
   SyncManager::InitArgs args;
-  args.event_handler = params.event_handler;
   args.service_url = params.service_url;
   args.enable_local_sync_backend = params.enable_local_sync_backend;
   args.local_sync_backend_folder = params.local_sync_backend_folder;
@@ -314,12 +313,11 @@ void SyncEngineBackend::DoInitialProcessControlTypes() {
     return;
   }
 
-  host_.Call(FROM_HERE,
-             &SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop,
-             sync_manager_->GetEnabledTypes(), sync_manager_->GetJsBackend(),
-             sync_manager_->GetDebugInfoListener(),
-             sync_manager_->GetModelTypeConnectorProxy(),
-             sync_manager_->birthday(), sync_manager_->bag_of_chips());
+  host_.Call(
+      FROM_HERE, &SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop,
+      sync_manager_->GetEnabledTypes(), sync_manager_->GetDebugInfoListener(),
+      sync_manager_->GetModelTypeConnectorProxy(), sync_manager_->birthday(),
+      sync_manager_->bag_of_chips());
 }
 
 void SyncEngineBackend::DoSetDecryptionPassphrase(

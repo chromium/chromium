@@ -385,8 +385,7 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserRefreshOnTabSelect', function() {
 // Tests that the events log page correctly receives and displays an event.
 TEST_F('SyncInternalsWebUITest', 'EventLogTest', function() {
   // Dispatch an event.
-  cr.webUIListenerCallback(
-      'onConnectionStatusChange', {'status': 'CONNECTION_OK'});
+  cr.webUIListenerCallback('onProtocolEvent', {someField: 'someData'});
 
   // Verify that it is displayed in the events log.
   const syncEventsTable = document.querySelector('#sync-events');
@@ -400,19 +399,15 @@ TEST_F('SyncInternalsWebUITest', 'EventLogTest', function() {
   const submoduleName = lastRow.children[1].textContent;
   const eventName = lastRow.children[2].textContent;
 
-  expectGE(submoduleName.indexOf('manager'), 0,
-      'submoduleName=' + submoduleName);
-  expectGE(eventName.indexOf('onConnectionStatusChange'), 0,
-      'eventName=' + eventName);
-  expectGE(detailsText.indexOf('CONNECTION_OK'), 0,
-      'detailsText=' + detailsText);
+  expectGE(
+      submoduleName.indexOf('protocol'), 0, 'submoduleName=' + submoduleName);
+  expectGE(eventName.indexOf('onProtocolEvent'), 0, 'eventName=' + eventName);
+  expectGE(detailsText.indexOf('someData'), 0, 'detailsText=' + detailsText);
 });
 
 TEST_F('SyncInternalsWebUITest', 'DumpSyncEventsToText', function() {
   // Dispatch an event.
-  connectionEvent = {'status': 'CONNECTION_OK'};
-  cr.webUIListenerCallback('onConnectionStatusChange',
-      { 'status': 'CONNECTION_OK' });
+  cr.webUIListenerCallback('onProtocolEvent', {someField: 'someData'});
 
   // Click the dump-to-text button.
   document.querySelector('#dump-to-text').click();
@@ -420,6 +415,6 @@ TEST_F('SyncInternalsWebUITest', 'DumpSyncEventsToText', function() {
   // Verify our event is among the results.
   const eventDumpText = document.querySelector('#data-dump').textContent;
 
-  expectGE(eventDumpText.indexOf('onConnectionStatusChange'), 0);
-  expectGE(eventDumpText.indexOf('CONNECTION_OK'), 0);
+  expectGE(eventDumpText.indexOf('onProtocolEvent'), 0);
+  expectGE(eventDumpText.indexOf('someData'), 0);
 });

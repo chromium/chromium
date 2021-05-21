@@ -5,43 +5,21 @@
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
-const eventsByCategory = {
-  notifier: [
-    'onIncomingNotification',
-    'onNotificationStateChange',
-  ],
-
-  manager: [
-    'onActionableError',
-    'onChangesApplied',
-    'onChangesComplete',
-    'onConnectionStatusChange',
-    'onEncryptedTypesChanged',
-    'onInitializationComplete',
-    'onPassphraseAccepted',
-    'onPassphraseRequired',
-    'onStopSyncingPermanently',
-    'onSyncCycleCompleted',
-  ],
-
-  transaction: [
-    'onTransactionWrite',
-  ],
-
-  protocol: [
-    'onProtocolEvent',
-  ]
-};
-
 /**
- * Creates a new log object which then immediately starts recording
- * sync events.  Recorded entries are available in the 'entries'
+ * Creates a new log object which then immediately starts recording sync
+ * protocol events.  Recorded entries are available in the 'entries'
  * property and there is an 'append' event which can be listened to.
  */
 class Log extends EventTarget {
   constructor() {
     super();
-    const self = this;
+
+    /**
+     * Must match the value in SyncInternalsMessageHandler::OnProtocolEvent().
+     * @private
+     * @type {string}
+     */
+    this.protocolEventName_ = 'onProtocolEvent';
 
     /**
      * The recorded log entries.
@@ -49,35 +27,21 @@ class Log extends EventTarget {
      */
     this.entries = [];
 
-    /**
-     * Creates a callback function to be invoked when an event arrives.
-     */
-    const makeCallback = function(categoryName, eventName) {
-      return function(response) {
-        self.log_(categoryName, eventName, response);
-      };
-    };
-
-    for (const categoryName in eventsByCategory) {
-      for (let i = 0; i < eventsByCategory[categoryName].length; ++i) {
-        const eventName = eventsByCategory[categoryName][i];
-        addWebUIListener(eventName, makeCallback(categoryName, eventName));
-      }
-    }
+    addWebUIListener(this.protocolEventName_, (response) => {
+      this.log_(response);
+    });
   }
 
   /**
    * Records a single event with the given parameters and fires the
    * 'append' event with the newly-created event as the 'detail'
    * field of a custom event.
-   * @param {string} submodule The sync submodule for the event.
-   * @param {string} event The name of the event.
    * @param {!Object} details A dictionary of event-specific details.
    */
-  log_(submodule, event, details) {
+  log_(details) {
     const entry = {
-      submodule: submodule,
-      event: event,
+      submodule: 'protocol',
+      event: this.protocolEventName_,
       date: new Date(),
       details: details,
       textDetails: ''

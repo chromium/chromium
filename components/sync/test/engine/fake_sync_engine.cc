@@ -30,7 +30,7 @@ void FakeSyncEngine::TriggerInitializationCompletion(bool success) {
 
   initialized_ = success;
 
-  host_->OnEngineInitialized(ModelTypeSet(), WeakHandle<JsBackend>(),
+  host_->OnEngineInitialized(ModelTypeSet(),
                              WeakHandle<DataTypeDebugInfoListener>(), success,
                              is_first_time_sync_configure_);
 }

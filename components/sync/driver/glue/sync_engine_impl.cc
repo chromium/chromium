@@ -420,7 +420,6 @@ void SyncEngineImpl::FinishConfigureDataTypesOnFrontendLoop(
 
 void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
     ModelTypeSet initial_types,
-    const WeakHandle<JsBackend> js_backend,
     const WeakHandle<DataTypeDebugInfoListener> debug_info_listener,
     std::unique_ptr<ModelTypeConnector> model_type_connector,
     const std::string& birthday,
@@ -465,13 +464,13 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
     UpdateLastSyncedTime();
   }
 
-  host_->OnEngineInitialized(initial_types, js_backend, debug_info_listener,
+  host_->OnEngineInitialized(initial_types, debug_info_listener,
                              /*success=*/true, is_first_time_sync_configure);
 }
 
 void SyncEngineImpl::HandleInitializationFailureOnFrontendLoop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  host_->OnEngineInitialized(ModelTypeSet(), WeakHandle<JsBackend>(),
+  host_->OnEngineInitialized(ModelTypeSet(),
                              WeakHandle<DataTypeDebugInfoListener>(),
                              /*success=*/false,
                              /*is_first_time_sync_configure=*/false);

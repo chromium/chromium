@@ -76,7 +76,6 @@ static_library("driver") {
     "//components/invalidation/public",
     "//components/sync/base",
     "//components/sync/engine",
-    "//components/sync/js",
     "//components/sync/model",
     "//components/sync/nigori",
     "//components/sync/protocol",

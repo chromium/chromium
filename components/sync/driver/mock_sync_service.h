@@ -127,7 +127,6 @@ class MockSyncService : public SyncService {
               RemoveProtocolEventObserver,
               (ProtocolEventObserver * observer),
               (override));
-  MOCK_METHOD(base::WeakPtr<JsController>, GetJsController, (), (override));
   MOCK_METHOD(
       void,
       GetAllNodesForDebugging,

@@ -3,7 +3,6 @@ include_rules = [
   "+components/sync/base",
   "+components/sync/protocol",
   "+components/sync/test",
-  "+components/sync/js",
   "+net/base/net_errors.h",
   "+net/http/http_status_code.h",
   "+services/network/public",

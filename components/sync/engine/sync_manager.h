@@ -38,8 +38,6 @@ class CancelationSignal;
 class DataTypeDebugInfoListener;
 class EngineComponentsFactory;
 class ExtensionsActivity;
-class JsBackend;
-class JsEventHandler;
 class ProtocolEvent;
 class SyncCycleSnapshot;
 class SyncStatusObserver;
@@ -77,9 +75,6 @@ class SyncManager {
   struct InitArgs {
     InitArgs();
     ~InitArgs();
-
-    // Used to propagate events to chrome://sync-internals.  Optional.
-    WeakHandle<JsEventHandler> event_handler;
 
     // URL of the sync server.
     GURL service_url;
@@ -193,7 +188,6 @@ class SyncManager {
   // sync engine.
   virtual std::unique_ptr<ModelTypeConnector> GetModelTypeConnectorProxy() = 0;
 
-  virtual WeakHandle<JsBackend> GetJsBackend() = 0;
   virtual WeakHandle<DataTypeDebugInfoListener> GetDebugInfoListener() = 0;
 
   // Returns the cache_guid of the currently open database.

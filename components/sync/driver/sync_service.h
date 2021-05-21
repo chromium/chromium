@@ -25,7 +25,6 @@ class GURL;
 
 namespace syncer {
 
-class JsController;
 class ProtocolEventObserver;
 class SyncCycleSnapshot;
 struct TypeEntitiesCount;
@@ -423,8 +422,6 @@ class SyncService : public KeyedService {
 
   virtual void AddProtocolEventObserver(ProtocolEventObserver* observer) = 0;
   virtual void RemoveProtocolEventObserver(ProtocolEventObserver* observer) = 0;
-
-  virtual base::WeakPtr<JsController> GetJsController() = 0;
 
   // Asynchronously fetches base::Value representations of all sync nodes and
   // returns them to the specified callback on this thread.

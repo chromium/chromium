@@ -21,13 +21,10 @@
 #include "components/sync/engine/all_status.h"
 #include "components/sync/engine/debug_info_event_listener.h"
 #include "components/sync/engine/events/protocol_event_buffer.h"
-#include "components/sync/engine/js_sync_encryption_handler_observer.h"
-#include "components/sync/engine/js_sync_manager_observer.h"
 #include "components/sync/engine/net/server_connection_manager.h"
 #include "components/sync/engine/nudge_handler.h"
 #include "components/sync/engine/sync_engine_event_listener.h"
 #include "components/sync/engine/sync_manager.h"
-#include "components/sync/js/js_backend.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace syncer {
@@ -41,7 +38,6 @@ class SyncCycleContext;
 class SyncManagerImpl
     : public SyncManager,
       public network::NetworkConnectionTracker::NetworkConnectionObserver,
-      public JsBackend,
       public SyncEngineEventListener,
       public ServerConnectionEventListener,
       public SyncEncryptionHandler::Observer,
@@ -75,7 +71,6 @@ class SyncManagerImpl
   void ShutdownOnSyncThread() override;
   ModelTypeConnector* GetModelTypeConnector() override;
   std::unique_ptr<ModelTypeConnector> GetModelTypeConnectorProxy() override;
-  WeakHandle<JsBackend> GetJsBackend() override;
   WeakHandle<DataTypeDebugInfoListener> GetDebugInfoListener() override;
   std::string cache_guid() override;
   std::string birthday() override;
@@ -117,10 +112,6 @@ class SyncManagerImpl
 
   // ServerConnectionEventListener implementation.
   void OnServerConnectionEvent(const ServerConnectionEvent& event) override;
-
-  // JsBackend implementation.
-  void SetJsEventHandler(
-      const WeakHandle<JsEventHandler>& event_handler) override;
 
   // Handle explicit requests to fetch updates for the given types.
   void RefreshTypes(ModelTypeSet types) override;
@@ -167,10 +158,6 @@ class SyncManagerImpl
   bool initialized_;
 
   bool observing_network_connectivity_changes_;
-
-  // These are for interacting with chrome://sync-internals.
-  JsSyncManagerObserver js_sync_manager_observer_;
-  JsSyncEncryptionHandlerObserver js_sync_encryption_handler_observer_;
 
   // This is for keeping track of client events to send to the server.
   DebugInfoEventListener debug_info_event_listener_;

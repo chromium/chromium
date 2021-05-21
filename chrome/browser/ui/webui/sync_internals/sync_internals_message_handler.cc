@@ -23,7 +23,6 @@
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
-#include "components/sync/js/js_event_details.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
@@ -166,8 +165,6 @@ void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
   if (service && !is_registered_) {
     service->AddObserver(this);
     service->AddProtocolEventObserver(this);
-    js_controller_ = service->GetJsController();
-    js_controller_->AddJsEventHandler(this);
 
     SyncInvalidationsService* invalidations_service =
         GetSyncInvalidationsService();
@@ -350,14 +347,6 @@ void SyncInternalsMessageHandler::OnInvalidationReceived(
                     data_types_list);
 }
 
-void SyncInternalsMessageHandler::HandleJsEvent(
-    const std::string& name,
-    const syncer::JsEventDetails& details) {
-  DVLOG(1) << "Handling event: " << name << " with details "
-           << details.ToString();
-  FireWebUIListener(name, details.Get());
-}
-
 void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
   std::unique_ptr<DictionaryValue> value = about_sync_data_delegate_.Run(
       GetSyncService(),
@@ -413,11 +402,8 @@ void SyncInternalsMessageHandler::UnregisterModelNotifications() {
   // Cannot use ScopedObserver to do all the tracking because most don't follow
   // AddObserver/RemoveObserver method naming style.
   if (is_registered_) {
-    DCHECK(js_controller_);
     service->RemoveObserver(this);
     service->RemoveProtocolEventObserver(this);
-    js_controller_->RemoveJsEventHandler(this);
-    js_controller_ = nullptr;
 
     SyncInvalidationsService* invalidations_service =
         GetSyncInvalidationsService();

@@ -71,7 +71,6 @@ class TestSyncEngineHost : public SyncEngineHostStub {
       : set_engine_types_(std::move(set_engine_types)) {}
 
   void OnEngineInitialized(ModelTypeSet initial_types,
-                           const WeakHandle<JsBackend>&,
                            const WeakHandle<DataTypeDebugInfoListener>&,
                            bool success,
                            bool is_first_time_sync_configure) override {

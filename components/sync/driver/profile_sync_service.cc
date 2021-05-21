@@ -310,10 +310,6 @@ bool ProfileSyncService::IsDataTypeControllerRunningForTest(
   return iter->second->state() == DataTypeController::RUNNING;
 }
 
-WeakHandle<JsEventHandler> ProfileSyncService::GetJsEventHandler() {
-  return MakeWeakHandle(sync_js_controller_.AsWeakPtr());
-}
-
 void ProfileSyncService::AccountStateChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -459,7 +455,6 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
   params.encryption_observer_proxy = crypto_.GetEncryptionObserverProxy();
 
   params.extensions_activity = sync_client_->GetExtensionsActivity();
-  params.event_handler = GetJsEventHandler();
   params.service_url = sync_service_url_;
   params.http_factory_getter = base::BindOnce(
       create_http_post_provider_factory_cb_, MakeUserAgentForSync(channel_),
@@ -551,7 +546,6 @@ void ProfileSyncService::ShutdownImpl(ShutdownReason reason) {
   // Shutdown the migrator before the engine to ensure it doesn't pull a null
   // snapshot.
   migrator_.reset();
-  sync_js_controller_.AttachJsBackend(WeakHandle<JsBackend>());
 
   engine_->Shutdown(reason);
   engine_.reset();
@@ -756,7 +750,6 @@ void ProfileSyncService::UpdateEngineInitUMA(bool success) const {
 
 void ProfileSyncService::OnEngineInitialized(
     ModelTypeSet initial_types,
-    const WeakHandle<JsBackend>& js_backend,
     const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
     bool success,
     bool is_first_time_sync_configure) {
@@ -780,8 +773,6 @@ void ProfileSyncService::OnEngineInitialized(
                              ERROR_REASON_ENGINE_INIT_FAILURE);
     return;
   }
-
-  sync_js_controller_.AttachJsBackend(js_backend);
 
   if (!protocol_event_observers_.empty()) {
     engine_->RequestBufferedProtocolEventsAndEnableForwarding();
@@ -1679,11 +1670,6 @@ void ProfileSyncService::AddTrustedVaultRecoveryMethodFromWeb(
     base::OnceClosure callback) {
   sync_client_->GetTrustedVaultClient()->AddTrustedRecoveryMethod(
       gaia_id, public_key, method_type_hint, std::move(callback));
-}
-
-base::WeakPtr<JsController> ProfileSyncService::GetJsController() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return sync_js_controller_.AsWeakPtr();
 }
 
 void ProfileSyncService::StopAndClear() {

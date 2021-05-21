@@ -41,7 +41,6 @@
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_engine_host.h"
-#include "components/sync/js/sync_js_controller.h"
 #include "components/version_info/channel.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -154,7 +153,6 @@ class ProfileSyncService : public SyncService,
   base::Location GetUnrecoverableErrorLocationForDebugging() const override;
   void AddProtocolEventObserver(ProtocolEventObserver* observer) override;
   void RemoveProtocolEventObserver(ProtocolEventObserver* observer) override;
-  base::WeakPtr<JsController> GetJsController() override;
   void GetAllNodesForDebugging(
       base::OnceCallback<void(std::unique_ptr<base::ListValue>)> callback)
       override;
@@ -162,7 +160,6 @@ class ProfileSyncService : public SyncService,
   // SyncEngineHost implementation.
   void OnEngineInitialized(
       ModelTypeSet initial_types,
-      const WeakHandle<JsBackend>& js_backend,
       const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
       bool success,
       bool is_first_time_sync_configure) override;
@@ -271,9 +268,6 @@ class ProfileSyncService : public SyncService,
     ERROR_REASON_ENGINE_INIT_FAILURE,
     ERROR_REASON_ACTIONABLE_ERROR,
   };
-
-  // Virtual for testing.
-  virtual WeakHandle<JsEventHandler> GetJsEventHandler();
 
   // Callbacks for SyncAuthManager.
   void AccountStateChanged();
@@ -450,8 +444,6 @@ class ProfileSyncService : public SyncService,
 
   base::ObserverList<ProtocolEventObserver>::Unchecked
       protocol_event_observers_;
-
-  SyncJsController sync_js_controller_;
 
   // This allows us to gracefully handle an ABORTED return code from the
   // DataTypeManager in the event that the server informed us to cease and

@@ -25,7 +25,6 @@ group("test_support") {
     ":test_support_model",
     "//components/sync/base:test_support",
     "//components/sync/driver:test_support",
-    "//components/sync/js:test_support",
   ]
 }
 
@@ -163,8 +162,6 @@ source_set("unit_tests") {
     "engine/entity_data_unittest.cc",
     "engine/events/protocol_event_buffer_unittest.cc",
     "engine/get_updates_processor_unittest.cc",
-    "engine/js_sync_encryption_handler_observer_unittest.cc",
-    "engine/js_sync_manager_observer_unittest.cc",
     "engine/loopback_server/loopback_server_unittest.cc",
     "engine/loopback_server/persistent_bookmark_entity_unittest.cc",
     "engine/loopback_server/persistent_permanent_entity_unittest.cc",
@@ -180,8 +177,6 @@ source_set("unit_tests") {
     "engine/syncer_unittest.cc",
     "invalidations/fcm_handler_unittest.cc",
     "invalidations/interested_data_types_manager_unittest.cc",
-    "js/js_event_details_unittest.cc",
-    "js/sync_js_controller_unittest.cc",
     "model/client_tag_based_model_type_processor_unittest.cc",
     "model/client_tag_based_remote_update_handler_unittest.cc",
     "model/in_memory_metadata_change_list_unittest.cc",
@@ -242,7 +237,6 @@ source_set("unit_tests") {
     "//components/sync/base:test_support",
     "//components/sync/driver:test_support",
     "//components/sync/invalidations:test_support",
-    "//components/sync/js:test_support",
     "//components/version_info",
     "//components/version_info:generate_version_info",
     "//components/version_info:version_string",

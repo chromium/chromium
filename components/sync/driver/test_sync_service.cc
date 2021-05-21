@@ -277,10 +277,6 @@ void TestSyncService::AddProtocolEventObserver(
 void TestSyncService::RemoveProtocolEventObserver(
     ProtocolEventObserver* observer) {}
 
-base::WeakPtr<JsController> TestSyncService::GetJsController() {
-  return base::WeakPtr<JsController>();
-}
-
 void TestSyncService::GetAllNodesForDebugging(
     base::OnceCallback<void(std::unique_ptr<base::ListValue>)> callback) {}
 
