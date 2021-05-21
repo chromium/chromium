@@ -47,14 +47,10 @@ Node* NodeTraversal::NextIncludingPseudo(const Node& current,
                                          const Node* stay_within) {
   if (Node* next = current.PseudoAwareFirstChild())
     return next;
-  if (current == stay_within)
-    return nullptr;
-  if (Node* next = current.PseudoAwareNextSibling())
-    return next;
-  for (Node& parent : AncestorsOf(current)) {
-    if (parent == stay_within)
+  for (Node& node : InclusiveAncestorsOf(current)) {
+    if (node == stay_within)
       return nullptr;
-    if (Node* next = parent.PseudoAwareNextSibling())
+    if (Node* next = node.PseudoAwareNextSibling())
       return next;
   }
   return nullptr;
@@ -63,14 +59,10 @@ Node* NodeTraversal::NextIncludingPseudo(const Node& current,
 Node* NodeTraversal::NextIncludingPseudoSkippingChildren(
     const Node& current,
     const Node* stay_within) {
-  if (current == stay_within)
-    return nullptr;
-  if (Node* next = current.PseudoAwareNextSibling())
-    return next;
-  for (Node& parent : AncestorsOf(current)) {
-    if (parent == stay_within)
+  for (Node& node : InclusiveAncestorsOf(current)) {
+    if (node == stay_within)
       return nullptr;
-    if (Node* next = parent.PseudoAwareNextSibling())
+    if (Node* next = node.PseudoAwareNextSibling())
       return next;
   }
   return nullptr;
@@ -126,15 +118,11 @@ Node* NodeTraversal::Previous(const Node& current, const Node* stay_within) {
 
 Node* NodeTraversal::PreviousAbsoluteSibling(const Node& current,
                                              const Node* stay_within) {
-  if (current == stay_within)
-    return nullptr;
-  if (current.previousSibling())
-    return current.previousSibling();
-  for (Node& parent : AncestorsOf(current)) {
-    if (parent == stay_within)
+  for (Node& node : InclusiveAncestorsOf(current)) {
+    if (node == stay_within)
       return nullptr;
-    if (parent.previousSibling())
-      return parent.previousSibling();
+    if (Node* prev = node.previousSibling())
+      return prev;
   }
   return nullptr;
 }
