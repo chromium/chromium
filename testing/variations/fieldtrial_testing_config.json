@@ -3884,6 +3884,24 @@
             ]
         }
     ],
+    "IOSDefaultBrowserFullscreenPromoExperiment": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "RemindMeLaterButton_90",
+                    "params": {
+                        "show_remind_me_later": "true"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserFullscreenPromoExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSDefaultBrowserNonModalPromoExperiment": [
         {
             "platforms": [
