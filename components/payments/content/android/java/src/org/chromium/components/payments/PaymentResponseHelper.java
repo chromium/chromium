@@ -17,16 +17,16 @@ public class PaymentResponseHelper implements PaymentResponseHelperInterface {
     private final PaymentResponse mPaymentResponse;
     private final PaymentOptions mPaymentOptions;
     private final boolean mPaymentAppHandlesShippingAddress;
+    private final PaymentApp mSelectedPaymentApp;
 
     /**
      * Creates an instance of the helper.
-     * @param paymentAppHandlesShippingAddress Whether the selected payment app handles shipping
-     *        address.
+     * @param selectedPaymentApp The selected payment app.
      * @param paymentOptions The payment options specified in the payment request.
      */
-    public PaymentResponseHelper(
-            boolean paymentAppHandlesShippingAddress, PaymentOptions paymentOptions) {
-        mPaymentAppHandlesShippingAddress = paymentAppHandlesShippingAddress;
+    public PaymentResponseHelper(PaymentApp selectedPaymentApp, PaymentOptions paymentOptions) {
+        mSelectedPaymentApp = selectedPaymentApp;
+        mPaymentAppHandlesShippingAddress = selectedPaymentApp.handlesShippingAddress();
         mPaymentOptions = paymentOptions;
         mPaymentResponse = new PaymentResponse();
         mPaymentResponse.payer = new PayerDetail();
@@ -45,9 +45,15 @@ public class PaymentResponseHelper implements PaymentResponseHelperInterface {
             mPaymentResponse.shippingOption = payerData.selectedShippingOptionId;
         }
 
-        mPaymentResponse.payer.name = payerData.payerName;
-        mPaymentResponse.payer.phone = payerData.payerPhone;
-        mPaymentResponse.payer.email = payerData.payerEmail;
+        if (mPaymentOptions.requestPayerName && mSelectedPaymentApp.handlesPayerName()) {
+            mPaymentResponse.payer.name = payerData.payerName;
+        }
+        if (mPaymentOptions.requestPayerPhone && mSelectedPaymentApp.handlesPayerPhone()) {
+            mPaymentResponse.payer.phone = payerData.payerPhone;
+        }
+        if (mPaymentOptions.requestPayerEmail && mSelectedPaymentApp.handlesPayerEmail()) {
+            mPaymentResponse.payer.email = payerData.payerEmail;
+        }
 
         resultCallback.onPaymentResponseReady(mPaymentResponse);
     }

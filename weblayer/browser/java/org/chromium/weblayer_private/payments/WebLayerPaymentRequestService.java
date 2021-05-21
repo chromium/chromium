@@ -131,8 +131,8 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
         PaymentApp selectedPaymentApp = mAvailableApps.get(0);
         if (mShouldSkipAppSelector) {
             mJourneyLogger.setSkippedShow();
-            PaymentResponseHelperInterface paymentResponseHelper = new PaymentResponseHelper(
-                    selectedPaymentApp.handlesShippingAddress(), mSpec.getPaymentOptions());
+            PaymentResponseHelperInterface paymentResponseHelper =
+                    new PaymentResponseHelper(selectedPaymentApp, mSpec.getPaymentOptions());
             mPaymentRequestService.invokePaymentApp(selectedPaymentApp, paymentResponseHelper);
         }
         return null;
