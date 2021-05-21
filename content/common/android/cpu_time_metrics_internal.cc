@@ -107,25 +107,6 @@ const char* GetPowerModeChangeHistogramNameForProcessType(
   }
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// Keep in sync with power_scheduler::PowerMode.
-enum class PowerModeForUma {
-  kIdle = 0,
-  kAudible = 1,
-  kLoading = 2,
-  kAnimation = 3,
-  kResponse = 4,
-  kNonWebActivity = 5,
-  kBackground = 6,
-  kCharging = 7,
-  kNopAnimation = 8,
-  kVideoPlayback = 9,
-  kLoadingAnimation = 10,
-  kMainThreadAnimation = 11,
-  kMaxValue = kMainThreadAnimation,
-};
-
 PowerModeForUma GetPowerModeForUma(power_scheduler::PowerMode power_mode) {
   switch (power_mode) {
     case power_scheduler::PowerMode::kIdle:
@@ -708,16 +689,19 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
 
 // static
 ProcessCpuTimeMetrics* ProcessCpuTimeMetrics::GetInstance() {
-  static base::NoDestructor<ProcessCpuTimeMetrics> instance;
+  static base::NoDestructor<ProcessCpuTimeMetrics> instance(
+      power_scheduler::PowerModeArbiter::GetInstance());
   return instance.get();
 }
 
-ProcessCpuTimeMetrics::ProcessCpuTimeMetrics()
+ProcessCpuTimeMetrics::ProcessCpuTimeMetrics(
+    power_scheduler::PowerModeArbiter* arbiter)
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT,
            // TODO(eseckler): Consider hooking into process shutdown on
            // desktop to reduce metric data loss.
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
+      arbiter_(arbiter),
       process_metrics_(base::ProcessMetrics::CreateCurrentProcessMetrics()),
       process_type_(CurrentProcessType()),
       detailed_metrics_(
@@ -752,11 +736,11 @@ ProcessCpuTimeMetrics::~ProcessCpuTimeMetrics() {
   // care of any threading issues.
   base::CurrentThread::Get()->RemoveTaskObserver(this);
   ProcessVisibilityTracker::GetInstance()->RemoveObserver(this);
-  power_scheduler::PowerModeArbiter::GetInstance()->RemoveObserver(this);
+  arbiter_->RemoveObserver(this);
 }
 
 void ProcessCpuTimeMetrics::InitializeOnThreadPool() {
-  power_scheduler::PowerModeArbiter::GetInstance()->AddObserver(this);
+  arbiter_->AddObserver(this);
   PerformFullCollectionOnThreadPool();
 }
 
@@ -890,11 +874,11 @@ void ProcessCpuTimeMetrics::WaitForCollectionForTesting() const {
 }
 
 // static
-std::unique_ptr<ProcessCpuTimeMetrics>
-ProcessCpuTimeMetrics::CreateForTesting() {
+std::unique_ptr<ProcessCpuTimeMetrics> ProcessCpuTimeMetrics::CreateForTesting(
+    power_scheduler::PowerModeArbiter* arbiter) {
   std::unique_ptr<ProcessCpuTimeMetrics> ptr;
   // Can't use std::make_unique due to private constructor.
-  ptr.reset(new ProcessCpuTimeMetrics());
+  ptr.reset(new ProcessCpuTimeMetrics(arbiter));
   return ptr;
 }
 
