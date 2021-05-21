@@ -35,9 +35,13 @@ IndividualSettings::IndividualSettings(
     const IndividualSettings* default_settings) {
   installation_mode = default_settings->installation_mode;
   update_url = default_settings->update_url;
-  blocked_permissions = default_settings->blocked_permissions.Clone();
-  // We are not initializing |minimum_version_required| from |default_settings|
+  // We are not initializing `minimum_version_required` from `default_settings`
   // here since it's not applicable to default settings.
+  //
+  // We also do not inherit `blocked_permissions`, `runtime_allowed_hosts` or
+  // `runtime_blocked_hosts` from default either. It's likely not a behavior by
+  // design but fixing these issues may break users that rely on them. For
+  // now, we will keep it as is until there is a long term plan.
 }
 
 IndividualSettings::~IndividualSettings() {
@@ -104,7 +108,18 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
   const base::ListValue* list_value = nullptr;
   std::u16string error;
 
-  // Set default blocked permissions, or replace with extension specific blocks.
+  // Parse the blocked and allowed permissions.
+  // Note that we currently don't use default permission settings for
+  // per-update-url or per-id settings at all even though they are not set.
+  // For example:
+  // {"*" : {blocked_permissions:["audio"]}, "id1":{}}
+  // {"*" : {blocked_permissions:["audio"]}}
+  // Extension id1 is able to get the audio permission with the first config but
+  // not the second one.
+  // It's against the intuition but we will NOT change this behavior until we
+  // find a good way to fix this issue as external users may rely on it anyway.
+  // This also makes the "allowed_permissions" attribute meaningless. However,
+  // for the same reason, we keep the code for now.
   APIPermissionSet parsed_blocked_permissions;
   APIPermissionSet explicitly_allowed_permissions;
   if (dict->GetListWithoutPathExpansion(schema_constants::kAllowedPermissions,

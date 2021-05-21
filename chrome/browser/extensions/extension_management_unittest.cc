@@ -27,8 +27,10 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/api_permission.h"
+#include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/permissions/permissions_info.h"
 #include "extensions/common/url_pattern.h"
+#include "extensions/common/url_pattern_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -763,6 +765,60 @@ TEST_F(ExtensionManagementServiceTest, BlockedPermissionsConflictHandling) {
   api_permission_set.insert(APIPermissionID::kHistory);
   EXPECT_EQ(api_permission_set,
             GetBlockedAPIPermissions(kTargetExtension3, kExampleUpdateUrl));
+
+  // Default blocked permissions will not be inherited.
+  EXPECT_EQ(blocked_permissions_for_update_url,
+            GetBlockedAPIPermissions(kTargetExtension4, kExampleUpdateUrl));
+  EXPECT_EQ(
+      APIPermissionSet(),
+      GetBlockedAPIPermissions(kTargetExtension4,
+                               "https://www.example.com/another_update_url"));
+}
+
+TEST_F(ExtensionManagementServiceTest, DefaultHostExtensionsOverride) {
+  SetExampleDictPref(base::StringPrintf(
+      R"({
+    "%s": {
+      "runtime_allowed_hosts": ["https://allow.extension.com"],
+      "runtime_blocked_hosts": ["https://block.extension.com"],
+    },
+    "%s": {},
+    "*": {
+      "runtime_allowed_hosts": ["https://allow.default.com"],
+      "runtime_blocked_hosts": ["https://block.default.com"],
+    },
+  })",
+      kTargetExtension, kTargetExtension2));
+
+  // Override allow/block host for the first extension.
+  URLPatternSet expected_extension_allowed_set_1;
+  URLPatternSet expected_extension_blocked_set_1;
+  expected_extension_allowed_set_1.AddPattern(
+      {URLPattern::SCHEME_ALL, "https://allow.extension.com/*"});
+  expected_extension_blocked_set_1.AddPattern(
+      {URLPattern::SCHEME_ALL, "https://block.extension.com/*"});
+
+  EXPECT_EQ(expected_extension_allowed_set_1,
+            GetPolicyAllowedHosts(kTargetExtension));
+  EXPECT_EQ(expected_extension_blocked_set_1,
+            GetPolicyBlockedHosts(kTargetExtension));
+
+  // Empty allow/block host for the second extension.
+  EXPECT_EQ(URLPatternSet(), GetPolicyAllowedHosts(kTargetExtension2));
+  EXPECT_EQ(URLPatternSet(), GetPolicyBlockedHosts(kTargetExtension2));
+
+  // Default allow/block host for the third extension.
+  URLPatternSet expected_extension_allowed_set_3;
+  URLPatternSet expected_extension_blocked_set_3;
+  expected_extension_allowed_set_3.AddPattern(
+      {URLPattern::SCHEME_ALL, "https://allow.default.com/*"});
+  expected_extension_blocked_set_3.AddPattern(
+      {URLPattern::SCHEME_ALL, "https://block.default.com/*"});
+
+  EXPECT_EQ(expected_extension_allowed_set_3,
+            GetPolicyAllowedHosts(kTargetExtension3));
+  EXPECT_EQ(expected_extension_blocked_set_3,
+            GetPolicyBlockedHosts(kTargetExtension3));
 }
 
 // Tests the 'minimum_version_required' settings of extension management.
