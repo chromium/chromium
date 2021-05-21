@@ -375,7 +375,8 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
     app_registry_cache_.ForEachApp([&intent_launch_info, &intent,
                                     &exclude_browsers](
                                        const apps::AppUpdate& update) {
-      if (update.Readiness() == apps::mojom::Readiness::kUninstalledByUser) {
+      if (update.Readiness() == apps::mojom::Readiness::kUninstalledByUser ||
+          update.ShowInLauncher() != apps::mojom::OptionalBool::kTrue) {
         return;
       }
       std::set<std::string> existing_activities;
