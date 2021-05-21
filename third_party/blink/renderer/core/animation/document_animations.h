@@ -64,7 +64,8 @@ class CORE_EXPORT DocumentAnimations final
   // both composited and non-composited animations.
   void UpdateAnimations(
       DocumentLifecycle::LifecycleState required_lifecycle_state,
-      const PaintArtifactCompositor* paint_artifact_compositor);
+      const PaintArtifactCompositor*,
+      bool compositor_properties_updated);
 
   size_t GetAnimationsCount();
 
@@ -108,6 +109,9 @@ class CORE_EXPORT DocumentAnimations final
   void RemoveReplacedAnimations(ReplaceableAnimationsMap*);
 
  private:
+  void MarkPendingIfCompositorPropertyAnimationChanges(
+      const PaintArtifactCompositor*);
+
   Member<Document> document_;
   HeapHashSet<WeakMember<AnimationTimeline>> timelines_;
   HeapHashSet<WeakMember<AnimationTimeline>> unvalidated_timelines_;

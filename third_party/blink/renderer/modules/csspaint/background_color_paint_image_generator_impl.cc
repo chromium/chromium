@@ -13,8 +13,9 @@ BackgroundColorPaintImageGenerator*
 BackgroundColorPaintImageGeneratorImpl::Create(LocalFrame& local_root) {
   BackgroundColorPaintWorklet* background_color_paint_worklet =
       BackgroundColorPaintWorklet::Create(local_root);
+  if (!background_color_paint_worklet)
+    return nullptr;
 
-  DCHECK(background_color_paint_worklet);
   BackgroundColorPaintImageGeneratorImpl* generator =
       MakeGarbageCollected<BackgroundColorPaintImageGeneratorImpl>(
           background_color_paint_worklet);

@@ -320,6 +320,17 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
 
   base::TimeDelta ComputeCompositorTimeOffset() const;
 
+  // Updates |compositor_property_animations_have_no_effect_| and marks the
+  // animation as pending if it changes.
+  void MarkPendingIfCompositorPropertyAnimationChanges(
+      const PaintArtifactCompositor*);
+  bool CompositorPropertyAnimationsHaveNoEffectForTesting() const {
+    return compositor_property_animations_have_no_effect_;
+  }
+  bool AnimationHasNoEffectForTesting() const {
+    return animation_has_no_effect_;
+  }
+
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
   void AddedEventListener(const AtomicString& event_type,
@@ -543,6 +554,14 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   // number of tree walks.
   base::TimeTicks last_display_lock_update_time_ = base::TimeTicks();
   bool is_in_display_locked_subtree_ = false;
+
+  // True if we animate compositor properties but they would have no effect due
+  // to being optimized out on the compositor. Updated in |Animation::PreCommit|
+  // and |MarkPendingIfCompositorPropertyAnimationChanges|.
+  bool compositor_property_animations_have_no_effect_;
+  // True if the only reason for not running the animation on the compositor is
+  // that the animation would have no effect. Updated in |Animation::PreCommit|.
+  bool animation_has_no_effect_;
 
   FRIEND_TEST_ALL_PREFIXES(AnimationAnimationTestCompositeAfterPaint,
                            NoCompositeWithoutCompositedElementId);

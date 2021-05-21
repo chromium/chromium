@@ -187,8 +187,10 @@ bool IsNoOpBGColorOrVariableAnimation(const PropertyHandle& property,
   return is_no_op_variable_anim || is_no_op_bgcolor_anim;
 }
 
-bool CompositedAnimationRequiresProperties(CSSPropertyID property) {
-  switch (property) {
+bool CompositedAnimationRequiresProperties(const PropertyHandle& property) {
+  if (!property.IsCSSProperty())
+    return false;
+  switch (property.GetCSSProperty().PropertyID()) {
     case CSSPropertyID::kOpacity:
     case CSSPropertyID::kBackdropFilter:
     case CSSPropertyID::kRotate:
@@ -331,8 +333,11 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
                 target_element.GetDocument()
                     .GetFrame()
                     ->GetBackgroundColorPaintImageGenerator();
-            compositable_animation =
-                generator->GetAnimationIfCompositable(&target_element);
+            // The generator may be null in tests.
+            if (generator) {
+              compositable_animation =
+                  generator->GetAnimationIfCompositable(&target_element);
+            }
             // When this is true, we have a background-color animation in the
             // body element, while the view is responsible for painting the
             // body's background. In this case, we need to let the
@@ -391,11 +396,9 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           break;
         }
         default:
-          // We skip the rest of the loop in this case for two reasons:
-          //   i.  Getting a CompositorElementId below will DCHECK if we pass it
-          //       an unsupported property.
-          //   ii. GetCompositorKeyframeValue() will be false so we will
-          //       accidentally count this as kInvalidAnimationOrEffect as well.
+          // We skip the rest of the loop in this case because
+          // |GetCompositorKeyframeValue()| will be false so we will
+          // accidentally count this as kInvalidAnimationOrEffect as well.
           DefaultToUnsupportedProperty(unsupported_properties, property,
                                        &reasons);
           continue;
@@ -406,29 +409,12 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
       if (!keyframe->GetCompositorKeyframeValue()) {
         reasons |= kInvalidAnimationOrEffect;
       }
-
-      if (CompositedAnimationRequiresProperties(
-              property.GetCSSProperty().PropertyID())) {
-        if (!paint_artifact_compositor) {
-          // TODO(pdr): We should return |kTargetHasInvalidCompositingState|.
-          continue;
-        } else if (!target_element.GetLayoutObject() ||
-                   !target_element.GetLayoutObject()
-                        ->FirstFragment()
-                        .PaintProperties()) {
-          reasons |= kTargetHasInvalidCompositingState;
-        } else {
-          CompositorElementId target_element_id =
-              CompositorElementIdFromUniqueObjectId(
-                  layout_object->UniqueId(),
-                  CompositorElementNamespaceForProperty(
-                      property.GetCSSProperty().PropertyID()));
-          DCHECK(target_element_id);
-          if (!paint_artifact_compositor->HasComposited(target_element_id))
-            reasons |= kTargetHasInvalidCompositingState;
-        }
-      }
     }
+  }
+
+  if (CompositorPropertyAnimationsHaveNoEffect(target_element, effect,
+                                               paint_artifact_compositor)) {
+    reasons |= kCompositorPropertyAnimationsHaveNoEffect;
   }
 
   // TODO: Support multiple transform property animations on the compositor
@@ -450,6 +436,54 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
   }
 
   return reasons;
+}
+
+bool CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
+    const Element& target_element,
+    const EffectModel& effect,
+    const PaintArtifactCompositor* paint_artifact_compositor) {
+  LayoutObject* layout_object = target_element.GetLayoutObject();
+  if (!layout_object || !layout_object->FirstFragment().PaintProperties())
+    return false;
+
+  if (!paint_artifact_compositor) {
+    // TODO(pdr): This should return true. This likely only affects tests.
+    return false;
+  }
+
+  bool any_compositor_properties_missing = false;
+  bool any_compositor_properties_present = false;
+
+  const auto& keyframe_effect = To<KeyframeEffectModelBase>(effect);
+  PropertyHandleSet properties = keyframe_effect.Properties();
+  for (const auto& property : properties) {
+    if (!CompositedAnimationRequiresProperties(property))
+      continue;
+
+    CompositorElementId target_element_id =
+        CompositorElementIdFromUniqueObjectId(
+            layout_object->UniqueId(),
+            CompositorAnimations::CompositorElementNamespaceForProperty(
+                property.GetCSSProperty().PropertyID()));
+    DCHECK(target_element_id);
+    if (paint_artifact_compositor->HasComposited(target_element_id))
+      any_compositor_properties_present = true;
+    else
+      any_compositor_properties_missing = true;
+  }
+
+  // Because animations are a direct compositing reason for paint properties,
+  // the only case when we wouldn't have compositor paint properties if when
+  // they were optimized out due to not having an effect. An example of this is
+  // hidden animations that do not paint.
+  if (any_compositor_properties_missing) {
+    // Because animations create all properties (crbug.com/900241), we should
+    // either have all properties or be missing all properties.
+    DCHECK(!any_compositor_properties_present);
+    return true;
+  }
+
+  return false;
 }
 
 CompositorAnimations::FailureReasons

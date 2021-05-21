@@ -110,8 +110,12 @@ void DocumentAnimations::UpdateAnimationTimingIfNeeded() {
 
 void DocumentAnimations::UpdateAnimations(
     DocumentLifecycle::LifecycleState required_lifecycle_state,
-    const PaintArtifactCompositor* paint_artifact_compositor) {
+    const PaintArtifactCompositor* paint_artifact_compositor,
+    bool compositor_properties_updated) {
   DCHECK(document_->Lifecycle().GetState() >= required_lifecycle_state);
+
+  if (compositor_properties_updated)
+    MarkPendingIfCompositorPropertyAnimationChanges(paint_artifact_compositor);
 
   if (document_->GetPendingAnimations().Update(paint_artifact_compositor)) {
     DCHECK(document_->View());
@@ -121,6 +125,14 @@ void DocumentAnimations::UpdateAnimations(
   document_->GetWorkletAnimationController().UpdateAnimationStates();
   for (auto& timeline : timelines_)
     timeline->ScheduleNextService();
+}
+
+void DocumentAnimations::MarkPendingIfCompositorPropertyAnimationChanges(
+    const PaintArtifactCompositor* paint_artifact_compositor) {
+  for (auto& timeline : timelines_) {
+    timeline->MarkPendingIfCompositorPropertyAnimationChanges(
+        paint_artifact_compositor);
+  }
 }
 
 size_t DocumentAnimations::GetAnimationsCount() {

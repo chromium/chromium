@@ -287,7 +287,9 @@ Animation::Animation(ExecutionContext* execution_context,
       compositor_state_(nullptr),
       compositor_pending_(false),
       compositor_group_(0),
-      effect_suppressed_(false) {
+      effect_suppressed_(false),
+      compositor_property_animations_have_no_effect_(false),
+      animation_has_no_effect_(false) {
   if (content_) {
     if (content_->GetAnimation()) {
       content_->GetAnimation()->cancel();
@@ -576,6 +578,9 @@ bool Animation::PreCommit(
        !IsWithinAnimationTimeEpsilon(compositor_state_->start_time.value(),
                                      start_time_.value().InSecondsF()));
 
+  compositor_property_animations_have_no_effect_ = false;
+  animation_has_no_effect_ = false;
+
   // FIXME: softChange && !hardChange should generate a Pause/ThenStart,
   // not a Cancel, but we can't communicate these to the compositor yet.
 
@@ -612,6 +617,14 @@ bool Animation::PreCommit(
       } else {
         CancelIncompatibleAnimationsOnCompositor();
       }
+
+      compositor_property_animations_have_no_effect_ =
+          failure_reasons &
+          CompositorAnimations::kCompositorPropertyAnimationsHaveNoEffect;
+      animation_has_no_effect_ =
+          failure_reasons ==
+          CompositorAnimations::kCompositorPropertyAnimationsHaveNoEffect;
+
       DCHECK_EQ(kRunning, CalculateAnimationPlayState());
       TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
           "blink.animations,devtools.timeline,benchmark,rail", "Animation",
@@ -2078,6 +2091,28 @@ base::TimeDelta Animation::ComputeCompositorTimeOffset() const {
   return base::TimeDelta::FromSecondsD(time_offset_s / fabs(playback_rate));
 }
 
+void Animation::MarkPendingIfCompositorPropertyAnimationChanges(
+    const PaintArtifactCompositor* paint_artifact_compositor) {
+  // |compositor_property_animations_have_no_effect_| will already be calculated
+  // in |Animation::PreCommit| if the animation is pending.
+  if (compositor_pending_)
+    return;
+
+  bool had_no_effect = compositor_property_animations_have_no_effect_;
+  compositor_property_animations_have_no_effect_ = false;
+  if (auto* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get())) {
+    Element* target = keyframe_effect->EffectTarget();
+    if (target && keyframe_effect->Model()) {
+      compositor_property_animations_have_no_effect_ =
+          CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
+              *target, *keyframe_effect->Model(), paint_artifact_compositor);
+    }
+  }
+
+  if (compositor_property_animations_have_no_effect_ != had_no_effect)
+    SetCompositorPending();
+}
+
 void Animation::StartAnimationOnCompositor(
     const PaintArtifactCompositor* paint_artifact_compositor) {
   DCHECK_EQ(
@@ -2290,9 +2325,11 @@ absl::optional<AnimationTimeDelta> Animation::TimeToEffectChange() {
     return -current_time.value() / playback_rate_;
   }
 
-  if (!HasActiveAnimationsOnCompositor() &&
-      (content_->GetPhase() == Timing::kPhaseActive))
+  // If this animation has no effect, we can skip ticking it on main.
+  if (!HasActiveAnimationsOnCompositor() && !animation_has_no_effect_ &&
+      (content_->GetPhase() == Timing::kPhaseActive)) {
     return AnimationTimeDelta();
+  }
 
   return (playback_rate_ > 0)
              ? (content_->TimeToForwardsEffectChange() / playback_rate_)
