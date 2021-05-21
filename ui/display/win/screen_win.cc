@@ -328,6 +328,9 @@ std::vector<ScreenWinDisplay> DisplayInfosToScreenWinDisplays(
     const std::vector<DisplayInfo>& display_infos,
     ColorProfileReader* color_profile_reader,
     bool hdr_enabled) {
+  if (display_infos.empty()) {
+    return {};
+  }
   // Find and extract the primary display.
   std::vector<DisplayInfo> display_infos_remaining = display_infos;
   auto primary_display_iter = std::find_if(

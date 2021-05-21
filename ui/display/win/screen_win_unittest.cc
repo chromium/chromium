@@ -3716,5 +3716,42 @@ TEST_F(ScreenWinTestTwoDisplaysOneInternal, InternalDisplayIdSet) {
   EXPECT_NE(Display::InternalDisplayId(), displays[1].id());
 }
 
+namespace {
+
+// Zero displays.
+class ScreenWinTestNoDisplay : public ScreenWinTest {
+ public:
+  ScreenWinTestNoDisplay() = default;
+
+  void SetUpScreen(TestScreenWinInitializer* initializer) override {}
+};
+
+}  // namespace
+
+TEST_F(ScreenWinTestNoDisplay, DIPToScreenPoints) {
+  gfx::Point origin(0, 0);
+  gfx::Point middle(365, 694);
+  gfx::Point lower_right(1919, 1199);
+  EXPECT_EQ(origin, ScreenWin::DIPToScreenPoint(origin));
+  EXPECT_EQ(middle, ScreenWin::DIPToScreenPoint(middle));
+  EXPECT_EQ(lower_right, ScreenWin::DIPToScreenPoint(lower_right));
+}
+
+TEST_F(ScreenWinTestNoDisplay, DIPToScreenRectNullHWND) {
+  gfx::Rect origin(0, 0, 50, 100);
+  gfx::Rect middle(253, 495, 41, 52);
+  EXPECT_EQ(origin, ScreenWin::DIPToScreenRect(nullptr, origin));
+  EXPECT_EQ(middle, ScreenWin::DIPToScreenRect(nullptr, middle));
+}
+
+TEST_F(ScreenWinTestNoDisplay, GetDisplays) {
+  std::vector<Display> displays = GetScreen()->GetAllDisplays();
+  ASSERT_EQ(0u, displays.size());
+}
+
+TEST_F(ScreenWinTestNoDisplay, GetNumDisplays) {
+  EXPECT_EQ(0, GetScreen()->GetNumDisplays());
+}
+
 }  // namespace win
 }  // namespace display
