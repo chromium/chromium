@@ -47,6 +47,7 @@ class DebugInfoEventListener : public SyncManager::Observer,
   void OnActionableError(const SyncProtocolError& sync_error) override;
   void OnMigrationRequested(ModelTypeSet types) override;
   void OnProtocolEvent(const ProtocolEvent& event) override;
+  void OnSyncStatusChanged(const SyncStatus& status) override;
 
   // SyncEncryptionHandler::Observer implementation.
   void OnPassphraseRequired(

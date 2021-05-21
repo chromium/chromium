@@ -146,7 +146,6 @@ static_library("engine") {
     "sync_scheduler_impl.h",
     "sync_status.cc",
     "sync_status.h",
-    "sync_status_observer.h",
     "sync_string_conversions.cc",
     "sync_string_conversions.h",
     "syncer.cc",

@@ -10,11 +10,13 @@
 #include "base/logging.h"
 #include "components/sync/engine/net/server_connection_manager.h"
 #include "components/sync/engine/sync_cycle_event.h"
-#include "components/sync/engine/sync_status_observer.h"
 
 namespace syncer {
 
-AllStatus::AllStatus() {
+AllStatus::AllStatus(const base::RepeatingCallback<void(const SyncStatus&)>&
+                         status_changed_callback)
+    : status_changed_callback_(status_changed_callback) {
+  DCHECK(status_changed_callback_);
   status_.notifications_enabled = false;
   status_.cryptographer_can_encrypt = false;
   status_.crypto_has_pending_keys = false;
@@ -74,17 +76,10 @@ SyncStatus AllStatus::CalcSyncing(const SyncCycleEvent& event) const {
   return status;
 }
 
-void AllStatus::AddObserver(SyncStatusObserver* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
-  sync_status_observers_.push_back(observer);
-  observer->OnSyncStatusChanged(status_);
-}
-
 void AllStatus::OnSyncCycleEvent(const SyncCycleEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_ = CalcSyncing(event);
-  NotifyStatusChanged();
+  status_changed_callback_.Run(status_);
 }
 
 void AllStatus::OnActionableError(
@@ -92,25 +87,25 @@ void AllStatus::OnActionableError(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_ = CreateBlankStatus();
   status_.sync_protocol_error = sync_protocol_error;
-  NotifyStatusChanged();
+  status_changed_callback_.Run(status_);
 }
 
 void AllStatus::OnRetryTimeChanged(base::Time retry_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.retry_time = retry_time;
-  NotifyStatusChanged();
+  status_changed_callback_.Run(status_);
 }
 
 void AllStatus::OnThrottledTypesChanged(ModelTypeSet throttled_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.throttled_types = throttled_types;
-  NotifyStatusChanged();
+  status_changed_callback_.Run(status_);
 }
 
 void AllStatus::OnBackedOffTypesChanged(ModelTypeSet backed_off_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.backed_off_types = backed_off_types;
-  NotifyStatusChanged();
+  status_changed_callback_.Run(status_);
 }
 
 void AllStatus::OnMigrationRequested(ModelTypeSet) {
@@ -124,49 +119,49 @@ void AllStatus::OnProtocolEvent(const ProtocolEvent&) {
 void AllStatus::SetNotificationsEnabled(bool notifications_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.notifications_enabled = notifications_enabled;
-  NotifyStatusChanged();
+  status_changed_callback_.Run(status_);
 }
 
 void AllStatus::IncrementNotificationsReceived() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++status_.notifications_received;
-  NotifyStatusChanged();
+  status_changed_callback_.Run(status_);
 }
 
 void AllStatus::SetEncryptedTypes(ModelTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.encrypted_types = types;
-  NotifyStatusChanged();
+  status_changed_callback_.Run(status_);
 }
 
 void AllStatus::SetCryptographerCanEncrypt(bool can_encrypt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.cryptographer_can_encrypt = can_encrypt;
-  NotifyStatusChanged();
+  status_changed_callback_.Run(status_);
 }
 
 void AllStatus::SetCryptoHasPendingKeys(bool has_pending_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.crypto_has_pending_keys = has_pending_keys;
-  NotifyStatusChanged();
+  status_changed_callback_.Run(status_);
 }
 
 void AllStatus::SetPassphraseType(PassphraseType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.passphrase_type = type;
-  NotifyStatusChanged();
+  status_changed_callback_.Run(status_);
 }
 
 void AllStatus::SetHasKeystoreKey(bool has_keystore_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.has_keystore_key = has_keystore_key;
-  NotifyStatusChanged();
+  status_changed_callback_.Run(status_);
 }
 
 void AllStatus::SetKeystoreMigrationTime(const base::Time& migration_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.keystore_migration_time = migration_time;
-  NotifyStatusChanged();
+  status_changed_callback_.Run(status_);
 }
 
 void AllStatus::SetTrustedVaultDebugInfo(
@@ -174,32 +169,26 @@ void AllStatus::SetTrustedVaultDebugInfo(
         trusted_vault_debug_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.trusted_vault_debug_info = trusted_vault_debug_info;
-  NotifyStatusChanged();
+  status_changed_callback_.Run(status_);
 }
 
 void AllStatus::SetSyncId(const std::string& sync_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.sync_id = sync_id;
-  NotifyStatusChanged();
+  status_changed_callback_.Run(status_);
 }
 
 void AllStatus::SetInvalidatorClientId(
     const std::string& invalidator_client_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.invalidator_client_id = invalidator_client_id;
-  NotifyStatusChanged();
+  status_changed_callback_.Run(status_);
 }
 
 void AllStatus::SetLocalBackendFolder(const std::string& folder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.local_sync_folder = folder;
-  NotifyStatusChanged();
-}
-
-void AllStatus::NotifyStatusChanged() {
-  for (SyncStatusObserver* observer : sync_status_observers_) {
-    observer->OnSyncStatusChanged(status_);
-  }
+  status_changed_callback_.Run(status_);
 }
 
 }  // namespace syncer

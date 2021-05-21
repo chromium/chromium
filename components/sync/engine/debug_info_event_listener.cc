@@ -125,6 +125,8 @@ void DebugInfoEventListener::OnMigrationRequested(ModelTypeSet types) {}
 
 void DebugInfoEventListener::OnProtocolEvent(const ProtocolEvent& event) {}
 
+void DebugInfoEventListener::OnSyncStatusChanged(const SyncStatus& status) {}
+
 void DebugInfoEventListener::OnNudgeFromDatatype(ModelType datatype) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_pb::DebugEventInfo event_info;

@@ -98,6 +98,7 @@ class SyncManagerObserverMock : public SyncManager::Observer {
   MOCK_METHOD(void, OnActionableError, (const SyncProtocolError&), (override));
   MOCK_METHOD(void, OnMigrationRequested, (ModelTypeSet), (override));
   MOCK_METHOD(void, OnProtocolEvent, (const ProtocolEvent&), (override));
+  MOCK_METHOD(void, OnSyncStatusChanged, (const SyncStatus&), (override));
 };
 
 class SyncEncryptionHandlerObserverMock
@@ -178,6 +179,9 @@ class SyncManagerImplTest : public testing::Test {
     encryption_observer_ = encryption_observer.get();
     auto scheduler = std::make_unique<MockSyncScheduler>();
     scheduler_ = scheduler.get();
+
+    // This should be the only method called by the Init() in the observer.
+    EXPECT_CALL(manager_observer_, OnSyncStatusChanged).Times(3);
 
     SyncManager::InitArgs args;
     args.service_url = GURL("https://example.com/");

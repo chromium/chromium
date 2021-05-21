@@ -124,7 +124,7 @@ class SyncManagerImpl
   void NudgeForCommit(ModelType type) override;
 
  private:
-  void NotifyInitializationSuccess();
+  void NotifySyncStatusChanged(const SyncStatus& status);
 
   const std::string name_;
 
@@ -151,8 +151,8 @@ class SyncManagerImpl
   std::unique_ptr<SyncScheduler> scheduler_;
 
   // A multi-purpose status watch object that aggregates stats from various
-  // sync components.
-  AllStatus allstatus_;
+  // sync components. Initialized in Init().
+  std::unique_ptr<AllStatus> all_status_;
 
   // Set to true once Init has been called.
   bool initialized_;

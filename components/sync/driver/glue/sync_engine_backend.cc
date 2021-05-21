@@ -115,11 +115,6 @@ void SyncEngineBackend::OnConnectionStatusChange(ConnectionStatus status) {
              status);
 }
 
-void SyncEngineBackend::OnSyncStatusChanged(const SyncStatus& status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  host_.Call(FROM_HERE, &SyncEngineImpl::HandleSyncStatusChanged, status);
-}
-
 void SyncEngineBackend::OnActionableError(const SyncProtocolError& sync_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   host_.Call(FROM_HERE,
@@ -140,6 +135,11 @@ void SyncEngineBackend::OnProtocolEvent(const ProtocolEvent& event) {
     host_.Call(FROM_HERE, &SyncEngineImpl::HandleProtocolEventOnFrontendLoop,
                std::move(event_clone));
   }
+}
+
+void SyncEngineBackend::OnSyncStatusChanged(const SyncStatus& status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  host_.Call(FROM_HERE, &SyncEngineImpl::HandleSyncStatusChanged, status);
 }
 
 void SyncEngineBackend::DoOnInvalidatorStateChange(
@@ -237,7 +237,6 @@ void SyncEngineBackend::DoInitialize(
   args.cache_guid = restored_local_transport_data.cache_guid;
   args.birthday = restored_local_transport_data.birthday;
   args.bag_of_chips = restored_local_transport_data.bag_of_chips;
-  args.sync_status_observers.push_back(this);
   sync_manager_->Init(&args);
 
   LoadAndConnectNigoriController();

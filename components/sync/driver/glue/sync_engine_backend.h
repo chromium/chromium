@@ -24,7 +24,6 @@
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_manager.h"
-#include "components/sync/engine/sync_status_observer.h"
 #include "google_apis/gaia/core_account_id.h"
 
 namespace syncer {
@@ -33,8 +32,7 @@ class ModelTypeController;
 class SyncEngineImpl;
 
 class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
-                          public SyncManager::Observer,
-                          public SyncStatusObserver {
+                          public SyncManager::Observer {
  public:
   using AllNodesCallback =
       base::OnceCallback<void(const ModelType,
@@ -73,8 +71,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void OnActionableError(const SyncProtocolError& sync_error) override;
   void OnMigrationRequested(ModelTypeSet types) override;
   void OnProtocolEvent(const ProtocolEvent& event) override;
-
-  // SyncStatusObserver implementation.
   void OnSyncStatusChanged(const SyncStatus& status) override;
 
   // Note:
