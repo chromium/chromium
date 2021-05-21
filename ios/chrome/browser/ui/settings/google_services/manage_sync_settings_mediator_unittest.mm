@@ -25,6 +25,8 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,6 +63,12 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    FakeChromeIdentity* identity =
+        [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+                                       gaiaID:@"foo1ID"
+                                         name:@"Fake Foo 1"];
+    identity_service()->AddIdentity(identity);
+
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
@@ -78,8 +86,12 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     [consumer_ loadModel];
 
     pref_service_ = SetPrefService();
+
+    // Sign a fake identity into Chrome.
     authentication_service_ =
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+    authentication_service_->SignIn(identity);
+
     sync_setup_service_mock_ = static_cast<SyncSetupServiceMock*>(
         SyncSetupServiceFactory::GetForBrowserState(browser_state_.get()));
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
@@ -94,6 +106,8 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   }
 
   void SetupSyncServiceInitializedExpectations() {
+    ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
+        .WillByDefault(Return(true));
     ON_CALL(*sync_setup_service_mock_, IsSyncEnabled())
         .WillByDefault(Return(true));
     ON_CALL(*sync_setup_service_mock_, IsSyncingAllDataTypes())
@@ -113,6 +127,10 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
         .WillByDefault(Return(false));
     ON_CALL(*sync_service_mock_, GetTransportState())
         .WillByDefault(Return(syncer::SyncService::TransportState::DISABLED));
+  }
+
+  ios::FakeChromeIdentityService* identity_service() {
+    return ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
   }
 
  protected:
@@ -140,6 +158,13 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSetupNotCommitted) {
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 
+  // "Turn off Sync" item only available in
+  // |signin::kMobileIdentityConsistency|.
+  ASSERT_FALSE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
+                                         SignOutSectionIdentifier]);
+
+  // Encryption item is disabled.
   NSArray* advanced_settings_items = [mediator_.consumer.tableViewModel
       itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
                                        AdvancedSettingsSectionIdentifier];
@@ -160,6 +185,13 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledByAdministrator) {
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 
+  // "Turn off Sync" item only available in
+  // |signin::kMobileIdentityConsistency|.
+  ASSERT_FALSE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
+                                         SignOutSectionIdentifier]);
+
+  // Encryption item is disabled.
   NSArray* advanced_settings_items = [mediator_.consumer.tableViewModel
       itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
                                        AdvancedSettingsSectionIdentifier];
@@ -190,7 +222,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledNeedsPassphrase) {
 }
 
 // Tests that encryption is accessible when Sync is enabled.
-TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabled) {
+TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabledWithEncryption) {
   SetupSyncServiceInitializedExpectations();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
@@ -210,6 +242,42 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabled) {
       hasSectionForSectionIdentifier:SyncErrorsSectionIdentifier]);
 }
 
+// Tests that "Turn off Sync" is hidden when Sync is disabled.
+TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledWithTurnOffSync) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+
+  SetupSyncDisabledExpectations();
+  ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
+      .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
+
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // "Turn off Sync" item is shown.
+  NSArray* sign_out_items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                       SignOutSectionIdentifier];
+  ASSERT_EQ(0UL, sign_out_items.count);
+}
+
+// Tests that "Turn off Sync" is accessible when Sync is enabled.
+TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabledWithTurnOffSync) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+
+  SetupSyncServiceInitializedExpectations();
+  ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
+      .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
+
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // "Turn off Sync" item is shown.
+  NSArray* sign_out_items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                       SignOutSectionIdentifier];
+  ASSERT_EQ(1UL, sign_out_items.count);
+}
+
 // Tests that a Sync error that occurs after the user has loaded the Settings
 // page once will update the full page.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSuccessThenDisabled) {
@@ -223,7 +291,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSuccessThenDisabled) {
 
   // Loads the Sync page once in success state.
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
-  // Loads the Sync page again in disabled tate.
+  // Loads the Sync page again in disabled state.
   [mediator_ onSyncStateChanged];
 
   ASSERT_TRUE([mediator_.consumer.tableViewModel
@@ -233,4 +301,39 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSuccessThenDisabled) {
       itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
                                        SyncErrorsSectionIdentifier];
   ASSERT_EQ(1UL, error_items.count);
+}
+
+// Tests that "Turn off Sync" item transition from disabled to enabled goes from
+// hiding to showing the item.
+TEST_F(ManageSyncSettingsMediatorTest,
+       SyncServiceSetupTransitionForTurnOffSync) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+
+  // Set Sync disabled expectations.
+  SetupSyncDisabledExpectations();
+  ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
+      .WillByDefault(Return(SyncSetupService::kSyncSettingsNotConfirmed));
+
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // "Turn off Sync" item is hidden.
+  NSArray* hidden_sign_out_items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                       SignOutSectionIdentifier];
+  ASSERT_EQ(0UL, hidden_sign_out_items.count);
+
+  // Set Sync enabled expectations.
+  SetupSyncServiceInitializedExpectations();
+  ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
+      .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
+
+  // Loads the Sync page again in enabled state.
+  [mediator_ onSyncStateChanged];
+
+  // "Turn off Sync" item is shown.
+  NSArray* shown_sign_out_items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                       SignOutSectionIdentifier];
+  ASSERT_EQ(1UL, shown_sign_out_items.count);
 }

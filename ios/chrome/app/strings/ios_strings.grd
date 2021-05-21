@@ -1328,7 +1328,7 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
         Off
       </message>
       <message name="IDS_IOS_OPTIONS_ACCOUNTS_SIGN_OUT_TURN_OFF_SYNC" desc="Title of the button to sign out and turn off sync. [iOS only]">
-        Sign Out and Turn Off Sync...
+        Sign Out and Turn Off Sync
       </message>
       <message name="IDS_IOS_OPTIONS_ADVANCED_TAB_LABEL" desc="The title of the Advanced section of the Settings page.  [Length: 20em] [iOS only]">
         Advanced

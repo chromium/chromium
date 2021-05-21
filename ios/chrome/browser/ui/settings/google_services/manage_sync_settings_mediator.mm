@@ -75,6 +75,8 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 @property(nonatomic, strong) TableViewImageItem* encryptionItem;
 // Sync error item.
 @property(nonatomic, strong) TableViewItem* syncErrorItem;
+// Sign out and turn off sync item.
+@property(nonatomic, strong) TableViewItem* signOutAndTurnOffSyncItem;
 // Returns YES if the sync data items should be enabled.
 @property(nonatomic, assign, readonly) BOOL shouldSyncDataItemEnabled;
 // Returns whether the Sync settings should be disabled because of a Sync error.
@@ -305,20 +307,47 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     return;
   }
 
+  // Creates the sign-out item and its section.
+  TableViewModel* model = self.consumer.tableViewModel;
+  [model addSectionWithIdentifier:SignOutSectionIdentifier];
+  TableViewTextItem* item =
+      [[TableViewTextItem alloc] initWithType:SignOutItemType];
+  item.text = GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_SIGN_OUT_TURN_OFF_SYNC);
+  item.textColor = [UIColor colorNamed:kRedColor];
+  self.signOutAndTurnOffSyncItem = item;
+
   // The user must be signed-in and syncing.
-  if (!self.isAuthenticated || !self.syncSetupService->IsSyncEnabled()) {
+  if (!self.shouldDisplaySignoutSection) {
+    return;
+  }
+  [model addItem:self.signOutAndTurnOffSyncItem
+      toSectionWithIdentifier:SignOutSectionIdentifier];
+}
+
+- (void)updateSignOutSection {
+  // The sign-out section will only apply to kMobileIdentityConsistency.
+  if (!base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
     return;
   }
 
+  BOOL hasModelUpdate = NO;
   TableViewModel* model = self.consumer.tableViewModel;
-  [model addSectionWithIdentifier:SignOutSectionIdentifier];
+  if (self.shouldDisplaySignoutSection) {
+    DCHECK(self.signOutAndTurnOffSyncItem);
+    [model addItem:self.signOutAndTurnOffSyncItem
+        toSectionWithIdentifier:SignOutSectionIdentifier];
+    hasModelUpdate = YES;
+  } else if ([model hasItem:self.signOutAndTurnOffSyncItem]) {
+    [model removeItemWithType:SignOutItemType
+        fromSectionWithIdentifier:SignOutSectionIdentifier];
+    hasModelUpdate = YES;
+  }
 
-  TableViewTextItem* signOutItem =
-      [[TableViewTextItem alloc] initWithType:SignOutItemType];
-  signOutItem.text =
-      GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_SIGN_OUT_TURN_OFF_SYNC);
-  signOutItem.textColor = [UIColor colorNamed:kRedColor];
-  [model addItem:signOutItem toSectionWithIdentifier:SignOutSectionIdentifier];
+  if (hasModelUpdate) {
+    NSUInteger sectionIndex =
+        [model sectionForSectionIdentifier:SignOutSectionIdentifier];
+    [self.consumer reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex]];
+  }
 }
 
 #pragma mark - Private
@@ -405,6 +434,12 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
          !self.disabledBecauseOfSyncError;
 }
 
+- (BOOL)shouldDisplaySignoutSection {
+  return self.isAuthenticated &&
+         self.syncSetupService->IsFirstSetupComplete() &&
+         self.syncSetupService->IsSyncEnabled();
+}
+
 #pragma mark - ManageSyncSettingsTableViewControllerModelDelegate
 
 - (void)manageSyncSettingsTableViewControllerLoadModel:
@@ -433,6 +468,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   [self updateSyncEverythingItemNotifyConsumer:YES];
   [self updateSyncItemsNotifyConsumer:YES];
   [self updateEncryptionItem:YES];
+  [self updateSignOutSection];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
