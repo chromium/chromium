@@ -123,21 +123,13 @@ void AddressProfileSaveManager::FinalizeProfileImport(
 
   AutofillProfileImportType import_type = import_process->import_type();
 
-  bool accepted_or_edited =
-      import_process->user_decision() == UserDecision::kAccepted ||
-      import_process->user_decision() == UserDecision::kEditAccepted;
-
-  bool declined =
-      import_process->user_decision() == UserDecision::kDeclined ||
-      import_process->user_decision() == UserDecision::kEditDeclined;
-
   // If the import of a new profile was declined, add a strike for this source
   // url. If it was accepted, reset the potentially existing strikes.
   if (import_type == AutofillProfileImportType::kNewProfile) {
-    if (declined) {
+    if (import_process->UserDeclined()) {
       personal_data_manager_->AddStrikeToBlockNewProfileImportForDomain(
           import_process->form_source_url());
-    } else if (accepted_or_edited) {
+    } else if (import_process->UserAccepted()) {
       personal_data_manager_->RemoveStrikesToBlockNewProfileImportForDomain(
           import_process->form_source_url());
     }
@@ -145,10 +137,10 @@ void AddressProfileSaveManager::FinalizeProfileImport(
              import_type ==
                  AutofillProfileImportType::kConfirmableMergeAndSilentUpdate) {
     DCHECK(import_process->merge_candidate().has_value());
-    if (declined) {
+    if (import_process->UserDeclined()) {
       personal_data_manager_->AddStrikeToBlockProfileUpdate(
           import_process->merge_candidate()->guid());
-    } else if (accepted_or_edited) {
+    } else if (import_process->UserAccepted()) {
       personal_data_manager_->RemoveStrikesToBlockProfileUpdate(
           import_process->merge_candidate()->guid());
     }

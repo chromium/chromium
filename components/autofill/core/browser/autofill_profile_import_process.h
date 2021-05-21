@@ -102,6 +102,16 @@ class ProfileImportProcess {
     return user_decision_;
   }
 
+  // Returns true if the user actively declined the save of update without
+  // differentiating between the actual type of decline.
+  // If no decision is available yet, return false.
+  bool UserDeclined() const;
+
+  // Returns true if the user actively accepted the save of update without
+  // differentiating if there have been additional edits by the user.
+  // If no decision is available yet, return false.
+  bool UserAccepted() const;
+
   const GURL& form_source_url() const { return form_source_url_; }
 
   // Returns a vector containing all unchanged, updated, merged and new
