@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "cc/layers/deadline_policy.h"
 #include "cc/layers/layer.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/mock_render_widget_host.h"
@@ -245,6 +247,53 @@ TEST_F(RenderWidgetHostViewAndroidTest, DisplayFeature) {
                               /* offset */ 195,
                               /* mask_length */ 10};
   EXPECT_EQ(expected_display_feature, *rwhv->GetDisplayFeature());
+}
+
+// Tests Rotation improvements that are behind the
+// features::kSurfaceSyncThrottling flag.
+class RenderWidgetHostViewAndroidRotationTest
+    : public RenderWidgetHostViewAndroidTest {
+ public:
+  RenderWidgetHostViewAndroidRotationTest();
+  ~RenderWidgetHostViewAndroidRotationTest() override {}
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+RenderWidgetHostViewAndroidRotationTest::
+    RenderWidgetHostViewAndroidRotationTest() {
+  scoped_feature_list_.InitAndEnableFeature(features::kSurfaceSyncThrottling);
+}
+
+// Tests that when a rotation occurs, that we only advance the
+// viz::LocalSurfaceId once, and that no other visual changes occurring during
+// this time can separately trigger SurfaceSync. (https://crbug.com/1203804)
+TEST_F(RenderWidgetHostViewAndroidRotationTest,
+       RotationOnlyAdvancesSurfaceSyncOnce) {
+  // Android default host and views initialize as visible.
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  EXPECT_TRUE(rwhva->IsShowing());
+  const viz::LocalSurfaceId initial_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_TRUE(initial_local_surface_id.is_valid());
+
+  // When rotation has started we should not be performing Surface Sync. The
+  // viz::LocalSurfaceId should not have advanced.
+  rwhva->OnSynchronizedDisplayPropertiesChanged(/* rotation= */ true);
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
+
+  // When rotation has completed we should begin Surface Sync again. There
+  // should also be a new viz::LocalSurfaceId.
+  rwhva->OnPhysicalBackingSizeChanged(/* deadline_override= */ absl::nullopt);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  const viz::LocalSurfaceId post_rotation_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_NE(initial_local_surface_id, post_rotation_local_surface_id);
+  EXPECT_TRUE(post_rotation_local_surface_id.is_valid());
+  EXPECT_TRUE(
+      post_rotation_local_surface_id.IsNewerThan(initial_local_surface_id));
 }
 
 }  // namespace content

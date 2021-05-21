@@ -38,7 +38,8 @@ class TestHooks : public AnimationDelegate {
   virtual std::unique_ptr<RasterBufferProvider> CreateRasterBufferProvider(
       LayerTreeHostImpl* host_impl);
   virtual void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
-                                          const viz::BeginFrameArgs& args) {}
+                                          const viz::BeginFrameArgs& args,
+                                          bool has_damage) {}
   virtual void DidFinishImplFrameOnThread(LayerTreeHostImpl* host_impl) {}
   virtual void WillSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) {}
   virtual void DidSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) {}

@@ -191,7 +191,7 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
 
   bool WillBeginImplFrame(const viz::BeginFrameArgs& args) override {
     bool has_damage = LayerTreeHostImpl::WillBeginImplFrame(args);
-    test_hooks_->WillBeginImplFrameOnThread(this, args);
+    test_hooks_->WillBeginImplFrameOnThread(this, args, has_damage);
     return has_damage;
   }
 

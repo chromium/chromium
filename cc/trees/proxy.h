@@ -16,6 +16,7 @@
 #include "cc/trees/paint_holding_commit_trigger.h"
 #include "cc/trees/task_runner_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
@@ -48,6 +49,8 @@ class CC_EXPORT Proxy {
   virtual void SetNeedsCommit() = 0;
   virtual void SetNeedsRedraw(const gfx::Rect& damage_rect) = 0;
   virtual void SetNextCommitWaitsForActivation() = 0;
+  virtual void SetTargetLocalSurfaceId(
+      const viz::LocalSurfaceId& target_local_surface_id) = 0;
 
   // Returns true if an animate or commit has been requested, and hasn't
   // completed yet.

@@ -240,7 +240,8 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
       page_scale_(1.f),
       min_page_scale_(1.f),
       max_page_scale_(1.f),
-      mouse_wheel_phase_handler_(this) {
+      mouse_wheel_phase_handler_(this),
+      is_surface_sync_throttling_(features::IsSurfaceSyncThrottling()) {
   // Set the layer which will hold the content layer for this view. The content
   // layer is managed by the DelegatedFrameHost.
   view_.SetLayer(cc::Layer::Create());
@@ -351,6 +352,8 @@ bool RenderWidgetHostViewAndroid::ShouldVirtualKeyboardOverlayContent() {
 bool RenderWidgetHostViewAndroid::SynchronizeVisualProperties(
     const cc::DeadlinePolicy& deadline_policy,
     const absl::optional<viz::LocalSurfaceId>& child_local_surface_id) {
+  if (!CanSynchronizeVisualProperties())
+    return false;
   if (child_local_surface_id) {
     local_surface_id_allocator_.UpdateFromChild(*child_local_surface_id);
   } else {
@@ -1144,6 +1147,23 @@ void RenderWidgetHostViewAndroid::OnInterstitialPageGoingAway() {
   ResetSynchronousCompositor();
 }
 
+bool RenderWidgetHostViewAndroid::CanSynchronizeVisualProperties() {
+  // When a rotation begins, the new visual properties are not all notified to
+  // RenderWidgetHostViewAndroid at the same time. The process begins when
+  // OnSynchronizedDisplayPropertiesChanged is called, and ends with
+  // OnPhysicalBackingSizeChanged.
+  //
+  // During this time there can be upwards of three calls to
+  // SynchronizeVisualProperties. Sending each of these separately to the
+  // Renderer causes three full re-layouts of the page to occur.
+  //
+  // We should instead wait for the full set of new visual properties to be
+  // available, and deliver them to the Renderer in one single update.
+  if (in_rotation_ && is_surface_sync_throttling_)
+    return false;
+  return true;
+}
+
 std::unique_ptr<SyntheticGestureTarget>
 RenderWidgetHostViewAndroid::CreateSyntheticGestureTarget() {
   return std::unique_ptr<SyntheticGestureTarget>(
@@ -1530,6 +1550,17 @@ void RenderWidgetHostViewAndroid::ShowInternal() {
                        : blink::mojom::RecordContentToVisibleTimeRequestPtr());
 
   if (delegated_frame_host_) {
+    // If a rotation occurred while this was not visible, we need to allocate a
+    // new viz::LocalSurfaceId and send the current visual properties to the
+    // Renderer. Otherwise there will be no content at all to display.
+    //
+    // The rotation process will complete after this first surface is displayed.
+    if (!local_surface_id_allocator_.HasValidLocalSurfaceId() &&
+        is_surface_sync_throttling_) {
+      base::AutoReset<bool> in_rotation(&in_rotation_, false);
+      SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
+                                  absl::nullopt);
+    }
     delegated_frame_host_->WasShown(
         local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
         GetCompositorViewportPixelSize(), host()->delegate()->IsFullscreen());

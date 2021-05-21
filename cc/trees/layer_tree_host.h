@@ -243,6 +243,12 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // synchronization.
   virtual void SetNeedsCommit();
 
+  // Notifies that a new viz::LocalSurfaceId has been set, ahead of it becoming
+  // activated. Requests that the compositor thread does not produce new frames
+  // until it has activated.
+  virtual void SetTargetLocalSurfaceId(
+      const viz::LocalSurfaceId& target_local_surface_id);
+
   // Returns true after SetNeedsAnimate(), SetNeedsUpdateLayers() or
   // SetNeedsCommit(), until it is satisfied.
   bool RequestedMainFramePendingForTesting() const;

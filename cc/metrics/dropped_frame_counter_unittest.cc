@@ -65,7 +65,8 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
 
   // Compositor thread function overrides:
   void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
-                                  const viz::BeginFrameArgs& args) override {
+                                  const viz::BeginFrameArgs& args,
+                                  bool has_damage) override {
     if (TestEnded())
       return;
 

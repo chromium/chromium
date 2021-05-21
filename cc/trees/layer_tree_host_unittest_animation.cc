@@ -1033,7 +1033,8 @@ class LayerTreeHostPresentationDuringAnimation
   }
 
   void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
-                                  const viz::BeginFrameArgs& args) override {
+                                  const viz::BeginFrameArgs& args,
+                                  bool has_damage) override {
     if (host_impl->next_frame_token() >= 5)
       host_impl->BlockNotifyReadyToActivateForTesting(false);
   }
@@ -1125,7 +1126,8 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationRemoval
   }
 
   void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
-                                  const viz::BeginFrameArgs& args) override {
+                                  const viz::BeginFrameArgs& args,
+                                  bool has_damage) override {
     host_impl->BlockNotifyReadyToActivateForTesting(
         ShouldBlockActivation(host_impl));
   }
@@ -1348,7 +1350,8 @@ class LayerTreeHostAnimationTestAnimationsAddedToNewAndExistingLayers
   }
 
   void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
-                                  const viz::BeginFrameArgs& args) override {
+                                  const viz::BeginFrameArgs& args,
+                                  bool has_damage) override {
     if (!host_impl->pending_tree() ||
         host_impl->pending_tree()->source_frame_number() != 2)
       return;

@@ -1752,6 +1752,11 @@ void LayerTreeHostImpl::DidModifyTilePriorities() {
   client_->SetNeedsPrepareTilesOnImplThread();
 }
 
+void LayerTreeHostImpl::SetTargetLocalSurfaceId(
+    const viz::LocalSurfaceId& target_local_surface_id) {
+  target_local_surface_id_ = target_local_surface_id;
+}
+
 std::unique_ptr<RasterTilePriorityQueue> LayerTreeHostImpl::BuildRasterQueue(
     TreePriority tree_priority,
     RasterTilePriorityQueue::Type type) {
@@ -2839,6 +2844,21 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
   UMA_HISTOGRAM_CUSTOM_COUNTS("GPU.AcceleratedSurfaceRefreshRate",
                               1 / args.interval.InSecondsF(), 0, 121, 122);
 
+  // When there is a |target_local_surface_id_|, we do not wish to begin
+  // producing Impl Frames for an older viz::LocalSurfaceId, as it will never
+  // be displayed.
+  //
+  // Once the Main thread has finished adjusting to the new visual properties,
+  // it will push the updated viz::LocalSurfaceId. Begin Impl Frame production
+  // if it has already become activated, or is on the |pending_tree| to be
+  // activated during this frame's production.
+  const viz::LocalSurfaceId& upcoming_lsid =
+      pending_tree() ? pending_tree()->local_surface_id_from_parent()
+                     : active_tree()->local_surface_id_from_parent();
+  if (target_local_surface_id_.IsNewerThan(upcoming_lsid)) {
+    return false;
+  }
+
   if (is_likely_to_require_a_draw_) {
     // Optimistically schedule a draw. This will let us expect the tile manager
     // to complete its work so that we can draw new tiles within the impl frame
@@ -3139,8 +3159,9 @@ void LayerTreeHostImpl::CreatePendingTree() {
   pending_tree_fully_painted_ = false;
 
   client_->OnCanDrawStateChanged(CanDraw());
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc", "PendingTree:waiting",
-                                    TRACE_ID_LOCAL(pending_tree_.get()));
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+      "cc", "PendingTree:waiting", TRACE_ID_LOCAL(pending_tree_.get()),
+      "active_lsid", active_tree()->local_surface_id_from_parent().ToString());
 }
 
 void LayerTreeHostImpl::PushScrollbarOpacitiesFromActiveToPending() {
@@ -3174,8 +3195,10 @@ void LayerTreeHostImpl::PushScrollbarOpacitiesFromActiveToPending() {
 void LayerTreeHostImpl::ActivateSyncTree() {
   TRACE_EVENT0("cc,benchmark", "LayerTreeHostImpl::ActivateSyncTree()");
   if (pending_tree_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("cc", "PendingTree:waiting",
-                                    TRACE_ID_LOCAL(pending_tree_.get()));
+    TRACE_EVENT_NESTABLE_ASYNC_END1(
+        "cc", "PendingTree:waiting", TRACE_ID_LOCAL(pending_tree_.get()),
+        "pending_lsid",
+        pending_tree_->local_surface_id_from_parent().ToString());
     active_tree_->lifecycle().AdvanceTo(LayerTreeLifecycle::kBeginningSync);
 
     // In most cases, this will be reset in NotifyReadyToActivate, since we

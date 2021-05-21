@@ -477,6 +477,15 @@ void ProxyMain::SetNextCommitWaitsForActivation() {
   commit_waits_for_activation_ = true;
 }
 
+void ProxyMain::SetTargetLocalSurfaceId(
+    const viz::LocalSurfaceId& target_local_surface_id) {
+  DCHECK(IsMainThread());
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&ProxyImpl::SetTargetLocalSurfaceIdOnImpl,
+                                base::Unretained(proxy_impl_.get()),
+                                target_local_surface_id));
+}
+
 bool ProxyMain::RequestedAnimatePending() {
   return max_requested_pipeline_stage_ >= ANIMATE_PIPELINE_STAGE;
 }

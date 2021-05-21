@@ -271,6 +271,13 @@ void SingleThreadProxy::SetNextCommitWaitsForActivation() {
   DCHECK(task_runner_provider_->IsMainThread());
 }
 
+void SingleThreadProxy::SetTargetLocalSurfaceId(
+    const viz::LocalSurfaceId& target_local_surface_id) {
+  if (!scheduler_on_impl_thread_)
+    return;
+  host_impl_->SetTargetLocalSurfaceId(target_local_surface_id);
+}
+
 bool SingleThreadProxy::RequestedAnimatePending() {
   return animate_requested_ || update_layers_requested_ || commit_requested_ ||
          needs_impl_frame_;

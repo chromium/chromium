@@ -31,6 +31,8 @@ class FakeProxy : public Proxy {
   void SetNeedsCommit() override {}
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override {}
   void SetNextCommitWaitsForActivation() override {}
+  void SetTargetLocalSurfaceId(
+      const viz::LocalSurfaceId& target_local_surface_id) override {}
   bool RequestedAnimatePending() override;
   void SetDeferMainFrameUpdate(bool defer_main_frame_update) override {}
   void StartDeferringCommits(base::TimeDelta timeout) override {}

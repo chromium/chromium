@@ -132,6 +132,12 @@ const base::Feature kUseSurfaceLayerForVideoDefault{
     "UseSurfaceLayerForVideoDefault", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
+// Used by CC to throttle frame production of older surfaces. Used by the
+// Browser to batch SurfaceSync calls sent to the Renderer for properties can
+// change in close proximity to each other.
+const base::Feature kSurfaceSyncThrottling{"SurfaceSyncThrottling",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsAdpfEnabled() {
   // TODO(crbug.com/1157620): Limit this to correct android version.
   return base::FeatureList::IsEnabled(kAdpf);
@@ -251,5 +257,9 @@ bool UseSurfaceLayerForVideo() {
   return base::FeatureList::IsEnabled(kUseSurfaceLayerForVideoDefault);
 }
 #endif
+
+bool IsSurfaceSyncThrottling() {
+  return base::FeatureList::IsEnabled(kSurfaceSyncThrottling);
+}
 
 }  // namespace features

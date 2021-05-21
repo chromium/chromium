@@ -187,6 +187,12 @@ void ProxyImpl::SetNeedsCommitOnImpl() {
   SetNeedsCommitOnImplThread();
 }
 
+void ProxyImpl::SetTargetLocalSurfaceIdOnImpl(
+    const viz::LocalSurfaceId& target_local_surface_id) {
+  DCHECK(IsImplThread());
+  host_impl_->SetTargetLocalSurfaceId(target_local_surface_id);
+}
+
 void ProxyImpl::BeginMainFrameAbortedOnImpl(
     CommitEarlyOutReason reason,
     base::TimeTicks main_thread_start_time,

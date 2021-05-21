@@ -67,11 +67,13 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
     return TimeDeltaToFrames(FirstFrameTimeout());
   }
 
-  // Wait up to 1 second for a frame of the correct size to be produced. Android
-  // OS will only wait 4 seconds, so we limit this to 1 second to make sure we
-  // have always produced a frame before the OS stops waiting.
+  // Wait up to 175 milliseconds for a frame of the correct size to be produced.
+  // Android OS will only wait 200 milliseconds, so we limit this to make sure
+  // that Viz is able to produce the latest frame from the Browser before the OS
+  // stops waiting. Otherwise a rotated version of the previous frame will be
+  // displayed with a large black region where there is no content yet.
   static constexpr base::TimeDelta ResizeTimeout() {
-    return base::TimeDelta::FromSeconds(1);
+    return base::TimeDelta::FromMilliseconds(175);
   }
   static int64_t ResizeTimeoutFrames() {
     return TimeDeltaToFrames(ResizeTimeout());

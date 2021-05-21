@@ -134,8 +134,26 @@ class CompositorEventAckBrowserTest : public ContentBrowserTest {
     TitleWatcher watcher(shell()->web_contents(), ready_title);
     ignore_result(watcher.WaitAndGetTitle());
 
-    HitTestRegionObserver observer(host->GetFrameSinkId());
-    observer.WaitForHitTestData();
+    // SetSize triggers an animation of the size, leading to a a new
+    // viz::LocalSurfaceId being generated. Since this was done right after
+    // navigation Viz could be processing an old surface.
+    //
+    // We want the HitTestData for the post resize surface. So wait until that
+    // surface has submitted a frame.
+    viz::LocalSurfaceId target = host->GetView()->GetLocalSurfaceId();
+    RenderFrameSubmissionObserver rfm_observer(
+        GetWidgetHost()->render_frame_metadata_provider());
+    while (!rfm_observer.LastRenderFrameMetadata()
+                .local_surface_id.value_or(viz::LocalSurfaceId())
+                .is_valid() ||
+           target !=
+               rfm_observer.LastRenderFrameMetadata().local_surface_id.value_or(
+                   viz::LocalSurfaceId::MaxSequenceId())) {
+      rfm_observer.WaitForMetadataChange();
+    }
+
+    HitTestRegionObserver hit_test_observer(host->GetFrameSinkId());
+    hit_test_observer.WaitForHitTestData();
   }
 
   int ExecuteScriptAndExtractInt(const std::string& script) {

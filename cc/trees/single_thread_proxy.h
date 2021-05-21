@@ -17,6 +17,7 @@
 #include "cc/trees/proxy.h"
 #include "cc/trees/task_runner_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 
 namespace viz {
 class BeginFrameSource;
@@ -53,6 +54,8 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void SetNeedsCommit() override;
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;
   void SetNextCommitWaitsForActivation() override;
+  void SetTargetLocalSurfaceId(
+      const viz::LocalSurfaceId& target_local_surface_id) override;
   bool RequestedAnimatePending() override;
   void SetDeferMainFrameUpdate(bool defer_main_frame_update) override;
   void StartDeferringCommits(base::TimeDelta timeout) override;

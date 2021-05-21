@@ -54,6 +54,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void SetDeferBeginMainFrameOnImpl(bool defer_begin_main_frame) const;
   void SetNeedsRedrawOnImpl(const gfx::Rect& damage_rect);
   void SetNeedsCommitOnImpl();
+  void SetTargetLocalSurfaceIdOnImpl(
+      const viz::LocalSurfaceId& target_local_surface_id);
   void BeginMainFrameAbortedOnImpl(
       CommitEarlyOutReason reason,
       base::TimeTicks main_thread_start_time,

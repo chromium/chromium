@@ -622,6 +622,16 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           FrameSkippedReason reason);
   void DidModifyTilePriorities();
+  // Requests that we do not produce frames until the new viz::LocalSurfaceId
+  // has been activated.
+  void SetTargetLocalSurfaceId(
+      const viz::LocalSurfaceId& target_local_surface_id);
+  const viz::LocalSurfaceId& target_local_surface_id() const {
+    return target_local_surface_id_;
+  }
+  const viz::LocalSurfaceId& last_draw_local_surface_id() const {
+    return last_draw_local_surface_id_;
+  }
 
   LayerTreeImpl* active_tree() { return active_tree_.get(); }
   const LayerTreeImpl* active_tree() const { return active_tree_.get(); }
@@ -1183,6 +1193,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   viz::LocalSurfaceId last_draw_local_surface_id_;
   base::flat_set<viz::SurfaceRange> last_draw_referenced_surfaces_;
   absl::optional<RenderFrameMetadata> last_draw_render_frame_metadata_;
+  // The viz::LocalSurfaceId to unthrottle drawing for.
+  viz::LocalSurfaceId target_local_surface_id_;
   viz::ChildLocalSurfaceIdAllocator child_local_surface_id_allocator_;
 
   // Indicates the direction of the last vertical scroll of the root layer.
