@@ -185,7 +185,6 @@
     readonly attribute InternalSettings settings;
     readonly attribute InternalRuntimeFlags runtimeFlags;
     readonly attribute unsigned long workerThreadCount;
-    readonly attribute boolean isFormControlsRefreshEnabled;
 
     // Flag for layerTreeAsText. The value must be kept in sync with the value
     // of LayerTreeFlags in layers_as_json.h.

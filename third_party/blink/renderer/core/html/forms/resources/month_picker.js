@@ -170,5 +170,5 @@ MonthPicker.YearWidth = 194;
 MonthPicker.YearHeight = 128;
 MonthPicker.YearPadding = 12;
 MonthPicker.Height = 182;
-MonthPicker.ClassNameTodayButton = 'today-button-refresh';
+MonthPicker.ClassNameTodayButton = 'today-button';
 window.customElements.define('month-picker', MonthPicker);

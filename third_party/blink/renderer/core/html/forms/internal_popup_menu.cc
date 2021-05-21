@@ -357,8 +357,6 @@ void InternalPopupMenu::WriteDocument(SharedBuffer* data) {
   AddProperty("scaleFactor", scale_factor, data);
   bool is_rtl = !owner_style->IsLeftToRightDirection();
   AddProperty("isRTL", is_rtl, data);
-  AddProperty("isFormControlsRefreshEnabled",
-              features::IsFormControlsRefreshEnabled(), data);
   AddProperty("paddingStart",
               is_rtl ? owner_element.ClientPaddingRight().ToDouble()
                      : owner_element.ClientPaddingLeft().ToDouble(),

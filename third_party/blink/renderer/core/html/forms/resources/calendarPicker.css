@@ -193,16 +193,6 @@ body {
     padding-bottom: 2px;
 }
 
-.today-button::after {
-    content: "";
-    display: block;
-    border-radius: 3px;
-    width: 6px;
-    height: 6px;
-    background-color: #6e6e6e;
-    margin: 0 auto;
-}
-
 .calendar-navigation-button {
     -webkit-align-self: center;
     width: 24px;

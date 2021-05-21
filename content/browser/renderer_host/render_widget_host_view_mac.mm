@@ -384,10 +384,7 @@ void RenderWidgetHostViewMac::InitAsPopup(
   SetContentBackgroundColor(SK_ColorTRANSPARENT);
 
   // This path is used by the time/date picker.
-  // When FormControlsRefresh is enabled the popup window should use
-  // the native shadow.
-  bool has_shadow = features::IsFormControlsRefreshEnabled();
-  ns_view_->InitAsPopup(pos, has_shadow);
+  ns_view_->InitAsPopup(pos);
 }
 
 RenderWidgetHostViewBase*

@@ -1,23 +1,28 @@
 .suggestion-list {
     list-style: none;
-    padding: 0;
     margin: 0;
     font: -webkit-small-control;
-    border: 1px solid #7f9db9;
+    border: 1px solid #bfbfbf;
     background-color: white;
     overflow: hidden;
+    padding: 4px;
 }
+
 
 .suggestion-list-entry {
     white-space: nowrap;
-    height: 1.73em;
-    line-height: 1.73em;
     -webkit-select: none;
     cursor: default;
+    border-radius: 2px;
+    font-size: 14px;
+    height: 32px;
+    line-height: 32px;
 }
 
 .suggestion-list-entry:focus {
-    outline: none;
+    background-color: #E5E5E5 !important;
+    outline: solid 2px -webkit-focus-ring-color;
+    outline-offset: -2px;
 }
 
 .suggestion-list-entry .content {
@@ -26,9 +31,9 @@
 
 .suggestion-list-entry .label {
     text-align: right;
-    color: #737373;
     float: right;
     padding: 0 4px 0 20px;
+    color: rgba(16, 16, 16, 0.6) !important;
 }
 
 .rtl .suggestion-list-entry .label {
@@ -39,6 +44,7 @@
 .suggestion-list-entry .title {
     direction: ltr;
     display: inline-block;
+    color: #101010;
 }
 
 .locale-rtl .suggestion-list-entry .title {
@@ -55,45 +61,19 @@
     height: 0;
 }
 
-.controls-refresh .suggestion-list {
-  border-color: #bfbfbf;
-  padding: 4px;
-}
-
-.controls-refresh .suggestion-list-entry {
-  border-radius: 2px;
-  font-size: 14px;
-  height: 32px;
-  line-height: 32px;
-}
-
-.controls-refresh .suggestion-list-entry:focus {
-  background-color: #E5E5E5;
-  outline: solid 2px -webkit-focus-ring-color;
-  outline-offset: -2px;
-}
-
-.controls-refresh .suggestion-list-entry .title {
-  color: #101010;
-}
-
-.controls-refresh .suggestion-list-entry .label {
-  color: rgba(16, 16, 16, 0.6) !important;
-}
-
 @media (forced-colors: active) {
-  .controls-refresh .suggestion-list-entry:focus {
+  .suggestion-list-entry:focus {
     background-color: Highlight !important;
     forced-color-adjust: none;
   }
 
-  .controls-refresh .suggestion-list-entry:focus .label,
-  .controls-refresh .suggestion-list-entry:focus .title {
+  .suggestion-list-entry:focus .label,
+  .suggestion-list-entry:focus .title {
     color: HighlightText !important;
   }
 
-  .controls-refresh .suggestion-list-entry .label,
-  .controls-refresh .suggestion-list-entry .title {
+  .suggestion-list-entry .label,
+  .suggestion-list-entry .title {
     color: WindowText !important;
   }
 }

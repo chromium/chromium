@@ -2224,7 +2224,7 @@ int ComputedStyle::OutlineOutsetExtent() const {
 }
 
 float ComputedStyle::GetOutlineStrokeWidthForFocusRing() const {
-  if (::features::IsFormControlsRefreshEnabled() && OutlineStyleIsAuto()) {
+  if (OutlineStyleIsAuto()) {
     return std::max(EffectiveZoom(), 3.f);
   }
 

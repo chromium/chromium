@@ -743,8 +743,7 @@ String LayoutTheme::DisplayNameForFile(const File& file) const {
 
 bool LayoutTheme::SupportsCalendarPicker(const AtomicString& type) const {
   DCHECK(RuntimeEnabledFeatures::InputMultipleFieldsUIEnabled());
-  if (features::IsFormControlsRefreshEnabled() &&
-      type == input_type_names::kTime)
+  if (type == input_type_names::kTime)
     return true;
 
   return type == input_type_names::kDate ||

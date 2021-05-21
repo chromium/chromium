@@ -137,9 +137,7 @@ const Vector<String>& LocaleMac::WeekDayShortLabels() {
   if (!week_day_short_labels_.IsEmpty())
     return week_day_short_labels_;
   week_day_short_labels_.ReserveCapacity(7);
-  NSArray* array = features::IsFormControlsRefreshEnabled()
-                       ? [ShortDateFormatter() veryShortWeekdaySymbols]
-                       : [ShortDateFormatter() shortWeekdaySymbols];
+  NSArray* array = [ShortDateFormatter() veryShortWeekdaySymbols];
   if ([array count] == 7) {
     for (unsigned i = 0; i < 7; ++i)
       week_day_short_labels_.push_back(String(array[i]));

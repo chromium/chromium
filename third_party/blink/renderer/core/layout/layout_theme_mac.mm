@@ -150,7 +150,6 @@ bool LayoutThemeMac::UsesTestModeFocusRingColor() const {
 }
 
 LayoutTheme& LayoutTheme::NativeTheme() {
-  DCHECK(features::IsFormControlsRefreshEnabled());
   DEFINE_STATIC_REF(LayoutTheme, layout_theme, (LayoutThemeMac::Create()));
   return *layout_theme;
 }

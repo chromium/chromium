@@ -815,16 +815,14 @@ float Scrollbar::ScaleFromDIP() const {
 }
 
 float Scrollbar::EffectiveZoom() const {
-  if (::features::IsFormControlsRefreshEnabled() && style_source_ &&
-      style_source_->GetLayoutObject()) {
+  if (style_source_ && style_source_->GetLayoutObject()) {
     return style_source_->GetLayoutObject()->Style()->EffectiveZoom();
   }
   return 1.0;
 }
 
 bool Scrollbar::ContainerIsRightToLeft() const {
-  if (::features::IsFormControlsRefreshEnabled() && style_source_ &&
-      style_source_->GetLayoutObject()) {
+  if (style_source_ && style_source_->GetLayoutObject()) {
     TextDirection dir = style_source_->GetLayoutObject()->Style()->Direction();
     return IsRtl(dir);
   }

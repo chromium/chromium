@@ -91,30 +91,11 @@ TEST_F(ComputedStyleTest, ClipPathEqual) {
 
 TEST_F(ComputedStyleTest, FocusRingWidth) {
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  if (::features::IsFormControlsRefreshEnabled()) {
-    style->SetOutlineStyleIsAuto(static_cast<bool>(OutlineIsAuto::kOn));
-    EXPECT_EQ(3, style->GetOutlineStrokeWidthForFocusRing());
-    style->SetEffectiveZoom(3.5);
-    style->SetOutlineWidth(4);
-    EXPECT_EQ(3.5, style->GetOutlineStrokeWidthForFocusRing());
-  } else {
-    style->SetEffectiveZoom(3.5);
-    style->SetOutlineStyle(EBorderStyle::kSolid);
-#if defined(OS_MAC)
-    EXPECT_EQ(3, style->GetOutlineStrokeWidthForFocusRing());
-#else
-    style->SetOutlineStyleIsAuto(static_cast<bool>(OutlineIsAuto::kOn));
-    static uint16_t outline_width = 4;
-    style->SetOutlineWidth(outline_width);
-
-    double expected_width = 3.5;
-    EXPECT_EQ(expected_width, style->GetOutlineStrokeWidthForFocusRing());
-
-    expected_width = 1.0;
-    style->SetEffectiveZoom(0.5);
-    EXPECT_EQ(expected_width, style->GetOutlineStrokeWidthForFocusRing());
-#endif
-  }
+  style->SetOutlineStyleIsAuto(static_cast<bool>(OutlineIsAuto::kOn));
+  EXPECT_EQ(3, style->GetOutlineStrokeWidthForFocusRing());
+  style->SetEffectiveZoom(3.5);
+  style->SetOutlineWidth(4);
+  EXPECT_EQ(3.5, style->GetOutlineStrokeWidthForFocusRing());
 }
 
 TEST_F(ComputedStyleTest, FocusRingOutset) {
@@ -122,15 +103,7 @@ TEST_F(ComputedStyleTest, FocusRingOutset) {
   style->SetOutlineStyle(EBorderStyle::kSolid);
   style->SetOutlineStyleIsAuto(static_cast<bool>(OutlineIsAuto::kOn));
   style->SetEffectiveZoom(4.75);
-  if (::features::IsFormControlsRefreshEnabled()) {
-    EXPECT_EQ(4, style->OutlineOutsetExtent());
-  } else {
-#if defined(OS_MAC)
-    EXPECT_EQ(4, style->OutlineOutsetExtent());
-#else
-    EXPECT_EQ(3, style->OutlineOutsetExtent());
-#endif
-  }
+  EXPECT_EQ(4, style->OutlineOutsetExtent());
 }
 
 TEST_F(ComputedStyleTest, SVGStackingContext) {
@@ -679,8 +652,6 @@ TEST_F(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
 }
 
 TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
-  ScopedCSSColorSchemeUARenderingForTest scoped_ua_enabled(true);
-
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
@@ -713,8 +684,6 @@ TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
 
 TEST_F(ComputedStyleTest, ApplyInternalLightDarkColor) {
   using css_test_helpers::ParseDeclarationBlock;
-
-  ScopedCSSColorSchemeUARenderingForTest scoped_ua_enabled(true);
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
@@ -757,8 +726,6 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkColor) {
 
 TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   using css_test_helpers::ParseDeclarationBlock;
-
-  ScopedCSSColorSchemeUARenderingForTest scoped_ua_enabled(true);
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);

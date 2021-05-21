@@ -293,24 +293,14 @@ void LocaleWin::EnsureMonthLabels() {
 void LocaleWin::EnsureWeekDayShortLabels() {
   if (!week_day_short_labels_.IsEmpty())
     return;
-  const LCTYPE kTypes[7] = {LOCALE_SABBREVDAYNAME7,  // Sunday
-                            LOCALE_SABBREVDAYNAME1,  // Monday
-                            LOCALE_SABBREVDAYNAME2, LOCALE_SABBREVDAYNAME3,
-                            LOCALE_SABBREVDAYNAME4, LOCALE_SABBREVDAYNAME5,
-                            LOCALE_SABBREVDAYNAME6};
-  const LCTYPE kTypesRefresh[7] = {
-      LOCALE_SSHORTESTDAYNAME7,  // Sunday
-      LOCALE_SSHORTESTDAYNAME1,  // Monday
-      LOCALE_SSHORTESTDAYNAME2, LOCALE_SSHORTESTDAYNAME3,
-      LOCALE_SSHORTESTDAYNAME4, LOCALE_SSHORTESTDAYNAME5,
-      LOCALE_SSHORTESTDAYNAME6};
+  const LCTYPE kTypes[7] = {LOCALE_SSHORTESTDAYNAME7,  // Sunday
+                            LOCALE_SSHORTESTDAYNAME1,  // Monday
+                            LOCALE_SSHORTESTDAYNAME2, LOCALE_SSHORTESTDAYNAME3,
+                            LOCALE_SSHORTESTDAYNAME4, LOCALE_SSHORTESTDAYNAME5,
+                            LOCALE_SSHORTESTDAYNAME6};
   week_day_short_labels_.ReserveCapacity(base::size(kTypes));
   for (unsigned i = 0; i < base::size(kTypes); ++i) {
-    if (features::IsFormControlsRefreshEnabled()) {
-      week_day_short_labels_.push_back(GetLocaleInfoString(kTypesRefresh[i]));
-    } else {
-      week_day_short_labels_.push_back(GetLocaleInfoString(kTypes[i]));
-    }
+    week_day_short_labels_.push_back(GetLocaleInfoString(kTypes[i]));
     if (week_day_short_labels_.back().IsEmpty()) {
       week_day_short_labels_.Shrink(0);
       week_day_short_labels_.ReserveCapacity(base::size(WTF::kWeekdayName));

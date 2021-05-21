@@ -88,7 +88,6 @@
 namespace remote_cocoa {
 
 PopupWindowMac::PopupWindowMac(const gfx::Rect& content_rect,
-                               bool has_shadow,
                                RenderWidgetHostViewCocoa* cocoa_view)
     : cocoa_view_(cocoa_view) {
   [cocoa_view_ setCloseOnDeactivate:YES];
@@ -99,7 +98,7 @@ PopupWindowMac::PopupWindowMac(const gfx::Rect& content_rect,
                 styleMask:NSBorderlessWindowMask
                   backing:NSBackingStoreBuffered
                     defer:NO]);
-  [popup_window_ setHasShadow:has_shadow];
+  [popup_window_ setHasShadow:YES];
   [popup_window_ setLevel:NSPopUpMenuWindowLevel];
   [popup_window_ setReleasedWhenClosed:NO];
   [popup_window_ makeKeyAndOrderFront:nil];

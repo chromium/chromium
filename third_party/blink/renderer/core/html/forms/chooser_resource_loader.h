@@ -20,9 +20,6 @@ class ChooserResourceLoader {
   // Returns the picker common javascript as a string.
   static Vector<char> GetPickerCommonJS();
 
-  // Returns the picker button stylesheet as a string.
-  static Vector<char> GetPickerButtonStyleSheet();
-
   // Returns the suggestion picker stylesheet as a string.
   static Vector<char> GetSuggestionPickerStyleSheet();
 

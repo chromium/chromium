@@ -750,12 +750,6 @@ extern const char kForceDirectionRtl[];
 extern const char kForceUiDirectionName[];
 extern const char kForceUiDirectionDescription[];
 
-extern const char kFormControlsDarkModeName[];
-extern const char kFormControlsDarkModeDescription[];
-
-extern const char kFormControlsRefreshName[];
-extern const char kFormControlsRefreshDescription[];
-
 extern const char kGlobalMediaControlsName[];
 extern const char kGlobalMediaControlsDescription[];
 

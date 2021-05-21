@@ -296,9 +296,8 @@ void MultipleFieldsTemporalInputTypeView::PickerIndicatorChooseValue(
   if (input_type_->FormControlType() == input_type_names::kTime) {
     if (date.ParseTime(value, 0, end) && end == value.length())
       edit->SetOnlyTime(date);
-  } else if (features::IsFormControlsRefreshEnabled() &&
-             input_type_->FormControlType() ==
-                 input_type_names::kDatetimeLocal) {
+  } else if (input_type_->FormControlType() ==
+             input_type_names::kDatetimeLocal) {
     if (date.ParseDateTimeLocal(value, 0, end) && end == value.length())
       edit->SetDateTimeLocal(date);
   } else {
@@ -397,18 +396,6 @@ void MultipleFieldsTemporalInputTypeView::CreateShadowSubtree() {
       MakeGarbageCollected<DateTimeEditElement, Document&,
                            DateTimeEditElement::EditControlOwner&>(document,
                                                                    *this));
-  if (!features::IsFormControlsRefreshEnabled()) {
-    GetElement().UpdateView();
-    container->AppendChild(
-        MakeGarbageCollected<ClearButtonElement, Document&,
-                             ClearButtonElement::ClearButtonOwner&>(document,
-                                                                    *this));
-    container->AppendChild(
-        MakeGarbageCollected<SpinButtonElement, Document&,
-                             SpinButtonElement::SpinButtonOwner&>(document,
-                                                                  *this));
-  }
-
   if (LayoutTheme::GetTheme().SupportsCalendarPicker(
           input_type_->FormControlType()))
     picker_indicator_is_always_visible_ = true;
@@ -497,8 +484,7 @@ void MultipleFieldsTemporalInputTypeView::HandleKeydownEvent(
     return;
   if (picker_indicator_is_visible_ &&
       ((event.key() == "ArrowDown" && event.getModifierState("Alt")) ||
-       (event.key() == "F4") ||
-       (features::IsFormControlsRefreshEnabled() && event.key() == " "))) {
+       event.key() == "F4" || event.key() == " ")) {
     if (PickerIndicatorElement* element = GetPickerIndicatorElement())
       element->OpenPopup();
     event.SetDefaultHandled();

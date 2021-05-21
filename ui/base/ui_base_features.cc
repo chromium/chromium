@@ -219,26 +219,7 @@ const base::Feature kEyeDropper {
 };
 
 bool IsEyeDropperEnabled() {
-  return IsFormControlsRefreshEnabled() &&
-         base::FeatureList::IsEnabled(features::kEyeDropper);
-}
-
-const base::Feature kCSSColorSchemeUARendering = {
-    "CSSColorSchemeUARendering", base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool IsCSSColorSchemeUARenderingEnabled() {
-  static const bool css_color_scheme_ua_rendering_enabled =
-      base::FeatureList::IsEnabled(features::kCSSColorSchemeUARendering);
-  return css_color_scheme_ua_rendering_enabled;
-}
-
-const base::Feature kFormControlsRefresh = {"FormControlsRefresh",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool IsFormControlsRefreshEnabled() {
-  static const bool form_controls_refresh_enabled =
-      base::FeatureList::IsEnabled(features::kFormControlsRefresh);
-  return form_controls_refresh_enabled;
+  return base::FeatureList::IsEnabled(features::kEyeDropper);
 }
 
 // Enable the common select popup.

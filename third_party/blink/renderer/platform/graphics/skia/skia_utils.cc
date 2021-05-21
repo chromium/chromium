@@ -420,26 +420,7 @@ void DrawPlatformFocusRing(const PrimitiveType& primitive,
   flags.setColor(color);
   flags.setStrokeWidth(width);
 
-  if (::features::IsFormControlsRefreshEnabled()) {
-    DrawFocusRingPrimitive(primitive, canvas, flags, border_radius);
-    return;
-  }
-
-#if defined(OS_MAC)
-  flags.setAlpha(64);
-  const float corner_radius = (width - 1) * 0.5f;
-#else
-  const float corner_radius = width;
-#endif
-
-  DrawFocusRingPrimitive(primitive, canvas, flags, corner_radius);
-
-#if defined(OS_MAC)
-  // Inner part
-  flags.setAlpha(128);
-  flags.setStrokeWidth(flags.getStrokeWidth() * 0.5f);
-  DrawFocusRingPrimitive(primitive, canvas, flags, corner_radius);
-#endif
+  DrawFocusRingPrimitive(primitive, canvas, flags, border_radius);
 }
 
 template void PLATFORM_EXPORT

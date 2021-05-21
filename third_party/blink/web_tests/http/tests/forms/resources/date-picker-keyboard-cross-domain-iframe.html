@@ -6,12 +6,7 @@
 
       input_date.focus();
 
-      if (internals.isFormControlsRefreshEnabled) {
-         eventSender.keyDown(" ");
-      } else {
-         // Old picker needs Alt+ArrowDown
-         eventSender.keyDown("ArrowDown", ["altKey"]);
-      }
+      eventSender.keyDown(" ");
 
       // Advance date to the next day
       eventSender.keyDown("ArrowRight");

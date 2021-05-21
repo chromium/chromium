@@ -17,11 +17,7 @@ let t = async_test('Test year list view size');
 function test1() {
   var dateViewHeight = popupWindow.global.picker.height();
   clickMonthPopupButton();
-  if (popupWindow.global.params.isFormControlsRefreshEnabled) {
-    assert_equals(dateViewHeight, popupWindow.global.picker.height());
-  } else {
-    assert_not_equals(dateViewHeight, popupWindow.global.picker.height());
-  }
+  assert_equals(dateViewHeight, popupWindow.global.picker.height());
 }
 
 t.step(() => {

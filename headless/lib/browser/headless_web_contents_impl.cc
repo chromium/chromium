@@ -65,16 +65,11 @@ void UpdatePrefsFromSystemSettings(blink::RendererPreferences* prefs) {
 #endif
 
   // The values were copied from chrome/browser/renderer_preferences_util.cc.
-#if defined(USE_AURA)
-  prefs->focus_ring_color = SkColorSetRGB(0x4D, 0x90, 0xFE);
-#endif
-  if (::features::IsFormControlsRefreshEnabled()) {
 #if defined(OS_MAC)
-    prefs->focus_ring_color = SkColorSetRGB(0x00, 0x5F, 0xCC);
+  prefs->focus_ring_color = SkColorSetRGB(0x00, 0x5F, 0xCC);
 #else
-    prefs->focus_ring_color = SkColorSetRGB(0x10, 0x10, 0x10);
+  prefs->focus_ring_color = SkColorSetRGB(0x10, 0x10, 0x10);
 #endif
-  }
 }
 
 }  // namespace

@@ -21,9 +21,6 @@ function initialize(args) {
   global.params = args;
   var main = $('main');
   main.innerHTML = '';
-  if (global.params.isFormControlsRefreshEnabled) {
-    document.body.classList.add('controls-refresh');
-  }
   global.picker = new ListPicker(main, args);
 }
 

@@ -724,7 +724,7 @@ crbug.com/6606 external/wpt/mathml/* [ Skip ]
 
 crbug.com/1034944 webexposed/global-interface-listing.html [ Skip ]
 
-# TODO(iopopesc) these need to be rebaselined for FormControlsRefresh focus ring.
+# TODO(iopopesc) these need to be rebaselined for focus ring changes.
 crbug.com/1035582 fast/css/focus-ring-detached.html [ Failure ]
 crbug.com/1035582 fast/events/sequential-focus-navigation-starting-point.html [ Skip ]
 crbug.com/1035582 fast/inline/continuation-outlines-with-layers.html [ Failure ]

@@ -19,19 +19,6 @@ LayoutTheme& LayoutTheme::NativeTheme() {
 
 LayoutThemeAndroid::~LayoutThemeAndroid() {}
 
-String LayoutThemeAndroid::ExtraDefaultStyleSheet() {
-  String extra_sheet = LayoutThemeMobile::ExtraDefaultStyleSheet();
-  if (features::IsFormControlsRefreshEnabled())
-    return extra_sheet;
-
-  // "32px" comes from
-  // 2 * -LayoutThemeDefault::SliderTickOffsetFromTrackCenter().
-  return extra_sheet + R"CSS(
-input[type="range" i]:-internal-has-datalist::-webkit-slider-container {
-    min-block-size: 32px;
-})CSS";
-}
-
 Color LayoutThemeAndroid::PlatformActiveSelectionBackgroundColor(
     mojom::blink::ColorScheme color_scheme) const {
   return color_scheme == mojom::blink::ColorScheme::kDark

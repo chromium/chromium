@@ -63,12 +63,10 @@ void SliderThumbElement::SetPositionFromValue() {
   if (GetLayoutObject()) {
     GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
         layout_invalidation_reason::kSliderValueChanged);
-    if (features::IsFormControlsRefreshEnabled()) {
-      HTMLInputElement* input(HostInput());
-      if (input && input->GetLayoutObject()) {
-        // the slider track selected value needs to be updated.
-        input->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
-      }
+    HTMLInputElement* input(HostInput());
+    if (input && input->GetLayoutObject()) {
+      // the slider track selected value needs to be updated.
+      input->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
     }
   }
 }

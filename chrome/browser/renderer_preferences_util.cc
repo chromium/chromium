@@ -208,13 +208,11 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
         ConvertExplicitlyAllowedNetworkPortsPref(local_state);
   }
 
-  if (::features::IsFormControlsRefreshEnabled()) {
 #if defined(OS_MAC)
-    prefs->focus_ring_color = SkColorSetRGB(0x00, 0x5F, 0xCC);
+  prefs->focus_ring_color = SkColorSetRGB(0x00, 0x5F, 0xCC);
 #else
-    prefs->focus_ring_color = SkColorSetRGB(0x10, 0x10, 0x10);
+  prefs->focus_ring_color = SkColorSetRGB(0x10, 0x10, 0x10);
 #endif
-  }
 }
 
 }  // namespace renderer_preferences_util

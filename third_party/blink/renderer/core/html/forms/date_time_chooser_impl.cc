@@ -129,16 +129,12 @@ void DateTimeChooserImpl::WriteDocument(SharedBuffer* data) {
       data);
 
   data->Append(ChooserResourceLoader::GetPickerCommonStyleSheet());
-  if (!features::IsFormControlsRefreshEnabled())
-    data->Append(ChooserResourceLoader::GetPickerButtonStyleSheet());
   data->Append(ChooserResourceLoader::GetSuggestionPickerStyleSheet());
   data->Append(ChooserResourceLoader::GetCalendarPickerStyleSheet());
-  if (features::IsFormControlsRefreshEnabled()) {
-    data->Append(ChooserResourceLoader::GetCalendarPickerRefreshStyleSheet());
-    if (parameters_->type == input_type_names::kTime ||
-        parameters_->type == input_type_names::kDatetimeLocal) {
-      data->Append(ChooserResourceLoader::GetTimePickerStyleSheet());
-    }
+  data->Append(ChooserResourceLoader::GetCalendarPickerRefreshStyleSheet());
+  if (parameters_->type == input_type_names::kTime ||
+      parameters_->type == input_type_names::kDatetimeLocal) {
+    data->Append(ChooserResourceLoader::GetTimePickerStyleSheet());
   }
   AddString(
       "</style></head><body><div id=main>Loading...</div><script>\n"
@@ -182,11 +178,8 @@ void DateTimeChooserImpl::WriteDocument(SharedBuffer* data) {
   AddProperty("ampmLabels", locale_->TimeAMPMLabels(), data);
   AddProperty("isLocaleRTL", locale_->IsRTL(), data);
   AddProperty("isRTL", parameters_->is_anchor_element_rtl, data);
-  AddProperty("isFormControlsRefreshEnabled",
-              features::IsFormControlsRefreshEnabled(), data);
 #if defined(OS_MAC)
-  AddProperty("isBorderTransparent", features::IsFormControlsRefreshEnabled(),
-              data);
+  AddProperty("isBorderTransparent", true, data);
 #endif
   AddProperty("mode", parameters_->type.GetString(), data);
   AddProperty("isAMPMFirst", parameters_->is_ampm_first, data);
@@ -236,14 +229,12 @@ void DateTimeChooserImpl::WriteDocument(SharedBuffer* data) {
 
   data->Append(ChooserResourceLoader::GetPickerCommonJS());
   data->Append(ChooserResourceLoader::GetSuggestionPickerJS());
-  if (features::IsFormControlsRefreshEnabled()) {
-    data->Append(ChooserResourceLoader::GetMonthPickerJS());
-    if (parameters_->type == input_type_names::kTime) {
-      data->Append(ChooserResourceLoader::GetTimePickerJS());
-    } else if (parameters_->type == input_type_names::kDatetimeLocal) {
-      data->Append(ChooserResourceLoader::GetTimePickerJS());
-      data->Append(ChooserResourceLoader::GetDateTimeLocalPickerJS());
-    }
+  data->Append(ChooserResourceLoader::GetMonthPickerJS());
+  if (parameters_->type == input_type_names::kTime) {
+    data->Append(ChooserResourceLoader::GetTimePickerJS());
+  } else if (parameters_->type == input_type_names::kDatetimeLocal) {
+    data->Append(ChooserResourceLoader::GetTimePickerJS());
+    data->Append(ChooserResourceLoader::GetDateTimeLocalPickerJS());
   }
   data->Append(ChooserResourceLoader::GetCalendarPickerJS());
   AddString("</script></body>\n", data);

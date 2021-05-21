@@ -173,7 +173,7 @@ function skipAnimationAndGetPositionOfTodayButton() {
       popupWindow.global.picker.datePicker.calendarTableView :
       popupWindow.global.picker.calendarTableView;
   var buttonElement =
-      calendarTableView.element.querySelector('.today-button-refresh');
+      calendarTableView.element.querySelector('.today-button');
   var offset = cumulativeOffset(buttonElement);
   return {
     x: offset[0] + buttonElement.offsetWidth / 2,
@@ -195,7 +195,7 @@ function clickTodayButton() {
 function skipAnimationAndGetPositionOfThisMonthButton() {
   skipAnimation();
   const button =
-      popupWindow.global.picker.querySelector('.today-button-refresh');
+      popupWindow.global.picker.querySelector('.today-button');
   var offset = cumulativeOffset(button);
   return {
     x: offset[0] + button.offsetWidth / 2,

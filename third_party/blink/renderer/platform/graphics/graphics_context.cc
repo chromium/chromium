@@ -329,32 +329,11 @@ void GraphicsContext::CompositeRecord(sk_sp<PaintRecord> record,
   canvas_->restore();
 }
 
-namespace {
-
-int AdjustedFocusRingOffset(int offset) {
-  // For FormControlsRefresh we just use the value of outline-offset so we don't
-  // need to call this method.
-  DCHECK(!::features::IsFormControlsRefreshEnabled());
-
-#if defined(OS_MAC)
-  return offset + 2;
-#else
-  return 0;
-#endif
-}
-
-}  // namespace
-
 int GraphicsContext::FocusRingOutsetExtent(int offset, int width) {
   // Unlike normal outlines (whole width is outside of the offset), focus
   // rings can be drawn with the center of the path aligned with the offset, so
-  // only half of the width is outside of the offset.
-  if (::features::IsFormControlsRefreshEnabled()) {
-    // For FormControlsRefresh 2/3 of the width is outside of the offset.
-    return offset + std::ceil(width / 3.f) * 2;
-  }
-
-  return AdjustedFocusRingOffset(offset) + (width + 1) / 2;
+  // only 2/3 of the width is outside of the offset.
+  return offset + std::ceil(width / 3.f) * 2;
 }
 
 void GraphicsContext::DrawFocusRingPath(const SkPath& path,
@@ -398,10 +377,6 @@ void GraphicsContext::DrawFocusRingInternal(const Vector<IntRect>& rects,
     return;
 
   SkRegion focus_ring_region;
-  if (!::features::IsFormControlsRefreshEnabled()) {
-    // For FormControlsRefresh we don't need to adjust the offset.
-    offset = AdjustedFocusRingOffset(offset);
-  }
   for (unsigned i = 0; i < rect_count; i++) {
     SkIRect r = rects[i];
     if (r.isEmpty())
@@ -436,29 +411,25 @@ void GraphicsContext::DrawFocusRing(const Vector<IntRect>& rects,
   const Color& inner_color =
       color_scheme == mojom::blink::ColorScheme::kDark ? SK_ColorWHITE : color;
 #endif
-  if (::features::IsFormControlsRefreshEnabled()) {
-    // The focus ring is made of two borders which have a 2:1 ratio.
-    const float first_border_width = (width / 3) * 2;
-    const float second_border_width = width - first_border_width;
+  // The focus ring is made of two borders which have a 2:1 ratio.
+  const float first_border_width = (width / 3) * 2;
+  const float second_border_width = width - first_border_width;
 
-    // How much space the focus ring would like to take from the actual border.
-    const float inside_border_width = 1;
-    if (min_border_width >= inside_border_width) {
-      offset -= inside_border_width;
-    }
-    const Color& outer_color = color_scheme == mojom::blink::ColorScheme::kDark
-                                   ? SkColorSetRGB(0x10, 0x10, 0x10)
-                                   : SK_ColorWHITE;
-    // The outer ring is drawn first, and we overdraw to ensure no gaps or AA
-    // artifacts.
-    DrawFocusRingInternal(rects, first_border_width,
-                          offset + std::ceil(second_border_width),
-                          border_radius, outer_color);
-    DrawFocusRingInternal(rects, first_border_width, offset, border_radius,
-                          inner_color);
-  } else {
-    DrawFocusRingInternal(rects, width, offset, border_radius, inner_color);
+  // How much space the focus ring would like to take from the actual border.
+  const float inside_border_width = 1;
+  if (min_border_width >= inside_border_width) {
+    offset -= inside_border_width;
   }
+  const Color& outer_color = color_scheme == mojom::blink::ColorScheme::kDark
+                                 ? SkColorSetRGB(0x10, 0x10, 0x10)
+                                 : SK_ColorWHITE;
+  // The outer ring is drawn first, and we overdraw to ensure no gaps or AA
+  // artifacts.
+  DrawFocusRingInternal(rects, first_border_width,
+                        offset + std::ceil(second_border_width), border_radius,
+                        outer_color);
+  DrawFocusRingInternal(rects, first_border_width, offset, border_radius,
+                        inner_color);
 }
 
 static void EnforceDotsAtEndpoints(GraphicsContext& context,

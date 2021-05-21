@@ -130,14 +130,6 @@ void SetRuntimeFeatureDefaultsForPlatform(
   WebRuntimeFeatures::EnableMediaControlsExpandGesture(
       base::FeatureList::IsEnabled(media::kMediaControlsExpandGesture));
 #endif
-
-#if defined(OS_ANDROID)
-  WebRuntimeFeatures::EnableCSSColorSchemeUARendering(
-      // Combining form-controls-refresh and form-controls-dark-mode
-      // to be launched together on Android. Only one about flags
-      // for both features.
-      base::FeatureList::IsEnabled(features::kFormControlsRefresh));
-#endif
 }
 
 enum RuntimeFeatureEnableOptions {
@@ -357,7 +349,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"CompositeAfterPaint", blink::features::kCompositeAfterPaint},
           {"ComputePressure", blink::features::kComputePressure,
            kSetOnlyIfOverridden},
-          {"CSSColorSchemeUARendering", features::kCSSColorSchemeUARendering},
           {"DeclarativeShadowDOM", blink::features::kDeclarativeShadowDOM},
           {"DocumentTransition", blink::features::kDocumentTransition},
           {"FeaturePolicyForClientHints",

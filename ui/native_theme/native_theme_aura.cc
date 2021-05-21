@@ -103,7 +103,6 @@ NativeThemeAura* NativeThemeAura::web_instance() {
 
 SkColor NativeThemeAura::FocusRingColorForBaseColor(SkColor base_color) const {
 #if defined(OS_APPLE)
-  DCHECK(features::IsFormControlsRefreshEnabled());
   // On Mac OSX, the system Accent Color setting is darkened a bit
   // for better contrast.
   return SkColorSetA(base_color, 166);
@@ -183,12 +182,6 @@ void NativeThemeAura::PaintArrowButton(
 
   cc::PaintFlags flags;
   flags.setColor(bg_color);
-
-  if (!features::IsFormControlsRefreshEnabled()) {
-    canvas->drawIRect(gfx::RectToSkIRect(rect), flags);
-
-    return PaintArrow(canvas, rect, direction, arrow_color);
-  }
 
   SkScalar upper_left_radius = 0;
   SkScalar lower_left_radius = 0;

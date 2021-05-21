@@ -1361,7 +1361,7 @@ crbug.com/1133390 virtual/css-calc-infinity-and-nan/external/wpt/css/css-values/
 # ====== Style team owned tests to here ======
 
 
-# Bug in FormControlsRefresh <select multiple> tap behavior:
+# Bug in <select multiple> tap behavior:
 crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
 
 ### sheriff 2019-07-16
@@ -1418,8 +1418,6 @@ crbug.com/520194 http/tests/xmlhttprequest/timeout/xmlhttprequest-timeout-worker
 
 crbug.com/892032 fast/events/wheel/wheel-latched-scroll-node-removed.html [ Pass Failure ]
 
-
-# Tests that fail when FormControlsRefresh is enabled:
 crbug.com/1051136 fast/forms/select/listbox-overlay-scrollbar.html [ Failure ]
 
 # These performance-sensitive user-timing tests are flaky in debug on all platforms, and flaky on all configurations of windows.

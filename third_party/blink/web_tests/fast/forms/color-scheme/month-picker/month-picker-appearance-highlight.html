@@ -9,9 +9,7 @@ testRunner.waitUntilDone();
 <input type=month id=month value="2018-08">
 <script>
 openPickerAppearanceOnly(document.getElementById('month'), function() {
-  if (popupWindow.global.params.isFormControlsRefreshEnabled) {
-    hoverOverMonthButtonForMonthPicker(2018, 5);
-  }
+  hoverOverMonthButtonForMonthPicker(2018, 5);
   testRunner.notifyDone()
 });
 </script>

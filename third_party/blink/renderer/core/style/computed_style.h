@@ -2602,9 +2602,7 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   mojom::blink::ColorScheme UsedColorScheme() const {
-    return RuntimeEnabledFeatures::CSSColorSchemeUARenderingEnabled()
-               ? ComputedColorScheme()
-               : mojom::blink::ColorScheme::kLight;
+    return ComputedColorScheme();
   }
 
   mojom::blink::ColorScheme UsedColorSchemeForInitialColors() const {

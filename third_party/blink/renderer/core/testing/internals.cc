@@ -711,10 +711,6 @@ unsigned Internals::workerThreadCount() const {
   return WorkerThread::WorkerThreadCount();
 }
 
-bool Internals::isFormControlsRefreshEnabled() const {
-  return ::features::IsFormControlsRefreshEnabled();
-}
-
 GCObservation* Internals::observeGC(ScriptValue script_value) {
   v8::Local<v8::Value> observed_value = script_value.V8Value();
   DCHECK(!observed_value.IsEmpty());

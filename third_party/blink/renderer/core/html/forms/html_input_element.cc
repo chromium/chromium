@@ -305,10 +305,8 @@ bool HTMLInputElement::MayTriggerVirtualKeyboard() const {
 }
 
 bool HTMLInputElement::ShouldHaveFocusAppearance() const {
-  // For FormControlsRefresh don't draw focus ring for an input that has its
-  // popup open.
-  if (::features::IsFormControlsRefreshEnabled() &&
-      input_type_view_->HasOpenedPopup())
+  // Don't draw focus ring for an input that has its popup open.
+  if (input_type_view_->HasOpenedPopup())
     return false;
 
   return TextControlElement::ShouldHaveFocusAppearance();

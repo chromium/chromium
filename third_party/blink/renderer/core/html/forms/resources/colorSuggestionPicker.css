@@ -25,10 +25,11 @@
 
 body {
     --color-swatch-border-width: 1px;
-    --color-swatch-margin: 1px;
-    --color-swatch-height: 20px;
     --color-swatch-padding: 0;
-    --color-swatch-width: 20px;
+    --color-swatch-margin: 3px;
+    --color-swatch-height: 18px;
+    --color-swatch-width: 18px;
+    --scrollbar-width: 4px;
     -webkit-user-select: none;
     background-color: white;
     font: -webkit-small-control;
@@ -36,23 +37,9 @@ body {
     overflow: hidden;
 }
 
-body.controls-refresh {
-    --color-swatch-margin: 3px;
-    --color-swatch-height: 18px;
-    --color-swatch-width: 18px;
-    --scrollbar-width: 4px;
-}
-
 .color-suggestion-picker-main {
     background-color: white;
-    border: solid 1px #8899aa;
-    box-shadow: inset 2px 2px 2px white,
-        inset -2px -2px 1px rgba(0,0,0,0.1);
-    padding: 6px;
     float: left;
-}
-
-.controls-refresh .color-suggestion-picker-main {
     border: 1px solid #bfbfbf;
     box-shadow: none;
     padding: 8px 8px 4px 8px;
@@ -64,19 +51,15 @@ body.controls-refresh {
     height: var(--color-swatch-height);
     margin: var(--color-swatch-margin);
     padding: var(--color-swatch-padding);
-    border: var(--color-swatch-border-width) solid #e0e0e0;
-    border-radius: 0;
     box-sizing: content-box;
-}
-
-.controls-refresh .color-swatch {
     border: var(--color-swatch-border-width) solid rgba(0, 0, 0, 0.19);
     border-radius: 2px;
 }
 
 .color-swatch:focus {
     border: var(--color-swatch-border-width) solid #000000;
-    outline: none;
+    outline: solid 2px -webkit-focus-ring-color;
+    outline-offset: -2px;
 }
 
 .color-swatch-container {
@@ -86,17 +69,14 @@ body.controls-refresh {
     display: flex;
     flex-flow: row wrap;
     align-items: center;
-}
-
-.controls-refresh .color-swatch-container {
     margin: 4px;
 }
 
-.controls-refresh .color-swatch-container::-webkit-scrollbar {
+.color-swatch-container::-webkit-scrollbar {
     width: var(--scrollbar-width);
 }
 
-.controls-refresh .color-swatch-container::-webkit-scrollbar-thumb {
+.color-swatch-container::-webkit-scrollbar-thumb {
     background-color: #cecece;
     border-radius: 2px;
     height: 47px;
@@ -104,17 +84,8 @@ body.controls-refresh {
     width: 4px;
 }
 
-.controls-refresh .color-swatch:focus {
-    outline: solid 2px -webkit-focus-ring-color;
-    outline-offset: -2px;
-}
-
 .other-color {
     width: 100%;
-    margin: 4px 0 0 0;
-}
-
-.controls-refresh .other-color {
     background-color: #ffffff;
     border-color: transparent;
     border-radius: 2px;
@@ -125,61 +96,61 @@ body.controls-refresh {
     text-align: left;
 }
 
-.controls-refresh .other-color:hover {
+.other-color:hover {
     background-color: #f3f3f3;
 }
 
 @media (forced-colors: active) {
-    .controls-refresh .color-suggestion-picker-main {
+    .color-suggestion-picker-main {
         border: 1px solid WindowText;
     }
 
-    .controls-refresh .color-swatch {
+    .color-swatch {
         forced-color-adjust: none;
         border-color: WindowText;
     }
 
-    .controls-refresh .color-swatch:focus {
+    .color-swatch:focus {
         outline-color: Highlight;
     }
 
-    .controls-refresh .color-swatch-container {
+    .color-swatch-container {
         forced-color-adjust: none;
     }
 
-    .controls-refresh .color-swatch-container::-webkit-scrollbar-thumb {
+    .color-swatch-container::-webkit-scrollbar-thumb {
         background-color: WindowText;
     }
 }
 
 @media (prefers-color-scheme: dark) {
-    .controls-refresh .color-suggestion-picker-main {
+    .color-suggestion-picker-main {
         background: #3B3B3B;
         color: #FFFFFF;
         border: 1px solid #858585;
         box-shadow: none;
     }
 
-    .controls-refresh .color-swatch {
+    .color-swatch {
         border-color: #858585;
     }
 
-    .controls-refresh .color-swatch:focus {
+    .color-swatch:focus {
         outline-color: Highlight;
     }
 
-    .controls-refresh .other-color,
-    .controls-refresh .other-color:hover {
+    .other-color,
+    .other-color:hover {
         background: #3B3B3B;
         color: #FFFFFF;
         border: 1px solid #858585;
     }
 
-    .controls-refresh .other-color:hover{
+    .other-color:hover{
         border: 1px solid #ACACAC;
     }
 
-    .controls-refresh .color-swatch-container::-webkit-scrollbar-thumb {
+    .color-swatch-container::-webkit-scrollbar-thumb {
         background-color: WindowText;
     }
 }

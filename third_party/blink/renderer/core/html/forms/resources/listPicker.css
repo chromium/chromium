@@ -1,6 +1,8 @@
 select {
     display: block;
     overflow-y: auto;
+    border-radius: 0px;
+    outline: none;
 }
 
 select hr {
@@ -15,9 +17,4 @@ option, optgroup {
 
 .wrap option {
     white-space: pre-wrap;
-}
-
-.controls-refresh select {
-  border-radius: 0px;
-  outline: none;
 }

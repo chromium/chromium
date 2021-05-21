@@ -1280,16 +1280,6 @@ const char kForceUiDirectionDescription[] =
     "Explicitly force the UI to left-to-right (LTR) or right-to-left (RTL) "
     "mode, overriding the default direction of the UI language.";
 
-const char kFormControlsDarkModeName[] = "Web Platform Controls Dark Mode";
-const char kFormControlsDarkModeDescription[] =
-    "If enabled, forms controls and scrollbars will be rendered with a dark "
-    "theme, only on web pages that support dark color schemes, and when the "
-    "OS is switched to dark theme.";
-
-const char kFormControlsRefreshName[] = "Web Platform Controls updated UI";
-const char kFormControlsRefreshDescription[] =
-    "If enabled, HTML forms elements will be rendered using an updated style.";
-
 const char kGlobalMediaControlsName[] = "Global Media Controls";
 const char kGlobalMediaControlsDescription[] =
     "Enables the Global Media Controls UI in the toolbar.";

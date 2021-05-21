@@ -160,8 +160,7 @@ void ColorInputType::HandleDOMActivateEvent(Event& event) {
             : WebFeature::kColorInputTypeChooserByUntrustedClick);
     chooser_ = chrome_client->OpenColorChooser(document.GetFrame(), this,
                                                ValueAsColor());
-    if (::features::IsFormControlsRefreshEnabled() &&
-        GetElement().GetLayoutObject()) {
+    if (GetElement().GetLayoutObject()) {
       // Invalidate paint to ensure that the focus ring is removed.
       GetElement().GetLayoutObject()->SetShouldDoFullPaintInvalidation();
     }
@@ -213,8 +212,7 @@ void ColorInputType::DidChooseColor(const Color& color) {
 void ColorInputType::DidEndChooser() {
   GetElement().EnqueueChangeEvent();
   chooser_.Clear();
-  if (::features::IsFormControlsRefreshEnabled() &&
-      GetElement().GetLayoutObject()) {
+  if (GetElement().GetLayoutObject()) {
     // Invalidate paint to ensure that the focus ring is shown.
     GetElement().GetLayoutObject()->SetShouldDoFullPaintInvalidation();
   }

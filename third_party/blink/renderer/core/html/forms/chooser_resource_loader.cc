@@ -29,15 +29,6 @@ Vector<char> ChooserResourceLoader::GetSuggestionPickerJS() {
 #endif
 }
 
-Vector<char> ChooserResourceLoader::GetPickerButtonStyleSheet() {
-#if !defined(OS_ANDROID)
-  return UncompressResourceAsBinary(IDR_PICKER_BUTTON_CSS);
-#else
-  NOTREACHED();
-  return Vector<char>();
-#endif
-}
-
 Vector<char> ChooserResourceLoader::GetPickerCommonStyleSheet() {
 #if !defined(OS_ANDROID)
   return UncompressResourceAsBinary(IDR_PICKER_COMMON_CSS);

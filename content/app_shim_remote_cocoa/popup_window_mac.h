@@ -21,7 +21,6 @@ namespace remote_cocoa {
 class PopupWindowMac {
  public:
   PopupWindowMac(const gfx::Rect& content_rect,
-                 bool has_shadow,
                  RenderWidgetHostViewCocoa* cocoa_view);
   ~PopupWindowMac();
 

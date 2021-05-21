@@ -211,12 +211,6 @@ SuggestionPicker.prototype._layout = function() {
         this._config.suggestionLabels[i], this._config.suggestionValues[i]));
   }
   if (this._config.showOtherDateEntry) {
-    // Add separator
-    if (!global.params.isFormControlsRefreshEnabled) {
-      var separator = createElement('div', 'separator');
-      this._containerElement.appendChild(separator);
-    }
-
     // Add "Other..." entry
     var otherEntry = this._createActionEntryElement(
         this._config.otherDateLabel,

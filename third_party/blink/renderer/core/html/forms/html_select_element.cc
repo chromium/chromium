@@ -363,9 +363,8 @@ bool HTMLSelectElement::MayTriggerVirtualKeyboard() const {
 }
 
 bool HTMLSelectElement::ShouldHaveFocusAppearance() const {
-  // For FormControlsRefresh don't draw focus ring for a select that has its
-  // popup open.
-  if (::features::IsFormControlsRefreshEnabled() && PopupIsVisible())
+  // Don't draw focus ring for a select that has its popup open.
+  if (PopupIsVisible())
     return false;
 
   return HTMLFormControlElementWithState::ShouldHaveFocusAppearance();

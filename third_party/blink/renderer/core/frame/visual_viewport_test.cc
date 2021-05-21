@@ -2799,8 +2799,6 @@ TEST_P(VisualViewportTest, InSubtreeOfPageScale) {
 }
 
 TEST_F(VisualViewportSimTest, UsedColorSchemeFromRootElement) {
-  ScopedCSSColorSchemeUARenderingForTest color_scheme_ua_enabled(true);
-
   ColorSchemeHelper color_scheme_helper(*(WebView().GetPage()));
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);

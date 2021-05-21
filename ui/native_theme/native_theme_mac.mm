@@ -109,9 +109,7 @@ namespace ui {
 
 // static
 NativeTheme* NativeTheme::GetInstanceForWeb() {
-  if (features::IsFormControlsRefreshEnabled())
-    return NativeThemeAura::web_instance();
-  return NativeThemeMac::instance();
+  return NativeThemeAura::web_instance();
 }
 
 // static
@@ -625,11 +623,7 @@ void NativeThemeMac::InitializeDarkModeStateAndObserver() {
 }
 
 void NativeThemeMac::ConfigureWebInstance() {
-  if (!features::IsFormControlsRefreshEnabled())
-    return;
-
-  // For FormControlsRefresh, NativeThemeAura is used as web instance so we need
-  // to initialize its state.
+  // NativeThemeAura is used as web instance so we need to initialize its state.
   NativeTheme* web_instance = NativeTheme::GetInstanceForWeb();
   web_instance->set_use_dark_colors(IsDarkMode());
   web_instance->set_preferred_color_scheme(CalculatePreferredColorScheme());

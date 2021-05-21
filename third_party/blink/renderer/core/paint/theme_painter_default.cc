@@ -209,9 +209,7 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
   extra_params.button.zoom = zoom_level;
   GraphicsContextStateSaver state_saver(paint_info.context, false);
   IntRect unzoomed_rect =
-      features::IsFormControlsRefreshEnabled()
-          ? ApplyZoomToRect(rect, paint_info, state_saver, zoom_level)
-          : rect;
+      ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartRadio, GetWebThemeState(element),
@@ -353,8 +351,7 @@ void ThemePainterDefault::SetupMenuListArrow(
       theme_.ClampedMenuListArrowPaddingSize(document.GetFrame(), style);
   float arrow_scale_factor = arrow_box_width / theme_.MenuListArrowWidthInDIP();
   // TODO(tkent): This should be 7.0 to match scroll bar buttons.
-  float arrow_size = (features::IsFormControlsRefreshEnabled() ? 8.0 : 6.0) *
-                     arrow_scale_factor;
+  float arrow_size = 8.0 * arrow_scale_factor;
   // Put the arrow at the center of paddingForArrow area.
   // |arrowX| is the left position for Aura theme engine.
   extra_params.menu_list.arrow_x =
@@ -383,14 +380,6 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
   extra_params.slider.zoom = zoom_level;
   GraphicsContextStateSaver state_saver(i.context, false);
   IntRect unzoomed_rect = rect;
-  if (zoom_level != 1 && !features::IsFormControlsRefreshEnabled()) {
-    state_saver.Save();
-    unzoomed_rect.SetWidth(unzoomed_rect.Width() / zoom_level);
-    unzoomed_rect.SetHeight(unzoomed_rect.Height() / zoom_level);
-    i.context.Translate(unzoomed_rect.X(), unzoomed_rect.Y());
-    i.context.Scale(zoom_level, zoom_level);
-    i.context.Translate(-unzoomed_rect.X(), -unzoomed_rect.Y());
-  }
 
   auto* input = DynamicTo<HTMLInputElement>(element);
   extra_params.slider.thumb_x = 0;
@@ -405,23 +394,12 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
     LayoutBox* input_box = input->GetLayoutBox();
     if (thumb) {
       IntRect thumb_rect = PixelSnappedIntRect(thumb->FrameRect());
-      if (features::IsFormControlsRefreshEnabled()) {
-        extra_params.slider.thumb_x = thumb_rect.X() +
-                                      input_box->PaddingLeft().ToInt() +
-                                      input_box->BorderLeft().ToInt();
-        extra_params.slider.thumb_y = thumb_rect.Y() +
-                                      input_box->PaddingTop().ToInt() +
-                                      input_box->BorderTop().ToInt();
-      } else {
-        extra_params.slider.thumb_x =
-            (thumb_rect.X() + input_box->PaddingLeft().ToInt() +
-             input_box->BorderLeft().ToInt()) /
-            zoom_level;
-        extra_params.slider.thumb_y =
-            (thumb_rect.Y() + input_box->PaddingTop().ToInt() +
-             input_box->BorderTop().ToInt()) /
-            zoom_level;
-      }
+      extra_params.slider.thumb_x = thumb_rect.X() +
+                                    input_box->PaddingLeft().ToInt() +
+                                    input_box->BorderLeft().ToInt();
+      extra_params.slider.thumb_y = thumb_rect.Y() +
+                                    input_box->PaddingTop().ToInt() +
+                                    input_box->BorderTop().ToInt();
     }
   }
 
@@ -446,14 +424,6 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
   extra_params.slider.zoom = zoom_level;
   GraphicsContextStateSaver state_saver(paint_info.context, false);
   IntRect unzoomed_rect = rect;
-  if (zoom_level != 1 && !features::IsFormControlsRefreshEnabled()) {
-    state_saver.Save();
-    unzoomed_rect.SetWidth(unzoomed_rect.Width() / zoom_level);
-    unzoomed_rect.SetHeight(unzoomed_rect.Height() / zoom_level);
-    paint_info.context.Translate(unzoomed_rect.X(), unzoomed_rect.Y());
-    paint_info.context.Scale(zoom_level, zoom_level);
-    paint_info.context.Translate(-unzoomed_rect.X(), -unzoomed_rect.Y());
-  }
 
   // The element passed in is inside the user agent shadowdom of the input
   // element, so we have to access the parent input element in order to get the

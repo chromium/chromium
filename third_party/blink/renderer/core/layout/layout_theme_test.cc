@@ -19,14 +19,11 @@
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
-class LayoutThemeTest : public PageTestBase,
-                        private ScopedCSSColorSchemeUARenderingForTest {
+class LayoutThemeTest : public PageTestBase {
  protected:
-  LayoutThemeTest() : ScopedCSSColorSchemeUARenderingForTest(true) {}
   void SetHtmlInnerHTML(const char* html_content);
 };
 

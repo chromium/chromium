@@ -357,8 +357,6 @@ bool MenuListSelectType::PopupIsVisible() const {
 
 void MenuListSelectType::SetPopupIsVisible(bool popup_is_visible) {
   popup_is_visible_ = popup_is_visible;
-  if (!::features::IsFormControlsRefreshEnabled())
-    return;
   if (auto* layout_object = select_->GetLayoutObject()) {
     // Invalidate paint to ensure that the focus ring is updated.
     layout_object->SetShouldDoFullPaintInvalidation();

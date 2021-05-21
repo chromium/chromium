@@ -2426,8 +2426,6 @@ TEST_F(StyleEngineTest, ColorSchemeBaseBackgroundChange) {
 }
 
 TEST_F(StyleEngineTest, ColorSchemeOverride) {
-  ScopedCSSColorSchemeUARenderingForTest enable_color_scheme_ua(true);
-
   ColorSchemeHelper color_scheme_helper(GetDocument());
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kLight);

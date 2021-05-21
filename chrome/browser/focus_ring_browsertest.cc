@@ -4,7 +4,6 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
@@ -55,12 +54,6 @@ const cc::FuzzyPixelComparator mac_loose_comparator(
 
 class FocusRingBrowserTest : public InProcessBrowserTest {
  public:
-  FocusRingBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kFormControlsRefresh, features::kCSSColorSchemeUARendering},
-        {});
-  }
-
   void SetUp() override {
     EnablePixelOutput(/*force_device_scale_factor=*/1.f);
     InProcessBrowserTest::SetUp();
@@ -83,9 +76,6 @@ class FocusRingBrowserTest : public InProcessBrowserTest {
                int screenshot_height,
                const cc::PixelComparator& comparator) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-
-    ASSERT_TRUE(features::IsFormControlsRefreshEnabled());
-    ASSERT_TRUE(features::IsCSSColorSchemeUARenderingEnabled());
 
     base::FilePath dir_test_data;
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &dir_test_data));
@@ -119,9 +109,6 @@ class FocusRingBrowserTest : public InProcessBrowserTest {
         web_contents, golden_filepath,
         gfx::Size(screenshot_width, screenshot_height), comparator));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, Checkbox) {

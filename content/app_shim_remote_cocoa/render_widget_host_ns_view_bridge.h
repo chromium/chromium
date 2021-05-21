@@ -43,7 +43,7 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
   RenderWidgetHostViewCocoa* GetNSView();
 
   // mojom::RenderWidgetHostNSView implementation.
-  void InitAsPopup(const gfx::Rect& content_rect, bool has_shadow) override;
+  void InitAsPopup(const gfx::Rect& content_rect) override;
   void SetParentWebContentsNSView(uint64_t parent_ns_view_id) override;
   void DisableDisplay() override;
   void MakeFirstResponder() override;

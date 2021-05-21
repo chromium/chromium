@@ -331,7 +331,6 @@ Picker.prototype = Object.create(EventEmitter.prototype);
 Picker.Actions = {
   SetValue: 0,
   Cancel: -1,
-  ChooseOtherColor: -2
 };
 
 /**
@@ -344,11 +343,6 @@ Picker.prototype.submitValue = function(value) {
 
 Picker.prototype.handleCancel = function() {
   window.pagePopupController.closePopup();
-};
-
-Picker.prototype.chooseOtherColor = function() {
-  window.pagePopupController.setValueAndClosePopup(
-      Picker.Actions.ChooseOtherColor, '');
 };
 
 Picker.prototype.cleanup = function() {};

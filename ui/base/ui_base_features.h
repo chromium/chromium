@@ -88,16 +88,6 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsForcedColorsEnabled();
 COMPONENT_EXPORT(UI_BASE_FEATURES) extern const base::Feature kEyeDropper;
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsEyeDropperEnabled();
 
-// Used to enable form controls and scrollbar dark mode rendering.
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const base::Feature kCSSColorSchemeUARendering;
-COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsCSSColorSchemeUARenderingEnabled();
-
-// Used to enable the new controls UI.
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const base::Feature kFormControlsRefresh;
-COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsFormControlsRefreshEnabled();
-
 // Used to enable the common select popup.
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kUseCommonSelectPopup;

@@ -2799,9 +2799,7 @@ Scrollbar* PaintLayerScrollableArea::ScrollbarManager::CreateScrollbar(
         ScrollableArea(), orientation, To<Element>(style_source.GetNode()));
   } else {
     Element* style_source_element = nullptr;
-    if (::features::IsFormControlsRefreshEnabled()) {
-      style_source_element = DynamicTo<Element>(style_source.GetNode());
-    }
+    style_source_element = DynamicTo<Element>(style_source.GetNode());
     scrollbar = MakeGarbageCollected<Scrollbar>(ScrollableArea(), orientation,
                                                 style_source_element);
   }

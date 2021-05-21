@@ -165,7 +165,7 @@ body {
   color: rgba(16, 16, 16, 0.3);
 }
 
-.today-button-refresh {
+.today-button {
   border: 1px solid transparent;
   bottom: 12px;
   color: #0078D4;
@@ -177,11 +177,11 @@ body {
   width: auto;
 }
 
-.today-button-refresh:hover {
+.today-button:hover {
   background-color: rgba(0, 117, 255, 0.3);
 }
 
-.today-button-refresh:disabled {
+.today-button:disabled {
   background-color: #FFFFFF;
   color: rgba(16, 16, 16, 0.3);
 }
@@ -360,18 +360,18 @@ body {
     color: GrayText;
   }
 
-  .today-button-refresh {
+  .today-button {
     background-color: Window;
     color: LinkText;
     forced-color-adjust: none;
   }
 
-  .today-button-refresh:hover {
+  .today-button:hover {
     background-color: Window;
     border-color: Highlight;
   }
 
-  .today-button-refresh:disabled {
+  .today-button:disabled {
     background-color: Window;
     border-color: transparent;
     color: GrayText;
@@ -471,16 +471,16 @@ body {
     color: rgba(255, 255, 255, 0.3);
   }
 
-  .today-button-refresh {
+  .today-button {
     color: #99C8FF;
   }
 
-  .today-button-refresh:hover {
+  .today-button:hover {
     color: #D1E6FF;
     background-color: #545454;
   }
 
-  .today-button-refresh:disabled {
+  .today-button:disabled {
     color: rgba(255, 255, 255, 0.3);
   }
 

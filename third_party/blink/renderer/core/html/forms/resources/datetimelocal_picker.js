@@ -99,7 +99,7 @@ class DateTimeLocalPicker extends HTMLElement {
 
   onClick_ = (event) => {
     if (event.target.matches(
-            '.day-cell, .time-cell, .today-button-refresh, .calendar-navigation-button, .year-list-view, .calendar-navigation-button, .navigation-button-icon-refresh, .month-button') &&
+            '.day-cell, .time-cell, .today-button, .calendar-navigation-button, .year-list-view, .calendar-navigation-button, .navigation-button-icon, .month-button') &&
         this.hasSelectedDate) {
       window.pagePopupController.setValue(this.selectedValue);
     }

@@ -109,8 +109,7 @@ void CalculateWindowStylesFromInitParams(
       break;
     case Widget::InitParams::TYPE_MENU:
       *style |= WS_POPUP;
-      if (::features::IsFormControlsRefreshEnabled() &&
-          params.remove_standard_frame) {
+      if (params.remove_standard_frame) {
         // If the platform doesn't support drop shadow, decorate the Window
         // with just a border.
         if (ui::win::IsAeroGlassEnabled())

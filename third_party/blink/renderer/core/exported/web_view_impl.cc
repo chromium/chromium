@@ -3170,8 +3170,7 @@ void WebViewImpl::UpdateRendererPreferences(
   }
 #endif
 
-  if (::features::IsFormControlsRefreshEnabled() &&
-      renderer_preferences_.use_custom_colors) {
+  if (renderer_preferences_.use_custom_colors) {
     SetFocusRingColor(renderer_preferences_.focus_ring_color);
   }
 

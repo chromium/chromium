@@ -61,10 +61,8 @@ RenderWidgetHostViewCocoa* RenderWidgetHostNSViewBridge::GetNSView() {
   return cocoa_view_;
 }
 
-void RenderWidgetHostNSViewBridge::InitAsPopup(const gfx::Rect& content_rect,
-                                               bool has_shadow) {
-  popup_window_ =
-      std::make_unique<PopupWindowMac>(content_rect, has_shadow, cocoa_view_);
+void RenderWidgetHostNSViewBridge::InitAsPopup(const gfx::Rect& content_rect) {
+  popup_window_ = std::make_unique<PopupWindowMac>(content_rect, cocoa_view_);
 }
 
 void RenderWidgetHostNSViewBridge::SetParentWebContentsNSView(

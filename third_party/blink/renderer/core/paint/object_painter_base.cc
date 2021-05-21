@@ -516,9 +516,7 @@ void DrawSolidBoxSide(GraphicsContext& graphics_context,
 float GetFocusRingBorderRadius(const ComputedStyle& style) {
   // Default style is border-radius equal to outline width.
   float border_radius = style.GetOutlineStrokeWidthForFocusRing();
-
-  if (::features::IsFormControlsRefreshEnabled() && !style.HasAuthorBorder() &&
-      style.HasEffectiveAppearance()) {
+  if (!style.HasAuthorBorder() && style.HasEffectiveAppearance()) {
     // For the elements that have not been styled and that have an appearance,
     // the focus ring should use the same border radius as the one used for
     // drawing the element.
