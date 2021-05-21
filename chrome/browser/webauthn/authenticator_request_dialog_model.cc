@@ -439,18 +439,7 @@ void AuthenticatorRequestDialogModel::OnUserConsentDenied() {
 }
 
 bool AuthenticatorRequestDialogModel::OnWinUserCancelled() {
-  // If caBLE v2 isn't enabled then this event isn't handled and will cause the
-  // request to fail with a NotAllowedError.
-  if (!base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
-    return false;
-  }
-
-  // Otherwise, if the user cancels out of the Windows-native UI, we show the
-  // transport selection dialog which allows them to pair a phone.
-  win_native_api_already_tried_ = true;
-
-  StartOver();
-  return true;
+  return false;
 }
 
 void AuthenticatorRequestDialogModel::OnBluetoothPoweredStateChanged(

@@ -659,10 +659,6 @@ class AuthenticatorRequestDialogModel {
   base::RepeatingCallback<void(size_t)> contact_phone_callback_;
 
   absl::optional<std::string> cable_qr_string_;
-  // win_native_api_already_tried_ is true if the Windows-native UI has been
-  // displayed already and the user cancelled it. In this case, we shouldn't
-  // jump straight to showing it again.
-  bool win_native_api_already_tried_ = false;
 
   base::WeakPtrFactory<AuthenticatorRequestDialogModel> weak_factory_{this};
 
