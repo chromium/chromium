@@ -9,6 +9,7 @@ android_library("java") {
   visibility = [
     ":*",
     "//chrome/android:chrome_all_java",
+    "//chrome/android:chrome_test_java",
   ]
 
   sources = [
@@ -56,5 +57,21 @@ android_resources("java_resources") {
     "java/res/layout/carousel_item.xml",
     "java/res/layout/creation_dialog.xml",
     "java/res/layout/top_bar.xml",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/content_creation/notes/fonts/TypefaceRequestTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base/test:test_support_java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
   ]
 }

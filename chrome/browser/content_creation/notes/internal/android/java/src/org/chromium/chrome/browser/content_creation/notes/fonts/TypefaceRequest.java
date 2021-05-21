@@ -13,6 +13,9 @@ import java.util.Objects;
  * Class used to represent queries used to load fonts.
  */
 public class TypefaceRequest {
+    private static final String CONDENSED_SUBSTRING = " Condensed";
+    private static final int CONDENSED_WIDTH_VALUE = 75;
+
     public final String fontName;
     public final int weight;
 
@@ -31,6 +34,16 @@ public class TypefaceRequest {
      * https://developers.google.com/fonts/docs/android#query_format
      */
     public String toQuery() {
+        int condensedIndex = this.fontName.lastIndexOf(CONDENSED_SUBSTRING);
+        if (condensedIndex != -1) {
+            // Build a query for the condensed version of the font. Condensed
+            // fonts are simply fonts with a width of 75. For example,
+            // "Roboto Condensed" is "Roboto" with a width of 75.
+            String actualFontName = this.fontName.substring(0, condensedIndex);
+            return String.format((Locale) null, "name=%s&weight=%d&width=%d", actualFontName,
+                    this.weight, CONDENSED_WIDTH_VALUE);
+        }
+
         return String.format((Locale) null, "name=%s&weight=%d", this.fontName, this.weight);
     }
 
