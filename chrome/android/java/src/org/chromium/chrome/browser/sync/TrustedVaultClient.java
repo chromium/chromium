@@ -54,6 +54,20 @@ public class TrustedVaultClient {
          * took any effect (false positives acceptable).
          */
         Promise<Boolean> markKeysAsStale(CoreAccountInfo accountInfo);
+
+        /**
+         * Returns whether recoverability of the keys is degraded and user action is required to add
+         * a new method. This may be called frequently and implementations are responsible for
+         * implementing caching and possibly throttling.
+         *
+         * @param accountInfo Account representing the user.
+         * @return a promise which indicates completion and representing whether recoverability is
+         *         actually degraded.
+         */
+        // TODO(crbug.com/1100279): Switch to non-default method once all implementations are ready.
+        default Promise<Boolean> getIsRecoverabilityDegraded(CoreAccountInfo accountInfo) {
+            return Promise.fulfilled(false);
+        }
     }
 
     /**
@@ -210,11 +224,40 @@ public class TrustedVaultClient {
                         });
     }
 
+    /**
+     * Forwards calls to Backend.getIsRecoverabilityDegraded() and upon completion invokes native
+     * method getIsRecoverabilityDegradedCompleted().
+     */
+    @CalledByNative
+    private static void getIsRecoverabilityDegraded(
+            long nativeTrustedVaultClientAndroid, int requestId, CoreAccountInfo accountInfo) {
+        assert isNativeRegistered(nativeTrustedVaultClientAndroid);
+
+        get().mBackend.getIsRecoverabilityDegraded(accountInfo)
+                .then(
+                        (result)
+                                -> {
+                            if (isNativeRegistered(nativeTrustedVaultClientAndroid)) {
+                                TrustedVaultClientJni.get().getIsRecoverabilityDegradedCompleted(
+                                        nativeTrustedVaultClientAndroid, requestId, result);
+                            }
+                        },
+                        (exception) -> {
+                            if (isNativeRegistered(nativeTrustedVaultClientAndroid)) {
+                                // In doubt, let's not bother the user with a prompt.
+                                TrustedVaultClientJni.get().getIsRecoverabilityDegradedCompleted(
+                                        nativeTrustedVaultClientAndroid, requestId, false);
+                            }
+                        });
+    }
+
     @NativeMethods
     interface Natives {
         void fetchKeysCompleted(
                 long nativeTrustedVaultClientAndroid, int requestId, String gaiaId, byte[][] keys);
         void markKeysAsStaleCompleted(
+                long nativeTrustedVaultClientAndroid, int requestId, boolean result);
+        void getIsRecoverabilityDegradedCompleted(
                 long nativeTrustedVaultClientAndroid, int requestId, boolean result);
         void notifyKeysChanged(long nativeTrustedVaultClientAndroid);
     }

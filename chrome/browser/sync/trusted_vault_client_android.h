@@ -45,6 +45,13 @@ class TrustedVaultClientAndroid : public syncer::TrustedVaultClient {
   // previously initiated from C++ and identified by |request_id|.
   void MarkKeysAsStaleCompleted(JNIEnv* env, jint request_id, jboolean result);
 
+  // Called from Java to notify the completion of a
+  // GetIsRecoverabilityDegraded() operation previously initiated from C++ and
+  // identified by |request_id|.
+  void GetIsRecoverabilityDegradedCompleted(JNIEnv* env,
+                                            jint request_id,
+                                            jboolean result);
+
   // Called from Java to notify that the keys in the vault may have changed.
   void NotifyKeysChanged(JNIEnv* env);
 
@@ -91,9 +98,21 @@ class TrustedVaultClientAndroid : public syncer::TrustedVaultClient {
     base::OnceCallback<void(bool)> callback;
   };
 
+  // Struct representing an in-flight GetIsRecoverabilityDegraded() invoked from
+  // C++.
+  struct OngoingGetIsRecoverabilityDegraded {
+    explicit OngoingGetIsRecoverabilityDegraded(
+        base::OnceCallback<void(bool)> callback);
+    OngoingGetIsRecoverabilityDegraded(OngoingGetIsRecoverabilityDegraded&&);
+    ~OngoingGetIsRecoverabilityDegraded();
+
+    base::OnceCallback<void(bool)> callback;
+  };
+
   using RequestId = int32_t;
-  using OngoingRequest =
-      absl::variant<OngoingFetchKeys, OngoingMarkKeysAsStale>;
+  using OngoingRequest = absl::variant<OngoingFetchKeys,
+                                       OngoingMarkKeysAsStale,
+                                       OngoingGetIsRecoverabilityDegraded>;
 
   RequestId RegisterNewOngoingRequest(OngoingRequest request);
   OngoingRequest GetAndUnregisterOngoingRequest(RequestId id);

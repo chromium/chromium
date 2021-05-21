@@ -32,6 +32,17 @@ TrustedVaultClientAndroid::OngoingMarkKeysAsStale::OngoingMarkKeysAsStale(
 TrustedVaultClientAndroid::OngoingMarkKeysAsStale::~OngoingMarkKeysAsStale() =
     default;
 
+TrustedVaultClientAndroid::OngoingGetIsRecoverabilityDegraded::
+    OngoingGetIsRecoverabilityDegraded(base::OnceCallback<void(bool)> callback)
+    : callback(std::move(callback)) {}
+
+TrustedVaultClientAndroid::OngoingGetIsRecoverabilityDegraded::
+    OngoingGetIsRecoverabilityDegraded(OngoingGetIsRecoverabilityDegraded&&) =
+        default;
+
+TrustedVaultClientAndroid::OngoingGetIsRecoverabilityDegraded::
+    ~OngoingGetIsRecoverabilityDegraded() = default;
+
 TrustedVaultClientAndroid::TrustedVaultClientAndroid() {
   JNIEnv* const env = base::android::AttachCurrentThread();
   Java_TrustedVaultClient_registerNative(env, reinterpret_cast<intptr_t>(this));
@@ -71,6 +82,19 @@ void TrustedVaultClientAndroid::MarkKeysAsStaleCompleted(JNIEnv* env,
   OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
 
   std::move(absl::get<OngoingMarkKeysAsStale>(ongoing_request).callback)
+      .Run(!!result);
+}
+
+void TrustedVaultClientAndroid::GetIsRecoverabilityDegradedCompleted(
+    JNIEnv* env,
+    jint request_id,
+    jboolean result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
+
+  std::move(
+      absl::get<OngoingGetIsRecoverabilityDegraded>(ongoing_request).callback)
       .Run(!!result);
 }
 
@@ -141,9 +165,21 @@ void TrustedVaultClientAndroid::MarkKeysAsStale(
 void TrustedVaultClientAndroid::GetIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> cb) {
-  // TODO(crbug.com/1100279): Needs implementation.
-  NOTIMPLEMENTED();
-  std::move(cb).Run(false);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(cb);
+
+  // Store for later completion when Java invokes
+  // GetIsRecoverabilityDegradedCompleted().
+  const RequestId request_id = RegisterNewOngoingRequest(
+      OngoingGetIsRecoverabilityDegraded(std::move(cb)));
+
+  JNIEnv* const env = base::android::AttachCurrentThread();
+  const base::android::ScopedJavaLocalRef<jobject> java_account_info =
+      ConvertToJavaCoreAccountInfo(env, account_info);
+
+  // The Java implementation will eventually call MarkKeysAsStaleCompleted().
+  Java_TrustedVaultClient_getIsRecoverabilityDegraded(
+      env, reinterpret_cast<intptr_t>(this), request_id, java_account_info);
 }
 
 void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
