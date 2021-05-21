@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -18,6 +19,7 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
+#include "base/time/time.h"
 #include "third_party/webrtc/rtc_base/thread.h"
 
 namespace jingle_glue {
@@ -36,6 +38,11 @@ namespace jingle_glue {
 class JingleThreadWrapper : public base::CurrentThread::DestructionObserver,
                             public rtc::Thread {
  public:
+  // A repeating callback whose TimeDelta argument indicates a duration sample.
+  // What the duration represents is contextual.
+  using SampledDurationCallback =
+      base::RepeatingCallback<void(base::TimeDelta)>;
+
   // Create JingleThreadWrapper for the current thread if it hasn't been created
   // yet. The thread wrapper is destroyed automatically when the current
   // MessageLoop is destroyed.
@@ -49,6 +56,21 @@ class JingleThreadWrapper : public base::CurrentThread::DestructionObserver,
   // Returns thread wrapper for the current thread or nullptr if it doesn't
   // exist.
   static JingleThreadWrapper* current();
+
+  // Sets task latency & duration sample callbacks intended to gather UMA
+  // statistics. Samples are acquired periodically every several seconds by
+  // JingleThreadWrapper. In this context,
+  // * task latency is defined as the duration between the moment a task is
+  //   scheduled from JingleThreadWrapper's task runner, and the moment
+  //   it begins running.
+  // * task duration is defined as the duration between the moment the
+  //   JingleThreadWrapper begins running a task and the moment it ends
+  //   executing it. It only measures durations of tasks posted to rtc::Thread.
+  // The passed callbacks are called in the JingleThreadWrapper's task runner
+  // context.
+  void SetLatencyAndTaskDurationCallbacks(
+      SampledDurationCallback task_latency_callback,
+      SampledDurationCallback task_duration_callback);
 
   ~JingleThreadWrapper() override;
 
@@ -105,6 +127,7 @@ class JingleThreadWrapper : public base::CurrentThread::DestructionObserver,
  private:
   typedef std::map<int, rtc::Message> MessagesQueue;
   struct PendingSend;
+  class PostTaskLatencySampler;
 
   explicit JingleThreadWrapper(
      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -115,6 +138,7 @@ class JingleThreadWrapper : public base::CurrentThread::DestructionObserver,
                         uint32_t message_id,
                         rtc::MessageData* data);
   void RunTask(int task_id);
+  void RunTaskInternal(int task_id);
   void ProcessPendingSends();
 
   // Task runner used to execute messages posted on this thread.
@@ -128,6 +152,9 @@ class JingleThreadWrapper : public base::CurrentThread::DestructionObserver,
   MessagesQueue messages_;
   std::list<PendingSend*> pending_send_messages_;
   base::WaitableEvent pending_send_event_;
+  std::unique_ptr<PostTaskLatencySampler> latency_sampler_;
+  SampledDurationCallback task_latency_callback_;
+  SampledDurationCallback task_duration_callback_;
 
   base::WeakPtr<JingleThreadWrapper> weak_ptr_;
   base::WeakPtrFactory<JingleThreadWrapper> weak_ptr_factory_{this};

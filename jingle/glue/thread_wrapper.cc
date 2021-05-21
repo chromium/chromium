@@ -11,16 +11,81 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
+#include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/sequence_checker.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/thread_annotations.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/thread.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/webrtc/rtc_base/physical_socket_server.h"
 
 namespace jingle_glue {
+namespace {
+static constexpr base::TimeDelta kTaskLatencySampleDuration =
+    base::TimeDelta::FromSeconds(3);
+}
+
+// Class intended to conditionally live for the duration of JingleThreadWrapper
+// that periodically captures task latencies (definition in docs for
+// SetLatencyAndTaskDurationCallbacks).
+class JingleThreadWrapper::PostTaskLatencySampler {
+ public:
+  PostTaskLatencySampler(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      SampledDurationCallback task_latency_callback)
+      : task_runner_(task_runner),
+        task_latency_callback_(std::move(task_latency_callback)) {
+    ScheduleDelayedSample();
+  }
+
+  bool ShouldSampleNextTaskDuration() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(current_);
+    bool time_to_sample = should_sample_next_task_duration_;
+    should_sample_next_task_duration_ = false;
+    return time_to_sample;
+  }
+
+ private:
+  void ScheduleDelayedSample() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(current_);
+    task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PostTaskLatencySampler::TakeSample,
+                       base::Unretained(this)),
+        kTaskLatencySampleDuration);
+  }
+
+  void TakeSample() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(current_);
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PostTaskLatencySampler::FinishSample,
+                       base::Unretained(this), base::TimeTicks::Now()));
+  }
+
+  void FinishSample(base::TimeTicks post_timestamp) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(current_);
+    task_latency_callback_.Run(base::TimeTicks::Now() - post_timestamp);
+    ScheduleDelayedSample();
+    should_sample_next_task_duration_ = true;
+  }
+
+  SEQUENCE_CHECKER(current_);
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  base::RepeatingCallback<void(base::TimeDelta)> task_latency_callback_
+      GUARDED_BY_CONTEXT(current_);
+  bool should_sample_next_task_duration_ GUARDED_BY_CONTEXT(current_) = false;
+};
 
 struct JingleThreadWrapper::PendingSend {
-  PendingSend(const rtc::Message& message_value)
+  explicit PendingSend(const rtc::Message& message_value)
       : sending_thread(JingleThreadWrapper::current()),
         message(message_value),
         done_event(base::WaitableEvent::ResetPolicy::MANUAL,
@@ -62,6 +127,13 @@ std::unique_ptr<JingleThreadWrapper> JingleThreadWrapper::WrapTaskRunner(
 // static
 JingleThreadWrapper* JingleThreadWrapper::current() {
   return g_jingle_thread_wrapper.Get().Get();
+}
+
+void JingleThreadWrapper::SetLatencyAndTaskDurationCallbacks(
+    SampledDurationCallback task_latency_callback,
+    SampledDurationCallback task_duration_callback) {
+  task_latency_callback_ = std::move(task_latency_callback);
+  task_duration_callback_ = std::move(task_duration_callback);
 }
 
 JingleThreadWrapper::JingleThreadWrapper(
@@ -260,6 +332,23 @@ void JingleThreadWrapper::PostTaskInternal(const rtc::Location& posted_from,
 }
 
 void JingleThreadWrapper::RunTask(int task_id) {
+  if (!latency_sampler_ && !task_latency_callback_.is_null()) {
+    latency_sampler_ = std::make_unique<PostTaskLatencySampler>(
+        task_runner_, std::move(task_latency_callback_));
+  }
+  absl::optional<base::TimeTicks> task_start_timestamp_;
+  if (!task_duration_callback_.is_null() && latency_sampler_ &&
+      latency_sampler_->ShouldSampleNextTaskDuration()) {
+    task_start_timestamp_ = base::TimeTicks::Now();
+  }
+  RunTaskInternal(task_id);
+  if (task_start_timestamp_.has_value()) {
+    task_duration_callback_.Run(base::TimeTicks::Now() -
+                                *task_start_timestamp_);
+  }
+}
+
+void JingleThreadWrapper::RunTaskInternal(int task_id) {
   bool have_message = false;
   rtc::Message message;
   {
