@@ -342,6 +342,12 @@ void MultiColumnFragmentainerGroup::SetColumnBlockSizeFromNG(
   is_logical_height_known_ = true;
 }
 
+void MultiColumnFragmentainerGroup::ExtendColumnBlockSizeFromNG(
+    LayoutUnit block_size) {
+  DCHECK(is_logical_height_known_);
+  logical_height_ += block_size;
+}
+
 LayoutUnit MultiColumnFragmentainerGroup::HeightAdjustedForRowOffset(
     LayoutUnit height) const {
   LayoutUnit adjusted_height =

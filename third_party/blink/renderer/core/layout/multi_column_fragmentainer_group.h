@@ -160,6 +160,7 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   unsigned ActualColumnCount() const;
 
   void SetColumnBlockSizeFromNG(LayoutUnit);
+  void ExtendColumnBlockSizeFromNG(LayoutUnit);
 
  private:
   LayoutUnit HeightAdjustedForRowOffset(LayoutUnit height) const;

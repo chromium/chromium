@@ -74,6 +74,11 @@ function checkExpectedValues(t, node, prefix)
         assert_tolerance(node.getBoundingClientRect().width, expectedWidth, prefix + "getBoundingClientRect().width");
     }
 
+    var expectedHeight = checkAttribute(output, node, "data-expected-bounding-client-rect-height");
+    if (expectedHeight) {
+        assert_tolerance(node.getBoundingClientRect().height, expectedHeight, prefix + "getBoundingClientRect().height");
+    }
+
     var expectedOffset = checkAttribute(output, node, "data-total-x");
     if (expectedOffset) {
         var totalLeft = node.clientLeft + node.offsetLeft;

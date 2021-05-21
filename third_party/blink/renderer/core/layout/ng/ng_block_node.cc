@@ -1244,6 +1244,7 @@ void NGBlockNode::PlaceChildrenInFlowThread(
   LayoutUnit flow_thread_offset;
   bool has_processed_first_column_in_flow_thread = false;
   bool should_append_fragmentainer_group = false;
+  bool should_expand_last_set = false;
 
   if (IsResumingLayout(previous_container_break_token)) {
     // This multicol container is nested inside another fragmentation context,
@@ -1315,6 +1316,11 @@ void NGBlockNode::PlaceChildrenInFlowThread(
       // found a spanner first, we won't do that, since we'll move to another
       // column set (if there's more column content at all).
       should_append_fragmentainer_group = false;
+
+      // If there is no column set after the spanner, we should expand the last
+      // column set to encompass any columns that were created after the
+      // spanner.
+      should_expand_last_set = !pending_column_set;
       continue;
     }
 
@@ -1376,6 +1382,15 @@ void NGBlockNode::PlaceChildrenInFlowThread(
       // same column set as we used there.
       flow_thread->AppendNewFragmentainerGroupFromNG();
       should_append_fragmentainer_group = false;
+    } else if (should_expand_last_set) {
+      if (logical_size.block_size > LayoutUnit()) {
+        auto* last_set = flow_thread->LastMultiColumnSet();
+        last_set->LastFragmentainerGroup().ExtendColumnBlockSizeFromNG(
+            logical_size.block_size);
+        last_set->EndFlow(flow_thread_offset + logical_size.block_size);
+        last_set->FinishLayoutFromNG();
+      }
+      should_expand_last_set = false;
     }
 
     flow_thread->SetCurrentColumnBlockSizeFromNG(logical_size.block_size);
