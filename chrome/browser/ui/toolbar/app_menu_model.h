@@ -15,6 +15,7 @@
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/button_menu_item_model.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -115,6 +116,8 @@ class AppMenuModel : public ui::SimpleMenuModel,
                      public TabStripModelObserver,
                      public content::WebContentsObserver {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kHistoryMenuItem);
+
   // Range of command IDs to use for the items in the recent tabs submenu.
   static const int kMinRecentTabsCommandId = 1001;
   static const int kMaxRecentTabsCommandId = 1200;

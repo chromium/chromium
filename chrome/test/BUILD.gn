@@ -2561,6 +2561,7 @@ if (!is_android) {
         "../browser/ui/views/translate/translate_bubble_view_browsertest.cc",
         "../browser/ui/views/translate/translate_language_browsertest.cc",
         "../browser/ui/views/user_education/feature_promo_dialog_browsertest.cc",
+        "../browser/ui/views/user_education/interaction_sequence_browsertest.cc",
         "../browser/ui/views/user_education/tip_marquee_view_browsertest.cc",
         "../browser/ui/views/user_education/tutorial_dialog_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_uninstall_dialog_browsertest.cc",
