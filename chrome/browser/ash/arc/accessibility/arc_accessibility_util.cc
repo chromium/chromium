@@ -7,6 +7,7 @@
 #include "ash/public/cpp/app_types.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
+#include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "components/arc/mojom/accessibility_helper.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -16,6 +17,7 @@ namespace arc {
 
 using AXBooleanProperty = mojom::AccessibilityBooleanProperty;
 using AXEventIntProperty = mojom::AccessibilityEventIntProperty;
+using AXIntProperty = mojom::AccessibilityIntProperty;
 using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
 
 absl::optional<ax::mojom::Event> FromContentChangeTypesToAXEvent(
@@ -65,6 +67,28 @@ ax::mojom::Event ToAXEvent(
             FromContentChangeTypesToAXEvent(arc_content_change_types.value());
         if (event_or_null.has_value()) {
           return event_or_null.value();
+        }
+      }
+      int live_region_type_int;
+      if (source_node && source_node->GetNode() &&
+          GetProperty(source_node->GetNode()->int_properties,
+                      AXIntProperty::LIVE_REGION, &live_region_type_int)) {
+        mojom::AccessibilityLiveRegionType live_region_type =
+            static_cast<mojom::AccessibilityLiveRegionType>(
+                live_region_type_int);
+        if (live_region_type != mojom::AccessibilityLiveRegionType::NONE) {
+          // Dispatch a kLiveRegionChanged event to ensure that all liveregions
+          // (inc. snackbar) will get announced. It is currently difficult to
+          // determine when liveregions need to be announced, in particular
+          // differentiaiting between when they first appear (vs text changed).
+          // This case is made evident with snackbar handling, which needs to be
+          // announced when it appears.
+          // TODO (b/187465133): Revisit this liveregion handling logic, once
+          // the talkback spec has been clarified. There is a proposal to write
+          // an API to expose attributes similar to aria-relevant, which will
+          // eventually allow liveregions to be handled similar to how it gets
+          // handled on the web.
+          return ax::mojom::Event::kLiveRegionChanged;
         }
       }
       return ax::mojom::Event::kLayoutComplete;
@@ -207,7 +231,7 @@ AccessibilityInfoDataWrapper* GetSelectedNodeInfoFromAdapterViewEvent(
 std::string ToLiveStatusString(mojom::AccessibilityLiveRegionType type) {
   switch (type) {
     case mojom::AccessibilityLiveRegionType::NONE:
-      return "none";
+      return "off";
     case mojom::AccessibilityLiveRegionType::POLITE:
       return "polite";
     case mojom::AccessibilityLiveRegionType::ASSERTIVE:

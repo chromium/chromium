@@ -5,6 +5,8 @@
 #include <memory>
 
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
+#include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
+#include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "components/arc/mojom/accessibility_helper.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,6 +17,7 @@ namespace arc {
 
 using AXEventType = mojom::AccessibilityEventType;
 using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
+using AXIntProperty = mojom::AccessibilityIntProperty;
 using AXRangeInfoData = mojom::AccessibilityRangeInfoData;
 
 TEST(ArcAccessibilityUtilTest, FromContentChangeTypesToAXEvent) {
@@ -60,4 +63,31 @@ TEST(ArcAccessibilityUtilTest, FromContentChangeTypesToAXEvent) {
   std::vector<int32_t> not_enum_value = {111};
   EXPECT_EQ(absl::nullopt, FromContentChangeTypesToAXEvent(not_enum_value));
 }
+
+TEST(ArcAccessibilityUtilTest, LiveRegionChangeEvent) {
+  auto node_info_data = AXNodeInfoData::New();
+
+  std::vector<int32_t> empty_list = {};
+
+  SetProperty(node_info_data.get(), AXIntProperty::LIVE_REGION,
+              static_cast<int32_t>(mojom::AccessibilityLiveRegionType::POLITE));
+
+  AccessibilityNodeInfoDataWrapper source_node_info_wrapper(
+      nullptr, node_info_data.get());
+  EXPECT_EQ(ax::mojom::Event::kLiveRegionChanged,
+            ToAXEvent(AXEventType::WINDOW_CONTENT_CHANGED, empty_list,
+                      &source_node_info_wrapper, &source_node_info_wrapper));
+
+  // Check kLayoutComplete is returned for nodes with live region type NONE.
+  SetProperty(node_info_data.get(), AXIntProperty::LIVE_REGION,
+              static_cast<int32_t>(mojom::AccessibilityLiveRegionType::NONE));
+
+  AccessibilityNodeInfoDataWrapper source_node_info_wrapper_none(
+      nullptr, node_info_data.get());
+  EXPECT_EQ(
+      ax::mojom::Event::kLayoutComplete,
+      ToAXEvent(AXEventType::WINDOW_CONTENT_CHANGED, empty_list,
+                &source_node_info_wrapper, &source_node_info_wrapper_none));
+}
+
 }  // namespace arc

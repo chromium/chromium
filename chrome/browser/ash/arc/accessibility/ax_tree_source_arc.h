@@ -23,10 +23,6 @@
 #include "ui/accessibility/ax_tree_source.h"
 #include "ui/views/view.h"
 
-namespace ui {
-struct AXEvent;
-}
-
 namespace arc {
 class AXTreeSourceArcTest;
 
@@ -153,10 +149,6 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   // re-serialization.
   std::vector<int32_t> ProcessHooksOnEvent(
       const mojom::AccessibilityEventData& event_data);
-
-  // Compare previous live region and current live region, and add event to the
-  // given vector if there is any difference.
-  void HandleLiveRegions(std::vector<ui::AXEvent>* events);
 
   // Resets tree state.
   void Reset();

@@ -46,10 +46,6 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
 
   mojom::AccessibilityNodeInfoData* node() { return node_ptr_; }
 
-  void set_container_live_status(mojom::AccessibilityLiveRegionType status) {
-    container_live_status_ = status;
-  }
-
  private:
   bool GetProperty(mojom::AccessibilityBooleanProperty prop) const;
   bool GetProperty(mojom::AccessibilityIntProperty prop,
@@ -83,9 +79,6 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
   bool HasImportantPropertyInternal() const;
 
   mojom::AccessibilityNodeInfoData* node_ptr_ = nullptr;
-
-  mojom::AccessibilityLiveRegionType container_live_status_ =
-      mojom::AccessibilityLiveRegionType::NONE;
 
   // Properties which should be checked for recursive text computation.
   // It's not clear whether labeled by should be taken into account here.

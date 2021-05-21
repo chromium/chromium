@@ -775,4 +775,24 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, FocusAndClickAction) {
   EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
 }
 
+TEST_F(AccessibilityNodeInfoDataWrapperTest, LiveRegionStatus) {
+  AXNodeInfoData root;
+  root.id = 1;
+  mojom::AccessibilityLiveRegionType politeLiveRegion =
+      mojom::AccessibilityLiveRegionType::POLITE;
+  SetProperty(root, AXIntProperty::LIVE_REGION,
+              static_cast<int32_t>(politeLiveRegion));
+  AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &root);
+
+  // Check that live region status was set on node.
+  ui::AXNodeData data = CallSerialize(wrapper);
+  std::string val;
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus, &val));
+  ASSERT_EQ("polite", val);
+
+  ASSERT_TRUE(data.GetStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveStatus, &val));
+  ASSERT_EQ("polite", val);
+}
 }  // namespace arc
