@@ -27,7 +27,8 @@ void WorkForOneCpuSec(base::WaitableEvent* event) {
   }
 }
 
-TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
+// Disabled due to excessive flakiness. http://crbug.com/1210898
+TEST(CpuTimeMetricsTest, DISABLED_RecordsMetricsForeground) {
   base::test::TaskEnvironment task_environment;
 
   base::HistogramTester histograms;
