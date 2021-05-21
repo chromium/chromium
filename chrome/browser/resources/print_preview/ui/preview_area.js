@@ -25,6 +25,7 @@ import {PrintableArea} from '../data/printable_area.js';
 import {ScalingType} from '../data/scaling.js';
 import {Size} from '../data/size.js';
 import {Error, State} from '../data/state.js';
+import {Metrics, MetricsContext} from '../metrics.js';
 import {NativeLayer, NativeLayerImpl} from '../native_layer.js';
 import {areRangesEqual} from '../print_preview_utils.js';
 
@@ -306,12 +307,16 @@ Polymer({
     this.documentReady_ = false;
     this.getPreview_().then(
         previewUid => {
+          MetricsContext.getPreview().record(
+              Metrics.PrintPreviewInitializationEvents.FUNCTION_SUCCESSFUL);
           if (!this.documentModifiable) {
             this.onPreviewStart_(previewUid, -1);
           }
           this.documentReady_ = true;
         },
         type => {
+          MetricsContext.getPreview().record(
+              Metrics.PrintPreviewInitializationEvents.FUNCTION_FAILED);
           if (/** @type{string} */ (type) === 'SETTINGS_INVALID') {
             this.error = Error.INVALID_PRINTER;
             this.previewState = PreviewAreaState.ERROR;
@@ -320,6 +325,8 @@ Polymer({
             this.previewState = PreviewAreaState.ERROR;
           }
         });
+    MetricsContext.getPreview().record(
+        Metrics.PrintPreviewInitializationEvents.FUNCTION_INITIATED);
   },
 
   // <if expr="is_macosx">

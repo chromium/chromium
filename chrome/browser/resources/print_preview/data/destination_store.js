@@ -708,6 +708,8 @@ export class DestinationStore extends EventTarget {
                     destination.origin, destination.id, caps),
                 () => this.onGetCapabilitiesFail_(
                     destination.origin, destination.id));
+        MetricsContext.getPrinterCapabilities().record(
+            Metrics.PrintPreviewInitializationEvents.FUNCTION_INITIATED);
       } else {
         assert(
             this.cloudPrintInterface_ !== null,
@@ -811,6 +813,8 @@ export class DestinationStore extends EventTarget {
         type, DestinationStorePrinterSearchStatus.SEARCHING);
     this.nativeLayer_.getPrinters(type).then(
         this.onDestinationSearchDone_.bind(this, type));
+    MetricsContext.getPrinters(type).record(
+        Metrics.PrintPreviewInitializationEvents.FUNCTION_INITIATED);
   }
 
   /**
@@ -1051,6 +1055,8 @@ export class DestinationStore extends EventTarget {
    *     done being retrieved.
    */
   onDestinationSearchDone_(type) {
+    MetricsContext.getPrinters(type).record(
+        Metrics.PrintPreviewInitializationEvents.FUNCTION_SUCCESSFUL);
     this.destinationSearchStatus_.set(
         type, DestinationStorePrinterSearchStatus.DONE);
     this.dispatchEvent(
@@ -1077,6 +1083,8 @@ export class DestinationStore extends EventTarget {
    * @private
    */
   onCapabilitiesSet_(origin, id, settingsInfo) {
+    MetricsContext.getPrinterCapabilities().record(
+        Metrics.PrintPreviewInitializationEvents.FUNCTION_SUCCESSFUL);
     let dest = null;
     if (origin !== DestinationOrigin.PRIVET) {
       const key = createDestinationKey(id, origin, '');
@@ -1122,6 +1130,8 @@ export class DestinationStore extends EventTarget {
    * @private
    */
   onGetCapabilitiesFail_(origin, destinationId) {
+    MetricsContext.getPrinterCapabilities().record(
+        Metrics.PrintPreviewInitializationEvents.FUNCTION_FAILED);
     console.warn(
         'Failed to get print capabilities for printer ' + destinationId);
     if (this.selectedDestination_ &&

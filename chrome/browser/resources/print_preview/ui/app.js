@@ -26,6 +26,7 @@ import {DuplexMode, whenReady} from '../data/model.js';
 import {PrintableArea} from '../data/printable_area.js';
 import {Size} from '../data/size.js';
 import {Error, State} from '../data/state.js';
+import {Metrics, MetricsContext} from '../metrics.js';
 import {NativeInitialSettings, NativeLayer, NativeLayerImpl} from '../native_layer.js';
 // <if expr="chromeos or lacros">
 import {NativeLayerCros, NativeLayerCrosImpl} from '../native_layer_cros.js';
@@ -188,6 +189,8 @@ Polymer({
     this.whenReady_ = whenReady();
     this.nativeLayer_.getInitialSettings().then(
         this.onInitialSettingsSet_.bind(this));
+    MetricsContext.getInitialSettings().record(
+        Metrics.PrintPreviewInitializationEvents.FUNCTION_INITIATED);
   },
 
   /** @override */
@@ -312,6 +315,8 @@ Polymer({
    * @private
    */
   onInitialSettingsSet_(settings) {
+    MetricsContext.getInitialSettings().record(
+        Metrics.PrintPreviewInitializationEvents.FUNCTION_SUCCESSFUL);
     if (!this.whenReady_) {
       // This element and its corresponding model were detached while waiting
       // for the callback. This can happen in tests; return early.
