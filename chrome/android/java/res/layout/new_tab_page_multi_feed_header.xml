@@ -23,6 +23,8 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_visibility_off_black"
         android:visibility="invisible"
+        app:tint="@color/default_icon_color_disabled"
+        android:tintMode="multiply"
         tools:ignore="contentDescription" />
 
     <com.google.android.material.tabs.TabLayout
@@ -30,6 +32,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:layout_marginVertical="5dp"
         style="@style/NtpHeaderTabLayoutStyle" />
 
     <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
