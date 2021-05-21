@@ -64,8 +64,8 @@ template("js_compile_bundle") {
              "SIMPLE_OPTIMIZATIONS",
              "--js_output_file",
              rebase_path("$target_gen_dir/$_target_name.js", root_build_dir),
-             "--only_closure_dependencies",
-             "--closure_entry_point",
+             "--dependency_mode=PRUNE",
+             "--entry_point",
              invoker.closure_entry_point,
              "--js",
            ] + rebase_path(sources, root_build_dir)
@@ -152,7 +152,7 @@ template("js_compile_checked") {
         "--jscomp_error=unknownDefines",
         "--jscomp_error=uselessCode",
         "--jscomp_error=visibility",
-        "--module_output_path_prefix",
+        "--chunk_output_path_prefix",
         rebase_path(target_gen_dir, root_build_dir) + "/",
       ]
       last_dependency = ""
@@ -161,7 +161,7 @@ template("js_compile_checked") {
         args += [
           "--js",
           rebase_path(_js_module, root_build_dir),
-          "--module",
+          "--chunk",
           "$_js_module_name:1$last_dependency",
         ]
         last_dependency = ":$_js_module_name"
@@ -169,7 +169,7 @@ template("js_compile_checked") {
       args += [
         "--js",
         "{{source}}",
-        "--module",
+        "--chunk",
         "{{source_name_part}}:1$last_dependency",
       ]
     }

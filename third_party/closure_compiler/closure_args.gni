@@ -40,7 +40,7 @@ default_closure_args = strict_error_checking_closure_args + [
 
 legacy_modules_args = [
   "chrome_pass",
-  "polymer_pass",
+  "polymer_version=1",
 ]
 
 js_modules_args = [

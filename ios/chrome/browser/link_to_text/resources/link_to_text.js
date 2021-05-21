@@ -5,8 +5,7 @@
 goog.module('__crWeb.linkToText');
 goog.module.declareLegacyNamespace();
 
-const utils = goog.require(
-  'googleChromeLabs.textFragmentPolyfill.fragmentGenerationUtils');
+const utils = goog.require('googleChromeLabs.textFragmentPolyfill.fragmentGenerationUtils');
 
 /**
  * @fileoverview Interface used for Chrome to use link-to-text link generation

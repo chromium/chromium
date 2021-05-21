@@ -46,11 +46,10 @@
  * F. Private APIs
  * G. Enums
  *
- * The best practices for each are described in more detail below.  It
- * should be noted that, due to historical reasons, and the evolutionary
- * nature of this file, much this file currently violates the best practices
- * described below. As changes are made, the changes should adhere to the
- * best practices.
+ * The best practices for each are described in more detail below. It should be
+ * noted that, due to historical reasons, and the evolutionary nature of this
+ * file, much this file currently violates the best practices described below.
+ * As changes are made, the changes should adhere to the best practices.
  *
  * A. When to Add Packages to this File?
  * Packages in chrome.experimental.* should *not* be added to this file. The
@@ -64,10 +63,10 @@
  * these cases, use comments to describe the situation.
  *
  * B. Optional Parameters
- * The Chrome extension APIs make extensive use of optional parameters that
- * are not at the end of the parameter list, "interior optional parameters",
- * while the JS Compiler's type system requires optional parameters to be
- * at the end. This creates a bit of tension:
+ * The Chrome extension APIs make extensive use of interior optional parameters
+ * that are not at the end of the parameter list, while the JS Compiler's type
+ * system requires optional parameters to be at the end. This creates a bit of
+ * tension:
  *
  * 1. If a method has N required params, then the parameter declarations
  *    should have N required params.
@@ -78,13 +77,13 @@
  *    b. the type should include both types, in the same order as the parts
  *       of the name, even when one type subsumes the other, eg, {string|*}
  *       or {Object|function(string)}.
- * See chrome.runtime.sendMessage for a complex example as sendMessage
- * takes three params with the first and third being optional.
+ * See chrome.runtime.sendMessage for a complex example as sendMessage takes
+ * three params with the first and third being optional.
  *
  * C. Pseudo-types
- * The Chrome APIs define many types are that actually pseudo-types, that
- * is, they can't be instantiated by name. The extension APIs also pass
- * untyped objects (a bag of properties) to callbacks.
+ * The Chrome APIs define many types that are actually pseudo-types, that
+ * is, they can't be instantiated by name. The extension APIs also pass untyped
+ * objects (a bag of properties) to callbacks.
  *
  * The Chrome extension APIs include at least three different situations:
  *
@@ -165,7 +164,7 @@
  *
  * D. Events
  * Most packages define a set of events with the standard set of methods:
- * addListener, removeListener, hasListener and hasListeners.  ChromeVoidEvent
+ * addListener, removeListener, hasListener and hasListeners. ChromeVoidEvent
  * is the appropriate type when an event's listeners do not take any
  * parameters, however, many events take parameters specific to that event.
  *
@@ -181,8 +180,8 @@
  * ChromeBaseEventNoListeners for an example.
  *
  * E. Nullability
- * We treat the Chrome Extension API pages as "the truth".  Not-null types
- * should be used in the following situations:
+ * We treat the Chrome Extension API pages as "the truth". Not-null types should
+ * be used in the following situations:
  *
  * 1. Parameters and return values that are not explicitly declared to handle
  *    null.
@@ -2126,6 +2125,32 @@ chrome.devtools.inspectedWindow.onResourceContentCommitted;
 
 
 /**
+ * @see https://developer.chrome.com/docs/extensions/reference/devtools_network/
+ * @const
+ */
+chrome.devtools.network = {};
+
+/**
+ * @see https://developer.chrome.com/docs/extensions/reference/devtools_network/#type-Request
+ * @constructor
+ */
+chrome.devtools.network.Request = function() {};
+
+/**
+ * @interface
+ * @extends {ChromeBaseEvent<
+ *     function(!chrome.devtools.network.Request)>}
+ */
+chrome.devtools.network.RequestEvent = function() {};
+
+/**
+ * @see https://developer.chrome.com/docs/extensions/reference/devtools_network/#event-onRequestFinished
+ * @type {!chrome.devtools.network.RequestEvent}
+ */
+chrome.devtools.network.onRequestFinished
+
+
+/**
  * @see https://developer.chrome.com/extensions/enterprise_platformKeys
  * @const
  */
@@ -2357,6 +2382,37 @@ chrome.enterprise.reportingPrivate.DeviceInfo;
  *     callback Called back with the response.
  */
 chrome.enterprise.reportingPrivate.getDeviceInfo = function(callback) {};
+
+/**
+ * Represents possible states for the EnterpriseRealTimeUrlCheckMode policy
+ * @enum {number}
+ */
+chrome.enterprise.reportingPrivate.RealtimeUrlCheckMode = {
+  DISABLED: 0,
+  ENABLED_MAIN_FRAME: 0,
+};
+
+/**
+ * Type of the object returned by getContextInfo.
+ * @typedef {?{
+ *   browserAffiliationIds: (!Array<string>|undefined),
+ *   profileAffiliationIds: (!Array<string>|undefined),
+ *   onFileAttachedProviders: (!Array<string>|undefined),
+ *   onFileDownloadedProviders: (!Array<string>|undefined),
+ *   onBulkDataEntryProviders: (!Array<string>|undefined),
+ *   onSecurityEventProviders: (!Array<string>|undefined),
+ *   realtimeUrlCheckMode: chrome.enterprise.reportingPrivate.RealtimeUrlCheckMode,
+ *   browserVersion: string,
+ * }}
+ */
+chrome.enterprise.reportingPrivate.ContextInfo;
+
+/**
+ * Returns the context information object.
+ * @param {(function(!chrome.enterprise.reportingPrivate.ContextInfo): void)}
+ *     callback Called back with the response.
+ */
+chrome.enterprise.reportingPrivate.getContextInfo = function(callback) {};
 
 /**
  * @see https://developer.chrome.com/extensions/extension.html
@@ -4048,7 +4104,7 @@ chrome.contextMenus.removeAll = function(opt_callback) {};
 
 /**
  * @interface
- * @extends {ChromeBaseEvent<function(!Object, !Tab=)>}
+ * @extends {ChromeBaseEvent<function(!OnClickData, !Tab=)>}
  * @see https://developer.chrome.com/extensions/contextMenus#event-onClicked
  */
 chrome.contextMenus.ClickedEvent = function() {};
@@ -4660,10 +4716,28 @@ chrome.identity.WebAuthFlowDetails;
 chrome.identity.ProfileUserInfo;
 
 /**
- * @param {function(!chrome.identity.ProfileUserInfo):void} callback
+ * @enum {string}
+ * See https://developer.chrome.com/docs/extensions/reference/identity/#type-AccountStatus
+ */
+chrome.identity.AccountStatus = {
+  SYNC: '',
+  ANY: '',
+};
+
+/**
+ * See https://developer.chrome.com/docs/extensions/reference/identity/#type-ProfileDetails
+ * @typedef {{accountStatus: (!chrome.identity.AccountStatus|undefined)}}
+ */
+chrome.identity.ProfileDetails;
+
+/**
+ * @param {!chrome.identity.ProfileDetails|function(!chrome.identity.ProfileUserInfo):void} accountStatusOrCallback
+ *     Either the accountStatus of the primary profile account or the callback
+ * @param {function(!chrome.identity.ProfileUserInfo):void=} opt_callback if
+ *     the accountStatus is provided
  * @return {undefined}
  */
-chrome.identity.getProfileUserInfo = function(callback) {};
+chrome.identity.getProfileUserInfo = function(accountStatusOrCallback, opt_callback) {};
 
 
 
@@ -7554,7 +7628,7 @@ CookieStore.prototype.tabIds;
 
 
 /**
- * @see https://developer.chrome.com/extensions/dev/contextMenus.html#type-OnClickData
+ * @see https://developer.chrome.com/docs/extensions/reference/contextMenus/#type-OnClickData
  * @constructor
  */
 function OnClickData() {}

@@ -5,8 +5,7 @@
 goog.module('__crWeb.textFragments');
 goog.module.declareLegacyNamespace();
 
-const utils = goog.require(
-    'googleChromeLabs.textFragmentPolyfill.textFragmentUtils');
+const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUtils');
 
 /**
  * @fileoverview Interface used for Chrome/WebView to call into the
