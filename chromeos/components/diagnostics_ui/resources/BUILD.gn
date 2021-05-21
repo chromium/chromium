@@ -39,6 +39,7 @@ js_type_check("closure_compile_module") {
     ":routine_result_entry",
     ":routine_result_list",
     ":routine_section",
+    ":system_page",
     ":text_badge",
     ":wifi_info",
   ]
@@ -91,18 +92,8 @@ js_library("data_point") {
 
 js_library("diagnostics_app") {
   deps = [
-    ":battery_status_card",
-    ":cpu_card",
-    ":diagnostics_browser_proxy",
-    ":diagnostics_card",
-    ":diagnostics_types",
-    ":memory_card",
-    ":mojo_interface_provider",
-    ":network_list",
-    ":overview_card",
+    ":system_page",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -279,6 +270,25 @@ js_library("routine_section") {
   ]
 }
 
+js_library("system_page") {
+  deps = [
+    ":battery_status_card",
+    ":cpu_card",
+    ":diagnostics_browser_proxy",
+    ":diagnostics_card",
+    ":diagnostics_types",
+    ":memory_card",
+    ":mojo_interface_provider",
+    ":network_list",
+    ":overview_card",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
 js_library("text_badge") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -315,6 +325,7 @@ html_to_js("web_components") {
     "routine_result_entry.js",
     "routine_result_list.js",
     "routine_section.js",
+    "system_page.js",
     "text_badge.js",
     "wifi_info.js",
   ]

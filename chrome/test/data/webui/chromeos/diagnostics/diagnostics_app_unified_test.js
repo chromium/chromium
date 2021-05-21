@@ -28,6 +28,7 @@ import {fakeRoutineListExecutorTestSuite} from './routine_list_executor_test.js'
 import {routineResultEntryTestSuite} from './routine_result_entry_test.js';
 import {routineResultListTestSuite} from './routine_result_list_test.js';
 import {routineSectionTestSuite} from './routine_section_test.js';
+import {systemPageTestSuite} from './system_page_test.js';
 import {textBadgeTestSuite} from './text_badge_test.js';
 import {wifiInfoTestSuite} from './wifi_info_test.js';
 
@@ -61,5 +62,6 @@ runSuite('RoutineListExecutor', fakeRoutineListExecutorTestSuite);
 runSuite('RoutineResultEntry', routineResultEntryTestSuite);
 runSuite('RoutineResultList', routineResultListTestSuite);
 runSuite('RoutineSection', routineSectionTestSuite);
+runSuite('SystemPage', systemPageTestSuite);
 runSuite('TextBadge', textBadgeTestSuite);
 runSuite('WifiInfo', wifiInfoTestSuite);

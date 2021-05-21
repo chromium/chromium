@@ -35,6 +35,7 @@ js_type_check("closure_compile") {
     ":routine_result_entry_test",
     ":routine_result_list_test",
     ":routine_section_test",
+    ":system_page_test",
     ":test_diagnostics_browser_proxy",
     ":text_badge_test",
     ":wifi_info_test",
@@ -301,6 +302,18 @@ js_library("routine_section_test") {
     "//chromeos/components/diagnostics_ui/resources:text_badge",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+  ]
+}
+
+js_library("system_page_test") {
+  deps = [
+    ":test_diagnostics_browser_proxy",
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
+    "//chromeos/components/diagnostics_ui/resources:fake_data",
+    "//chromeos/components/diagnostics_ui/resources:fake_system_data_provider",
+    "//chromeos/components/diagnostics_ui/resources:system_page",
   ]
 }
 

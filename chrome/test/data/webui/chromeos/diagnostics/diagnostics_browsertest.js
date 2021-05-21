@@ -68,6 +68,7 @@ const debug_suites_list = [
   'RoutineResultEntry',
   'RoutineResultList',
   'RoutineSection',
+  'SystemPage',
   'TextBadge',
   'WifiInfo',
 ];
