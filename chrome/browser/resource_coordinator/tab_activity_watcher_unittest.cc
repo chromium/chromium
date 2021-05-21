@@ -84,6 +84,8 @@ class TabActivityWatcherTest : public ChromeRenderViewHostTestHarness {
  public:
   TabActivityWatcherTest() = default;
   // Reset TabActivityWatcher with given |params|.
+  // This should only be called from test constructors, to avoid tsan data races
+  // with the  FeatureList.
   void SetParams(const base::FieldTrialParams& params) {
     feature_list_.InitAndEnableFeatureWithParameters(features::kTabRanker,
                                                      params);
@@ -119,9 +121,14 @@ class TabActivityWatcherTest : public ChromeRenderViewHostTestHarness {
   DISALLOW_COPY_AND_ASSIGN(TabActivityWatcherTest);
 };
 
+class TabActivityWatcherScorerType0Test : public TabActivityWatcherTest {
+ public:
+  TabActivityWatcherScorerType0Test() { SetParams({{"scorer_type", "0"}}); }
+};
+
 // Test that lifecycleunits are sorted with high activation score first order.
-TEST_F(TabActivityWatcherTest, LogAndMaybeSortLifecycleUnitWithTabRanker) {
-  SetParams({{"scorer_type", "0"}});
+TEST_F(TabActivityWatcherScorerType0Test,
+       LogAndMaybeSortLifecycleUnitWithTabRanker) {
   Browser::CreateParams params(profile(), true);
   std::unique_ptr<Browser> browser =
       CreateBrowserWithTestWindowForParams(params);
@@ -145,9 +152,13 @@ TEST_F(TabActivityWatcherTest, LogAndMaybeSortLifecycleUnitWithTabRanker) {
   tab_strip_model->CloseAllTabs();
 }
 
+class TabActivityWatcherScorerType3Test : public TabActivityWatcherTest {
+ public:
+  TabActivityWatcherScorerType3Test() { SetParams({{"scorer_type", "3"}}); }
+};
+
 // Test that lifecycleunits are sorted with high frecency score first order.
-TEST_F(TabActivityWatcherTest, SortLifecycleUnitWithFrecencyScorer) {
-  SetParams({{"scorer_type", "3"}});
+TEST_F(TabActivityWatcherScorerType3Test, SortLifecycleUnitWithFrecencyScorer) {
   Browser::CreateParams params(profile(), true);
   std::unique_ptr<Browser> browser =
       CreateBrowserWithTestWindowForParams(params);
@@ -181,8 +192,7 @@ TEST_F(TabActivityWatcherTest, SortLifecycleUnitWithFrecencyScorer) {
 }
 
 // Test that frecency scores are calculated correctly.
-TEST_F(TabActivityWatcherTest, GetFrecencyScore) {
-  SetParams({{"scorer_type", "3"}});
+TEST_F(TabActivityWatcherScorerType3Test, GetFrecencyScore) {
   Browser::CreateParams params(profile(), true);
   std::unique_ptr<Browser> browser =
       CreateBrowserWithTestWindowForParams(params);
@@ -218,11 +228,17 @@ TEST_F(TabActivityWatcherTest, GetFrecencyScore) {
   tab_strip_model->CloseAllTabs();
 }
 
+class TabActiveWatcherDisableBackgroundLogTest : public TabActivityWatcherTest {
+ public:
+  TabActiveWatcherDisableBackgroundLogTest() {
+    SetParams({{"disable_background_log_with_TabRanker", "true"}});
+  }
+};
+
 // Test that lifecycleunits are correctly logged inside
 // LogAndMaybeSortLifecycleUnitWithTabRanker.
-TEST_F(TabActivityWatcherTest,
+TEST_F(TabActiveWatcherDisableBackgroundLogTest,
        LogInsideLogAndMaybeSortLifecycleUnitWithTabRanker) {
-  SetParams({{"disable_background_log_with_TabRanker", "true"}});
   Browser::CreateParams params(profile(), true);
   std::unique_ptr<Browser> browser =
       CreateBrowserWithTestWindowForParams(params);
