@@ -82,11 +82,8 @@ void PPAPITestMessageHandler::Reset() {
 }
 
 PPAPITestBase::InfoBarObserver::InfoBarObserver(PPAPITestBase* test_base)
-    : test_base_(test_base),
-      expecting_infobar_(false),
-      should_accept_(false),
-      infobar_observer_(this) {
-  infobar_observer_.Add(GetInfoBarManager());
+    : test_base_(test_base), expecting_infobar_(false), should_accept_(false) {
+  infobar_observation_.Observe(GetInfoBarManager());
 }
 
 PPAPITestBase::InfoBarObserver::~InfoBarObserver() {
@@ -112,7 +109,8 @@ void PPAPITestBase::InfoBarObserver::OnInfoBarAdded(
 
 void PPAPITestBase::InfoBarObserver::OnManagerShuttingDown(
     infobars::InfoBarManager* manager) {
-  infobar_observer_.Remove(manager);
+  ASSERT_TRUE(infobar_observation_.IsObservingSource(manager));
+  infobar_observation_.Reset();
 }
 
 void PPAPITestBase::InfoBarObserver::VerifyInfoBarState() {

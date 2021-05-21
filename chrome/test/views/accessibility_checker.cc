@@ -119,10 +119,10 @@ void AddFailureOnWidgetAccessibilityError(views::Widget* widget) {
   }
 }
 
-AccessibilityChecker::AccessibilityChecker() : scoped_observer_(this) {}
+AccessibilityChecker::AccessibilityChecker() = default;
 
 AccessibilityChecker::~AccessibilityChecker() {
-  DCHECK(!scoped_observer_.IsObservingSources());
+  DCHECK(!scoped_observations_.IsObservingAnySource());
 }
 
 void AccessibilityChecker::OnBeforeWidgetInit(
@@ -131,11 +131,11 @@ void AccessibilityChecker::OnBeforeWidgetInit(
   ChromeViewsDelegate::OnBeforeWidgetInit(params, delegate);
   views::Widget* widget = delegate->AsWidget();
   if (widget)
-    scoped_observer_.Add(widget);
+    scoped_observations_.AddObservation(widget);
 }
 
 void AccessibilityChecker::OnWidgetDestroying(views::Widget* widget) {
-  scoped_observer_.Remove(widget);
+  scoped_observations_.RemoveObservation(widget);
 }
 
 void AccessibilityChecker::OnWidgetVisibilityChanged(views::Widget* widget,

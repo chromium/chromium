@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/test/base/ui_test_utils.h"
+#include "base/scoped_observation.h"
 
 #include <stddef.h>
 
@@ -163,7 +164,7 @@ class AppModalDialogWaiter : public javascript_dialogs::AppModalDialogObserver {
 class AutocompleteChangeObserver : public AutocompleteController::Observer {
  public:
   explicit AutocompleteChangeObserver(Profile* profile) {
-    scoped_observer_.Add(
+    scoped_observation_.Observe(
         OmniboxControllerEmitter::GetForBrowserContext(profile));
   }
 
@@ -183,8 +184,9 @@ class AutocompleteChangeObserver : public AutocompleteController::Observer {
 
  private:
   base::RunLoop run_loop_;
-  ScopedObserver<OmniboxControllerEmitter, AutocompleteController::Observer>
-      scoped_observer_{this};
+  base::ScopedObservation<OmniboxControllerEmitter,
+                          AutocompleteController::Observer>
+      scoped_observation_{this};
 };
 
 }  // namespace
@@ -560,9 +562,10 @@ void WaitForHistoryToLoad(history::HistoryService* history_service) {
     scoped_refptr<content::MessageLoopRunner> runner =
         new content::MessageLoopRunner;
     WaitHistoryLoadedObserver observer(runner.get());
-    ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
+    base::ScopedObservation<history::HistoryService,
+                            history::HistoryServiceObserver>
         scoped_observer(&observer);
-    scoped_observer.Add(history_service);
+    scoped_observer.Observe(history_service);
     runner->Run();
   }
 }
