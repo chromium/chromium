@@ -1574,7 +1574,7 @@ NGLogicalStaticPosition NGOutOfFlowLayoutPart::ToStaticPositionForLegacy(
   // Legacy expects the static position to include the block contribution from
   // previous columns.
   if (const auto* break_token = container_builder_->PreviousBreakToken())
-    position.offset.block_offset += break_token->ConsumedBlockSize();
+    position.offset.block_offset += break_token->ConsumedBlockSizeForLegacy();
   return position;
 }
 

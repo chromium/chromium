@@ -233,6 +233,12 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // building now.
   void SetConsumedBlockSize(LayoutUnit size) { consumed_block_size_ = size; }
 
+  // Set how much to adjust |consumed_block_size_| for legacy write-back. See
+  // NGBlockBreakToken::ConsumedBlockSizeForLegacy() for more details.
+  void SetConsumedBlockSizeLegacyAdjustment(LayoutUnit adjustment) {
+    consumed_block_size_legacy_adjustment_ = adjustment;
+  }
+
   // Set how much of the column block-size we've used so far. This will be used
   // to determine the block-size of any new columns added by descendant
   // out-of-flow positioned elements.
@@ -639,6 +645,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool is_at_block_end_ = false;
   bool has_violating_break_ = false;
   LayoutUnit consumed_block_size_;
+  LayoutUnit consumed_block_size_legacy_adjustment_;
   LayoutUnit block_offset_for_additional_columns_;
   unsigned sequence_number_ = 0;
 

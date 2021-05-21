@@ -55,6 +55,17 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   // the fragmentainer is shorter than 50px, for instance).
   LayoutUnit ConsumedBlockSize() const { return consumed_block_size_; }
 
+  // The consumed block size when writing back to legacy layout. The only time
+  // this may be different than ConsumedBlockSize() is in the case of a
+  // fragmentainer. We clamp the fragmentainer block size from 0 to 1 for legacy
+  // write-back only in the case where there is content that overflows the
+  // zero-height fragmentainer. This can result in a different consumed block
+  // size when used for legacy. This difference is represented by
+  // |consumed_block_size_legacy_adjustment_|.
+  LayoutUnit ConsumedBlockSizeForLegacy() const {
+    return consumed_block_size_ + consumed_block_size_legacy_adjustment_;
+  }
+
   // A unique identifier for a fragment that generates a break token. This is
   // unique within the generating layout input node. The break token of the
   // first fragment gets 0, then second 1, and so on. Note that we don't "count"
@@ -168,6 +179,7 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
 
  private:
   LayoutUnit consumed_block_size_;
+  LayoutUnit consumed_block_size_legacy_adjustment_;
   unsigned sequence_number_ = 0;
 
   wtf_size_t num_children_;

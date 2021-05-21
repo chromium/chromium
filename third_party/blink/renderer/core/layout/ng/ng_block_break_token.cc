@@ -14,7 +14,7 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGBlockBreakToken : NGBreakToken {
-  unsigned numbers[3];
+  unsigned numbers[4];
 };
 
 ASSERT_SIZE(NGBlockBreakToken, SameSizeAsNGBlockBreakToken);
@@ -38,6 +38,8 @@ NGBlockBreakToken::NGBlockBreakToken(PassKey key,
                                      const NGBoxFragmentBuilder& builder)
     : NGBreakToken(kBlockBreakToken, builder.node_),
       consumed_block_size_(builder.consumed_block_size_),
+      consumed_block_size_legacy_adjustment_(
+          builder.consumed_block_size_legacy_adjustment_),
       sequence_number_(builder.sequence_number_),
       num_children_(builder.child_break_tokens_.size()) {
   break_appeal_ = builder.break_appeal_;
@@ -88,6 +90,7 @@ String NGBlockBreakToken::ToString() const {
   string_builder.Append(NGBreakToken::ToString());
   string_builder.Append(" consumed:");
   string_builder.Append(consumed_block_size_.ToString());
+  string_builder.Append(consumed_block_size_legacy_adjustment_.ToString());
   string_builder.Append("px");
   return string_builder.ToString();
 }

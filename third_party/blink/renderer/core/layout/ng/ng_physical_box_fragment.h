@@ -164,6 +164,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return *ComputeLayoutOverflowAddress();
   }
 
+  bool HasLayoutOverflow() const { return has_layout_overflow_; }
+
   const NGPhysicalBoxStrut Borders() const {
     if (!has_borders_)
       return NGPhysicalBoxStrut();
