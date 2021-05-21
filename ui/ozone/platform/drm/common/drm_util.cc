@@ -490,6 +490,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   bool has_overscan = false;
   gfx::ColorSpace display_color_space;
   uint32_t bits_per_channel = 8u;
+  absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata{};
   // Active pixels size from the first detailed timing descriptor in the EDID.
   gfx::Size active_pixel_size;
 
@@ -517,6 +518,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     bits_per_channel = std::max(edid_parser.bits_per_channel(), 0);
     base::UmaHistogramCounts100("DrmUtil.CreateDisplaySnapshot.BitsPerChannel",
                                 bits_per_channel);
+    hdr_static_metadata = edid_parser.hdr_static_metadata();
   } else {
     VLOG(1) << "Failed to get EDID blob for connector "
             << info->connector()->connector_id;
@@ -531,9 +533,9 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       display_id, origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_color_correction_matrix, color_correction_in_linear_space,
-      display_color_space, bits_per_channel, display_name, sys_path,
-      std::move(modes), panel_orientation, edid, current_mode, native_mode,
-      product_code, year_of_manufacture, maximum_cursor_size);
+      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
+      sys_path, std::move(modes), panel_orientation, edid, current_mode,
+      native_mode, product_code, year_of_manufacture, maximum_cursor_size);
 }
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {

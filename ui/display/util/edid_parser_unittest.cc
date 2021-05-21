@@ -525,11 +525,12 @@ TEST_P(EDIDParserTest, ParseEdids) {
   EXPECT_EQ(GetParam().supported_color_transfer_ids_,
             parser_.supported_color_transfer_ids());
 
-  const gfx::HDRStaticMetadata* hdr_static_metadata =
+  const absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata =
       parser_.hdr_static_metadata();
   EXPECT_EQ(GetParam().hdr_static_metadata_.has_value(),
-            hdr_static_metadata != nullptr);
-  if (GetParam().hdr_static_metadata_.has_value() && hdr_static_metadata) {
+            hdr_static_metadata.has_value());
+  if (GetParam().hdr_static_metadata_.has_value() &&
+      hdr_static_metadata.has_value()) {
     constexpr double epsilon = 0.001;
     EXPECT_NEAR(GetParam().hdr_static_metadata_->max, hdr_static_metadata->max,
                 epsilon);

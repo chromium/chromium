@@ -74,6 +74,8 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     Builder& SetPrivacyScreen(PrivacyScreenState state);
     Builder& SetColorSpace(const gfx::ColorSpace& color_space);
     Builder& SetBitsPerChannel(uint32_t bits_per_channel);
+    Builder& SetHDRStaticMetadata(
+        const gfx::HDRStaticMetadata& hdr_static_metadata);
 
    private:
     // Returns a display mode with |size|. If there is no existing mode, insert
@@ -102,6 +104,7 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     const DisplayMode* native_mode_ = nullptr;
     gfx::ColorSpace color_space_;
     uint32_t bits_per_channel_ = 8u;
+    gfx::HDRStaticMetadata hdr_static_metadata_;
 
     DISALLOW_COPY_AND_ASSIGN(Builder);
   };
@@ -124,7 +127,8 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
                       int64_t product_code,
                       const gfx::Size& maximum_cursor_size,
                       const gfx::ColorSpace& color_space,
-                      uint32_t bits_per_channel);
+                      uint32_t bits_per_channel,
+                      const gfx::HDRStaticMetadata& hdr_static_metadata);
   ~FakeDisplaySnapshot() override;
 
   // Creates a display snapshot from the provided |spec| string. Returns null if

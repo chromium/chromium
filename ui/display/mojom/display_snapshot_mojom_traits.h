@@ -88,6 +88,11 @@ struct StructTraits<display::mojom::DisplaySnapshotDataView,
     return snapshot->bits_per_channel();
   }
 
+  static const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata(
+      const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
+    return snapshot->hdr_static_metadata();
+  }
+
   static std::string display_name(
       const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
     return snapshot->display_name();

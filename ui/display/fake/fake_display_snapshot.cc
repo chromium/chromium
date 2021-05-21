@@ -168,7 +168,8 @@ std::unique_ptr<FakeDisplaySnapshot> Builder::Build() {
       is_aspect_preserving_scaling_, has_overscan_, privacy_screen_state_,
       has_color_correction_matrix_, color_correction_in_linear_space_, name_,
       std::move(modes_), current_mode_, native_mode_, product_code_,
-      maximum_cursor_size_, color_space_, bits_per_channel_);
+      maximum_cursor_size_, color_space_, bits_per_channel_,
+      hdr_static_metadata_);
 }
 
 Builder& Builder::SetId(int64_t id) {
@@ -289,6 +290,12 @@ Builder& Builder::SetBitsPerChannel(uint32_t bits_per_channel) {
   return *this;
 }
 
+Builder& Builder::SetHDRStaticMetadata(
+    const gfx::HDRStaticMetadata& hdr_static_metadata) {
+  hdr_static_metadata_ = hdr_static_metadata;
+  return *this;
+}
+
 const DisplayMode* Builder::AddOrFindDisplayMode(const gfx::Size& size) {
   for (auto& mode : modes_) {
     if (mode->size() == size)
@@ -334,7 +341,8 @@ FakeDisplaySnapshot::FakeDisplaySnapshot(
     int64_t product_code,
     const gfx::Size& maximum_cursor_size,
     const gfx::ColorSpace& color_space,
-    uint32_t bits_per_channel)
+    uint32_t bits_per_channel,
+    const gfx::HDRStaticMetadata& hdr_static_metadata)
     : DisplaySnapshot(display_id,
                       origin,
                       physical_size,
@@ -348,6 +356,7 @@ FakeDisplaySnapshot::FakeDisplaySnapshot(
                       color_correction_in_linear_space,
                       color_space,
                       bits_per_channel,
+                      hdr_static_metadata,
                       display_name,
                       base::FilePath(),
                       std::move(modes),

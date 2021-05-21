@@ -105,6 +105,9 @@ void CheckDisplaySnapShotMojoEqual(const DisplaySnapshot& input,
   CheckDisplayModesEqual(input.native_mode(), output.native_mode());
 
   EXPECT_EQ(input.maximum_cursor_size(), output.maximum_cursor_size());
+  EXPECT_EQ(input.color_space(), output.color_space());
+  EXPECT_EQ(input.bits_per_channel(), output.bits_per_channel());
+  EXPECT_EQ(input.hdr_static_metadata(), output.hdr_static_metadata());
 }
 
 // Test StructTrait serialization and deserialization for copyable type. |input|
@@ -266,6 +269,7 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
   const bool color_correction_in_linear_space = true;
   const gfx::ColorSpace display_color_space = gfx::ColorSpace::CreateREC709();
   const int32_t bits_per_channel = 8;
+  const gfx::HDRStaticMetadata hdr_static_metadata(100.0, 80.0, 0.0);
   const std::string display_name("whatever display_name");
   const base::FilePath sys_path = base::FilePath::FromUTF8Unsafe("a/cb");
   const int64_t product_code = 19;
@@ -284,8 +288,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
       display_id, origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_color_correction_matrix, color_correction_in_linear_space,
-      display_color_space, bits_per_channel, display_name, sys_path,
-      std::move(modes), PanelOrientation::kNormal, edid, current_mode,
+      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
+      sys_path, std::move(modes), PanelOrientation::kNormal, edid, current_mode,
       native_mode, product_code, year_of_manufacture, maximum_cursor_size);
 
   std::unique_ptr<DisplaySnapshot> output;
@@ -311,6 +315,7 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
   const bool color_correction_in_linear_space = true;
   const gfx::ColorSpace display_color_space = gfx::ColorSpace::CreateREC709();
   const uint32_t bits_per_channel = 8u;
+  const gfx::HDRStaticMetadata hdr_static_metadata(100.0, 80.0, 0.0);
   const std::string display_name("whatever display_name");
   const base::FilePath sys_path = base::FilePath::FromUTF8Unsafe("z/b");
   const int64_t product_code = 9;
@@ -329,8 +334,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
       display_id, origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_color_correction_matrix, color_correction_in_linear_space,
-      display_color_space, bits_per_channel, display_name, sys_path,
-      std::move(modes), PanelOrientation::kNormal, edid, current_mode,
+      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
+      sys_path, std::move(modes), PanelOrientation::kNormal, edid, current_mode,
       native_mode, product_code, year_of_manufacture, maximum_cursor_size);
 
   std::unique_ptr<DisplaySnapshot> output;
@@ -357,6 +362,7 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
   const std::string display_name("HP Z24i");
   const gfx::ColorSpace display_color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t bits_per_channel = 8u;
+  const gfx::HDRStaticMetadata hdr_static_metadata(100.0, 80.0, 0.0);
   const base::FilePath sys_path = base::FilePath::FromUTF8Unsafe("a/cb");
   const int64_t product_code = 139;
   const int32_t year_of_manufacture = 2018;
@@ -378,8 +384,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
       display_id, origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_color_correction_matrix, color_correction_in_linear_space,
-      display_color_space, bits_per_channel, display_name, sys_path,
-      std::move(modes), PanelOrientation::kLeftUp, edid, current_mode,
+      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
+      sys_path, std::move(modes), PanelOrientation::kLeftUp, edid, current_mode,
       native_mode, product_code, year_of_manufacture, maximum_cursor_size);
 
   std::unique_ptr<DisplaySnapshot> output;
@@ -405,6 +411,7 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotInternal) {
   const gfx::ColorSpace display_color_space =
       gfx::ColorSpace::CreateDisplayP3D65();
   const uint32_t bits_per_channel = 9u;
+  const gfx::HDRStaticMetadata hdr_static_metadata(200.0, 100.0, 0.0);
   const std::string display_name("");
   const base::FilePath sys_path;
   const int64_t product_code = 139;
@@ -423,9 +430,10 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotInternal) {
       display_id, origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_color_correction_matrix, color_correction_in_linear_space,
-      display_color_space, bits_per_channel, display_name, sys_path,
-      std::move(modes), PanelOrientation::kRightUp, edid, current_mode,
-      native_mode, product_code, year_of_manufacture, maximum_cursor_size);
+      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
+      sys_path, std::move(modes), PanelOrientation::kRightUp, edid,
+      current_mode, native_mode, product_code, year_of_manufacture,
+      maximum_cursor_size);
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);

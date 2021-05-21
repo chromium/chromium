@@ -49,8 +49,8 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   supported_color_transfer_ids() const {
     return supported_color_transfer_ids_;
   }
-  const gfx::HDRStaticMetadata* hdr_static_metadata() const {
-    return base::OptionalOrNullptr(hdr_static_metadata_);
+  const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata() const {
+    return hdr_static_metadata_;
   }
   // Returns a 32-bit identifier for this display |manufacturer_id_| and
   // |product_id_|.

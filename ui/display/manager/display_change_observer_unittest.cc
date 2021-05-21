@@ -197,7 +197,7 @@ TEST_P(DisplayChangeObserverTest, GetEmptyExternalManagedDisplayModeList) {
       /*base_connector_id=*/1u, /*path_topology=*/{}, false, false,
       PrivacyScreenState::kNotSupported, false, false, std::string(), {},
       nullptr, nullptr, 0, gfx::Size(), gfx::ColorSpace(),
-      /*bits_per_channel=*/8u);
+      /*bits_per_channel=*/8u, /*hdr_static_metadata=*/{});
 
   ManagedDisplayInfo::ManagedDisplayModeList display_modes =
       DisplayChangeObserver::GetExternalManagedDisplayModeList(
@@ -447,6 +447,7 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
           .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
           .SetColorSpace(display_color_space)
           .SetBitsPerChannel(10u)
+          .SetHDRStaticMetadata({600.0, 500.0, 0.01})
           .Build();
 
   ui::DeviceDataManager::CreateInstance();

@@ -13,12 +13,14 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_static_metadata.h"
 
 namespace display {
 
@@ -29,29 +31,31 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
  public:
   using DisplayModeList = std::vector<std::unique_ptr<const DisplayMode>>;
 
-  DisplaySnapshot(int64_t display_id,
-                  const gfx::Point& origin,
-                  const gfx::Size& physical_size,
-                  DisplayConnectionType type,
-                  uint64_t base_connector_id,
-                  const std::vector<uint64_t>& path_topology,
-                  bool is_aspect_preserving_scaling,
-                  bool has_overscan,
-                  PrivacyScreenState privacy_screen_state,
-                  bool has_color_correction_matrix,
-                  bool color_correction_in_linear_space,
-                  const gfx::ColorSpace& color_space,
-                  uint32_t bits_per_channel,
-                  std::string display_name,
-                  const base::FilePath& sys_path,
-                  DisplayModeList modes,
-                  PanelOrientation panel_orientation,
-                  const std::vector<uint8_t>& edid,
-                  const DisplayMode* current_mode,
-                  const DisplayMode* native_mode,
-                  int64_t product_code,
-                  int32_t year_of_manufacture,
-                  const gfx::Size& maximum_cursor_size);
+  DisplaySnapshot(
+      int64_t display_id,
+      const gfx::Point& origin,
+      const gfx::Size& physical_size,
+      DisplayConnectionType type,
+      uint64_t base_connector_id,
+      const std::vector<uint64_t>& path_topology,
+      bool is_aspect_preserving_scaling,
+      bool has_overscan,
+      PrivacyScreenState privacy_screen_state,
+      bool has_color_correction_matrix,
+      bool color_correction_in_linear_space,
+      const gfx::ColorSpace& color_space,
+      uint32_t bits_per_channel,
+      const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata,
+      std::string display_name,
+      const base::FilePath& sys_path,
+      DisplayModeList modes,
+      PanelOrientation panel_orientation,
+      const std::vector<uint8_t>& edid,
+      const DisplayMode* current_mode,
+      const DisplayMode* native_mode,
+      int64_t product_code,
+      int32_t year_of_manufacture,
+      const gfx::Size& maximum_cursor_size);
   virtual ~DisplaySnapshot();
 
   int64_t display_id() const { return display_id_; }
@@ -76,6 +80,9 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   }
   const gfx::ColorSpace& color_space() const { return color_space_; }
   uint32_t bits_per_channel() const { return bits_per_channel_; }
+  const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata() const {
+    return hdr_static_metadata_;
+  }
   const std::string& display_name() const { return display_name_; }
   const base::FilePath& sys_path() const { return sys_path_; }
   const DisplayModeList& modes() const { return modes_; }
@@ -173,8 +180,8 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   const bool color_correction_in_linear_space_;
 
   const gfx::ColorSpace color_space_;
-
   uint32_t bits_per_channel_;
+  absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
 
   const std::string display_name_;
 
