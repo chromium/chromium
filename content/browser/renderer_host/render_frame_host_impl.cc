@@ -766,8 +766,8 @@ DetermineWhetherToForbidTrustTokenRedemption(
 // current Permissions Policy state to determine whether the feature is enabled.
 network::mojom::TrustTokenRedemptionPolicy
 DetermineAfterCommitWhetherToForbidTrustTokenRedemption(
-    RenderFrameHostImpl* impl) {
-  return impl->IsFeatureEnabled(
+    RenderFrameHostImpl& impl) {
+  return impl.IsFeatureEnabled(
              blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)
              ? network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit
              : network::mojom::TrustTokenRedemptionPolicy::kForbid;
@@ -977,6 +977,137 @@ base::TimeDelta GetSubframeProcessShutdownDelay(
 }
 
 }  // namespace
+
+class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
+ public:
+  static SubresourceLoaderFactoriesConfig ForLastCommittedNavigation(
+      RenderFrameHostImpl& frame) {
+    SubresourceLoaderFactoriesConfig result;
+    result.origin_ = frame.GetLastCommittedOrigin();
+    result.isolation_info_ = frame.GetIsolationInfoForSubresources();
+    result.client_security_state_ = frame.BuildClientSecurityState();
+    if (frame.coep_reporter_) {
+      frame.coep_reporter_->Clone(
+          result.coep_reporter_.BindNewPipeAndPassReceiver());
+    }
+    result.trust_token_redemption_policy_ =
+        DetermineAfterCommitWhetherToForbidTrustTokenRedemption(frame);
+    result.ukm_source_id_ =
+        ukm::SourceIdObj::FromInt64(frame.GetPageUkmSourceId());
+    return result;
+  }
+
+  static SubresourceLoaderFactoriesConfig ForPendingNavigation(
+      NavigationRequest& navigation_request) {
+    SubresourceLoaderFactoriesConfig result;
+    result.origin_ = navigation_request.GetOriginForURLLoaderFactory();
+    result.client_security_state_ =
+        navigation_request.BuildClientSecurityState();
+    result.ukm_source_id_ = ukm::SourceIdObj::FromInt64(
+        navigation_request.GetNextPageUkmSourceId());
+
+    // TODO(lukasza): Consider pushing the ok-vs-error differentiation into
+    // NavigationRequest methods (e.g. into |isolation_info_for_subresources|
+    // and/or |coep_reporter| methods).
+    if (navigation_request.DidEncounterError()) {
+      // Error frames gets locked down `isolation_info_` and
+      // `trust_token_redemption_policy_` plus an empty/uninitialized
+      // `coep_reporter_`.
+      result.isolation_info_ = net::IsolationInfo::CreateTransient();
+      result.trust_token_redemption_policy_ =
+          network::mojom::TrustTokenRedemptionPolicy::kForbid;
+    } else {
+      result.isolation_info_ =
+          navigation_request.isolation_info_for_subresources();
+      if (navigation_request.coep_reporter()) {
+        navigation_request.coep_reporter()->Clone(
+            result.coep_reporter_.BindNewPipeAndPassReceiver());
+      }
+      result.trust_token_redemption_policy_ =
+          DetermineWhetherToForbidTrustTokenRedemption(
+              navigation_request.GetRenderFrameHost()->GetParent(),
+              navigation_request.commit_params(), result.origin());
+    }
+
+    return result;
+  }
+
+  // ForPendingOrLastCommittedNavigation is useful in scenarios where there is
+  // no coordination between the timing of 1) a navigation commit and 2)
+  // subresource loader factories bundle creation.  For example, using
+  // ForPendingOrLastCommittedNavigation from UpdateSubresourceLoaderFactories
+  // leads to using the correct SubresourceLoaderFactoriesConfig regardless of
+  // the timing of when a NetworkService crash triggers a call to
+  // UpdateSubresourceLoaderFactories:
+  // 1. If the crash happens when there is an in-flight Commit IPC to the
+  //    renderer process, then the newly created subresource loader factories
+  //    will arrive at the renderer *after* the Commit IPC and therefore the
+  //    factories need to use the configuration (e.g. the origin) based on the
+  //    pending navigation.
+  // 2. OTOH, if the crash happens when there is no in-flight Commit IPC then
+  //    the newly created factories should use the configuration based on the
+  //    last committed navigation.
+  //
+  // TODO(https://crbug.com/729021): ForPendingOrLastCommittedNavigation might
+  // not be needed once we have RenderDocumentHost (e.g. we swap on every
+  // cross-document navigation), because with RenderDocumentHost there is no
+  // risk of sending last-commited-navigation-based subresource loaders to a
+  // document different from the last-committed one.
+  static SubresourceLoaderFactoriesConfig ForPendingOrLastCommittedNavigation(
+      RenderFrameHostImpl& frame) {
+    NavigationRequest* navigation_request =
+        frame.FindLatestNavigationRequestThatIsStillCommitting();
+    return navigation_request ? ForPendingNavigation(*navigation_request)
+                              : ForLastCommittedNavigation(frame);
+  }
+
+  ~SubresourceLoaderFactoriesConfig() = default;
+
+  SubresourceLoaderFactoriesConfig(SubresourceLoaderFactoriesConfig&&) =
+      default;
+  SubresourceLoaderFactoriesConfig& operator=(
+      SubresourceLoaderFactoriesConfig&&) = default;
+
+  SubresourceLoaderFactoriesConfig(const SubresourceLoaderFactoriesConfig&) =
+      delete;
+  SubresourceLoaderFactoriesConfig& operator=(
+      const SubresourceLoaderFactoriesConfig&) = delete;
+
+  const url::Origin& origin() const { return origin_; }
+  const net::IsolationInfo& isolation_info() const { return isolation_info_; }
+
+  network::mojom::ClientSecurityStatePtr GetClientSecurityState() const {
+    return mojo::Clone(client_security_state_);
+  }
+
+  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+  GetCoepReporter() const {
+    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter> p;
+    if (coep_reporter_) {
+      coep_reporter_->Clone(p.InitWithNewPipeAndPassReceiver());
+    }
+    return p;
+  }
+
+  const network::mojom::TrustTokenRedemptionPolicy&
+  trust_token_redemption_policy() const {
+    return trust_token_redemption_policy_;
+  }
+
+  const ukm::SourceIdObj& ukm_source_id() const { return ukm_source_id_; }
+
+ private:
+  // Private constructor - please go through the static For... methods.
+  SubresourceLoaderFactoriesConfig() = default;
+
+  url::Origin origin_;
+  net::IsolationInfo isolation_info_;
+  network::mojom::ClientSecurityStatePtr client_security_state_;
+  mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
+      coep_reporter_;
+  network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy_;
+  ukm::SourceIdObj ukm_source_id_;
+};
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 class PepperPluginInstanceHost : public mojom::PepperPluginInstanceHost {
@@ -1895,11 +2026,13 @@ RenderFrameHostImpl::GetIsolationInfoForSubresources() {
 
 net::IsolationInfo
 RenderFrameHostImpl::GetPendingIsolationInfoForSubresources() {
-  network::mojom::URLLoaderFactoryParamsPtr factory_params =
-      RenderFrameHostImpl::CreateURLLoaderFactoryParamsForMainWorld(
-          FindLatestNavigationRequestThatIsStillCommitting(), "Unused tag");
-  DCHECK(!factory_params->isolation_info.IsEmpty());
-  return factory_params->isolation_info;
+  // TODO(https://crbug.com/1211126): Figure out if
+  // ForPendingOrLastCommittedNavigation is correct below (it might not be).
+  auto config =
+      SubresourceLoaderFactoriesConfig::ForPendingOrLastCommittedNavigation(
+          *this);
+  DCHECK(!config.isolation_info().IsEmpty());
+  return config.isolation_info();
 }
 
 void RenderFrameHostImpl::GetCanonicalUrlForSharing(
@@ -1943,18 +2076,21 @@ void RenderFrameHostImpl::ExecuteMediaPlayerActionAtLocation(
 bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>
         default_factory_receiver) {
-  // By providing null |navigation_request| we will always use the last
-  // committed Origin and ClientSecurityState (using GetPageUkmSourceId()
-  // does the same for UKM). If the caller wanted a factory associated to a
-  // navigation about to commit, the params generated won't be correct. There is
-  // no good way of fixing this before RenderDocumentHost (ie swapping
-  // RenderFrameHost on each navigation).
-  NavigationRequest* navigation_request = nullptr;
+  // Factory config below is based on the last committed navigation, under the
+  // assumptions that the caller wants a factory that acts on behalf of the
+  // *currently* committed document.  This assumption is typically valid for
+  // callers that are responding to an IPC coming from the renderer process.  If
+  // the caller wanted a factory associated with a pending navigation, then the
+  // config won't be correct.  For more details, please see the doc comment of
+  // ForPendingOrLastCommittedNavigation.
+  auto subresource_loader_factories_config =
+      SubresourceLoaderFactoriesConfig::ForLastCommittedNavigation(*this);
 
   return CreateNetworkServiceDefaultFactoryAndObserve(
       CreateURLLoaderFactoryParamsForMainWorld(
-          navigation_request, "RFHI::CreateNetworkServiceDefaultFactory"),
-      ukm::SourceIdObj::FromInt64(GetPageUkmSourceId()),
+          subresource_loader_factories_config,
+          "RFHI::CreateNetworkServiceDefaultFactory"),
+      subresource_loader_factories_config.ukm_source_id(),
       std::move(default_factory_receiver));
 }
 
@@ -2024,13 +2160,21 @@ void RenderFrameHostImpl::MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
   // See also the doc comment of `PendingURLLoaderFactoryBundle::OriginMap`
   // (the type of `pending_isolated_world_factories` that are set below).
   if (push_to_renderer_now && insertion_took_place) {
+    // The `config` of the new factories might need to depend on the pending
+    // (rather than the last committed) navigation, because we can't predict if
+    // an in-flight Commit IPC might be present when an extension injects a
+    // content script and MarkIsolatedWorlds... is called.  See also the doc
+    // comment for the ForPendingOrLastCommittedNavigation method.
+    auto config =
+        SubresourceLoaderFactoriesConfig::ForPendingOrLastCommittedNavigation(
+            *this);
+
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories =
             std::make_unique<blink::PendingURLLoaderFactoryBundle>();
     subresource_loader_factories->pending_isolated_world_factories() =
-        CreateURLLoaderFactoriesForIsolatedWorlds(
-            FindLatestNavigationRequestThatIsStillCommitting(),
-            isolated_world_origins);
+        CreateURLLoaderFactoriesForIsolatedWorlds(config,
+                                                  isolated_world_origins);
     GetMojomFrameInRenderer()->UpdateSubresourceLoaderFactories(
         std::move(subresource_loader_factories));
   }
@@ -2047,24 +2191,15 @@ RenderFrameHostImpl::GetOrCreateWebPreferences() {
 
 blink::PendingURLLoaderFactoryBundle::OriginMap
 RenderFrameHostImpl::CreateURLLoaderFactoriesForIsolatedWorlds(
-    NavigationRequest* navigation_request,
+    const SubresourceLoaderFactoriesConfig& config,
     const base::flat_set<url::Origin>& isolated_world_origins) {
-  url::Origin main_world_origin;
-  net::IsolationInfo isolation_info;
-  network::mojom::ClientSecurityStatePtr client_security_state;
-  network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy =
-      network::mojom::TrustTokenRedemptionPolicy::kForbid;
-  ExtractFactoryParamsFromNavigationRequestOrLastCommittedNavigation(
-      navigation_request, &main_world_origin, &isolation_info,
-      &client_security_state, nullptr /* coep_reporter_remote */,
-      &trust_token_redemption_policy);
-
   blink::PendingURLLoaderFactoryBundle::OriginMap result;
   for (const url::Origin& isolated_world_origin : isolated_world_origins) {
     network::mojom::URLLoaderFactoryParamsPtr factory_params =
         URLLoaderFactoryParamsHelper::CreateForIsolatedWorld(
-            this, isolated_world_origin, main_world_origin, isolation_info,
-            mojo::Clone(client_security_state), trust_token_redemption_policy);
+            this, isolated_world_origin, config.origin(),
+            config.isolation_info(), config.GetClientSecurityState(),
+            config.trust_token_redemption_policy());
 
     mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
     CreateNetworkServiceDefaultFactoryAndObserve(
@@ -4481,8 +4616,17 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
   // Disregard this if frame is being destroyed.
   if (!frame_)
     return;
-  NavigationRequest* latest_nav_request_still_committing =
-      FindLatestNavigationRequestThatIsStillCommitting();
+
+  // The `subresource_loader_factories_config` of the new factories might need
+  // to depend on the pending (rather than the last committed) navigation,
+  // because we can't predict if an in-flight Commit IPC might be present when
+  // an extension injects a content script and MarkIsolatedWorlds... is called.
+  // See also the doc comment for the ForPendingOrLastCommittedNavigation
+  // method.
+  auto subresource_loader_factories_config =
+      SubresourceLoaderFactoriesConfig::ForPendingOrLastCommittedNavigation(
+          *this);
+
   mojo::PendingRemote<network::mojom::URLLoaderFactory> default_factory_remote;
   bool bypass_redirect_checks = false;
   if (recreate_default_url_loader_factory_after_network_service_crash_) {
@@ -4490,12 +4634,9 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
            network_service_disconnect_handler_holder_.is_bound());
     bypass_redirect_checks = CreateNetworkServiceDefaultFactoryAndObserve(
         CreateURLLoaderFactoryParamsForMainWorld(
-            latest_nav_request_still_committing,
+            subresource_loader_factories_config,
             "RFHI::UpdateSubresourceLoaderFactories"),
-        ukm::SourceIdObj::FromInt64(
-            latest_nav_request_still_committing
-                ? latest_nav_request_still_committing->GetNextPageUkmSourceId()
-                : GetPageUkmSourceId()),
+        subresource_loader_factories_config.ukm_source_id(),
         default_factory_remote.InitWithNewPipeAndPassReceiver());
   }
 
@@ -4505,9 +4646,10 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
               std::move(default_factory_remote),
               blink::PendingURLLoaderFactoryBundle::SchemeMap(),
               CreateURLLoaderFactoriesForIsolatedWorlds(
-                  latest_nav_request_still_committing,
+                  subresource_loader_factories_config,
                   isolated_worlds_requiring_separate_url_loader_factory_),
               bypass_redirect_checks);
+
   GetMojomFrameInRenderer()->UpdateSubresourceLoaderFactories(
       std::move(subresource_loader_factories));
 }
@@ -5680,9 +5822,14 @@ void RenderFrameHostImpl::DomOperationResponse(const std::string& json_string) {
 
 std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
 RenderFrameHostImpl::CreateCrossOriginPrefetchLoaderFactoryBundle() {
+  // IPCs coming from the renderer talk on behalf of the last-committed
+  // navigation.  This also applies to IPCs asking for a prefetch factory
+  // bundle.
+  auto subresource_loader_factories_config =
+      SubresourceLoaderFactoriesConfig::ForLastCommittedNavigation(*this);
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForPrefetch(
-          this, BuildClientSecurityState());
+          this, subresource_loader_factories_config.GetClientSecurityState());
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_default_factory;
   bool bypass_redirect_checks = false;
@@ -5692,16 +5839,14 @@ RenderFrameHostImpl::CreateCrossOriginPrefetchLoaderFactoryBundle() {
   // it.
   bypass_redirect_checks = CreateNetworkServiceDefaultFactoryAndObserve(
       std::move(factory_params),
-      // This is for renderer prefetches, so it's associated with this page, not
-      // pending navigation.
-      ukm::SourceIdObj::FromInt64(GetPageUkmSourceId()),
+      subresource_loader_factories_config.ukm_source_id(),
       pending_default_factory.InitWithNewPipeAndPassReceiver());
 
   return std::make_unique<blink::PendingURLLoaderFactoryBundle>(
       std::move(pending_default_factory),
       blink::PendingURLLoaderFactoryBundle::SchemeMap(),
       CreateURLLoaderFactoriesForIsolatedWorlds(
-          FindLatestNavigationRequestThatIsStillCommitting(),
+          subresource_loader_factories_config,
           isolated_worlds_requiring_separate_url_loader_factory_),
       bypass_redirect_checks);
 }
@@ -6776,6 +6921,7 @@ void RenderFrameHostImpl::CommitNavigation(
                common_params->url.possibly_invalid_spec());
   DCHECK(!blink::IsRendererDebugURL(common_params->url));
   DCHECK(navigation_request);
+  DCHECK_EQ(this, navigation_request->GetRenderFrameHost());
 
   bool is_same_document =
       NavigationTypeUtils::IsSameDocument(common_params->navigation_type);
@@ -6886,11 +7032,6 @@ void RenderFrameHostImpl::CommitNavigation(
       response_head ? std::move(response_head)
                     : network::mojom::URLResponseHead::New();
 
-  // TODO(crbug.com/979296): Consider changing this code to copy an origin
-  // instead of creating one from a URL which lacks opacity information.
-  url::Origin main_world_origin_for_url_loader_factory =
-      navigation_request->GetOriginForURLLoaderFactory();
-
   if (navigation_request->appcache_handle()) {
     // AppCache may create a subresource URLLoaderFactory later, so make sure it
     // has the correct origin to use when calling
@@ -6898,12 +7039,8 @@ void RenderFrameHostImpl::CommitNavigation(
     navigation_request->appcache_handle()
         ->host()
         ->set_origin_for_url_loader_factory(
-            main_world_origin_for_url_loader_factory);
+            navigation_request->GetOriginForURLLoaderFactory());
   }
-  // This needs to ask |navigation_request| for the UKM ID since the commit is
-  // in progress but not yet done.
-  ukm::SourceIdObj next_page_ukm_source_id =
-      ukm::SourceIdObj::FromInt64(navigation_request->GetNextPageUkmSourceId());
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       subresource_loader_factories;
   if ((!is_same_document || is_first_navigation) && !is_srcdoc) {
@@ -6911,6 +7048,20 @@ void RenderFrameHostImpl::CommitNavigation(
     subresource_loader_factories =
         std::make_unique<blink::PendingURLLoaderFactoryBundle>();
     BrowserContext* browser_context = GetSiteInstance()->GetBrowserContext();
+    auto subresource_loader_factories_config =
+        SubresourceLoaderFactoriesConfig::ForPendingNavigation(
+            *navigation_request);
+
+    // Calculate `effective_scheme` - this will be the main input for deciding
+    // whether the new document should have access to special URLLoaderFactories
+    // like FileURLLoaderFactory, ContentURLLoaderFactory,
+    // WebUIURLLoaderFactory, etc.  We look at GetTupleOrPrecursorTupleIfOpaque
+    // to make sure the old behavior of sandboxed frames is preserved - see also
+    // the FileURLLoaderFactory...SubresourcesInSandboxedFileFrame test.
+    const std::string& effective_scheme =
+        subresource_loader_factories_config.origin()
+            .GetTupleOrPrecursorTupleIfOpaque()
+            .scheme();
 
     // NOTE: On Network Service navigations, we want to ensure that a frame is
     // given everything it will need to load any accessible subresources. We
@@ -6930,8 +7081,9 @@ void RenderFrameHostImpl::CommitNavigation(
           GetContentClient()->browser()->WillCreateURLLoaderFactory(
               browser_context, this, GetProcess()->GetID(),
               ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-              main_world_origin_for_url_loader_factory,
-              absl::nullopt /* navigation_id */, next_page_ukm_source_id,
+              subresource_loader_factories_config.origin(),
+              absl::nullopt /* navigation_id */,
+              subresource_loader_factories_config.ukm_source_id(),
               &appcache_proxied_receiver, nullptr /* header_client */,
               nullptr /* bypass_redirect_checks */,
               nullptr /* disable_secure_dns */, nullptr /* factory_override */);
@@ -6952,22 +7104,22 @@ void RenderFrameHostImpl::CommitNavigation(
         pending_default_factory;
 
     // See if this is for WebUI.
-    std::string scheme = common_params->url.scheme();
     const auto& webui_schemes = URLDataManagerBackend::GetWebUISchemes();
-    if (base::Contains(webui_schemes, scheme)) {
+    if (base::Contains(webui_schemes, effective_scheme)) {
       mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_for_webui;
       auto factory_receiver =
           factory_for_webui.InitWithNewPipeAndPassReceiver();
       GetContentClient()->browser()->WillCreateURLLoaderFactory(
           browser_context, this, GetProcess()->GetID(),
           ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-          main_world_origin_for_url_loader_factory,
-          absl::nullopt /* navigation_id */, next_page_ukm_source_id,
+          subresource_loader_factories_config.origin(),
+          absl::nullopt /* navigation_id */,
+          subresource_loader_factories_config.ukm_source_id(),
           &factory_receiver, nullptr /* header_client */,
           nullptr /* bypass_redirect_checks */,
           nullptr /* disable_secure_dns */, nullptr /* factory_override */);
       mojo::Remote<network::mojom::URLLoaderFactory> direct_factory_for_webui(
-          CreateWebUIURLLoaderFactory(this, scheme, {}));
+          CreateWebUIURLLoaderFactory(this, effective_scheme, {}));
       direct_factory_for_webui->Clone(std::move(factory_receiver));
 
       // If the renderer has webui bindings, then don't give it access to
@@ -6976,7 +7128,7 @@ void RenderFrameHostImpl::CommitNavigation(
       // of WebUIs that need to be fixed to not make network requests in JS.
       if ((enabled_bindings_ & kWebUIBindingsPolicyMask) &&
           !GetContentClient()->browser()->IsWebUIAllowedToMakeNetworkRequests(
-              url::Origin::Create(common_params->url.GetOrigin()))) {
+              subresource_loader_factories_config.origin())) {
         pending_default_factory = std::move(factory_for_webui);
         // WebUIURLLoaderFactory will kill the renderer if it sees a request
         // with a non-chrome scheme. Register a URLLoaderFactory for the about
@@ -6987,7 +7139,7 @@ void RenderFrameHostImpl::CommitNavigation(
         // This is a webui scheme that doesn't have webui bindings. Give it
         // access to the network loader as it might require it.
         subresource_loader_factories->pending_scheme_specific_factories()
-            .emplace(scheme, std::move(factory_for_webui));
+            .emplace(effective_scheme, std::move(factory_for_webui));
       }
     }
 
@@ -7008,8 +7160,9 @@ void RenderFrameHostImpl::CommitNavigation(
       bool bypass_redirect_checks =
           CreateNetworkServiceDefaultFactoryAndObserve(
               CreateURLLoaderFactoryParamsForMainWorld(
-                  navigation_request, "RFHI::CommitNavigation"),
-              next_page_ukm_source_id,
+                  subresource_loader_factories_config,
+                  "RFHI::CommitNavigation"),
+              subresource_loader_factories_config.ukm_source_id(),
               pending_default_factory.InitWithNewPipeAndPassReceiver());
       subresource_loader_factories->set_bypass_redirect_checks(
           bypass_redirect_checks);
@@ -7037,25 +7190,11 @@ void RenderFrameHostImpl::CommitNavigation(
     subresource_loader_factories->pending_default_factory() =
         std::move(pending_default_factory);
 
-    // Only file resources and about:blank with an initiator that can load files
-    // can load file subresources.
-    //
-    // Other URLs like about:srcdoc might be able load files, but only because
-    // they will inherit loaders from their parents instead of the ones
-    // provided by the browser process here.
-    // TODO(crbug.com/949510): Make about:srcdoc also use this path instead of
-    // inheriting loaders from the parent.
+    // Only documents from a file precursor scheme can load file subresoruces.
     //
     // For loading Web Bundle files, we don't set FileURLLoaderFactory.
     // Because loading local files from a Web Bundle file is prohibited.
-    //
-    // TODO(crbug.com/888079): In the future, use
-    // GetOriginForURLLoaderFactory/GetOriginToCommit.
-    if ((common_params->url.SchemeIsFile() ||
-         (common_params->url.IsAboutBlank() &&
-          common_params->initiator_origin &&
-          common_params->initiator_origin->scheme() == url::kFileScheme)) &&
-        !navigation_to_web_bundle) {
+    if (effective_scheme == url::kFileScheme && !navigation_to_web_bundle) {
       // USER_BLOCKING because this scenario is exactly one of the examples
       // given by the doc comment for USER_BLOCKING: Loading and rendering a web
       // page after the user clicks a link.
@@ -7070,7 +7209,7 @@ void RenderFrameHostImpl::CommitNavigation(
     }
 
 #if defined(OS_ANDROID)
-    if (common_params->url.SchemeIs(url::kContentScheme)) {
+    if (effective_scheme == url::kContentScheme) {
       // Only content:// URLs can load content:// subresources
       non_network_factories.emplace(url::kContentScheme,
                                     ContentURLLoaderFactory::Create());
@@ -7097,8 +7236,9 @@ void RenderFrameHostImpl::CommitNavigation(
           pending_factory_proxy;
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver =
           pending_factory_proxy.InitWithNewPipeAndPassReceiver();
-      WillCreateURLLoaderFactory(main_world_origin_for_url_loader_factory,
-                                 &factory_receiver, next_page_ukm_source_id);
+      WillCreateURLLoaderFactory(
+          subresource_loader_factories_config.origin(), &factory_receiver,
+          subresource_loader_factories_config.ukm_source_id());
       mojo::Remote<network::mojom::URLLoaderFactory> remote(
           std::move(factory.second));
       remote->Clone(std::move(factory_receiver));
@@ -7108,7 +7248,7 @@ void RenderFrameHostImpl::CommitNavigation(
 
     subresource_loader_factories->pending_isolated_world_factories() =
         CreateURLLoaderFactoriesForIsolatedWorlds(
-            navigation_request,
+            subresource_loader_factories_config,
             isolated_worlds_requiring_separate_url_loader_factory_);
   }
 
@@ -7289,8 +7429,10 @@ void RenderFrameHostImpl::FailedNavigation(
       subresource_loader_factories;
   mojo::PendingRemote<network::mojom::URLLoaderFactory> default_factory_remote;
   bool bypass_redirect_checks = CreateNetworkServiceDefaultFactoryAndObserve(
-      CreateURLLoaderFactoryParamsForMainWorld(navigation_request,
-                                               "RFHI::FailedNavigation"),
+      CreateURLLoaderFactoryParamsForMainWorld(
+          SubresourceLoaderFactoriesConfig::ForPendingNavigation(
+              *navigation_request),
+          "RFHI::FailedNavigation"),
       ukm::kInvalidSourceIdObj,
       default_factory_remote.InitWithNewPipeAndPassReceiver());
   subresource_loader_factories =
@@ -7942,82 +8084,14 @@ RenderFrameHostImpl::FindLatestNavigationRequestThatIsStillCommitting() {
   return found_request;
 }
 
-void RenderFrameHostImpl::
-    ExtractFactoryParamsFromNavigationRequestOrLastCommittedNavigation(
-        NavigationRequest* navigation_request,
-        url::Origin* out_main_world_origin,
-        net::IsolationInfo* out_isolation_info,
-        network::mojom::ClientSecurityStatePtr* out_client_security_state,
-        mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>*
-            coep_reporter_pending_remote,
-        network::mojom::TrustTokenRedemptionPolicy*
-            out_trust_token_redemption_policy) {
-  // |navigation_request| is optional.
-  DCHECK(out_main_world_origin);
-  DCHECK(out_client_security_state);
-  // |coep_reporter_receiver| is optional.
-  DCHECK(out_trust_token_redemption_policy);
-
-  CrossOriginEmbedderPolicyReporter* coep_reporter = nullptr;
-
-  if (navigation_request) {
-    // Return values based on the |navigation_request|.
-    *out_main_world_origin = navigation_request->GetOriginForURLLoaderFactory();
-    *out_client_security_state = navigation_request->BuildClientSecurityState();
-
-    // TODO(lukasza): Consider pushing the ok-vs-error differentiation into
-    // NavigationRequest methods (e.g. into |isolation_info_for_subresources|
-    // and/or |coep_reporter| methods).
-    if (!navigation_request->DidEncounterError()) {
-      *out_isolation_info =
-          navigation_request->isolation_info_for_subresources();
-      coep_reporter = navigation_request->coep_reporter();
-      *out_trust_token_redemption_policy =
-          DetermineWhetherToForbidTrustTokenRedemption(
-              GetParent(), navigation_request->commit_params(),
-              *out_main_world_origin);
-    } else {
-      *out_isolation_info = net::IsolationInfo::CreateTransient();
-      coep_reporter = nullptr;
-      *out_trust_token_redemption_policy =
-          network::mojom::TrustTokenRedemptionPolicy::kForbid;
-    }
-  } else {
-    // Use properties of the last committed navigation.
-    *out_main_world_origin = last_committed_origin_;
-    *out_isolation_info = isolation_info_;
-    *out_client_security_state = BuildClientSecurityState();
-    coep_reporter = coep_reporter_.get();
-    *out_trust_token_redemption_policy =
-        DetermineAfterCommitWhetherToForbidTrustTokenRedemption(this);
-  }
-
-  if (coep_reporter && coep_reporter_pending_remote) {
-    coep_reporter->Clone(
-        coep_reporter_pending_remote->InitWithNewPipeAndPassReceiver());
-  }
-}
-
 network::mojom::URLLoaderFactoryParamsPtr
 RenderFrameHostImpl::CreateURLLoaderFactoryParamsForMainWorld(
-    NavigationRequest* navigation_request,
+    const SubresourceLoaderFactoriesConfig& config,
     base::StringPiece debug_tag) {
-  url::Origin main_world_origin;
-  net::IsolationInfo isolation_info;
-  network::mojom::ClientSecurityStatePtr client_security_state;
-  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      coep_reporter_remote;
-  network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy =
-      network::mojom::TrustTokenRedemptionPolicy::kForbid;
-  ExtractFactoryParamsFromNavigationRequestOrLastCommittedNavigation(
-      navigation_request, &main_world_origin, &isolation_info,
-      &client_security_state, &coep_reporter_remote,
-      &trust_token_redemption_policy);
-
   return URLLoaderFactoryParamsHelper::CreateForFrame(
-      this, main_world_origin, isolation_info, std::move(client_security_state),
-      std::move(coep_reporter_remote), GetProcess(),
-      trust_token_redemption_policy, debug_tag);
+      this, config.origin(), config.isolation_info(),
+      config.GetClientSecurityState(), config.GetCoepReporter(), GetProcess(),
+      config.trust_token_redemption_policy(), debug_tag);
 }
 
 bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryAndObserve(

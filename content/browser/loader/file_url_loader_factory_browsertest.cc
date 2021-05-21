@@ -30,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -454,6 +455,69 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest,
   EXPECT_EQ("OK",
             EvalJs(popup, JsReplace(kScriptTemplateToTriggerSubresourceFetch,
                                     img_url)));
+}
+
+class FileURLLoaderFactoryDisabledSecurityBrowserTest
+    : public FileURLLoaderFactoryBrowserTest {
+ public:
+  FileURLLoaderFactoryDisabledSecurityBrowserTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kDisableWebSecurity);
+    FileURLLoaderFactoryBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Test whether sandboxed file: frames still can access file: subresources.
+IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryDisabledSecurityBrowserTest,
+                       SubresourcesInSandboxedFileFrame) {
+  GURL main_url(GetTestUrl("", "title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Append a sandboxed file: subframe.
+  {
+    GURL sandboxed_url(GetTestUrl("", "title2.html"));
+    TestNavigationObserver nav_observer(shell()->web_contents());
+    const char kScriptTemplateToAddSubframe[] = R"(
+        f = document.createElement('iframe');
+        f.sandbox = 'allow-scripts';
+        f.src = $1;
+        document.body.appendChild(f);
+    )";
+    ASSERT_TRUE(ExecJs(shell(),
+                       JsReplace(kScriptTemplateToAddSubframe, sandboxed_url)));
+    nav_observer.Wait();
+  }
+
+  // Trigger a subresource fetch in the subframe.  This is the main test step -
+  // it verifies that at this point the subframe has access to a functional
+  // FileURLLoaderFactory.
+  //
+  // Access to a file: (local-scheme) subresource is normally forbidden by
+  // blink::SecurityOrigin::CanDisplay if the requesting origin is opaque.
+  // Example error message:
+  //     Not allowed to load local resource:
+  //     file:///.../src/content/test/data/site_isolation/png-corp.png,
+  //     source: file:///...src/content/test/data/title2.html
+  //
+  // OTOH, this restriction can be relaxed by 1) the --disable-web-security
+  // switch (this is what this test suite is doing) or 2) the following Android
+  // WebView API: android.webkit.WebSettings.setAllowFileAccess.  This is why
+  // the test asserts below that the access is successful.
+  RenderFrameHost* main_frame = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
+  const char kScriptTemplateToTriggerSubresourceFetch[] = R"(
+      new Promise(function (resolve, reject) {
+          var img = document.createElement('img');
+          img.src = $1;
+          img.onload = _ => resolve('OK');
+          img.onerror = e => resolve('ERR: ' + e);
+      });
+  )";
+  GURL img_url = GetTestUrl("site_isolation", "png-corp.png");
+  EXPECT_EQ("OK", EvalJs(child_frame,
+                         JsReplace(kScriptTemplateToTriggerSubresourceFetch,
+                                   img_url)));
 }
 
 }  // namespace

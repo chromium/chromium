@@ -2277,6 +2277,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC);
 
   class DroppedInterfaceRequestLogger;
+  class SubresourceLoaderFactoriesConfig;
 
   RenderFrameHostImpl* FindAndVerifyChildInternal(
       RenderFrameHostOrProxy child_frame_or_proxy,
@@ -2462,24 +2463,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // exists.
   NavigationRequest* FindLatestNavigationRequestThatIsStillCommitting();
 
-  // Extracts all the |out_...| values from either the |navigation_request| (if
-  // present) or from |this| (if |navigation_request| is null).
-  void ExtractFactoryParamsFromNavigationRequestOrLastCommittedNavigation(
-      NavigationRequest* navigation_request,
-      url::Origin* out_main_world_origin,
-      net::IsolationInfo* out_isolation_info,
-      network::mojom::ClientSecurityStatePtr* out_client_security_state,
-      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>*
-          coep_reporter_pending_remote,
-      network::mojom::TrustTokenRedemptionPolicy*
-          out_trust_token_redemption_policy);
-
   // Creates URLLoaderFactoryParams for main world of |this|, either based on
   // the |navigation_request|, or (if |navigation_request| is null) on the last
   // committed navigation.
   network::mojom::URLLoaderFactoryParamsPtr
   CreateURLLoaderFactoryParamsForMainWorld(
-      NavigationRequest* navigation_request,
+      const SubresourceLoaderFactoriesConfig& config,
       base::StringPiece debug_tag);
 
   // Like CreateNetworkServiceDefaultFactoryInternal but also sets up a
@@ -2738,7 +2727,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // the last committed navigation.
   blink::PendingURLLoaderFactoryBundle::OriginMap
   CreateURLLoaderFactoriesForIsolatedWorlds(
-      NavigationRequest* navigation_request,
+      const SubresourceLoaderFactoriesConfig& config,
       const base::flat_set<url::Origin>& isolated_world_origins);
 
   // Based on the termination |status| and |exit_code|, may generate a crash
