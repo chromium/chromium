@@ -48,18 +48,42 @@ bool ShouldEnableSubresourceRedirect(HTMLImageElement* image_element,
     return false;
   }
 
-  // Enable subresource redirect only for <img> elements created by parser.
-  // Images created from javascript, fetched via XHR/Fetch API should not be
-  // subresource redirected due to the additional CORB/CORS handling needed for
-  // them.
-  if (!image_element->ElementCreatedByParser()) {
+  // Allow subresource redirect only when cross-origin attribute is not set,
+  // which indicates CORS validation is not triggered for the image.
+  if (GetCrossOriginAttributeValue(image_element->FastGetAttribute(
+          html_names::kCrossoriginAttr)) != kCrossOriginAttributeNotSet) {
     RecordSubresourceRedirectIneligibility(
-        SecurityOrigin::AreSameOrigin(url, image_element->GetDocument().Url())
-            ? BlinkSubresourceRedirectIneligibility::
-                  kJavascriptCreatedSameOrigin
-            : BlinkSubresourceRedirectIneligibility::
-                  kJavascriptCreatedCrossOrigin);
+        BlinkSubresourceRedirectIneligibility::kCrossOriginAttributeSet);
     return false;
+  }
+
+  // Enable subresource redirect for <img> elements created by parser, or for
+  // crossorigin <img> elements without cross-origin attribute when not created
+  // by parser. Images created from javascript, fetched via XHR/Fetch API should
+  // not be subresource redirected when they are sameorigin, since the redirect
+  // brings in cross-origin issues. Such images having cross-origin attribute
+  // should not be subresource redirected too due to the additional CORB/CORS
+  // handling needed for them.
+  if (!image_element->ElementCreatedByParser()) {
+    bool is_sameorigin =
+        SecurityOrigin::AreSameOrigin(url, image_element->GetDocument().Url());
+    bool allow_javascript_crossorigin_images =
+        base::GetFieldTrialParamByFeatureAsBool(
+            blink::features::kSubresourceRedirect,
+            "allow_javascript_crossorigin_images", false);
+    if (!allow_javascript_crossorigin_images) {
+      RecordSubresourceRedirectIneligibility(
+          is_sameorigin ? BlinkSubresourceRedirectIneligibility::
+                              kJavascriptCreatedSameOrigin
+                        : BlinkSubresourceRedirectIneligibility::
+                              kJavascriptCreatedCrossOrigin);
+      return false;
+    }
+    if (is_sameorigin) {
+      RecordSubresourceRedirectIneligibility(
+          BlinkSubresourceRedirectIneligibility::kJavascriptCreatedSameOrigin);
+      return false;
+    }
   }
 
   // Create a cross origin URL by appending a string to the original host. This
@@ -89,15 +113,6 @@ bool ShouldEnableSubresourceRedirect(HTMLImageElement* image_element,
                   kContentSecurityPolicyImgSrcRestricted
             : BlinkSubresourceRedirectIneligibility::
                   kContentSecurityPolicyDefaultSrcRestricted);
-    return false;
-  }
-
-  // Allow subresource redirect only when cross-origin attribute is not set,
-  // which indicates CORS validation is not triggered for the image.
-  if (GetCrossOriginAttributeValue(image_element->FastGetAttribute(
-          html_names::kCrossoriginAttr)) != kCrossOriginAttributeNotSet) {
-    RecordSubresourceRedirectIneligibility(
-        BlinkSubresourceRedirectIneligibility::kCrossOriginAttributeSet);
     return false;
   }
   return true;
