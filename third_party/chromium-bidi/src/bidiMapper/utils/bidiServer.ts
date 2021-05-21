@@ -14,27 +14,19 @@
  * limitations under the License.
  */
 
-import { ServerBinding, IServer } from './iServer';
+import { ServerBinding, AbstractServer } from './iServer';
 import { log } from './log';
 const logBidi = log('bidi');
 
-export class BidiServer implements IServer {
+export class BidiServer extends AbstractServer {
   private _bidiBindings: ServerBinding;
-  private _handlers: ((messageObj: any) => void)[] = new Array();
 
   constructor(bidiBindings: ServerBinding) {
+    super(bidiBindings);
     this._bidiBindings = bidiBindings;
     this._bidiBindings.onmessage = (messageStr: string) => {
       this._onBidiMessage(messageStr);
     };
-  }
-
-  /**
-   * Sets handler, which will be called for each BiDi message.
-   * @param handler
-   */
-  setOnMessage(handler: (messageObj: any) => Promise<void>): void {
-    this._handlers.push(handler);
   }
 
   /**
@@ -59,9 +51,7 @@ export class BidiServer implements IServer {
       this._respondWithError(messageStr, 'invalid argument', e.message);
       return;
     }
-    for (let handler of this._handlers) {
-      handler(messageObj);
-    }
+    this.notifySubscribersOnMessage(messageObj);
   }
 
   private _respondWithError(plainCommandData, errorCode, errorMessage) {

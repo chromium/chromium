@@ -13,29 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ServerBinding, IServer } from './iServer';
+import { ServerBinding, AbstractServer } from './iServer';
 import { log } from './log';
 const logCdp = log('cdp');
 
-export class CdpServer implements IServer {
-  private _cdpBinding: ServerBinding;
+export class CdpServer extends AbstractServer {
   private _commandCallbacks: Map<number, (messageObj: any) => void> = new Map();
-  private _handlers: ((messageObj: any) => void)[] = new Array();
 
   constructor(cdpBinding: ServerBinding) {
-    this._cdpBinding = cdpBinding;
-    this._cdpBinding.onmessage = (messageStr: string) => {
+    super(cdpBinding);
+
+    this._binding.onmessage = (messageStr: string) => {
       this._onCdpMessage(messageStr);
     };
-  }
-
-  /**
-   * Sets handler, which will be called for each CDP message, except commands.
-   * Commands result will be returned by the command promise.
-   * @param handler
-   */
-  setOnMessage(handler: (messageObj: any) => Promise<void>): void {
-    this._handlers.push(handler);
   }
 
   /**
@@ -50,7 +40,7 @@ export class CdpServer implements IServer {
       const messageStr = JSON.stringify(messageObj);
 
       logCdp('sent > ' + messageStr);
-      this._cdpBinding.sendMessage(messageStr);
+      this._binding.sendMessage(messageStr);
     });
   }
 
@@ -62,7 +52,7 @@ export class CdpServer implements IServer {
       this._commandCallbacks.get(messageObj.id)(messageObj.result);
       return;
     } else {
-      for (let handler of this._handlers) handler(messageObj);
+      this.notifySubscribersOnMessage(messageObj);
     }
   }
 }

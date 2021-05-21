@@ -47,3 +47,29 @@ export class ServerBinding {
     this._sendMessage(message);
   }
 }
+
+export abstract class AbstractServer implements IServer {
+  protected _binding: ServerBinding;
+  private _handlers: ((messageObj: any) => void)[] = new Array();
+
+  constructor(binding: ServerBinding) {
+    this._binding = binding;
+  }
+
+  abstract sendMessage(messageObj: any): Promise<any>;
+
+  /**
+   * Sets handler, which will be called for each CDP message, except commands.
+   * Commands result will be returned by the command promise.
+   * @param handler
+   */
+  setOnMessage(handler: (messageObj: any) => Promise<void>): void {
+    this._handlers.push(handler);
+  }
+
+  protected notifySubscribersOnMessage(messageObj: any): void {
+    for (let handler of this._handlers) {
+      handler(messageObj);
+    }
+  }
+}
