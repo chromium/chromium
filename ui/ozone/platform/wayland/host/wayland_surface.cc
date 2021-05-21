@@ -174,7 +174,7 @@ void WaylandSurface::SetBufferTransform(gfx::OverlayTransform transform) {
   wl_surface_set_buffer_transform(surface_.get(), wl_transform);
 }
 
-void WaylandSurface::SetBufferScale(int32_t new_scale, bool update_bounds) {
+void WaylandSurface::SetBufferScale(int32_t new_scale) {
   DCHECK_GT(new_scale, 0);
 
   if (new_scale == buffer_scale_)

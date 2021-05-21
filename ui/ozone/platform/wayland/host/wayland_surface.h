@@ -78,7 +78,7 @@ class WaylandSurface {
   void SetBufferTransform(gfx::OverlayTransform transform);
 
   // Sets the buffer scale for this surface.
-  void SetBufferScale(int32_t scale, bool update_bounds);
+  void SetBufferScale(int32_t scale);
 
   // Sets the region that is opaque on this surface in physical pixels. This is
   // expected to be called whenever the region that the surface span changes or

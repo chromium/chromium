@@ -124,7 +124,7 @@ void WaylandSubsurface::ConfigureAndShowSurface(
     const WaylandSurface* reference_below,
     const WaylandSurface* reference_above) {
   wayland_surface()->SetBufferTransform(transform);
-  wayland_surface()->SetBufferScale(parent_->buffer_scale(), false);
+  wayland_surface()->SetBufferScale(parent_->buffer_scale());
 
   auto old_bounds = bounds_px_;
   SetBounds(bounds_rect);

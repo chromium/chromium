@@ -171,7 +171,7 @@ void WaylandPopup::OnCloseRequest() {
 
 bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties) {
   DCHECK(parent_window());
-  root_surface()->SetBufferScale(parent_window()->buffer_scale(), false);
+  root_surface()->SetBufferScale(parent_window()->buffer_scale());
   set_ui_scale(parent_window()->ui_scale());
   shadow_type_ = properties.shadow_type;
 
