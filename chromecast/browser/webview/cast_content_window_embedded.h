@@ -53,10 +53,8 @@ class CastContentWindowEmbedded
       delete;
 
   // CastContentWindow implementation:
-  void CreateWindowForWebContents(
-      CastWebContents* cast_web_contents,
-      ::chromecast::mojom::ZOrder z_order,
-      VisibilityPriority visibility_priority) override;
+  void CreateWindow(::chromecast::mojom::ZOrder z_order,
+                    VisibilityPriority visibility_priority) override;
   void GrantScreenAccess() override;
   void RevokeScreenAccess() override;
   void RequestVisibility(VisibilityPriority visibility_priority) override;

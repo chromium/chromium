@@ -18,6 +18,7 @@
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_browser_process.h"
+#include "chromecast/browser/cast_navigation_ui_data.h"
 #include "chromecast/browser/devtools/remote_debugging_server.h"
 #include "chromecast/common/mojom/activity_url_filter.mojom.h"
 #include "chromecast/common/mojom/queryable_data_store.mojom.h"
@@ -327,6 +328,14 @@ void CastWebContentsImpl::ClearRenderWidgetHostView() {
     view->SetBackgroundColor(SK_ColorBLACK);
     view->SetBackgroundColor(SK_ColorTRANSPARENT);
   }
+}
+
+void CastWebContentsImpl::SetAppProperties(const std::string& session_id,
+                                           bool is_audio_app) {
+  if (!web_contents_)
+    return;
+  shell::CastNavigationUIData::SetAppPropertiesForWebContents(
+      web_contents_, session_id, is_audio_app);
 }
 
 on_load_script_injector::OnLoadScriptInjectorHost<std::string>*

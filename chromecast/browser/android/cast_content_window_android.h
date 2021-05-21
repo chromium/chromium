@@ -26,10 +26,8 @@ class CastContentWindowAndroid : public CastContentWindow {
   ~CastContentWindowAndroid() override;
 
   // CastContentWindow implementation:
-  void CreateWindowForWebContents(
-      CastWebContents* cast_web_contents,
-      mojom::ZOrder z_order,
-      VisibilityPriority visibility_priority) override;
+  void CreateWindow(mojom::ZOrder z_order,
+                    VisibilityPriority visibility_priority) override;
   void GrantScreenAccess() override;
   void RevokeScreenAccess() override;
   void EnableTouchInput(bool enabled) override;

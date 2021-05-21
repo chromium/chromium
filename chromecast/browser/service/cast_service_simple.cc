@@ -73,7 +73,7 @@ void CastServiceSimple::StartInternal() {
       web_service_->CreateWebView(params, GURL() /* initial_url */);
   cast_web_view_->cast_web_contents()->LoadUrl(startup_url_);
   cast_web_view_->window()->GrantScreenAccess();
-  cast_web_view_->InitializeWindow(
+  cast_web_view_->window()->CreateWindow(
       ::chromecast::mojom::ZOrder::APP,
       chromecast::VisibilityPriority::STICKY_ACTIVITY);
 }

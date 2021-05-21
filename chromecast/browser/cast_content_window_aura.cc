@@ -79,9 +79,11 @@ CastContentWindowAura::CastContentWindowAura(
       gesture_priority_(params.gesture_priority),
       is_touch_enabled_(params.enable_touch_input),
       window_(nullptr),
-      has_screen_access_(false) {}
+      has_screen_access_(false),
+      resize_window_when_navigation_starts_(true) {}
 
 CastContentWindowAura::~CastContentWindowAura() {
+  content::WebContentsObserver::Observe(nullptr);
   CastWebContents::Observer::Observe(nullptr);
   if (window_manager_) {
     window_manager_->RemoveGestureHandler(gesture_dispatcher_.get());
@@ -91,15 +93,14 @@ CastContentWindowAura::~CastContentWindowAura() {
   }
 }
 
-void CastContentWindowAura::CreateWindowForWebContents(
-    CastWebContents* cast_web_contents,
+void CastContentWindowAura::CreateWindow(
     mojom::ZOrder z_order,
     VisibilityPriority visibility_priority) {
-  DCHECK(cast_web_contents);
   DCHECK(window_manager_) << "A CastWindowManager must be provided before "
                           << "creating a window for WebContents.";
-  CastWebContents::Observer::Observe(cast_web_contents);
-  window_ = cast_web_contents->web_contents()->GetNativeView();
+  CastWebContents::Observer::Observe(cast_web_contents());
+  content::WebContentsObserver::Observe(WebContents());
+  window_ = WebContents()->GetNativeView();
   if (!window_->HasObserver(this)) {
     window_->AddObserver(this);
   }
@@ -115,28 +116,24 @@ void CastContentWindowAura::CreateWindowForWebContents(
   } else {
     window_->Hide();
   }
+
+  cast_web_contents()->web_contents()->Focus();
 }
 
 void CastContentWindowAura::GrantScreenAccess() {
   has_screen_access_ = true;
   if (window_) {
-#if !BUILDFLAG(IS_CAST_AUDIO_ONLY)
-    gfx::Size display_size =
-        display::Screen::GetScreen()->GetPrimaryDisplay().size();
-    window_->SetBounds(gfx::Rect(display_size.width(), display_size.height()));
-#endif
+    SetFullWindowBounds();
     window_->Show();
   }
 }
 
 void CastContentWindowAura::RevokeScreenAccess() {
   has_screen_access_ = false;
+  resize_window_when_navigation_starts_ = false;
   if (window_) {
     window_->Hide();
-    // Because rendering a larger window may require more system resources,
-    // resize the window to one pixel while hidden.
-    LOG(INFO) << "Resizing window to 1x1 pixel while hidden";
-    window_->SetBounds(gfx::Rect(1, 1));
+    SetHiddenWindowBounds();
   }
 }
 
@@ -186,6 +183,30 @@ void CastContentWindowAura::OnWindowVisibilityChanged(aura::Window* window,
 
 void CastContentWindowAura::OnWindowDestroyed(aura::Window* window) {
   window_ = nullptr;
+}
+
+void CastContentWindowAura::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!resize_window_when_navigation_starts_ || !window_) {
+    return;
+  }
+  resize_window_when_navigation_starts_ = false;
+  SetFullWindowBounds();
+}
+
+void CastContentWindowAura::SetFullWindowBounds() {
+#if !BUILDFLAG(IS_CAST_AUDIO_ONLY)
+  gfx::Size display_size =
+      display::Screen::GetScreen()->GetPrimaryDisplay().size();
+  window_->SetBounds(gfx::Rect(display_size.width(), display_size.height()));
+#endif
+}
+
+void CastContentWindowAura::SetHiddenWindowBounds() {
+  // Because rendering a larger window may require more system resources,
+  // resize the window to one pixel while hidden.
+  LOG(INFO) << "Resizing window to 1x1 pixel while hidden";
+  window_->SetBounds(gfx::Rect(1, 1));
 }
 
 }  // namespace chromecast

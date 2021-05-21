@@ -22,10 +22,10 @@ namespace chromecast {
 
 class CastWebService;
 
-class CastWebViewFactory : public CastWebView::Observer {
+class CastWebViewFactory {
  public:
   explicit CastWebViewFactory(content::BrowserContext* browser_context);
-  ~CastWebViewFactory() override;
+  virtual ~CastWebViewFactory();
 
   virtual std::unique_ptr<CastWebView> CreateWebView(
       const CastWebView::CreateParams& params,
@@ -35,9 +35,6 @@ class CastWebViewFactory : public CastWebView::Observer {
   content::BrowserContext* browser_context() const { return browser_context_; }
 
  protected:
-  // CastWebView::Observer implementation:
-  void OnPageDestroyed(CastWebView* web_view) override;
-
   content::BrowserContext* const browser_context_;
   base::RepeatingCallback<void(CastWebView*, int)> register_callback_;
 

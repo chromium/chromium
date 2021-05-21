@@ -38,17 +38,5 @@ CastWebContents* MockCastWebView::cast_web_contents() {
 base::TimeDelta MockCastWebView::shutdown_delay() const {
   return base::TimeDelta();
 }
-void MockCastWebView::ForceClose() {}
-
-void MockCastWebView::InitializeWindow(mojom::ZOrder z_order,
-                                       VisibilityPriority initial_priority) {}
-
-void MockCastWebView::GrantScreenAccess() {}
-
-void MockCastWebView::RevokeScreenAccess() {}
-
-void MockCastWebView::AddObserver(Observer* observer) {}
-
-void MockCastWebView::RemoveObserver(Observer* observer) {}
 
 }  // namespace chromecast

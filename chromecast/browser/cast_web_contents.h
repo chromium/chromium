@@ -286,6 +286,12 @@ class CastWebContents {
   virtual void AllowWebAndMojoWebUiBindings() = 0;
   virtual void ClearRenderWidgetHostView() = 0;
 
+  // Associates transparent app properties to a given session ID. This data is
+  // used elsewhere in the browser to gate output stream selection. We expose
+  // this API on CastWebContents for the sake of convenience.
+  virtual void SetAppProperties(const std::string& session_id,
+                                bool is_audio_app) = 0;
+
   // ===========================================================================
   // Page Lifetime
   // ===========================================================================

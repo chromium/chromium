@@ -16,20 +16,12 @@ CastWebViewFactory::CastWebViewFactory(content::BrowserContext* browser_context)
 
 CastWebViewFactory::~CastWebViewFactory() = default;
 
-void CastWebViewFactory::OnPageDestroyed(CastWebView* web_view) {
-  web_view->RemoveObserver(this);
-}
-
 std::unique_ptr<CastWebView> CastWebViewFactory::CreateWebView(
     const CastWebView::CreateParams& params,
     CastWebService* web_service,
     const GURL& initial_url) {
-  auto webview = std::make_unique<CastWebViewDefault>(params, web_service,
-                                                      browser_context_);
-  if (webview) {
-    webview->AddObserver(this);
-  }
-  return webview;
+  return std::make_unique<CastWebViewDefault>(params, web_service,
+                                              browser_context_);
 }
 
 }  // namespace chromecast

@@ -57,24 +57,23 @@ CastContentWindowEmbedded::~CastContentWindowEmbedded() {
   SendWindowRequest(CastWindowEmbedder::WindowRequestType::CLOSE_WINDOW);
 }
 
-void CastContentWindowEmbedded::CreateWindowForWebContents(
-    CastWebContents* cast_web_contents,
+void CastContentWindowEmbedded::CreateWindow(
     ::chromecast::mojom::ZOrder z_order,
     VisibilityPriority visibility_priority) {
-  if (!cast_web_contents) {
+  if (!WebContents()) {
     LOG(ERROR) << "cast_web_contents is null";
     return;
   }
-  cast_web_contents_ = cast_web_contents;
-  Observe(cast_web_contents_->web_contents());
-  window_ = cast_web_contents_->web_contents()->GetNativeView();
+  Observe(WebContents());
+  window_ = WebContents()->GetNativeView();
   visibility_priority_ = visibility_priority;
   if (!window_->HasObserver(this)) {
     window_->AddObserver(this);
   }
-  if (!cast_web_contents_->web_contents()->IsLoading()) {
+  if (!WebContents()->IsLoading()) {
     MaybeSendOpenWindowRequest();
   }
+  WebContents()->Focus();
 }
 
 void CastContentWindowEmbedded::GrantScreenAccess() {
@@ -232,8 +231,8 @@ std::string CastContentWindowEmbedded::GetAppId() {
 }
 
 content::WebContents* CastContentWindowEmbedded::GetWebContents() {
-  DCHECK(cast_web_contents_);
-  return cast_web_contents_->web_contents();
+  DCHECK(cast_web_contents());
+  return WebContents();
 }
 
 CastWebContents* CastContentWindowEmbedded::GetCastWebContents() {

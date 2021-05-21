@@ -360,14 +360,10 @@ cast_source_set("browser_base") {
 
   if (enable_chromecast_extensions) {
     sources += [
-      "cast_extension_host.cc",
-      "cast_extension_host.h",
       "cast_extension_message_filter.cc",
       "cast_extension_message_filter.h",
       "cast_extension_url_loader_factory.cc",
       "cast_extension_url_loader_factory.h",
-      "extension_page.cc",
-      "extension_page.h",
       "extensions/api/accessibility_private/accessibility_extension_api.cc",
       "extensions/api/accessibility_private/accessibility_extension_api.h",
       "extensions/api/automation_internal/chromecast_automation_internal_api_delegate.cc",

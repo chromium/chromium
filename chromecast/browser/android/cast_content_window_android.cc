@@ -88,24 +88,23 @@ CastContentWindowAndroid::~CastContentWindowAndroid() {
   Java_CastContentWindowAndroid_onNativeDestroyed(env, java_window_);
 }
 
-void CastContentWindowAndroid::CreateWindowForWebContents(
-    CastWebContents* cast_web_contents,
+void CastContentWindowAndroid::CreateWindow(
     mojom::ZOrder /* z_order */,
     VisibilityPriority visibility_priority) {
-  DCHECK(cast_web_contents);
   if (web_contents_attached_) {
     RequestVisibility(visibility_priority);
     return;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> java_web_contents =
-      cast_web_contents->web_contents()->GetJavaWebContents();
+      cast_web_contents()->web_contents()->GetJavaWebContents();
 
   Java_CastContentWindowAndroid_createWindowForWebContents(
       env, java_window_, java_web_contents,
       ConvertUTF8ToJavaString(env, delegate_->GetId()),
       static_cast<int>(visibility_priority));
   web_contents_attached_ = true;
+  cast_web_contents()->web_contents()->Focus();
 }
 
 void CastContentWindowAndroid::GrantScreenAccess() {

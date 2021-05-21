@@ -59,6 +59,8 @@ class CastWebContentsImpl : public CastWebContents,
   void AddRendererFeatures(std::vector<RendererFeature> features) override;
   void AllowWebAndMojoWebUiBindings() override;
   void ClearRenderWidgetHostView() override;
+  void SetAppProperties(const std::string& session_id,
+                        bool is_audio_app) override;
   void LoadUrl(const GURL& url) override;
   void ClosePage() override;
   void Stop(int error_code) override;

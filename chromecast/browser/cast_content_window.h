@@ -173,16 +173,20 @@ class CastContentWindow {
   explicit CastContentWindow(const CreateParams& params);
   virtual ~CastContentWindow();
 
-  // Creates a full-screen window for |cast_web_contents| and displays it if
-  // screen access has been granted. |cast_web_contents| must outlive the
-  // CastContentWindow. |z_order| is provided so that windows which share the
-  // same parent have a well-defined order.
+  // |cast_web_contents| must outlive the CastContentWindow.
+  void SetCastWebContents(CastWebContents* cast_web_contents) {
+    cast_web_contents_ = cast_web_contents;
+  }
+
+  CastWebContents* cast_web_contents() { return cast_web_contents_; }
+
+  // Creates a full-screen window and displays it if screen access has been
+  // granted.|z_order| is provided so that windows which share the same parent
+  // have a well-defined order.
   // TODO(seantopping): This method probably shouldn't exist; this class should
   // use RAII instead.
-  virtual void CreateWindowForWebContents(
-      CastWebContents* cast_web_contents,
-      mojom::ZOrder z_order,
-      VisibilityPriority visibility_priority) = 0;
+  virtual void CreateWindow(mojom::ZOrder z_order,
+                            VisibilityPriority visibility_priority) = 0;
 
   // Allows the window to be shown on the screen. The window cannot be shown on
   // the screen until this is called.
@@ -229,6 +233,12 @@ class CastContentWindow {
   void RemoveObserver(Observer* observer);
 
  protected:
+  // Camel case due to conflict with WebContentsObserver::web_contents().
+  content::WebContents* WebContents() {
+    return cast_web_contents() ? cast_web_contents()->web_contents() : nullptr;
+  }
+
+  CastWebContents* cast_web_contents_;
   base::WeakPtr<Delegate> delegate_;
   base::ObserverList<Observer> observer_list_;
 };

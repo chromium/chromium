@@ -10,6 +10,7 @@
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/ui/media_control_ui.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/aura/window_observer.h"
 
 namespace aura {
@@ -22,6 +23,7 @@ class TouchBlocker;
 
 class CastContentWindowAura : public CastContentWindow,
                               public CastWebContents::Observer,
+                              public content::WebContentsObserver,
                               public aura::WindowObserver {
  public:
   CastContentWindowAura(const CastContentWindow::CreateParams& params,
@@ -29,10 +31,8 @@ class CastContentWindowAura : public CastContentWindow,
   ~CastContentWindowAura() override;
 
   // CastContentWindow implementation:
-  void CreateWindowForWebContents(
-      CastWebContents* cast_web_contents,
-      mojom::ZOrder z_order,
-      VisibilityPriority visibility_priority) override;
+  void CreateWindow(mojom::ZOrder z_order,
+                    VisibilityPriority visibility_priority) override;
   void GrantScreenAccess() override;
   void RevokeScreenAccess() override;
   void RequestVisibility(VisibilityPriority visibility_priority) override;
@@ -46,11 +46,18 @@ class CastContentWindowAura : public CastContentWindow,
   // CastWebContents::Observer implementation:
   void MainFrameResized(const gfx::Rect& bounds) override;
 
+  // content::WebContentsObserver implementation:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
   // aura::WindowObserver implementation:
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowDestroyed(aura::Window* window) override;
 
  private:
+  void SetFullWindowBounds();
+  void SetHiddenWindowBounds();
+
   CastWindowManager* const window_manager_;
 
   // Utility class for detecting and dispatching gestures to delegates.
@@ -64,6 +71,7 @@ class CastContentWindowAura : public CastContentWindow,
 
   aura::Window* window_;
   bool has_screen_access_;
+  bool resize_window_when_navigation_starts_;
 
   DISALLOW_COPY_AND_ASSIGN(CastContentWindowAura);
 };
