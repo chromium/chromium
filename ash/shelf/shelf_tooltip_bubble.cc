@@ -4,6 +4,7 @@
 
 #include "ash/shelf/shelf_tooltip_bubble.h"
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
@@ -41,10 +42,17 @@ ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
   views::Label* label = new views::Label(text);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   const auto* color_provider = AshColorProvider::Get();
-  const SkColor tooltip_background = color_provider->GetInvertedBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80);
-  const SkColor tooltip_text = color_provider->GetInvertedContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  const bool is_dark_light_mode_enabled = features::IsDarkLightModeEnabled();
+  auto background_color_type = AshColorProvider::BaseLayerType::kTransparent80;
+  auto text_color_type = AshColorProvider::ContentLayerType::kTextColorPrimary;
+  const SkColor tooltip_background =
+      is_dark_light_mode_enabled
+          ? color_provider->GetInvertedBaseLayerColor(background_color_type)
+          : color_provider->GetBaseLayerColor(background_color_type);
+  const SkColor tooltip_text =
+      is_dark_light_mode_enabled
+          ? color_provider->GetInvertedContentLayerColor(text_color_type)
+          : color_provider->GetContentLayerColor(text_color_type);
 
   set_color(tooltip_background);
   label->SetEnabledColor(tooltip_text);
