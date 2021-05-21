@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/no_content_padding"
+    android:background="@drawable/hairline_border_card_background_with_inset">
+    <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:paddingBottom="@dimen/no_content_text_padding"
+          android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+          android:text="@string/web_feed_no_cards_title" />
+    <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+          android:text="@string/web_feed_no_cards_instructions" />
+</LinearLayout>

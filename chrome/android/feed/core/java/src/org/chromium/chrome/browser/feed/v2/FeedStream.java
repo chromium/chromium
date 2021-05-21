@@ -780,8 +780,7 @@ public class FeedStream implements Stream {
         // Builds the new list containing:
         // * existing headers
         // * both new and existing contents
-        ArrayList<NtpListContentManager.FeedContent> newContentList =
-                new ArrayList<NtpListContentManager.FeedContent>();
+        ArrayList<NtpListContentManager.FeedContent> newContentList = new ArrayList<>();
         for (int i = 0; i < mHeaderCount; ++i) {
             newContentList.add(mContentManager.getContent(i));
         }
@@ -821,6 +820,10 @@ public class FeedStream implements Stream {
                     sliceId, org.chromium.chrome.R.layout.feed_spinner);
         }
         assert slice.hasZeroStateSlice();
+        if (!mIsInterestFeed) {
+            return new NtpListContentManager.NativeViewContent(
+                    sliceId, org.chromium.chrome.R.layout.following_empty_state);
+        }
         if (slice.getZeroStateSlice().getType() == FeedUiProto.ZeroStateSlice.Type.CANT_REFRESH) {
             return new NtpListContentManager.NativeViewContent(
                     sliceId, org.chromium.chrome.R.layout.no_connection);

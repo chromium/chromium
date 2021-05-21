@@ -12,6 +12,7 @@ android_resources("chrome_feed_java_resources") {
     "core/java/res/drawable/feed_text_ripple_drawable_light.xml",
     "core/java/res/drawable/hairline_border_card_background_with_inset.xml",
     "core/java/res/layout/feed_spinner.xml",
+    "core/java/res/layout/following_empty_state.xml",
     "core/java/res/layout/no_connection.xml",
     "core/java/res/layout/no_content_v2.xml",
     "core/java/res/values/attrs.xml",

@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.app.feedmanagement.FeedManagementActivity;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ContentChangedListener;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
@@ -521,8 +520,7 @@ public class FeedSurfaceMediator
         }
         int tabId = getTabIdForSection(SectionType.WEB_FEED);
         boolean hasWebFeedTab = tabId != -1;
-        boolean shouldHaveWebFeedTab = mHasHeader && WebFeedBridge.isWebFeedSubscriber()
-                && FeedFeatures.isWebFeedUIEnabled();
+        boolean shouldHaveWebFeedTab = mHasHeader && FeedFeatures.isWebFeedUIEnabled();
         if (hasWebFeedTab == shouldHaveWebFeedTab) return;
         if (shouldHaveWebFeedTab) {
             addHeaderAndStream(mContext.getResources().getString(R.string.ntp_following),
@@ -530,14 +528,6 @@ public class FeedSurfaceMediator
                             R.string.accessibility_ntp_following_unread_content),
 
                     mCoordinator.createFeedStream(/* isInterestFeed = */ false));
-        } else {
-            if (mCurrentStream != null && mCurrentStream.getSectionType() == SectionType.WEB_FEED) {
-                unbindStream();
-            }
-            mTabToStreamMap.remove(tabId);
-            mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
-                    .removeAt(tabId);
-            mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, 0);
         }
     }
 
@@ -587,7 +577,6 @@ public class FeedSurfaceMediator
     }
 
     void onSurfaceOpened() {
-        setUpWebFeedTab();
         rebindStream();
     }
 
