@@ -83,6 +83,7 @@ class CORE_EXPORT SystemClipboard final
   void CopyToFindPboard(const String& text);
 
   void RecordClipboardImageUrls(DocumentFragment* pasting_fragment);
+  void RecordImageLoadError(const String& image_url);
 
   void Trace(Visitor*) const;
 
@@ -97,7 +98,8 @@ class CORE_EXPORT SystemClipboard final
 
   // Whether the selection buffer is available on the underlying platform.
   bool is_selection_buffer_available_ = false;
-
+  // Cache of image elements inserted by paste.
+  WTF::HashSet<String> image_urls_in_paste_;
 };
 
 }  // namespace blink
