@@ -183,15 +183,6 @@ void AddLocallySavedPredictions(FieldInfoManager* field_info_manager,
   }
 }
 
-FormData SimplifiedFormDataFromFormStructure(
-    const FormStructure& form_structure) {
-  FormData form_data;
-  form_data.name = form_structure.form_name();
-  form_data.is_form_tag = form_structure.is_form_tag();
-  form_data.unique_renderer_id = form_structure.unique_renderer_id();
-  return form_data;
-}
-
 bool HasMutedCredentials(base::span<const InsecureCredential> credentials,
                          const std::u16string& username) {
   return base::ranges::any_of(credentials, [&username](const auto& credential) {
@@ -1122,8 +1113,7 @@ void PasswordManager::ProcessAutofillPredictions(
   for (const FormStructure* form : forms) {
     if (logger)
       logger->LogFormStructure(Logger::STRING_SERVER_PREDICTIONS, *form);
-    FormData form_data = SimplifiedFormDataFromFormStructure(*form);
-    if (GetMatchedManager(driver, form_data.unique_renderer_id)) {
+    if (GetMatchedManager(driver, form->global_id().renderer_id)) {
       // The form manager is already created.
       continue;
     }

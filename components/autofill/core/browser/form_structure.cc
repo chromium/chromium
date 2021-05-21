@@ -2518,8 +2518,9 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
            << base::StrCat(
                   {"renderer id: ",
                    base::NumberToString(field->unique_renderer_id.value()),
-                   ", host frame: ", form.host_frame().ToString(), " - ",
-                   field->origin.Serialize(), ", host form renderer id: ",
+                   ", host frame: ", form.global_id().frame_token.ToString(),
+                   " - ", field->origin.Serialize(),
+                   ", host form renderer id: ",
                    base::NumberToString(field->host_form_id.value())});
     buffer << "\n  Signature: "
            << base::StrCat(
@@ -2574,8 +2575,9 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
            << base::StrCat(
                   {"renderer id: ",
                    base::NumberToString(field->unique_renderer_id.value()),
-                   ", host frame: ", form.host_frame().ToString(), " - ",
-                   field->origin.Serialize(), ", host form renderer id: ",
+                   ", host frame: ", form.global_id().frame_token.ToString(),
+                   " - ", field->origin.Serialize(),
+                   ", host form renderer id: ",
                    base::NumberToString(field->host_form_id.value())});
     buffer << Tr{} << "Signature:"
            << base::StrCat(

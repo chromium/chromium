@@ -26,8 +26,8 @@ void TestAutofillDownloadManager::VerifyLastQueriedForms(
     const std::vector<FormData>& expected_forms) {
   ASSERT_EQ(expected_forms.size(), last_queried_forms_.size());
   for (size_t i = 0; i < expected_forms.size(); ++i) {
-    EXPECT_EQ(last_queried_forms_[i]->unique_renderer_id(),
-              expected_forms[i].unique_renderer_id);
+    EXPECT_EQ(last_queried_forms_[i]->global_id().renderer_id,
+              expected_forms[i].global_id().renderer_id);
   }
 }
 
