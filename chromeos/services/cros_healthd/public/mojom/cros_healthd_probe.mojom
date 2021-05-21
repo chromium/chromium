@@ -547,6 +547,10 @@ struct AudioInfo {
   uint64 output_volume;
   // Active output device's name.
   string output_device_name;
+  // Numbers of underruns.
+  uint32 underruns;
+  // Numbers of severe underruns.
+  uint32 severe_underruns;
 };
 
 // A collection of all the device's telemetry information that cros_healthd is
