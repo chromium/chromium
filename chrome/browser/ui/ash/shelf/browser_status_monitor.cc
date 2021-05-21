@@ -28,12 +28,8 @@
 namespace {
 
 bool IsV1WindowedApp(Browser* browser) {
-  if (!browser->deprecated_is_app())
-    return false;
-  // Crostini terminal windows do not have an app id and are handled by
-  // CrostiniAppWindowShelfController. All other app windows should have a non
-  // empty app id.
-  return !web_app::GetAppIdFromApplicationName(browser->app_name()).empty();
+  return (browser->is_type_app() || browser->is_type_app_popup()) &&
+         !web_app::GetAppIdFromApplicationName(browser->app_name()).empty();
 }
 
 #if DCHECK_IS_ON()
