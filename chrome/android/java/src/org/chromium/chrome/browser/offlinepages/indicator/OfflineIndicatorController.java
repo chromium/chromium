@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -261,7 +262,8 @@ public class OfflineIndicatorController implements ConnectivityDetector.Observer
                                            R.string.offline_indicator_view_offline_content),
                                 null);
         if (isUsingTopSnackbar()) {
-            mTopSnackbarManager.show(snackbar, chromeActivity);
+            mTopSnackbarManager.show(snackbar, chromeActivity, chromeActivity.getWindowAndroid(),
+                    BrowserControlsManagerSupplier.from(chromeActivity.getWindowAndroid()));
         } else {
             // Show a bottom snackbar via SnackbarManager.
             SnackbarManager snackbarManager = chromeActivity.getSnackbarManager();

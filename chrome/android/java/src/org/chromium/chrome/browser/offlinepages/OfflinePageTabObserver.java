@@ -13,17 +13,19 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.net.NetworkChangeNotifier;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -75,13 +77,15 @@ public class OfflinePageTabObserver
     /** Current tab, kept track of for the network change notification. */
     private Tab mCurrentTab;
 
-    static OfflinePageTabObserver getObserverForActivity(ChromeActivity activity) {
+    private static OfflinePageTabObserver getObserverForWindowAndroid(WindowAndroid windowAndroid) {
         ensureObserverMapInitialized();
+        Activity activity = windowAndroid.getActivity().get();
         OfflinePageTabObserver observer = sObservers.get(activity);
         if (observer == null) {
-            observer = new OfflinePageTabObserver(activity.getTabModelSelector(),
-                    activity.getSnackbarManager(),
-                    createReloadSnackbarController(activity.getTabModelSelector()));
+            TabModelSelector tabModelSelector = TabModelSelectorSupplier.from(windowAndroid).get();
+            observer = new OfflinePageTabObserver(tabModelSelector,
+                    SnackbarManagerProvider.from(windowAndroid),
+                    createReloadSnackbarController(tabModelSelector));
             sObservers.put(activity, observer);
         }
         return observer;
@@ -112,8 +116,7 @@ public class OfflinePageTabObserver
      * @param tab The tab we are adding an observer for.
      */
     public static void addObserverForTab(Tab tab) {
-        OfflinePageTabObserver observer =
-                getObserverForActivity((ChromeActivity) tab.getWindowAndroid().getActivity().get());
+        OfflinePageTabObserver observer = getObserverForWindowAndroid(tab.getWindowAndroid());
         observer.startObservingTab(tab);
         observer.maybeShowReloadSnackbar(tab, false);
     }

@@ -10,8 +10,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarView;
 import org.chromium.ui.base.WindowAndroid;
@@ -21,6 +22,7 @@ import org.chromium.ui.base.WindowAndroid;
  */
 public class TopSnackbarView extends SnackbarView {
     private final Activity mActivity;
+    private final Supplier<BrowserControlsManager> mBrowserControlsManagerSupplier;
 
     /**
      * Creates an instance of the {@link SnackbarView}.
@@ -32,10 +34,12 @@ public class TopSnackbarView extends SnackbarView {
      *                   will determine where to attach the snackbar.
      */
     public TopSnackbarView(Activity activity, OnClickListener listener, Snackbar snackbar,
-            @Nullable WindowAndroid windowAndroid) {
+            @Nullable WindowAndroid windowAndroid,
+            @Nullable Supplier<BrowserControlsManager> browserControlsManagerSupplier) {
         super(activity, listener, snackbar, (ViewGroup) activity.findViewById(android.R.id.content),
                 windowAndroid);
         mActivity = activity;
+        mBrowserControlsManagerSupplier = browserControlsManagerSupplier;
     }
 
     @Override
@@ -55,12 +59,12 @@ public class TopSnackbarView extends SnackbarView {
     }
 
     private int getOffsetFromTop() {
-        if (!(mActivity instanceof ChromeActivity)) return 0;
+        if (mBrowserControlsManagerSupplier == null
+                || !mBrowserControlsManagerSupplier.hasValue()) {
+            return 0;
+        }
+        if (mBrowserControlsManagerSupplier.get().getContentOffset() == 0) return 0;
 
-        ChromeActivity chromeActivity = (ChromeActivity) mActivity;
-
-        if (chromeActivity.getBrowserControlsManager().getContentOffset() == 0) return 0;
-
-        return chromeActivity.getBrowserControlsManager().getTopControlsHeight();
+        return mBrowserControlsManagerSupplier.get().getTopControlsHeight();
     }
 }

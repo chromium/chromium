@@ -21,15 +21,20 @@ public class BrowserControlsManagerSupplier
             new UnownedUserDataKey<BrowserControlsManagerSupplier>(
                     BrowserControlsManagerSupplier.class);
 
+    /** Return {@link TabModelSelector} supplier associated with the given {@link WindowAndroid}. */
+    public static ObservableSupplier<BrowserControlsManager> from(
+            @Nullable WindowAndroid windowAndroid) {
+        if (windowAndroid == null) return null;
+        return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
+    }
+
     /**
      * Retrieves an {@link ObservableSupplier} from the given host. Real implementations should
      * use {@link WindowAndroid}.
      */
     public static @Nullable BrowserControlsManager getValueOrNullFrom(
             @Nullable WindowAndroid windowAndroid) {
-        if (windowAndroid == null) return null;
-        BrowserControlsManagerSupplier supplier =
-                KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
+        ObservableSupplier<BrowserControlsManager> supplier = from(windowAndroid);
         return supplier == null ? null : supplier.get();
     }
 
