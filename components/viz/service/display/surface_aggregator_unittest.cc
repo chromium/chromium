@@ -32,6 +32,7 @@
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
@@ -78,6 +79,29 @@ gfx::Size SurfaceSize() {
 
 gfx::Rect NoDamage() {
   return gfx::Rect();
+}
+
+// Populate valid looking TransferableResources for `frame` based on DrawQuad
+// ResourceIds.
+void PopulateTransferableResources(CompositorFrame& frame) {
+  DCHECK(frame.resource_list.empty());
+
+  std::set<ResourceId> resources_added;
+  for (auto& render_pass : frame.render_pass_list) {
+    for (auto* quad : render_pass->quad_list) {
+      for (ResourceId resource_id : quad->resources) {
+        if (resource_id == kInvalidResourceId)
+          continue;
+
+        // Adds a TransferableResource the first time seeing a ResourceId.
+        if (resources_added.insert(resource_id).second) {
+          frame.resource_list.push_back(TransferableResource::MakeSoftware(
+              SharedBitmap::GenerateId(), quad->rect.size(), RGBA_8888));
+          frame.resource_list.back().id = resource_id;
+        }
+      }
+    }
+  }
 }
 
 class MockAggregatedDamageCallback {
@@ -131,7 +155,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
             kArbitraryRootFrameSinkId,
             kRootIsRoot)),
         aggregator_(manager_.surface_manager(),
-                    nullptr,
+                    &resource_provider_,
                     use_damage_rect,
                     true) {
     manager_.surface_manager()->AddObserver(&observer_);
@@ -430,14 +454,15 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     auto* quad = pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
     quad->SetNew(shared_state, output_rect, output_rect, false,
                  gfx::RectF(output_rect), gfx::RectF(), output_rect.size(),
-                 gfx::Size(), kInvalidResourceId, kInvalidResourceId,
-                 kInvalidResourceId, kInvalidResourceId,
-                 gfx::ColorSpace::CreateREC709(), 0, 1.0, 8);
+                 gfx::Size(), ResourceId(1), ResourceId(2), ResourceId(3),
+                 kInvalidResourceId, gfx::ColorSpace::CreateREC709(), 0, 1.0,
+                 8);
   }
 
  protected:
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
+  DisplayResourceProviderSoftware resource_provider_{&shared_bitmap_manager_};
   FakeSurfaceObserver observer_;
   FakeCompositorFrameSinkClient fake_client_;
   std::unique_ptr<CompositorFrameSinkSupport> root_sink_;
@@ -5350,23 +5375,13 @@ TEST_F(SurfaceAggregatorPartialSwapTest, ExpandByTargetDamage) {
   }
 }
 
-class SurfaceAggregatorWithResourcesTest : public testing::Test,
-                                           public DisplayTimeSource {
+class SurfaceAggregatorWithResourcesTest : public SurfaceAggregatorTest {
  public:
-  SurfaceAggregatorWithResourcesTest() : manager_(&shared_bitmap_manager_) {}
-
-  void SetUp() override {
-    resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
-        &shared_bitmap_manager_);
-
-    aggregator_ = std::make_unique<SurfaceAggregator>(
-        manager_.surface_manager(), resource_provider_.get(), false, false);
-    aggregator_->set_output_is_secure(true);
-  }
-
-  AggregatedFrame AggregateFrame(const SurfaceId& surface_id) {
-    return aggregator_->Aggregate(surface_id, GetNextDisplayTimeAndIncrement(),
-                                  gfx::OVERLAY_TRANSFORM_NONE);
+  SurfaceAggregatorWithResourcesTest() : SurfaceAggregatorTest(false) {
+    // BuildCompositorFrameWithResources() sets secure_output_only=true on
+    // TextureDrawQuads so this will ensure they aren't dropped from the
+    // AggregatedFrame.
+    aggregator_.set_output_is_secure(true);
   }
 
   void SendBeginFrame(CompositorFrameSinkSupport* support, uint64_t id) {
@@ -5374,12 +5389,6 @@ class SurfaceAggregatorWithResourcesTest : public testing::Test,
         CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, id);
     support->OnBeginFrame(args);
   }
-
- protected:
-  ServerSharedBitmapManager shared_bitmap_manager_;
-  FrameSinkManagerImpl manager_;
-  std::unique_ptr<DisplayResourceProvider> resource_provider_;
-  std::unique_ptr<SurfaceAggregator> aggregator_;
 };
 
 CompositorFrame BuildCompositorFrameWithResources(
@@ -5444,31 +5453,28 @@ void SubmitCompositorFrameWithResources(
 }
 
 TEST_F(SurfaceAggregatorWithResourcesTest, TakeResourcesOneSurface) {
-  FakeCompositorFrameSinkClient client;
-  auto support = std::make_unique<CompositorFrameSinkSupport>(
-      &client, &manager_, kArbitraryRootFrameSinkId, kRootIsRoot);
   LocalSurfaceId local_surface_id(7u, base::UnguessableToken::Create());
-  SurfaceId surface_id(support->frame_sink_id(), local_surface_id);
+  SurfaceId surface_id(root_sink_->frame_sink_id(), local_surface_id);
 
   std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
                                  ResourceId(13)};
-  SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support.get(),
+  SubmitCompositorFrameWithResources(ids, true, SurfaceId(), root_sink_.get(),
                                      surface_id);
 
   auto frame = AggregateFrame(surface_id);
 
   // Nothing should be available to be returned yet.
-  EXPECT_TRUE(client.returned_resources().empty());
+  EXPECT_TRUE(fake_client_.returned_resources().empty());
 
-  SubmitCompositorFrameWithResources({}, true, SurfaceId(), support.get(),
+  SubmitCompositorFrameWithResources({}, true, SurfaceId(), root_sink_.get(),
                                      surface_id);
 
   frame = AggregateFrame(surface_id);
 
-  ASSERT_EQ(3u, client.returned_resources().size());
+  ASSERT_EQ(3u, fake_client_.returned_resources().size());
   ResourceId returned_ids[3];
   for (size_t i = 0; i < 3; ++i) {
-    returned_ids[i] = client.returned_resources()[i].id;
+    returned_ids[i] = fake_client_.returned_resources()[i].id;
   }
   EXPECT_THAT(returned_ids,
               testing::WhenSorted(testing::ElementsAreArray(ids)));
@@ -5478,47 +5484,41 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TakeResourcesOneSurface) {
 // ID, and a new display frame is generated, then the resources of the old
 // surface are returned to the appropriate client.
 TEST_F(SurfaceAggregatorWithResourcesTest, ReturnResourcesAsSurfacesChange) {
-  FakeCompositorFrameSinkClient client;
-  auto support = std::make_unique<CompositorFrameSinkSupport>(
-      &client, &manager_, kArbitraryRootFrameSinkId, kRootIsRoot);
   LocalSurfaceId local_surface_id1(7u, base::UnguessableToken::Create());
   LocalSurfaceId local_surface_id2(8u, base::UnguessableToken::Create());
-  SurfaceId surface_id1(support->frame_sink_id(), local_surface_id1);
-  SurfaceId surface_id2(support->frame_sink_id(), local_surface_id2);
+  SurfaceId surface_id1(root_sink_->frame_sink_id(), local_surface_id1);
+  SurfaceId surface_id2(root_sink_->frame_sink_id(), local_surface_id2);
 
   std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
                                  ResourceId(13)};
-  SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support.get(),
+  SubmitCompositorFrameWithResources(ids, true, SurfaceId(), root_sink_.get(),
                                      surface_id1);
 
   auto frame = AggregateFrame(surface_id1);
 
   // Nothing should be available to be returned yet.
-  EXPECT_TRUE(client.returned_resources().empty());
+  EXPECT_TRUE(fake_client_.returned_resources().empty());
 
   // Submitting a CompositorFrame to |surface_id2| should cause the surface
   // associated with |surface_id1| to get garbage collected.
-  SubmitCompositorFrameWithResources({}, true, SurfaceId(), support.get(),
+  SubmitCompositorFrameWithResources({}, true, SurfaceId(), root_sink_.get(),
                                      surface_id2);
   manager_.surface_manager()->GarbageCollectSurfaces();
 
   frame = AggregateFrame(surface_id2);
 
-  ASSERT_EQ(3u, client.returned_resources().size());
+  ASSERT_EQ(3u, fake_client_.returned_resources().size());
   ResourceId returned_ids[3];
   for (size_t i = 0; i < 3; ++i) {
-    returned_ids[i] = client.returned_resources()[i].id;
+    returned_ids[i] = fake_client_.returned_resources()[i].id;
   }
   EXPECT_THAT(returned_ids,
               testing::WhenSorted(testing::ElementsAreArray(ids)));
 }
 
 TEST_F(SurfaceAggregatorWithResourcesTest, TakeInvalidResources) {
-  FakeCompositorFrameSinkClient client;
-  auto support = std::make_unique<CompositorFrameSinkSupport>(
-      &client, &manager_, kArbitraryRootFrameSinkId, kRootIsRoot);
   LocalSurfaceId local_surface_id(7u, base::UnguessableToken::Create());
-  SurfaceId surface_id(support->frame_sink_id(), local_surface_id);
+  SurfaceId surface_id(root_sink_->frame_sink_id(), local_surface_id);
 
   TransferableResource resource;
   resource.id = ResourceId(11);
@@ -5530,25 +5530,25 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TakeInvalidResources) {
                               .AddDefaultRenderPass()
                               .AddTransferableResource(resource)
                               .Build();
-  support->SubmitCompositorFrame(local_surface_id, std::move(frame));
+  root_sink_->SubmitCompositorFrame(local_surface_id, std::move(frame));
 
   auto returned_frame = AggregateFrame(surface_id);
 
   // Nothing should be available to be returned yet.
-  EXPECT_TRUE(client.returned_resources().empty());
+  EXPECT_TRUE(fake_client_.returned_resources().empty());
 
-  SubmitCompositorFrameWithResources({}, true, SurfaceId(), support.get(),
+  SubmitCompositorFrameWithResources({}, true, SurfaceId(), root_sink_.get(),
                                      surface_id);
-  ASSERT_EQ(1u, client.returned_resources().size());
-  EXPECT_EQ(ResourceId(11u), client.returned_resources()[0].id);
+  ASSERT_EQ(1u, fake_client_.returned_resources().size());
+  EXPECT_EQ(ResourceId(11u), fake_client_.returned_resources()[0].id);
 }
 
 TEST_F(SurfaceAggregatorWithResourcesTest, TwoSurfaces) {
   FakeCompositorFrameSinkClient client;
   auto support1 = std::make_unique<CompositorFrameSinkSupport>(
-      &client, &manager_, FrameSinkId(1, 1), kChildIsRoot);
+      &client, &manager_, FrameSinkId(3, 1), kChildIsRoot);
   auto support2 = std::make_unique<CompositorFrameSinkSupport>(
-      &client, &manager_, FrameSinkId(2, 2), kChildIsRoot);
+      &client, &manager_, FrameSinkId(4, 2), kChildIsRoot);
   LocalSurfaceId local_frame1_id(7u, base::UnguessableToken::Create());
   SurfaceId surface1_id(support1->frame_sink_id(), local_frame1_id);
 
@@ -5582,19 +5582,17 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TwoSurfaces) {
   }
   EXPECT_THAT(returned_ids,
               testing::WhenSorted(testing::ElementsAreArray(ids)));
-  EXPECT_EQ(3u, resource_provider_->num_resources());
+  EXPECT_EQ(3u, resource_provider_.num_resources());
 }
 
 // Ensure that aggregator completely ignores Surfaces that reference invalid
 // resources.
 TEST_F(SurfaceAggregatorWithResourcesTest, InvalidChildSurface) {
-  auto root_support = std::make_unique<CompositorFrameSinkSupport>(
-      nullptr, &manager_, kArbitraryRootFrameSinkId, kRootIsRoot);
   auto middle_support = std::make_unique<CompositorFrameSinkSupport>(
       nullptr, &manager_, kArbitraryMiddleFrameSinkId, kChildIsRoot);
   auto child_support = std::make_unique<CompositorFrameSinkSupport>(
       nullptr, &manager_, kArbitraryFrameSinkId1, kChildIsRoot);
-  TestSurfaceIdAllocator root_surface_id(root_support->frame_sink_id());
+  TestSurfaceIdAllocator root_surface_id(root_sink_->frame_sink_id());
   TestSurfaceIdAllocator middle_surface_id(middle_support->frame_sink_id());
   TestSurfaceIdAllocator child_surface_id(child_support->frame_sink_id());
 
@@ -5611,7 +5609,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, InvalidChildSurface) {
   std::vector<ResourceId> ids3 = {ResourceId(20), ResourceId(21),
                                   ResourceId(22)};
   SubmitCompositorFrameWithResources(ids3, true, middle_surface_id,
-                                     root_support.get(), root_surface_id);
+                                     root_sink_.get(), root_surface_id);
 
   auto frame = AggregateFrame(root_surface_id);
 
@@ -5632,9 +5630,9 @@ TEST_F(SurfaceAggregatorWithResourcesTest, InvalidChildSurface) {
 
 TEST_F(SurfaceAggregatorWithResourcesTest, SecureOutputTexture) {
   auto support1 = std::make_unique<CompositorFrameSinkSupport>(
-      nullptr, &manager_, FrameSinkId(1, 1), kChildIsRoot);
+      nullptr, &manager_, FrameSinkId(3, 1), kChildIsRoot);
   auto support2 = std::make_unique<CompositorFrameSinkSupport>(
-      nullptr, &manager_, FrameSinkId(2, 2), kChildIsRoot);
+      nullptr, &manager_, FrameSinkId(4, 2), kChildIsRoot);
   support2->set_allow_copy_output_requests_for_testing();
   LocalSurfaceId local_frame1_id(7u, base::UnguessableToken::Create());
   SurfaceId surface1_id(support1->frame_sink_id(), local_frame1_id);
@@ -5690,7 +5688,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, SecureOutputTexture) {
   EXPECT_EQ(DrawQuad::Material::kTextureContent,
             render_pass->quad_list.front()->material);
 
-  aggregator_->set_output_is_secure(false);
+  aggregator_.set_output_is_secure(false);
 
   frame = AggregateFrame(surface2_id);
   render_pass = frame.render_pass_list.back().get();
@@ -6564,6 +6562,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
   CompositorFrame child_surface_frame = MakeEmptyCompositorFrame();
   AddPasses(&child_surface_frame.render_pass_list, child_surface_passes,
             &child_surface_frame.metadata.referenced_surfaces);
+  PopulateTransferableResources(child_surface_frame);
 
   TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
   child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
@@ -6613,7 +6612,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
             aggregated_frame.surface_damage_rect_list_[0]);
 
   // Video quad(10, 0, 80, 80) is damaged.
-  EXPECT_TRUE(video_sqs->overlay_damage_index.has_value());
+  ASSERT_TRUE(video_sqs->overlay_damage_index.has_value());
   auto index = video_sqs->overlay_damage_index.value();
   EXPECT_EQ(1U, index);
   EXPECT_EQ(gfx::Rect(10, 0, 80, 80),
@@ -6624,6 +6623,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
     CompositorFrame child_surface_frame = MakeEmptyCompositorFrame();
     AddPasses(&child_surface_frame.render_pass_list, child_surface_passes,
               &child_surface_frame.metadata.referenced_surfaces);
+    PopulateTransferableResources(child_surface_frame);
     child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
                                        std::move(child_surface_frame));
 
@@ -8505,44 +8505,40 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorUsageChangeFullFrameDamage) {
 }
 
 TEST_F(SurfaceAggregatorWithResourcesTest, TransitionDirectiveFrameBehind) {
-  FakeCompositorFrameSinkClient client;
-  auto support = std::make_unique<CompositorFrameSinkSupport>(
-      &client, &manager_, kArbitraryRootFrameSinkId, kRootIsRoot);
-
   LocalSurfaceId local_surface_id(7u, base::UnguessableToken::Create());
-  SurfaceId surface_id(support->frame_sink_id(), local_surface_id);
+  SurfaceId surface_id(root_sink_->frame_sink_id(), local_surface_id);
 
   // Create and submit a 'save' frame.
-  SendBeginFrame(support.get(), 1);
+  SendBeginFrame(root_sink_.get(), 1);
   {
     auto frame = BuildCompositorFrameWithResources({}, true, SurfaceId());
     frame.metadata.transition_directives.emplace_back(
         1, CompositorFrameTransitionDirective::Type::kSave,
         CompositorFrameTransitionDirective::Effect::kCoverLeft);
 
-    support->SubmitCompositorFrame(local_surface_id, std::move(frame));
-    auto* surface = support->GetLastCreatedSurfaceForTesting();
+    root_sink_->SubmitCompositorFrame(local_surface_id, std::move(frame));
+    auto* surface = root_sink_->GetLastCreatedSurfaceForTesting();
     ASSERT_TRUE(surface);
     surface->GetSurfaceSavedFrameStorage()->CompleteForTesting();
   }
   AggregateFrame(surface_id);
 
   // Create and submit an 'animate' frame.
-  SendBeginFrame(support.get(), 2);
+  SendBeginFrame(root_sink_.get(), 2);
   {
     auto frame = BuildCompositorFrameWithResources({}, true, SurfaceId());
     frame.metadata.transition_directives.emplace_back(
         2, CompositorFrameTransitionDirective::Type::kAnimate);
-    support->SubmitCompositorFrame(local_surface_id, std::move(frame));
+    root_sink_->SubmitCompositorFrame(local_surface_id, std::move(frame));
   }
   AggregateFrame(surface_id);
 
   // Create and submit a frame with some resources.
-  SendBeginFrame(support.get(), 3);
+  SendBeginFrame(root_sink_.get(), 3);
   {
     std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
                                    ResourceId(13)};
-    SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support.get(),
+    SubmitCompositorFrameWithResources(ids, true, SurfaceId(), root_sink_.get(),
                                        surface_id);
   }
   auto frame = AggregateFrame(surface_id);
@@ -8562,13 +8558,13 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TransitionDirectiveFrameBehind) {
 
   // At this point we will interpolate with the above frame (resources 11, 12,
   // 13).
-  SendBeginFrame(support.get(), 4);
+  SendBeginFrame(root_sink_.get(), 4);
   {
     std::vector<ResourceId> ids = {ResourceId(15), ResourceId(16),
                                    ResourceId(17)};
     // This will cause an activation which will unref 11, 12, 13. So, the
     // activation must also interpolate a new frame.
-    SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support.get(),
+    SubmitCompositorFrameWithResources(ids, true, SurfaceId(), root_sink_.get(),
                                        surface_id);
   }
   // Ensure that the interpolated frame is not using unreffed resources
@@ -8578,10 +8574,10 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TransitionDirectiveFrameBehind) {
   // ones) from the original frame).
   EXPECT_EQ(count_textures(frame), 4u);
 
-  ASSERT_EQ(3u, client.returned_resources().size());
+  ASSERT_EQ(3u, fake_client_.returned_resources().size());
   ResourceId returned_ids[3];
   for (size_t i = 0; i < 3; ++i) {
-    returned_ids[i] = client.returned_resources()[i].id;
+    returned_ids[i] = fake_client_.returned_resources()[i].id;
   }
   // We expect that 11, 12, and 13 are now returned.
   EXPECT_THAT(returned_ids,

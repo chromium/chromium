@@ -147,6 +147,7 @@ SurfaceAggregator::SurfaceAggregator(SurfaceManager* manager,
       needs_surface_damage_rect_list_(needs_surface_damage_rect_list),
       de_jelly_enabled_(DeJellyEnabled()) {
   DCHECK(manager_);
+  DCHECK(provider_);
 }
 
 SurfaceAggregator::~SurfaceAggregator() {
@@ -581,12 +582,8 @@ void SurfaceAggregator::EmitSurfaceContent(
   }
 
   referenced_surfaces_.insert(surface_id);
-  // TODO(vmpstr): provider check is a hack for unittests that don't set up a
-  // resource provider.
-  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> empty_map;
   const auto& child_to_parent_map =
-      provider_ ? provider_->GetChildToParentMap(ChildIdForSurface(surface))
-                : empty_map;
+      provider_->GetChildToParentMap(ChildIdForSurface(surface));
   gfx::Transform combined_transform = scaled_quad_to_target_transform;
   combined_transform.ConcatTransform(target_transform);
 
@@ -1196,12 +1193,8 @@ void SurfaceAggregator::CopyPasses(const CompositorFrame& frame,
 
   ++stats_->copied_surface_count;
 
-  // TODO(vmpstr): provider check is a hack for unittests that don't set up a
-  // resource provider.
-  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> empty_map;
   const auto& child_to_parent_map =
-      provider_ ? provider_->GetChildToParentMap(ChildIdForSurface(surface))
-                : empty_map;
+      provider_->GetChildToParentMap(ChildIdForSurface(surface));
 
   const gfx::Transform surface_transform =
       IsRootSurface(surface) ? root_surface_transform_ : gfx::Transform();
@@ -1542,10 +1535,6 @@ bool SurfaceAggregator::DeclareResourcesToProvider(
     Surface* surface,
     const std::vector<TransferableResource>& resource_list,
     const CompositorRenderPassList& render_passes) {
-  // |provider_| may be null in tests.
-  if (!provider_)
-    return true;
-
   int child_id = ChildIdForSurface(surface);
 
   // Ref the resources in the surface, and let the provider know we've received
