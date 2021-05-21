@@ -42,6 +42,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -88,8 +89,15 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
  public:
   METADATA_HEADER(SharesheetImagePreview);
   explicit SharesheetImagePreview(size_t file_count) {
+    const int border_radius =
+        views::LayoutProvider::Get()->GetCornerRadiusMetric(
+            views::Emphasis::kMedium);
     SetBackground(views::CreateRoundedRectBackground(
-        SK_ColorWHITE, kImagePreviewCornerRadius));
+        kImagePreviewPlaceholderBackgroundColor, border_radius));
+    SetBorder(views::CreateRoundedRectBorder(
+        /* thickness */ 1, border_radius,
+        GetNativeTheme()->GetSystemColor(
+            ui::NativeTheme::kColorId_UnfocusedBorderColor)));
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
         /* inside_border_insets */ gfx::Insets(),

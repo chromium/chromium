@@ -42,7 +42,6 @@ constexpr gfx::Size kImagePreviewQuarterSize(kImagePreviewHalfIconSize,
                                              kImagePreviewHalfIconSize);
 constexpr int kImagePreviewFileEnumerationLineHeight = 10;
 constexpr int kImagePreviewBetweenChildSpacing = 2;
-constexpr int kImagePreviewCornerRadius = 4;
 constexpr int kImagePreviewIconCornerRadius = 2;
 constexpr int kImagePreviewPlaceholderIconContentSize = 20;
 constexpr SkAlpha kImagePreviewBackgroundAlphaComponent = 0x32;
