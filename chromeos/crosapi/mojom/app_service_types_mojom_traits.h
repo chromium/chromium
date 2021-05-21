@@ -270,6 +270,13 @@ struct StructTraits<crosapi::mojom::CapabilityAccessDataView,
                    apps::mojom::CapabilityAccessPtr* out);
 };
 
+template <>
+struct EnumTraits<crosapi::mojom::IconType, apps::mojom::IconType> {
+  static crosapi::mojom::IconType ToMojom(apps::mojom::IconType input);
+  static bool FromMojom(crosapi::mojom::IconType input,
+                        apps::mojom::IconType* output);
+};
+
 }  // namespace mojo
 
 #endif  // CHROMEOS_CROSAPI_MOJOM_APP_SERVICE_TYPES_MOJOM_TRAITS_H_

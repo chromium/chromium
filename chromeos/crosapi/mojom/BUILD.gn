@@ -78,6 +78,10 @@ mojom("mojom") {
           cpp = "::apps::mojom::CapabilityAccessPtr"
           move_only = true
         },
+        {
+          mojom = "crosapi.mojom.IconType"
+          cpp = "::apps::mojom::IconType"
+        },
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",

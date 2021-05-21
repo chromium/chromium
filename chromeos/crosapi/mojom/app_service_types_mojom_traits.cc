@@ -550,4 +550,43 @@ bool StructTraits<crosapi::mojom::CapabilityAccessDataView,
   return true;
 }
 
+crosapi::mojom::IconType
+EnumTraits<crosapi::mojom::IconType, apps::mojom::IconType>::ToMojom(
+    apps::mojom::IconType input) {
+  switch (input) {
+    case apps::mojom::IconType::kUnknown:
+      return crosapi::mojom::IconType::kUnknown;
+    case apps::mojom::IconType::kUncompressed:
+      return crosapi::mojom::IconType::kUncompressed;
+    case apps::mojom::IconType::kCompressed:
+      return crosapi::mojom::IconType::kCompressed;
+    case apps::mojom::IconType::kStandard:
+      return crosapi::mojom::IconType::kStandard;
+  }
+
+  NOTREACHED();
+}
+
+bool EnumTraits<crosapi::mojom::IconType, apps::mojom::IconType>::FromMojom(
+    crosapi::mojom::IconType input,
+    apps::mojom::IconType* output) {
+  switch (input) {
+    case crosapi::mojom::IconType::kUnknown:
+      *output = apps::mojom::IconType::kUnknown;
+      return true;
+    case crosapi::mojom::IconType::kUncompressed:
+      *output = apps::mojom::IconType::kUncompressed;
+      return true;
+    case crosapi::mojom::IconType::kCompressed:
+      *output = apps::mojom::IconType::kCompressed;
+      return true;
+    case crosapi::mojom::IconType::kStandard:
+      *output = apps::mojom::IconType::kStandard;
+      return true;
+  }
+
+  NOTREACHED();
+  return false;
+}
+
 }  // namespace mojo

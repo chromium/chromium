@@ -210,3 +210,16 @@ struct CapabilityAccess {
   // Whether the app is accessing microphone.
   OptionalBool microphone;
 };
+
+[Stable, Extensible]
+enum IconType {
+  // Sentinel value used in error cases.
+  [Default] kUnknown,
+  // Icon as an uncompressed gfx::ImageSkia with no standard Chrome OS mask.
+  kUncompressed,
+  // Icon as compressed bytes in PNG format with no standard Chrome OS mask.
+  kCompressed,
+  // Icon as an uncompressed gfx::ImageSkia with the standard Chrome OS mask
+  // applied. This is the default suggested icon type.
+  kStandard,
+};

@@ -644,3 +644,36 @@ TEST(AppServiceTypesTraitsTest, RoundTripUninstallSource) {
     EXPECT_EQ(output, apps::mojom::UninstallSource::kMigration);
   }
 }
+
+// Test that serialization and deserialization works with icon type.
+TEST(AppServiceTypesTraitsTest, RoundTripIconType) {
+  apps::mojom::IconType input;
+  {
+    input = apps::mojom::IconType::kUnknown;
+    apps::mojom::IconType output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconType>(
+        input, output));
+    EXPECT_EQ(output, apps::mojom::IconType::kUnknown);
+  }
+  {
+    input = apps::mojom::IconType::kUncompressed;
+    apps::mojom::IconType output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconType>(
+        input, output));
+    EXPECT_EQ(output, apps::mojom::IconType::kUncompressed);
+  }
+  {
+    input = apps::mojom::IconType::kCompressed;
+    apps::mojom::IconType output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconType>(
+        input, output));
+    EXPECT_EQ(output, apps::mojom::IconType::kCompressed);
+  }
+  {
+    input = apps::mojom::IconType::kStandard;
+    apps::mojom::IconType output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconType>(
+        input, output));
+    EXPECT_EQ(output, apps::mojom::IconType::kStandard);
+  }
+}
