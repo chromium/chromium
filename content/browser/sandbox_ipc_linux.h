@@ -8,7 +8,6 @@
 #define CONTENT_BROWSER_SANDBOX_IPC_LINUX_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/files/scoped_file.h"

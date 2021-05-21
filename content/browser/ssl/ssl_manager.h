@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_SSL_SSL_MANAGER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

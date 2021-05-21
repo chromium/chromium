@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_TRACING_CROS_TRACING_AGENT_H_
 
 #include <memory>
-#include <string>
 
 #include "services/tracing/public/cpp/base_agent.h"
 

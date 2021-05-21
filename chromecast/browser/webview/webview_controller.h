@@ -6,7 +6,6 @@
 #define CHROMECAST_BROWSER_WEBVIEW_WEBVIEW_CONTROLLER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/supports_user_data.h"
 #include "chromecast/browser/cast_web_contents.h"

@@ -6,7 +6,6 @@
 #define CHROMECAST_MEDIA_CMA_BACKEND_ANDROID_AUDIO_SINK_MANAGER_H_
 
 #include <map>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

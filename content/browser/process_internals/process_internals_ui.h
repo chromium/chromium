@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_PROCESS_INTERNALS_PROCESS_INTERNALS_UI_H_
 
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "content/browser/process_internals/process_internals.mojom.h"

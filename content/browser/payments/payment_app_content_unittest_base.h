@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_PAYMENTS_PAYMENT_APP_CONTENT_UNITTEST_BASE_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

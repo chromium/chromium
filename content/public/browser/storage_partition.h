@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <set>
-#include <string>
 
 #include "base/callback_forward.h"
 #include "base/time/time.h"

@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_BROWSER_WEBVIEW_PLATFORM_VIEWS_GRPC_SERVICE_H_
 #define CHROMECAST_BROWSER_WEBVIEW_PLATFORM_VIEWS_GRPC_SERVICE_H_
 
-#include <string>
-
 #include "base/memory/weak_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"

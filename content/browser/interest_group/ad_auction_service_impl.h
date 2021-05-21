@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <set>
-#include <string>
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "content/browser/interest_group/auction_runner.h"

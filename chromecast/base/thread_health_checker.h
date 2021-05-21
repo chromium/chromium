@@ -6,7 +6,6 @@
 #define CHROMECAST_BASE_THREAD_HEALTH_CHECKER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"

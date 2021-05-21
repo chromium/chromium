@@ -5,8 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_BROWSER_ASSOCIATED_INTERFACE_H_
 #define CONTENT_PUBLIC_BROWSER_BROWSER_ASSOCIATED_INTERFACE_H_
 
-#include <string>
-
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"

@@ -6,7 +6,6 @@
 #define CONTENT_RENDERER_PEPPER_PEPPER_WEBPLUGIN_IMPL_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

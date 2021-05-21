@@ -8,7 +8,6 @@
 #import <Cocoa/Cocoa.h>
 
 #include <memory>
-#include <string>
 
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"

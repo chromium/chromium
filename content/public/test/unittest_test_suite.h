@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_TEST_UNITTEST_TEST_SUITE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "build/build_config.h"

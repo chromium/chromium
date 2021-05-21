@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_MEDIA_CAPTURE_CONTENT_CAPTURE_DEVICE_BROWSERTEST_BASE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/time/time.h"

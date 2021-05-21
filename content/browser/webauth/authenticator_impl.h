@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "content/common/content_export.h"

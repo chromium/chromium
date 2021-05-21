@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_INSTALLEDAPP_INSTALLED_APP_PROVIDER_IMPL_H_
 #define CONTENT_BROWSER_INSTALLEDAPP_INSTALLED_APP_PROVIDER_IMPL_H_
 
-#include <string>
 #include <vector>
 
 #include "content/public/browser/web_contents_observer.h"

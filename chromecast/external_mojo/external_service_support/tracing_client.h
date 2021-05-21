@@ -5,7 +5,6 @@
 #define CHROMECAST_EXTERNAL_MOJO_EXTERNAL_SERVICE_SUPPORT_TRACING_CLIENT_H_
 
 #include <memory>
-#include <string>
 
 namespace chromecast {
 namespace external_service_support {

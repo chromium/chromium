@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EVENT_RECORDER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

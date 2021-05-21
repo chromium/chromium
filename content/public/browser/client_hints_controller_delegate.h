@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_BROWSER_CLIENT_HINTS_CONTROLLER_DELEGATE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/time/time.h"
 #include "content/common/content_export.h"

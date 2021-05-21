@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_TEST_SERVICE_WORKER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

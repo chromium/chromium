@@ -6,7 +6,6 @@
 #define CONTENT_CHILD_BROWSER_FONT_RESOURCE_TRUSTED_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "cc/paint/paint_canvas.h"

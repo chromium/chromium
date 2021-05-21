@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_INSTALLEDAPP_INSTALLED_APP_PROVIDER_IMPL_WIN_H_
 #define CONTENT_BROWSER_INSTALLEDAPP_INSTALLED_APP_PROVIDER_IMPL_WIN_H_
 
-#include <string>
 #include <vector>
 
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"

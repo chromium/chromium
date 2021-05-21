@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_COMMON_PROFILING_UTILS_H_
 #define CONTENT_PUBLIC_COMMON_PROFILING_UTILS_H_
 
-#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"

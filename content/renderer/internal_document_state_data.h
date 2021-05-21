@@ -6,7 +6,6 @@
 #define CONTENT_RENDERER_INTERNAL_DOCUMENT_STATE_DATA_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/supports_user_data.h"

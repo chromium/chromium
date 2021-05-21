@@ -6,7 +6,6 @@
 #define CHROMECAST_RENDERER_CAST_CONTENT_RENDERER_CLIENT_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

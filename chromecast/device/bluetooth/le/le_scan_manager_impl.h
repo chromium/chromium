@@ -9,7 +9,6 @@
 #include <list>
 #include <map>
 #include <set>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

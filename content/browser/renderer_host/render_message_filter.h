@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include <list>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

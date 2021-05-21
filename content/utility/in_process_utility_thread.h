@@ -6,7 +6,6 @@
 #define CONTENT_UTILITY_IN_PROCESS_UTILITY_THREAD_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/threading/thread.h"

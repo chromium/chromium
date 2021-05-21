@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_BROWSER_TRACING_DELEGATE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback.h"
 #include "content/common/content_export.h"

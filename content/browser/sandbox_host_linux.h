@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_SANDBOX_HOST_LINUX_H_
 
 #include <memory>
-#include <string>
 
 #include "base/check.h"
 #include "base/macros.h"

@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_MEDIA_BASE_VIDEO_MODE_SWITCHER_H_
 #define CHROMECAST_MEDIA_BASE_VIDEO_MODE_SWITCHER_H_
 
-#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"

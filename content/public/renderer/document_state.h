@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_RENDERER_DOCUMENT_STATE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
