@@ -1042,9 +1042,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, UpdatesFocusInformation) {
       ->GetMainFrame()
       ->AccessibilityPerformAction(action_data);
 
-  auto* semantic_tree = semantics_manager_.semantic_tree();
+  FakeSemanticTree* semantic_tree = semantics_manager_.semantic_tree();
 
-  semantic_tree->RunUntilCondititionIsTrue(
+  semantic_tree->RunUntilConditionIsTrue(
       base::BindLambdaForTesting([semantic_tree]() {
         auto* node = semantic_tree->GetNodeWithId(0u);
         if (!node)
@@ -1071,7 +1071,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, UpdatesFocusInformation) {
       ->GetMainFrame()
       ->AccessibilityPerformAction(action_data);
 
-  semantic_tree->RunUntilCondititionIsTrue(
+  semantic_tree->RunUntilConditionIsTrue(
       base::BindLambdaForTesting([semantic_tree, new_focus_id]() {
         auto* root = semantic_tree->GetNodeWithId(0u);
         auto* node = semantic_tree->GetNodeWithId(new_focus_id);

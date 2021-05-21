@@ -178,7 +178,7 @@ void FakeSemanticTree::Clear() {
   nodes_.clear();
 }
 
-void FakeSemanticTree::RunUntilCondititionIsTrue(
+void FakeSemanticTree::RunUntilConditionIsTrue(
     base::RepeatingCallback<bool()> condition) {
   DCHECK(!on_commit_updates_);
   if (condition.Run())
