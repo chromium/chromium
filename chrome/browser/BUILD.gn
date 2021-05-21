@@ -2170,9 +2170,7 @@ static_library("browser") {
     "//components/safe_browsing/content/browser:client_side_detection",
     "//components/safe_browsing/content/password_protection",
     "//components/safe_browsing/content/web_ui",
-    "//components/safe_browsing/core:download_file_types_proto",
     "//components/safe_browsing/core:features",
-    "//components/safe_browsing/core:file_type_policies",
     "//components/safe_browsing/core:public",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser/sync",
@@ -6547,6 +6545,13 @@ static_library("browser") {
     sources += [
       "component_updater/hyphenation_component_installer.cc",
       "component_updater/hyphenation_component_installer.h",
+    ]
+  }
+
+  if (safe_browsing_mode != 0) {
+    deps += [
+      "//components/safe_browsing/core:download_file_types_proto",
+      "//components/safe_browsing/core:file_type_policies",
     ]
   }
 }

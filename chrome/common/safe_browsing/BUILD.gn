@@ -128,7 +128,11 @@ if (safe_browsing_mode == 1) {
 }
 
 source_set("safe_browsing") {
-  deps = [ "//components/safe_browsing/core:file_type_policies" ]
+  deps = []
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/core:file_type_policies" ]
+  }
 
   if (safe_browsing_mode == 1) {
     sources = [

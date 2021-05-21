@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//components/safe_browsing/buildflags.gni")
 
 generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingBridge.java" ]
@@ -15,10 +16,13 @@ source_set("android") {
     "//components/password_manager/core/browser/leak_detection",
     "//components/password_manager/core/common",
     "//components/prefs",
-    "//components/safe_browsing/core:file_type_policies",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager",
   ]
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/core:file_type_policies" ]
+  }
 }
 
 android_library("java") {

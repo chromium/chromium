@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/safe_browsing/buildflags.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -152,7 +153,7 @@ if (!is_ios) {
 # These files have no content/ dependency, but we still aren't building them on
 # on iOS since we don't ship download protection on that platform.
 # TODO(crbug/1056278): Enable this on Fuchsia
-if (!is_ios && !is_fuchsia) {
+if (safe_browsing_mode != 0 && !is_ios && !is_fuchsia) {
   proto_library("download_file_types_proto") {
     sources = [ "proto/download_file_types.proto" ]
   }
