@@ -81,26 +81,32 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
   ~SegregatedPrefStore() override;
 
  private:
-  // Aggregates events from the underlying stores and synthesizes external
-  // events via |on_initialization|, |read_error_delegate_|, and |observers_|.
-  class AggregatingObserver : public PrefStore::Observer {
+  // Caches event state from the underlying stores and exposes the state to the
+  // provided "outer" SegregatedPrefStore to synthesize external events via
+  // |read_error_delegate_| and |observers_|.
+  class UnderlyingPrefStoreObserver : public PrefStore::Observer {
    public:
-    explicit AggregatingObserver(SegregatedPrefStore* outer);
+    explicit UnderlyingPrefStoreObserver(SegregatedPrefStore* outer);
 
     // PrefStore::Observer implementation
     void OnPrefValueChanged(const std::string& key) override;
     void OnInitializationCompleted(bool succeeded) override;
 
-   private:
-    SegregatedPrefStore* outer_;
-    int failed_sub_initializations_;
-    int successful_sub_initializations_;
+    bool initialization_succeeded() const { return initialization_succeeded_; }
 
-    DISALLOW_COPY_AND_ASSIGN(AggregatingObserver);
+   private:
+    SegregatedPrefStore* const outer_;
+    bool initialization_succeeded_ = false;
+
+    DISALLOW_COPY_AND_ASSIGN(UnderlyingPrefStoreObserver);
   };
 
-  // Returns |selected_pref_store| if |key| is selected and |default_pref_store|
-  // otherwise.
+  // Returns true only if all underlying PrefStores have initialized
+  // successfully, otherwise false.
+  bool IsInitializationSuccessful() const;
+
+  // Returns |selected_pref_store| if |key| is selected and
+  // |default_pref_store| otherwise.
   PersistentPrefStore* StoreForKey(const std::string& key);
   const PersistentPrefStore* StoreForKey(const std::string& key) const;
 
@@ -110,7 +116,8 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
 
   std::unique_ptr<PersistentPrefStore::ReadErrorDelegate> read_error_delegate_;
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
-  AggregatingObserver aggregating_observer_;
+  UnderlyingPrefStoreObserver default_observer_;
+  UnderlyingPrefStoreObserver selected_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(SegregatedPrefStore);
 };

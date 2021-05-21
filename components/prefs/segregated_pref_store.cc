@@ -12,42 +12,40 @@
 #include "base/notreached.h"
 #include "base/values.h"
 
-SegregatedPrefStore::AggregatingObserver::AggregatingObserver(
+SegregatedPrefStore::UnderlyingPrefStoreObserver::UnderlyingPrefStoreObserver(
     SegregatedPrefStore* outer)
-    : outer_(outer),
-      failed_sub_initializations_(0),
-      successful_sub_initializations_(0) {}
+    : outer_(outer) {
+  DCHECK(outer_);
+}
 
-void SegregatedPrefStore::AggregatingObserver::OnPrefValueChanged(
+void SegregatedPrefStore::UnderlyingPrefStoreObserver::OnPrefValueChanged(
     const std::string& key) {
-  // There is no need to tell clients about changes if they have not yet been
-  // told about initialization.
-  if (failed_sub_initializations_ + successful_sub_initializations_ < 2)
+  // Notify Observers only after all underlying PrefStores of the outer
+  // SegregatedPrefStore are initialized.
+  if (!outer_->IsInitializationComplete())
     return;
 
   for (auto& observer : outer_->observers_)
     observer.OnPrefValueChanged(key);
 }
 
-void SegregatedPrefStore::AggregatingObserver::OnInitializationCompleted(
-    bool succeeded) {
-  if (succeeded)
-    ++successful_sub_initializations_;
-  else
-    ++failed_sub_initializations_;
+void SegregatedPrefStore::UnderlyingPrefStoreObserver::
+    OnInitializationCompleted(bool succeeded) {
+  initialization_succeeded_ = succeeded;
 
-  DCHECK_LE(failed_sub_initializations_ + successful_sub_initializations_, 2);
+  // Notify Observers only after all underlying PrefStores of the outer
+  // SegregatedPrefStore are initialized.
+  if (!outer_->IsInitializationComplete())
+    return;
 
-  if (failed_sub_initializations_ + successful_sub_initializations_ == 2) {
-    if (successful_sub_initializations_ == 2 && outer_->read_error_delegate_) {
-      PersistentPrefStore::PrefReadError read_error = outer_->GetReadError();
-      if (read_error != PersistentPrefStore::PREF_READ_ERROR_NONE)
-        outer_->read_error_delegate_->OnError(read_error);
-    }
-
-    for (auto& observer : outer_->observers_)
-      observer.OnInitializationCompleted(successful_sub_initializations_ == 2);
+  if (outer_->read_error_delegate_) {
+    PersistentPrefStore::PrefReadError read_error = outer_->GetReadError();
+    if (read_error != PersistentPrefStore::PREF_READ_ERROR_NONE)
+      outer_->read_error_delegate_->OnError(read_error);
   }
+
+  for (auto& observer : outer_->observers_)
+    observer.OnInitializationCompleted(outer_->IsInitializationSuccessful());
 }
 
 SegregatedPrefStore::SegregatedPrefStore(
@@ -57,9 +55,10 @@ SegregatedPrefStore::SegregatedPrefStore(
     : default_pref_store_(std::move(default_pref_store)),
       selected_pref_store_(std::move(selected_pref_store)),
       selected_preference_names_(std::move(selected_pref_names)),
-      aggregating_observer_(this) {
-  default_pref_store_->AddObserver(&aggregating_observer_);
-  selected_pref_store_->AddObserver(&aggregating_observer_);
+      default_observer_(this),
+      selected_observer_(this) {
+  default_pref_store_->AddObserver(&default_observer_);
+  selected_pref_store_->AddObserver(&selected_observer_);
 }
 
 void SegregatedPrefStore::AddObserver(Observer* observer) {
@@ -77,6 +76,11 @@ bool SegregatedPrefStore::HasObservers() const {
 bool SegregatedPrefStore::IsInitializationComplete() const {
   return default_pref_store_->IsInitializationComplete() &&
          selected_pref_store_->IsInitializationComplete();
+}
+
+bool SegregatedPrefStore::IsInitializationSuccessful() const {
+  return default_observer_.initialization_succeeded() &&
+         selected_observer_.initialization_succeeded();
 }
 
 bool SegregatedPrefStore::GetValue(const std::string& key,
@@ -206,8 +210,8 @@ void SegregatedPrefStore::OnStoreDeletionFromDisk() {
 }
 
 SegregatedPrefStore::~SegregatedPrefStore() {
-  default_pref_store_->RemoveObserver(&aggregating_observer_);
-  selected_pref_store_->RemoveObserver(&aggregating_observer_);
+  default_pref_store_->RemoveObserver(&default_observer_);
+  selected_pref_store_->RemoveObserver(&selected_observer_);
 }
 
 PersistentPrefStore* SegregatedPrefStore::StoreForKey(const std::string& key) {

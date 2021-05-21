@@ -79,13 +79,10 @@ class SegregatedPrefStoreTest
     selected_store_ = new TestingPrefStore;
     default_store_ = new TestingPrefStore;
 
-    std::set<std::string> selected_pref_names;
-    selected_pref_names.insert(kSelectedPref);
-    selected_pref_names.insert(kSharedPref);
-
+    selected_pref_names_.insert(kSelectedPref);
+    selected_pref_names_.insert(kSharedPref);
     segregated_store_ = new SegregatedPrefStore(default_store_, selected_store_,
-                                                selected_pref_names);
-
+                                                selected_pref_names_);
     segregated_store_->AddObserver(&observer_);
   }
 
@@ -106,6 +103,7 @@ class SegregatedPrefStoreTest
   scoped_refptr<TestingPrefStore> selected_store_;
   scoped_refptr<SegregatedPrefStore> segregated_store_;
 
+  std::set<std::string> selected_pref_names_;
   MockReadErrorDelegate::Data read_error_delegate_data_;
 
  private:
@@ -219,6 +217,33 @@ TEST_F(SegregatedPrefStoreTest, Observer) {
             segregated_store_->ReadPrefs());
   EXPECT_TRUE(observer_.initialized);
   EXPECT_TRUE(observer_.initialization_success);
+  EXPECT_TRUE(observer_.changed_keys.empty());
+  segregated_store_->SetValue(kSelectedPref,
+                              std::make_unique<base::Value>(kValue1),
+                              WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+  observer_.VerifyAndResetChangedKey(kSelectedPref);
+  segregated_store_->SetValue(kUnselectedPref,
+                              std::make_unique<base::Value>(kValue2),
+                              WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+  observer_.VerifyAndResetChangedKey(kUnselectedPref);
+}
+
+TEST_F(SegregatedPrefStoreTest,
+       ObserverAfterConstructionAfterSubInitialization) {
+  // Ensure that underlying PrefStores are initialized first.
+  default_store_->ReadPrefs();
+  selected_store_->ReadPrefs();
+  EXPECT_TRUE(default_store_->IsInitializationComplete());
+  EXPECT_TRUE(selected_store_->IsInitializationComplete());
+
+  // Create a new SegregatedPrefStore based on the initialized PrefStores.
+  segregated_store_->RemoveObserver(&observer_);
+  segregated_store_ = base::MakeRefCounted<SegregatedPrefStore>(
+      default_store_, selected_store_, selected_pref_names_);
+  segregated_store_->AddObserver(&observer_);
+  EXPECT_TRUE(segregated_store_->IsInitializationComplete());
+
+  // The Observer should receive notifications from the SegregatedPrefStore.
   EXPECT_TRUE(observer_.changed_keys.empty());
   segregated_store_->SetValue(kSelectedPref,
                               std::make_unique<base::Value>(kValue1),
