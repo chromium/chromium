@@ -80,7 +80,7 @@ bool DoesViewHaveAccessibilityErrors(views::View* view,
     }
     if (node_data.HasState(State::kIgnored))
       violations += "\n- Focusable View should not be ignored.";
-    if (node_data.HasState(State::kInvisible))
+    if (node_data.IsInvisible())
       violations += "\n- Focusable View should not be invisible.";
   }
 

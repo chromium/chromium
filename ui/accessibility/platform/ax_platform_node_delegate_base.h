@@ -156,6 +156,9 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   // Get whether this node is offscreen.
   bool IsOffscreen() const override;
 
+  // Returns true if this node is ignored.
+  bool IsIgnored() const override;
+
   // Returns true if this node is invisible or ignored.
   bool IsInvisibleOrIgnored() const override;
 

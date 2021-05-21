@@ -358,8 +358,7 @@ gfx::Rect AXVirtualView::GetBoundsRect(
 gfx::NativeViewAccessible AXVirtualView::HitTestSync(
     int screen_physical_pixel_x,
     int screen_physical_pixel_y) const {
-  const ui::AXNodeData& node_data = GetData();
-  if (node_data.HasState(ax::mojom::State::kInvisible))
+  if (GetData().IsInvisible())
     return nullptr;
 
   // Check if the point is within any of the virtual children of this view.
@@ -382,7 +381,7 @@ gfx::NativeViewAccessible AXVirtualView::HitTestSync(
   if (bounds_in_screen_physical_pixels.Contains(
           static_cast<float>(screen_physical_pixel_x),
           static_cast<float>(screen_physical_pixel_y)) &&
-      !node_data.IsIgnored()) {
+      !IsIgnored()) {
     return GetNativeObject();
   }
 
@@ -458,10 +457,6 @@ std::vector<int32_t> AXVirtualView::GetColHeaderNodeIds(int col_index) const {
 absl::optional<int32_t> AXVirtualView::GetCellId(int row_index,
                                                  int col_index) const {
   return GetDelegate()->GetCellId(row_index, col_index);
-}
-
-bool AXVirtualView::IsIgnored() const {
-  return GetData().IsIgnored();
 }
 
 bool AXVirtualView::HandleAccessibleAction(

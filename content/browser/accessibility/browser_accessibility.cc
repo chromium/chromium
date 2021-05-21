@@ -1562,9 +1562,6 @@ bool BrowserAccessibility::IsFocused() const {
 }
 
 bool BrowserAccessibility::IsInvisibleOrIgnored() const {
-  if (IsFocused())
-    return false;
-
   return node()->IsInvisibleOrIgnored();
 }
 

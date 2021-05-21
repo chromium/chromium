@@ -47,7 +47,7 @@ std::u16string AXPlatformNodeDelegateBase::GetInnerText() const {
   // should not be needed. ChildAtIndex() and GetChildCount() are already
   // supposed to skip over nodes that are invisible or ignored, but
   // ViewAXPlatformNodeDelegate does not currently implement this behavior.
-  if (IsLeaf() && !GetData().IsInvisibleOrIgnored())
+  if (IsLeaf() && !IsInvisibleOrIgnored())
     return GetData().GetString16Attribute(ax::mojom::StringAttribute::kName);
 
   std::u16string inner_text;
@@ -164,8 +164,19 @@ bool AXPlatformNodeDelegateBase::IsFocused() const {
   return false;
 }
 
+bool AXPlatformNodeDelegateBase::IsIgnored() const {
+  // To avoid the situation where a screen reader user will not be able to
+  // access a focused node because it has accidentally been marked as ignored,
+  // we unignore any nodes that are focused. However, we don't need to check
+  // this here because subclasses should make sure that the ignored state is
+  // removed from all nodes that are currently focused. This condition will be
+  // enforced once we switch to using an AXTree of AXNodes in Views.
+  return GetData().role == ax::mojom::Role::kNone ||
+         GetData().HasState(ax::mojom::State::kIgnored);
+}
+
 bool AXPlatformNodeDelegateBase::IsInvisibleOrIgnored() const {
-  return false;
+  return IsIgnored() || GetData().IsInvisible();
 }
 
 bool AXPlatformNodeDelegateBase::IsToplevelBrowserWindow() {
@@ -191,12 +202,11 @@ AXPlatformNodeDelegateBase::GetLowestPlatformAncestor() const {
   AXPlatformNodeDelegateBase* current_delegate =
       const_cast<AXPlatformNodeDelegateBase*>(this);
   AXPlatformNodeDelegateBase* lowest_unignored_delegate = current_delegate;
-  if (lowest_unignored_delegate->IsInvisibleOrIgnored()) {
+  if (lowest_unignored_delegate->IsIgnored()) {
     lowest_unignored_delegate = static_cast<AXPlatformNodeDelegateBase*>(
         lowest_unignored_delegate->GetParentDelegate());
   }
-  DCHECK(!lowest_unignored_delegate ||
-         !lowest_unignored_delegate->IsInvisibleOrIgnored())
+  DCHECK(!lowest_unignored_delegate || !lowest_unignored_delegate->IsIgnored())
       << "`AXPlatformNodeDelegateBase::GetParentDelegate()` should return "
          "either an unignored object or nullptr.";
 

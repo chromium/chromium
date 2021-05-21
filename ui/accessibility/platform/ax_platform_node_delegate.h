@@ -96,7 +96,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
 
   // Get the unignored selection from the tree, meaning the selection whose
   // endpoints are on unignored nodes. (An ignored node means that the node
-  // should not be exposed to platform APIs: See `IsInvisibleOrIgnored`.)
+  // should not be exposed to platform APIs: See `IsIgnored`.)
   virtual const AXTree::Selection GetUnignoredSelection() const = 0;
 
   // Creates a text position rooted at this object.
@@ -125,7 +125,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // should return the number of unignored children. All ignored nodes are
   // recursively removed from the children count. (An ignored node means that
   // the node should not be exposed to platform APIs: See
-  // `IsInvisibleOrIgnored`.)
+  // `IsIgnored`.)
   virtual int GetChildCount() const = 0;
 
   // Get a child of a node given a 0-based index.
@@ -133,7 +133,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // Note that for accessibility trees that have ignored nodes, this method
   // returns only unignored children. All ignored nodes are recursively removed.
   // (An ignored node means that the node should not be exposed to platform
-  // APIs: See `IsInvisibleOrIgnored`.)
+  // APIs: See `IsIgnored`.)
   virtual gfx::NativeViewAccessible ChildAtIndex(int index) = 0;
 
   // Returns true if it has a modal dialog.
@@ -164,6 +164,15 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // text fields.
   virtual bool IsDescendantOfAtomicTextField() const = 0;
 
+  // Returns true if this node is ignored and should be hidden from the
+  // accessibility tree. Methods that are used to navigate the accessibility
+  // tree, such as "ChildAtIndex", "GetParent", and "GetChildCount", among
+  // others, also skip ignored nodes. This does not impact the node's
+  // descendants.
+  //
+  // Only relevant for accessibility trees that support ignored nodes.)
+  virtual bool IsIgnored() const = 0;
+
   // Returns true if this is a leaf node, meaning all its
   // children should not be exposed to any platform's native accessibility
   // layer.
@@ -186,7 +195,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // ancestor under which this object is found.
   //
   // (An ignored node means that the node should not be exposed to platform
-  // APIs: See `IsInvisibleOrIgnored`.)
+  // APIs: See `IsIgnored`.)
   virtual gfx::NativeViewAccessible GetLowestPlatformAncestor() const = 0;
 
   // If this node is within an editable region, returns the node that is at the

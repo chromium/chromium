@@ -850,7 +850,7 @@ bool WebAXObjectProxy::IsCollapsed() {
 
 bool WebAXObjectProxy::IsVisible() {
   UpdateLayout();
-  return !GetAXNodeData().HasState(ax::mojom::State::kInvisible);
+  return !GetAXNodeData().IsInvisible();
 }
 
 bool WebAXObjectProxy::IsVisited() {

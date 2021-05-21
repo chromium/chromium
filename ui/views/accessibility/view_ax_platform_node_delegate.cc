@@ -574,7 +574,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(
       return false;
     ui::AXNodeData child_data;
     child->GetViewAccessibility().GetAccessibleNodeData(&child_data);
-    if (child_data.HasState(ax::mojom::State::kInvisible))
+    if (child_data.IsInvisible())
       return false;
     gfx::Point point_in_child_coords = point;
     v->ConvertPointToTarget(v, child, &point_in_child_coords);

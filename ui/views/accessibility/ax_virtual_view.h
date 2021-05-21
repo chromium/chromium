@@ -172,13 +172,6 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegateBase {
   // Gets or creates a wrapper suitable for use with tree sources.
   AXVirtualViewWrapper* GetOrCreateWrapper(views::AXAuraObjCache* cache);
 
-  // Returns true if this node is ignored and should be hidden from the
-  // accessibility tree. Methods that are used to navigate the accessibility
-  // tree, such as "ChildAtIndex", "GetParent", and "GetChildCount", among
-  // others, also skip ignored nodes. This does not impact the node's
-  // descendants.
-  bool IsIgnored() const;
-
   // Handle a request from assistive technology to perform an action on this
   // virtual view. Returns true on success, but note that the success/failure is
   // not propagated to the client that requested the action, since the

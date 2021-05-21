@@ -93,8 +93,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // PDF.
   bool IsPlatformDocument() const;
 
-  bool IsIgnored() const;
-
   bool IsIgnoredForTextNavigation() const;
 
   bool IsLineBreakObject() const;
@@ -409,6 +407,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   bool IsDescendantOfAtomicTextField() const override;
   bool IsLeaf() const override;
   bool IsFocused() const override;
+  bool IsIgnored() const override;
   bool IsInvisibleOrIgnored() const override;
   bool IsToplevelBrowserWindow() override;
   gfx::NativeViewAccessible GetLowestPlatformAncestor() const override;

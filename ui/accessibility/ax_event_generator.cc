@@ -462,7 +462,7 @@ void AXEventGenerator::OnIntAttributeChanged(AXTree* tree,
     case ax::mojom::IntAttribute::kActivedescendantId:
       // Don't fire on invisible containers, as it confuses some screen readers,
       // such as NVDA.
-      if (!node->data().HasState(ax::mojom::State::kInvisible)) {
+      if (!node->data().IsInvisible()) {
         AddEvent(node, Event::ACTIVE_DESCENDANT_CHANGED);
         active_descendant_changed_.push_back(node);
       }

@@ -2056,8 +2056,8 @@ void AXTree::RecursivelyPopulateOrderedSetItemsMap(
     // containers are historically marked invisible. Therefore, in that case,
     // count the invisible items. Only check 2 levels up, as combobox containers
     // are never higher.
-    if (child->data().HasState(ax::mojom::State::kInvisible) &&
-        !IsCollapsed(local_parent) && !IsCollapsed(local_parent->parent())) {
+    if (child->data().IsInvisible() && !IsCollapsed(local_parent) &&
+        !IsCollapsed(local_parent->parent())) {
       continue;
     }
 
