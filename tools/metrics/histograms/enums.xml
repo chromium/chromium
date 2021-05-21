@@ -41649,6 +41649,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Remind Me Later"/>
 </enum>
 
+<enum name="IOSDefaultBrowserPromoNonModalAction">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Appear"/>
+  <int value="2" label="Dismiss"/>
+  <int value="3" label="Timeout"/>
+  <int value="4" label="Background prevented impression"/>
+</enum>
+
 <enum name="IOSDefaultBrowserTailoredPromoType">
   <int value="0" label="Unkown"/>
   <int value="1" label="Made for iOS"/>
