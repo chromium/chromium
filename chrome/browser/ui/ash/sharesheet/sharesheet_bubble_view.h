@@ -102,6 +102,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
 
   views::View* main_view_ = nullptr;
   SharesheetHeaderView* header_view_ = nullptr;
+  views::View* footer_view_ = nullptr;
   views::View* default_view_ = nullptr;
   views::View* expanded_view_ = nullptr;
   views::View* share_action_view_ = nullptr;
