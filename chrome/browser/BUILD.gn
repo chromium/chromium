@@ -6556,6 +6556,7 @@ static_library("browser") {
     deps += [
       "//components/safe_browsing/core:download_file_types_proto",
       "//components/safe_browsing/core:file_type_policies",
+      "//components/safe_browsing/core/browser/download:download_stats",
     ]
   }
 }

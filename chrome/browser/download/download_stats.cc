@@ -4,6 +4,7 @@
 
 #include "chrome/browser/download/download_stats.h"
 #include "components/profile_metrics/browser_profile_type.h"
+#include "components/safe_browsing/core/browser/download/download_stats.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -19,9 +20,14 @@ void RecordDownloadSource(ChromeDownloadSource source) {
 }
 
 void RecordDangerousDownloadWarningShown(
-    download::DownloadDangerType danger_type) {
+    download::DownloadDangerType danger_type,
+    const base::FilePath& file_path,
+    bool is_https,
+    bool has_user_gesture) {
   base::UmaHistogramEnumeration("Download.ShowedDownloadWarning", danger_type,
                                 download::DOWNLOAD_DANGER_TYPE_MAX);
+  safe_browsing::RecordDangerousDownloadWarningShown(
+      danger_type, file_path, is_https, has_user_gesture);
 }
 
 void RecordOpenedDangerousConfirmDialog(

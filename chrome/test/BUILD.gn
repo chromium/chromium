@@ -6055,6 +6055,7 @@ test("unit_tests") {
       "//components/safe_browsing/core:features_unittest",
       "//components/safe_browsing/core:ping_manager_unittest",
       "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
+      "//components/safe_browsing/core/browser/download:unittests",
       "//components/safe_browsing/core/browser/sync:unittests",
       "//components/safe_browsing/core/db:v4_test_util",
     ]

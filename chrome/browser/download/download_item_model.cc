@@ -494,6 +494,10 @@ GURL DownloadItemModel::GetURL() const {
   return download_->GetURL();
 }
 
+bool DownloadItemModel::HasUserGesture() const {
+  return download_->HasUserGesture();
+}
+
 void DownloadItemModel::OnDownloadUpdated(DownloadItem* download) {
   for (auto& obs : observers_)
     obs.OnDownloadUpdated();

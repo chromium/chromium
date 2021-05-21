@@ -279,6 +279,10 @@ class DownloadUIModel {
   // Returns the URL represented by this download.
   virtual GURL GetURL() const;
 
+  // Returns whether the download request was initiated in response to a user
+  // gesture.
+  virtual bool HasUserGesture() const;
+
   // Returns the most recent failure reason for this download. Returns
   // |FailState::NO_FAILURE| if there is no previous failure reason.
   virtual offline_items_collection::FailState GetLastFailState() const;
