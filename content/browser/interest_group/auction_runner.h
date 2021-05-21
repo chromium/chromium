@@ -202,7 +202,8 @@ class CONTENT_EXPORT AuctionRunner {
       const absl::optional<std::string>& signals_for_winner,
       const absl::optional<GURL>& seller_report_url,
       const std::vector<std::string>& error_msgs);
-  void ReportBidWin(BidState* state);
+  void ReportBidWin(BidState* state,
+                    const absl::optional<std::string>& signals_for_winner);
   void OnReportBidWinComplete(const BidState* best_bid,
                               const absl::optional<GURL>& bidder_report_url,
                               const std::vector<std::string>& error_msgs);
@@ -254,7 +255,6 @@ class CONTENT_EXPORT AuctionRunner {
   size_t seller_considering_ = 0;
 
   // Seller script reportResult() results.
-  absl::optional<std::string> signals_for_winner_;
   absl::optional<GURL> seller_report_url_;
 
   // Bidder script reportWin() results.

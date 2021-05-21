@@ -141,6 +141,15 @@ constexpr char kReportWinNoUrl[] = R"(
   }
 )";
 
+// This can be appended to the standard script to override the function.
+constexpr char kReportWinExpectNullAuctionSignals[] = R"(
+  function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                     browserSignals) {
+    if (sellerSignals === null)
+      sendReportTo("https://seller.signals.were.null.test");
+  }
+)";
+
 constexpr char kCheckingAuctionScript[] = R"(
   function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                    browserSignals) {
@@ -1392,6 +1401,47 @@ TEST_F(AuctionRunnerTest, NeitherReportUrl) {
   EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
             res.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(res.errors, testing::ElementsAre());
+}
+
+// Test the case where the seller worklet provides no signals for the winner,
+// since it has no reportResult() method. The winning bidder's reportWin()
+// function should be passed null as `sellerSignals`, and should still be able
+// to send a report.
+TEST_F(AuctionRunnerTest, NoReportResult) {
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript("1", "https://ad1.com/", kBidder1, kBidder1Name,
+                    true /* has_signals */, "k1", "a"));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript("2", "https://ad2.com/", kBidder2, kBidder2Name,
+                    true /* has_signals */, "l2", "b") +
+          kReportWinExpectNullAuctionSignals);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kCheckingAuctionScript);
+  auction_worklet::AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
+      R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
+      R"({"l1":"a", "l2": "b", "extra": "c"})");
+
+  const Result& res = RunStandardAuction();
+  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+  EXPECT_FALSE(res.seller_report_url);
+  EXPECT_EQ(GURL("https://seller.signals.were.null.test/"),
+            res.bidder_report_url);
+  EXPECT_EQ(6, res.bidder1_bid_count);
+  EXPECT_EQ(3u, res.bidder1_prev_wins.size());
+  EXPECT_EQ(6, res.bidder2_bid_count);
+  ASSERT_EQ(4u, res.bidder2_prev_wins.size());
+  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+            res.bidder2_prev_wins[3]->ad_json);
+  EXPECT_THAT(res.errors, testing::ElementsAre(base::StringPrintf(
+                              "%s `reportResult` is not a function.",
+                              kSellerUrl.spec().c_str())));
 }
 
 TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {

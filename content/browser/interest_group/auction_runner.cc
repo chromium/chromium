@@ -388,7 +388,6 @@ void AuctionRunner::OnReportSellerResultComplete(
     const absl::optional<std::string>& signals_for_winner,
     const absl::optional<GURL>& seller_report_url,
     const std::vector<std::string>& errors) {
-  signals_for_winner_ = signals_for_winner;
   seller_report_url_ = seller_report_url;
   errors_.insert(errors_.end(), errors.begin(), errors.end());
 
@@ -399,17 +398,24 @@ void AuctionRunner::OnReportSellerResultComplete(
     return;
   }
 
-  ReportBidWin(best_bid);
+  ReportBidWin(best_bid, signals_for_winner);
 }
 
-void AuctionRunner::ReportBidWin(BidState* best_bid) {
+void AuctionRunner::ReportBidWin(
+    BidState* best_bid,
+    const absl::optional<std::string>& signals_for_winner) {
   CHECK(best_bid->bid_result);
   std::string signals_for_winner_arg;
-  // TODO(mmenke): It's unclear what should happen here if
-  // `signals_for_winner_` is null. As-is, an empty string will result in the
-  // BidderWorklet's ReportWin() method failing, since it's not valid JSON.
-  if (signals_for_winner_)
-    signals_for_winner_arg = *signals_for_winner_;
+  if (signals_for_winner) {
+    signals_for_winner_arg = *signals_for_winner;
+  } else {
+    // `signals_for_winner_arg` is passed as JSON, so need to pass "null" when
+    // it's not provided. Pass in "null" instead of making the API take an
+    // optional to limit the information provided to the untrusted BidderWorklet
+    // process that's not part of the FLEDGE API. Unlikely to matter, but best
+    // to be safe.
+    signals_for_winner_arg = "null";
+  }
 
   // Fail the auction if the winning bidder process has crashed.
   //
