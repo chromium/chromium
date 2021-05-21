@@ -515,6 +515,10 @@ try_.chromium_android_builder(
 )
 
 try_.chromium_android_builder(
+    name = "android-weblayer-10-x86-rel-tests",
+)
+
+try_.chromium_android_builder(
     name = "android-weblayer-marshmallow-x86-rel-tests",
 )
 
