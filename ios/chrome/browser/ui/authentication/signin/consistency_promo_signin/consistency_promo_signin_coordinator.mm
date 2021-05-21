@@ -74,14 +74,18 @@
 
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
                  completion:(ProceduralBlock)completion {
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
   __weak __typeof(self) weakSelf = self;
-  [self.navigationController
-      dismissViewControllerAnimated:YES
-                         completion:^() {
-                           [weakSelf finishedWithResult:
-                                         SigninCoordinatorResultInterrupted
-                                               identity:nil];
-                         }];
+  ProceduralBlock consistencyCompletion = ^() {
+    [weakSelf finalizeInterruptWithAction:action completion:completion];
+  };
+  if (self.addAccountCoordinator) {
+    [self.addAccountCoordinator interruptWithAction:action
+                                         completion:consistencyCompletion];
+  } else {
+    consistencyCompletion();
+  }
 }
 
 - (void)start {
@@ -138,24 +142,12 @@
                                       accessPoint:signin_metrics::AccessPoint::
                                                       ACCESS_POINT_WEB_SIGNIN];
   __weak ConsistencyPromoSigninCoordinator* weakSelf = self;
-  self.addAccountCoordinator.signinCompletion = ^(
-      SigninCoordinatorResult signinResult,
-      SigninCompletionInfo* signinCompletionInfo) {
-    if (!weakSelf) {
-      return;
-    }
-    ConsistencyPromoSigninCoordinator* strongSelf = weakSelf;
-    [strongSelf.addAccountCoordinator stop];
-    strongSelf.addAccountCoordinator = nil;
-    [strongSelf.navigationController
-        dismissViewControllerAnimated:YES
-                           completion:^() {
-                             [strongSelf finishedWithResult:signinResult
-                                                   identity:signinCompletionInfo
-                                                                .identity];
-                           }];
-  };
-
+  self.addAccountCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult signinResult,
+        SigninCompletionInfo* signinCompletionInfo) {
+        [weakSelf.addAccountCoordinator stop];
+        weakSelf.addAccountCoordinator = nil;
+      };
   [self.addAccountCoordinator start];
 }
 
@@ -175,6 +167,12 @@
 // Calls the sign-in completion block.
 - (void)finishedWithResult:(SigninCoordinatorResult)signinResult
                   identity:(ChromeIdentity*)identity {
+  DCHECK(!self.alertCoordinator);
+  [self.defaultAccountCoordinator stop];
+  self.defaultAccountCoordinator = nil;
+  [self.accountChooserCoordinator stop];
+  self.accountChooserCoordinator = nil;
+  self.navigationController = nil;
   SigninCompletionInfo* completionInfo =
       [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
   [self runCompletionCallbackWithSigninResult:signinResult
@@ -215,6 +213,36 @@
                    style:UIAlertActionStyleDefault];
   }
   [self.alertCoordinator start];
+}
+
+// Finishes the interrupt process. This method needs to be called once all
+// other dialogs on top of ConsistencyPromoSigninCoordinator are properly
+// dismissed.
+- (void)finalizeInterruptWithAction:(SigninCoordinatorInterruptAction)action
+                         completion:(ProceduralBlock)interruptCompletion {
+  DCHECK(!self.alertCoordinator);
+  DCHECK(!self.addAccountCoordinator);
+  __weak ConsistencyPromoSigninCoordinator* weakSelf = self;
+  ProceduralBlock finishCompletionBlock = ^() {
+    [weakSelf finishedWithResult:SigninCoordinatorResultInterrupted
+                        identity:nil];
+    if (interruptCompletion) {
+      interruptCompletion();
+    }
+  };
+  switch (action) {
+    case SigninCoordinatorInterruptActionNoDismiss:
+      finishCompletionBlock();
+      break;
+    case SigninCoordinatorInterruptActionDismissWithoutAnimation:
+    case SigninCoordinatorInterruptActionDismissWithAnimation: {
+      BOOL animated =
+          action == SigninCoordinatorInterruptActionDismissWithAnimation;
+      [self.navigationController
+          dismissViewControllerAnimated:animated
+                             completion:finishCompletionBlock];
+    }
+  }
 }
 
 #pragma mark - SwipeGesture
@@ -278,6 +306,11 @@
   [self.accountChooserCoordinator stop];
   self.accountChooserCoordinator = nil;
   [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)consistencyAccountChooserCoordinatorOpenAddAccount:
+    (ConsistencyAccountChooserCoordinator*)coordinator {
+  [self displayAddAccount];
 }
 
 #pragma mark - ConsistencyDefaultAccountCoordinatorDelegate

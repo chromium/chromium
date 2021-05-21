@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_mediator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_view_controller.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
@@ -26,7 +25,6 @@
     ConsistencyAccountChooserViewController* accountChooserViewController;
 
 @property(nonatomic, strong) ConsistencyAccountChooserMediator* mediator;
-@property(nonatomic, strong) SigninCoordinator* addAccountSigninCoordinator;
 
 @end
 
@@ -78,18 +76,7 @@
 
 - (void)consistencyAccountChooserTableViewControllerDidTapOnAddAccount:
     (ConsistencyAccountChooserTableViewController*)viewController {
-  self.addAccountSigninCoordinator = [SigninCoordinator
-      addAccountCoordinatorWithBaseViewController:self.viewController
-                                          browser:self.browser
-                                      accessPoint:signin_metrics::AccessPoint::
-                                                      ACCESS_POINT_WEB_SIGNIN];
-  __weak __typeof(self) weakSelf = self;
-  self.addAccountSigninCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
-        [weakSelf.addAccountSigninCoordinator stop];
-        weakSelf.addAccountSigninCoordinator = nil;
-      };
-  [self.addAccountSigninCoordinator start];
+  [self.delegate consistencyAccountChooserCoordinatorOpenAddAccount:self];
 }
 
 @end

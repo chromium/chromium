@@ -17,6 +17,10 @@
 - (void)consistencyAccountChooserCoordinatorChromeIdentitySelected:
     (ConsistencyAccountChooserCoordinator*)coordinator;
 
+// Invoke add account SigninCoordinator.
+- (void)consistencyAccountChooserCoordinatorOpenAddAccount:
+    (ConsistencyAccountChooserCoordinator*)coordinator;
+
 @end
 
 // This coordinator presents an entry point to the Chrome sign-in flow with the
