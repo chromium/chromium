@@ -22,7 +22,9 @@
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -32,6 +34,7 @@
 #include "extensions/common/value_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
@@ -39,6 +42,7 @@
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
@@ -333,26 +337,40 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
 //     URL and also the extension has access to it.
 // See URLLoader::ShouldForceIgnoreSiteForCookies().
 //
-// The test fixture param is whether or not the new SameSite features are
-// enabled.
+// The test fixture param is whether or not legacy SameSite semantics are
+// enabled (i.e, whether SameSite-by-default cookies and SameSite=None
+// requires Secure are disabled).
 class ExtensionSameSiteCookiesTest
     : public ExtensionCookiesTest,
       public ::testing::WithParamInterface<bool> {
  public:
-  ExtensionSameSiteCookiesTest() {
-    std::vector<base::Feature> samesite_features = {
-        net::features::kSameSiteByDefaultCookies,
-        net::features::kCookiesWithoutSameSiteMustBeSecure};
-    if (AreSameSiteFeaturesEnabled()) {
-      feature_list_.InitWithFeatures(samesite_features /* enabled */, {});
-    } else {
-      feature_list_.InitWithFeatures({}, samesite_features /* disabled */);
-    }
-  }
+  ExtensionSameSiteCookiesTest() = default;
   ~ExtensionSameSiteCookiesTest() override = default;
   ExtensionSameSiteCookiesTest(const ExtensionSameSiteCookiesTest&) = delete;
   ExtensionSameSiteCookiesTest& operator=(const ExtensionSameSiteCookiesTest&) =
       delete;
+
+  void SetUpOnMainThread() override {
+    ExtensionCookiesTest::SetUpOnMainThread();
+
+    // If SameSite access semantics is "legacy", add content settings to allow
+    // legacy access for all sites.
+    if (HasLegacySameSiteAccessSemantics()) {
+      browser()
+          ->profile()
+          ->GetDefaultStoragePartition()
+          ->GetNetworkContext()
+          ->GetCookieManager(
+              cookie_manager_remote_.BindNewPipeAndPassReceiver());
+      cookie_manager_remote_->SetContentSettingsForLegacyCookieAccess(
+          {ContentSettingPatternSource(
+              ContentSettingsPattern::Wildcard(),
+              ContentSettingsPattern::Wildcard(),
+              base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
+              /*source=*/std::string(), /*incognito=*/false)});
+      cookie_manager_remote_.FlushForTesting();
+    }
+  }
 
  protected:
   // Sets an array of cookies with various SameSite values.
@@ -377,7 +395,7 @@ class ExtensionSameSiteCookiesTest
   // Expect that only cookies without SameSite are present.
   void ExpectNoSameSiteCookies(const std::string& cookie_header) {
     std::vector<std::string> expected = {kNoneCookie};
-    if (!AreSameSiteFeaturesEnabled()) {
+    if (HasLegacySameSiteAccessSemantics()) {
       expected.push_back(kUnspecifiedCookie);
     }
     EXPECT_THAT(AsCookies(cookie_header),
@@ -389,7 +407,10 @@ class ExtensionSameSiteCookiesTest
         {kPermissionPattern1, kPermissionPattern1Sub, kPermissionPattern2});
   }
 
-  bool AreSameSiteFeaturesEnabled() { return GetParam(); }
+  bool HasLegacySameSiteAccessSemantics() { return GetParam(); }
+
+ private:
+  mojo::Remote<network::mojom::CookieManager> cookie_manager_remote_;
 };
 
 // Tests where the extension page initiates the request.
