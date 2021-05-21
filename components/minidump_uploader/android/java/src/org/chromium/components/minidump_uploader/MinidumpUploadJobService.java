@@ -82,12 +82,6 @@ public abstract class MinidumpUploadJobService extends JobService {
         return reschedule;
     }
 
-    @Override
-    public void onDestroy() {
-        mMinidumpUploadJob = null;
-        super.onDestroy();
-    }
-
     private MinidumpUploadJob.UploadsFinishedCallback createJobFinishedCallback(
             final JobParameters params) {
         return new MinidumpUploadJob.UploadsFinishedCallback() {
