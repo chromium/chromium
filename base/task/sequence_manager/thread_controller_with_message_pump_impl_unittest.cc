@@ -844,6 +844,48 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest,
+       ThreadControllerActiveWakeUpForNothing) {
+  ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
+
+  thread_controller_.InstallTraceObserver();
+
+  testing::InSequence sequence;
+
+  RunLoop run_loop;
+  EXPECT_CALL(*thread_controller_.trace_observer,
+              OnThreadControllerActiveBegin);
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+        // Don't expect a call to OnThreadControllerActiveBegin on the first
+        // pass as the Run() call already triggered the active state.
+        bool first_pass = true;
+
+        // Invoke DoWork with no pending work, go idle, repeat 5 times. Expected
+        // to enter/exit "ThreadController active" state 5 consecutive times.
+        for (int i = 0; i < 5; ++i, first_pass = false) {
+          if (!first_pass) {
+            EXPECT_CALL(*thread_controller_.trace_observer,
+                        OnThreadControllerActiveBegin);
+          }
+          EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                    TimeTicks::Max());
+
+          testing::Mock::VerifyAndClearExpectations(
+              &*thread_controller_.trace_observer);
+
+          EXPECT_CALL(*thread_controller_.trace_observer,
+                      OnThreadControllerActiveEnd);
+          EXPECT_FALSE(thread_controller_.DoIdleWork());
+
+          testing::Mock::VerifyAndClearExpectations(
+              &*thread_controller_.trace_observer);
+        }
+      }));
+
+  RunLoop().Run();
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest,
        ThreadControllerActiveAdvancedNesting) {
   ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
 
