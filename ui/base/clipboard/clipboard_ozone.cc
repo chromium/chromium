@@ -468,8 +468,8 @@ void ClipboardOzone::ReadRTF(ClipboardBuffer buffer,
 void ClipboardOzone::ReadPng(ClipboardBuffer buffer,
                              const DataTransferEndpoint* data_dst,
                              ReadPngCallback callback) const {
-  // TODO(crbug.com/1201018): Implement this.
-  NOTIMPLEMENTED();
+  RecordRead(ClipboardFormatMetric::kPng);
+  std::move(callback).Run(ReadPngInternal(buffer));
 }
 
 // TODO(crbug.com/1103194): |data_dst| should be supported.
@@ -477,7 +477,10 @@ void ClipboardOzone::ReadImage(ClipboardBuffer buffer,
                                const DataTransferEndpoint* data_dst,
                                ReadImageCallback callback) const {
   RecordRead(ClipboardFormatMetric::kImage);
-  std::move(callback).Run(ReadImageInternal(buffer));
+  auto png_data = ReadPngInternal(buffer);
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  std::move(callback).Run(bitmap);
 }
 
 // TODO(crbug.com/1103194): |data_dst| should be supported.
@@ -637,16 +640,13 @@ void ClipboardOzone::WriteData(const ClipboardFormatType& format,
   async_clipboard_ozone_->InsertData(std::move(data), {format.GetName()});
 }
 
-SkBitmap ClipboardOzone::ReadImageInternal(ClipboardBuffer buffer) const {
+std::vector<uint8_t> ClipboardOzone::ReadPngInternal(
+    ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
 
-  auto clipboard_data =
+  base::span<uint8_t> clipboard_data =
       async_clipboard_ozone_->ReadClipboardDataAndWait(buffer, kMimeTypePNG);
-  SkBitmap bitmap;
-  if (!gfx::PNGCodec::Decode(clipboard_data.data(), clipboard_data.size(),
-                             &bitmap))
-    return {};
-  return SkBitmap(bitmap);
+  return std::vector<uint8_t>(clipboard_data.begin(), clipboard_data.end());
 }
 
 }  // namespace ui

@@ -8,6 +8,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -211,8 +212,9 @@ void ClipboardX11::ReadRTF(ClipboardBuffer buffer,
 void ClipboardX11::ReadPng(ClipboardBuffer buffer,
                            const DataTransferEndpoint* data_dst,
                            ReadPngCallback callback) const {
-  // TODO(crbug.com/1201018): Implement this.
-  NOTIMPLEMENTED();
+  DCHECK(IsSupportedClipboardBuffer(buffer));
+  RecordRead(ClipboardFormatMetric::kPng);
+  std::move(callback).Run(ReadPngInternal(buffer));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -222,7 +224,10 @@ void ClipboardX11::ReadImage(ClipboardBuffer buffer,
                              ReadImageCallback callback) const {
   DCHECK(IsSupportedClipboardBuffer(buffer));
   RecordRead(ClipboardFormatMetric::kImage);
-  std::move(callback).Run(ReadImageInternal(buffer));
+  auto png_data = ReadPngInternal(buffer);
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  std::move(callback).Run(bitmap);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -431,22 +436,23 @@ void ClipboardX11::WriteData(const ClipboardFormatType& format,
   x_clipboard_helper_->InsertMapping(format.GetName(), mem);
 }
 
-SkBitmap ClipboardX11::ReadImageInternal(ClipboardBuffer buffer) const {
+std::vector<uint8_t> ClipboardX11::ReadPngInternal(
+    ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
 
-  // TODO(https://crbug.com/443355): Since now that ReadImage() is async,
-  // refactor the code to keep a callback with the request, and invoke the
-  // callback when the request is satisfied.
+  // TODO(https://crbug.com/443355): Since ReadPng() is async, refactor the code
+  // to keep a callback with the request, and invoke the callback when the
+  // request is satisfied.
   SelectionData data(x_clipboard_helper_->Read(
       buffer, x_clipboard_helper_->GetAtomsForFormat(
-                  ClipboardFormatType::GetBitmapType())));
+                  ClipboardFormatType::GetPngType())));
+
   if (data.IsValid()) {
-    SkBitmap bitmap;
-    if (gfx::PNGCodec::Decode(data.GetData(), data.GetSize(), &bitmap))
-      return SkBitmap(bitmap);
+    return std::vector<uint8_t>(data.GetData(),
+                                data.GetData() + data.GetSize());
   }
 
-  return SkBitmap();
+  return std::vector<uint8_t>();
 }
 
 void ClipboardX11::OnSelectionChanged(ClipboardBuffer buffer) {

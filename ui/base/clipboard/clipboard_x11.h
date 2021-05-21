@@ -103,7 +103,7 @@ class ClipboardX11 : public Clipboard {
                  const char* data_data,
                  size_t data_len) override;
 
-  SkBitmap ReadImageInternal(ClipboardBuffer buffer) const;
+  std::vector<uint8_t> ReadPngInternal(ClipboardBuffer buffer) const;
   void OnSelectionChanged(ClipboardBuffer buffer);
 
   std::unique_ptr<XClipboardHelper> x_clipboard_helper_;

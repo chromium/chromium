@@ -647,7 +647,7 @@ TYPED_TEST(ClipboardTest, Bitmap_N32_Premul_2x7) {
 }
 
 // TODO(crbug.com/1201018): Enable as support for each OS is added.
-#if false
+#if defined(USE_X11) || defined(USE_OZONE)
 
 // Only kN32_SkColorType bitmaps are allowed into the clipboard to prevent
 // surprising buffer overflows due to bits-per-pixel assumptions.
@@ -688,7 +688,7 @@ TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_N32_Premul_2x7) {
   TestBitmapWriteAndPngRead(&this->clipboard(),
                             SkImageInfo::MakeN32Premul(2, 7), b, b);
 }
-#endif  // false
+#endif  // defined(USE_X11) || defined(USE_OZONE)
 #endif  // !defined(OS_ANDROID)
 
 }  // namespace
