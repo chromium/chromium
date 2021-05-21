@@ -3249,8 +3249,6 @@ void LocalFrameView::UpdateStyleAndLayout() {
 
 bool LocalFrameView::UpdateStyleAndLayoutInternal() {
   {
-    SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
-                             LocalFrameUkmAggregator::kStyle);
     frame_->GetDocument()->UpdateStyleAndLayoutTreeForThisDocument();
 
     // Update style for all embedded SVG documents underneath this frame, so
