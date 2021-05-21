@@ -282,6 +282,7 @@
       'Linux Builder (core-32) (runsc) (reclient)': 'gpu_tests_release_bot_reclient',
       'Linux Builder (deps-cache) (reclient)': 'gpu_tests_release_bot_reclient',
       'Linux Builder (j-500) (reclient)': 'gpu_tests_release_bot_reclient',
+      'Linux Builder (j-500) (n2) (reclient)': 'gpu_tests_release_bot_reclient',
       'Linux TSan Builder (goma cache silo)': 'tsan_disable_nacl_release_bot',
       'Linux TSan Builder (reclient)': 'tsan_disable_nacl_release_bot_reclient',
       'Linux Viz': 'release_trybot',

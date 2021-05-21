@@ -34,17 +34,14 @@
       }
     ]
   },
+  "Linux Builder (j-500) (n2) (reclient)": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "Linux Builder (j-500) (reclient)": {
     "additional_compile_targets": [
       "all"
-    ],
-    "scripts": [
-      {
-        "isolate_profile_data": true,
-        "name": "check_network_annotations",
-        "script": "check_network_annotations.py",
-        "swarming": {}
-      }
     ]
   },
   "Linux Viz": {

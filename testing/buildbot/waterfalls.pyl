@@ -2532,6 +2532,16 @@
           'scripts': 'check_network_annotations_script',
         }
       },
+      'Linux Builder (j-500) (n2) (reclient)': {
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
+        'mixins': [
+          'isolate_profile_data',
+        ],
+        'additional_compile_targets': [
+          'all'
+        ],
+      },
       'Linux Builder (j-500) (reclient)': {
         # Copied from
         # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
@@ -2541,9 +2551,6 @@
         'additional_compile_targets': [
           'all'
         ],
-        'test_suites': {
-          'scripts': 'check_network_annotations_script',
-        }
       },
       'Linux Viz': {
         'mixins': [
