@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 
@@ -568,6 +569,10 @@ void InteractiveDetector::CheckTimeToInteractiveReached() {
 void InteractiveDetector::OnTimeToInteractiveDetected() {
   LongTaskDetector::Instance().UnregisterObserver(this);
   network_quiet_windows_.clear();
+  LocalFrame* frame = GetSupplementable()->GetFrame();
+  DocumentLoader* loader = GetSupplementable()->Loader();
+  probe::LifecycleEvent(frame, loader, "InteractiveTime",
+                        base::TimeTicks::Now().since_origin().InSecondsF());
 
   TRACE_EVENT_MARK_WITH_TIMESTAMP2(
       "loading,rail", "InteractiveTime", interactive_time_, "frame",
