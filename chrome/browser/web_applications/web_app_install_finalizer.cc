@@ -270,6 +270,8 @@ void WebAppInstallFinalizer::UninstallExternalWebApp(
              webapps::WebappUninstallSource::kExternalPolicy ||
          webapp_uninstall_source ==
              webapps::WebappUninstallSource::kSystemPreinstalled ||
+         webapp_uninstall_source ==
+             webapps::WebappUninstallSource::kPlaceholderReplacement ||
          webapp_uninstall_source == webapps::WebappUninstallSource::kArc);
 
   Source::Type source =
