@@ -86,6 +86,10 @@ if (is_chromeos_ash || is_chromeos_lacros) {
         "it2me_native_messaging_host_lacros.cc",
         "it2me_native_messaging_host_lacros.h",
       ]
+      deps = [
+        "//base",
+        "//extensions/browser/api/messaging:native_messaging",
+      ]
     } else {
       sources += [
         "it2me_native_messaging_host_chromeos.cc",
