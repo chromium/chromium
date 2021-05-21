@@ -77,8 +77,9 @@ void CrosSodaClient::OnSpeechRecognizerEvent(
       const std::string partial_hyp = partial_result->partial_text.front();
       callback_.Run(partial_hyp, false);
     }
-  } else {
-    LOG(ERROR) << "Some kind of other soda event, ignoring completely.";
+  } else if (!event->is_endpointer_event() || !event->is_audio_event()) {
+    LOG(ERROR) << "Some kind of other soda event, ignoring completely. Tag is '"
+               << static_cast<uint32_t>(event->which()) << "'";
   }
 }
 
