@@ -237,6 +237,8 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
 
 }  // namespace
 
+// Note AcceleratorControllerTest can't be in the anonymous namespace because
+// it is referenced as a friend by exit_warning_handler.h
 class AcceleratorControllerTest : public AshTestBase {
  public:
   AcceleratorControllerTest() {
@@ -387,6 +389,8 @@ class AcceleratorControllerTest : public AshTestBase {
  private:
   DISALLOW_COPY_AND_ASSIGN(AcceleratorControllerTest);
 };
+
+namespace {
 
 // Double press of exit shortcut => exiting
 TEST_F(AcceleratorControllerTest, ExitWarningHandlerTestDoublePress) {
@@ -627,8 +631,6 @@ TEST_F(AcceleratorControllerTest, TestRepeatedSnap) {
   EXPECT_EQ(normal_bounds.ToString(), window->bounds().ToString());
 }
 
-namespace {
-
 class AcceleratorControllerTestWithClamshellSplitView
     : public AcceleratorControllerTest {
  public:
@@ -779,8 +781,6 @@ TEST_F(AcceleratorControllerTestWithClamshellSplitView, WindowSnapUma) {
   test("Unsnap right, tablet, overview", WINDOW_CYCLE_SNAP_RIGHT,
        WindowStateType::kMaximized);
 }
-
-}  // namespace
 
 TEST_F(AcceleratorControllerTest, RotateScreen) {
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
@@ -1666,8 +1666,6 @@ INSTANTIATE_TEST_SUITE_P(
              AcceleratorControllerImpl::kVolumeButtonRegionScreen,
              AcceleratorControllerImpl::kVolumeButtonSideBottom)}));
 
-namespace {
-
 // Tests the TOGGLE_CAPS_LOCK accelerator.
 TEST_F(AcceleratorControllerTest, ToggleCapsLockAccelerators) {
   ImeControllerImpl* controller = Shell::Get()->ime_controller();
@@ -1800,8 +1798,6 @@ class PreferredReservedAcceleratorsTest : public AshTestBase {
  private:
   DISALLOW_COPY_AND_ASSIGN(PreferredReservedAcceleratorsTest);
 };
-
-}  // namespace
 
 TEST_F(PreferredReservedAcceleratorsTest, AcceleratorsWithFullscreen) {
   aura::Window* w1 = CreateTestWindowInShellWithId(0);
@@ -2133,6 +2129,22 @@ TEST_F(AcceleratorControllerTest, CalculatorKey) {
   EXPECT_TRUE(ProcessInController(accelerator));
 }
 
+// Tests the IME mode change key.
+TEST_F(AcceleratorControllerTest, ChangeIMEMode_SwitchesInputMethod) {
+  AddTestImes();
+
+  ImeController* controller = Shell::Get()->ime_controller();
+
+  TestImeControllerClient client;
+  controller->SetClient(&client);
+
+  EXPECT_EQ(0, client.next_ime_count_);
+
+  ProcessInController(ui::Accelerator(ui::VKEY_MODECHANGE, ui::EF_NONE));
+
+  EXPECT_EQ(1, client.next_ime_count_);
+}
+
 class AcceleratorControllerInputMethodTest : public AcceleratorControllerTest {
  public:
   AcceleratorControllerInputMethodTest() = default;
@@ -2189,8 +2201,6 @@ TEST_F(AcceleratorControllerInputMethodTest, AcceleratorClearsComposition) {
   EXPECT_EQ(1u, mock_input_->cancel_composition_call_count);
 }
 
-namespace {
-
 // TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
 class AcceleratorControllerDeprecatedTest : public AcceleratorControllerTest {
  public:
@@ -2207,8 +2217,6 @@ class AcceleratorControllerDeprecatedTest : public AcceleratorControllerTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-}  // namespace
-
 // TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
 TEST_F(AcceleratorControllerDeprecatedTest, DeskShortcuts_Old) {
   // The shortcuts are Search+Shift+[MINUS|PLUS], but due to event
@@ -2223,8 +2231,6 @@ TEST_F(AcceleratorControllerDeprecatedTest, DeskShortcuts_Old) {
   EXPECT_FALSE(controller_->IsRegistered(ui::Accelerator(
       ui::VKEY_OEM_MINUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
 }
-
-namespace {
 
 // Overrides SetUp() to do nothing so that the flag can be tested in both
 // directions during setup.
@@ -2272,8 +2278,6 @@ class AcceleratorControllerStartupNotificationTest
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-}  // namespace
 
 TEST_F(AcceleratorControllerStartupNotificationTest,
        StartupNotificationShownWhenEnabled) {
@@ -2407,8 +2411,6 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
                                   /*reply=*/absl::nullopt);
 }
 
-namespace {
-
 // defines a class to test the behavior of deprecated accelerators.
 class DeprecatedAcceleratorTester : public AcceleratorControllerTest {
  public:
@@ -2441,8 +2443,6 @@ class DeprecatedAcceleratorTester : public AcceleratorControllerTest {
  private:
   DISALLOW_COPY_AND_ASSIGN(DeprecatedAcceleratorTester);
 };
-
-}  // namespace
 
 TEST_F(DeprecatedAcceleratorTester, TestDeprecatedAcceleratorsBehavior) {
   for (size_t i = 0; i < kDeprecatedAcceleratorsLength; ++i) {
@@ -2516,8 +2516,6 @@ TEST_F(AcceleratorControllerGuestModeTest, IncognitoWindowDisabled) {
       NEW_INCOGNITO_WINDOW, {}));
 }
 
-namespace {
-
 constexpr char kUserEmail[] = "user@magnifier";
 
 class MagnifiersAcceleratorsTester : public AcceleratorControllerTest {
@@ -2548,8 +2546,6 @@ class MagnifiersAcceleratorsTester : public AcceleratorControllerTest {
  private:
   DISALLOW_COPY_AND_ASSIGN(MagnifiersAcceleratorsTester);
 };
-
-}  // namespace
 
 // TODO (afakhry): Remove this class after refactoring MagnificationManager.
 // Mocked chrome/browser/ash/accessibility/magnification_manager.cc
@@ -2755,8 +2751,6 @@ TEST_F(AccessibilityAcceleratorTester, DisableAccessibilityAccelerators) {
   }
 }
 
-namespace {
-
 struct MediaSessionAcceleratorTestConfig {
   // Runs the test with the media session service enabled.
   bool service_enabled;
@@ -2777,6 +2771,8 @@ struct MediaSessionAcceleratorTestConfig {
 // MediaSessionAcceleratorTest tests media key handling with media session
 // service integration. The parameter is a struct that configures different
 // settings to run the test under.
+// Note this class can't be in the anonymous namespace because it is referenced
+// as a friend by ash/media/media_controller_impl.h.
 class MediaSessionAcceleratorTest
     : public AcceleratorControllerTest,
       public testing::WithParamInterface<MediaSessionAcceleratorTestConfig> {
@@ -3130,22 +3126,6 @@ TEST_P(MediaSessionAcceleratorTest,
     EXPECT_EQ(2, client()->handle_media_next_track_count());
     EXPECT_EQ(0, controller()->next_track_count());
   }
-}
-
-// Tests the IME mode change key.
-TEST_F(AcceleratorControllerTest, ChangeIMEMode_SwitchesInputMethod) {
-  AddTestImes();
-
-  ImeController* controller = Shell::Get()->ime_controller();
-
-  TestImeControllerClient client;
-  controller->SetClient(&client);
-
-  EXPECT_EQ(0, client.next_ime_count_);
-
-  ProcessInController(ui::Accelerator(ui::VKEY_MODECHANGE, ui::EF_NONE));
-
-  EXPECT_EQ(1, client.next_ime_count_);
 }
 
 }  // namespace ash
