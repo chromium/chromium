@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/system/sys_info.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"

@@ -4,7 +4,6 @@
 
 #include "chromeos/services/secure_channel/fake_pending_connection_request_delegate.h"
 
-#include "base/stl_util.h"
 
 namespace chromeos {
 

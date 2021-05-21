@@ -5,7 +5,6 @@
 #include "chromeos/components/multidevice/remote_device.h"
 
 #include "base/base64.h"
-#include "base/stl_util.h"
 
 namespace chromeos {
 

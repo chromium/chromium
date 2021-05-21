@@ -5,7 +5,6 @@
 #include "chromeos/components/multidevice/remote_device_cache.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
 namespace chromeos {

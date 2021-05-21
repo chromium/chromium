@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/fake_shill_service_client.h"
 #include "chromeos/dbus/shill/shill_property_changed_observer.h"

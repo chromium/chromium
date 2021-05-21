@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 
 namespace ash {

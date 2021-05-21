@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time_override.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
