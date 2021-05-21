@@ -1526,8 +1526,10 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle* style) const {
       return true;
   }
   // https://www.w3.org/TR/css-contain-1/#containment-layout
-  if (ShouldApplyPaintContainment(*style) ||
-      ShouldApplyLayoutContainment(*style))
+  if (IsEligibleForPaintOrLayoutContainment() &&
+      (ShouldApplyPaintContainment(*style) ||
+       ShouldApplyLayoutContainment(*style) ||
+       style->WillChangeProperties().Contains(CSSPropertyID::kContain)))
     return true;
 
   // We intend to change behavior to set containing block based on computed

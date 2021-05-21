@@ -1091,6 +1091,8 @@ static bool IsWillChangeTransformHintProperty(CSSPropertyID property) {
     case CSSPropertyID::kRotate:
     case CSSPropertyID::kOffsetPath:
     case CSSPropertyID::kOffsetPosition:
+    case CSSPropertyID::kTransformStyle:
+    case CSSPropertyID::kAliasWebkitTransformStyle:
       return true;
     default:
       break;

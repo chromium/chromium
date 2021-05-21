@@ -581,10 +581,15 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     return fragment_.UniqueId();
   }
 
+  inline bool IsEligibleForPaintOrLayoutContainment() const {
+    NOT_DESTROYED();
+    return (!IsInline() || IsAtomicInlineLevel()) && !IsRubyText() &&
+           (!IsTablePart() || IsLayoutBlockFlow());
+  }
+
   inline bool ShouldApplyPaintContainment(const ComputedStyle& style) const {
     NOT_DESTROYED();
-    return style.ContainsPaint() && (!IsInline() || IsAtomicInlineLevel()) &&
-           !IsRubyText() && (!IsTablePart() || IsLayoutBlockFlow());
+    return style.ContainsPaint() && IsEligibleForPaintOrLayoutContainment();
   }
 
   inline bool ShouldApplyPaintContainment() const {
@@ -594,8 +599,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
 
   inline bool ShouldApplyLayoutContainment(const ComputedStyle& style) const {
     NOT_DESTROYED();
-    return style.ContainsLayout() && (!IsInline() || IsAtomicInlineLevel()) &&
-           !IsRubyText() && (!IsTablePart() || IsLayoutBlockFlow());
+    return style.ContainsLayout() && IsEligibleForPaintOrLayoutContainment();
   }
 
   inline bool ShouldApplyLayoutContainment() const {
