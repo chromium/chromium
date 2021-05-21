@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 
 #import "base/test/ios/wait_util.h"
+#include "build/build_config.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
@@ -192,7 +193,13 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandIfSignedIn) {
 
 // Tests that the pref change doesn't trigger a command if the scene isn't
 // active.
-TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotActive) {
+// TODO(crbug.com/1211546): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_NoCommandIfNotActive NoCommandIfNotActive
+#else
+#define MAYBE_NoCommandIfNotActive DISABLED_NoCommandIfNotActive
+#endif  // TARGET_IPHONE_SIMULATOR
+TEST_F(PolicyWatcherBrowserAgentTest, MAYBE_NoCommandIfNotActive) {
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
