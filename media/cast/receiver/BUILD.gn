@@ -1,0 +1,38 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//media/media_options.gni")
+
+source_set("cast_streaming_renderer") {
+  sources = [
+    "cast_streaming_renderer.cc",
+    "cast_streaming_renderer.h",
+    "cast_streaming_renderer_factory.cc",
+    "cast_streaming_renderer_factory.h",
+  ]
+
+  deps = [
+    "//base",
+    "//media",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cast_streaming_renderer_factory_unittest.cc",
+    "cast_streaming_renderer_unittest.cc",
+  ]
+
+  deps = [
+    ":cast_streaming_renderer",
+    "//base/test:test_support",
+    "//media:test_support",
+    "//media/mojo:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

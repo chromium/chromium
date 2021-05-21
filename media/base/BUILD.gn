@@ -516,6 +516,8 @@ static_library("test_support") {
     "mock_filters.h",
     "mock_media_log.cc",
     "mock_media_log.h",
+    "mock_video_renderer_sink.cc",
+    "mock_video_renderer_sink.h",
     "test_data_util.cc",
     "test_data_util.h",
     "test_helpers.cc",

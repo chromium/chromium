@@ -383,6 +383,10 @@ target(link_target_type, "renderer") {
     }
   }
 
+  if (enable_cast_streaming_renderer) {
+    deps += [ "//media/cast/receiver:cast_streaming_renderer" ]
+  }
+
   if (enable_plugins) {
     sources += [
       "pepper/pepper_media_stream_audio_track_host.cc",

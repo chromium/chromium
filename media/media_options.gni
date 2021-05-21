@@ -228,6 +228,15 @@ declare_args() {
   enable_media_remoting_rpc = enable_media_remoting && !is_android
 }
 
+declare_args() {
+  # Enable use of libcast (//third_party/openscreen/src/cast) for cast mirroring
+  # and linked into the resulting binary.
+  enable_cast_streaming_renderer = false
+}
+
+# Currently, libcast mirroring is only supported for chromecast.
+assert(!enable_cast_streaming_renderer || is_chromecast)
+
 # Do not expand this list without double-checking with OWNERS, this is a list of
 # all targets which roll up into the //media component. It controls visibility
 # of subcomponent targets and public_deps for //media.

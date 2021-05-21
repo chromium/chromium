@@ -47,7 +47,8 @@ enum class RendererType {
   kMediaFoundation = 6,  // MediaFoundationRendererClientFactory
   kFuchsia = 7,          // FuchsiaRendererFactory
   kRemoting = 8,         // RemotingRendererFactory for remoting::Receiver
-  kMaxValue = kRemoting,
+  kCastStreaming = 9,    // CastStreamingRendererFactory
+  kMaxValue = kCastStreaming,
 };
 
 class MEDIA_EXPORT RendererFactorySelector {

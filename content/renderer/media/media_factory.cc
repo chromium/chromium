@@ -101,6 +101,12 @@
 #include "media/remoting/renderer_controller.h"       // nogncheck
 #endif
 
+#if BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
+// Enable libcast streaming receiver.
+#include "media/cast/receiver/cast_streaming_renderer_factory.h"  // nogncheck
+#include "media/cast/receiver/constants.h"                        // nogncheck
+#endif
+
 #if BUILDFLAG(IS_CHROMECAST)
 // Enable remoting receiver
 #include "media/remoting/receiver_controller.h"        // nogncheck
@@ -728,17 +734,17 @@ MediaFactory::CreateRendererFactorySelector(
 #if BUILDFLAG(IS_CHROMECAST)
   if (renderer_media_playback_options.is_remoting_renderer_enabled()) {
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
-    auto default_factory = std::make_unique<CastRendererClientFactory>(
+    auto default_factory_remoting = std::make_unique<CastRendererClientFactory>(
         media_log, CreateMojoRendererFactory());
-#else
-    auto default_factory = CreateDefaultRendererFactory(
+#else   // BUILDFLAG(ENABLE_CAST_RENDERER)
+    auto default_factory_remoting = CreateDefaultRendererFactory(
         media_log, decoder_factory, render_thread, render_frame_);
-#endif
+#endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
     mojo::PendingRemote<media::mojom::Remotee> remotee;
     interface_broker_->GetInterface(remotee.InitWithNewPipeAndPassReceiver());
     auto remoting_renderer_factory =
         std::make_unique<media::remoting::RemotingRendererFactory>(
-            std::move(remotee), std::move(default_factory),
+            std::move(remotee), std::move(default_factory_remoting),
             render_thread->GetMediaThreadTaskRunner());
     auto is_remoting_media = base::BindRepeating(
         [](const GURL& url) -> bool {
@@ -749,6 +755,30 @@ MediaFactory::CreateRendererFactorySelector(
         RendererType::kRemoting, std::move(remoting_renderer_factory),
         is_remoting_media);
   }
+
+#if BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
+  if (url.SchemeIs(media::cast::kMirroringScheme)) {
+#if BUILDFLAG(ENABLE_CAST_RENDERER)
+    auto default_factory_cast_streaming =
+        std::make_unique<CastRendererClientFactory>(
+            media_log, CreateMojoRendererFactory());
+#else   // BUILDFLAG(ENABLE_CAST_RENDERER)
+    // NOTE: Prior to the resolution of b/187332037, playback will not work
+    // correctly with this renderer.
+    // NOTE: This renderer is only expected to be used in TEST scenarios and
+    // should not be used in production.
+    auto default_factory_cast_streaming = CreateDefaultRendererFactory(
+        media_log, decoder_factory, render_thread, render_frame_);
+#endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
+
+    auto cast_streaming_renderer_factory =
+        std::make_unique<media::cast::CastStreamingRendererFactory>(
+            std::move(default_factory_cast_streaming));
+    factory_selector->AddBaseFactory(
+        FactoryType::kLibcastMirroring,
+        std::move(cast_streaming_renderer_factory));
+  }
+#endif  // BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
 #endif  // BUILDFLAG(IS_CHROMECAST)
 
   return factory_selector;
