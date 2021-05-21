@@ -171,6 +171,9 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
     {SHARING_MESSAGE, "SHARING_MESSAGE", "sharing_message", "Sharing Message",
      sync_pb::EntitySpecifics::kSharingMessageFieldNumber,
      ModelTypeForHistograms::kSharingMessage},
+    {WORKSPACE_DESK, "WORKSPACE_DESK", "workspace_desk", "Workspace Desk",
+     sync_pb::EntitySpecifics::kWorkspaceDeskFieldNumber,
+     ModelTypeForHistograms::kWorkspaceDesk},
     // ---- Proxy types ----
     {PROXY_TABS, "", "", "Tabs", -1, ModelTypeForHistograms::kProxyTabs},
     // ---- Control Types ----
@@ -182,11 +185,11 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
 static_assert(base::size(kModelTypeInfoMap) == GetNumModelTypes(),
               "kModelTypeInfoMap should have GetNumModelTypes() elements");
 
-static_assert(37 == syncer::GetNumModelTypes(),
+static_assert(38 == syncer::GetNumModelTypes(),
               "When adding a new type, update enum SyncModelTypes in enums.xml "
               "and suffix SyncModelType in histograms.xml.");
 
-static_assert(37 == syncer::GetNumModelTypes(),
+static_assert(38 == syncer::GetNumModelTypes(),
               "When adding a new type, update kAllocatorDumpNameAllowlist in "
               "base/trace_event/memory_infra_background_allowlist.cc.");
 
@@ -294,6 +297,9 @@ void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
     case WIFI_CONFIGURATIONS:
       specifics->mutable_wifi_configuration();
       break;
+    case WORKSPACE_DESK:
+      specifics->mutable_workspace_desk();
+      break;
     case OS_PREFERENCES:
       specifics->mutable_os_preference();
       break;
@@ -322,7 +328,7 @@ int GetSpecificsFieldNumberFromModelType(ModelType model_type) {
 }
 
 ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(37 == syncer::GetNumModelTypes(),
+  static_assert(38 == syncer::GetNumModelTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark())
@@ -395,6 +401,8 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
     return SHARING_MESSAGE;
   if (specifics.has_autofill_offer())
     return AUTOFILL_WALLET_OFFER;
+  if (specifics.has_workspace_desk())
+    return WORKSPACE_DESK;
 
   // This client version doesn't understand |specifics|.
   DVLOG(1) << "Unknown datatype in sync proto.";
@@ -402,7 +410,7 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
 }
 
 ModelTypeSet EncryptableUserTypes() {
-  static_assert(37 == syncer::GetNumModelTypes(),
+  static_assert(38 == syncer::GetNumModelTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   ModelTypeSet encryptable_user_types = UserTypes();

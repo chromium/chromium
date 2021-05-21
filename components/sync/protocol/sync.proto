@@ -63,6 +63,7 @@ import "components/sync/protocol/user_consent_specifics.proto";
 import "components/sync/protocol/user_event_specifics.proto";
 import "components/sync/protocol/web_app_specifics.proto";
 import "components/sync/protocol/wifi_configuration_specifics.proto";
+import "components/sync/protocol/workspace_desk_specifics.proto";
 
 // Used for inspecting how long we spent performing operations in different
 // backends. All times must be in millis.
@@ -170,6 +171,7 @@ message EntitySpecifics {
     OsPriorityPreferenceSpecifics os_priority_preference = 703915;
     SharingMessageSpecifics sharing_message = 728866;
     AutofillOfferSpecifics autofill_offer = 774329;
+    WorkspaceDeskSpecifics workspace_desk = 874841;
   }
   reserved 218175;
   reserved "wifi_credential";

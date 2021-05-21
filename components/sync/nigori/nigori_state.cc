@@ -63,7 +63,7 @@ bool EncryptKeyBag(const CryptographerImpl& cryptographer,
 void UpdateNigoriSpecificsFromEncryptedTypes(
     ModelTypeSet encrypted_types,
     sync_pb::NigoriSpecifics* specifics) {
-  static_assert(37 == GetNumModelTypes(),
+  static_assert(38 == GetNumModelTypes(),
                 "If adding an encryptable type, update handling below.");
   specifics->set_encrypt_bookmarks(encrypted_types.Has(BOOKMARKS));
   specifics->set_encrypt_preferences(encrypted_types.Has(PREFERENCES));
@@ -90,6 +90,7 @@ void UpdateNigoriSpecificsFromEncryptedTypes(
       encrypted_types.Has(SEND_TAB_TO_SELF));
   specifics->set_encrypt_web_apps(encrypted_types.Has(WEB_APPS));
   specifics->set_encrypt_os_preferences(encrypted_types.Has(OS_PREFERENCES));
+  specifics->set_encrypt_workspace_desk(encrypted_types.Has(WORKSPACE_DESK));
 }
 
 void UpdateSpecificsFromKeyDerivationParams(

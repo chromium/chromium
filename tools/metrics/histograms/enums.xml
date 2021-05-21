@@ -77085,6 +77085,7 @@ would be helpful to identify which type is being sent.
   <int value="47" label="OS Priority Preferences"/>
   <int value="48" label="Sharing Message"/>
   <int value="49" label="Autofill Wallet Offer"/>
+  <int value="50" label="Workspace Desk"/>
 </enum>
 
 <enum name="SyncModelTypeStoreInitResult">

@@ -34,14 +34,14 @@ ModelTypeSet GetUserTypes() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // These types only exist when SplitSettingsSync is enabled.
   if (!chromeos::features::IsSplitSettingsSyncEnabled()) {
-    user_types.RemoveAll(
-        {OS_PREFERENCES, OS_PRIORITY_PREFERENCES, WIFI_CONFIGURATIONS});
+    user_types.RemoveAll({OS_PREFERENCES, OS_PRIORITY_PREFERENCES,
+                          WIFI_CONFIGURATIONS, WORKSPACE_DESK});
   }
 #else
   // Ignore all Chrome OS types on non-Chrome OS platforms.
   user_types.RemoveAll({APP_LIST, ARC_PACKAGE, OS_PREFERENCES,
-                        OS_PRIORITY_PREFERENCES, PRINTERS,
-                        WIFI_CONFIGURATIONS});
+                        OS_PRIORITY_PREFERENCES, PRINTERS, WIFI_CONFIGURATIONS,
+                        WORKSPACE_DESK});
 #endif
   return user_types;
 }

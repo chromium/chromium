@@ -72,6 +72,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
     case OS_PREFERENCES:
     case OS_PRIORITY_PREFERENCES:
     case PROXY_TABS:
+    case WORKSPACE_DESK:
     case NIGORI:
       return kMediumLocalChangeNudgeDelay;
     case UNSPECIFIED:

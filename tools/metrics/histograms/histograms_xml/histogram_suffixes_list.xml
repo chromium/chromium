@@ -18995,6 +18995,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       This never got launched and is removed.
     </obsolete>
   </suffix>
+  <suffix name="WORKSPACE_DESK" label="WORKSPACE_DESK"/>
   <affected-histogram name="FCMInvalidations.SubscriptionResponseCodeForTopic"/>
   <affected-histogram name="Sync.CommitLatency"/>
   <affected-histogram name="Sync.CommitResponse"/>

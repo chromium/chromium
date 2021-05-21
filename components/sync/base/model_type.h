@@ -129,6 +129,8 @@ enum ModelType {
   OS_PRIORITY_PREFERENCES,
   // Commit only sharing message object.
   SHARING_MESSAGE,
+  // A workspace desk saved by user. Chrome OS only.
+  WORKSPACE_DESK,
 
   // ---- Proxy types ----
   // Proxy types are excluded from the sync protocol, but are still considered
@@ -226,7 +228,8 @@ enum class ModelTypeForHistograms {
   kOsPriorityPreferences = 47,
   kSharingMessage = 48,
   kAutofillWalletOffer = 49,
-  kMaxValue = kAutofillWalletOffer
+  kWorkspaceDesk = 50,
+  kMaxValue = kWorkspaceDesk
 };
 
 // Used to mark the type of EntitySpecifics that has no actual data.
@@ -248,7 +251,7 @@ constexpr ModelTypeSet ProtocolTypes() {
       DEVICE_INFO, PRIORITY_PREFERENCES, SUPERVISED_USER_SETTINGS, APP_LIST,
       ARC_PACKAGE, PRINTERS, READING_LIST, USER_EVENTS, NIGORI, USER_CONSENTS,
       SEND_TAB_TO_SELF, SECURITY_EVENTS, WEB_APPS, WIFI_CONFIGURATIONS,
-      OS_PREFERENCES, OS_PRIORITY_PREFERENCES, SHARING_MESSAGE);
+      OS_PREFERENCES, OS_PRIORITY_PREFERENCES, SHARING_MESSAGE, WORKSPACE_DESK);
 }
 
 // These are the normal user-controlled types. This is to distinguish from

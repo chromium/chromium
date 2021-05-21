@@ -119,9 +119,10 @@ UserSelectableTypeInfo GetUserSelectableOsTypeInfo(UserSelectableOsType type) {
               APPS,
               {APP_LIST, APPS, APP_SETTINGS, ARC_PACKAGE, WEB_APPS}};
     case UserSelectableOsType::kOsPreferences:
-      return {kOsPreferencesTypeName,
-              OS_PREFERENCES,
-              {OS_PREFERENCES, OS_PRIORITY_PREFERENCES, PRINTERS}};
+      return {
+          kOsPreferencesTypeName,
+          OS_PREFERENCES,
+          {OS_PREFERENCES, OS_PRIORITY_PREFERENCES, PRINTERS, WORKSPACE_DESK}};
     case UserSelectableOsType::kOsWifiConfigurations:
       return {kOsWifiConfigurationsTypeName,
               WIFI_CONFIGURATIONS,

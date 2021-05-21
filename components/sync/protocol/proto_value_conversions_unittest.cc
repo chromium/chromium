@@ -55,7 +55,7 @@ namespace {
 
 DEFINE_SPECIFICS_TO_VALUE_TEST(encrypted)
 
-static_assert(37 == syncer::GetNumModelTypes(),
+static_assert(38 == syncer::GetNumModelTypes(),
               "When adding a new field, add a DEFINE_SPECIFICS_TO_VALUE_TEST "
               "for your field below, and optionally a test for the specific "
               "conversions.");
@@ -95,6 +95,7 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(user_event)
 DEFINE_SPECIFICS_TO_VALUE_TEST(wallet_metadata)
 DEFINE_SPECIFICS_TO_VALUE_TEST(web_app)
 DEFINE_SPECIFICS_TO_VALUE_TEST(wifi_configuration)
+DEFINE_SPECIFICS_TO_VALUE_TEST(workspace_desk)
 
 TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
   sync_pb::AutofillWalletSpecifics specifics;
