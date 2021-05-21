@@ -47,4 +47,7 @@ interface TestViewStructureInterface {
      * Get the Android View-style class name.
      */
     public String getClassName();
+
+    /** @see android.view.ViewStructure#getText */
+    public CharSequence getText();
 }

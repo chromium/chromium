@@ -204,4 +204,27 @@ public class AssistViewStructureTest {
         Assert.assertNull(extras.getCharSequence("disabled"));
         Assert.assertNull(extras.getCharSequence("onclick"));
     }
+
+    /**
+     * Verifies that AX tree is returned.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testButton() throws Throwable {
+        final String data = "<button>Click</button>";
+        TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
+
+        Assert.assertEquals(1, root.getChildCount());
+        Assert.assertEquals("", root.getText());
+        TestViewStructureInterface child = root.getChild(0);
+        Assert.assertEquals(1, child.getChildCount());
+        Assert.assertEquals("", child.getText());
+        TestViewStructureInterface button = child.getChild(0);
+        Assert.assertEquals(1, button.getChildCount());
+        Assert.assertEquals("android.widget.Button", button.getClassName());
+        TestViewStructureInterface buttonText = button.getChild(0);
+        Assert.assertEquals("Click", buttonText.getText());
+    }
 }

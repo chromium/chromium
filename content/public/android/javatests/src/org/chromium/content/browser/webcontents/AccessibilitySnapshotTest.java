@@ -89,26 +89,6 @@ public class AccessibilitySnapshotTest {
         return Math.ceil(zoomFactor * css);
     }
 
-    /**
-     * Verifies that AX tree is returned.
-     */
-    @Test
-    @SmallTest
-    public void testRequestAccessibilitySnapshot() throws Throwable {
-        final String data = "<button>Click</button>";
-        AccessibilitySnapshotNode root = receiveAccessibilitySnapshot(data, null);
-        Assert.assertEquals(1, root.children.size());
-        Assert.assertEquals("", root.text);
-        AccessibilitySnapshotNode child = root.children.get(0);
-        Assert.assertEquals(1, child.children.size());
-        Assert.assertEquals("", child.text);
-        AccessibilitySnapshotNode button = child.children.get(0);
-        Assert.assertEquals(1, button.children.size());
-        Assert.assertEquals("android.widget.Button", button.className);
-        AccessibilitySnapshotNode buttonText = button.children.get(0);
-        Assert.assertEquals("Click", buttonText.text);
-    }
-
     @Test
     @SmallTest
     public void testRequestAccessibilitySnapshotColors() throws Throwable {
