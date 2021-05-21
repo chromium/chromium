@@ -263,7 +263,27 @@ class span : public internal::ExtentStorage<Extent> {
   template <typename It,
             typename = internal::EnableIfCompatibleContiguousIterator<It, T>>
   constexpr span(It first, size_t count) noexcept
-      : ExtentStorage(count), data_(base::to_address(first)) {
+      : ExtentStorage(count),
+        // The use of to_address() here is to handle the case where the iterator
+        // `first` is pointing to the container's `end()`. In that case we can
+        // not use the address returned from the iterator, or dereference it
+        // through the iterator's `operator*`, but we can store it. We must assume
+        // in this case that `count` is 0, since the iterator does not point to
+        // valid data. Future hardening of iterators may disallow pulling the
+        // address from `end()`, as demonstrated by asserts() in libstdc++:
+        // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93960.
+        //
+        // The span API dictates that the `data()` is accessible when size is 0,
+        // since the pointer may be valid, so we cannot prevent storing and
+        // giving out an invalid pointer here without breaking API compatibility
+        // and our unit tests. Thus protecting against this can likely only be
+        // successful from inside iterators themselves, where the context about
+        // the pointer is known.
+        //
+        // We can not protect here generally against an invalid iterator/count
+        // being passed in, since we have no context to determine if the
+        // iterator or count are valid.
+        data_(base::to_address(first)) {
     CHECK(Extent == dynamic_extent || Extent == count);
   }
 
