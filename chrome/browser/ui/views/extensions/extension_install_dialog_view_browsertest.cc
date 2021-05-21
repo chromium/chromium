@@ -297,10 +297,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest,
     int tab1_idx = tab_strip_model->GetIndexOfWebContents(originator_contents);
     content::WebContentsDestroyedWatcher tab_destroyed_watcher(
         tab_strip_model->GetWebContentsAt(tab1_idx));
-    tab_strip_model->CloseWebContentsAt(tab1_idx, TabStripModel::CLOSE_NONE);
-    tab_destroyed_watcher.Wait();
     EXPECT_TRUE(tab_strip_model->CloseWebContentsAt(tab1_idx,
                                                     TabStripModel::CLOSE_NONE));
+    tab_destroyed_watcher.Wait();
   }
 
   class TabAddedObserver : public TabStripModelObserver {
