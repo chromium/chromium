@@ -17,6 +17,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 
+import com.google.common.base.Optional;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -362,7 +364,7 @@ public class AssistantVoiceSearchServiceUnitTest {
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
     public void testDoesViolateMultiAccountCheck_cacheNotPopulated() {
-        doReturn(false).when(mFakeAccountManagerFacade).isCachePopulated();
+        doReturn(Optional.absent()).when(mFakeAccountManagerFacade).getGoogleAccounts();
         Assert.assertTrue(mAssistantVoiceSearchService.doesViolateMultiAccountCheck());
     }
 }

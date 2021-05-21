@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.voice;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
 
+import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -18,6 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+
+import com.google.common.base.Optional;
 
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -415,9 +418,9 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
     @VisibleForTesting
     boolean doesViolateMultiAccountCheck() {
         // In case of the accounts cannot be fetched -- we can't be sure so default to true.
-        return !mExternalAuthUtils.canUseGooglePlayServices()
-                || !mAccountManagerFacade.isCachePopulated()
-                || mAccountManagerFacade.tryGetGoogleAccounts().size() > 1;
+        Optional<List<Account>> accounts = mAccountManagerFacade.getGoogleAccounts();
+        return !mExternalAuthUtils.canUseGooglePlayServices() || !accounts.isPresent()
+                || accounts.get().size() > 1;
     }
 
     // TemplateUrlService.TemplateUrlServiceObserver implementation
