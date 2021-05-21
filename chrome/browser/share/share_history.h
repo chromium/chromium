@@ -49,6 +49,9 @@ class ShareHistory : public base::SupportsUserData::Data {
  private:
   void Init();
   void OnInitDone(leveldb_proto::Enums::InitStatus status);
+  void OnInitialReadDone(bool ok, std::unique_ptr<mojom::ShareHistory> history);
+
+  void FlushToBackingDb();
 
   // These two methods get or create entries in the in-memory protobuf; they do
   // not actually write back to the DB.

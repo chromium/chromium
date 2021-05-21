@@ -18,7 +18,11 @@ namespace sharing {
 namespace {
 
 const char* const kShareHistoryFolder = "share_history";
-static const char kShareHistoryKey[1] = "";
+
+// This is the key used for the single entry in the backing LevelDB. The fact
+// that it is the same string as the above folder name is a coincidence; please
+// do not fold these constants together.
+const char* const kShareHistoryKey = "share_history";
 
 int TodaysDay() {
   return (base::Time::Now() - base::Time::UnixEpoch()).InDays();
@@ -76,8 +80,7 @@ void ShareHistory::AddShareEntry(const std::string& component_name) {
 
   target_history->set_count(target_history->count() + 1);
 
-  // TODO(ellyjones): Start a write back to the backing database. Once that's
-  // done, un-disable the AddsWrittenToBackingDb test.
+  FlushToBackingDb();
 }
 
 void ShareHistory::GetFlatShareHistory(GetFlatHistoryCallback callback,
@@ -126,11 +129,42 @@ void ShareHistory::Init() {
 }
 
 void ShareHistory::OnInitDone(leveldb_proto::Enums::InitStatus status) {
-  init_finished_ = true;
   db_init_status_ = status;
+  if (status != leveldb_proto::Enums::kOK) {
+    // If the LevelDB initialization failed, follow the same state transitions
+    // as in the happy case, but without going through LevelDB; i.e., act as
+    // though the initial read failed, instead of the LevelDB initialization, so
+    // that control always ends up in OnInitialReadDone.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&ShareHistory::OnInitialReadDone,
+                                  weak_factory_.GetWeakPtr(), false,
+                                  std::make_unique<mojom::ShareHistory>()));
+    return;
+  }
+
+  db_->GetEntry(kShareHistoryKey,
+                base::BindOnce(&ShareHistory::OnInitialReadDone,
+                               weak_factory_.GetWeakPtr()));
+}
+
+void ShareHistory::OnInitialReadDone(
+    bool ok,
+    std::unique_ptr<mojom::ShareHistory> history) {
+  if (ok && history)
+    history_ = *history;
+  init_finished_ = true;
   post_init_callbacks_.Notify();
 
   // TODO(ellyjones): Expire entries older than WINDOW days.
+}
+
+void ShareHistory::FlushToBackingDb() {
+  auto keyvals = std::make_unique<BackingDb::KeyEntryVector>();
+  keyvals->push_back({kShareHistoryKey, history_});
+
+  db_->UpdateEntries(std::move(keyvals),
+                     std::make_unique<std::vector<std::string>>(),
+                     base::DoNothing());
 }
 
 mojom::DayShareHistory* ShareHistory::DayShareHistoryForToday() {
