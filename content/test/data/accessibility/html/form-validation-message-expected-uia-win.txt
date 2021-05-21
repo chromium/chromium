@@ -1,6 +1,6 @@
 Document
 ++Text Name='Please enter pet name'
-++Group IsControlElement=false
+++Group
 ++++Text
 ++++++Text Name='Pet name:'
 ++++Edit Name='Pet name:' IsRequiredForForm=true

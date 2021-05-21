@@ -1306,6 +1306,20 @@ void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) {
                              max_scroll_offset.y());
 }
 
+const AtomicString& AXObject::GetRoleAttributeStringForObjectAttribute() {
+  // All ARIA roles are exposed in xml-roles.
+  if (const AtomicString& role_str =
+          GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole)) {
+    return role_str;
+  }
+
+  // Landmarks are the only native roles exposed in xml-roles, matching Firefox.
+  if (ui::IsLandmark(RoleValue()))
+    return ARIARoleName(RoleValue());
+
+  return g_null_atom;
+}
+
 void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) {
   Element* element = GetElement();
   if (!element)
@@ -1317,18 +1331,13 @@ void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) {
                                   class_name.Utf8());
   }
 
-  // ARIA role.
-  if (const AtomicString& aria_role =
-          GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole)) {
+  // Expose StringAttribute::kRole, which is used for the xml-roles object
+  // attribute. Prefer the raw ARIA role attribute value, otherwise, the ARIA
+  // equivalent role is used, if it is a role that is exposed in xml-roles.
+  const AtomicString& role_str = GetRoleAttributeStringForObjectAttribute();
+  if (role_str) {
     TruncateAndAddStringAttribute(
-        node_data, ax::mojom::blink::StringAttribute::kRole, aria_role.Utf8());
-  } else {
-    const AtomicString& role_str = GetEquivalentAriaRoleName(RoleValue());
-    if (role_str != g_null_atom) {
-      TruncateAndAddStringAttribute(node_data,
-                                    ax::mojom::blink::StringAttribute::kRole,
-                                    role_str.Ascii());
-    }
+        node_data, ax::mojom::blink::StringAttribute::kRole, role_str.Utf8());
   }
 }
 
@@ -5494,32 +5503,6 @@ const AtomicString& AXObject::ARIARoleName(ax::mojom::blink::Role role) {
       CreateARIARoleNameVector();
 
   return aria_role_name_vector->at(static_cast<wtf_size_t>(role));
-}
-
-// static
-const AtomicString& AXObject::GetEquivalentAriaRoleName(
-    const ax::mojom::blink::Role role) {
-  // TODO(accessibilty) Why are some roles listed here and not others?
-  switch (role) {
-    case ax::mojom::blink::Role::kArticle:
-    case ax::mojom::blink::Role::kBanner:
-    case ax::mojom::blink::Role::kButton:
-    case ax::mojom::blink::Role::kComplementary:
-    case ax::mojom::blink::Role::kFigure:
-    case ax::mojom::blink::Role::kFooter:
-    case ax::mojom::blink::Role::kHeader:
-    case ax::mojom::blink::Role::kHeading:
-    case ax::mojom::blink::Role::kImage:
-    case ax::mojom::blink::Role::kMain:
-    case ax::mojom::blink::Role::kNavigation:
-    case ax::mojom::blink::Role::kRadioButton:
-    case ax::mojom::blink::Role::kRegion:
-    case ax::mojom::blink::Role::kSlider:
-    case ax::mojom::blink::Role::kTime:
-      return ARIARoleName(role);
-    default:
-      return g_null_atom;
-  }
 }
 
 const String AXObject::InternalRoleName(ax::mojom::blink::Role role) {

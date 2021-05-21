@@ -1,3 +1,3 @@
 [document web]
 ++[section]
-++++[slider] horizontal valuetext:5 xml-roles:slider current=5.000000 minimum=1.000000 maximum=10.000000
+++++[slider] horizontal valuetext:5 current=5.000000 minimum=1.000000 maximum=10.000000

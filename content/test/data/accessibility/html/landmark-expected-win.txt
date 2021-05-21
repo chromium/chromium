@@ -1,13 +1,13 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_LANDMARK xml-roles:banner
+++IA2_ROLE_LANDMARK
 ++++ROLE_SYSTEM_STATICTEXT name='This is a header element.'
 ++IA2_ROLE_LANDMARK xml-roles:complementary
 ++++ROLE_SYSTEM_STATICTEXT name='This is an aside element.'
 ++IA2_ROLE_SECTION
 ++++ROLE_SYSTEM_STATICTEXT name='This is an address element.'
-++IA2_ROLE_LANDMARK xml-roles:contentinfo
+++IA2_ROLE_LANDMARK
 ++++ROLE_SYSTEM_STATICTEXT name='This is a footer element.'
-++IA2_ROLE_FORM
+++IA2_ROLE_FORM xml-roles:form
 ++++ROLE_SYSTEM_STATICTEXT name='This is a form element.'
 ++IA2_ROLE_LANDMARK xml-roles:main
 ++++ROLE_SYSTEM_STATICTEXT name='This is a main element.'
@@ -29,7 +29,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++ROLE_SYSTEM_STATICTEXT name='This is an ARIA navigation landmark.'
 ++IA2_ROLE_LANDMARK xml-roles:search
 ++++ROLE_SYSTEM_STATICTEXT name='This is an ARIA search landmark.'
-++ROLE_SYSTEM_DOCUMENT READONLY xml-roles:article
+++ROLE_SYSTEM_DOCUMENT READONLY
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT banner role.'
 ++IA2_ROLE_LANDMARK xml-roles:complementary
@@ -50,7 +50,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++ROLE_SYSTEM_GROUPING
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
-++ROLE_SYSTEM_GROUPING xml-roles:figure
+++ROLE_SYSTEM_GROUPING
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
 ++ROLE_SYSTEM_GROUPING xml-roles:group
@@ -59,7 +59,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_LANDMARK xml-roles:main
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
-++ROLE_SYSTEM_DOCUMENT READONLY xml-roles:article
+++ROLE_SYSTEM_DOCUMENT READONLY
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT banner role.'
 ++IA2_ROLE_LANDMARK xml-roles:complementary
@@ -80,7 +80,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++ROLE_SYSTEM_GROUPING
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
-++ROLE_SYSTEM_GROUPING xml-roles:figure
+++ROLE_SYSTEM_GROUPING
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
 ++IA2_ROLE_SECTION
@@ -88,7 +88,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_LANDMARK xml-roles:main
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
-++ROLE_SYSTEM_DOCUMENT READONLY xml-roles:article
+++ROLE_SYSTEM_DOCUMENT READONLY
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT footer role.'
 ++IA2_ROLE_LANDMARK xml-roles:complementary
@@ -109,7 +109,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++ROLE_SYSTEM_GROUPING
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
-++ROLE_SYSTEM_GROUPING xml-roles:figure
+++ROLE_SYSTEM_GROUPING
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
 ++IA2_ROLE_SECTION
@@ -117,7 +117,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_LANDMARK xml-roles:main
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
-++ROLE_SYSTEM_DOCUMENT READONLY xml-roles:article
+++ROLE_SYSTEM_DOCUMENT READONLY
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT footer role.'
 ++IA2_ROLE_LANDMARK xml-roles:complementary
@@ -138,7 +138,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++ROLE_SYSTEM_GROUPING
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
-++ROLE_SYSTEM_GROUPING xml-roles:figure
+++ROLE_SYSTEM_GROUPING
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
 ++ROLE_SYSTEM_GROUPING xml-roles:group

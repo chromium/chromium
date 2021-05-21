@@ -1,5 +1,5 @@
 Document
-++Group IsControlElement=false
+++Group
 ++++Group Name='Browser Engines:'
 ++++++Text IsControlElement=false
 ++++++++Text Name='Browser Engines:' IsControlElement=false

@@ -1,5 +1,5 @@
 [document web]
-++[article] xml-roles:article
+++[article]
 ++++[section]
 ++++++[paragraph]
 ++++++++[static] name='footer inside article.'

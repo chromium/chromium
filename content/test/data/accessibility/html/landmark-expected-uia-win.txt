@@ -7,7 +7,7 @@ Document
 ++++Text Name='This is an address element.'
 ++Group
 ++++Text Name='This is a footer element.'
-++Group IsControlElement=false
+++Group
 ++++Text Name='This is a form element.'
 ++Group
 ++++Text Name='This is a main element.'

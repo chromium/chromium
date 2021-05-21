@@ -1,13 +1,13 @@
 [document web]
-++[landmark] xml-roles:banner
+++[landmark]
 ++++[static] name='This is a header element.'
 ++[landmark] xml-roles:complementary
 ++++[static] name='This is an aside element.'
 ++[section]
 ++++[static] name='This is an address element.'
-++[landmark] xml-roles:contentinfo
+++[landmark]
 ++++[static] name='This is a footer element.'
-++[form]
+++[form] xml-roles:form
 ++++[static] name='This is a form element.'
 ++[landmark] xml-roles:main
 ++++[static] name='This is a main element.'
@@ -29,7 +29,7 @@
 ++++[static] name='This is an ARIA navigation landmark.'
 ++[landmark] xml-roles:search
 ++++[static] name='This is an ARIA search landmark.'
-++[article] xml-roles:article
+++[article]
 ++++[section]
 ++++++[static] name='This should NOT banner role.'
 ++[landmark] xml-roles:complementary
@@ -50,7 +50,7 @@
 ++[panel]
 ++++[section]
 ++++++[static] name='This should NOT have banner role.'
-++[panel] xml-roles:figure
+++[panel]
 ++++[section]
 ++++++[static] name='This should NOT have banner role.'
 ++[panel] xml-roles:group
@@ -59,7 +59,7 @@
 ++[landmark] xml-roles:main
 ++++[section]
 ++++++[static] name='This should NOT have banner role.'
-++[article] xml-roles:article
+++[article]
 ++++[section]
 ++++++[static] name='This should NOT banner role.'
 ++[landmark] xml-roles:complementary
@@ -80,7 +80,7 @@
 ++[panel]
 ++++[section]
 ++++++[static] name='This should NOT have banner role.'
-++[panel] xml-roles:figure
+++[panel]
 ++++[section]
 ++++++[static] name='This should NOT have banner role.'
 ++[section]
@@ -88,7 +88,7 @@
 ++[landmark] xml-roles:main
 ++++[section]
 ++++++[static] name='This should NOT have banner role.'
-++[article] xml-roles:article
+++[article]
 ++++[section]
 ++++++[static] name='This should NOT footer role.'
 ++[landmark] xml-roles:complementary
@@ -109,7 +109,7 @@
 ++[panel]
 ++++[section]
 ++++++[static] name='This should NOT have footer role.'
-++[panel] xml-roles:figure
+++[panel]
 ++++[section]
 ++++++[static] name='This should NOT have footer role.'
 ++[section]
@@ -117,7 +117,7 @@
 ++[landmark] xml-roles:main
 ++++[section]
 ++++++[static] name='This should NOT have footer role.'
-++[article] xml-roles:article
+++[article]
 ++++[section]
 ++++++[static] name='This should NOT footer role.'
 ++[landmark] xml-roles:complementary
@@ -138,7 +138,7 @@
 ++[panel]
 ++++[section]
 ++++++[static] name='This should NOT have footer role.'
-++[panel] xml-roles:figure
+++[panel]
 ++++[section]
 ++++++[static] name='This should NOT have footer role.'
 ++[panel] xml-roles:group

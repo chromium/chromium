@@ -1324,10 +1324,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Return the equivalent ARIA name for an enumerated role, or g_null_atom.
   static const AtomicString& ARIARoleName(ax::mojom::blink::Role);
 
-  // For a native role get the equivalent ARIA role for use in the xml-roles
-  // object attribute.
-  static const AtomicString& GetEquivalentAriaRoleName(ax::mojom::blink::Role);
-
   // Return the equivalent internal role name as a string.
   static const String InternalRoleName(ax::mojom::blink::Role);
 
@@ -1356,6 +1352,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // What should the role be assuming an ARIA role is not present?
   virtual ax::mojom::blink::Role NativeRoleIgnoringAria() const = 0;
+
+  // Get the role to be used in StringAttribute::kRole, which is used in the
+  // xml-roles object attribute.
+  const AtomicString& GetRoleAttributeStringForObjectAttribute();
 
   // Returns a string representation of this object.
   // |cached_values_only| avoids recomputing cached values, and thus can be
