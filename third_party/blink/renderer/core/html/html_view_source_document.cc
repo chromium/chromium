@@ -100,7 +100,6 @@ void HTMLViewSourceDocument::CreateContainingTable() {
   body->ParserAppendChild(div);
 
   auto* table = MakeGarbageCollected<HTMLTableElement>(*this);
-  body->ParserAppendChild(table);
   tbody_ = MakeGarbageCollected<HTMLTableSectionElement>(html_names::kTbodyTag,
                                                          *this);
   table->ParserAppendChild(tbody_);
@@ -115,6 +114,8 @@ void HTMLViewSourceDocument::CreateContainingTable() {
       event_type_names::kChange,
       MakeGarbageCollected<ViewSourceEventListener>(table, checkbox),
       /*use_capture=*/false);
+  checkbox->setAttribute(html_names::kAriaLabelAttr, WTF::AtomicString(Locale::DefaultLocale().QueryString(
+                              IDS_VIEW_SOURCE_LINE_WRAP)));
   auto* label = MakeGarbageCollected<HTMLLabelElement>(*this);
   label->ParserAppendChild(
       Text::Create(*this, WTF::AtomicString(Locale::DefaultLocale().QueryString(
@@ -126,14 +127,8 @@ void HTMLViewSourceDocument::CreateContainingTable() {
   auto* form = MakeGarbageCollected<HTMLFormElement>(*this);
   form->setAttribute(html_names::kAutocompleteAttr, "off");
   form->ParserAppendChild(label);
-  auto* tr = MakeGarbageCollected<HTMLTableRowElement>(*this);
-  auto* td =
-      MakeGarbageCollected<HTMLTableCellElement>(html_names::kTdTag, *this);
-  td->setAttribute(html_names::kColspanAttr, "2");
-  td->setAttribute(html_names::kClassAttr, "line-wrap-cell");
-  td->ParserAppendChild(form);
-  tr->ParserAppendChild(td);
-  tbody_->ParserAppendChild(tr);
+  body->ParserAppendChild(form);
+  body->ParserAppendChild(table);
 }
 
 void HTMLViewSourceDocument::AddSource(const String& source, HTMLToken& token) {
