@@ -103,8 +103,10 @@ static inline bool IsMultiColumnContainer(const LayoutObject& object) {
 // other formatting contexts in-between). We also require that there be no
 // transforms, since transforms insist on being in the containing block chain
 // for everything inside it, which conflicts with a spanners's need to have the
-// multicol container as its direct containing block. We may also not put
-// spanners inside objects that don't support fragmentation.
+// multicol container as its direct containing block. However, the containing
+// block chain goes directly from the column spanner to the multicol container
+// for an NG multicol, so it is safe to skip this rule in such cases. We may
+// also not put spanners inside objects that don't support fragmentation.
 bool LayoutMultiColumnFlowThread::CanContainSpannerInParentFragmentationContext(
     const LayoutObject& object) const {
   NOT_DESTROYED();
@@ -112,7 +114,8 @@ bool LayoutMultiColumnFlowThread::CanContainSpannerInParentFragmentationContext(
   if (!block_flow)
     return false;
   return !block_flow->CreatesNewFormattingContext() &&
-         !block_flow->CanContainFixedPositionObjects() &&
+         (!block_flow->CanContainFixedPositionObjects() ||
+          MultiColumnBlockFlow()->IsLayoutNGObject()) &&
          block_flow->GetPaginationBreakability(fragmentation_engine_) !=
              LayoutBox::kForbidBreaks &&
          !IsMultiColumnContainer(*block_flow);
