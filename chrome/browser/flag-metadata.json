@@ -2518,8 +2518,8 @@
   },
   {
     "name": "enable-tls13-early-data",
-    "owners": [ "svaldez" ],
-    "expiry_milestone": 90
+    "owners": [ "davidben", "svaldez" ],
+    "expiry_milestone": 100
   },
   {
     "name": "enable-touch-drag-drop",
