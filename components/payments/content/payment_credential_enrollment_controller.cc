@@ -49,44 +49,14 @@ void PaymentCredentialEnrollmentController::ShowDialog(
     std::unique_ptr<SkBitmap> instrument_icon,
     const std::u16string& instrument_name,
     ResponseCallback response_callback) {
-#if defined(OS_ANDROID)
-  NOTREACHED();
-#endif  // OS_ANDROID
-  DCHECK(!view_);
-
+  DCHECK(!bridge_);
   is_user_response_recorded_ = false;
   initiator_frame_routing_id_ = initiator_frame_routing_id;
   response_callback_ = std::move(response_callback);
 
-  model_.set_instrument_icon(std::move(instrument_icon));
-
-  model_.set_progress_bar_visible(false);
-  model_.set_accept_button_enabled(true);
-  model_.set_cancel_button_enabled(true);
-
-  model_.set_title(
-      l10n_util::GetStringUTF16(IDS_PAYMENT_CREDENTIAL_ENROLLMENT_TITLE));
-
-  model_.set_description(
-      l10n_util::GetStringUTF16(IDS_PAYMENT_CREDENTIAL_ENROLLMENT_DESCRIPTION));
-
-  model_.set_instrument_name(instrument_name);
-
-  model_.set_extra_description(
-      web_contents()->GetBrowserContext()->IsOffTheRecord()
-          ? l10n_util::GetStringUTF16(
-                IDS_PAYMENT_CREDENTIAL_ENROLLMENT_OFF_THE_RECORD_DESCRIPTION)
-          : std::u16string());
-
-  model_.set_accept_button_label(l10n_util::GetStringUTF16(
-      IDS_PAYMENT_CREDENTIAL_ENROLLMENT_ACCEPT_BUTTON_LABEL));
-
-  model_.set_cancel_button_label(l10n_util::GetStringUTF16(
-      IDS_PAYMENT_CREDENTIAL_ENROLLMENT_CANCEL_BUTTON_LABEL));
-
-  view_ = PaymentCredentialEnrollmentView::Create();
-  view_->ShowDialog(
-      web_contents(), model_.GetWeakPtr(),
+  bridge_ = PaymentCredentialEnrollmentBridge::Create();
+  bridge_->ShowDialog(
+      web_contents(), std::move(instrument_icon), instrument_name,
       base::BindOnce(&PaymentCredentialEnrollmentController::OnConfirm,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&PaymentCredentialEnrollmentController::OnCancel,
@@ -97,21 +67,16 @@ void PaymentCredentialEnrollmentController::ShowDialog(
 }
 
 void PaymentCredentialEnrollmentController::ShowProcessingSpinner() {
-  if (!view_)
-    return;
-
-  model_.set_progress_bar_visible(true);
-  model_.set_accept_button_enabled(false);
-  model_.set_cancel_button_enabled(false);
-  view_->OnModelUpdated();
+  if (bridge_)
+    bridge_->ShowProcessingSpinner();
 }
 
 void PaymentCredentialEnrollmentController::CloseDialog() {
   RecordFirstCloseReason(SecurePaymentConfirmationEnrollDialogResult::kClosed);
 
-  if (view_) {
-    view_->HideDialog();
-    view_.reset();
+  if (bridge_) {
+    bridge_->CloseDialog();
+    bridge_.reset();
   }
 }
 
@@ -186,7 +151,7 @@ void PaymentCredentialEnrollmentController::RenderFrameDeleted(
 
 void PaymentCredentialEnrollmentController::RecordFirstCloseReason(
     SecurePaymentConfirmationEnrollDialogResult result) {
-  if (!is_user_response_recorded_ && view_) {
+  if (!is_user_response_recorded_ && bridge_) {
     is_user_response_recorded_ = true;
     RecordEnrollDialogResult(result);
   }

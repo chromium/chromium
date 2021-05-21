@@ -399,6 +399,7 @@ test("components_unittests") {
       "//components/offline_items_collection/core:native_java_unittests_java",
       "//components/paint_preview/browser/android:java",
       "//components/paint_preview/player/android:unit_tests",
+      "//components/payments/content/android",
       "//components/permissions/android:java",
       "//components/policy/android:native_test_support_java",
       "//components/policy/android:policy_java",

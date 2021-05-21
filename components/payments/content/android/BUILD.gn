@@ -20,6 +20,8 @@ static_library("android") {
     "journey_logger_android.cc",
     "journey_logger_android.h",
     "origin_security_checker_android.cc",
+    "payment_credential_enrollment_bridge_android.cc",
+    "payment_credential_enrollment_bridge_android.h",
     "payment_feature_list.cc",
     "payment_feature_list.h",
     "payment_handler_host.cc",

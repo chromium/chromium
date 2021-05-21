@@ -30,6 +30,7 @@ static_library("content") {
     "payment_app_service_factory.h",
     "payment_credential.cc",
     "payment_credential.h",
+    "payment_credential_enrollment_bridge.h",
     "payment_credential_enrollment_controller.cc",
     "payment_credential_enrollment_controller.h",
     "payment_credential_enrollment_model.cc",
@@ -105,14 +106,13 @@ static_library("content") {
   }
 
   if (is_android) {
-    sources += [
-      "payment_credential_enrollment_view_stub.cc",
-      "secure_payment_confirmation_view_stub.cc",
-    ]
+    sources += [ "secure_payment_confirmation_view_stub.cc" ]
   } else {
     sources += [
       "content_payment_request_delegate.cc",
       "content_payment_request_delegate.h",
+      "payment_credential_enrollment_bridge_desktop.cc",
+      "payment_credential_enrollment_bridge_desktop.h",
       "payment_request.cc",
       "payment_request.h",
       "payment_request_dialog.h",

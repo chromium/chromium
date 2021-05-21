@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/payments/content/payment_credential_enrollment_bridge.h"
 #include "components/payments/content/payment_credential_enrollment_model.h"
 #include "components/payments/core/secure_payment_confirmation_metrics.h"
 #include "content/public/browser/global_routing_id.h"
@@ -18,8 +19,6 @@
 class SkBitmap;
 
 namespace payments {
-
-class PaymentCredentialEnrollmentView;
 
 // Controls the user interface in the secure payment confirmation flow.
 class PaymentCredentialEnrollmentController
@@ -102,16 +101,10 @@ class PaymentCredentialEnrollmentController
 
   ResponseCallback response_callback_;
 
-  PaymentCredentialEnrollmentModel model_;
-
-  // On desktop, the PaymentCredentialEnrollmentView object is memory managed by
-  // the views:: machinery. It is deleted when the window is closed and
-  // views::DialogDelegateView::DeleteDelegate() is called by its corresponding
-  // views::Widget.
-  base::WeakPtr<PaymentCredentialEnrollmentView> view_;
-
   ObserverForTest* observer_for_test_ = nullptr;
   base::WeakPtr<ScopedToken> token_;
+
+  std::unique_ptr<PaymentCredentialEnrollmentBridge> bridge_;
 
   bool is_user_response_recorded_ = false;
 
