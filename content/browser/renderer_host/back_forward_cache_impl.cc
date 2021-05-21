@@ -6,8 +6,10 @@
 
 #include <algorithm>
 #include <string>
+#include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
@@ -320,6 +322,14 @@ std::string GetBlockedURLList() {
              : "";
 }
 
+// Returns the list of blocked CGI params
+std::string GetBlockedCgiParams() {
+  return IsBackForwardCacheEnabled()
+             ? base::GetFieldTrialParamValueByFeature(
+                   features::kBackForwardCache, "blocked_cgi_params")
+             : "";
+}
+
 // Parses the “allowed_websites” and "blocked_websites" field trial parameters
 // and creates a map to represent hosts and corresponding path prefixes.
 std::map<std::string, std::vector<std::string>> ParseCommaSeparatedURLs(
@@ -332,6 +342,17 @@ std::map<std::string, std::vector<std::string>> ParseCommaSeparatedURLs(
     urls[url.host()].push_back(url.path());
   }
   return urls;
+}
+
+// Parses the "cgi_params" field trial parameter into a set by splitting on "|".
+std::unordered_set<std::string> ParseBlockedCgiParams(
+    base::StringPiece cgi_params_string) {
+  std::vector<std::string> split =
+      base::SplitString(cgi_params_string, "|", base::TRIM_WHITESPACE,
+                        base::SplitResult::SPLIT_WANT_NONEMPTY);
+  std::unordered_set<std::string> cgi_params;
+  cgi_params.insert(split.begin(), split.end());
+  return cgi_params;
 }
 
 BackForwardCacheTestDelegate* g_bfcache_disabled_test_observer = nullptr;
@@ -457,6 +478,7 @@ BackForwardCacheTestDelegate::~BackForwardCacheTestDelegate() {
 BackForwardCacheImpl::BackForwardCacheImpl()
     : allowed_urls_(ParseCommaSeparatedURLs(GetAllowedURLList())),
       blocked_urls_(ParseCommaSeparatedURLs(GetBlockedURLList())),
+      blocked_cgi_params_(ParseBlockedCgiParams(GetBlockedCgiParams())),
       unload_strategy_(GetUnloadSupportStrategy()),
       weak_factory_(this) {}
 
@@ -998,6 +1020,10 @@ void BackForwardCacheImpl::DestroyEvictedFrames() {
 }
 
 bool BackForwardCacheImpl::IsAllowed(const GURL& current_url) {
+  return IsHostPathAllowed(current_url) && IsQueryAllowed(current_url);
+}
+
+bool BackForwardCacheImpl::IsHostPathAllowed(const GURL& current_url) {
   // If the current_url matches the blocked host and path, current_url is
   // not allowed to be cached.
   const auto& it = blocked_urls_.find(current_url.host());
@@ -1025,6 +1051,17 @@ bool BackForwardCacheImpl::IsAllowed(const GURL& current_url) {
     }
   }
   return false;
+}
+
+bool BackForwardCacheImpl::IsQueryAllowed(const GURL& current_url) {
+  std::vector<std::string> cgi_params =
+      base::SplitString(current_url.query_piece(), "&", base::TRIM_WHITESPACE,
+                        base::SplitResult::SPLIT_WANT_NONEMPTY);
+  for (const std::string& cgi_param : cgi_params) {
+    if (base::Contains(blocked_cgi_params_, cgi_param))
+      return false;
+  }
+  return true;
 }
 
 bool BackForwardCacheImpl::CheckFeatureUsageOnlyAfterAck() {
