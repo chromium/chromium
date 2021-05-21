@@ -217,6 +217,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   cc::Layer* LayerForHorizontalScrollbar() const override;
   cc::Layer* LayerForVerticalScrollbar() const override;
   bool ScheduleAnimation() override;
+  bool UsesCompositedScrolling() const override { return true; }
   cc::AnimationHost* GetCompositorAnimationHost() const override;
   CompositorAnimationTimeline* GetCompositorAnimationTimeline() const override;
   IntRect VisibleContentRect(

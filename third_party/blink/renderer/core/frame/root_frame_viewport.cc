@@ -479,6 +479,10 @@ IntSize RootFrameViewport::ContentsSize() const {
   return LayoutViewport().ContentsSize();
 }
 
+bool RootFrameViewport::UsesCompositedScrolling() const {
+  return LayoutViewport().UsesCompositedScrolling();
+}
+
 bool RootFrameViewport::ShouldScrollOnMainThread() const {
   return LayoutViewport().ShouldScrollOnMainThread();
 }

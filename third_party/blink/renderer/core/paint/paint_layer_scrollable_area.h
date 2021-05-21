@@ -482,6 +482,11 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // Rectangle encompassing the scroll corner and resizer rect.
   IntRect ScrollCornerAndResizerRect() const;
 
+  // The difference between this function and NeedsCompositedScrolling() is
+  // that this function returns the composited scrolling status based on paint
+  // properties which are updated based on the latter.
+  bool UsesCompositedScrolling() const override;
+
   void UpdateNeedsCompositedScrolling(
       bool force_prefer_compositing_to_lcd_text);
   bool NeedsCompositedScrolling() const { return needs_composited_scrolling_; }

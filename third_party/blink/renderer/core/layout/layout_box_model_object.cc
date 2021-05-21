@@ -102,8 +102,15 @@ LayoutBoxModelObject::LayoutBoxModelObject(ContainerNode* node)
 
 bool LayoutBoxModelObject::UsesCompositedScrolling() const {
   NOT_DESTROYED();
-  return IsScrollContainer() && HasLayer() &&
-         Layer()->GetScrollableArea()->UsesCompositedScrolling();
+
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    return IsScrollContainer() && HasLayer() &&
+           Layer()->GetScrollableArea()->UsesCompositedScrolling();
+  }
+
+  const auto* properties = FirstFragment().PaintProperties();
+  return properties && properties->ScrollTranslation() &&
+         properties->ScrollTranslation()->HasDirectCompositingReasons();
 }
 
 static bool HasInsetBoxShadow(const ComputedStyle& style) {

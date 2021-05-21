@@ -86,6 +86,7 @@ class CORE_EXPORT RootFrameViewport final
   IntSize ClampScrollOffset(const IntSize&) const override;
   ScrollOffset ClampScrollOffset(const ScrollOffset&) const override;
   IntSize ContentsSize() const override;
+  bool UsesCompositedScrolling() const override;
   bool ShouldScrollOnMainThread() const override;
   bool ScrollbarsCanBeActive() const override;
   bool UserInputScrollable(ScrollbarOrientation) const override;

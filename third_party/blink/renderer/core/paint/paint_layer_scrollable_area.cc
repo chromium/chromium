@@ -2677,6 +2677,12 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
   return needs_composited_scrolling;
 }
 
+bool PaintLayerScrollableArea::UsesCompositedScrolling() const {
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return GetLayoutBox()->UsesCompositedScrolling();
+  return ScrollableArea::UsesCompositedScrolling();
+}
+
 void PaintLayerScrollableArea::UpdateNeedsCompositedScrolling(
     bool force_prefer_compositing_to_lcd_text) {
   bool new_needs_composited_scrolling =

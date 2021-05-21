@@ -393,8 +393,12 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual void RegisterForAnimation() {}
   virtual void DeregisterForAnimation() {}
 
-  bool UsesCompositedScrolling() const { return uses_composited_scrolling_; }
+  virtual bool UsesCompositedScrolling() const {
+    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+    return uses_composited_scrolling_;
+  }
   void SetUsesCompositedScrolling(bool uses_composited_scrolling) {
+    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
     uses_composited_scrolling_ = uses_composited_scrolling;
   }
   virtual bool ShouldScrollOnMainThread() const { return false; }

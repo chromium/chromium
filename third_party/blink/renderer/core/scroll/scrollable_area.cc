@@ -753,7 +753,7 @@ void ScrollableArea::ShowNonMacOverlayScrollbars() {
 
   // Don't do this for composited scrollbars. These scrollbars are handled
   // by separate code in cc::ScrollbarAnimationController.
-  if (LayerForVerticalScrollbar() || LayerForHorizontalScrollbar())
+  if (UsesCompositedScrolling())
     return;
 
   SetScrollbarsHiddenIfOverlay(false);
