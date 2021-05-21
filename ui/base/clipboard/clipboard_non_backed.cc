@@ -181,6 +181,14 @@ class ClipboardInternal {
     *result = data->rtf_data();
   }
 
+  // Reads png from the ClipboardData.
+  std::vector<uint8_t> ReadPng() const {
+    if (!HasFormat(ClipboardInternalFormat::kPng))
+      return std::vector<uint8_t>();
+
+    return GetData()->png();
+  }
+
   // Reads image from the ClipboardData.
   SkBitmap ReadImage() const {
     SkBitmap img;
@@ -610,8 +618,18 @@ void ClipboardNonBacked::ReadPng(ClipboardBuffer buffer,
                                  const DataTransferEndpoint* data_dst,
                                  ReadPngCallback callback) const {
   DCHECK(CalledOnValidThread());
-  // TODO(crbug.com/1201018): Implement this.
-  NOTIMPLEMENTED();
+
+  if (!clipboard_internal_->IsReadAllowed(data_dst)) {
+    std::move(callback).Run(std::vector<uint8_t>());
+    return;
+  }
+
+  RecordRead(ClipboardFormatMetric::kPng);
+  std::move(callback).Run(clipboard_internal_->ReadPng());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
+#endif
 }
 
 void ClipboardNonBacked::ReadImage(ClipboardBuffer buffer,
